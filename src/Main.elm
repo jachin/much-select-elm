@@ -1,10 +1,37 @@
 module Main exposing (..)
 
 import Browser
-import Css exposing (absolute, backgroundColor, color, cursor, display, float, fontSize, height, hex, inlineBlock, left, minWidth, padding, pointer, position, px, relative, rgb, top)
+import Css
+    exposing
+        ( absolute
+        , backgroundColor
+        , color
+        , cursor
+        , display
+        , fontSize
+        , height
+        , hex
+        , inlineBlock
+        , left
+        , minWidth
+        , padding
+        , pointer
+        , position
+        , px
+        , relative
+        , rgb
+        , top
+        )
 import Html.Styled exposing (Html, div, input, text, toUnstyled)
-import Html.Styled.Attributes exposing (class, css, type_)
-import Html.Styled.Events exposing (onBlur, onFocus, onMouseOut, onMouseOver)
+import Html.Styled.Attributes exposing (class, css, type_, value)
+import Html.Styled.Events
+    exposing
+        ( onBlur
+        , onFocus
+        , onMouseDown
+        , onMouseOut
+        , onMouseOver
+        )
 
 
 type Msg
@@ -12,6 +39,7 @@ type Msg
     | InputFocus
     | DropdownMouseOverOption Option
     | DropdownMouseOutOption Option
+    | DropdownMouseClickOption Option
 
 
 type alias Model =
@@ -36,6 +64,9 @@ update msg model =
         DropdownMouseOutOption option ->
             ( { model | options = removeHighlightOptionInList option model.options }, Cmd.none )
 
+        DropdownMouseClickOption option ->
+            ( { model | options = selectOptionInList option model.options }, Cmd.none )
+
 
 view : Model -> Html Msg
 view model =
@@ -44,6 +75,7 @@ view model =
             [ type_ "text"
             , onBlur InputBlur
             , onFocus InputFocus
+            , value (selectedValueLabel model.options)
             , css [ height (px 40), fontSize (px 25) ]
             ]
             []
@@ -79,7 +111,12 @@ optionToDropdownOption option =
             div
                 [ onMouseOver (DropdownMouseOverOption option)
                 , onMouseOut (DropdownMouseOutOption option)
-                , css [ backgroundColor (rgb 255 255 255), padding (px 5), cursor pointer ]
+                , onMouseDown (DropdownMouseClickOption option)
+                , css
+                    [ backgroundColor (rgb 255 255 255)
+                    , padding (px 5)
+                    , cursor pointer
+                    ]
                 ]
                 [ text (getOptionLabelString option) ]
 
@@ -88,10 +125,13 @@ optionToDropdownOption option =
 
         OptionSelected ->
             div
-                [ onMouseOver (DropdownMouseOverOption option)
-                , onMouseOut (DropdownMouseOutOption option)
-                , class "selected"
-                , css [ backgroundColor (hex "111111"), color (hex "EEEEEE"), padding (px 5), cursor pointer ]
+                [ class "selected"
+                , css
+                    [ backgroundColor (hex "111111")
+                    , color (hex "EEEEEE")
+                    , padding (px 5)
+                    , cursor pointer
+                    ]
                 ]
                 [ text (getOptionLabelString option) ]
 
@@ -99,8 +139,14 @@ optionToDropdownOption option =
             div
                 [ onMouseOver (DropdownMouseOverOption option)
                 , onMouseOut (DropdownMouseOutOption option)
+                , onMouseDown (DropdownMouseClickOption option)
                 , class "highlighted"
-                , css [ backgroundColor (hex "111111"), color (hex "EEEEEE"), padding (px 5), cursor pointer ]
+                , css
+                    [ backgroundColor (hex "666666")
+                    , color (hex "EEEEEE")
+                    , padding (px 5)
+                    , cursor pointer
+                    ]
                 ]
                 [ text (getOptionLabelString option) ]
 
@@ -129,7 +175,11 @@ init flags =
 main : Program Flags Model Msg
 main =
     Browser.element
-        { init = init, update = update, subscriptions = \_ -> Sub.none, view = view >> toUnstyled }
+        { init = init
+        , update = update
+        , subscriptions = \_ -> Sub.none
+        , view = view >> toUnstyled
+        }
 
 
 type OptionDisplay
@@ -176,12 +226,12 @@ getOptionLabelString (Option _ label _) =
 highlightOptionInList : Option -> List Option -> List Option
 highlightOptionInList option options =
     List.map
-        (\o ->
-            if o == option then
-                highlightOption option
+        (\option_ ->
+            if option_ == option then
+                highlightOption option_
 
             else
-                o
+                removeHighlightOption option_
         )
         options
 
@@ -199,6 +249,19 @@ removeHighlightOptionInList option options =
         options
 
 
+selectOptionInList : Option -> List Option -> List Option
+selectOptionInList option options =
+    List.map
+        (\option_ ->
+            if option_ == option then
+                selectOption option_
+
+            else
+                option_
+        )
+        options
+
+
 highlightOption : Option -> Option
 highlightOption (Option _ label value) =
     Option OptionHighlighted label value
@@ -207,3 +270,33 @@ highlightOption (Option _ label value) =
 removeHighlightOption : Option -> Option
 removeHighlightOption (Option _ label value) =
     Option OptionShown label value
+
+
+selectOption : Option -> Option
+selectOption (Option _ label value) =
+    Option OptionSelected label value
+
+
+selectedValueLabel : List Option -> String
+selectedValueLabel options =
+    options
+        |> List.filter
+            (\option_ ->
+                case option_ of
+                    Option display _ _ ->
+                        case display of
+                            OptionShown ->
+                                False
+
+                            OptionHidden ->
+                                False
+
+                            OptionSelected ->
+                                True
+
+                            OptionHighlighted ->
+                                False
+            )
+        |> List.head
+        |> Maybe.map getOptionLabelString
+        |> Maybe.withDefault ""
