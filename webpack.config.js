@@ -15,6 +15,7 @@ module.exports = env => {
 
     return {
       mode: env.production ? "production" : "development",
+      target: "web",
       entry: env.production ? "./src/much-selector.js" : "./src/index.js",
       devServer: {
         publicPath: "/",
@@ -26,6 +27,8 @@ module.exports = env => {
         publicPath: "/",
         path: publicFolder,
         filename: "bundle.js",
+        library: 'muchSelector',
+        libraryTarget: 'umd',
       },
       module: {
         rules: [
