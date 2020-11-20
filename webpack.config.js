@@ -18,7 +18,7 @@ const webpackLoader = {
 
 module.exports = {
     mode: isProd ? "production" : "development",
-    entry: "./src/index.js",
+    entry: isProd ? "./src/much-selector.js" : "./src/index.js",
     devServer: {
         publicPath: "/",
         contentBase: publicFolder,
