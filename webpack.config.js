@@ -33,6 +33,15 @@ module.exports = env => {
       module: {
         rules: [
           {
+            enforce: "pre",
+            test: /\.(js|tsx?)$/,
+            exclude: /node_modules/,
+            loader: "eslint-loader",
+            options: {
+              configFile: ".eslintrc.js",
+            },
+          },
+          {
             test: /\.elm$/,
             exclude: [/elm-stuff/, /node_modules/],
             use: env.production

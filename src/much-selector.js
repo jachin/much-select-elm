@@ -1,31 +1,31 @@
-import { Elm } from './Main.elm';
+// noinspection ES6CheckImport
+import { Elm } from "./Main.elm";
 
 // adapted from https://github.com/thread/elm-web-components
 
 class MuchSelector extends HTMLElement {
+  // noinspection JSUnusedGlobalSymbols
   connectedCallback() {
+    // eslint-disable-next-line no-useless-catch
     try {
-      const flags = {name: "Jachin"};
+      const flags = { name: "Jachin" };
 
       // User shadow DOM.
-      const parentDiv = this.attachShadow({mode: 'open'});
+      const parentDiv = this.attachShadow({ mode: "open" });
 
-      const elmDiv = document.createElement('div');
+      const elmDiv = document.createElement("div");
 
-      parentDiv.innerHTML = '';
+      parentDiv.innerHTML = "";
       parentDiv.appendChild(elmDiv);
 
-      const elmElement = Elm.Main.init({
+      // noinspection JSUnresolvedVariable
+      Elm.Main.init({
         flags,
         node: elmDiv,
       });
-
     } catch (error) {
-      console.error(
-        `Error from elm-web-components registering ${name}`,
-        'You can pass an `onSetupError` to handle these.',
-        error
-      )
+      // TODO Do something interesting here
+      throw error;
     }
   }
 }
