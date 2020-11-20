@@ -1,12 +1,12 @@
 {
   "name": "@getdrip/much-selector-elm",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "A fancy selector web component written (mostly) in elm.",
   "main": "public/bundle.js",
   "repository": "github:DripEmail/much-selector-elm",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack",
+    "build": "webpack --env production",
     "watch": "webpack serve --watch"
   },
   "author": "Jachin Rupe <jachin.rupe@drip.com>",

@@ -1,6 +1,6 @@
 import { Elm } from './Main.elm';
 
-// adapted from https://github.com/PixelsCommander/ReactiveElements
+// adapted from https://github.com/thread/elm-web-components
 
 class MuchSelector extends HTMLElement {
   connectedCallback() {
