@@ -1,45 +1,43 @@
 const { resolve } = require("path");
 const webpack = require("webpack");
 
-const { ENV } = process.env;
-
 const publicFolder = resolve("./public");
 
-const isProd = ENV === "production";
-
-const webpackLoader = {
+module.exports = env => {
+  const webpackLoader = {
     loader: "elm-webpack-loader",
     options: {
-        debug: !isProd,
-        optimize: isProd,
-        cwd: __dirname,
+      debug: !env.production,
+      optimize: env.production,
+      cwd: __dirname,
     },
-};
+  };
 
-module.exports = {
-    mode: isProd ? "production" : "development",
-    entry: isProd ? "./src/much-selector.js" : "./src/index.js",
-    devServer: {
+    return {
+      mode: env.production ? "production" : "development",
+      entry: env.production ? "./src/much-selector.js" : "./src/index.js",
+      devServer: {
         publicPath: "/",
         contentBase: publicFolder,
         port: 8000,
         hotOnly: true,
-    },
-    output: {
+      },
+      output: {
         publicPath: "/",
         path: publicFolder,
         filename: "bundle.js",
-    },
-    module: {
+      },
+      module: {
         rules: [
-            {
-                test: /\.elm$/,
-                exclude: [/elm-stuff/, /node_modules/],
-                use: isProd
-                    ? [webpackLoader]
-                    : [{ loader: "elm-hot-webpack-loader" }, webpackLoader],
-            },
+          {
+            test: /\.elm$/,
+            exclude: [/elm-stuff/, /node_modules/],
+            use: env.production
+              ? [webpackLoader]
+              : [{loader: "elm-hot-webpack-loader"}, webpackLoader],
+          },
         ],
-    },
-    plugins: [new webpack.NoEmitOnErrorsPlugin()],
+      },
+      plugins: [new webpack.NoEmitOnErrorsPlugin()],
+    }
 };
