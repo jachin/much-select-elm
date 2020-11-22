@@ -280,7 +280,7 @@ selectOptionInList option options =
                 selectOption option_
 
             else
-                option_
+                deselectOption option_
         )
         options
 
