@@ -2,7 +2,6 @@
   "name": "@getdrip/much-selector-elm",
   "version": "0.0.5",
   "description": "A fancy selector web component written (mostly) in elm.",
-  "type": "module",
   "main": "public/bundle.js",
   "repository": "github:DripEmail/much-selector-elm",
   "scripts": {
@@ -25,7 +24,7 @@
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-prettier": "^3.1.4",
     "prettier": "^2.2.0",
-    "webpack": "^5.4.0",
+    "webpack": "^5.6.0",
     "webpack-cli": "^4.2.0",
     "webpack-dev-server": "^3.11.0"
   }

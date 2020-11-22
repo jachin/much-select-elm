@@ -38,7 +38,7 @@ module.exports = env => {
             exclude: /node_modules/,
             loader: "eslint-loader",
             options: {
-              configFile: ".eslintrc.js",
+              configFile: ".eslintrc.json",
             },
           },
           {

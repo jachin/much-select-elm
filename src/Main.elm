@@ -63,7 +63,7 @@ update msg model =
             ( { model | options = selectOptionInList option model.options }, Cmd.none )
 
         SearchInputOnInput string ->
-            ( { model | searchString = string}, Cmd.none )
+            ( { model | searchString = string }, Cmd.none )
 
 
 view : Model -> Html Msg
@@ -153,25 +153,24 @@ optionToDropdownOption option =
 
 optionsToValuesHtml : List Option -> List (Html Msg)
 optionsToValuesHtml options =
-    options |>
-        List.map (\option ->
-            case option of
-                (Option display (OptionLabel labelStr) _ ) ->
-                    case display of
-                        OptionShown ->
-                            text ""
+    options
+        |> List.map
+            (\option ->
+                case option of
+                    Option display (OptionLabel labelStr) _ ->
+                        case display of
+                            OptionShown ->
+                                text ""
 
-                        OptionHidden ->
-                            text ""
+                            OptionHidden ->
+                                text ""
 
-                        OptionSelected ->
-                            div [ class "value" ] [ text labelStr  ]
+                            OptionSelected ->
+                                div [ class "value" ] [ text labelStr ]
 
-                        OptionHighlighted ->
-                            text ""
-
-
-        )
+                            OptionHighlighted ->
+                                text ""
+            )
 
 
 type alias Flags =
@@ -285,10 +284,11 @@ selectOptionInList option options =
         )
         options
 
+
 selectSingleOptionInList : Option -> List Option -> List Option
 selectSingleOptionInList option options =
     options
-    |> List.map
+        |> List.map
             (\option_ ->
                 if option_ == option then
                     selectOption option_
@@ -296,7 +296,6 @@ selectSingleOptionInList option options =
                 else
                     option_
             )
-
 
 
 highlightOption : Option -> Option
@@ -315,7 +314,6 @@ highlightOption (Option display label value) =
             Option OptionHighlighted label value
 
 
-
 removeHighlightOption : Option -> Option
 removeHighlightOption (Option display label value) =
     case display of
@@ -330,7 +328,6 @@ removeHighlightOption (Option display label value) =
 
         OptionHighlighted ->
             Option OptionShown label value
-
 
 
 selectOption : Option -> Option
@@ -348,8 +345,21 @@ selectOption (Option display label value) =
         OptionHighlighted ->
             Option OptionSelected label value
 
-deselect
 
+deselectOption : Option -> Option
+deselectOption (Option display label value) =
+    case display of
+        OptionShown ->
+            Option OptionShown label value
+
+        OptionHidden ->
+            Option OptionHidden label value
+
+        OptionSelected ->
+            Option OptionShown label value
+
+        OptionHighlighted ->
+            Option OptionHighlighted label value
 
 
 selectedValueLabel : List Option -> String
