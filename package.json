@@ -7,7 +7,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack --env production",
-    "watch": "webpack serve --watch"
+    "watch": "webpack serve"
   },
   "author": "Jachin Rupe <jachin.rupe@drip.com>",
   "license": "MIT",
