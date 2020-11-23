@@ -33,6 +33,20 @@ import Html.Styled.Events
         , onMouseOut
         , onMouseOver
         )
+import Option
+    exposing
+        ( Option(..)
+        , OptionDisplay(..)
+        , OptionLabel(..)
+        , getOptionDisplay
+        , getOptionLabelString
+        , highlightOptionInList
+        , newOption
+        , removeHighlightOptionInList
+        , selectOptionInList
+        , selectSingleOptionInList
+        , selectedOptionsToTuple
+        )
 import Ports exposing (valueChanged)
 
 
@@ -46,14 +60,19 @@ type Msg
 
 
 type alias Model =
-    { initalValue : String
+    { initialValue : String
     , placeholder : String
     , size : String
-    , allowMulitSelect : Bool
+    , selectionMode : SelectionMode
     , options : List Option
     , showDropdown : Bool
     , searchString : String
     }
+
+
+type SelectionMode
+    = SingleSelect
+    | MultiSelect
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -74,11 +93,12 @@ update msg model =
         DropdownMouseClickOption option ->
             let
                 options =
-                    if model.allowMulitSelect then
-                        selectOptionInList option model.options
+                    case model.selectionMode of
+                        MultiSelect ->
+                            selectOptionInList option model.options
 
-                    else
-                        selectSingleOptionInList option model.options
+                        SingleSelect ->
+                            selectSingleOptionInList option model.options
             in
             ( { model | options = options }, valueChanged (selectedOptionsToTuple options) )
 
@@ -118,14 +138,14 @@ dropdown model =
                 , minWidth (px 200)
                 ]
             ]
-            (List.map optionToDropdownOption model.options)
+            (List.map (optionToDropdownOption model.selectionMode) model.options)
 
     else
         text ""
 
 
-optionToDropdownOption : Option -> Html Msg
-optionToDropdownOption option =
+optionToDropdownOption : SelectionMode -> Option -> Html Msg
+optionToDropdownOption selectionMode option =
     case getOptionDisplay option of
         OptionShown ->
             div
@@ -144,16 +164,21 @@ optionToDropdownOption option =
             text ""
 
         OptionSelected ->
-            div
-                [ class "selected"
-                , css
-                    [ backgroundColor (hex "111111")
-                    , color (hex "EEEEEE")
-                    , padding (px 5)
-                    , cursor pointer
-                    ]
-                ]
-                [ text (getOptionLabelString option) ]
+            case selectionMode of
+                SingleSelect ->
+                    div
+                        [ class "selected"
+                        , css
+                            [ backgroundColor (hex "111111")
+                            , color (hex "EEEEEE")
+                            , padding (px 5)
+                            , cursor pointer
+                            ]
+                        ]
+                        [ text (getOptionLabelString option) ]
+
+                MultiSelect ->
+                    text ""
 
         OptionHighlighted ->
             div
@@ -203,10 +228,15 @@ type alias Flags =
 
 init : Flags -> ( Model, Cmd Msg )
 init flags =
-    ( { initalValue = flags.value
+    ( { initialValue = flags.value
       , placeholder = flags.placeholder
       , size = flags.size
-      , allowMulitSelect = flags.allowMultiSelect
+      , selectionMode =
+            if flags.allowMultiSelect then
+                MultiSelect
+
+            else
+                SingleSelect
       , options =
             [ newOption "Red"
             , newOption "Yellow"
@@ -230,219 +260,3 @@ main =
         , subscriptions = \_ -> Sub.none
         , view = view >> toUnstyled
         }
-
-
-type OptionDisplay
-    = OptionShown
-    | OptionHidden
-    | OptionSelected
-    | OptionHighlighted
-
-
-type OptionLabel
-    = OptionLabel String
-
-
-optionLabelToString : OptionLabel -> String
-optionLabelToString optionLabel =
-    case optionLabel of
-        OptionLabel label ->
-            label
-
-
-type OptionValue
-    = OptionValue String
-
-
-type Option
-    = Option OptionDisplay OptionLabel OptionValue
-
-
-newOption : String -> Option
-newOption string =
-    Option OptionShown (OptionLabel string) (OptionValue string)
-
-
-getOptionDisplay : Option -> OptionDisplay
-getOptionDisplay (Option display _ _) =
-    display
-
-
-getOptionLabelString : Option -> String
-getOptionLabelString (Option _ label _) =
-    optionLabelToString label
-
-
-selectedOptionsToTuple : List Option -> List ( String, String )
-selectedOptionsToTuple options =
-    options |> selectedOptions |> List.map optionToValueLabelTuple
-
-
-highlightOptionInList : Option -> List Option -> List Option
-highlightOptionInList option options =
-    List.map
-        (\option_ ->
-            if option_ == option then
-                highlightOption option_
-
-            else
-                removeHighlightOption option_
-        )
-        options
-
-
-removeHighlightOptionInList : Option -> List Option -> List Option
-removeHighlightOptionInList option options =
-    List.map
-        (\option_ ->
-            if option_ == option then
-                removeHighlightOption option
-
-            else
-                option_
-        )
-        options
-
-
-selectOptionInList : Option -> List Option -> List Option
-selectOptionInList option options =
-    List.map
-        (\option_ ->
-            if option_ == option then
-                selectOption option_
-
-            else
-                option_
-        )
-        options
-
-
-selectSingleOptionInList : Option -> List Option -> List Option
-selectSingleOptionInList option options =
-    options
-        |> List.map
-            (\option_ ->
-                if option_ == option then
-                    selectOption option_
-
-                else
-                    deselectOption option_
-            )
-
-
-highlightOption : Option -> Option
-highlightOption (Option display label value) =
-    case display of
-        OptionShown ->
-            Option OptionHighlighted label value
-
-        OptionHidden ->
-            Option OptionHidden label value
-
-        OptionSelected ->
-            Option OptionSelected label value
-
-        OptionHighlighted ->
-            Option OptionHighlighted label value
-
-
-removeHighlightOption : Option -> Option
-removeHighlightOption (Option display label value) =
-    case display of
-        OptionShown ->
-            Option OptionShown label value
-
-        OptionHidden ->
-            Option OptionHidden label value
-
-        OptionSelected ->
-            Option OptionSelected label value
-
-        OptionHighlighted ->
-            Option OptionShown label value
-
-
-selectOption : Option -> Option
-selectOption (Option display label value) =
-    case display of
-        OptionShown ->
-            Option OptionSelected label value
-
-        OptionHidden ->
-            Option OptionSelected label value
-
-        OptionSelected ->
-            Option OptionSelected label value
-
-        OptionHighlighted ->
-            Option OptionSelected label value
-
-
-deselectOption : Option -> Option
-deselectOption (Option display label value) =
-    case display of
-        OptionShown ->
-            Option OptionShown label value
-
-        OptionHidden ->
-            Option OptionHidden label value
-
-        OptionSelected ->
-            Option OptionShown label value
-
-        OptionHighlighted ->
-            Option OptionHighlighted label value
-
-
-selectedOptions : List Option -> List Option
-selectedOptions options =
-    options
-        |> List.filter
-            (\option_ ->
-                case option_ of
-                    Option display _ _ ->
-                        case display of
-                            OptionShown ->
-                                False
-
-                            OptionHidden ->
-                                False
-
-                            OptionSelected ->
-                                True
-
-                            OptionHighlighted ->
-                                False
-            )
-
-
-optionToValueLabelTuple : Option -> ( String, String )
-optionToValueLabelTuple option =
-    case option of
-        Option _ (OptionLabel label) (OptionValue value) ->
-            ( value, label )
-
-
-selectedValueLabel : List Option -> String
-selectedValueLabel options =
-    options
-        |> List.filter
-            (\option_ ->
-                case option_ of
-                    Option display _ _ ->
-                        case display of
-                            OptionShown ->
-                                False
-
-                            OptionHidden ->
-                                False
-
-                            OptionSelected ->
-                                True
-
-                            OptionHighlighted ->
-                                False
-            )
-        |> List.head
-        |> Maybe.map getOptionLabelString
-        |> Maybe.withDefault ""
