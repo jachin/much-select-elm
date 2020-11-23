@@ -3,15 +3,19 @@ module Option exposing
     , OptionDisplay(..)
     , OptionLabel(..)
     , OptionValue
+    , decoder
     , getOptionDisplay
     , getOptionLabelString
     , highlightOptionInList
     , newOption
+    , newSelectedOption
     , removeHighlightOptionInList
     , selectOptionInList
     , selectSingleOptionInList
     , selectedOptionsToTuple
     )
+
+import Json.Decode
 
 
 type Option
@@ -43,6 +47,11 @@ type OptionValue
 newOption : String -> Option
 newOption string =
     Option OptionShown (OptionLabel string) (OptionValue string)
+
+
+newSelectedOption : String -> Option
+newSelectedOption string =
+    Option OptionSelected (OptionLabel string) (OptionValue string)
 
 
 getOptionDisplay : Option -> OptionDisplay
@@ -228,3 +237,50 @@ selectedValueLabel options =
         |> List.head
         |> Maybe.map getOptionLabelString
         |> Maybe.withDefault ""
+
+
+decoder : Json.Decode.Decoder Option
+decoder =
+    Json.Decode.map3 Option
+        displayDecoder
+        (Json.Decode.field
+            "label"
+            labelDecoder
+        )
+        (Json.Decode.field
+            "value"
+            valueDecoder
+        )
+
+
+displayDecoder : Json.Decode.Decoder OptionDisplay
+displayDecoder =
+    Json.Decode.oneOf
+        [ Json.Decode.field
+            "selected"
+            Json.Decode.string
+            |> Json.Decode.andThen
+                (\str ->
+                    case str of
+                        "true" ->
+                            Json.Decode.succeed OptionSelected
+
+                        _ ->
+                            Json.Decode.succeed OptionShown
+                )
+        , Json.Decode.succeed OptionShown
+        ]
+
+
+labelDecoder : Json.Decode.Decoder OptionLabel
+labelDecoder =
+    Json.Decode.string
+        |> Json.Decode.map
+            OptionLabel
+
+
+valueDecoder : Json.Decode.Decoder OptionValue
+valueDecoder =
+    Json.Decode.string
+        |> Json.Decode.map
+            OptionValue
