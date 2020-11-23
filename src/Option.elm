@@ -15,6 +15,7 @@ module Option exposing
     , selectSingleOptionInList
     , selectedOptionsToTuple
     , setDescription
+    , setGroup
     , setLabel
     )
 
@@ -74,6 +75,13 @@ setDescription string option =
     case option of
         Option optionDisplay label optionValue _ group ->
             Option optionDisplay label optionValue (OptionDescription string) group
+
+
+setGroup : String -> Option -> Option
+setGroup string option =
+    case option of
+        Option optionDisplay label optionValue description _ ->
+            Option optionDisplay label optionValue description (OptionGroup string)
 
 
 newSelectedOption : String -> Option
@@ -307,7 +315,7 @@ descriptionDecoder =
 optionGroupDecoder : Json.Decode.Decoder OptionGroup
 optionGroupDecoder =
     Json.Decode.oneOf
-        [ Json.Decode.field "optgroup" Json.Decode.string
+        [ Json.Decode.field "group" Json.Decode.string
             |> Json.Decode.map OptionGroup
         , Json.Decode.succeed NoOptionGroup
         ]

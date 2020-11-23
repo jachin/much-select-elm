@@ -33,6 +33,14 @@ listOfOptionsWithDescriptions =
     """
 
 
+listOfOptionsWithGroups =
+    """[
+        {"label": "straw", "value": "1", "selected": "false", "group": "Building Material"},
+        {"label": "sticks", "value": "2", "group": "Building Material"},
+        {"label": "bricks", "value": "3", "selected": "true", "group": "Building Material"}]
+    """
+
+
 suite : Test
 suite =
     describe "The Option modules"
@@ -77,6 +85,28 @@ suite =
                                 |> Option.setDescription "🧱"
                             ]
                         )
-                        (Json.Decode.decodeString optionsDecoder listOfOptionsWithDescriptions)
+                        (Json.Decode.decodeString
+                            optionsDecoder
+                            listOfOptionsWithDescriptions
+                        )
+            , test "a list of options with groups" <|
+                \_ ->
+                    Expect.equal
+                        (Ok
+                            [ newOption "1"
+                                |> Option.setLabel "straw"
+                                |> Option.setGroup "Building Material"
+                            , newOption "2"
+                                |> Option.setLabel "sticks"
+                                |> Option.setGroup "Building Material"
+                            , newSelectedOption "3"
+                                |> Option.setLabel "bricks"
+                                |> Option.setGroup "Building Material"
+                            ]
+                        )
+                        (Json.Decode.decodeString
+                            optionsDecoder
+                            listOfOptionsWithGroups
+                        )
             ]
         ]

@@ -18,6 +18,9 @@ const buildOptionsFromSelectElement = (selectElement) => {
       const optionSelectedValue = optionElement.getAttribute("selected");
       option.selected = optionSelectedValue !== "false";
     }
+    if (optionElement.parentElement.tagName === "OPTGROUP") {
+      option.group = optionElement.parentElement.getAttribute("label");
+    }
     options.push(option);
   });
   return options;
@@ -46,6 +49,7 @@ class MuchSelector extends HTMLElement {
         node: elmDiv,
       });
 
+      // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
       app.ports.valueChanged.subscribe(this.valueChangedHandler.bind(this));
     } catch (error) {
       // TODO Do something interesting here
