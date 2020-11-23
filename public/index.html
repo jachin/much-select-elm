@@ -8,10 +8,39 @@
   <link rel="icon" href="/favicon.ico" type="image/x-icon" />
     <title>App</title>
 </head>
-<body>
-<much-selector></much-selector>
 
-<much-selector multi-select="true"></much-selector>
+<style>
+  .container {
+    display: flex; /* or inline-flex */
+  }
+</style>
+
+<body>
+
+
+
+<h1>Much-Selector</h1>
+
+<h2>Demo and Development Playground</h2>
+
+<div class="container">
+
+  <div>
+    <h3>Simple Example</h3>
+    <much-selector></much-selector>
+  </div>
+
+
+  <div>
+    <h3>Multi Select</h3>
+    <much-selector multi-select="true"></much-selector>
+  </div>
+
+
+
+
+</div>
+
 
 <!--suppress HtmlUnknownTarget -->
 <script src="/bundle.js"></script>
