@@ -24,14 +24,7 @@ import Css
         )
 import Html.Styled exposing (Html, div, input, text, toUnstyled)
 import Html.Styled.Attributes exposing (class, css, type_, value)
-import Html.Styled.Events
-    exposing
-        ( onBlur
-        , onFocus
-        , onMouseDown
-        , onMouseOut
-        , onMouseOver
-        )
+import Html.Styled.Events exposing (onBlur, onFocus, onInput, onMouseDown, onMouseOut, onMouseOver)
 
 
 type Msg
@@ -40,12 +33,14 @@ type Msg
     | DropdownMouseOverOption Option
     | DropdownMouseOutOption Option
     | DropdownMouseClickOption Option
+    | SearchInputOnInput String
 
 
 type alias Model =
     { name : String
     , options : List Option
     , showDropdown : Bool
+    , searchString : String
     }
 
 
@@ -67,15 +62,20 @@ update msg model =
         DropdownMouseClickOption option ->
             ( { model | options = selectOptionInList option model.options }, Cmd.none )
 
+        SearchInputOnInput string ->
+            ( { model | searchString = string }, Cmd.none )
+
 
 view : Model -> Html Msg
 view model =
     div [ css [ position relative ] ]
-        [ input
+        [ div [ class "value" ] (optionsToValuesHtml model.options)
+        , input
             [ type_ "text"
             , onBlur InputBlur
             , onFocus InputFocus
-            , value (selectedValueLabel model.options)
+            , onInput SearchInputOnInput
+            , value model.searchString
             , css [ height (px 40), fontSize (px 25) ]
             ]
             []
@@ -151,6 +151,28 @@ optionToDropdownOption option =
                 [ text (getOptionLabelString option) ]
 
 
+optionsToValuesHtml : List Option -> List (Html Msg)
+optionsToValuesHtml options =
+    options
+        |> List.map
+            (\option ->
+                case option of
+                    Option display (OptionLabel labelStr) _ ->
+                        case display of
+                            OptionShown ->
+                                text ""
+
+                            OptionHidden ->
+                                text ""
+
+                            OptionSelected ->
+                                div [ class "value" ] [ text labelStr ]
+
+                            OptionHighlighted ->
+                                text ""
+            )
+
+
 type alias Flags =
     { name : String }
 
@@ -167,6 +189,7 @@ init flags =
             , newOption "Purple"
             ]
       , showDropdown = False
+      , searchString = ""
       }
     , Cmd.none
     )
@@ -239,12 +262,12 @@ highlightOptionInList option options =
 removeHighlightOptionInList : Option -> List Option -> List Option
 removeHighlightOptionInList option options =
     List.map
-        (\o ->
-            if o == option then
+        (\option_ ->
+            if option_ == option then
                 removeHighlightOption option
 
             else
-                o
+                option_
         )
         options
 
@@ -257,24 +280,86 @@ selectOptionInList option options =
                 selectOption option_
 
             else
-                option_
+                deselectOption option_
         )
         options
 
 
+selectSingleOptionInList : Option -> List Option -> List Option
+selectSingleOptionInList option options =
+    options
+        |> List.map
+            (\option_ ->
+                if option_ == option then
+                    selectOption option_
+
+                else
+                    option_
+            )
+
+
 highlightOption : Option -> Option
-highlightOption (Option _ label value) =
-    Option OptionHighlighted label value
+highlightOption (Option display label value) =
+    case display of
+        OptionShown ->
+            Option OptionHighlighted label value
+
+        OptionHidden ->
+            Option OptionHidden label value
+
+        OptionSelected ->
+            Option OptionSelected label value
+
+        OptionHighlighted ->
+            Option OptionHighlighted label value
 
 
 removeHighlightOption : Option -> Option
-removeHighlightOption (Option _ label value) =
-    Option OptionShown label value
+removeHighlightOption (Option display label value) =
+    case display of
+        OptionShown ->
+            Option OptionShown label value
+
+        OptionHidden ->
+            Option OptionHidden label value
+
+        OptionSelected ->
+            Option OptionSelected label value
+
+        OptionHighlighted ->
+            Option OptionShown label value
 
 
 selectOption : Option -> Option
-selectOption (Option _ label value) =
-    Option OptionSelected label value
+selectOption (Option display label value) =
+    case display of
+        OptionShown ->
+            Option OptionSelected label value
+
+        OptionHidden ->
+            Option OptionSelected label value
+
+        OptionSelected ->
+            Option OptionSelected label value
+
+        OptionHighlighted ->
+            Option OptionSelected label value
+
+
+deselectOption : Option -> Option
+deselectOption (Option display label value) =
+    case display of
+        OptionShown ->
+            Option OptionShown label value
+
+        OptionHidden ->
+            Option OptionHidden label value
+
+        OptionSelected ->
+            Option OptionShown label value
+
+        OptionHighlighted ->
+            Option OptionHighlighted label value
 
 
 selectedValueLabel : List Option -> String

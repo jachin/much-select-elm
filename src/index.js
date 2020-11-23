@@ -1,6 +1,7 @@
-import elmWebComponents from '@teamthread/elm-web-components';
-import { Elm } from './Main.elm';
+import MuchSelector from "./much-selector";
 
-elmWebComponents.configure('0.19')
-
-elmWebComponents.register('much-selector', Elm.Main, {useShadowDom: true})
+if (!customElements.get("much-selector")) {
+  // Putting guard rails around this because browsers do not like
+  //  having the same custom element defined more than once.
+  window.customElements.define("much-selector", MuchSelector);
+}
