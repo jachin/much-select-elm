@@ -21,6 +21,9 @@ const buildOptionsFromSelectElement = (selectElement) => {
     if (optionElement.parentElement.tagName === "OPTGROUP") {
       option.group = optionElement.parentElement.getAttribute("label");
     }
+    if (optionElement.dataset.description) {
+      option.description = optionElement.dataset.description;
+    }
     options.push(option);
   });
   return options;
