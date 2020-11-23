@@ -203,7 +203,7 @@ optionsToValuesHtml options =
         |> List.map
             (\option ->
                 case option of
-                    Option display (OptionLabel labelStr) _ ->
+                    Option display (OptionLabel labelStr) _ _ _ ->
                         case display of
                             OptionShown ->
                                 text ""

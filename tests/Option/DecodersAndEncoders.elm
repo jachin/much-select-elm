@@ -25,6 +25,14 @@ listOfOptions =
         {"label": "three", "value": "3", "selected": "true"}]"""
 
 
+listOfOptionsWithDescriptions =
+    """[
+        {"label": "straw", "value": "1", "selected": "false", "description": "👒"},
+        {"label": "sticks", "value": "2", "description": "🌳"},
+        {"label": "bricks", "value": "3", "selected": "true", "description": "🧱"}]
+    """
+
+
 suite : Test
 suite =
     describe "The Option modules"
@@ -54,5 +62,21 @@ suite =
                             ]
                         )
                         (Json.Decode.decodeString optionsDecoder listOfOptions)
+            , test "a list of options with descriptions" <|
+                \_ ->
+                    Expect.equal
+                        (Ok
+                            [ newOption "1"
+                                |> Option.setLabel "straw"
+                                |> Option.setDescription "👒"
+                            , newOption "2"
+                                |> Option.setLabel "sticks"
+                                |> Option.setDescription "🌳"
+                            , newSelectedOption "3"
+                                |> Option.setLabel "bricks"
+                                |> Option.setDescription "🧱"
+                            ]
+                        )
+                        (Json.Decode.decodeString optionsDecoder listOfOptionsWithDescriptions)
             ]
         ]

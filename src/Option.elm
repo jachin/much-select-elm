@@ -14,6 +14,7 @@ module Option exposing
     , selectOptionInList
     , selectSingleOptionInList
     , selectedOptionsToTuple
+    , setDescription
     , setLabel
     )
 
@@ -21,7 +22,7 @@ import Json.Decode
 
 
 type Option
-    = Option OptionDisplay OptionLabel OptionValue
+    = Option OptionDisplay OptionLabel OptionValue OptionDescription OptionGroup
 
 
 type OptionDisplay
@@ -46,30 +47,47 @@ type OptionValue
     = OptionValue String
 
 
+type OptionDescription
+    = OptionDescription String
+    | NoDescription
+
+
+type OptionGroup
+    = OptionGroup String
+    | NoOptionGroup
+
+
 newOption : String -> Option
 newOption string =
-    Option OptionShown (OptionLabel string) (OptionValue string)
+    Option OptionShown (OptionLabel string) (OptionValue string) NoDescription NoOptionGroup
 
 
 setLabel : String -> Option -> Option
 setLabel string option =
     case option of
-        Option optionDisplay _ optionValue ->
-            Option optionDisplay (OptionLabel string) optionValue
+        Option optionDisplay _ optionValue description group ->
+            Option optionDisplay (OptionLabel string) optionValue description group
+
+
+setDescription : String -> Option -> Option
+setDescription string option =
+    case option of
+        Option optionDisplay label optionValue _ group ->
+            Option optionDisplay label optionValue (OptionDescription string) group
 
 
 newSelectedOption : String -> Option
 newSelectedOption string =
-    Option OptionSelected (OptionLabel string) (OptionValue string)
+    Option OptionSelected (OptionLabel string) (OptionValue string) NoDescription NoOptionGroup
 
 
 getOptionDisplay : Option -> OptionDisplay
-getOptionDisplay (Option display _ _) =
+getOptionDisplay (Option display _ _ _ _) =
     display
 
 
 getOptionLabelString : Option -> String
-getOptionLabelString (Option _ label _) =
+getOptionLabelString (Option _ label _ _ _) =
     optionLabelToString label
 
 
@@ -131,67 +149,67 @@ selectSingleOptionInList option options =
 
 
 highlightOption : Option -> Option
-highlightOption (Option display label value) =
+highlightOption (Option display label value description group) =
     case display of
         OptionShown ->
-            Option OptionHighlighted label value
+            Option OptionHighlighted label value description group
 
         OptionHidden ->
-            Option OptionHidden label value
+            Option OptionHidden label value description group
 
         OptionSelected ->
-            Option OptionSelected label value
+            Option OptionSelected label value description group
 
         OptionHighlighted ->
-            Option OptionHighlighted label value
+            Option OptionHighlighted label value description group
 
 
 removeHighlightOption : Option -> Option
-removeHighlightOption (Option display label value) =
+removeHighlightOption (Option display label value description group) =
     case display of
         OptionShown ->
-            Option OptionShown label value
+            Option OptionShown label value description group
 
         OptionHidden ->
-            Option OptionHidden label value
+            Option OptionHidden label value description group
 
         OptionSelected ->
-            Option OptionSelected label value
+            Option OptionSelected label value description group
 
         OptionHighlighted ->
-            Option OptionShown label value
+            Option OptionShown label value description group
 
 
 selectOption : Option -> Option
-selectOption (Option display label value) =
+selectOption (Option display label value description group) =
     case display of
         OptionShown ->
-            Option OptionSelected label value
+            Option OptionSelected label value description group
 
         OptionHidden ->
-            Option OptionSelected label value
+            Option OptionSelected label value description group
 
         OptionSelected ->
-            Option OptionSelected label value
+            Option OptionSelected label value description group
 
         OptionHighlighted ->
-            Option OptionSelected label value
+            Option OptionSelected label value description group
 
 
 deselectOption : Option -> Option
-deselectOption (Option display label value) =
+deselectOption (Option display label value description group) =
     case display of
         OptionShown ->
-            Option OptionShown label value
+            Option OptionShown label value description group
 
         OptionHidden ->
-            Option OptionHidden label value
+            Option OptionHidden label value description group
 
         OptionSelected ->
-            Option OptionShown label value
+            Option OptionShown label value description group
 
         OptionHighlighted ->
-            Option OptionHighlighted label value
+            Option OptionHighlighted label value description group
 
 
 selectedOptions : List Option -> List Option
@@ -200,7 +218,7 @@ selectedOptions options =
         |> List.filter
             (\option_ ->
                 case option_ of
-                    Option display _ _ ->
+                    Option display _ _ _ _ ->
                         case display of
                             OptionShown ->
                                 False
@@ -219,7 +237,7 @@ selectedOptions options =
 optionToValueLabelTuple : Option -> ( String, String )
 optionToValueLabelTuple option =
     case option of
-        Option _ (OptionLabel label) (OptionValue value) ->
+        Option _ (OptionLabel label) (OptionValue value) _ _ ->
             ( value, label )
 
 
@@ -230,7 +248,7 @@ optionsDecoder =
 
 decoder : Json.Decode.Decoder Option
 decoder =
-    Json.Decode.map3 Option
+    Json.Decode.map5 Option
         displayDecoder
         (Json.Decode.field
             "label"
@@ -240,6 +258,8 @@ decoder =
             "value"
             valueDecoder
         )
+        descriptionDecoder
+        optionGroupDecoder
 
 
 displayDecoder : Json.Decode.Decoder OptionDisplay
@@ -273,3 +293,21 @@ valueDecoder =
     Json.Decode.string
         |> Json.Decode.map
             OptionValue
+
+
+descriptionDecoder : Json.Decode.Decoder OptionDescription
+descriptionDecoder =
+    Json.Decode.oneOf
+        [ Json.Decode.field "description" Json.Decode.string
+            |> Json.Decode.map OptionDescription
+        , Json.Decode.succeed NoDescription
+        ]
+
+
+optionGroupDecoder : Json.Decode.Decoder OptionGroup
+optionGroupDecoder =
+    Json.Decode.oneOf
+        [ Json.Decode.field "optgroup" Json.Decode.string
+            |> Json.Decode.map OptionGroup
+        , Json.Decode.succeed NoOptionGroup
+        ]
