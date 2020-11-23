@@ -214,31 +214,6 @@ optionToValueLabelTuple option =
             ( value, label )
 
 
-selectedValueLabel : List Option -> String
-selectedValueLabel options =
-    options
-        |> List.filter
-            (\option_ ->
-                case option_ of
-                    Option display _ _ ->
-                        case display of
-                            OptionShown ->
-                                False
-
-                            OptionHidden ->
-                                False
-
-                            OptionSelected ->
-                                True
-
-                            OptionHighlighted ->
-                                False
-            )
-        |> List.head
-        |> Maybe.map getOptionLabelString
-        |> Maybe.withDefault ""
-
-
 decoder : Json.Decode.Decoder Option
 decoder =
     Json.Decode.map3 Option
