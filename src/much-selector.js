@@ -1,6 +1,28 @@
 // noinspection ES6CheckImport
 import { Elm } from "./Main.elm";
 
+const buildOptionsFromSelectElement = (selectElement) => {
+  const options = [];
+  const optionElements = selectElement.querySelectorAll("option");
+  optionElements.forEach((optionElement, optionIndex) => {
+    let value;
+    if (optionElement.hasAttribute("value")) {
+      value = optionElement.getAttribute("value");
+    } else {
+      value = optionElement.innerText;
+    }
+    const option = { value };
+    option.label = optionElement.innerText;
+    option.index = optionIndex;
+    if (optionElement.hasAttribute("selected")) {
+      const optionSelectedValue = optionElement.getAttribute("selected");
+      option.selected = optionSelectedValue !== "false";
+    }
+    options.push(option);
+  });
+  return options;
+};
+
 // adapted from https://github.com/thread/elm-web-components
 
 class MuchSelector extends HTMLElement {
@@ -56,6 +78,16 @@ class MuchSelector extends HTMLElement {
     } else {
       flags.allowMultiSelect = false;
     }
+
+    const selectElement = this.querySelector("select");
+    if (selectElement) {
+      flags.optionsJson = JSON.stringify(
+        buildOptionsFromSelectElement(selectElement)
+      );
+    } else {
+      flags.optionsJson = JSON.stringify([]);
+    }
+
     return flags;
   }
 

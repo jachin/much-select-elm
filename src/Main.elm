@@ -33,6 +33,7 @@ import Html.Styled.Events
         , onMouseOut
         , onMouseOver
         )
+import Json.Decode
 import Option
     exposing
         ( Option(..)
@@ -223,6 +224,7 @@ type alias Flags =
     , placeholder : String
     , size : String
     , allowMultiSelect : Bool
+    , optionsJson : String
     }
 
 
@@ -237,14 +239,11 @@ init flags =
 
             else
                 SingleSelect
+
+      -- TODO if this decoder fails we should "do" something about it.
       , options =
-            [ newOption "Red"
-            , newOption "Yellow"
-            , newOption "Orange"
-            , newOption "Green"
-            , newOption "Blue"
-            , newOption "Purple"
-            ]
+            Json.Decode.decodeString Option.optionsDecoder flags.optionsJson
+                |> Result.withDefault []
       , showDropdown = False
       , searchString = ""
       }

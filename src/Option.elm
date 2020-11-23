@@ -3,13 +3,13 @@ module Option exposing
     , OptionDisplay(..)
     , OptionLabel(..)
     , OptionValue
-    , decodeOptions
     , decoder
     , getOptionDisplay
     , getOptionLabelString
     , highlightOptionInList
     , newOption
     , newSelectedOption
+    , optionsDecoder
     , removeHighlightOptionInList
     , selectOptionInList
     , selectSingleOptionInList
@@ -223,8 +223,8 @@ optionToValueLabelTuple option =
             ( value, label )
 
 
-decodeOptions : Json.Decode.Decoder (List Option)
-decodeOptions =
+optionsDecoder : Json.Decode.Decoder (List Option)
+optionsDecoder =
     Json.Decode.list decoder
 
 

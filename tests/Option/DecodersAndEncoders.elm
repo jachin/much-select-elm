@@ -2,7 +2,7 @@ module Option.DecodersAndEncoders exposing (suite)
 
 import Expect
 import Json.Decode
-import Option exposing (decodeOptions, decoder, newOption, newSelectedOption)
+import Option exposing (decoder, newOption, newSelectedOption, optionsDecoder)
 import Test exposing (Test, describe, test)
 
 
@@ -53,6 +53,6 @@ suite =
                             , newSelectedOption "3" |> Option.setLabel "three"
                             ]
                         )
-                        (Json.Decode.decodeString decodeOptions listOfOptions)
+                        (Json.Decode.decodeString optionsDecoder listOfOptions)
             ]
         ]
