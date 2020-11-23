@@ -3,6 +3,7 @@ module Option exposing
     , OptionDisplay(..)
     , OptionLabel(..)
     , OptionValue
+    , decodeOptions
     , decoder
     , getOptionDisplay
     , getOptionLabelString
@@ -13,6 +14,7 @@ module Option exposing
     , selectOptionInList
     , selectSingleOptionInList
     , selectedOptionsToTuple
+    , setLabel
     )
 
 import Json.Decode
@@ -47,6 +49,13 @@ type OptionValue
 newOption : String -> Option
 newOption string =
     Option OptionShown (OptionLabel string) (OptionValue string)
+
+
+setLabel : String -> Option -> Option
+setLabel string option =
+    case option of
+        Option optionDisplay _ optionValue ->
+            Option optionDisplay (OptionLabel string) optionValue
 
 
 newSelectedOption : String -> Option
@@ -212,6 +221,11 @@ optionToValueLabelTuple option =
     case option of
         Option _ (OptionLabel label) (OptionValue value) ->
             ( value, label )
+
+
+decodeOptions : Json.Decode.Decoder (List Option)
+decodeOptions =
+    Json.Decode.list decoder
 
 
 decoder : Json.Decode.Decoder Option
