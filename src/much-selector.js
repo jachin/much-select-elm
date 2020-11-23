@@ -8,7 +8,7 @@ class MuchSelector extends HTMLElement {
   connectedCallback() {
     // eslint-disable-next-line no-useless-catch
     try {
-      const flags = { name: "Jachin" };
+      const flags = this.buildFlags();
 
       // User shadow DOM.
       const parentDiv = this.attachShadow({ mode: "open" });
@@ -19,14 +19,49 @@ class MuchSelector extends HTMLElement {
       parentDiv.appendChild(elmDiv);
 
       // noinspection JSUnresolvedVariable
-      Elm.Main.init({
+      const app = Elm.Main.init({
         flags,
         node: elmDiv,
       });
+
+      app.ports.valueChanged.subscribe(this.valueChangedHandler.bind(this));
     } catch (error) {
       // TODO Do something interesting here
       throw error;
     }
+  }
+
+  buildFlags() {
+    const flags = {};
+    if (this.hasAttribute("value")) {
+      flags.value = this.getAttribute("value").trim();
+    } else {
+      flags.value = "";
+    }
+
+    if (this.hasAttribute("placeholder")) {
+      flags.placeholder = this.getAttribute("placeholder").trim();
+    } else {
+      flags.placeholder = "";
+    }
+
+    if (this.hasAttribute("size")) {
+      flags.size = this.getAttribute("size").trim();
+    } else {
+      flags.size = "";
+    }
+
+    if (this.hasAttribute("multi-select")) {
+      flags.allowMultiSelect = this.getAttribute("multi-select") !== "false";
+    } else {
+      flags.allowMultiSelect = false;
+    }
+    return flags;
+  }
+
+  valueChangedHandler(valuesTuple) {
+    const value = valuesTuple.map((valueTuple) => valueTuple[0]).join();
+    this.setAttribute("value", value);
   }
 }
 

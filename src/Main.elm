@@ -24,7 +24,16 @@ import Css
         )
 import Html.Styled exposing (Html, div, input, text, toUnstyled)
 import Html.Styled.Attributes exposing (class, css, type_, value)
-import Html.Styled.Events exposing (onBlur, onFocus, onInput, onMouseDown, onMouseOut, onMouseOver)
+import Html.Styled.Events
+    exposing
+        ( onBlur
+        , onFocus
+        , onInput
+        , onMouseDown
+        , onMouseOut
+        , onMouseOver
+        )
+import Ports exposing (valueChanged)
 
 
 type Msg
@@ -37,7 +46,10 @@ type Msg
 
 
 type alias Model =
-    { name : String
+    { initalValue : String
+    , placeholder : String
+    , size : String
+    , allowMulitSelect : Bool
     , options : List Option
     , showDropdown : Bool
     , searchString : String
@@ -60,7 +72,15 @@ update msg model =
             ( { model | options = removeHighlightOptionInList option model.options }, Cmd.none )
 
         DropdownMouseClickOption option ->
-            ( { model | options = selectOptionInList option model.options }, Cmd.none )
+            let
+                options =
+                    if model.allowMulitSelect then
+                        selectOptionInList option model.options
+
+                    else
+                        selectSingleOptionInList option model.options
+            in
+            ( { model | options = options }, valueChanged (selectedOptionsToTuple options) )
 
         SearchInputOnInput string ->
             ( { model | searchString = string }, Cmd.none )
@@ -174,12 +194,19 @@ optionsToValuesHtml options =
 
 
 type alias Flags =
-    { name : String }
+    { value : String
+    , placeholder : String
+    , size : String
+    , allowMultiSelect : Bool
+    }
 
 
 init : Flags -> ( Model, Cmd Msg )
 init flags =
-    ( { name = flags.name
+    ( { initalValue = flags.value
+      , placeholder = flags.placeholder
+      , size = flags.size
+      , allowMulitSelect = flags.allowMultiSelect
       , options =
             [ newOption "Red"
             , newOption "Yellow"
@@ -246,6 +273,11 @@ getOptionLabelString (Option _ label _) =
     optionLabelToString label
 
 
+selectedOptionsToTuple : List Option -> List ( String, String )
+selectedOptionsToTuple options =
+    options |> selectedOptions |> List.map optionToValueLabelTuple
+
+
 highlightOptionInList : Option -> List Option -> List Option
 highlightOptionInList option options =
     List.map
@@ -280,7 +312,7 @@ selectOptionInList option options =
                 selectOption option_
 
             else
-                deselectOption option_
+                option_
         )
         options
 
@@ -294,7 +326,7 @@ selectSingleOptionInList option options =
                     selectOption option_
 
                 else
-                    option_
+                    deselectOption option_
             )
 
 
@@ -360,6 +392,35 @@ deselectOption (Option display label value) =
 
         OptionHighlighted ->
             Option OptionHighlighted label value
+
+
+selectedOptions : List Option -> List Option
+selectedOptions options =
+    options
+        |> List.filter
+            (\option_ ->
+                case option_ of
+                    Option display _ _ ->
+                        case display of
+                            OptionShown ->
+                                False
+
+                            OptionHidden ->
+                                False
+
+                            OptionSelected ->
+                                True
+
+                            OptionHighlighted ->
+                                False
+            )
+
+
+optionToValueLabelTuple : Option -> ( String, String )
+optionToValueLabelTuple option =
+    case option of
+        Option _ (OptionLabel label) (OptionValue value) ->
+            ( value, label )
 
 
 selectedValueLabel : List Option -> String
