@@ -50,10 +50,16 @@ import Option
         , optionListGrouped
         , removeHighlightOptionInList
         , selectOptionInList
+        , selectOptionsInOptionsList
         , selectSingleOptionInList
         , selectedOptionsToTuple
         )
-import Ports exposing (valueChanged)
+import Ports
+    exposing
+        ( valueChanged
+        , valueChangedReceiver
+        , valuesDecoder
+        )
 
 
 type Msg
@@ -63,6 +69,7 @@ type Msg
     | DropdownMouseOutOption Option
     | DropdownMouseClickOption Option
     | SearchInputOnInput String
+    | ValueChanged Json.Decode.Value
 
 
 type alias Model =
@@ -110,6 +117,18 @@ update msg model =
 
         SearchInputOnInput string ->
             ( { model | searchString = string }, Cmd.none )
+
+        ValueChanged valuesJson ->
+            let
+                valuesResult =
+                    Json.Decode.decodeValue valuesDecoder valuesJson
+            in
+            case valuesResult of
+                Ok values ->
+                    ( { model | options = selectOptionsInOptionsList values model.options }, Cmd.none )
+
+                Err _ ->
+                    ( model, Cmd.none )
 
 
 view : Model -> Html Msg
@@ -308,6 +327,11 @@ main =
     Browser.element
         { init = init
         , update = update
-        , subscriptions = \_ -> Sub.none
+        , subscriptions = subscriptions
         , view = view >> toUnstyled
         }
+
+
+subscriptions : Model -> Sub Msg
+subscriptions _ =
+    valueChangedReceiver ValueChanged

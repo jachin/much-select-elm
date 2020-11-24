@@ -13,6 +13,7 @@
     "sourceType": "module"
   },
   "rules": {
-    "prettier/prettier": "error"
+    "prettier/prettier": "error",
+    "no-underscore-dangle": ["error", { "allowAfterThis": true }]
   }
 }

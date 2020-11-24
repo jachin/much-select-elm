@@ -16,6 +16,7 @@ module Option exposing
     , optionsDecoder
     , removeHighlightOptionInList
     , selectOptionInList
+    , selectOptionsInOptionsList
     , selectSingleOptionInList
     , selectedOptionsToTuple
     , setDescription
@@ -97,6 +98,18 @@ newSelectedOption string =
 getOptionDisplay : Option -> OptionDisplay
 getOptionDisplay (Option display _ _ _ _) =
     display
+
+
+getOptionValue : Option -> OptionValue
+getOptionValue (Option _ _ value _ _) =
+    value
+
+
+getOptionValueAsString : Option -> String
+getOptionValueAsString option =
+    case option |> getOptionValue of
+        OptionValue string ->
+            string
 
 
 getGroup : Option -> OptionGroup
@@ -184,6 +197,24 @@ optionListGrouped options =
                 |> List.foldl accumulator Dict.empty
     in
     Dict.toList optionsDict
+
+
+selectOptionsInOptionsList : List String -> List Option -> List Option
+selectOptionsInOptionsList strings options =
+    List.map
+        (\option ->
+            if isOptionValueInList strings option then
+                selectOption option
+
+            else
+                deselectOption option
+        )
+        options
+
+
+isOptionValueInList : List String -> Option -> Bool
+isOptionValueInList possibleValues option =
+    List.any (\possibleValue -> getOptionValueAsString option == possibleValue) possibleValues
 
 
 highlightOptionInList : Option -> List Option -> List Option

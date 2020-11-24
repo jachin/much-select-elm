@@ -32,6 +32,24 @@ const buildOptionsFromSelectElement = (selectElement) => {
 // adapted from https://github.com/thread/elm-web-components
 
 class MuchSelector extends HTMLElement {
+  constructor() {
+    super();
+    this._selected = null;
+    this._app = null;
+  }
+
+  static get observedAttributes() {
+    return ["selected", "disabled", "placeholder", "loading"];
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (name === "selected") {
+      if (oldValue !== newValue) {
+        this.selected = newValue;
+      }
+    }
+  }
+
   // noinspection JSUnusedGlobalSymbols
   connectedCallback() {
     // eslint-disable-next-line no-useless-catch
@@ -47,13 +65,15 @@ class MuchSelector extends HTMLElement {
       parentDiv.appendChild(elmDiv);
 
       // noinspection JSUnresolvedVariable
-      const app = Elm.Main.init({
+      this._app = Elm.Main.init({
         flags,
         node: elmDiv,
       });
 
       // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
-      app.ports.valueChanged.subscribe(this.valueChangedHandler.bind(this));
+      this._app.ports.valueChanged.subscribe(
+        this.valueChangedHandler.bind(this)
+      );
     } catch (error) {
       // TODO Do something interesting here
       throw error;
@@ -62,8 +82,8 @@ class MuchSelector extends HTMLElement {
 
   buildFlags() {
     const flags = {};
-    if (this.hasAttribute("value")) {
-      flags.value = this.getAttribute("value").trim();
+    if (this.selected) {
+      flags.value = this.selected;
     } else {
       flags.value = "";
     }
@@ -99,8 +119,24 @@ class MuchSelector extends HTMLElement {
   }
 
   valueChangedHandler(valuesTuple) {
-    const value = valuesTuple.map((valueTuple) => valueTuple[0]).join();
-    this.setAttribute("value", value);
+    // TODO perhaps this delimiter should be configurable
+    this.selected = valuesTuple.map((valueTuple) => valueTuple[0]).join(",");
+  }
+
+  get selected() {
+    return this._selected;
+  }
+
+  set selected(value) {
+    this.setAttribute("selected", value);
+
+    // TODO perhaps this delimiter should be configurable
+    const values = value.split(",");
+
+    // TODO Convert this._app to a function that get a promise that returns _app
+    //  when it is ready.
+    // noinspection JSUnresolvedVariable
+    this._app.ports.valueChangedReceiver.send(values);
   }
 }
 
