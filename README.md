@@ -10,7 +10,7 @@ The project draws heavy inspiration from the jquery based [selectize.js](https:/
 
 The need for this project is that we want to use selectize.js however we need the over all app to be built in [Elm](https://elm-lang.org/). Elm needs to "own" the DOM and selectize is built in a way that's not compatible with that. 
 
-The goal for this project to achieve near feature parity with selectize using web components. The API will be different so it will not be a drop in replacement but hopefully it will not be too hard to replace one with the other.
+The goal for this project to achieve near feature parity with selectize using web components. The API will be different, so it will not be a drop in replacement but hopefully it will not be too hard to replace one with the other.
 
 ## Installation
 
@@ -36,15 +36,25 @@ if (!customElements.get("much-selector")) {
 
 To work on this project, clone the repo to your machine, then.
 
+### Initial Setup
+
+Just do like you'd expect to get started. Only development dependencies.
+
 ``` bash
 npm install
 ```
+
+### Watch and Develop
 
 To run a webpack development server with the sandbox/demo page:
 
 ```bash
 npm run watch
 ```
+
+Now you can visit http://localhost:8000
+
+### Production Build
 
 To do a production build run
 
