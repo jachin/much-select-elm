@@ -34,8 +34,35 @@ const buildOptionsFromSelectElement = (selectElement) => {
 class MuchSelector extends HTMLElement {
   constructor() {
     super();
+
+    /**
+     * @type {string|null}
+     * @private
+     */
     this._selected = null;
+
+    /**
+     * @type {string|null}
+     * @private
+     */
     this._placeholder = null;
+
+    /**
+     * @type {boolean}
+     * @private
+     */
+    this._disabled = false;
+
+    /**
+     * @type {boolean}
+     * @private
+     */
+    this._loading = false;
+
+    /**
+     * @type {null|object}
+     * @private
+     */
     this._app = null;
   }
 
@@ -43,6 +70,7 @@ class MuchSelector extends HTMLElement {
     return ["selected", "disabled", "placeholder", "loading"];
   }
 
+  // noinspection JSUnusedGlobalSymbols
   attributeChangedCallback(name, oldValue, newValue) {
     if (name === "selected") {
       if (oldValue !== newValue) {
@@ -51,6 +79,10 @@ class MuchSelector extends HTMLElement {
     } else if (name === "placeholder") {
       if (oldValue !== newValue) {
         this.placeholder = newValue;
+      }
+    } else if (name === "disabled") {
+      if (oldValue !== newValue) {
+        this.disabled = newValue;
       }
     }
   }
@@ -163,6 +195,17 @@ class MuchSelector extends HTMLElement {
     this._app.ports.placeholderChangedReceiver.send(placeholder);
 
     this._placeholder = placeholder;
+  }
+
+  get disabled() {
+    return this._disabled;
+  }
+
+  set disabled(value) {
+    this._disabled = !value;
+    if (this._disabled) {
+      this.removeAttribute("disabled");
+    }
   }
 }
 
