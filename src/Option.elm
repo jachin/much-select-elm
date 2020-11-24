@@ -4,11 +4,14 @@ module Option exposing
     , OptionLabel(..)
     , OptionValue
     , decoder
+    , getOptionDescription
+    , getOptionDescriptionString
     , getOptionDisplay
     , getOptionLabelString
     , highlightOptionInList
     , newOption
     , newSelectedOption
+    , optionHadDescription
     , optionListGrouped
     , optionsDecoder
     , removeHighlightOptionInList
@@ -116,6 +119,33 @@ groupToString optionGroup =
 getOptionLabelString : Option -> String
 getOptionLabelString (Option _ label _ _ _) =
     optionLabelToString label
+
+
+getOptionDescription : Option -> OptionDescription
+getOptionDescription option =
+    case option of
+        Option _ _ _ optionDescription _ ->
+            optionDescription
+
+
+getOptionDescriptionString : Option -> String
+getOptionDescriptionString option =
+    case option |> getOptionDescription of
+        OptionDescription string ->
+            string
+
+        NoDescription ->
+            ""
+
+
+optionHadDescription : Option -> Bool
+optionHadDescription option =
+    case option |> getOptionDescription of
+        OptionDescription _ ->
+            True
+
+        NoDescription ->
+            False
 
 
 selectedOptionsToTuple : List Option -> List ( String, String )

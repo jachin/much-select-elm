@@ -33,8 +33,8 @@ import Html.Styled.Events
         , onFocus
         , onInput
         , onMouseDown
-        , onMouseOut
-        , onMouseOver
+        , onMouseEnter
+        , onMouseLeave
         )
 import Json.Decode
 import Option
@@ -42,9 +42,11 @@ import Option
         ( Option(..)
         , OptionDisplay(..)
         , OptionLabel(..)
+        , getOptionDescriptionString
         , getOptionDisplay
         , getOptionLabelString
         , highlightOptionInList
+        , optionHadDescription
         , optionListGrouped
         , removeHighlightOptionInList
         , selectOptionInList
@@ -179,11 +181,26 @@ optionListGroupToDropdown selectionMode ( optGroupLabelStr, options ) =
 
 optionToDropdownOption : SelectionMode -> Option -> Html Msg
 optionToDropdownOption selectionMode option =
+    let
+        descriptionHtml =
+            if optionHadDescription option then
+                div
+                    [ class "description"
+                    , css
+                        [ fontSize (rem 0.85)
+                        , padding (px 3)
+                        ]
+                    ]
+                    [ text (getOptionDescriptionString option) ]
+
+            else
+                text ""
+    in
     case getOptionDisplay option of
         OptionShown ->
             div
-                [ onMouseOver (DropdownMouseOverOption option)
-                , onMouseOut (DropdownMouseOutOption option)
+                [ onMouseEnter (DropdownMouseOverOption option)
+                , onMouseLeave (DropdownMouseOutOption option)
                 , onMouseDown (DropdownMouseClickOption option)
                 , class "option"
                 , css
@@ -192,7 +209,7 @@ optionToDropdownOption selectionMode option =
                     , cursor pointer
                     ]
                 ]
-                [ text (getOptionLabelString option) ]
+                [ text (getOptionLabelString option), descriptionHtml ]
 
         OptionHidden ->
             text ""
@@ -210,15 +227,15 @@ optionToDropdownOption selectionMode option =
                             , cursor pointer
                             ]
                         ]
-                        [ text (getOptionLabelString option) ]
+                        [ text (getOptionLabelString option), descriptionHtml ]
 
                 MultiSelect ->
                     text ""
 
         OptionHighlighted ->
             div
-                [ onMouseOver (DropdownMouseOverOption option)
-                , onMouseOut (DropdownMouseOutOption option)
+                [ onMouseEnter (DropdownMouseOverOption option)
+                , onMouseLeave (DropdownMouseOutOption option)
                 , onMouseDown (DropdownMouseClickOption option)
                 , class "highlighted"
                 , class "option"
@@ -229,7 +246,7 @@ optionToDropdownOption selectionMode option =
                     , cursor pointer
                     ]
                 ]
-                [ text (getOptionLabelString option) ]
+                [ text (getOptionLabelString option), descriptionHtml ]
 
 
 optionsToValuesHtml : List Option -> List (Html Msg)
