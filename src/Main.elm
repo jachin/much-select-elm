@@ -42,7 +42,6 @@ import Option
         , getOptionDisplay
         , getOptionLabelString
         , highlightOptionInList
-        , newOption
         , removeHighlightOptionInList
         , selectOptionInList
         , selectSingleOptionInList

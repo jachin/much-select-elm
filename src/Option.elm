@@ -9,6 +9,7 @@ module Option exposing
     , highlightOptionInList
     , newOption
     , newSelectedOption
+    , optionListGrouped
     , optionsDecoder
     , removeHighlightOptionInList
     , selectOptionInList
@@ -19,6 +20,7 @@ module Option exposing
     , setLabel
     )
 
+import Dict
 import Json.Decode
 
 
@@ -94,6 +96,23 @@ getOptionDisplay (Option display _ _ _ _) =
     display
 
 
+getGroup : Option -> OptionGroup
+getGroup option =
+    case option of
+        Option _ _ _ _ group ->
+            group
+
+
+groupToString : OptionGroup -> String
+groupToString optionGroup =
+    case optionGroup of
+        OptionGroup string ->
+            string
+
+        NoOptionGroup ->
+            ""
+
+
 getOptionLabelString : Option -> String
 getOptionLabelString (Option _ label _ _ _) =
     optionLabelToString label
@@ -102,6 +121,39 @@ getOptionLabelString (Option _ label _ _ _) =
 selectedOptionsToTuple : List Option -> List ( String, String )
 selectedOptionsToTuple options =
     options |> selectedOptions |> List.map optionToValueLabelTuple
+
+
+optionListGrouped : List Option -> List ( String, List Option )
+optionListGrouped options =
+    let
+        accumulator optionTuple dict =
+            let
+                groupStr =
+                    Tuple.first optionTuple
+
+                option =
+                    Tuple.second optionTuple
+            in
+            if Dict.member groupStr dict then
+                Dict.update groupStr
+                    (\maybeOptionList ->
+                        Maybe.map
+                            (\optionList_ ->
+                                List.append optionList_ [ option ]
+                            )
+                            maybeOptionList
+                    )
+                    dict
+
+            else
+                Dict.insert groupStr [ option ] dict
+
+        optionsDict =
+            options
+                |> List.map (\option -> ( getGroup option |> groupToString, option ))
+                |> List.foldl accumulator Dict.empty
+    in
+    Dict.toList optionsDict
 
 
 highlightOptionInList : Option -> List Option -> List Option
