@@ -9,9 +9,11 @@ import Css
         , cursor
         , display
         , fontSize
+        , fontWeight
         , height
         , hex
         , inlineBlock
+        , int
         , left
         , minWidth
         , padding
@@ -19,6 +21,7 @@ import Css
         , position
         , px
         , relative
+        , rem
         , rgb
         , top
         )
@@ -42,6 +45,7 @@ import Option
         , getOptionDisplay
         , getOptionLabelString
         , highlightOptionInList
+        , optionListGrouped
         , removeHighlightOptionInList
         , selectOptionInList
         , selectSingleOptionInList
@@ -138,10 +142,39 @@ dropdown model =
                 , minWidth (px 200)
                 ]
             ]
-            (List.map (optionToDropdownOption model.selectionMode) model.options)
+            (optionsToDropdownOptions model.selectionMode model.options)
 
     else
         text ""
+
+
+optionsToDropdownOptions : SelectionMode -> List Option -> List (Html Msg)
+optionsToDropdownOptions selectionMode options =
+    optionListGrouped options
+        |> List.map (optionListGroupToDropdown selectionMode)
+        |> List.concat
+
+
+optionListGroupToDropdown : SelectionMode -> ( String, List Option ) -> List (Html Msg)
+optionListGroupToDropdown selectionMode ( optGroupLabelStr, options ) =
+    case optGroupLabelStr of
+        "" ->
+            List.map (optionToDropdownOption selectionMode) options
+
+        _ ->
+            List.append
+                [ div
+                    [ class "optgroup"
+                    , css
+                        [ backgroundColor (rgb 200 200 200)
+                        , fontSize (rem 0.85)
+                        , fontWeight (int 300)
+                        , padding (px 5)
+                        ]
+                    ]
+                    [ text optGroupLabelStr ]
+                ]
+                (List.map (optionToDropdownOption selectionMode) options)
 
 
 optionToDropdownOption : SelectionMode -> Option -> Html Msg
@@ -152,6 +185,7 @@ optionToDropdownOption selectionMode option =
                 [ onMouseOver (DropdownMouseOverOption option)
                 , onMouseOut (DropdownMouseOutOption option)
                 , onMouseDown (DropdownMouseClickOption option)
+                , class "option"
                 , css
                     [ backgroundColor (rgb 255 255 255)
                     , padding (px 5)
@@ -168,6 +202,7 @@ optionToDropdownOption selectionMode option =
                 SingleSelect ->
                     div
                         [ class "selected"
+                        , class "option"
                         , css
                             [ backgroundColor (hex "111111")
                             , color (hex "EEEEEE")
@@ -186,6 +221,7 @@ optionToDropdownOption selectionMode option =
                 , onMouseOut (DropdownMouseOutOption option)
                 , onMouseDown (DropdownMouseClickOption option)
                 , class "highlighted"
+                , class "option"
                 , css
                     [ backgroundColor (hex "666666")
                     , color (hex "EEEEEE")
