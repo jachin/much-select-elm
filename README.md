@@ -68,6 +68,14 @@ npm run build
 
 #### Attributes
 
+##### `selected`
+
+The `selected` attribute is used to set the value of the `<much-selector>`.
+
+##### `placeholder`
+
+The `placeholder` attribute is used to set the placeholder in the text input of the `<much-selector>`. Just like in the `<input type="text">` it should only show up if the input is empty. 
+
 #### Options
 
 ### Events
