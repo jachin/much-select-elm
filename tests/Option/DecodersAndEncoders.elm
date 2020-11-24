@@ -176,5 +176,27 @@ suite =
                             ]
                           )
                         ]
+            , test "no group" <|
+                \_ ->
+                    Expect.equal
+                        (optionListGrouped
+                            [ newOption "1"
+                                |> Option.setLabel "straw"
+                            , newOption "2"
+                                |> Option.setLabel "sticks"
+                            , newSelectedOption "3"
+                                |> Option.setLabel "bricks"
+                            ]
+                        )
+                        [ ( ""
+                          , [ newOption "1"
+                                |> Option.setLabel "straw"
+                            , newOption "2"
+                                |> Option.setLabel "sticks"
+                            , newSelectedOption "3"
+                                |> Option.setLabel "bricks"
+                            ]
+                          )
+                        ]
             ]
         ]
