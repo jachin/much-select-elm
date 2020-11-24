@@ -130,13 +130,20 @@ class MuchSelector extends HTMLElement {
   set selected(value) {
     this.setAttribute("selected", value);
 
-    // TODO perhaps this delimiter should be configurable
-    const values = value.split(",");
+    if (value) {
+      // TODO perhaps this delimiter should be configurable
+      const values = value.split(",");
 
-    // TODO Convert this._app to a function that get a promise that returns _app
-    //  when it is ready.
-    // noinspection JSUnresolvedVariable
-    this._app.ports.valueChangedReceiver.send(values);
+      // TODO Convert this._app to a function that get a promise that returns _app
+      //  when it is ready.
+      // noinspection JSUnresolvedVariable
+      this._app.ports.valueChangedReceiver.send(values);
+    } else {
+      // TODO Convert this._app to a function that get a promise that returns _app
+      //  when it is ready.
+      // noinspection JSUnresolvedVariable
+      this._app.ports.valueChangedReceiver.send([]);
+    }
   }
 }
 
