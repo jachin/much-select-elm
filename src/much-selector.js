@@ -35,6 +35,7 @@ class MuchSelector extends HTMLElement {
   constructor() {
     super();
     this._selected = null;
+    this._placeholder = null;
     this._app = null;
   }
 
@@ -46,6 +47,10 @@ class MuchSelector extends HTMLElement {
     if (name === "selected") {
       if (oldValue !== newValue) {
         this.selected = newValue;
+      }
+    } else if (name === "placeholder") {
+      if (oldValue !== newValue) {
+        this.placeholder = newValue;
       }
     }
   }
@@ -144,6 +149,20 @@ class MuchSelector extends HTMLElement {
       // noinspection JSUnresolvedVariable
       this._app.ports.valueChangedReceiver.send([]);
     }
+  }
+
+  get placeholder() {
+    return this._placeholder;
+  }
+
+  set placeholder(placeholder) {
+    this.setAttribute("placeholder", placeholder);
+    // TODO Convert this._app to a function that get a promise that returns _app
+    //  when it is ready.
+    // noinspection JSUnresolvedVariable
+    this._app.ports.placeholderChangedReceiver.send(placeholder);
+
+    this._placeholder = placeholder;
   }
 }
 

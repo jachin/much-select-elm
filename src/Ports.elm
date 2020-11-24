@@ -1,4 +1,9 @@
-port module Ports exposing (valueChanged, valueChangedReceiver, valuesDecoder)
+port module Ports exposing
+    ( placeholderChangedReceiver
+    , valueChanged
+    , valueChangedReceiver
+    , valuesDecoder
+    )
 
 import Json.Decode
 
@@ -12,3 +17,6 @@ valuesDecoder =
 
 
 port valueChangedReceiver : (Json.Decode.Value -> msg) -> Sub msg
+
+
+port placeholderChangedReceiver : (String -> msg) -> Sub msg

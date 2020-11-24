@@ -26,7 +26,7 @@ import Css
         , top
         )
 import Html.Styled exposing (Html, div, input, text, toUnstyled)
-import Html.Styled.Attributes exposing (class, css, type_, value)
+import Html.Styled.Attributes exposing (class, css, placeholder, type_, value)
 import Html.Styled.Events
     exposing
         ( onBlur
@@ -54,12 +54,7 @@ import Option
         , selectSingleOptionInList
         , selectedOptionsToTuple
         )
-import Ports
-    exposing
-        ( valueChanged
-        , valueChangedReceiver
-        , valuesDecoder
-        )
+import Ports exposing (placeholderChangedReceiver, valueChanged, valueChangedReceiver, valuesDecoder)
 
 
 type Msg
@@ -70,6 +65,7 @@ type Msg
     | DropdownMouseClickOption Option
     | SearchInputOnInput String
     | ValueChanged Json.Decode.Value
+    | PlaceholderChanged String
 
 
 type alias Model =
@@ -130,6 +126,9 @@ update msg model =
                 Err _ ->
                     ( model, Cmd.none )
 
+        PlaceholderChanged newPlaceholder ->
+            ( { model | placeholder = newPlaceholder }, Cmd.none )
+
 
 view : Model -> Html Msg
 view model =
@@ -141,6 +140,7 @@ view model =
             , onFocus InputFocus
             , onInput SearchInputOnInput
             , value model.searchString
+            , placeholder model.placeholder
             , css [ height (px 40), fontSize (px 25) ]
             ]
             []
@@ -334,4 +334,7 @@ main =
 
 subscriptions : Model -> Sub Msg
 subscriptions _ =
-    valueChangedReceiver ValueChanged
+    Sub.batch
+        [ valueChangedReceiver ValueChanged
+        , placeholderChangedReceiver PlaceholderChanged
+        ]
