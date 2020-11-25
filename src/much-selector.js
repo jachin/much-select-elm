@@ -84,6 +84,10 @@ class MuchSelector extends HTMLElement {
       if (oldValue !== newValue) {
         this.disabled = newValue;
       }
+    } else if (name === "loading") {
+      if (oldValue !== newValue) {
+        this.loading = newValue;
+      }
     }
   }
 
@@ -142,6 +146,9 @@ class MuchSelector extends HTMLElement {
     } else {
       flags.allowMultiSelect = false;
     }
+
+    flags.disabled = this.disabled;
+    flags.loading = this.loading;
 
     const selectElement = this.querySelector("select");
     if (selectElement) {
@@ -202,10 +209,36 @@ class MuchSelector extends HTMLElement {
   }
 
   set disabled(value) {
-    this._disabled = !value;
+    if (value === "false") {
+      this._disabled = false;
+    } else {
+      this._disabled = !!value;
+    }
+
     if (this._disabled) {
+      this.setAttribute("disabled", "disabled");
+    } else {
       this.removeAttribute("disabled");
     }
+    this._app.ports.disableChangedReceiver.send(this._disabled);
+  }
+
+  get loading() {
+    return this._loading;
+  }
+
+  set loading(value) {
+    if (value === "false") {
+      this._loading = false;
+    } else {
+      this._loading = !!value;
+    }
+    if (this._loading) {
+      this.setAttribute("loading", "loading");
+    } else {
+      this.removeAttribute("loading");
+    }
+    this._app.ports.loadingChangedReceiver.send(this._loading);
   }
 }
 

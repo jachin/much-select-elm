@@ -1,5 +1,7 @@
 port module Ports exposing
-    ( placeholderChangedReceiver
+    ( disableChangedReceiver
+    , loadingChangedReceiver
+    , placeholderChangedReceiver
     , valueChanged
     , valueChangedReceiver
     , valuesDecoder
@@ -20,3 +22,9 @@ port valueChangedReceiver : (Json.Decode.Value -> msg) -> Sub msg
 
 
 port placeholderChangedReceiver : (String -> msg) -> Sub msg
+
+
+port loadingChangedReceiver : (Bool -> msg) -> Sub msg
+
+
+port disableChangedReceiver : (Bool -> msg) -> Sub msg

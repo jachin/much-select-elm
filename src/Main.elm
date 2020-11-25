@@ -54,7 +54,7 @@ import Option
         , selectSingleOptionInList
         , selectedOptionsToTuple
         )
-import Ports exposing (placeholderChangedReceiver, valueChanged, valueChangedReceiver, valuesDecoder)
+import Ports exposing (disableChangedReceiver, loadingChangedReceiver, placeholderChangedReceiver, valueChanged, valueChangedReceiver, valuesDecoder)
 
 
 type Msg
@@ -65,7 +65,9 @@ type Msg
     | DropdownMouseClickOption Option
     | SearchInputOnInput String
     | ValueChanged Json.Decode.Value
-    | PlaceholderChanged String
+    | PlaceholderAttributeChanged String
+    | LoadingAttributeChanged Bool
+    | DisabledAttributeChanged Bool
 
 
 type alias Model =
@@ -76,6 +78,8 @@ type alias Model =
     , options : List Option
     , showDropdown : Bool
     , searchString : String
+    , loading : Bool
+    , disabled : Bool
     }
 
 
@@ -126,8 +130,14 @@ update msg model =
                 Err _ ->
                     ( model, Cmd.none )
 
-        PlaceholderChanged newPlaceholder ->
+        PlaceholderAttributeChanged newPlaceholder ->
             ( { model | placeholder = newPlaceholder }, Cmd.none )
+
+        LoadingAttributeChanged bool ->
+            ( { model | loading = bool }, Cmd.none )
+
+        DisabledAttributeChanged bool ->
+            ( { model | disabled = bool }, Cmd.none )
 
 
 view : Model -> Html Msg
@@ -296,6 +306,8 @@ type alias Flags =
     , size : String
     , allowMultiSelect : Bool
     , optionsJson : String
+    , loading : Bool
+    , disabled : Bool
     }
 
 
@@ -317,6 +329,8 @@ init flags =
                 |> Result.withDefault []
       , showDropdown = False
       , searchString = ""
+      , loading = flags.loading
+      , disabled = flags.disabled
       }
     , Cmd.none
     )
@@ -336,5 +350,7 @@ subscriptions : Model -> Sub Msg
 subscriptions _ =
     Sub.batch
         [ valueChangedReceiver ValueChanged
-        , placeholderChangedReceiver PlaceholderChanged
+        , placeholderChangedReceiver PlaceholderAttributeChanged
+        , loadingChangedReceiver LoadingAttributeChanged
+        , disableChangedReceiver DisabledAttributeChanged
         ]
