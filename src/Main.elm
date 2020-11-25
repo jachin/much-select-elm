@@ -54,7 +54,15 @@ import Option
         , selectSingleOptionInList
         , selectedOptionsToTuple
         )
-import Ports exposing (disableChangedReceiver, loadingChangedReceiver, placeholderChangedReceiver, valueChanged, valueChangedReceiver, valuesDecoder)
+import Ports
+    exposing
+        ( disableChangedReceiver
+        , loadingChangedReceiver
+        , placeholderChangedReceiver
+        , valueChanged
+        , valueChangedReceiver
+        , valuesDecoder
+        )
 
 
 type Msg
