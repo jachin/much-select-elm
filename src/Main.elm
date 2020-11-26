@@ -54,6 +54,7 @@ import Option
         , selectSingleOptionInList
         , selectedOptionsToTuple
         )
+import OptionPresentor
 import Ports
     exposing
         ( disableChangedReceiver
@@ -124,6 +125,11 @@ update msg model =
             ( { model | options = options }, valueChanged (selectedOptionsToTuple options) )
 
         SearchInputOnInput string ->
+            let
+                _ =
+                    Debug.log "search results" <|
+                        OptionPresentor.search string model.options
+            in
             ( { model | searchString = string }, Cmd.none )
 
         ValueChanged valuesJson ->
