@@ -25,7 +25,7 @@ import Css
         , rgb
         , top
         )
-import Html.Styled exposing (Html, div, input, text, toUnstyled)
+import Html.Styled exposing (Html, div, fromUnstyled, input, text, toUnstyled)
 import Html.Styled.Attributes exposing (class, css, placeholder, type_, value)
 import Html.Styled.Events
     exposing
@@ -179,7 +179,11 @@ dropdown model =
                 , minWidth (px 200)
                 ]
             ]
-            (optionsToDropdownOptions model.selectionMode
+            (optionsToDropdownOptions
+                DropdownMouseOverOption
+                DropdownMouseOutOption
+                DropdownMouseClickOption
+                model.selectionMode
                 (OptionPresentor.prepareOptionsForPresentation model.searchString model.options)
             )
 
@@ -187,13 +191,19 @@ dropdown model =
         text ""
 
 
-optionsToDropdownOptions : SelectionMode -> List OptionPresenter -> List (Html Msg)
-optionsToDropdownOptions selectionMode options =
+optionsToDropdownOptions :
+    (OptionValue -> msg)
+    -> (OptionValue -> msg)
+    -> (OptionValue -> msg)
+    -> SelectionMode
+    -> List (OptionPresenter msg)
+    -> List (Html msg)
+optionsToDropdownOptions mouseOverMsgConstructor mouseOutMsgConstructor clickMsgConstructor selectionMode options =
     let
         partialWithSelectionMode =
-            optionToDropdownOption selectionMode
+            optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgConstructor selectionMode
 
-        helper : OptionGroup -> List OptionPresenter -> List (OptionPresenter -> List (Html Msg))
+        helper : OptionGroup -> List (OptionPresenter msg) -> List (OptionPresenter msg -> List (Html msg))
         helper previousGroup options_ =
             case List.head options_ of
                 Just option_ ->
@@ -210,7 +220,7 @@ optionsToDropdownOptions selectionMode options =
                 Nothing ->
                     []
 
-        partialsWithGroupChangesFlagged : List (OptionPresenter -> List (Html Msg))
+        partialsWithGroupChangesFlagged : List (OptionPresenter msg -> List (Html msg))
         partialsWithGroupChangesFlagged =
             helper Option.emptyOptionGroup options
     in
@@ -223,8 +233,15 @@ optionsToDropdownOptions selectionMode options =
         |> List.concat
 
 
-optionToDropdownOption : SelectionMode -> Bool -> OptionPresenter -> List (Html Msg)
-optionToDropdownOption selectionMode prependOptionGroup option =
+optionToDropdownOption :
+    (OptionValue -> msg)
+    -> (OptionValue -> msg)
+    -> (OptionValue -> msg)
+    -> SelectionMode
+    -> Bool
+    -> OptionPresenter msg
+    -> List (Html msg)
+optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgConstructor selectionMode prependOptionGroup option =
     let
         optionGroupHtml =
             if prependOptionGroup then
@@ -242,6 +259,7 @@ optionToDropdownOption selectionMode prependOptionGroup option =
             else
                 text ""
 
+        descriptionHtml : Html msg
         descriptionHtml =
             if OptionPresentor.hasDescription option then
                 div
@@ -251,7 +269,7 @@ optionToDropdownOption selectionMode prependOptionGroup option =
                         , padding (px 3)
                         ]
                     ]
-                    [ text (Option.optionDescriptionToString option.description) ]
+                    [ fromUnstyled option.descriptionMarkup ]
 
             else
                 text ""
@@ -260,9 +278,9 @@ optionToDropdownOption selectionMode prependOptionGroup option =
         OptionShown ->
             [ optionGroupHtml
             , div
-                [ onMouseEnter (DropdownMouseOverOption option.value)
-                , onMouseLeave (DropdownMouseOutOption option.value)
-                , onMouseDown (DropdownMouseClickOption option.value)
+                [ onMouseEnter (mouseOverMsgConstructor option.value)
+                , onMouseLeave (mouseOutMsgConstructor option.value)
+                , onMouseDown (clickMsgConstructor option.value)
                 , class "option"
                 , css
                     [ backgroundColor (rgb 255 255 255)
@@ -270,7 +288,7 @@ optionToDropdownOption selectionMode prependOptionGroup option =
                     , cursor pointer
                     ]
                 ]
-                [ text (Option.optionLabelToString option.label), descriptionHtml ]
+                [ fromUnstyled option.labelMarkup, descriptionHtml ]
             ]
 
         OptionHidden ->
@@ -290,7 +308,7 @@ optionToDropdownOption selectionMode prependOptionGroup option =
                             , cursor pointer
                             ]
                         ]
-                        [ text (Option.optionLabelToString option.label), descriptionHtml ]
+                        [ fromUnstyled option.labelMarkup, descriptionHtml ]
                     ]
 
                 MultiSelect ->
@@ -299,9 +317,9 @@ optionToDropdownOption selectionMode prependOptionGroup option =
         OptionHighlighted ->
             [ optionGroupHtml
             , div
-                [ onMouseEnter (DropdownMouseOverOption option.value)
-                , onMouseLeave (DropdownMouseOutOption option.value)
-                , onMouseDown (DropdownMouseClickOption option.value)
+                [ onMouseEnter (mouseOverMsgConstructor option.value)
+                , onMouseLeave (mouseOutMsgConstructor option.value)
+                , onMouseDown (clickMsgConstructor option.value)
                 , class "highlighted"
                 , class "option"
                 , css
@@ -311,7 +329,7 @@ optionToDropdownOption selectionMode prependOptionGroup option =
                     , cursor pointer
                     ]
                 ]
-                [ text (Option.optionLabelToString option.label), descriptionHtml ]
+                [ fromUnstyled option.labelMarkup, descriptionHtml ]
             ]
 
         OptionDisabled ->
@@ -326,11 +344,11 @@ optionToDropdownOption selectionMode prependOptionGroup option =
                     , cursor pointer
                     ]
                 ]
-                [ text (Option.optionLabelToString option.label), descriptionHtml ]
+                [ fromUnstyled option.labelMarkup, descriptionHtml ]
             ]
 
 
-optionsToValuesHtml : List Option -> List (Html Msg)
+optionsToValuesHtml : List Option -> List (Html msg)
 optionsToValuesHtml options =
     options
         |> List.map

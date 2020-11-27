@@ -1,6 +1,11 @@
-module OptionPresentor exposing (OptionPresenter, hasDescription, prepareOptionsForPresentation)
+module OptionPresentor exposing
+    ( OptionPresenter
+    , hasDescription
+    , prepareOptionsForPresentation
+    )
 
 import Fuzzy exposing (Result, match)
+import Html exposing (Html, text)
 import Option
     exposing
         ( Option
@@ -12,7 +17,7 @@ import Option
         )
 
 
-type alias OptionPresenter =
+type alias OptionPresenter msg =
     { display : OptionDisplay
     , label : OptionLabel
     , value : OptionValue
@@ -20,10 +25,12 @@ type alias OptionPresenter =
     , description : OptionDescription
     , searchResult : Maybe OptionSearchResult
     , totalScore : Int
+    , labelMarkup : Html msg
+    , descriptionMarkup : Html msg
     }
 
 
-hasDescription : OptionPresenter -> Bool
+hasDescription : OptionPresenter msg -> Bool
 hasDescription optionPresenter =
     Option.optionDescriptionToBool optionPresenter.description
 
@@ -34,7 +41,7 @@ type alias OptionSearchResult =
     }
 
 
-prepareOptionsForPresentation : String -> List Option -> List OptionPresenter
+prepareOptionsForPresentation : String -> List Option -> List (OptionPresenter msg)
 prepareOptionsForPresentation searchString options =
     if String.length searchString < 3 then
         options
@@ -47,6 +54,8 @@ prepareOptionsForPresentation searchString options =
                     , description = Option.getOptionDescription option
                     , searchResult = Nothing
                     , totalScore = 0
+                    , labelMarkup = text (Option.getOptionLabel option |> Option.optionLabelToString)
+                    , descriptionMarkup = text (Option.getOptionDescription option |> Option.optionDescriptionToString)
                     }
                 )
 
@@ -68,9 +77,12 @@ prepareOptionsForPresentation searchString options =
                     , description = Option.getOptionDescription option
                     , searchResult = Just searchResult
                     , totalScore = totalScore
+                    , labelMarkup = text (Option.getOptionLabel option |> Option.optionLabelToString)
+                    , descriptionMarkup = text (Option.getOptionDescription option |> Option.optionDescriptionToString)
                     }
                 )
             |> List.sortBy .totalScore
+            |> Debug.log "searching results"
 
 
 search : String -> Option -> OptionSearchResult
