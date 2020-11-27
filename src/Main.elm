@@ -190,7 +190,7 @@ dropdown model =
 optionsToDropdownOptions : SelectionMode -> List OptionPresenter -> List (Html Msg)
 optionsToDropdownOptions selectionMode options =
     let
-        one =
+        partialWithSelectionMode =
             optionToDropdownOption selectionMode
 
         helper : OptionGroup -> List OptionPresenter -> List (OptionPresenter -> List (Html Msg))
@@ -198,20 +198,20 @@ optionsToDropdownOptions selectionMode options =
             case List.head options_ of
                 Just option_ ->
                     let
-                        thingy =
+                        partial_ =
                             if previousGroup == option_.group then
-                                one False
+                                partialWithSelectionMode False
 
                             else
-                                one True
+                                partialWithSelectionMode True
                     in
-                    List.append [ thingy ] (helper option_.group (options_ |> List.tail |> Maybe.withDefault []))
+                    List.append [ partial_ ] (helper option_.group (options_ |> List.tail |> Maybe.withDefault []))
 
                 Nothing ->
                     []
 
-        partials : List (OptionPresenter -> List (Html Msg))
-        partials =
+        partialsWithGroupChangesFlagged : List (OptionPresenter -> List (Html Msg))
+        partialsWithGroupChangesFlagged =
             helper Option.emptyOptionGroup options
     in
     List.map2
@@ -219,7 +219,7 @@ optionsToDropdownOptions selectionMode options =
             partial option
         )
         options
-        partials
+        partialsWithGroupChangesFlagged
         |> List.concat
 
 
