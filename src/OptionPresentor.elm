@@ -5,7 +5,8 @@ module OptionPresentor exposing
     )
 
 import Fuzzy exposing (Result, match)
-import Html exposing (Html, text)
+import Html exposing (Html, span, text)
+import Html.Attributes exposing (style)
 import Option
     exposing
         ( Option
@@ -41,48 +42,85 @@ type alias OptionSearchResult =
     }
 
 
+highlightMarkup item result =
+    let
+        isKey index =
+            List.foldl
+                (\e sum ->
+                    if not sum then
+                        List.member (index - e.offset) e.keys
+
+                    else
+                        sum
+                )
+                False
+                result.matches
+
+        isMatch index =
+            List.foldl
+                (\e sum ->
+                    if not sum then
+                        e.offset <= index && (e.offset + e.length) > index
+
+                    else
+                        sum
+                )
+                False
+                result.matches
+
+        color index =
+            if isKey index then
+                Just ( "color", "red" )
+
+            else
+                Nothing
+
+        bgColor index =
+            if isMatch index then
+                Just ( "background-color", "yellow" )
+
+            else
+                Nothing
+
+        hStyle index =
+            [ color index, bgColor index ]
+                |> List.filterMap identity
+                |> List.map (\( styleName, styleValue ) -> style styleName styleValue)
+
+        accumulateChar c ( sum, index ) =
+            ( sum ++ [ span (hStyle index) [ c |> String.fromChar |> text ] ], index + 1 )
+
+        highlight =
+            String.foldl accumulateChar ( [], 0 ) item
+    in
+    span [] (Tuple.first highlight)
+
+
 prepareOptionsForPresentation : String -> List Option -> List (OptionPresenter msg)
 prepareOptionsForPresentation searchString options =
-    if String.length searchString < 3 then
-        options
-            |> List.map
-                (\option ->
-                    { display = Option.getOptionDisplay option
-                    , label = Option.getOptionLabel option
-                    , value = Option.getOptionValue option
-                    , group = Option.getOptionGroup option
-                    , description = Option.getOptionDescription option
-                    , searchResult = Nothing
-                    , totalScore = 0
-                    , labelMarkup = text (Option.getOptionLabel option |> Option.optionLabelToString)
-                    , descriptionMarkup = text (Option.getOptionDescription option |> Option.optionDescriptionToString)
-                    }
-                )
+    options
+        |> List.map
+            (\option ->
+                let
+                    searchResult =
+                        search searchString option
 
-    else
-        options
-            |> List.map
-                (\option ->
-                    let
-                        searchResult =
-                            search searchString option
-
-                        totalScore =
-                            searchResult.labelMatch.score + searchResult.descriptionMatch.score
-                    in
-                    { display = Option.getOptionDisplay option
-                    , label = Option.getOptionLabel option
-                    , value = Option.getOptionValue option
-                    , group = Option.getOptionGroup option
-                    , description = Option.getOptionDescription option
-                    , searchResult = Just searchResult
-                    , totalScore = totalScore
-                    , labelMarkup = text (Option.getOptionLabel option |> Option.optionLabelToString)
-                    , descriptionMarkup = text (Option.getOptionDescription option |> Option.optionDescriptionToString)
-                    }
-                )
-            |> List.sortBy .totalScore
-            |> Debug.log "searching results"
+                    totalScore =
+                        searchResult.labelMatch.score + searchResult.descriptionMatch.score
+                in
+                { display = Option.getOptionDisplay option
+                , label = Option.getOptionLabel option
+                , value = Option.getOptionValue option
+                , group = Option.getOptionGroup option
+                , description = Option.getOptionDescription option
+                , searchResult = Just searchResult
+                , totalScore = totalScore
+                , labelMarkup = highlightMarkup (Option.getOptionLabel option |> Option.optionLabelToString) searchResult.labelMatch
+                , descriptionMarkup = highlightMarkup (Option.getOptionDescription option |> Option.optionDescriptionToString) searchResult.descriptionMatch
+                }
+            )
+        |> List.sortBy .totalScore
+        |> Debug.log "searching results"
 
 
 search : String -> Option -> OptionSearchResult
