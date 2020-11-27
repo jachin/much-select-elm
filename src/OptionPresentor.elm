@@ -1,7 +1,15 @@
 module OptionPresentor exposing (OptionPresenter, hasDescription, prepareOptionsForPresentation)
 
 import Fuzzy exposing (Result, match)
-import Option exposing (Option, OptionDescription, OptionDisplay, OptionGroup, OptionLabel, OptionValue, optionDescriptionToString)
+import Option
+    exposing
+        ( Option
+        , OptionDescription
+        , OptionDisplay
+        , OptionGroup
+        , OptionLabel
+        , OptionValue
+        )
 
 
 type alias OptionPresenter =
@@ -11,6 +19,7 @@ type alias OptionPresenter =
     , group : OptionGroup
     , description : OptionDescription
     , searchResult : Maybe OptionSearchResult
+    , totalScore : Int
     }
 
 
@@ -37,6 +46,7 @@ prepareOptionsForPresentation searchString options =
                     , group = Option.getOptionGroup option
                     , description = Option.getOptionDescription option
                     , searchResult = Nothing
+                    , totalScore = 0
                     }
                 )
 
@@ -44,14 +54,23 @@ prepareOptionsForPresentation searchString options =
         options
             |> List.map
                 (\option ->
+                    let
+                        searchResult =
+                            search searchString option
+
+                        totalScore =
+                            searchResult.labelMatch.score + searchResult.descriptionMatch.score
+                    in
                     { display = Option.getOptionDisplay option
                     , label = Option.getOptionLabel option
                     , value = Option.getOptionValue option
                     , group = Option.getOptionGroup option
                     , description = Option.getOptionDescription option
-                    , searchResult = Just (search searchString option)
+                    , searchResult = Just searchResult
+                    , totalScore = totalScore
                     }
                 )
+            |> List.sortBy .totalScore
 
 
 search : String -> Option -> OptionSearchResult
