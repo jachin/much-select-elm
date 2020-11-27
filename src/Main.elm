@@ -41,20 +41,17 @@ import Option
     exposing
         ( Option(..)
         , OptionDisplay(..)
+        , OptionGroup
         , OptionLabel(..)
-        , getOptionDescriptionString
-        , getOptionDisplay
-        , getOptionLabelString
+        , OptionValue
         , highlightOptionInList
-        , optionHadDescription
-        , optionListGrouped
         , removeHighlightOptionInList
         , selectOptionInList
         , selectOptionsInOptionsList
         , selectSingleOptionInList
         , selectedOptionsToTuple
         )
-import OptionPresentor
+import OptionPresentor exposing (OptionPresenter)
 import Ports
     exposing
         ( disableChangedReceiver
@@ -69,9 +66,9 @@ import Ports
 type Msg
     = InputBlur
     | InputFocus
-    | DropdownMouseOverOption Option
-    | DropdownMouseOutOption Option
-    | DropdownMouseClickOption Option
+    | DropdownMouseOverOption OptionValue
+    | DropdownMouseOutOption OptionValue
+    | DropdownMouseClickOption OptionValue
     | SearchInputOnInput String
     | ValueChanged Json.Decode.Value
     | PlaceholderAttributeChanged String
@@ -106,30 +103,25 @@ update msg model =
         InputFocus ->
             ( { model | showDropdown = True }, Cmd.none )
 
-        DropdownMouseOverOption option ->
-            ( { model | options = highlightOptionInList option model.options }, Cmd.none )
+        DropdownMouseOverOption optionValue ->
+            ( { model | options = highlightOptionInList optionValue model.options }, Cmd.none )
 
-        DropdownMouseOutOption option ->
-            ( { model | options = removeHighlightOptionInList option model.options }, Cmd.none )
+        DropdownMouseOutOption optionValue ->
+            ( { model | options = removeHighlightOptionInList optionValue model.options }, Cmd.none )
 
-        DropdownMouseClickOption option ->
+        DropdownMouseClickOption optionValue ->
             let
                 options =
                     case model.selectionMode of
                         MultiSelect ->
-                            selectOptionInList option model.options
+                            selectOptionInList optionValue model.options
 
                         SingleSelect ->
-                            selectSingleOptionInList option model.options
+                            selectSingleOptionInList optionValue model.options
             in
             ( { model | options = options }, valueChanged (selectedOptionsToTuple options) )
 
         SearchInputOnInput string ->
-            let
-                _ =
-                    Debug.log "search results" <|
-                        OptionPresentor.search string model.options
-            in
             ( { model | searchString = string }, Cmd.none )
 
         ValueChanged valuesJson ->
@@ -187,28 +179,56 @@ dropdown model =
                 , minWidth (px 200)
                 ]
             ]
-            (optionsToDropdownOptions model.selectionMode model.options)
+            (optionsToDropdownOptions model.selectionMode
+                (OptionPresentor.prepareOptionsForPresentation model.searchString model.options)
+            )
 
     else
         text ""
 
 
-optionsToDropdownOptions : SelectionMode -> List Option -> List (Html Msg)
+optionsToDropdownOptions : SelectionMode -> List OptionPresenter -> List (Html Msg)
 optionsToDropdownOptions selectionMode options =
-    optionListGrouped options
-        |> List.map (optionListGroupToDropdown selectionMode)
+    let
+        one =
+            optionToDropdownOption selectionMode
+
+        helper : OptionGroup -> List OptionPresenter -> List (OptionPresenter -> List (Html Msg))
+        helper previousGroup options_ =
+            case List.head options_ of
+                Just option_ ->
+                    let
+                        thingy =
+                            if previousGroup == option_.group then
+                                one False
+
+                            else
+                                one True
+                    in
+                    List.append [ thingy ] (helper option_.group (options_ |> List.tail |> Maybe.withDefault []))
+
+                Nothing ->
+                    []
+
+        partials : List (OptionPresenter -> List (Html Msg))
+        partials =
+            helper Option.emptyOptionGroup options
+    in
+    List.map2
+        (\option partial ->
+            partial option
+        )
+        options
+        partials
         |> List.concat
 
 
-optionListGroupToDropdown : SelectionMode -> ( String, List Option ) -> List (Html Msg)
-optionListGroupToDropdown selectionMode ( optGroupLabelStr, options ) =
-    case optGroupLabelStr of
-        "" ->
-            List.map (optionToDropdownOption selectionMode) options
-
-        _ ->
-            List.append
-                [ div
+optionToDropdownOption : SelectionMode -> Bool -> OptionPresenter -> List (Html Msg)
+optionToDropdownOption selectionMode prependOptionGroup option =
+    let
+        optionGroupHtml =
+            if prependOptionGroup then
+                div
                     [ class "optgroup"
                     , css
                         [ backgroundColor (rgb 200 200 200)
@@ -217,16 +237,13 @@ optionListGroupToDropdown selectionMode ( optGroupLabelStr, options ) =
                         , padding (px 5)
                         ]
                     ]
-                    [ text optGroupLabelStr ]
-                ]
-                (List.map (optionToDropdownOption selectionMode) options)
+                    [ text (Option.optionGroupToString option.group) ]
 
+            else
+                text ""
 
-optionToDropdownOption : SelectionMode -> Option -> Html Msg
-optionToDropdownOption selectionMode option =
-    let
         descriptionHtml =
-            if optionHadDescription option then
+            if OptionPresentor.hasDescription option then
                 div
                     [ class "description"
                     , css
@@ -234,17 +251,18 @@ optionToDropdownOption selectionMode option =
                         , padding (px 3)
                         ]
                     ]
-                    [ text (getOptionDescriptionString option) ]
+                    [ text (Option.optionDescriptionToString option.description) ]
 
             else
                 text ""
     in
-    case getOptionDisplay option of
+    case option.display of
         OptionShown ->
-            div
-                [ onMouseEnter (DropdownMouseOverOption option)
-                , onMouseLeave (DropdownMouseOutOption option)
-                , onMouseDown (DropdownMouseClickOption option)
+            [ optionGroupHtml
+            , div
+                [ onMouseEnter (DropdownMouseOverOption option.value)
+                , onMouseLeave (DropdownMouseOutOption option.value)
+                , onMouseDown (DropdownMouseClickOption option.value)
                 , class "option"
                 , css
                     [ backgroundColor (rgb 255 255 255)
@@ -252,15 +270,17 @@ optionToDropdownOption selectionMode option =
                     , cursor pointer
                     ]
                 ]
-                [ text (getOptionLabelString option), descriptionHtml ]
+                [ text (Option.optionLabelToString option.label), descriptionHtml ]
+            ]
 
         OptionHidden ->
-            text ""
+            [ optionGroupHtml, text "" ]
 
         OptionSelected ->
             case selectionMode of
                 SingleSelect ->
-                    div
+                    [ optionGroupHtml
+                    , div
                         [ class "selected"
                         , class "option"
                         , css
@@ -270,16 +290,18 @@ optionToDropdownOption selectionMode option =
                             , cursor pointer
                             ]
                         ]
-                        [ text (getOptionLabelString option), descriptionHtml ]
+                        [ text (Option.optionLabelToString option.label), descriptionHtml ]
+                    ]
 
                 MultiSelect ->
-                    text ""
+                    [ optionGroupHtml, text "" ]
 
         OptionHighlighted ->
-            div
-                [ onMouseEnter (DropdownMouseOverOption option)
-                , onMouseLeave (DropdownMouseOutOption option)
-                , onMouseDown (DropdownMouseClickOption option)
+            [ optionGroupHtml
+            , div
+                [ onMouseEnter (DropdownMouseOverOption option.value)
+                , onMouseLeave (DropdownMouseOutOption option.value)
+                , onMouseDown (DropdownMouseClickOption option.value)
                 , class "highlighted"
                 , class "option"
                 , css
@@ -289,7 +311,23 @@ optionToDropdownOption selectionMode option =
                     , cursor pointer
                     ]
                 ]
-                [ text (getOptionLabelString option), descriptionHtml ]
+                [ text (Option.optionLabelToString option.label), descriptionHtml ]
+            ]
+
+        OptionDisabled ->
+            [ optionGroupHtml
+            , div
+                [ class "disabled"
+                , class "option"
+                , css
+                    [ backgroundColor (hex "666666")
+                    , color (hex "EEEEEE")
+                    , padding (px 5)
+                    , cursor pointer
+                    ]
+                ]
+                [ text (Option.optionLabelToString option.label), descriptionHtml ]
+            ]
 
 
 optionsToValuesHtml : List Option -> List (Html Msg)
@@ -310,6 +348,9 @@ optionsToValuesHtml options =
                                 div [ class "value" ] [ text labelStr ]
 
                             OptionHighlighted ->
+                                text ""
+
+                            OptionDisabled ->
                                 text ""
             )
 

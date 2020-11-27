@@ -1,18 +1,27 @@
 module Option exposing
     ( Option(..)
+    , OptionDescription
     , OptionDisplay(..)
+    , OptionGroup
     , OptionLabel(..)
     , OptionValue
     , decoder
+    , emptyOptionGroup
     , getOptionDescription
     , getOptionDescriptionString
     , getOptionDisplay
+    , getOptionGroup
+    , getOptionLabel
     , getOptionLabelString
+    , getOptionValue
     , highlightOptionInList
     , newOption
     , newSelectedOption
-    , optionHadDescription
-    , optionListGrouped
+    , optionDescriptionToBool
+    , optionDescriptionToString
+    , optionGroupToString
+    , optionHasDescription
+    , optionLabelToString
     , optionsDecoder
     , removeHighlightOptionInList
     , selectOptionInList
@@ -24,7 +33,6 @@ module Option exposing
     , setLabel
     )
 
-import Dict
 import Json.Decode
 
 
@@ -32,11 +40,17 @@ type Option
     = Option OptionDisplay OptionLabel OptionValue OptionDescription OptionGroup
 
 
+getOptionLabel : Option -> OptionLabel
+getOptionLabel (Option _ label _ _ _) =
+    label
+
+
 type OptionDisplay
     = OptionShown
     | OptionHidden
     | OptionSelected
     | OptionHighlighted
+    | OptionDisabled
 
 
 type OptionLabel
@@ -59,9 +73,39 @@ type OptionDescription
     | NoDescription
 
 
+optionDescriptionToString : OptionDescription -> String
+optionDescriptionToString optionDescription =
+    case optionDescription of
+        OptionDescription string ->
+            string
+
+        NoDescription ->
+            ""
+
+
+optionDescriptionToBool : OptionDescription -> Bool
+optionDescriptionToBool optionDescription =
+    case optionDescription of
+        OptionDescription _ ->
+            True
+
+        NoDescription ->
+            False
+
+
 type OptionGroup
     = OptionGroup String
     | NoOptionGroup
+
+
+emptyOptionGroup : OptionGroup
+emptyOptionGroup =
+    NoOptionGroup
+
+
+getOptionGroup : Option -> OptionGroup
+getOptionGroup (Option _ _ _ _ group) =
+    group
 
 
 newOption : String -> Option
@@ -112,15 +156,8 @@ getOptionValueAsString option =
             string
 
 
-getGroup : Option -> OptionGroup
-getGroup option =
-    case option of
-        Option _ _ _ _ group ->
-            group
-
-
-groupToString : OptionGroup -> String
-groupToString optionGroup =
+optionGroupToString : OptionGroup -> String
+optionGroupToString optionGroup =
     case optionGroup of
         OptionGroup string ->
             string
@@ -151,8 +188,8 @@ getOptionDescriptionString option =
             ""
 
 
-optionHadDescription : Option -> Bool
-optionHadDescription option =
+optionHasDescription : Option -> Bool
+optionHasDescription option =
     case option |> getOptionDescription of
         OptionDescription _ ->
             True
@@ -164,39 +201,6 @@ optionHadDescription option =
 selectedOptionsToTuple : List Option -> List ( String, String )
 selectedOptionsToTuple options =
     options |> selectedOptions |> List.map optionToValueLabelTuple
-
-
-optionListGrouped : List Option -> List ( String, List Option )
-optionListGrouped options =
-    let
-        accumulator optionTuple dict =
-            let
-                groupStr =
-                    Tuple.first optionTuple
-
-                option =
-                    Tuple.second optionTuple
-            in
-            if Dict.member groupStr dict then
-                Dict.update groupStr
-                    (\maybeOptionList ->
-                        Maybe.map
-                            (\optionList_ ->
-                                List.append optionList_ [ option ]
-                            )
-                            maybeOptionList
-                    )
-                    dict
-
-            else
-                Dict.insert groupStr [ option ] dict
-
-        optionsDict =
-            options
-                |> List.map (\option -> ( getGroup option |> groupToString, option ))
-                |> List.foldl accumulator Dict.empty
-    in
-    Dict.toList optionsDict
 
 
 selectOptionsInOptionsList : List String -> List Option -> List Option
@@ -217,11 +221,16 @@ isOptionValueInList possibleValues option =
     List.any (\possibleValue -> getOptionValueAsString option == possibleValue) possibleValues
 
 
-highlightOptionInList : Option -> List Option -> List Option
-highlightOptionInList option options =
+optionValuesEqual : Option -> OptionValue -> Bool
+optionValuesEqual option optionValue =
+    getOptionValue option == optionValue
+
+
+highlightOptionInList : OptionValue -> List Option -> List Option
+highlightOptionInList value options =
     List.map
         (\option_ ->
-            if option_ == option then
+            if optionValuesEqual option_ value then
                 highlightOption option_
 
             else
@@ -230,12 +239,12 @@ highlightOptionInList option options =
         options
 
 
-removeHighlightOptionInList : Option -> List Option -> List Option
-removeHighlightOptionInList option options =
+removeHighlightOptionInList : OptionValue -> List Option -> List Option
+removeHighlightOptionInList value options =
     List.map
         (\option_ ->
-            if option_ == option then
-                removeHighlightOption option
+            if optionValuesEqual option_ value then
+                removeHighlightOption option_
 
             else
                 option_
@@ -243,11 +252,11 @@ removeHighlightOptionInList option options =
         options
 
 
-selectOptionInList : Option -> List Option -> List Option
-selectOptionInList option options =
+selectOptionInList : OptionValue -> List Option -> List Option
+selectOptionInList value options =
     List.map
         (\option_ ->
-            if option_ == option then
+            if optionValuesEqual option_ value then
                 selectOption option_
 
             else
@@ -256,12 +265,12 @@ selectOptionInList option options =
         options
 
 
-selectSingleOptionInList : Option -> List Option -> List Option
-selectSingleOptionInList option options =
+selectSingleOptionInList : OptionValue -> List Option -> List Option
+selectSingleOptionInList value options =
     options
         |> List.map
             (\option_ ->
-                if option_ == option then
+                if optionValuesEqual option_ value then
                     selectOption option_
 
                 else
@@ -284,6 +293,9 @@ highlightOption (Option display label value description group) =
         OptionHighlighted ->
             Option OptionHighlighted label value description group
 
+        OptionDisabled ->
+            Option OptionDisabled label value description group
+
 
 removeHighlightOption : Option -> Option
 removeHighlightOption (Option display label value description group) =
@@ -299,6 +311,9 @@ removeHighlightOption (Option display label value description group) =
 
         OptionHighlighted ->
             Option OptionShown label value description group
+
+        OptionDisabled ->
+            Option OptionDisabled label value description group
 
 
 selectOption : Option -> Option
@@ -316,6 +331,9 @@ selectOption (Option display label value description group) =
         OptionHighlighted ->
             Option OptionSelected label value description group
 
+        OptionDisabled ->
+            Option OptionDisabled label value description group
+
 
 deselectOption : Option -> Option
 deselectOption (Option display label value description group) =
@@ -331,6 +349,9 @@ deselectOption (Option display label value description group) =
 
         OptionHighlighted ->
             Option OptionHighlighted label value description group
+
+        OptionDisabled ->
+            Option OptionDisabled label value description group
 
 
 selectedOptions : List Option -> List Option
@@ -351,6 +372,9 @@ selectedOptions options =
                                 True
 
                             OptionHighlighted ->
+                                False
+
+                            OptionDisabled ->
                                 False
             )
 
