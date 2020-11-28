@@ -7,7 +7,6 @@ import Option
         ( decoder
         , newOption
         , newSelectedOption
-        , optionListGrouped
         , optionsDecoder
         )
 import Test exposing (Test, describe, test)
@@ -115,88 +114,5 @@ suite =
                             optionsDecoder
                             listOfOptionsWithGroups
                         )
-            ]
-        , describe "sorting options into groups"
-            [ test "Just 1 group" <|
-                \_ ->
-                    Expect.equal
-                        (optionListGrouped
-                            [ newOption "1"
-                                |> Option.setLabel "straw"
-                                |> Option.setGroup "Building Material"
-                            , newOption "2"
-                                |> Option.setLabel "sticks"
-                                |> Option.setGroup "Building Material"
-                            , newSelectedOption "3"
-                                |> Option.setLabel "bricks"
-                                |> Option.setGroup "Building Material"
-                            ]
-                        )
-                        [ ( "Building Material"
-                          , [ newOption "1"
-                                |> Option.setLabel "straw"
-                                |> Option.setGroup "Building Material"
-                            , newOption "2"
-                                |> Option.setLabel "sticks"
-                                |> Option.setGroup "Building Material"
-                            , newSelectedOption "3"
-                                |> Option.setLabel "bricks"
-                                |> Option.setGroup "Building Material"
-                            ]
-                          )
-                        ]
-            , test "2 groups" <|
-                \_ ->
-                    Expect.equal
-                        (optionListGrouped
-                            [ newOption "1"
-                                |> Option.setLabel "straw"
-                                |> Option.setGroup "Trash"
-                            , newOption "2"
-                                |> Option.setLabel "sticks"
-                                |> Option.setGroup "Trash"
-                            , newSelectedOption "3"
-                                |> Option.setLabel "bricks"
-                                |> Option.setGroup "Building Material"
-                            ]
-                        )
-                        [ ( "Building Material"
-                          , [ newSelectedOption "3"
-                                |> Option.setLabel "bricks"
-                                |> Option.setGroup "Building Material"
-                            ]
-                          )
-                        , ( "Trash"
-                          , [ newOption "1"
-                                |> Option.setLabel "straw"
-                                |> Option.setGroup "Trash"
-                            , newOption "2"
-                                |> Option.setLabel "sticks"
-                                |> Option.setGroup "Trash"
-                            ]
-                          )
-                        ]
-            , test "no group" <|
-                \_ ->
-                    Expect.equal
-                        (optionListGrouped
-                            [ newOption "1"
-                                |> Option.setLabel "straw"
-                            , newOption "2"
-                                |> Option.setLabel "sticks"
-                            , newSelectedOption "3"
-                                |> Option.setLabel "bricks"
-                            ]
-                        )
-                        [ ( ""
-                          , [ newOption "1"
-                                |> Option.setLabel "straw"
-                            , newOption "2"
-                                |> Option.setLabel "sticks"
-                            , newSelectedOption "3"
-                                |> Option.setLabel "bricks"
-                            ]
-                          )
-                        ]
             ]
         ]
