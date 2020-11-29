@@ -1,7 +1,9 @@
 module OptionPresentor exposing
     ( OptionPresenter
     , hasDescription
+    , highlightMarkup
     , prepareOptionsForPresentation
+    , simpleMatch
     )
 
 import Fuzzy exposing (Result, match)
@@ -42,6 +44,7 @@ type alias OptionSearchResult =
     }
 
 
+highlightMarkup : String -> Result -> Html msg
 highlightMarkup item result =
     let
         isKey index =
@@ -123,12 +126,13 @@ prepareOptionsForPresentation searchString options =
         |> Debug.log "searching results"
 
 
+simpleMatch : String -> String -> Result
+simpleMatch needle hay =
+    match [] [ " " ] needle hay
+
+
 search : String -> Option -> OptionSearchResult
 search string option =
-    let
-        simpleMatch needle hay =
-            match [] [] needle hay
-    in
     { labelMatch =
         simpleMatch
             (string |> String.toLower)
