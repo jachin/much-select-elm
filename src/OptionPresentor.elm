@@ -62,11 +62,11 @@ indexInsideMatch result index =
     result.matches
         |> List.filter
             (\match ->
-                match.offset
-                    <= index
-                    && match.offset
-                    + List.length match.keys
-                    > index
+                let
+                    matchIndex =
+                        index - match.offset
+                in
+                List.member matchIndex match.keys
             )
         |> List.isEmpty
         |> not

@@ -97,10 +97,10 @@ suite =
 
                     result =
                         Debug.log "result" <|
-                            simpleMatch "r" hay
+                            simpleMatch "e" hay
                 in
                 Expect.equal (tokenize hay result)
-                    [ ( False, "22 orange " ), ( True, "r" ), ( False, "ed purple 11" ) ]
+                    [ ( False, "22 orange r" ), ( True, "e" ), ( False, "d purple 11" ) ]
         , describe "html output"
             [ test "a simple example where the needle and the hay are identical" <|
                 \_ ->
