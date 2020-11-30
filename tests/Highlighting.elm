@@ -3,7 +3,7 @@ module Highlighting exposing (suite)
 import Expect
 import Html exposing (span, text)
 import Html.Attributes exposing (class)
-import OptionPresentor exposing (highlightMarkup, indexInsideMatch, simpleMatch)
+import OptionPresentor exposing (highlightMarkup, indexInsideMatch, simpleMatch, tokenize)
 import Test exposing (Test, describe, test)
 
 
@@ -69,16 +69,12 @@ suite =
                         Expect.false "" (indexInsideMatch colorResult 13)
                 ]
             ]
-
-        --, test "a simple example where the needle and the hay are identical" <|
-        --    \_ ->
-        --        let
-        --            _ =
-        --                Debug.log "straightUpMatchResult" straightUpMatchResult
-        --
-        --            _ =
-        --                Debug.log "colorResult" colorResult
-        --        in
-        --        Expect.equal (highlightMarkup "red" straightUpMatchResult)
-        --            (span [] [ span [ class "highlight" ] [ text "red" ] ])
+        , test "a simple example where the needle and the hay are identical" <|
+            \_ ->
+                Expect.equal (tokenize "red" straightUpMatchResult)
+                    [ ( True, "red" ) ]
+        , test "an example where the needle is in the middle of some hay" <|
+            \_ ->
+                Expect.equal (tokenize "22 orange red purple 11" colorResult)
+                    [ ( False, "22 orange " ), ( True, "red" ), ( False, " purple 11" ) ]
         ]

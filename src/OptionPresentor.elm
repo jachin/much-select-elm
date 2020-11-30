@@ -5,6 +5,7 @@ module OptionPresentor exposing
     , indexInsideMatch
     , prepareOptionsForPresentation
     , simpleMatch
+    , tokenize
     )
 
 import Fuzzy exposing (Result, match)
@@ -47,10 +48,12 @@ type alias OptionSearchResult =
     }
 
 
-type alias HighlightResult msg =
-    { stack : Stack.Stack Char
+type alias HighlightResult =
+    { highlightStack : Stack.Stack Char
+    , plainStack : Stack.Stack Char
     , result : Result
-    , htmlNodes : List (Html msg)
+    , textTokens : List ( Bool, String )
+    , hay : String
     }
 
 
@@ -69,25 +72,109 @@ indexInsideMatch result index =
         |> not
 
 
-highlightHelper : Int -> Char -> HighlightResult msg -> HighlightResult msg
+highlightHelper : Int -> Char -> HighlightResult -> HighlightResult
 highlightHelper index char highlightResult =
     let
         _ =
             Debug.log "highlightResult" highlightResult
+
+        theEnd =
+            index == String.length highlightResult.hay - 1
     in
     if indexInsideMatch highlightResult.result index then
-        { highlightResult | stack = Stack.push char highlightResult.stack }
+        case Stack.top highlightResult.plainStack of
+            Just _ ->
+                let
+                    prevText =
+                        ( False, highlightResult.plainStack |> Stack.toList |> List.reverse |> String.fromList )
+                in
+                { highlightResult
+                    | textTokens = List.append highlightResult.textTokens [ prevText ]
+                    , highlightStack = Stack.push char highlightResult.highlightStack
+                    , plainStack = Stack.initialise
+                }
 
-    else
-        let
-            prevHighlight =
-                if (highlightResult.stack |> Stack.toList |> List.length) > 0 then
-                    span [ class "highlight" ] [ highlightResult.stack |> Stack.toList |> String.fromList |> text ]
+            Nothing ->
+                if theEnd then
+                    let
+                        currentHighlight =
+                            ( True
+                            , highlightResult.highlightStack
+                                |> Stack.toList
+                                |> List.append [ char ]
+                                |> List.reverse
+                                |> String.fromList
+                            )
+                    in
+                    { highlightResult
+                        | textTokens = List.append highlightResult.textTokens [ currentHighlight ]
+                        , highlightStack = Stack.initialise
+                    }
 
                 else
-                    text ""
-        in
-        { highlightResult | htmlNodes = List.append highlightResult.htmlNodes [ prevHighlight, char |> String.fromChar |> text ] }
+                    { highlightResult | highlightStack = Stack.push char highlightResult.highlightStack }
+
+    else
+        case Stack.top highlightResult.highlightStack of
+            Just _ ->
+                let
+                    prevHighlight =
+                        if (highlightResult.highlightStack |> Stack.toList |> List.length) > 0 then
+                            ( True
+                            , highlightResult.highlightStack
+                                |> Stack.toList
+                                |> List.reverse
+                                |> String.fromList
+                            )
+
+                        else
+                            ( False, "" )
+                in
+                { highlightResult
+                    | textTokens =
+                        List.append highlightResult.textTokens
+                            [ prevHighlight
+                            ]
+                    , highlightStack = Stack.initialise
+                    , plainStack = Stack.push char highlightResult.plainStack
+                }
+
+            Nothing ->
+                if theEnd then
+                    let
+                        prevText =
+                            ( False
+                            , highlightResult.plainStack
+                                |> Stack.toList
+                                |> List.append [ char ]
+                                |> List.reverse
+                                |> String.fromList
+                            )
+                    in
+                    { highlightResult
+                        | textTokens = List.append highlightResult.textTokens [ prevText ]
+                        , plainStack = Stack.initialise
+                    }
+
+                else
+                    { highlightResult
+                        | plainStack = Stack.push char highlightResult.plainStack
+                        , highlightStack = Stack.initialise
+                    }
+
+
+tokenize : String -> Result -> List ( Bool, String )
+tokenize hay result =
+    List.Extra.indexedFoldl
+        highlightHelper
+        { highlightStack = Stack.initialise
+        , plainStack = Stack.initialise
+        , result = result
+        , textTokens = []
+        , hay = hay
+        }
+        (String.toList hay)
+        |> .textTokens
 
 
 highlightMarkup : String -> Result -> Html msg
@@ -96,13 +183,15 @@ highlightMarkup hay result =
         highlightResult =
             List.Extra.indexedFoldl
                 highlightHelper
-                { stack = Stack.initialise
+                { highlightStack = Stack.initialise
+                , plainStack = Stack.initialise
                 , result = result
-                , htmlNodes = []
+                , textTokens = []
+                , hay = hay
                 }
                 (String.toList hay)
     in
-    span [] highlightResult.htmlNodes
+    span [] []
 
 
 prepareOptionsForPresentation : String -> List Option -> List (OptionPresenter msg)
