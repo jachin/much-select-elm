@@ -72,8 +72,8 @@ indexInsideMatch result index =
         |> not
 
 
-highlightHelper : Int -> Char -> HighlightResult -> HighlightResult
-highlightHelper index char highlightResult =
+tokenizeHelper : Int -> Char -> HighlightResult -> HighlightResult
+tokenizeHelper index char highlightResult =
     let
         theEnd =
             index == String.length highlightResult.hay - 1
@@ -163,7 +163,7 @@ highlightHelper index char highlightResult =
 tokenize : String -> Result -> List ( Bool, String )
 tokenize hay result =
     List.Extra.indexedFoldl
-        highlightHelper
+        tokenizeHelper
         { highlightStack = Stack.initialise
         , plainStack = Stack.initialise
         , result = result
@@ -174,21 +174,22 @@ tokenize hay result =
         |> .textTokens
 
 
+tokensToHtml : List ( Bool, String ) -> List (Html msg)
+tokensToHtml list =
+    List.map
+        (\( highlighted, string ) ->
+            if highlighted then
+                span [ class "highlighted" ] [ text string ]
+
+            else
+                text string
+        )
+        list
+
+
 highlightMarkup : String -> Result -> Html msg
 highlightMarkup hay result =
-    let
-        highlightResult =
-            List.Extra.indexedFoldl
-                highlightHelper
-                { highlightStack = Stack.initialise
-                , plainStack = Stack.initialise
-                , result = result
-                , textTokens = []
-                , hay = hay
-                }
-                (String.toList hay)
-    in
-    span [] []
+    span [] (tokensToHtml (tokenize hay result))
 
 
 prepareOptionsForPresentation : String -> List Option -> List (OptionPresenter msg)

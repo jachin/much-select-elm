@@ -103,6 +103,7 @@ class MuchSelector extends HTMLElement {
       const elmDiv = document.createElement("div");
 
       parentDiv.innerHTML = "";
+      parentDiv.appendChild(this.styleTag);
       parentDiv.appendChild(elmDiv);
 
       // noinspection JSUnresolvedVariable
@@ -239,6 +240,14 @@ class MuchSelector extends HTMLElement {
       this.removeAttribute("loading");
     }
     this._app.ports.loadingChangedReceiver.send(this._loading);
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  get styleTag() {
+    const styleTag = document.createElement("style");
+    styleTag.innerHTML = ".highlight { color: red }";
+
+    return styleTag;
   }
 }
 

@@ -19,6 +19,10 @@ colorResult =
     simpleMatch "red" "22 orange red purple 11"
 
 
+colorPartialResult =
+    simpleMatch "re" "22 orange red purple 11"
+
+
 suite : Test
 suite =
     describe "Highlighting search results"
@@ -77,4 +81,30 @@ suite =
             \_ ->
                 Expect.equal (tokenize "22 orange red purple 11" colorResult)
                     [ ( False, "22 orange " ), ( True, "red" ), ( False, " purple 11" ) ]
+        , test "an example of a partial match" <|
+            \_ ->
+                Expect.equal (tokenize "22 orange red purple 11" colorPartialResult)
+                    [ ( False, "22 orange " ), ( True, "re" ), ( False, "d purple 11" ) ]
+        , test "an example of a partial match with just one letter for the needle" <|
+            \_ ->
+                Expect.equal (tokenize "22 orange red purple 11" (simpleMatch "r" "22 orange red purple 11"))
+                    [ ( False, "22 orange " ), ( True, "r" ), ( False, "ed purple 11" ) ]
+        , test "an example of a partial match with just one letter for the needle that's in the middle of the words" <|
+            \_ ->
+                let
+                    hay =
+                        "22 orange red purple 11"
+
+                    result =
+                        Debug.log "result" <|
+                            simpleMatch "r" hay
+                in
+                Expect.equal (tokenize hay result)
+                    [ ( False, "22 orange " ), ( True, "r" ), ( False, "ed purple 11" ) ]
+        , describe "html output"
+            [ test "a simple example where the needle and the hay are identical" <|
+                \_ ->
+                    Expect.equal (highlightMarkup "red" straightUpMatchResult)
+                        (span [] [ span [ class "highlighted" ] [ text "red" ] ])
+            ]
         ]
