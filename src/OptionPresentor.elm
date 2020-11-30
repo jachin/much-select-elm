@@ -62,7 +62,7 @@ indexInsideMatch result index =
                 match.offset
                     <= index
                     && match.offset
-                    + match.length
+                    + List.length match.keys
                     > index
             )
         |> List.isEmpty
