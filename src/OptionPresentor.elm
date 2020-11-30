@@ -75,9 +75,6 @@ indexInsideMatch result index =
 highlightHelper : Int -> Char -> HighlightResult -> HighlightResult
 highlightHelper index char highlightResult =
     let
-        _ =
-            Debug.log "highlightResult" highlightResult
-
         theEnd =
             index == String.length highlightResult.hay - 1
     in
