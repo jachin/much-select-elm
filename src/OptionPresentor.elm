@@ -2,13 +2,15 @@ module OptionPresentor exposing
     ( OptionPresenter
     , hasDescription
     , highlightMarkup
+    , indexInsideMatch
     , prepareOptionsForPresentation
     , simpleMatch
     )
 
 import Fuzzy exposing (Result, match)
 import Html exposing (Html, span, text)
-import Html.Attributes exposing (style)
+import Html.Attributes exposing (class, style)
+import List.Extra
 import Option
     exposing
         ( Option
@@ -18,6 +20,7 @@ import Option
         , OptionLabel
         , OptionValue
         )
+import Stack
 
 
 type alias OptionPresenter msg =
@@ -44,59 +47,62 @@ type alias OptionSearchResult =
     }
 
 
-highlightMarkup : String -> Result -> Html msg
-highlightMarkup item result =
+type alias HighlightResult msg =
+    { stack : Stack.Stack Char
+    , result : Result
+    , htmlNodes : List (Html msg)
+    }
+
+
+indexInsideMatch : Result -> Int -> Bool
+indexInsideMatch result index =
+    result.matches
+        |> List.filter
+            (\match ->
+                match.offset
+                    <= index
+                    && match.offset
+                    + match.length
+                    > index
+            )
+        |> List.isEmpty
+        |> not
+
+
+highlightHelper : Int -> Char -> HighlightResult msg -> HighlightResult msg
+highlightHelper index char highlightResult =
     let
-        isKey index =
-            List.foldl
-                (\e sum ->
-                    if not sum then
-                        List.member (index - e.offset) e.keys
-
-                    else
-                        sum
-                )
-                False
-                result.matches
-
-        isMatch index =
-            List.foldl
-                (\e sum ->
-                    if not sum then
-                        e.offset <= index && (e.offset + e.length) > index
-
-                    else
-                        sum
-                )
-                False
-                result.matches
-
-        color index =
-            if isKey index then
-                Just ( "color", "red" )
-
-            else
-                Nothing
-
-        bgColor index =
-            if isMatch index then
-                Just ( "background-color", "yellow" )
-
-            else
-                Nothing
-
-        hStyle index =
-            [ color index, bgColor index ]
-                |> List.filterMap identity
-                |> List.map (\( styleName, styleValue ) -> style styleName styleValue)
-
-        accumulateChar c ( sum, index ) =
-            ( sum ++ [ span (hStyle index) [ c |> String.fromChar |> text ] ], index + 1 )
-
-        highlight =
-            String.foldl accumulateChar ( [], 0 ) item
+        _ =
+            Debug.log "highlightResult" highlightResult
     in
-    span [] (Tuple.first highlight)
+    if indexInsideMatch highlightResult.result index then
+        { highlightResult | stack = Stack.push char highlightResult.stack }
+
+    else
+        let
+            prevHighlight =
+                if (highlightResult.stack |> Stack.toList |> List.length) > 0 then
+                    span [ class "highlight" ] [ highlightResult.stack |> Stack.toList |> String.fromList |> text ]
+
+                else
+                    text ""
+        in
+        { highlightResult | htmlNodes = List.append highlightResult.htmlNodes [ prevHighlight, char |> String.fromChar |> text ] }
+
+
+highlightMarkup : String -> Result -> Html msg
+highlightMarkup hay result =
+    let
+        highlightResult =
+            List.Extra.indexedFoldl
+                highlightHelper
+                { stack = Stack.initialise
+                , result = result
+                , htmlNodes = []
+                }
+                (String.toList hay)
+    in
+    span [] highlightResult.htmlNodes
 
 
 prepareOptionsForPresentation : String -> List Option -> List (OptionPresenter msg)
