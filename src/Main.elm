@@ -6,6 +6,8 @@ import Css
         ( position
         , relative
         )
+import Html.Parser
+import Html.Parser.Util
 import Html.Styled exposing (Html, div, fromUnstyled, input, text, toUnstyled)
 import Html.Styled.Attributes exposing (class, css, disabled, id, placeholder, type_, value)
 import Html.Styled.Events
@@ -66,6 +68,7 @@ type alias Model =
     , showDropdown : Bool
     , searchString : String
     , loading : Bool
+    , loadingIndicatorHtml : List (Html Msg)
     , disabled : Bool
     }
 
@@ -142,6 +145,11 @@ view model =
             , disabled model.disabled
             ]
             []
+        , if model.loading then
+            div [ id "loading-indicator" ] model.loadingIndicatorHtml
+
+          else
+            text ""
         , dropdown model
         ]
 
@@ -325,6 +333,7 @@ type alias Flags =
     , optionsJson : String
     , loading : Bool
     , disabled : Bool
+    , loadingIndicatorHtml : String
     }
 
 
@@ -347,6 +356,7 @@ init flags =
       , showDropdown = False
       , searchString = ""
       , loading = flags.loading
+      , loadingIndicatorHtml = textHtml flags.loadingIndicatorHtml
       , disabled = flags.disabled
       }
     , Cmd.none
@@ -371,3 +381,14 @@ subscriptions _ =
         , loadingChangedReceiver LoadingAttributeChanged
         , disableChangedReceiver DisabledAttributeChanged
         ]
+
+
+textHtml : String -> List (Html msg)
+textHtml t =
+    case Html.Parser.run t of
+        Ok nodes ->
+            Html.Parser.Util.toVirtualDom nodes
+                |> List.map fromUnstyled
+
+        Err _ ->
+            []
