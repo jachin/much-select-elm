@@ -96,15 +96,58 @@ suite =
                         "22 orange red purple 11"
 
                     result =
-                        Debug.log "result" <|
-                            simpleMatch "e" hay
+                        simpleMatch "e" hay
                 in
                 Expect.equal (tokenize hay result)
                     [ ( False, "22 orange r" ), ( True, "e" ), ( False, "d purple 11" ) ]
+        , test "a needle with all but the last character of a word" <|
+            \_ ->
+                let
+                    hay =
+                        "22 orange red purple 11"
+
+                    result =
+                        simpleMatch "orang" hay
+                in
+                Expect.equal (tokenize hay result)
+                    [ ( False, "22 " ), ( True, "orang" ), ( False, "e red purple 11" ) ]
+        , test "a needle with all but the last character of a word and that word is at the end of the text block" <|
+            \_ ->
+                let
+                    hay =
+                        "red orange"
+
+                    result =
+                        simpleMatch "orang" hay
+                in
+                Expect.equal (tokenize hay result)
+                    [ ( False, "red " ), ( True, "orang" ), ( False, "e" ) ]
         , describe "html output"
             [ test "a simple example where the needle and the hay are identical" <|
                 \_ ->
                     Expect.equal (highlightMarkup "red" straightUpMatchResult)
-                        (span [] [ span [ class "highlighted" ] [ text "red" ] ])
+                        (span [] [ span [ class "highlight" ] [ text "red" ] ])
+            , test "a needle with all but the last character of a word" <|
+                \_ ->
+                    let
+                        hay =
+                            "orange red"
+
+                        result =
+                            simpleMatch "orang" hay
+                    in
+                    Expect.equal (highlightMarkup hay result)
+                        (span [] [ span [ class "highlight" ] [ text "orang" ], text "e red" ])
+            , test "a needle with all but the last character of a word and that word is at the end" <|
+                \_ ->
+                    let
+                        hay =
+                            "red orange"
+
+                        result =
+                            simpleMatch "orang" hay
+                    in
+                    Expect.equal (highlightMarkup hay result)
+                        (span [] [ text "red ", span [ class "highlight" ] [ text "orang" ], text "e" ])
             ]
         ]

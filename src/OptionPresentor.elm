@@ -10,7 +10,7 @@ module OptionPresentor exposing
 
 import Fuzzy exposing (Result, match)
 import Html exposing (Html, span, text)
-import Html.Attributes exposing (class, style)
+import Html.Attributes exposing (class)
 import List.Extra
 import Option
     exposing
@@ -114,27 +114,42 @@ tokenizeHelper index char highlightResult =
     else
         case Stack.top highlightResult.highlightStack of
             Just _ ->
-                let
-                    prevHighlight =
-                        if (highlightResult.highlightStack |> Stack.toList |> List.length) > 0 then
+                if theEnd then
+                    let
+                        prevHighlight =
                             ( True
                             , highlightResult.highlightStack
                                 |> Stack.toList
                                 |> List.reverse
                                 |> String.fromList
                             )
+                    in
+                    { highlightResult
+                        | textTokens =
+                            List.append highlightResult.textTokens
+                                [ prevHighlight
+                                , ( False, String.fromChar char )
+                                ]
+                    }
 
-                        else
-                            ( False, "" )
-                in
-                { highlightResult
-                    | textTokens =
-                        List.append highlightResult.textTokens
-                            [ prevHighlight
-                            ]
-                    , highlightStack = Stack.initialise
-                    , plainStack = Stack.push char highlightResult.plainStack
-                }
+                else
+                    let
+                        prevHighlight =
+                            ( True
+                            , highlightResult.highlightStack
+                                |> Stack.toList
+                                |> List.reverse
+                                |> String.fromList
+                            )
+                    in
+                    { highlightResult
+                        | textTokens =
+                            List.append highlightResult.textTokens
+                                [ prevHighlight
+                                ]
+                        , highlightStack = Stack.initialise
+                        , plainStack = Stack.push char highlightResult.plainStack
+                    }
 
             Nothing ->
                 if theEnd then
@@ -179,7 +194,7 @@ tokensToHtml list =
     List.map
         (\( highlighted, string ) ->
             if highlighted then
-                span [ class "highlighted" ] [ text string ]
+                span [ class "highlight" ] [ text string ]
 
             else
                 text string

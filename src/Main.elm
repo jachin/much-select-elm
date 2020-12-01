@@ -16,6 +16,7 @@ import Css
         , int
         , left
         , minWidth
+        , none
         , padding
         , pointer
         , position
@@ -166,6 +167,15 @@ view model =
 
 dropdown : Model -> Html Msg
 dropdown model =
+    let
+        options =
+            optionsToDropdownOptions
+                DropdownMouseOverOption
+                DropdownMouseOutOption
+                DropdownMouseClickOption
+                model.selectionMode
+                (OptionPresentor.prepareOptionsForPresentation model.searchString model.options)
+    in
     if model.showDropdown then
         div
             [ css
@@ -179,16 +189,10 @@ dropdown model =
                 , minWidth (px 200)
                 ]
             ]
-            (optionsToDropdownOptions
-                DropdownMouseOverOption
-                DropdownMouseOutOption
-                DropdownMouseClickOption
-                model.selectionMode
-                (OptionPresentor.prepareOptionsForPresentation model.searchString model.options)
-            )
+            options
 
     else
-        text ""
+        div [ css [ display none ] ] options
 
 
 optionsToDropdownOptions :
