@@ -20,6 +20,8 @@ import Html.Styled.Events
         , onMouseLeave
         )
 import Json.Decode
+import Keyboard exposing (Key(..))
+import Keyboard.Events as Keyboard
 import List.Extra exposing (mapAccuml)
 import Option
     exposing
@@ -38,20 +40,13 @@ import Option
         )
 import OptionPresentor exposing (OptionPresenter)
 import OptionSearcher exposing (bestMatch)
-import Ports
-    exposing
-        ( disableChangedReceiver
-        , loadingChangedReceiver
-        , placeholderChangedReceiver
-        , valueChanged
-        , valueChangedReceiver
-        , valuesDecoder
-        )
+import Ports exposing (blurInput, disableChangedReceiver, loadingChangedReceiver, placeholderChangedReceiver, valueChanged, valueChangedReceiver, valuesDecoder)
 import SelectionMode exposing (SelectionMode(..))
 
 
 type Msg
-    = InputBlur
+    = NoOp
+    | InputBlur
     | InputFocus
     | DropdownMouseOverOption OptionValue
     | DropdownMouseOutOption OptionValue
@@ -81,6 +76,9 @@ type alias Model =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        NoOp ->
+            ( model, Cmd.none )
+
         InputBlur ->
             ( { model | showDropdown = False }, Cmd.none )
 
@@ -139,7 +137,17 @@ update msg model =
                 options =
                     selectHighlightedOption model.selectionMode model.options
             in
-            ( { model | options = options }, valueChanged (selectedOptionsToTuple options) )
+            case model.selectionMode of
+                SingleSelect ->
+                    ( { model | options = options, searchString = "" }
+                    , Cmd.batch
+                        [ valueChanged (selectedOptionsToTuple options)
+                        , blurInput ()
+                        ]
+                    )
+
+                MultiSelect ->
+                    ( { model | options = options, searchString = "" }, valueChanged (selectedOptionsToTuple options) )
 
 
 view : Model -> Html Msg
@@ -155,6 +163,7 @@ view model =
             , placeholder model.placeholder
             , id "input-filter"
             , disabled model.disabled
+            , Keyboard.on Keyboard.Keydown [ ( Enter, SelectHighlightedOption ) ] |> Html.Styled.Attributes.fromUnstyled
             ]
             []
         , if model.loading then

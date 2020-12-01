@@ -1,5 +1,6 @@
 port module Ports exposing
-    ( disableChangedReceiver
+    ( blurInput
+    , disableChangedReceiver
     , loadingChangedReceiver
     , placeholderChangedReceiver
     , valueChanged
@@ -11,6 +12,9 @@ import Json.Decode
 
 
 port valueChanged : List ( String, String ) -> Cmd msg
+
+
+port blurInput : () -> Cmd msg
 
 
 valuesDecoder : Json.Decode.Decoder (List String)

@@ -118,6 +118,11 @@ class MuchSelector extends HTMLElement {
       this._app.ports.valueChanged.subscribe(
         this.valueChangedHandler.bind(this)
       );
+
+      // noinspection JSUnresolvedVariable
+      this._app.ports.blurInput.subscribe(() => {
+        this.shadowRoot.getElementById("input-filter").blur();
+      });
     } catch (error) {
       // TODO Do something interesting here
       throw error;

@@ -1,4 +1,4 @@
-module OptionSearcher exposing (OptionSearchResult, bestMatch, search)
+module OptionSearcher exposing (OptionSearchResult, bestMatch, search, simpleMatch)
 
 import Fuzzy exposing (Result, match)
 import Option exposing (Option)
