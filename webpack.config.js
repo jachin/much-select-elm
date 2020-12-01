@@ -43,9 +43,7 @@ module.exports = (env) => {
         {
           test: /\.elm$/,
           exclude: [/elm-stuff/, /node_modules/],
-          use: env.production
-            ? [webpackLoader]
-            : [{ loader: "elm-hot-webpack-loader" }, webpackLoader],
+          use: [webpackLoader],
         },
       ],
     },

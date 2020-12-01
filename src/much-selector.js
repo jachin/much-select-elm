@@ -245,7 +245,7 @@ class MuchSelector extends HTMLElement {
   // eslint-disable-next-line class-methods-use-this
   get styleTag() {
     const styleTag = document.createElement("style");
-    styleTag.innerHTML = ".highlight { color: red }";
+    styleTag.innerHTML = ".highlight { color: blue }";
 
     return styleTag;
   }
