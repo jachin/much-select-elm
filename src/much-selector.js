@@ -221,6 +221,7 @@ class MuchSelector extends HTMLElement {
     } else {
       this.removeAttribute("disabled");
     }
+    // noinspection JSUnresolvedVariable
     this._app.ports.disableChangedReceiver.send(this._disabled);
   }
 
@@ -239,13 +240,67 @@ class MuchSelector extends HTMLElement {
     } else {
       this.removeAttribute("loading");
     }
+    // noinspection JSUnresolvedVariable
     this._app.ports.loadingChangedReceiver.send(this._loading);
   }
 
   // eslint-disable-next-line class-methods-use-this
   get styleTag() {
     const styleTag = document.createElement("style");
-    styleTag.innerHTML = ".highlight { color: blue }";
+    styleTag.innerHTML = `
+
+      #input-filter {
+        height: 40px;
+        font-size: 25px;
+      }
+      #dropdown {
+        background-color: #EEEEEE;
+        display: none;
+        padding: 5px;
+        position: absolute;
+        top: 50px;
+        left: 0px;
+        font-size: 20px;
+        min-width: 200px;
+      }
+      #dropdown.showing {
+        display: inline-block;
+      }
+      #dropdown.hiding {
+        display: none;
+      }
+      .optgroup {
+        background-color: gray;
+        font-size: 0.85rem;
+        font-weight: 300;
+        padding: 5px;
+      }
+      .option {
+        background-color: silver;
+        padding: 5px;
+        cursor: pointer;
+      }
+
+      .option.selected {
+        background-color: darkslategrey;
+        color: ghostwhite;
+        cursor: pointer;
+      }
+
+      .option.highlighted {
+        background-color: indigo;
+        color: ghostwhite;
+      }
+
+      .option.disabled {
+        display: none;
+      }
+
+      .description {
+        font-size: 0.85rem;
+        padding: 3px;
+      }
+      .highlight { color: blue }`;
 
     return styleTag;
   }

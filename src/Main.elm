@@ -3,31 +3,11 @@ module Main exposing (..)
 import Browser
 import Css
     exposing
-        ( absolute
-        , backgroundColor
-        , color
-        , cursor
-        , display
-        , fontSize
-        , fontWeight
-        , height
-        , hex
-        , inlineBlock
-        , int
-        , left
-        , minWidth
-        , none
-        , padding
-        , pointer
-        , position
-        , px
+        ( position
         , relative
-        , rem
-        , rgb
-        , top
         )
 import Html.Styled exposing (Html, div, fromUnstyled, input, text, toUnstyled)
-import Html.Styled.Attributes exposing (class, css, placeholder, type_, value)
+import Html.Styled.Attributes exposing (class, css, id, placeholder, type_, value)
 import Html.Styled.Events
     exposing
         ( onBlur
@@ -158,7 +138,7 @@ view model =
             , onInput SearchInputOnInput
             , value model.searchString
             , placeholder model.placeholder
-            , css [ height (px 40), fontSize (px 25) ]
+            , id "input-filter"
             ]
             []
         , dropdown model
@@ -178,21 +158,13 @@ dropdown model =
     in
     if model.showDropdown then
         div
-            [ css
-                [ backgroundColor (hex "EEEEEE")
-                , display inlineBlock
-                , padding (px 5)
-                , position absolute
-                , top (px 50)
-                , left (px 0)
-                , fontSize (px 20)
-                , minWidth (px 200)
-                ]
+            [ id "dropdown"
+            , class "showing"
             ]
             options
 
     else
-        div [ css [ display none ] ] options
+        div [ id "dropdown", class "hiding" ] options
 
 
 optionsToDropdownOptions :
@@ -251,12 +223,6 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
             if prependOptionGroup then
                 div
                     [ class "optgroup"
-                    , css
-                        [ backgroundColor (rgb 200 200 200)
-                        , fontSize (rem 0.85)
-                        , fontWeight (int 300)
-                        , padding (px 5)
-                        ]
                     ]
                     [ text (Option.optionGroupToString option.group) ]
 
@@ -268,10 +234,6 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
             if OptionPresentor.hasDescription option then
                 div
                     [ class "description"
-                    , css
-                        [ fontSize (rem 0.85)
-                        , padding (px 3)
-                        ]
                     ]
                     [ fromUnstyled option.descriptionMarkup ]
 
@@ -286,11 +248,6 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
                 , onMouseLeave (mouseOutMsgConstructor option.value)
                 , onMouseDown (clickMsgConstructor option.value)
                 , class "option"
-                , css
-                    [ backgroundColor (rgb 255 255 255)
-                    , padding (px 5)
-                    , cursor pointer
-                    ]
                 ]
                 [ fromUnstyled option.labelMarkup, descriptionHtml ]
             ]
@@ -305,12 +262,6 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
                     , div
                         [ class "selected"
                         , class "option"
-                        , css
-                            [ backgroundColor (hex "111111")
-                            , color (hex "EEEEEE")
-                            , padding (px 5)
-                            , cursor pointer
-                            ]
                         ]
                         [ fromUnstyled option.labelMarkup, descriptionHtml ]
                     ]
@@ -326,12 +277,6 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
                 , onMouseDown (clickMsgConstructor option.value)
                 , class "highlighted"
                 , class "option"
-                , css
-                    [ backgroundColor (hex "666666")
-                    , color (hex "EEEEEE")
-                    , padding (px 5)
-                    , cursor pointer
-                    ]
                 ]
                 [ fromUnstyled option.labelMarkup, descriptionHtml ]
             ]
@@ -341,12 +286,6 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
             , div
                 [ class "disabled"
                 , class "option"
-                , css
-                    [ backgroundColor (hex "666666")
-                    , color (hex "EEEEEE")
-                    , padding (px 5)
-                    , cursor pointer
-                    ]
                 ]
                 [ fromUnstyled option.labelMarkup, descriptionHtml ]
             ]
