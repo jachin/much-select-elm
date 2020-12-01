@@ -25,6 +25,7 @@ module Option exposing
     , optionLabelToString
     , optionsDecoder
     , removeHighlightOptionInList
+    , selectHighlightedOption
     , selectOptionInList
     , selectOptionsInOptionsList
     , selectSingleOptionInList
@@ -35,6 +36,8 @@ module Option exposing
     )
 
 import Json.Decode
+import List.Extra
+import SelectionMode exposing (SelectionMode(..))
 
 
 type Option
@@ -271,6 +274,29 @@ selectOptionInList value options =
         options
 
 
+selectHighlightedOption : SelectionMode -> List Option -> List Option
+selectHighlightedOption selectionMode options =
+    options
+        |> List.filter
+            (\option ->
+                optionIsHighlighted option
+            )
+        |> List.head
+        |> (\maybeOption ->
+                case maybeOption of
+                    Just (Option _ _ value _ _) ->
+                        case selectionMode of
+                            MultiSelect ->
+                                selectOptionInList value options
+
+                            SingleSelect ->
+                                selectSingleOptionInList value options
+
+                    Nothing ->
+                        options
+           )
+
+
 selectSingleOptionInList : OptionValue -> List Option -> List Option
 selectSingleOptionInList value options =
     options
@@ -320,6 +346,25 @@ removeHighlightOption (Option display label value description group) =
 
         OptionDisabled ->
             Option OptionDisabled label value description group
+
+
+optionIsHighlighted : Option -> Bool
+optionIsHighlighted (Option display _ _ _ _) =
+    case display of
+        OptionShown ->
+            False
+
+        OptionHidden ->
+            False
+
+        OptionSelected ->
+            False
+
+        OptionHighlighted ->
+            True
+
+        OptionDisabled ->
+            False
 
 
 selectOption : Option -> Option

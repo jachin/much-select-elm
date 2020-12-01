@@ -30,12 +30,14 @@ import Option
         , OptionValue
         , highlightOptionInList
         , removeHighlightOptionInList
+        , selectHighlightedOption
         , selectOptionInList
         , selectOptionsInOptionsList
         , selectSingleOptionInList
         , selectedOptionsToTuple
         )
 import OptionPresentor exposing (OptionPresenter)
+import OptionSearcher exposing (bestMatch)
 import Ports
     exposing
         ( disableChangedReceiver
@@ -45,6 +47,7 @@ import Ports
         , valueChangedReceiver
         , valuesDecoder
         )
+import SelectionMode exposing (SelectionMode(..))
 
 
 type Msg
@@ -58,6 +61,7 @@ type Msg
     | PlaceholderAttributeChanged String
     | LoadingAttributeChanged Bool
     | DisabledAttributeChanged Bool
+    | SelectHighlightedOption
 
 
 type alias Model =
@@ -72,11 +76,6 @@ type alias Model =
     , loadingIndicatorHtml : List (Html Msg)
     , disabled : Bool
     }
-
-
-type SelectionMode
-    = SingleSelect
-    | MultiSelect
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -107,7 +106,12 @@ update msg model =
             ( { model | options = options }, valueChanged (selectedOptionsToTuple options) )
 
         SearchInputOnInput string ->
-            ( { model | searchString = string }, Cmd.none )
+            case bestMatch string model.options of
+                Just (Option _ _ value _ _) ->
+                    ( { model | searchString = string, options = highlightOptionInList value model.options }, Cmd.none )
+
+                Nothing ->
+                    ( { model | searchString = string }, Cmd.none )
 
         ValueChanged valuesJson ->
             let
@@ -129,6 +133,13 @@ update msg model =
 
         DisabledAttributeChanged bool ->
             ( { model | disabled = bool }, Cmd.none )
+
+        SelectHighlightedOption ->
+            let
+                options =
+                    selectHighlightedOption model.selectionMode model.options
+            in
+            ( { model | options = options }, valueChanged (selectedOptionsToTuple options) )
 
 
 view : Model -> Html Msg

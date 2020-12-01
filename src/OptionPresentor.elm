@@ -4,7 +4,6 @@ module OptionPresentor exposing
     , highlightMarkup
     , indexInsideMatch
     , prepareOptionsForPresentation
-    , simpleMatch
     , tokenize
     )
 
@@ -21,6 +20,7 @@ import Option
         , OptionLabel
         , OptionValue
         )
+import OptionSearcher exposing (OptionSearchResult, search)
 import Stack
 
 
@@ -40,12 +40,6 @@ type alias OptionPresenter msg =
 hasDescription : OptionPresenter msg -> Bool
 hasDescription optionPresenter =
     Option.optionDescriptionToBool optionPresenter.description
-
-
-type alias OptionSearchResult =
-    { labelMatch : Result
-    , descriptionMatch : Result
-    }
 
 
 type alias HighlightResult =
@@ -241,29 +235,3 @@ prepareOptionsForPresentation searchString options =
                 }
             )
         |> List.sortBy .totalScore
-
-
-simpleMatch : String -> String -> Result
-simpleMatch needle hay =
-    match [] [ " " ] needle hay
-
-
-search : String -> Option -> OptionSearchResult
-search string option =
-    { labelMatch =
-        simpleMatch
-            (string |> String.toLower)
-            (option
-                |> Option.getOptionLabel
-                |> Option.optionLabelToString
-                |> String.toLower
-            )
-    , descriptionMatch =
-        simpleMatch
-            (string |> String.toLower)
-            (option
-                |> Option.getOptionDescription
-                |> Option.optionDescriptionToString
-                |> String.toLower
-            )
-    }
