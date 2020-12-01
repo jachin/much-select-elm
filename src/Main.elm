@@ -20,6 +20,7 @@ import Html.Styled.Events
         , onMouseLeave
         )
 import Json.Decode
+import List.Extra exposing (mapAccuml)
 import Option
     exposing
         ( Option(..)
@@ -188,33 +189,15 @@ optionsToDropdownOptions mouseOverMsgConstructor mouseOutMsgConstructor clickMsg
         partialWithSelectionMode =
             optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgConstructor selectionMode
 
-        helper : OptionGroup -> List (OptionPresenter msg) -> List (OptionPresenter msg -> List (Html msg))
-        helper previousGroup options_ =
-            case List.head options_ of
-                Just option_ ->
-                    let
-                        partial_ =
-                            if previousGroup == option_.group then
-                                partialWithSelectionMode False
-
-                            else
-                                partialWithSelectionMode True
-                    in
-                    List.append [ partial_ ] (helper option_.group (options_ |> List.tail |> Maybe.withDefault []))
-
-                Nothing ->
-                    []
-
-        partialsWithGroupChangesFlagged : List (OptionPresenter msg -> List (Html msg))
-        partialsWithGroupChangesFlagged =
-            helper Option.emptyOptionGroup options
+        helper : OptionGroup -> OptionPresenter msg -> ( OptionGroup, List (Html msg) )
+        helper previousGroup option_ =
+            ( option_.group
+            , option_ |> partialWithSelectionMode (previousGroup /= option_.group)
+            )
     in
-    List.map2
-        (\option partial ->
-            partial option
-        )
-        options
-        partialsWithGroupChangesFlagged
+    options
+        |> mapAccuml helper Option.emptyOptionGroup
+        |> Tuple.second
         |> List.concat
 
 
