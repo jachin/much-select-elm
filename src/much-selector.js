@@ -24,6 +24,7 @@ const buildOptionsFromSelectElement = (selectElement) => {
     if (optionElement.dataset.description) {
       option.description = optionElement.dataset.description;
     }
+    option.disabled = optionElement.hasAttribute("disabled");
     options.push(option);
   });
   return options;

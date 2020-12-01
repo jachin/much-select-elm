@@ -15,6 +15,7 @@ module Option exposing
     , getOptionLabelString
     , getOptionValue
     , highlightOptionInList
+    , newDisabledOption
     , newOption
     , newSelectedOption
     , optionDescriptionToBool
@@ -137,6 +138,11 @@ setGroup string option =
 newSelectedOption : String -> Option
 newSelectedOption string =
     Option OptionSelected (OptionLabel string) (OptionValue string) NoDescription NoOptionGroup
+
+
+newDisabledOption : String -> Option
+newDisabledOption string =
+    Option OptionDisabled (OptionLabel string) (OptionValue string) NoDescription NoOptionGroup
 
 
 getOptionDisplay : Option -> OptionDisplay
@@ -420,7 +426,18 @@ displayDecoder =
                             Json.Decode.succeed OptionSelected
 
                         _ ->
-                            Json.Decode.succeed OptionShown
+                            Json.Decode.fail "Option is not selected"
+                )
+        , Json.Decode.field
+            "disabled"
+            Json.Decode.bool
+            |> Json.Decode.andThen
+                (\isDisabled ->
+                    if isDisabled then
+                        Json.Decode.succeed OptionDisabled
+
+                    else
+                        Json.Decode.fail "Option is not disabled"
                 )
         , Json.Decode.succeed OptionShown
         ]

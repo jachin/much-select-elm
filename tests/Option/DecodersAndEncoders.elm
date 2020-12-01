@@ -5,6 +5,7 @@ import Json.Decode
 import Option
     exposing
         ( decoder
+        , newDisabledOption
         , newOption
         , newSelectedOption
         , optionsDecoder
@@ -22,6 +23,10 @@ simpleSelectedOption =
 
 simpleNotSelectedOption =
     """{"label": "Sup", "value": "Sup", "selected": "false"}"""
+
+
+disabledOption =
+    """{"label": "Dude", "value": "Dude", "selected": "false", "disabled": true}"""
 
 
 listOfOptions =
@@ -66,6 +71,11 @@ suite =
                     Expect.equal
                         (Ok (newOption "Sup"))
                         (Json.Decode.decodeString decoder simpleNotSelectedOption)
+            , test "an option that's disabled" <|
+                \_ ->
+                    Expect.equal
+                        (Ok (newDisabledOption "Dude"))
+                        (Json.Decode.decodeString decoder disabledOption)
             , test "a list of options" <|
                 \_ ->
                     Expect.equal

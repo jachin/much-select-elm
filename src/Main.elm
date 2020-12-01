@@ -7,7 +7,7 @@ import Css
         , relative
         )
 import Html.Styled exposing (Html, div, fromUnstyled, input, text, toUnstyled)
-import Html.Styled.Attributes exposing (class, css, id, placeholder, type_, value)
+import Html.Styled.Attributes exposing (class, css, disabled, id, placeholder, type_, value)
 import Html.Styled.Events
     exposing
         ( onBlur
@@ -139,6 +139,7 @@ view model =
             , value model.searchString
             , placeholder model.placeholder
             , id "input-filter"
+            , disabled model.disabled
             ]
             []
         , dropdown model

@@ -231,7 +231,6 @@ prepareOptionsForPresentation searchString options =
                 }
             )
         |> List.sortBy .totalScore
-        |> Debug.log "searching results"
 
 
 simpleMatch : String -> String -> Result
