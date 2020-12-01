@@ -81,15 +81,25 @@ tokenizeHelper index char highlightResult =
     if indexInsideMatch highlightResult.result index then
         case Stack.top highlightResult.plainStack of
             Just _ ->
-                let
-                    prevText =
-                        ( False, highlightResult.plainStack |> Stack.toList |> List.reverse |> String.fromList )
-                in
-                { highlightResult
-                    | textTokens = List.append highlightResult.textTokens [ prevText ]
-                    , highlightStack = Stack.push char highlightResult.highlightStack
-                    , plainStack = Stack.initialise
-                }
+                if theEnd then
+                    let
+                        prevText =
+                            ( False, highlightResult.plainStack |> Stack.toList |> List.reverse |> String.fromList )
+                    in
+                    { highlightResult
+                        | textTokens = List.append highlightResult.textTokens [ prevText, ( True, String.fromChar char ) ]
+                    }
+
+                else
+                    let
+                        prevText =
+                            ( False, highlightResult.plainStack |> Stack.toList |> List.reverse |> String.fromList )
+                    in
+                    { highlightResult
+                        | textTokens = List.append highlightResult.textTokens [ prevText ]
+                        , highlightStack = Stack.push char highlightResult.highlightStack
+                        , plainStack = Stack.initialise
+                    }
 
             Nothing ->
                 if theEnd then

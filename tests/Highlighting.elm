@@ -122,6 +122,28 @@ suite =
                 in
                 Expect.equal (tokenize hay result)
                     [ ( False, "red " ), ( True, "orang" ), ( False, "e" ) ]
+        , test "a one character needle in the middle of a word" <|
+            \_ ->
+                let
+                    hay =
+                        "red"
+
+                    result =
+                        simpleMatch "e" hay
+                in
+                Expect.equal (tokenize hay result)
+                    [ ( False, "r" ), ( True, "e" ), ( False, "d" ) ]
+        , test "a one character needle at the end of a word" <|
+            \_ ->
+                let
+                    hay =
+                        "red"
+
+                    result =
+                        simpleMatch "d" hay
+                in
+                Expect.equal (tokenize hay result)
+                    [ ( False, "re" ), ( True, "d" ) ]
         , describe "html output"
             [ test "a simple example where the needle and the hay are identical" <|
                 \_ ->
@@ -149,5 +171,16 @@ suite =
                     in
                     Expect.equal (highlightMarkup hay result)
                         (span [] [ text "red ", span [ class "highlight" ] [ text "orang" ], text "e" ])
+            , test "a one character needle at the end of a word" <|
+                \_ ->
+                    let
+                        hay =
+                            "two"
+
+                        result =
+                            simpleMatch "o" hay
+                    in
+                    Expect.equal (highlightMarkup hay result)
+                        (span [] [ text "tw", span [ class "highlight" ] [ text "o" ] ])
             ]
         ]
