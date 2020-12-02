@@ -30,7 +30,7 @@ import Option
         , OptionGroup
         , OptionLabel(..)
         , OptionValue
-        , highlightOptionInList
+        , highlightOptionInListByValue
         , removeHighlightOptionInList
         , selectHighlightedOption
         , selectOptionInList
@@ -68,6 +68,8 @@ type Msg
     | SelectHighlightedOption
     | DeleteInputForSingleSelect
     | EscapeKeyInInputFilter
+    | MoveHightlighedOptionUp
+    | MoveHighlightedOptionDown
 
 
 type alias Model =
@@ -97,7 +99,7 @@ update msg model =
             ( { model | showDropdown = True }, Cmd.none )
 
         DropdownMouseOverOption optionValue ->
-            ( { model | options = highlightOptionInList optionValue model.options }, Cmd.none )
+            ( { model | options = highlightOptionInListByValue optionValue model.options }, Cmd.none )
 
         DropdownMouseOutOption optionValue ->
             ( { model | options = removeHighlightOptionInList optionValue model.options }, Cmd.none )
@@ -117,7 +119,7 @@ update msg model =
         SearchInputOnInput string ->
             case bestMatch string model.options of
                 Just (Option _ _ value _ _) ->
-                    ( { model | searchString = string, options = highlightOptionInList value model.options }, Cmd.none )
+                    ( { model | searchString = string, options = highlightOptionInListByValue value model.options }, Cmd.none )
 
                 Nothing ->
                     ( { model | searchString = string }, Cmd.none )
@@ -180,6 +182,12 @@ update msg model =
         EscapeKeyInInputFilter ->
             ( { model | searchString = "" }, blurInput () )
 
+        MoveHightlighedOptionUp ->
+            ( { model | options = Option.moveHighlightedOptionUp model.options }, Cmd.none )
+
+        MoveHighlightedOptionDown ->
+            ( { model | options = Option.moveHighlightedOptionDown model.options }, Cmd.none )
+
 
 view : Model -> Html Msg
 view model =
@@ -211,6 +219,8 @@ view model =
                         [ ( Enter, SelectHighlightedOption )
                         , ( Backspace, DeleteInputForSingleSelect )
                         , ( Escape, EscapeKeyInInputFilter )
+                        , ( ArrowUp, MoveHightlighedOptionUp )
+                        , ( ArrowDown, MoveHighlightedOptionDown )
                         ]
                         |> Html.Styled.Attributes.fromUnstyled
                     ]

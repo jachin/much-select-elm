@@ -16,7 +16,9 @@ module Option exposing
     , getOptionLabelString
     , getOptionValue
     , hasSelectedOption
-    , highlightOptionInList
+    , highlightOptionInListByValue
+    , moveHighlightedOptionDown
+    , moveHighlightedOptionUp
     , newDisabledOption
     , newOption
     , newSelectedOption
@@ -227,6 +229,54 @@ selectOptionsInOptionsList strings options =
         options
 
 
+moveHighlightedOptionUp : List Option -> List Option
+moveHighlightedOptionUp options =
+    let
+        maybeCurrentlyHighlightedOption =
+            options |> highlightedOption
+
+        maybeHigherSibling =
+            Maybe.andThen
+                (\currentlyHighlightedOption ->
+                    options
+                        |> List.Extra.findIndex
+                            (\option -> option == currentlyHighlightedOption)
+                        |> Maybe.andThen (\i -> List.Extra.getAt (i - 1) options)
+                )
+                maybeCurrentlyHighlightedOption
+    in
+    case maybeHigherSibling of
+        Just option ->
+            highlightOptionInList option options
+
+        Nothing ->
+            options
+
+
+moveHighlightedOptionDown : List Option -> List Option
+moveHighlightedOptionDown options =
+    let
+        maybeCurrentlyHighlightedOption =
+            options |> highlightedOption
+
+        maybeLowerSibling =
+            Maybe.andThen
+                (\currentlyHighlightedOption ->
+                    options
+                        |> List.Extra.findIndex
+                            (\option -> option == currentlyHighlightedOption)
+                        |> Maybe.andThen (\i -> List.Extra.getAt (i + 1) options)
+                )
+                maybeCurrentlyHighlightedOption
+    in
+    case maybeLowerSibling of
+        Just option ->
+            highlightOptionInList option options
+
+        Nothing ->
+            options
+
+
 deselectAllOptionsInOptionsList : List Option -> List Option
 deselectAllOptionsInOptionsList options =
     List.map
@@ -244,8 +294,26 @@ optionValuesEqual option optionValue =
     getOptionValue option == optionValue
 
 
-highlightOptionInList : OptionValue -> List Option -> List Option
-highlightOptionInList value options =
+highlightedOption : List Option -> Maybe Option
+highlightedOption options =
+    List.Extra.find (\option -> optionIsHighlighted option) options
+
+
+highlightOptionInList : Option -> List Option -> List Option
+highlightOptionInList option options =
+    List.map
+        (\option_ ->
+            if option == option_ then
+                highlightOption option_
+
+            else
+                removeHighlightOption option_
+        )
+        options
+
+
+highlightOptionInListByValue : OptionValue -> List Option -> List Option
+highlightOptionInListByValue value options =
     List.map
         (\option_ ->
             if optionValuesEqual option_ value then
