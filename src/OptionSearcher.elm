@@ -1,7 +1,9 @@
-module OptionSearcher exposing (OptionSearchResult, bestMatch, search, simpleMatch)
+module OptionSearcher exposing (OptionSearchResult, bestMatch, replaceFancyCharters, search, simpleMatch)
 
 import Fuzzy exposing (Result, match)
 import Option exposing (Option)
+import String.Deburr exposing (deburr)
+import String.Extra exposing (fromCodePoints, toCodePoints)
 
 
 type alias OptionSearchResult =
@@ -10,9 +12,24 @@ type alias OptionSearchResult =
     }
 
 
+replaceFancyCharters : String -> String
+replaceFancyCharters str =
+    str
+        |> toCodePoints
+        |> List.map
+            (\int ->
+                if int > 127 then
+                    127
+
+                else
+                    int
+            )
+        |> fromCodePoints
+
+
 simpleMatch : String -> String -> Result
 simpleMatch needle hay =
-    match [] [ " " ] needle hay
+    match [] [ " " ] (needle |> deburr |> replaceFancyCharters) (hay |> deburr |> replaceFancyCharters)
 
 
 bestMatch : String -> List Option -> Maybe Option

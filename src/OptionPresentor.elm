@@ -22,6 +22,7 @@ import Option
         )
 import OptionSearcher exposing (OptionSearchResult, search)
 import Stack
+import String.Graphemes
 
 
 type alias OptionPresenter msg =
@@ -70,7 +71,7 @@ tokenizeHelper : Int -> Char -> HighlightResult -> HighlightResult
 tokenizeHelper index char highlightResult =
     let
         theEnd =
-            index == String.length highlightResult.hay - 1
+            index == String.Graphemes.length highlightResult.hay - 1
     in
     if indexInsideMatch highlightResult.result index then
         case Stack.top highlightResult.plainStack of

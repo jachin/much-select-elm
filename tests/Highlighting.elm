@@ -4,7 +4,7 @@ import Expect
 import Html exposing (span, text)
 import Html.Attributes exposing (class)
 import OptionPresentor exposing (highlightMarkup, indexInsideMatch, tokenize)
-import OptionSearcher exposing (simpleMatch)
+import OptionSearcher exposing (replaceFancyCharters, simpleMatch)
 import Test exposing (Test, describe, test)
 
 
@@ -27,7 +27,12 @@ colorPartialResult =
 suite : Test
 suite =
     describe "Highlighting search results"
-        [ describe "we need to know which characters are inside of a match and which are not"
+        [ describe "do not include fancy characters in the search"
+            [ test "like emojis, they should be replaced with blank characters" <|
+                \_ ->
+                    Expect.equal (replaceFancyCharters "a🐇") "a\u{007F}"
+            ]
+        , describe "we need to know which characters are inside of a match and which are not"
             [ describe "a simple example where the whole needs matches the whole hay"
                 [ test "Expected the first character to be part of a match" <|
                     \_ ->
@@ -145,6 +150,28 @@ suite =
                 in
                 Expect.equal (tokenize hay result)
                     [ ( False, "re" ), ( True, "d" ) ]
+        , test "a one character hay with no needle" <|
+            \_ ->
+                let
+                    hay =
+                        "a"
+
+                    result =
+                        simpleMatch "" hay
+                in
+                Expect.equal (tokenize hay result)
+                    [ ( False, "a" ) ]
+        , test "a one emoji character hay with no needle" <|
+            \_ ->
+                let
+                    hay =
+                        "🐇"
+
+                    result =
+                        simpleMatch "" hay
+                in
+                Expect.equal (tokenize hay result)
+                    [ ( False, "🐇" ) ]
         , describe "html output"
             [ test "a simple example where the needle and the hay are identical" <|
                 \_ ->
@@ -183,5 +210,16 @@ suite =
                     in
                     Expect.equal (highlightMarkup hay result)
                         (span [] [ text "tw", span [ class "highlight" ] [ text "o" ] ])
+            , test "a one character hay with no needle" <|
+                \_ ->
+                    let
+                        hay =
+                            "a"
+
+                        result =
+                            simpleMatch "" hay
+                    in
+                    Expect.equal (highlightMarkup hay result)
+                        (span [] [ text "a" ])
             ]
         ]

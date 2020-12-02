@@ -190,7 +190,7 @@ view model =
                     if Option.hasSelectedOption model.options then
                         model.options
                             |> Option.selectedOptionsToTuple
-                            |> List.map Tuple.first
+                            |> List.map Tuple.second
                             |> List.head
                             |> Maybe.withDefault ""
 
