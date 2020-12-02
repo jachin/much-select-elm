@@ -8,7 +8,7 @@ import Css
         )
 import Html.Parser
 import Html.Parser.Util
-import Html.Styled exposing (Html, div, fromUnstyled, input, text, toUnstyled)
+import Html.Styled exposing (Html, div, fromUnstyled, input, span, text, toUnstyled)
 import Html.Styled.Attributes exposing (class, css, disabled, id, placeholder, type_, value)
 import Html.Styled.Events
     exposing
@@ -236,7 +236,7 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
                 div
                     [ class "optgroup"
                     ]
-                    [ text (Option.optionGroupToString option.group) ]
+                    [ span [ class "optgroup-header" ] [ text (Option.optionGroupToString option.group) ] ]
 
             else
                 text ""
