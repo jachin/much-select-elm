@@ -40,7 +40,16 @@ import Option
         )
 import OptionPresentor exposing (OptionPresenter)
 import OptionSearcher exposing (bestMatch)
-import Ports exposing (blurInput, disableChangedReceiver, loadingChangedReceiver, placeholderChangedReceiver, valueChanged, valueChangedReceiver, valuesDecoder)
+import Ports
+    exposing
+        ( blurInput
+        , disableChangedReceiver
+        , loadingChangedReceiver
+        , placeholderChangedReceiver
+        , valueChanged
+        , valueChangedReceiver
+        , valuesDecoder
+        )
 import SelectionMode exposing (SelectionMode(..))
 
 
@@ -57,6 +66,8 @@ type Msg
     | LoadingAttributeChanged Bool
     | DisabledAttributeChanged Bool
     | SelectHighlightedOption
+    | DeleteInputForSingleSelect
+    | EscapeKeyInInputFilter
 
 
 type alias Model =
@@ -149,30 +160,92 @@ update msg model =
                 MultiSelect ->
                     ( { model | options = options, searchString = "" }, valueChanged (selectedOptionsToTuple options) )
 
+        DeleteInputForSingleSelect ->
+            case model.selectionMode of
+                SingleSelect ->
+                    if Option.hasSelectedOption model.options then
+                        ( { model
+                            | options = Option.deselectAllOptionsInOptionsList model.options
+                            , searchString = ""
+                          }
+                        , Cmd.none
+                        )
+
+                    else
+                        ( model, Cmd.none )
+
+                MultiSelect ->
+                    ( model, Cmd.none )
+
+        EscapeKeyInInputFilter ->
+            ( { model | searchString = "" }, blurInput () )
+
 
 view : Model -> Html Msg
 view model =
-    div [ css [ position relative ] ]
-        [ div [ class "value" ] (optionsToValuesHtml model.options)
-        , input
-            [ type_ "text"
-            , onBlur InputBlur
-            , onFocus InputFocus
-            , onInput SearchInputOnInput
-            , value model.searchString
-            , placeholder model.placeholder
-            , id "input-filter"
-            , disabled model.disabled
-            , Keyboard.on Keyboard.Keydown [ ( Enter, SelectHighlightedOption ) ] |> Html.Styled.Attributes.fromUnstyled
-            ]
-            []
-        , if model.loading then
-            div [ id "loading-indicator" ] model.loadingIndicatorHtml
+    case model.selectionMode of
+        SingleSelect ->
+            let
+                valueStr =
+                    if Option.hasSelectedOption model.options then
+                        model.options
+                            |> Option.selectedOptionsToTuple
+                            |> List.map Tuple.first
+                            |> List.head
+                            |> Maybe.withDefault ""
 
-          else
-            text ""
-        , dropdown model
-        ]
+                    else
+                        model.searchString
+            in
+            div [ css [ position relative ] ]
+                [ input
+                    [ type_ "text"
+                    , onBlur InputBlur
+                    , onFocus InputFocus
+                    , onInput SearchInputOnInput
+                    , value valueStr
+                    , placeholder model.placeholder
+                    , id "input-filter"
+                    , disabled model.disabled
+                    , Keyboard.on Keyboard.Keydown
+                        [ ( Enter, SelectHighlightedOption )
+                        , ( Backspace, DeleteInputForSingleSelect )
+                        , ( Escape, EscapeKeyInInputFilter )
+                        ]
+                        |> Html.Styled.Attributes.fromUnstyled
+                    ]
+                    []
+                , if model.loading then
+                    div [ id "loading-indicator" ] model.loadingIndicatorHtml
+
+                  else
+                    text ""
+                , dropdown model
+                ]
+
+        MultiSelect ->
+            div [ css [ position relative ] ]
+                [ div [ class "value" ] (optionsToValuesHtml model.options)
+                , input
+                    [ type_ "text"
+                    , onBlur InputBlur
+                    , onFocus InputFocus
+                    , onInput SearchInputOnInput
+                    , value model.searchString
+                    , placeholder model.placeholder
+                    , id "input-filter"
+                    , disabled model.disabled
+                    , Keyboard.on Keyboard.Keydown [ ( Enter, SelectHighlightedOption ) ]
+                        |> Html.Styled.Attributes.fromUnstyled
+                    ]
+                    []
+                , if model.loading then
+                    div [ id "loading-indicator" ] model.loadingIndicatorHtml
+
+                  else
+                    text ""
+                , dropdown model
+                ]
 
 
 dropdown : Model -> Html Msg
@@ -207,7 +280,11 @@ optionsToDropdownOptions :
 optionsToDropdownOptions mouseOverMsgConstructor mouseOutMsgConstructor clickMsgConstructor selectionMode options =
     let
         partialWithSelectionMode =
-            optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgConstructor selectionMode
+            optionToDropdownOption
+                mouseOverMsgConstructor
+                mouseOutMsgConstructor
+                clickMsgConstructor
+                selectionMode
 
         helper : OptionGroup -> OptionPresenter msg -> ( OptionGroup, List (Html msg) )
         helper previousGroup option_ =

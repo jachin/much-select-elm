@@ -6,6 +6,7 @@ module Option exposing
     , OptionLabel(..)
     , OptionValue
     , decoder
+    , deselectAllOptionsInOptionsList
     , emptyOptionGroup
     , getOptionDescription
     , getOptionDescriptionString
@@ -14,6 +15,7 @@ module Option exposing
     , getOptionLabel
     , getOptionLabelString
     , getOptionValue
+    , hasSelectedOption
     , highlightOptionInList
     , newDisabledOption
     , newOption
@@ -225,6 +227,13 @@ selectOptionsInOptionsList strings options =
         options
 
 
+deselectAllOptionsInOptionsList : List Option -> List Option
+deselectAllOptionsInOptionsList options =
+    List.map
+        deselectOption
+        options
+
+
 isOptionValueInList : List String -> Option -> Bool
 isOptionValueInList possibleValues option =
     List.any (\possibleValue -> getOptionValueAsString option == possibleValue) possibleValues
@@ -428,6 +437,11 @@ selectedOptions options =
                             OptionDisabled ->
                                 False
             )
+
+
+hasSelectedOption : List Option -> Bool
+hasSelectedOption options =
+    options |> selectedOptions |> List.isEmpty |> not
 
 
 optionToValueLabelTuple : Option -> ( String, String )
