@@ -70,7 +70,13 @@ class MuchSelector extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ["selected", "disabled", "placeholder", "loading"];
+    return [
+      "selected",
+      "disabled",
+      "placeholder",
+      "loading",
+      "max-dropdown-items",
+    ];
   }
 
   // noinspection JSUnusedGlobalSymbols
@@ -86,6 +92,10 @@ class MuchSelector extends HTMLElement {
     } else if (name === "disabled") {
       if (oldValue !== newValue) {
         this.disabled = newValue;
+      }
+    } else if (name === "max-dropdown-items") {
+      if (oldValue !== newValue) {
+        this.maxdropdownitems = newValue;
       }
     } else if (name === "loading") {
       if (oldValue !== newValue) {
@@ -254,6 +264,22 @@ class MuchSelector extends HTMLElement {
     }
     // noinspection JSUnresolvedVariable
     this._app.ports.disableChangedReceiver.send(this._disabled);
+  }
+
+  get maxdropdownitems() {
+    return this._maxdropdownitems;
+  }
+
+  set maxdropdownitems(value) {
+    if (value > "3") {
+      this._maxdropdownitems = "3";
+    } else {
+      this._maxdropdownitems = value;
+      this.setAttribute("max-dropdown-items", value);
+    }
+    this._app.ports.maxDropdownItemsChangedReceiver.send(
+      this.maxdropdownitems.toString()
+    );
   }
 
   get loading() {
