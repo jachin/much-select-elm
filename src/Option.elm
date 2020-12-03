@@ -16,6 +16,7 @@ module Option exposing
     , getOptionLabelString
     , getOptionValue
     , hasSelectedOption
+    , highlightOption
     , highlightOptionInListByValue
     , moveHighlightedOptionDown
     , moveHighlightedOptionUp
@@ -30,6 +31,7 @@ module Option exposing
     , optionsDecoder
     , removeHighlightOptionInList
     , selectHighlightedOption
+    , selectOption
     , selectOptionInList
     , selectOptionsInOptionsList
     , selectSingleOptionInList
@@ -290,8 +292,8 @@ removeHighlightOptionInList value options =
         options
 
 
-findClosestHighlightableOption : Int -> List Option -> Maybe Option
-findClosestHighlightableOption index options =
+findClosestHighlightableOptionGoingUp : Int -> List Option -> Maybe Option
+findClosestHighlightableOptionGoingUp index options =
     List.Extra.splitAt index options
         |> Tuple.first
         |> List.reverse
@@ -304,28 +306,35 @@ moveHighlightedOptionUp options =
         maybeHigherSibling =
             options
                 |> highlightedOptionIndex
-                |> Maybe.andThen (\index -> findClosestHighlightableOption index options)
+                |> Maybe.andThen (\index -> findClosestHighlightableOptionGoingUp index options)
     in
     case maybeHigherSibling of
         Just option ->
             highlightOptionInList option options
 
         Nothing ->
-            options
+            case List.head options of
+                Just firstOption ->
+                    highlightOptionInList firstOption options
+
+                Nothing ->
+                    options
+
+
+findClosestHighlightableOptionGoingDown : Int -> List Option -> Maybe Option
+findClosestHighlightableOptionGoingDown index options =
+    List.Extra.splitAt index options
+        |> Tuple.second
+        |> List.Extra.find optionIsHighlightable
 
 
 moveHighlightedOptionDown : List Option -> List Option
 moveHighlightedOptionDown options =
     let
-        maybeCurrentlyHighlightedOptionIndex =
-            options |> highlightedOptionIndex
-
         maybeLowerSibling =
-            Maybe.andThen
-                (\index ->
-                    List.Extra.getAt (index + 1) options
-                )
-                maybeCurrentlyHighlightedOptionIndex
+            options
+                |> highlightedOptionIndex
+                |> Maybe.andThen (\index -> findClosestHighlightableOptionGoingDown index options)
     in
     case maybeLowerSibling of
         Just option ->

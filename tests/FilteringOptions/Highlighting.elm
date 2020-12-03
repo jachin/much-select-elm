@@ -1,4 +1,4 @@
-module Highlighting exposing (suite)
+module FilteringOptions.Highlighting exposing (suite)
 
 import Expect
 import Html exposing (span, text)
