@@ -235,7 +235,7 @@ view model =
 
         MultiSelect ->
             div [ css [ position relative ] ]
-                [ div [ class "value" ] (optionsToValuesHtml model.options)
+                [ div [ id "values" ] (optionsToValuesHtml model.options)
                 , input
                     [ type_ "text"
                     , onBlur InputBlur
