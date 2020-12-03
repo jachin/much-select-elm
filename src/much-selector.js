@@ -61,6 +61,12 @@ class MuchSelector extends HTMLElement {
     this._loading = false;
 
     /**
+     * @type {number}
+     * @private
+     */
+    this._maxDropdownItems = 10000;
+
+    /**
      * @type {null|object}
      * @private
      */
@@ -266,19 +272,27 @@ class MuchSelector extends HTMLElement {
     this._app.ports.disableChangedReceiver.send(this._disabled);
   }
 
-  get maxdropdownitems() {
-    return this._maxdropdownitems;
+  get maxDropdownItems() {
+    return this._maxDropdownItems;
   }
 
-  set maxdropdownitems(value) {
-    if (value > "3") {
-      this._maxdropdownitems = "3";
+  set maxDropdownItems(value) {
+    let newValue;
+    if (typeof value === "number") {
+      newValue = Math.floor(value);
+    } else if (typeof value === "string") {
+      newValue = Math.floor(parseInt(value, 10));
     } else {
-      this._maxdropdownitems = value;
-      this.setAttribute("max-dropdown-items", value);
+      throw new TypeError("Max dropdown items must be a number!");
+    }
+    if (newValue > 3) {
+      this._maxDropdownItems = 3;
+    } else {
+      this._maxDropdownItems = newValue;
+      this.setAttribute("max-dropdown-items", newValue);
     }
     this._app.ports.maxDropdownItemsChangedReceiver.send(
-      this.maxdropdownitems.toString()
+      this._maxDropdownItems
     );
   }
 
