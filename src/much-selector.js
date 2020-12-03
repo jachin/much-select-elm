@@ -105,7 +105,7 @@ class MuchSelector extends HTMLElement {
 
       const elmDiv = document.createElement("div");
       const selectMenuInputSlot = document.createElement("slot");
-      selectMenuInputSlot.setAttribute("name", "select-menu-input");
+      selectMenuInputSlot.setAttribute("name", "select-input");
 
       parentDiv.innerHTML = "";
       parentDiv.appendChild(this.styleTag);
@@ -124,14 +124,12 @@ class MuchSelector extends HTMLElement {
         this.valueChangedHandler.bind(this)
       );
 
-      // noinspection JSUnresolvedVariable
+      // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall,JSArrowFunctionBracesCanBeRemoved
       this._app.ports.blurInput.subscribe(() => {
         this.shadowRoot.getElementById("input-filter").blur();
       });
 
-      const slot = this.shadowRoot.querySelector(
-        "slot[name=select-menu-input]"
-      );
+      const slot = this.shadowRoot.querySelector("slot[name=select-input]");
       if (slot) {
         slot.addEventListener("slotchange", this._onSlotChange);
       }

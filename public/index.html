@@ -31,7 +31,7 @@
   <div>
     <h3>Simple Example</h3>
     <much-selector>
-      <select>
+      <select slot="select-input">
         <option>Bricks</option>
         <option>Sticks</option>
         <option>Straw</option>
@@ -42,7 +42,7 @@
   <div>
     <h3>Multi Select</h3>
     <much-selector multi-select="true">
-      <select>
+      <select slot="select-input">
         <option>Red</option>
         <option>Yellow</option>
         <option>Orange</option>
@@ -56,7 +56,7 @@
   <div>
     <h3>Option Groups</h3>
     <much-selector>
-      <select>
+      <select slot="select-input">
         <optgroup label="Primary">
           <option>Red</option>
           <option>Yellow</option>
@@ -74,7 +74,7 @@
   <div>
     <h3>Options with Descriptions</h3>
     <much-selector>
-      <select>
+      <select slot="select-input">
         <option data-description="scarlet, vermilion, ruby, ruby red, ruby-colored, cherry">Red</option>
         <option data-description="yellowish, yellowy, lemon, lemony, amber, gold, golden; blond, light brown, fair, flaxen">Yellow</option>
         <option data-description=" sky blue, azure, cobalt (blue), sapphire, cerulean, navy (blue), saxe (blue), Oxford blue, Cambridge blue, ultramarine">Blue</option>
@@ -89,7 +89,7 @@
     <h3>Options Label and Values</h3>
     <p>The labels and values are different</p>
     <much-selector>
-      <select>
+      <select slot="select-input">
         <option value="monkey">🐒</option>
         <option value="tree">🌳</option>
         <option value="panda">🐼</option>
@@ -104,7 +104,7 @@
     <h3>An initial value</h3>
     <p>Set using the <code>selected</code> attribute on the <code>&lt;much-selector&gt;</code></p>
     <much-selector selected="Blue">
-      <select>
+      <select slot="select-input">
         <option data-description="scarlet, vermilion, ruby, ruby red, ruby-colored, cherry">Red</option>
         <option data-description="yellowish, yellowy, lemon, lemony, amber, gold, golden; blond, light brown, fair, flaxen">Yellow</option>
         <option data-description=" sky blue, azure, cobalt (blue), sapphire, cerulean, navy (blue), saxe (blue), Oxford blue, Cambridge blue, ultramarine">Blue</option>
@@ -118,7 +118,7 @@
   <div>
     <h3>A Placeholder</h3>
     <much-selector placeholder="What is your favorite color?">
-      <select>
+      <select slot="select-input">
         <option data-description="scarlet, vermilion, ruby, ruby red, ruby-colored, cherry">Red</option>
         <option data-description="yellowish, yellowy, lemon, lemony, amber, gold, golden; blond, light brown, fair, flaxen">Yellow</option>
         <option data-description=" sky blue, azure, cobalt (blue), sapphire, cerulean, navy (blue), saxe (blue), Oxford blue, Cambridge blue, ultramarine">Blue</option>
@@ -133,7 +133,7 @@
     <h3>Disabled</h3>
     <p>Disable the <code>&lt;much-selector&gt;</code> with the <code>disabled</code> attribute.</p>
     <much-selector disabled="disabled">
-      <select>
+      <select slot="select-input">
         <option>Red</option>
         <option>Yellow</option>
         <option>Blue</option>
@@ -148,7 +148,7 @@
     <h3>Loading</h3>
     <p>Show and hide the loading indicator with the <code>loading</code> attribute.</p>
     <much-selector loading="loading">
-      <select>
+      <select slot="select-input">
         <option>Red</option>
         <option>Yellow</option>
         <option>Blue</option>
@@ -162,7 +162,7 @@
   <div>
     <h3>Disabled Options</h3>
     <much-selector>
-      <select>
+      <select slot="select-input">
         <option>Red</option>
         <option disabled>Yellow</option>
         <option>Blue</option>
@@ -178,7 +178,7 @@
     <h3>Change Options With the Dom</h3>
     <button id="change-the-dom">Click me to change the dom</button>
     <much-selector id="change-the-dom-much-selector">
-      <select id="change-the-dom-select" slot="select-menu-input">
+      <select id="change-the-dom-select" slot="select-input">
         <option value="1">These</option>
         <option value="2">are</option>
         <option value="3" data-description="initial options">the</option>
@@ -188,7 +188,7 @@
     <script>
       document.getElementById("change-the-dom").addEventListener("click", () => {
         document.getElementById("change-the-dom-much-selector").innerHTML = `
-          <select id="change-the-dom-select" slot="select-menu-input">
+          <select id="change-the-dom-select" slot="select-input">
             <option value="100">New</option>
             <option value="200">options</option>
             <option value="3" data-description="here">are</option>
