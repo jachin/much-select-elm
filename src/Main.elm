@@ -245,7 +245,12 @@ view model =
                     , placeholder model.placeholder
                     , id "input-filter"
                     , disabled model.disabled
-                    , Keyboard.on Keyboard.Keydown [ ( Enter, SelectHighlightedOption ) ]
+                    , Keyboard.on Keyboard.Keydown
+                        [ ( Enter, SelectHighlightedOption )
+                        , ( Escape, EscapeKeyInInputFilter )
+                        , ( ArrowUp, MoveHighlightedOptionUp )
+                        , ( ArrowDown, MoveHighlightedOptionDown )
+                        ]
                         |> Html.Styled.Attributes.fromUnstyled
                     ]
                     []

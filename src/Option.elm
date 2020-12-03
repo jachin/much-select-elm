@@ -290,18 +290,21 @@ removeHighlightOptionInList value options =
         options
 
 
+findClosestHighlightableOption : Int -> List Option -> Maybe Option
+findClosestHighlightableOption index options =
+    List.Extra.splitAt index options
+        |> Tuple.first
+        |> List.reverse
+        |> List.Extra.find optionIsHighlightable
+
+
 moveHighlightedOptionUp : List Option -> List Option
 moveHighlightedOptionUp options =
     let
-        maybeCurrentlyHighlightedOptionIndex =
-            options |> highlightedOptionIndex
-
         maybeHigherSibling =
-            Maybe.andThen
-                (\index ->
-                    List.Extra.getAt (index - 1) options
-                )
-                maybeCurrentlyHighlightedOptionIndex
+            options
+                |> highlightedOptionIndex
+                |> Maybe.andThen (\index -> findClosestHighlightableOption index options)
     in
     case maybeHigherSibling of
         Just option ->
@@ -438,6 +441,25 @@ optionIsHighlighted (Option display _ _ _ _) =
 
         OptionHighlighted ->
             True
+
+        OptionDisabled ->
+            False
+
+
+optionIsHighlightable : Option -> Bool
+optionIsHighlightable (Option display _ _ _ _) =
+    case display of
+        OptionShown ->
+            True
+
+        OptionHidden ->
+            False
+
+        OptionSelected ->
+            False
+
+        OptionHighlighted ->
+            False
 
         OptionDisabled ->
             False
