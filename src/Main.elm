@@ -8,8 +8,26 @@ import Css
         )
 import Html.Parser
 import Html.Parser.Util
-import Html.Styled exposing (Html, div, fromUnstyled, input, span, text, toUnstyled)
-import Html.Styled.Attributes exposing (class, css, disabled, id, placeholder, type_, value)
+import Html.Styled
+    exposing
+        ( Html
+        , div
+        , fromUnstyled
+        , input
+        , span
+        , text
+        , toUnstyled
+        )
+import Html.Styled.Attributes
+    exposing
+        ( class
+        , css
+        , disabled
+        , id
+        , placeholder
+        , type_
+        , value
+        )
 import Html.Styled.Events
     exposing
         ( onBlur
@@ -45,6 +63,7 @@ import Ports
         ( blurInput
         , disableChangedReceiver
         , loadingChangedReceiver
+        , optionsChangedReceiver
         , placeholderChangedReceiver
         , valueChanged
         , valueChangedReceiver
@@ -62,6 +81,7 @@ type Msg
     | DropdownMouseClickOption OptionValue
     | SearchInputOnInput String
     | ValueChanged Json.Decode.Value
+    | OptionsChanged Json.Decode.Value
     | PlaceholderAttributeChanged String
     | LoadingAttributeChanged Bool
     | DisabledAttributeChanged Bool
@@ -135,6 +155,15 @@ update msg model =
 
                 Err _ ->
                     ( model, Cmd.none )
+
+        OptionsChanged optionsJson ->
+            let
+                -- TODO if this decoder fails we should "do" something about it.
+                options =
+                    Json.Decode.decodeValue Option.optionsDecoder optionsJson
+                        |> Result.withDefault []
+            in
+            ( { model | options = options }, Cmd.none )
 
         PlaceholderAttributeChanged newPlaceholder ->
             ( { model | placeholder = newPlaceholder }, Cmd.none )
@@ -475,6 +504,7 @@ subscriptions _ =
         , placeholderChangedReceiver PlaceholderAttributeChanged
         , loadingChangedReceiver LoadingAttributeChanged
         , disableChangedReceiver DisabledAttributeChanged
+        , optionsChangedReceiver OptionsChanged
         ]
 
 

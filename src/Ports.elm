@@ -2,6 +2,7 @@ port module Ports exposing
     ( blurInput
     , disableChangedReceiver
     , loadingChangedReceiver
+    , optionsChangedReceiver
     , placeholderChangedReceiver
     , valueChanged
     , valueChangedReceiver
@@ -23,6 +24,9 @@ valuesDecoder =
 
 
 port valueChangedReceiver : (Json.Decode.Value -> msg) -> Sub msg
+
+
+port optionsChangedReceiver : (Json.Decode.Value -> msg) -> Sub msg
 
 
 port placeholderChangedReceiver : (String -> msg) -> Sub msg

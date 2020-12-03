@@ -65,6 +65,8 @@ class MuchSelector extends HTMLElement {
      * @private
      */
     this._app = null;
+
+    this._onSlotChange = this._onSlotChange.bind(this);
   }
 
   static get observedAttributes() {
@@ -102,11 +104,14 @@ class MuchSelector extends HTMLElement {
       const parentDiv = this.attachShadow({ mode: "open" });
 
       const elmDiv = document.createElement("div");
+      const selectMenuInputSlot = document.createElement("slot");
+      selectMenuInputSlot.setAttribute("name", "select-menu-input");
 
       parentDiv.innerHTML = "";
       parentDiv.appendChild(this.styleTag);
       parentDiv.appendChild(this.styleTagForLoadingIndicator);
       parentDiv.appendChild(elmDiv);
+      parentDiv.appendChild(selectMenuInputSlot);
 
       // noinspection JSUnresolvedVariable
       this._app = Elm.Main.init({
@@ -123,9 +128,26 @@ class MuchSelector extends HTMLElement {
       this._app.ports.blurInput.subscribe(() => {
         this.shadowRoot.getElementById("input-filter").blur();
       });
+
+      const slot = this.shadowRoot.querySelector(
+        "slot[name=select-menu-input]"
+      );
+      if (slot) {
+        slot.addEventListener("slotchange", this._onSlotChange);
+      }
     } catch (error) {
       // TODO Do something interesting here
       throw error;
+    }
+  }
+
+  _onSlotChange() {
+    const selectElement = this.querySelector("select");
+    if (selectElement) {
+      const optionsJson = buildOptionsFromSelectElement(selectElement);
+
+      // noinspection JSUnresolvedVariable
+      this._app.ports.optionsChangedReceiver.send(optionsJson);
     }
   }
 
@@ -257,6 +279,10 @@ class MuchSelector extends HTMLElement {
   get styleTag() {
     const styleTag = document.createElement("style");
     styleTag.innerHTML = `
+
+      slot {
+        display: none;
+      }
 
       #input-filter {
         height: 40px;
