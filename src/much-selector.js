@@ -101,7 +101,7 @@ class MuchSelector extends HTMLElement {
       }
     } else if (name === "max-dropdown-items") {
       if (oldValue !== newValue) {
-        this.maxdropdownitems = newValue;
+        this.maxDropdownItems = newValue;
       }
     } else if (name === "loading") {
       if (oldValue !== newValue) {
@@ -195,6 +195,7 @@ class MuchSelector extends HTMLElement {
 
     flags.disabled = this.disabled;
     flags.loading = this.loading;
+    flags.maxDropdownItems = this.maxDropdownItems;
 
     const selectElement = this.querySelector("select");
     if (selectElement) {
