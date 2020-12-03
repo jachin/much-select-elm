@@ -229,54 +229,6 @@ selectOptionsInOptionsList strings options =
         options
 
 
-moveHighlightedOptionUp : List Option -> List Option
-moveHighlightedOptionUp options =
-    let
-        maybeCurrentlyHighlightedOption =
-            options |> highlightedOption
-
-        maybeHigherSibling =
-            Maybe.andThen
-                (\currentlyHighlightedOption ->
-                    options
-                        |> List.Extra.findIndex
-                            (\option -> option == currentlyHighlightedOption)
-                        |> Maybe.andThen (\i -> List.Extra.getAt (i - 1) options)
-                )
-                maybeCurrentlyHighlightedOption
-    in
-    case maybeHigherSibling of
-        Just option ->
-            highlightOptionInList option options
-
-        Nothing ->
-            options
-
-
-moveHighlightedOptionDown : List Option -> List Option
-moveHighlightedOptionDown options =
-    let
-        maybeCurrentlyHighlightedOption =
-            options |> highlightedOption
-
-        maybeLowerSibling =
-            Maybe.andThen
-                (\currentlyHighlightedOption ->
-                    options
-                        |> List.Extra.findIndex
-                            (\option -> option == currentlyHighlightedOption)
-                        |> Maybe.andThen (\i -> List.Extra.getAt (i + 1) options)
-                )
-                maybeCurrentlyHighlightedOption
-    in
-    case maybeLowerSibling of
-        Just option ->
-            highlightOptionInList option options
-
-        Nothing ->
-            options
-
-
 deselectAllOptionsInOptionsList : List Option -> List Option
 deselectAllOptionsInOptionsList options =
     List.map
@@ -294,9 +246,9 @@ optionValuesEqual option optionValue =
     getOptionValue option == optionValue
 
 
-highlightedOption : List Option -> Maybe Option
-highlightedOption options =
-    List.Extra.find (\option -> optionIsHighlighted option) options
+highlightedOptionIndex : List Option -> Maybe Int
+highlightedOptionIndex options =
+    List.Extra.findIndex (\option -> optionIsHighlighted option) options
 
 
 highlightOptionInList : Option -> List Option -> List Option
@@ -336,6 +288,53 @@ removeHighlightOptionInList value options =
                 option_
         )
         options
+
+
+moveHighlightedOptionUp : List Option -> List Option
+moveHighlightedOptionUp options =
+    let
+        maybeCurrentlyHighlightedOptionIndex =
+            options |> highlightedOptionIndex
+
+        maybeHigherSibling =
+            Maybe.andThen
+                (\index ->
+                    List.Extra.getAt (index - 1) options
+                )
+                maybeCurrentlyHighlightedOptionIndex
+    in
+    case maybeHigherSibling of
+        Just option ->
+            highlightOptionInList option options
+
+        Nothing ->
+            options
+
+
+moveHighlightedOptionDown : List Option -> List Option
+moveHighlightedOptionDown options =
+    let
+        maybeCurrentlyHighlightedOptionIndex =
+            options |> highlightedOptionIndex
+
+        maybeLowerSibling =
+            Maybe.andThen
+                (\index ->
+                    List.Extra.getAt (index + 1) options
+                )
+                maybeCurrentlyHighlightedOptionIndex
+    in
+    case maybeLowerSibling of
+        Just option ->
+            highlightOptionInList option options
+
+        Nothing ->
+            case List.head options of
+                Just firstOption ->
+                    highlightOptionInList firstOption options
+
+                Nothing ->
+                    options
 
 
 selectOptionInList : OptionValue -> List Option -> List Option

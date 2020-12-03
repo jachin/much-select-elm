@@ -68,7 +68,7 @@ type Msg
     | SelectHighlightedOption
     | DeleteInputForSingleSelect
     | EscapeKeyInInputFilter
-    | MoveHightlighedOptionUp
+    | MoveHighlightedOptionUp
     | MoveHighlightedOptionDown
 
 
@@ -182,7 +182,7 @@ update msg model =
         EscapeKeyInInputFilter ->
             ( { model | searchString = "" }, blurInput () )
 
-        MoveHightlighedOptionUp ->
+        MoveHighlightedOptionUp ->
             ( { model | options = Option.moveHighlightedOptionUp model.options }, Cmd.none )
 
         MoveHighlightedOptionDown ->
@@ -219,7 +219,7 @@ view model =
                         [ ( Enter, SelectHighlightedOption )
                         , ( Backspace, DeleteInputForSingleSelect )
                         , ( Escape, EscapeKeyInInputFilter )
-                        , ( ArrowUp, MoveHightlighedOptionUp )
+                        , ( ArrowUp, MoveHighlightedOptionUp )
                         , ( ArrowDown, MoveHighlightedOptionDown )
                         ]
                         |> Html.Styled.Attributes.fromUnstyled
