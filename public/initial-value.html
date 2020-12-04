@@ -29,12 +29,56 @@
         <select slot="select-input">
           <option data-description="scarlet, vermilion, ruby, ruby red, ruby-colored, cherry">Red</option>
           <option data-description="yellowish, yellowy, lemon, lemony, amber, gold, golden; blond, light brown, fair, flaxen">Yellow</option>
-          <option data-description=" sky blue, azure, cobalt (blue), sapphire, cerulean, navy (blue), saxe (blue), Oxford blue, Cambridge blue, ultramarine">Blue</option>
+          <option data-description="sky blue, azure, cobalt (blue), sapphire, cerulean, navy (blue), saxe (blue), Oxford blue, Cambridge blue, ultramarine">Blue</option>
           <option data-description="A town in France">Orange</option>
           <option data-description="greenish, viridescent; olive green, pea green, emerald green, lime green, bottle green">Green</option>
           <option data-description="violet">Purple</option>
         </select>
       </much-selector>
+    </div>
+
+    <div>
+      <h3>An initial Value (No Options)</h3>
+      <p>If there is an initial value but no options it should create one for the initial value</p>
+      <much-selector selected="Coffee"></much-selector>
+    </div>
+
+    <div id="add-options-including-the-selected-value">
+      <h3>An initial Value (No Options) - Then Add the Options</h3>
+      <p>If there is an initial value but no options initial, then we add options (async) it should keep the selected value and "merge" the new option with the same value.</p>
+      <button>Click me to add options via the DOM</button>
+      <much-selector selected="Coffee"></much-selector>
+      <script>
+        document.querySelector("#add-options-including-the-selected-value button").addEventListener("click", () => {
+          document.querySelector("#add-options-including-the-selected-value much-selector").innerHTML = `
+          <select slot="select-input">
+            <option value="Coffee">Coffee</option>
+            <option value="Tea">Tea</option>
+            <option value="Water">Water</option>
+            <option value="Soda">Soda</option>
+          </select>
+        `;
+        });
+      </script>
+    </div>
+
+    <div id="add-options-not-including-the-selected-value">
+      <h3>An initial Value (No Options) - Then Add the Options - But not the selected value</h3>
+      <p>If there is an initial value but no options initial, then we add option (async) it should keep the selected value include the additional options in the dropdown.</p>
+      <button>Click me to add options via the DOM</button>
+      <much-selector selected="Butter"></much-selector>
+      <script>
+        document.querySelector("#add-options-not-including-the-selected-value button").addEventListener("click", () => {
+          document.querySelector("#add-options-not-including-the-selected-value much-selector").innerHTML = `
+          <select slot="select-input">
+            <option value="Jam">Jam</option>
+            <option value="Marmalade">Marmalade</option>
+            <option value="Preserves">Preserves</option>
+            <option value="Apple Butter">Apple Butter</option>
+          </select>
+        `;
+        });
+      </script>
     </div>
   </div>
 
