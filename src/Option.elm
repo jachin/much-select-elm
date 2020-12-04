@@ -32,13 +32,14 @@ module Option exposing
     , removeHighlightOptionInList
     , selectHighlightedOption
     , selectOption
-    , selectOptionInList
-    , selectOptionsInOptionsList
+    , selectOptionInListByOptionValue
+    , selectOptionsInOptionsListByString
     , selectSingleOptionInList
     , selectedOptionsToTuple
     , setDescription
     , setGroup
     , setLabel
+    , setSelectedOptionInNewOptions
     )
 
 import Json.Decode
@@ -218,8 +219,8 @@ selectedOptionsToTuple options =
     options |> selectedOptions |> List.map optionToValueLabelTuple
 
 
-selectOptionsInOptionsList : List String -> List Option -> List Option
-selectOptionsInOptionsList strings options =
+selectOptionsInOptionsListByString : List String -> List Option -> List Option
+selectOptionsInOptionsListByString strings options =
     List.map
         (\option ->
             if isOptionValueInList strings option then
@@ -229,6 +230,23 @@ selectOptionsInOptionsList strings options =
                 deselectOption option
         )
         options
+
+
+setSelectedOptionInNewOptions : List Option -> List Option -> List Option
+setSelectedOptionInNewOptions oldOptions newOptions =
+    let
+        oldSelectedOption =
+            oldOptions |> selectedOptions
+    in
+    List.map
+        (\newOption_ ->
+            if optionListContainsOptionWithValue newOption_ oldSelectedOption then
+                selectOption newOption_
+
+            else
+                newOption_
+        )
+        newOptions
 
 
 deselectAllOptionsInOptionsList : List Option -> List Option
@@ -349,8 +367,8 @@ moveHighlightedOptionDown options =
                     options
 
 
-selectOptionInList : OptionValue -> List Option -> List Option
-selectOptionInList value options =
+selectOptionInListByOptionValue : OptionValue -> List Option -> List Option
+selectOptionInListByOptionValue value options =
     List.map
         (\option_ ->
             if optionValuesEqual option_ value then
@@ -360,6 +378,13 @@ selectOptionInList value options =
                 option_
         )
         options
+
+
+selectOptionInList : Option -> List Option -> List Option
+selectOptionInList optionToSelect options =
+    optionToSelect
+        |> getOptionValue
+        |> (\optionValue -> selectOptionInListByOptionValue optionValue options)
 
 
 selectHighlightedOption : SelectionMode -> List Option -> List Option
@@ -375,7 +400,7 @@ selectHighlightedOption selectionMode options =
                     Just (Option _ _ value _ _) ->
                         case selectionMode of
                             MultiSelect ->
-                                selectOptionInList value options
+                                selectOptionInListByOptionValue value options
 
                             SingleSelect ->
                                 selectSingleOptionInList value options
@@ -540,6 +565,17 @@ selectedOptions options =
 hasSelectedOption : List Option -> Bool
 hasSelectedOption options =
     options |> selectedOptions |> List.isEmpty |> not
+
+
+optionListContainsOptionWithValue : Option -> List Option -> Bool
+optionListContainsOptionWithValue option options =
+    let
+        optionValue =
+            getOptionValue option
+    in
+    List.filter (\option_ -> getOptionValue option_ == optionValue) options
+        |> List.isEmpty
+        |> not
 
 
 optionToValueLabelTuple : Option -> ( String, String )

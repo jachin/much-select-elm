@@ -51,8 +51,8 @@ import Option
         , highlightOptionInListByValue
         , removeHighlightOptionInList
         , selectHighlightedOption
-        , selectOptionInList
-        , selectOptionsInOptionsList
+        , selectOptionInListByOptionValue
+        , selectOptionsInOptionsListByString
         , selectSingleOptionInList
         , selectedOptionsToTuple
         )
@@ -132,7 +132,7 @@ update msg model =
                 options =
                     case model.selectionMode of
                         MultiSelect ->
-                            selectOptionInList optionValue model.options
+                            selectOptionInListByOptionValue optionValue model.options
 
                         SingleSelect ->
                             selectSingleOptionInList optionValue model.options
@@ -154,7 +154,7 @@ update msg model =
             in
             case valuesResult of
                 Ok values ->
-                    ( { model | options = selectOptionsInOptionsList values model.options }, Cmd.none )
+                    ( { model | options = selectOptionsInOptionsListByString values model.options }, Cmd.none )
 
                 Err _ ->
                     ( model, Cmd.none )
@@ -162,11 +162,17 @@ update msg model =
         OptionsChanged optionsJson ->
             let
                 -- TODO if this decoder fails we should "do" something about it.
-                options =
+                newOptions =
                     Json.Decode.decodeValue Option.optionsDecoder optionsJson
                         |> Result.withDefault []
+
+                newOptionWithOldSelectedOption =
+                    Option.setSelectedOptionInNewOptions model.options newOptions
+
+                -- TODO if there is an option selected that is not in this list
+                --       of options add the selected option to the list options.
             in
-            ( { model | options = options }, Cmd.none )
+            ( { model | options = newOptionWithOldSelectedOption }, Cmd.none )
 
         PlaceholderAttributeChanged newPlaceholder ->
             ( { model | placeholder = newPlaceholder }, Cmd.none )

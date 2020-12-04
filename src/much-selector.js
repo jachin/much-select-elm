@@ -327,6 +327,14 @@ class MuchSelector extends HTMLElement {
         height: 40px;
         font-size: 25px;
       }
+
+      #select-box {
+        height: 40px;
+        width: 100px;
+        font-size: 25px;
+        border: solid 1px black;
+      }
+
       #dropdown {
         background-color: #EEEEEE;
         display: none;

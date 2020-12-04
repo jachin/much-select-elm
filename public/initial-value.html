@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!--suppress HtmlUnknownTarget -->
+  <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+  <title>Much Selector</title>
+  <link href="demo-styles.css" rel="stylesheet">
+</head>
+
+<body>
+  <h1>Much-Selector - Initial Values</h1>
+
+  <h2>Demo and Development Playground</h2>
+
+  <nav>
+    <ol class="main-nav">
+      <li class="main-nav-item"><a href="index.html">Home</a></li>
+    </ol>
+  </nav>
+
+  <div class="container">
+    <div>
+      <h3>An initial value</h3>
+      <p>Set using the <code>selected</code> attribute on the <code>&lt;much-selector&gt;</code></p>
+      <much-selector selected="Blue">
+        <select slot="select-input">
+          <option data-description="scarlet, vermilion, ruby, ruby red, ruby-colored, cherry">Red</option>
+          <option data-description="yellowish, yellowy, lemon, lemony, amber, gold, golden; blond, light brown, fair, flaxen">Yellow</option>
+          <option data-description=" sky blue, azure, cobalt (blue), sapphire, cerulean, navy (blue), saxe (blue), Oxford blue, Cambridge blue, ultramarine">Blue</option>
+          <option data-description="A town in France">Orange</option>
+          <option data-description="greenish, viridescent; olive green, pea green, emerald green, lime green, bottle green">Green</option>
+          <option data-description="violet">Purple</option>
+        </select>
+      </much-selector>
+    </div>
+  </div>
+
+  <!--suppress HtmlUnknownTarget -->
+  <script src="/bundle.js"></script>
+
+</body>
+</html>
