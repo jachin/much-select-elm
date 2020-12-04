@@ -44,7 +44,6 @@ import Html.Styled.Events
         , onClick
         , onFocus
         , onInput
-        , onMouseDown
         , onMouseEnter
         , onMouseLeave
         )
@@ -161,7 +160,7 @@ update msg model =
                         SingleSelect ->
                             selectSingleOptionInList optionValue model.options
             in
-            ( { model | options = options }, valueChanged (selectedOptionsToTuple options) )
+            ( { model | options = options }, Cmd.batch [ valueChanged (selectedOptionsToTuple options), blurInput () ] )
 
         SearchInputOnInput string ->
             case bestMatch string model.options of
@@ -509,7 +508,7 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
             , div
                 [ onMouseEnter (mouseOverMsgConstructor option.value)
                 , onMouseLeave (mouseOutMsgConstructor option.value)
-                , onMouseDown (clickMsgConstructor option.value)
+                , mousedownPreventDefaultAndStopPropagation (clickMsgConstructor option.value)
                 , class "option"
                 ]
                 [ fromUnstyled option.labelMarkup, descriptionHtml ]
@@ -537,7 +536,7 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
             , div
                 [ onMouseEnter (mouseOverMsgConstructor option.value)
                 , onMouseLeave (mouseOutMsgConstructor option.value)
-                , onMouseDown (clickMsgConstructor option.value)
+                , mousedownPreventDefaultAndStopPropagation (clickMsgConstructor option.value)
                 , class "highlighted"
                 , class "option"
                 ]
