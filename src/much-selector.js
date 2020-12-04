@@ -471,6 +471,12 @@ class MuchSelector extends HTMLElement {
 
     return styleTag;
   }
+
+  updateOptions(options) {
+    // noinspection JSUnresolvedVariable
+    this._app.ports.optionsChangedReceiver.send(options);
+    this.updateWidth();
+  }
 }
 
 export default MuchSelector;

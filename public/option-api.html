@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!--suppress HtmlUnknownTarget -->
+  <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+  <title>Much Selector - Option API</title>
+  <link href="demo-styles.css" rel="stylesheet">
+</head>
+<body>
+<h1>Much-Selector - Option API</h1>
+
+<h2>Demo and Development Playground</h2>
+
+<nav>
+  <ol class="main-nav">
+    <li class="main-nav-item"><a href="index.html">Home</a></li>
+  </ol>
+</nav>
+
+<div class="container">
+  <div id="update-options-add-options-to-an-empty-much-selector" >
+    <h3><code>updateOptions</code></h3>
+    <p>Updates the options. Here we have something with no options, click the button to add some options.</p>
+    <button>Add the Options</button>
+    <much-selector></much-selector>
+    <script>
+      document.querySelector("#update-options-add-options-to-an-empty-much-selector button").addEventListener("click", () => {
+        document.querySelector("#update-options-add-options-to-an-empty-much-selector much-selector").updateOptions([
+          {value: "Bears", label: "Bears", description: "Chicago"},
+          {value: "Lions", label: "Lions", description: "Detroit"},
+          {value: "Packers", label: "Packers", description: "Green Bay"},
+          {value: "Vikings", label: "Vikings", description: "Minnesota"}
+        ]);
+      });
+    </script>
+  </div>
+</div>
+
+<!--suppress HtmlUnknownTarget -->
+<script src="/bundle.js"></script>
+
+</body>
+</html>
