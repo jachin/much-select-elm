@@ -7,9 +7,7 @@ import Css
         , display
         , hidden
         , none
-        , position
         , px
-        , relative
         , visibility
         , visible
         , width
@@ -273,6 +271,8 @@ view model =
                     , classList
                         [ ( "placeholder", not hasOptionSelected )
                         , ( "value", hasOptionSelected )
+                        , ( "single", True )
+                        , ( "disabled", model.disabled )
                         ]
                     , css
                         [ if model.focused then
@@ -329,7 +329,7 @@ view model =
                 hasOptionSelected =
                     Option.hasSelectedOption model.options
             in
-            div [ id "wrapper" ]
+            div [ id "wrapper", classList [ ( "disabled", model.disabled ) ] ]
                 [ div
                     [ id "select-box"
                     , onClick BringInputInFocus
@@ -337,6 +337,8 @@ view model =
                     , tabindex 0
                     , classList
                         [ ( "placeholder", not hasOptionSelected )
+                        , ( "mulit", True )
+                        , ( "disabled", model.disabled )
                         ]
                     , css
                         [ if model.focused then

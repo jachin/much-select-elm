@@ -379,6 +379,11 @@ class MuchSelector extends HTMLElement {
         cursor: pointer;
       }
 
+      #select-box.disabled {
+        border: 1px solid lightgray;
+        cursor: pointer;
+      }
+
       #select-box .placeholder {
         color: silver;
         font-size: 25px;
@@ -389,6 +394,15 @@ class MuchSelector extends HTMLElement {
         color: black;
         font-size: 25px;
         vertical-align: middle;
+      }
+
+      #select-box.single {
+        background-image: linear-gradient(to bottom, #fefefe, #f2f2f2);
+        background-repeat: repeat-x;
+      }
+
+      #select-box.single.disabled {
+        background-image: none;
       }
 
       #dropdown {
