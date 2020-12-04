@@ -334,21 +334,7 @@ view model =
 
                   else
                     text ""
-                , if model.focused then
-                    div
-                        [ id "select-indicator"
-                        , mousedownPreventDefaultAndStopPropagation BringInputOutOfFocus
-                        , class "down"
-                        ]
-                        [ text "🔽" ]
-
-                  else
-                    div
-                        [ id "select-indicator"
-                        , mousedownPreventDefaultAndStopPropagation BringInputInFocus
-                        , class "up"
-                        ]
-                        [ text "🔼" ]
+                , dropdownIndicator model.focused model.disabled
                 , dropdown model
                 ]
 
@@ -411,6 +397,28 @@ view model =
                     []
                 , dropdown model
                 ]
+
+
+dropdownIndicator : Bool -> Bool -> Html Msg
+dropdownIndicator focused disabled =
+    if disabled then
+        text ""
+
+    else if focused then
+        div
+            [ id "select-indicator"
+            , mousedownPreventDefaultAndStopPropagation BringInputOutOfFocus
+            , class "down"
+            ]
+            [ text "🔽" ]
+
+    else
+        div
+            [ id "select-indicator"
+            , mousedownPreventDefaultAndStopPropagation BringInputInFocus
+            , class "up"
+            ]
+            [ text "🔼" ]
 
 
 dropdown : Model -> Html Msg
