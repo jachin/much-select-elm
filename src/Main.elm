@@ -25,6 +25,7 @@ import Html.Styled.Attributes
         , disabled
         , id
         , placeholder
+        , tabindex
         , type_
         , value
         )
@@ -276,7 +277,13 @@ view model =
                             []
 
                     else
-                        div [ id "select-box", onClick BringInputInFocus ] [ text valueStr ]
+                        div
+                            [ id "select-box"
+                            , onClick BringInputInFocus
+                            , onFocus BringInputInFocus
+                            , tabindex 0
+                            ]
+                            [ text valueStr ]
             in
             div [ css [ position relative ] ]
                 [ inputElement
