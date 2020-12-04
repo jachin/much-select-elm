@@ -61,6 +61,12 @@ class MuchSelector extends HTMLElement {
     this._loading = false;
 
     /**
+     * @type {number}
+     * @private
+     */
+    this._maxDropdownItems = 10000;
+
+    /**
      * @type {null|object}
      * @private
      */
@@ -70,7 +76,13 @@ class MuchSelector extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ["selected", "disabled", "placeholder", "loading"];
+    return [
+      "selected",
+      "disabled",
+      "placeholder",
+      "loading",
+      "max-dropdown-items",
+    ];
   }
 
   // noinspection JSUnusedGlobalSymbols
@@ -86,6 +98,10 @@ class MuchSelector extends HTMLElement {
     } else if (name === "disabled") {
       if (oldValue !== newValue) {
         this.disabled = newValue;
+      }
+    } else if (name === "max-dropdown-items") {
+      if (oldValue !== newValue) {
+        this.maxDropdownItems = newValue;
       }
     } else if (name === "loading") {
       if (oldValue !== newValue) {
@@ -177,6 +193,7 @@ class MuchSelector extends HTMLElement {
 
     flags.disabled = this.disabled;
     flags.loading = this.loading;
+    flags.maxDropdownItems = this.maxDropdownItems;
 
     const selectElement = this.querySelector("select");
     if (selectElement) {
@@ -252,6 +269,30 @@ class MuchSelector extends HTMLElement {
     }
     // noinspection JSUnresolvedVariable
     this._app.ports.disableChangedReceiver.send(this._disabled);
+  }
+
+  get maxDropdownItems() {
+    return this._maxDropdownItems;
+  }
+
+  set maxDropdownItems(value) {
+    let newValue;
+    if (typeof value === "number") {
+      newValue = Math.floor(value);
+    } else if (typeof value === "string") {
+      newValue = Math.floor(parseInt(value, 10));
+    } else {
+      throw new TypeError("Max dropdown items must be a number!");
+    }
+    if (newValue > 3) {
+      this._maxDropdownItems = 3;
+    } else {
+      this._maxDropdownItems = newValue;
+      this.setAttribute("max-dropdown-items", newValue);
+    }
+    this._app.ports.maxDropdownItemsChangedReceiver.send(
+      this._maxDropdownItems
+    );
   }
 
   get loading() {

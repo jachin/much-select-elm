@@ -2,6 +2,7 @@ port module Ports exposing
     ( blurInput
     , disableChangedReceiver
     , loadingChangedReceiver
+    , maxDropdownItemsChangedReceiver
     , optionsChangedReceiver
     , placeholderChangedReceiver
     , valueChanged
@@ -36,3 +37,6 @@ port loadingChangedReceiver : (Bool -> msg) -> Sub msg
 
 
 port disableChangedReceiver : (Bool -> msg) -> Sub msg
+
+
+port maxDropdownItemsChangedReceiver : (Int -> msg) -> Sub msg

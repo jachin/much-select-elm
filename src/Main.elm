@@ -63,6 +63,7 @@ import Ports
         ( blurInput
         , disableChangedReceiver
         , loadingChangedReceiver
+        , maxDropdownItemsChangedReceiver
         , optionsChangedReceiver
         , placeholderChangedReceiver
         , valueChanged
@@ -84,6 +85,7 @@ type Msg
     | OptionsChanged Json.Decode.Value
     | PlaceholderAttributeChanged String
     | LoadingAttributeChanged Bool
+    | MaxDropdownItemsChanged Int
     | DisabledAttributeChanged Bool
     | SelectHighlightedOption
     | DeleteInputForSingleSelect
@@ -101,6 +103,7 @@ type alias Model =
     , showDropdown : Bool
     , searchString : String
     , loading : Bool
+    , maxDropdownItems : Int
     , loadingIndicatorHtml : List (Html Msg)
     , disabled : Bool
     }
@@ -170,6 +173,9 @@ update msg model =
 
         LoadingAttributeChanged bool ->
             ( { model | loading = bool }, Cmd.none )
+
+        MaxDropdownItemsChanged int ->
+            ( { model | maxDropdownItems = int }, Cmd.none )
 
         DisabledAttributeChanged bool ->
             ( { model | disabled = bool }, Cmd.none )
@@ -456,6 +462,7 @@ type alias Flags =
     , allowMultiSelect : Bool
     , optionsJson : String
     , loading : Bool
+    , maxDropdownItems : Int
     , disabled : Bool
     , loadingIndicatorHtml : String
     }
@@ -480,6 +487,7 @@ init flags =
       , showDropdown = False
       , searchString = ""
       , loading = flags.loading
+      , maxDropdownItems = flags.maxDropdownItems
       , loadingIndicatorHtml = textHtml flags.loadingIndicatorHtml
       , disabled = flags.disabled
       }
@@ -505,6 +513,7 @@ subscriptions _ =
         , loadingChangedReceiver LoadingAttributeChanged
         , disableChangedReceiver DisabledAttributeChanged
         , optionsChangedReceiver OptionsChanged
+        , maxDropdownItemsChangedReceiver MaxDropdownItemsChanged
         ]
 
 
