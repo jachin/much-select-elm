@@ -123,15 +123,10 @@ class MuchSelector extends HTMLElement {
       const selectMenuInputSlot = document.createElement("slot");
       selectMenuInputSlot.setAttribute("name", "select-input");
 
-      // const loadingIndicatorSlot = document.createElement("slot");
-      // loadingIndicatorSlot.setAttribute("name", "loading-indicator");
-
       parentDiv.innerHTML = "";
       parentDiv.appendChild(this.styleTag);
-      parentDiv.appendChild(this.styleTagForLoadingIndicator);
       parentDiv.appendChild(elmDiv);
       parentDiv.appendChild(selectMenuInputSlot);
-      // parentDiv.appendChild(loadingIndicatorSlot);
 
       // noinspection JSUnresolvedVariable
       this._app = Elm.Main.init({
@@ -144,7 +139,7 @@ class MuchSelector extends HTMLElement {
         this.valueChangedHandler.bind(this)
       );
 
-      // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall,JSArrowFunctionBracesCanBeRemoved
+      // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
       this._app.ports.blurInput.subscribe(() => {
         const inputFilterElement = this.shadowRoot.getElementById(
           "input-filter"
@@ -241,8 +236,6 @@ class MuchSelector extends HTMLElement {
       flags.optionsJson = JSON.stringify([]);
     }
 
-    flags.loadingIndicatorHtml = this.htmlForLoadingIndicator;
-
     return flags;
   }
 
@@ -328,6 +321,7 @@ class MuchSelector extends HTMLElement {
       this._maxDropdownItems = newValue;
       this.setAttribute("max-dropdown-items", newValue);
     }
+    // noinspection JSUnresolvedVariable
     this._app.ports.maxDropdownItemsChangedReceiver.send(
       this._maxDropdownItems
     );
@@ -476,18 +470,6 @@ class MuchSelector extends HTMLElement {
       .highlight { color: blue }`;
 
     return styleTag;
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  get styleTagForLoadingIndicator() {
-    const styleTag = document.createElement("style");
-    styleTag.innerHTML = ``;
-    return styleTag;
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  get htmlForLoadingIndicator() {
-    return ``;
   }
 }
 

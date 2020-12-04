@@ -12,8 +12,6 @@ import Css
         , visible
         , width
         )
-import Html.Parser
-import Html.Parser.Util
 import Html.Styled
     exposing
         ( Html
@@ -119,7 +117,6 @@ type alias Model =
     , searchString : String
     , loading : Bool
     , maxDropdownItems : Int
-    , loadingIndicatorHtml : List (Html Msg)
     , disabled : Bool
     , focused : Bool
     , selectBoxWidth : Float
@@ -412,11 +409,6 @@ view model =
                         |> Html.Styled.Attributes.fromUnstyled
                     ]
                     []
-                , if model.loading then
-                    div [ id "loading-indicator" ] model.loadingIndicatorHtml
-
-                  else
-                    text ""
                 , dropdown model
                 ]
 
@@ -587,7 +579,6 @@ type alias Flags =
     , loading : Bool
     , maxDropdownItems : Int
     , disabled : Bool
-    , loadingIndicatorHtml : String
     }
 
 
@@ -611,7 +602,6 @@ init flags =
       , searchString = ""
       , loading = flags.loading
       , maxDropdownItems = flags.maxDropdownItems
-      , loadingIndicatorHtml = textHtml flags.loadingIndicatorHtml
       , disabled = flags.disabled
       , focused = False
       , selectBoxWidth = 100
@@ -641,17 +631,6 @@ subscriptions _ =
         , maxDropdownItemsChangedReceiver MaxDropdownItemsChanged
         , selectBoxWidthChangedReceiver SelectBoxWidthUpdate
         ]
-
-
-textHtml : String -> List (Html msg)
-textHtml t =
-    case Html.Parser.run t of
-        Ok nodes ->
-            Html.Parser.Util.toVirtualDom nodes
-                |> List.map fromUnstyled
-
-        Err _ ->
-            []
 
 
 mousedownPreventDefaultAndStopPropagation : a -> Html.Styled.Attribute a
