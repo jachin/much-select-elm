@@ -19,3 +19,7 @@ nav {
 .main-nav-item {
     display: inline-block;
 }
+
+much-selector:not(:defined) {
+    visibility: hidden;
+}

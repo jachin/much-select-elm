@@ -5,10 +5,13 @@ import Css
     exposing
         ( block
         , display
+        , hidden
         , none
         , position
         , px
         , relative
+        , visibility
+        , visible
         , width
         )
 import Html.Parser
@@ -23,17 +26,7 @@ import Html.Styled
         , text
         , toUnstyled
         )
-import Html.Styled.Attributes
-    exposing
-        ( class
-        , css
-        , disabled
-        , id
-        , placeholder
-        , tabindex
-        , type_
-        , value
-        )
+import Html.Styled.Attributes exposing (class, classList, css, disabled, id, placeholder, tabindex, type_, value)
 import Html.Styled.Events
     exposing
         ( onBlur
@@ -254,23 +247,33 @@ view model =
     case model.selectionMode of
         SingleSelect ->
             let
+                hasOptionSelected =
+                    Option.hasSelectedOption model.options
+
                 valueStr =
-                    if Option.hasSelectedOption model.options then
+                    if hasOptionSelected then
                         model.options
                             |> Option.selectedOptionsToTuple
                             |> List.map Tuple.second
                             |> List.head
                             |> Maybe.withDefault ""
 
-                    else
+                    else if model.focused then
                         model.searchString
+
+                    else
+                        model.placeholder
             in
-            div [ css [ position relative ] ]
+            div [ id "wrapper" ]
                 [ div
                     [ id "select-box"
                     , onClick BringInputInFocus
                     , onFocus BringInputInFocus
                     , tabindex 0
+                    , classList
+                        [ ( "placeholder", not hasOptionSelected )
+                        , ( "value", hasOptionSelected )
+                        ]
                     , css
                         [ if model.focused then
                             display none
@@ -280,7 +283,12 @@ view model =
                         , width (px model.selectBoxWidth)
                         ]
                     ]
-                    [ text valueStr ]
+                    [ if hasOptionSelected then
+                        span [ class "value" ] [ text valueStr ]
+
+                      else
+                        span [ class "placeholder" ] [ text model.placeholder ]
+                    ]
                 , input
                     [ type_ "text"
                     , onBlur InputBlur
@@ -292,10 +300,11 @@ view model =
                     , disabled model.disabled
                     , css
                         [ if model.focused then
-                            display block
+                            visibility visible
 
                           else
-                            display none
+                            visibility hidden
+                        , width (px model.selectBoxWidth)
                         ]
                     , Keyboard.on Keyboard.Keydown
                         [ ( Enter, SelectHighlightedOption )
@@ -316,8 +325,34 @@ view model =
                 ]
 
         MultiSelect ->
-            div [ css [ position relative ] ]
-                [ div [ id "values" ] (optionsToValuesHtml model.options)
+            let
+                hasOptionSelected =
+                    Option.hasSelectedOption model.options
+            in
+            div [ id "wrapper" ]
+                [ div
+                    [ id "select-box"
+                    , onClick BringInputInFocus
+                    , onFocus BringInputInFocus
+                    , tabindex 0
+                    , classList
+                        [ ( "placeholder", not hasOptionSelected )
+                        ]
+                    , css
+                        [ if model.focused then
+                            display none
+
+                          else
+                            display block
+                        , width (px model.selectBoxWidth)
+                        ]
+                    ]
+                    [ if hasOptionSelected then
+                        div [ id "values" ] (optionsToValuesHtml model.options)
+
+                      else
+                        span [ class "placeholder" ] [ text model.placeholder ]
+                    ]
                 , input
                     [ type_ "text"
                     , onBlur InputBlur
@@ -327,6 +362,14 @@ view model =
                     , placeholder model.placeholder
                     , id "input-filter"
                     , disabled model.disabled
+                    , css
+                        [ if model.focused then
+                            visibility visible
+
+                          else
+                            visibility hidden
+                        , width (px model.selectBoxWidth)
+                        ]
                     , Keyboard.on Keyboard.Keydown
                         [ ( Enter, SelectHighlightedOption )
                         , ( Escape, EscapeKeyInInputFilter )

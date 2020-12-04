@@ -179,6 +179,22 @@ class MuchSelector extends HTMLElement {
 
       // noinspection JSUnresolvedVariable
       this._app.ports.optionsChangedReceiver.send(optionsJson);
+      this.updateWidth();
+    }
+  }
+
+  /**
+   * This method updates the width this widget when it's not selected, so when it is selected it matches the
+   *  input element.
+   * This needs to be called very time the options change.
+   */
+  updateWidth() {
+    const dropdownElement = this.shadowRoot.getElementById("dropdown");
+    if (dropdownElement) {
+      // noinspection JSUnresolvedVariable
+      this._app.ports.selectBoxWidthChangedReceiver.send(
+        dropdownElement.offsetWidth
+      );
     }
   }
 
@@ -229,6 +245,7 @@ class MuchSelector extends HTMLElement {
   valueChangedHandler(valuesTuple) {
     // TODO perhaps this delimiter should be configurable
     this.selected = valuesTuple.map((valueTuple) => valueTuple[0]).join(",");
+    this.updateWidth();
   }
 
   get selected() {
@@ -340,32 +357,57 @@ class MuchSelector extends HTMLElement {
         display: none;
       }
 
+      #wrapper {
+        margin-top: auto;
+        margin-bottom: auto;
+        position: relative;
+      }
+
       #input-filter {
-        height: 40px;
+        height: 36px;
+        position: relative;
         font-size: 25px;
       }
 
       #select-box {
-        height: 40px;
+        min-height: 36px;
+        position: relative;
+        border: 1px solid darkgray;
+        margin-top: auto;
+        margin-bottom: auto;
+        padding: 2px 3px;
+        cursor: pointer;
+      }
+
+      #select-box .placeholder {
+        color: silver;
         font-size: 25px;
-        border: solid 1px black;
+        vertical-align: middle;
+      }
+
+      #select-box .value {
+        color: black;
+        font-size: 25px;
+        vertical-align: middle;
       }
 
       #dropdown {
         background-color: #EEEEEE;
-        display: none;
+        visibility: hidden;
         padding: 5px;
         position: absolute;
         top: 50px;
         left: 0px;
         font-size: 20px;
         min-width: 200px;
+        display: inline-block;
+        z-index: 10;
       }
       #dropdown.showing {
-        display: inline-block;
+        visibility: visible;
       }
       #dropdown.hiding {
-        display: none;
+        visibility: hidden;
       }
       .optgroup {
         background-color: gray;
