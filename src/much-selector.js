@@ -347,7 +347,6 @@ class MuchSelector extends HTMLElement {
 
       #select-box {
         height: 40px;
-        width: 100px;
         font-size: 25px;
         border: solid 1px black;
       }

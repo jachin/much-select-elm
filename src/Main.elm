@@ -3,8 +3,13 @@ module Main exposing (..)
 import Browser
 import Css
     exposing
-        ( position
+        ( block
+        , display
+        , none
+        , position
+        , px
         , relative
+        , width
         )
 import Html.Parser
 import Html.Parser.Util
@@ -69,6 +74,7 @@ import Ports
         , maxDropdownItemsChangedReceiver
         , optionsChangedReceiver
         , placeholderChangedReceiver
+        , selectBoxWidthChangedReceiver
         , valueChanged
         , valueChangedReceiver
         , valuesDecoder
@@ -96,6 +102,7 @@ type Msg
     | EscapeKeyInInputFilter
     | MoveHighlightedOptionUp
     | MoveHighlightedOptionDown
+    | SelectBoxWidthUpdate Float
 
 
 type alias Model =
@@ -111,6 +118,7 @@ type alias Model =
     , loadingIndicatorHtml : List (Html Msg)
     , disabled : Bool
     , focused : Bool
+    , selectBoxWidth : Float
     }
 
 
@@ -237,6 +245,9 @@ update msg model =
         MoveHighlightedOptionDown ->
             ( { model | options = Option.moveHighlightedOptionDown model.options }, Cmd.none )
 
+        SelectBoxWidthUpdate width ->
+            ( { model | selectBoxWidth = width }, Cmd.none )
+
 
 view : Model -> Html Msg
 view model =
@@ -253,40 +264,49 @@ view model =
 
                     else
                         model.searchString
-
-                inputElement =
-                    if model.focused then
-                        input
-                            [ type_ "text"
-                            , onBlur InputBlur
-                            , onFocus InputFocus
-                            , onInput SearchInputOnInput
-                            , value valueStr
-                            , placeholder model.placeholder
-                            , id "input-filter"
-                            , disabled model.disabled
-                            , Keyboard.on Keyboard.Keydown
-                                [ ( Enter, SelectHighlightedOption )
-                                , ( Backspace, DeleteInputForSingleSelect )
-                                , ( Escape, EscapeKeyInInputFilter )
-                                , ( ArrowUp, MoveHighlightedOptionUp )
-                                , ( ArrowDown, MoveHighlightedOptionDown )
-                                ]
-                                |> Html.Styled.Attributes.fromUnstyled
-                            ]
-                            []
-
-                    else
-                        div
-                            [ id "select-box"
-                            , onClick BringInputInFocus
-                            , onFocus BringInputInFocus
-                            , tabindex 0
-                            ]
-                            [ text valueStr ]
             in
             div [ css [ position relative ] ]
-                [ inputElement
+                [ div
+                    [ id "select-box"
+                    , onClick BringInputInFocus
+                    , onFocus BringInputInFocus
+                    , tabindex 0
+                    , css
+                        [ if model.focused then
+                            display none
+
+                          else
+                            display block
+                        , width (px model.selectBoxWidth)
+                        ]
+                    ]
+                    [ text valueStr ]
+                , input
+                    [ type_ "text"
+                    , onBlur InputBlur
+                    , onFocus InputFocus
+                    , onInput SearchInputOnInput
+                    , value valueStr
+                    , placeholder model.placeholder
+                    , id "input-filter"
+                    , disabled model.disabled
+                    , css
+                        [ if model.focused then
+                            display block
+
+                          else
+                            display none
+                        ]
+                    , Keyboard.on Keyboard.Keydown
+                        [ ( Enter, SelectHighlightedOption )
+                        , ( Backspace, DeleteInputForSingleSelect )
+                        , ( Escape, EscapeKeyInInputFilter )
+                        , ( ArrowUp, MoveHighlightedOptionUp )
+                        , ( ArrowDown, MoveHighlightedOptionDown )
+                        ]
+                        |> Html.Styled.Attributes.fromUnstyled
+                    ]
+                    []
                 , if model.loading then
                     div [ id "loading-indicator" ] model.loadingIndicatorHtml
 
@@ -518,6 +538,7 @@ init flags =
       , loadingIndicatorHtml = textHtml flags.loadingIndicatorHtml
       , disabled = flags.disabled
       , focused = False
+      , selectBoxWidth = 100
       }
     , Cmd.none
     )
@@ -542,6 +563,7 @@ subscriptions _ =
         , disableChangedReceiver DisabledAttributeChanged
         , optionsChangedReceiver OptionsChanged
         , maxDropdownItemsChangedReceiver MaxDropdownItemsChanged
+        , selectBoxWidthChangedReceiver SelectBoxWidthUpdate
         ]
 
 
