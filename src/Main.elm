@@ -31,6 +31,7 @@ import Html.Styled.Attributes
 import Html.Styled.Events
     exposing
         ( onBlur
+        , onClick
         , onFocus
         , onInput
         , onMouseDown
@@ -62,6 +63,7 @@ import Ports
     exposing
         ( blurInput
         , disableChangedReceiver
+        , focusInput
         , loadingChangedReceiver
         , maxDropdownItemsChangedReceiver
         , optionsChangedReceiver
@@ -75,6 +77,7 @@ import SelectionMode exposing (SelectionMode(..))
 
 type Msg
     = NoOp
+    | BringInputInFocus
     | InputBlur
     | InputFocus
     | DropdownMouseOverOption OptionValue
@@ -106,6 +109,7 @@ type alias Model =
     , maxDropdownItems : Int
     , loadingIndicatorHtml : List (Html Msg)
     , disabled : Bool
+    , focused : Bool
     }
 
 
@@ -115,8 +119,11 @@ update msg model =
         NoOp ->
             ( model, Cmd.none )
 
+        BringInputInFocus ->
+            ( { model | focused = True }, focusInput () )
+
         InputBlur ->
-            ( { model | showDropdown = False }, Cmd.none )
+            ( { model | showDropdown = False, focused = False }, Cmd.none )
 
         InputFocus ->
             ( { model | showDropdown = True }, Cmd.none )
@@ -245,27 +252,34 @@ view model =
 
                     else
                         model.searchString
+
+                inputElement =
+                    if model.focused then
+                        input
+                            [ type_ "text"
+                            , onBlur InputBlur
+                            , onFocus InputFocus
+                            , onInput SearchInputOnInput
+                            , value valueStr
+                            , placeholder model.placeholder
+                            , id "input-filter"
+                            , disabled model.disabled
+                            , Keyboard.on Keyboard.Keydown
+                                [ ( Enter, SelectHighlightedOption )
+                                , ( Backspace, DeleteInputForSingleSelect )
+                                , ( Escape, EscapeKeyInInputFilter )
+                                , ( ArrowUp, MoveHighlightedOptionUp )
+                                , ( ArrowDown, MoveHighlightedOptionDown )
+                                ]
+                                |> Html.Styled.Attributes.fromUnstyled
+                            ]
+                            []
+
+                    else
+                        div [ id "select-box", onClick BringInputInFocus ] [ text valueStr ]
             in
             div [ css [ position relative ] ]
-                [ input
-                    [ type_ "text"
-                    , onBlur InputBlur
-                    , onFocus InputFocus
-                    , onInput SearchInputOnInput
-                    , value valueStr
-                    , placeholder model.placeholder
-                    , id "input-filter"
-                    , disabled model.disabled
-                    , Keyboard.on Keyboard.Keydown
-                        [ ( Enter, SelectHighlightedOption )
-                        , ( Backspace, DeleteInputForSingleSelect )
-                        , ( Escape, EscapeKeyInInputFilter )
-                        , ( ArrowUp, MoveHighlightedOptionUp )
-                        , ( ArrowDown, MoveHighlightedOptionDown )
-                        ]
-                        |> Html.Styled.Attributes.fromUnstyled
-                    ]
-                    []
+                [ inputElement
                 , if model.loading then
                     div [ id "loading-indicator" ] model.loadingIndicatorHtml
 
@@ -496,6 +510,7 @@ init flags =
       , maxDropdownItems = flags.maxDropdownItems
       , loadingIndicatorHtml = textHtml flags.loadingIndicatorHtml
       , disabled = flags.disabled
+      , focused = False
       }
     , Cmd.none
     )

@@ -142,7 +142,24 @@ class MuchSelector extends HTMLElement {
 
       // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall,JSArrowFunctionBracesCanBeRemoved
       this._app.ports.blurInput.subscribe(() => {
-        this.shadowRoot.getElementById("input-filter").blur();
+        const inputFilterElement = this.shadowRoot.getElementById(
+          "input-filter"
+        );
+        if (inputFilterElement) {
+          inputFilterElement.blur();
+        }
+      });
+
+      // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
+      this._app.ports.focusInput.subscribe(() => {
+        window.requestAnimationFrame(() => {
+          const inputFilterElement = this.shadowRoot.getElementById(
+            "input-filter"
+          );
+          if (inputFilterElement) {
+            this.shadowRoot.getElementById("input-filter").focus();
+          }
+        });
       });
 
       const slot = this.shadowRoot.querySelector("slot[name=select-input]");

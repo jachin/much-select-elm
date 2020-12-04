@@ -1,6 +1,7 @@
 port module Ports exposing
     ( blurInput
     , disableChangedReceiver
+    , focusInput
     , loadingChangedReceiver
     , maxDropdownItemsChangedReceiver
     , optionsChangedReceiver
@@ -17,6 +18,9 @@ port valueChanged : List ( String, String ) -> Cmd msg
 
 
 port blurInput : () -> Cmd msg
+
+
+port focusInput : () -> Cmd msg
 
 
 valuesDecoder : Json.Decode.Decoder (List String)
