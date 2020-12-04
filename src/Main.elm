@@ -20,11 +20,24 @@ import Html.Styled
         , div
         , fromUnstyled
         , input
+        , node
         , span
         , text
         , toUnstyled
         )
-import Html.Styled.Attributes exposing (class, classList, css, disabled, id, placeholder, tabindex, type_, value)
+import Html.Styled.Attributes
+    exposing
+        ( class
+        , classList
+        , css
+        , disabled
+        , id
+        , name
+        , placeholder
+        , tabindex
+        , type_
+        , value
+        )
 import Html.Styled.Events
     exposing
         ( onBlur
@@ -262,7 +275,7 @@ view model =
                     else
                         model.placeholder
             in
-            div [ id "wrapper" ]
+            div [ id "wrapper", css [ width (px model.selectBoxWidth) ] ]
                 [ div
                     [ id "select-box"
                     , onClick BringInputInFocus
@@ -317,7 +330,7 @@ view model =
                     ]
                     []
                 , if model.loading then
-                    div [ id "loading-indicator" ] model.loadingIndicatorHtml
+                    node "slot" [ name "loading-indicator" ] []
 
                   else
                     text ""

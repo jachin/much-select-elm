@@ -3,7 +3,7 @@
     flex-wrap: wrap;
 }
 
-.container div {
+.container > div {
     margin: 1rem;
 }
 
