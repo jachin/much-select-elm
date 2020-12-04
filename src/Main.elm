@@ -89,6 +89,7 @@ import SelectionMode exposing (SelectionMode(..))
 type Msg
     = NoOp
     | BringInputInFocus
+    | BringInputOutOfFocus
     | InputBlur
     | InputFocus
     | DropdownMouseOverOption OptionValue
@@ -134,6 +135,9 @@ update msg model =
 
         BringInputInFocus ->
             ( { model | focused = True }, focusInput () )
+
+        BringInputOutOfFocus ->
+            ( { model | focused = False }, blurInput () )
 
         InputBlur ->
             ( { model | showDropdown = False, focused = False }, Cmd.none )
@@ -334,6 +338,21 @@ view model =
 
                   else
                     text ""
+                , if model.focused then
+                    div
+                        [ id "select-indicator"
+                        , mousedownPreventDefaultAndStopPropagation BringInputOutOfFocus
+                        , class "down"
+                        ]
+                        [ text "🔽" ]
+
+                  else
+                    div
+                        [ id "select-indicator"
+                        , mousedownPreventDefaultAndStopPropagation BringInputInFocus
+                        , class "up"
+                        ]
+                        [ text "🔼" ]
                 , dropdown model
                 ]
 
@@ -634,3 +653,14 @@ textHtml t =
 
         Err _ ->
             []
+
+
+mousedownPreventDefaultAndStopPropagation : a -> Html.Styled.Attribute a
+mousedownPreventDefaultAndStopPropagation message =
+    Html.Styled.Events.custom "mousedown"
+        (Json.Decode.succeed
+            { message = message
+            , stopPropagation = True
+            , preventDefault = True
+            }
+        )

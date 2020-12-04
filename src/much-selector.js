@@ -410,6 +410,13 @@ class MuchSelector extends HTMLElement {
         background-image: none;
       }
 
+      #select-indicator {
+        position: absolute;
+        right: 3px;
+        top: 3px;
+        cursor: pointer;
+      }
+
       slot[name='loading-indicator'] {
         display: block;
         position: absolute;
