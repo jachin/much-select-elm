@@ -1,6 +1,7 @@
 port module Ports exposing
     ( blurInput
     , disableChangedReceiver
+    , errorMessage
     , focusInput
     , loadingChangedReceiver
     , maxDropdownItemsChangedReceiver
@@ -13,6 +14,9 @@ port module Ports exposing
     )
 
 import Json.Decode
+
+
+port errorMessage : String -> Cmd msg
 
 
 port valueChanged : List ( String, String ) -> Cmd msg

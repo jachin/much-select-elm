@@ -46,7 +46,7 @@ const cleanUpOptions = (options) => {
       label: `${num}`,
     };
   };
-  options.map((option) => {
+  return options.map((option) => {
     if (typeof option === "string") {
       return stringToOptionObject(option);
     }
@@ -56,11 +56,11 @@ const cleanUpOptions = (options) => {
     if (typeof option === "object") {
       const optionMap = new Map();
       if (notNullOrUndefined(option.value)) {
-        optionMap.set("value", option.value);
+        optionMap.set("value", `${option.value}`);
       }
 
       if (notNullOrUndefined(option.label)) {
-        optionMap.set("label", option.label);
+        optionMap.set("label", `${option.label}`);
       }
 
       if (notNullOrUndefined(option.description)) {
@@ -215,6 +215,9 @@ class MuchSelector extends HTMLElement {
       });
 
       // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
+      this._app.ports.errorMessage.subscribe(this.errorHandler.bind(this));
+
+      // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
       this._app.ports.valueChanged.subscribe(
         this.valueChangedHandler.bind(this)
       );
@@ -260,6 +263,12 @@ class MuchSelector extends HTMLElement {
       this._app.ports.optionsChangedReceiver.send(optionsJson);
       this.updateWidth();
     }
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  errorHandler(error) {
+    // eslint-disable-next-line no-console
+    console.error(error);
   }
 
   /**

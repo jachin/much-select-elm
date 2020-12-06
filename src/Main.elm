@@ -70,6 +70,7 @@ import Ports
     exposing
         ( blurInput
         , disableChangedReceiver
+        , errorMessage
         , focusInput
         , loadingChangedReceiver
         , maxDropdownItemsChangedReceiver
@@ -176,23 +177,23 @@ update msg model =
                 Ok values ->
                     ( { model | options = selectOptionsInOptionsListByString values model.options }, Cmd.none )
 
-                Err _ ->
-                    ( model, Cmd.none )
+                Err error ->
+                    ( model, errorMessage (Json.Decode.errorToString error) )
 
         OptionsChanged optionsJson ->
-            let
-                -- TODO if this decoder fails we should "do" something about it.
-                newOptions =
-                    Json.Decode.decodeValue Option.optionsDecoder optionsJson
-                        |> Result.withDefault []
+            case Json.Decode.decodeValue Option.optionsDecoder optionsJson of
+                Ok newOptions ->
+                    let
+                        newOptionWithOldSelectedOption =
+                            Option.setSelectedOptionInNewOptions model.options newOptions
 
-                newOptionWithOldSelectedOption =
-                    Option.setSelectedOptionInNewOptions model.options newOptions
+                        -- TODO if there is an option selected that is not in this list
+                        --       of options add the selected option to the list options.
+                    in
+                    ( { model | options = newOptionWithOldSelectedOption }, Cmd.none )
 
-                -- TODO if there is an option selected that is not in this list
-                --       of options add the selected option to the list options.
-            in
-            ( { model | options = newOptionWithOldSelectedOption }, Cmd.none )
+                Err error ->
+                    ( model, errorMessage (Json.Decode.errorToString error) )
 
         PlaceholderAttributeChanged newPlaceholder ->
             ( { model | placeholder = newPlaceholder }, Cmd.none )
