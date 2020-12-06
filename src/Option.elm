@@ -5,6 +5,7 @@ module Option exposing
     , OptionGroup
     , OptionLabel(..)
     , OptionValue
+    , addAdditionalOptionsToOptionList
     , decoder
     , deselectAllOptionsInOptionsList
     , emptyOptionGroup
@@ -421,6 +422,12 @@ selectSingleOptionInList value options =
                 else
                     deselectOption option_
             )
+
+
+addAdditionalOptionsToOptionList : List Option -> List Option -> List Option
+addAdditionalOptionsToOptionList currentOptions newOptions =
+    List.filter (\new -> not (optionListContainsOptionWithValue new currentOptions)) newOptions
+        ++ currentOptions
 
 
 highlightOption : Option -> Option

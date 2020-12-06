@@ -200,7 +200,7 @@ update msg model =
         AddOptions optionsJson ->
             case Json.Decode.decodeValue Option.optionsDecoder optionsJson of
                 Ok newOptions ->
-                    ( { model | options = model.options ++ newOptions }, Cmd.none )
+                    ( { model | options = Option.addAdditionalOptionsToOptionList model.options newOptions }, Cmd.none )
 
                 Err error ->
                     ( model, errorMessage (Json.Decode.errorToString error) )
