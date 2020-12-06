@@ -568,13 +568,23 @@ class MuchSelector extends HTMLElement {
   }
 
   addOption(option) {
+    this.addOptions([option]);
+  }
+
+  addOptions(options) {
     // noinspection JSUnresolvedVariable
-    this._app.ports.addOptionsReceiver.send(cleanUpOptions([option]));
+    this._app.ports.addOptionsReceiver.send(cleanUpOptions(options));
     this.updateWidth();
   }
 
   removeOption(option) {
-    this._app.ports.removeOptionsReceiver.send(cleanUpOptions([option]));
+    this.removeOptions([option]);
+  }
+
+  removeOptions(options) {
+    // noinspection JSUnresolvedVariable
+    this._app.ports.removeOptionsReceiver.send(cleanUpOptions(options));
+    this.updateWidth();
   }
 }
 
