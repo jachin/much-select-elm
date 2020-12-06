@@ -37,6 +37,30 @@
       });
     </script>
   </div>
+
+  <div id="update-options-add-options-to-a-much-selector" >
+    <h3><code>updateOptions</code></h3>
+    <p>Updates the options. Here we have something with no options, click the button to add some options.</p>
+    <button>Add the Options</button>
+    <much-selector></much-selector>
+    <script>
+      function getRandomInt(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
+      }
+      document.querySelector("#update-options-add-options-to-a-much-selector button").addEventListener("click", () => {
+        const randomOptions = [];
+        for(let i=0; i<5; i++) {
+          const num = getRandomInt(1000, 5000)
+          randomOptions.push({
+            value: num
+          })
+        }
+        document.querySelector("#update-options-add-options-to-a-much-selector much-selector").updateOptions(randomOptions);
+      });
+    </script>
+  </div>
 </div>
 
 <!--suppress HtmlUnknownTarget -->

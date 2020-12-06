@@ -30,6 +30,86 @@ const buildOptionsFromSelectElement = (selectElement) => {
   return options;
 };
 
+const notNullOrUndefined = (thing) => thing !== null && thing !== undefined;
+
+const cleanUpOptions = (options) => {
+  const stringToOptionObject = (str) => {
+    return {
+      value: str,
+      label: str,
+    };
+  };
+
+  const numberToOptionObject = (num) => {
+    return {
+      value: `${num}`,
+      label: `${num}`,
+    };
+  };
+  options.map((option) => {
+    if (typeof option === "string") {
+      return stringToOptionObject(option);
+    }
+    if (typeof option === "number") {
+      return numberToOptionObject(option);
+    }
+    if (typeof option === "object") {
+      const optionMap = new Map();
+      if (notNullOrUndefined(option.value)) {
+        optionMap.set("value", option.value);
+      }
+
+      if (notNullOrUndefined(option.label)) {
+        optionMap.set("label", option.label);
+      }
+
+      if (notNullOrUndefined(option.description)) {
+        optionMap.set("description", option.description);
+      }
+
+      if (notNullOrUndefined(option.disabled)) {
+        optionMap.set("disabled", !!option.disabled);
+      }
+
+      if (notNullOrUndefined(option.index)) {
+        if (typeof option.index === "number") {
+          optionMap.set("index", Math.floor(option.index));
+        } else {
+          throw new TypeError("option index in not a valid value");
+        }
+      }
+
+      if (optionMap.has("value") && !optionMap.has("label")) {
+        return {
+          label: optionMap.get("value"),
+          value: optionMap.get("value"),
+          description: optionMap.get("description"),
+          disabled: optionMap.get("disabled"),
+          index: optionMap.get("index"),
+        };
+      }
+      if (optionMap.has("label") && !optionMap.has("value")) {
+        return {
+          label: optionMap.get("label"),
+          value: optionMap.get("label"),
+          description: optionMap.get("description"),
+          disabled: optionMap.get("disabled"),
+          index: optionMap.get("index"),
+        };
+      }
+      return {
+        label: optionMap.get("label"),
+        value: optionMap.get("value"),
+        description: optionMap.get("description"),
+        disabled: optionMap.get("disabled"),
+        index: optionMap.get("index"),
+      };
+    }
+
+    throw new TypeError("Invalid option");
+  });
+};
+
 // adapted from https://github.com/thread/elm-web-components
 
 class MuchSelector extends HTMLElement {
@@ -474,7 +554,7 @@ class MuchSelector extends HTMLElement {
 
   updateOptions(options) {
     // noinspection JSUnresolvedVariable
-    this._app.ports.optionsChangedReceiver.send(options);
+    this._app.ports.optionsChangedReceiver.send(cleanUpOptions(options));
     this.updateWidth();
   }
 }
