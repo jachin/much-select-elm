@@ -31,6 +31,7 @@ module Option exposing
     , optionLabelToString
     , optionsDecoder
     , removeHighlightOptionInList
+    , removeOptionsFromOptionList
     , selectHighlightedOption
     , selectOption
     , selectOptionInListByOptionValue
@@ -428,6 +429,11 @@ addAdditionalOptionsToOptionList : List Option -> List Option -> List Option
 addAdditionalOptionsToOptionList currentOptions newOptions =
     List.filter (\new -> not (optionListContainsOptionWithValue new currentOptions)) newOptions
         ++ currentOptions
+
+
+removeOptionsFromOptionList : List Option -> List Option -> List Option
+removeOptionsFromOptionList options optionsToRemove =
+    List.filter (\option -> not (optionListContainsOptionWithValue option optionsToRemove)) options
 
 
 highlightOption : Option -> Option

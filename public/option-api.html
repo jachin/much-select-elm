@@ -92,6 +92,36 @@
       });
     </script>
   </div>
+
+  <div id="remove-an-option-from-a-much-selector" >
+    <h3>Use <code>removeOption</code> to remove different options</h3>
+    <p>Clicking on a button should remove it from the list of options.</p>
+    <button id="remove-cake">No More Cake</button>
+    <button id="remove-pie">No More Pie</button>
+    <button id="remove-pudding">No More Pudding</button>
+    <much-selector>
+      <select slot="select-input">
+        <option>Ice Cream</option>
+        <option>Cake</option>
+        <option>Pie</option>
+        <option>Candy</option>
+        <option>Pudding</option>
+      </select>
+    </much-selector>
+    <script>
+      document.querySelector("#remove-cake").addEventListener("click", () => {
+        document.querySelector("#remove-an-option-from-a-much-selector much-selector").removeOption({value: "Cake"});
+      });
+
+      document.querySelector("#remove-pie").addEventListener("click", () => {
+        document.querySelector("#remove-an-option-from-a-much-selector much-selector").removeOption({value: "Pie"});
+      });
+
+      document.querySelector("#remove-pudding").addEventListener("click", () => {
+        document.querySelector("#remove-an-option-from-a-much-selector much-selector").removeOption({value: "Pudding"});
+      });
+    </script>
+  </div>
 </div>
 
 <!--suppress HtmlUnknownTarget -->

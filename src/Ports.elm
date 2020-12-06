@@ -8,6 +8,7 @@ port module Ports exposing
     , maxDropdownItemsChangedReceiver
     , optionsChangedReceiver
     , placeholderChangedReceiver
+    , removeOptionsReceiver
     , selectBoxWidthChangedReceiver
     , valueChanged
     , valueChangedReceiver
@@ -41,6 +42,9 @@ port optionsChangedReceiver : (Json.Decode.Value -> msg) -> Sub msg
 
 
 port addOptionsReceiver : (Json.Decode.Value -> msg) -> Sub msg
+
+
+port removeOptionsReceiver : (Json.Decode.Value -> msg) -> Sub msg
 
 
 port placeholderChangedReceiver : (String -> msg) -> Sub msg

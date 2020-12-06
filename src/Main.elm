@@ -77,6 +77,7 @@ import Ports
         , maxDropdownItemsChangedReceiver
         , optionsChangedReceiver
         , placeholderChangedReceiver
+        , removeOptionsReceiver
         , selectBoxWidthChangedReceiver
         , valueChanged
         , valueChangedReceiver
@@ -98,6 +99,7 @@ type Msg
     | ValueChanged Json.Decode.Value
     | OptionsChanged Json.Decode.Value
     | AddOptions Json.Decode.Value
+    | RemoveOptions Json.Decode.Value
     | PlaceholderAttributeChanged String
     | LoadingAttributeChanged Bool
     | MaxDropdownItemsChanged Int
@@ -201,6 +203,14 @@ update msg model =
             case Json.Decode.decodeValue Option.optionsDecoder optionsJson of
                 Ok newOptions ->
                     ( { model | options = Option.addAdditionalOptionsToOptionList model.options newOptions }, Cmd.none )
+
+                Err error ->
+                    ( model, errorMessage (Json.Decode.errorToString error) )
+
+        RemoveOptions optionsJson ->
+            case Json.Decode.decodeValue Option.optionsDecoder optionsJson of
+                Ok optionsToRemove ->
+                    ( { model | options = Option.removeOptionsFromOptionList model.options optionsToRemove }, Cmd.none )
 
                 Err error ->
                     ( model, errorMessage (Json.Decode.errorToString error) )
@@ -647,6 +657,7 @@ subscriptions _ =
     Sub.batch
         [ valueChangedReceiver ValueChanged
         , addOptionsReceiver AddOptions
+        , removeOptionsReceiver RemoveOptions
         , placeholderChangedReceiver PlaceholderAttributeChanged
         , loadingChangedReceiver LoadingAttributeChanged
         , disableChangedReceiver DisabledAttributeChanged
