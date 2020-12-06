@@ -261,6 +261,9 @@ view model =
                 hasOptionSelected =
                     Option.hasSelectedOption model.options
 
+                hasOptions =
+                    List.isEmpty model.options |> not
+
                 valueStr =
                     if hasOptionSelected then
                         model.options
@@ -334,7 +337,7 @@ view model =
 
                   else
                     text ""
-                , dropdownIndicator model.focused model.disabled
+                , dropdownIndicator model.focused model.disabled hasOptions
                 , dropdown model
                 ]
 
@@ -399,9 +402,9 @@ view model =
                 ]
 
 
-dropdownIndicator : Bool -> Bool -> Html Msg
-dropdownIndicator focused disabled =
-    if disabled then
+dropdownIndicator : Bool -> Bool -> Bool -> Html Msg
+dropdownIndicator focused disabled hasOptions =
+    if disabled || not hasOptions then
         text ""
 
     else if focused then
@@ -432,7 +435,7 @@ dropdown model =
                 model.selectionMode
                 (OptionPresentor.prepareOptionsForPresentation model.searchString model.options)
     in
-    if model.showDropdown then
+    if model.showDropdown && not (List.isEmpty model.options) then
         div
             [ id "dropdown"
             , class "showing"
