@@ -566,6 +566,12 @@ class MuchSelector extends HTMLElement {
     this._app.ports.optionsChangedReceiver.send(cleanUpOptions(options));
     this.updateWidth();
   }
+
+  addOption(option) {
+    // noinspection JSUnresolvedVariable
+    this._app.ports.addOptionsReceiver.send(cleanUpOptions([option]));
+    this.updateWidth();
+  }
 }
 
 export default MuchSelector;

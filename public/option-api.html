@@ -61,6 +61,37 @@
       });
     </script>
   </div>
+
+  <div id="add-option-to-a-much-selector" >
+    <h3><code>addOption</code></h3>
+    <p>Click the button to add a random option. And then click it again.</p>
+    <button>Add an Option</button>
+    <much-selector></much-selector>
+    <script>
+      function getRandomInt(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
+      }
+      document.querySelector("#add-option-to-a-much-selector button").addEventListener("click", () => {
+        document.querySelector("#add-option-to-a-much-selector much-selector").addOption({value: getRandomInt(1000, 5000)});
+      });
+    </script>
+  </div>
+
+  <div id="add-possible-duplicate-option-to-a-much-selector" >
+    <h3><code>addOption</code></h3>
+    <p>Click the button to add a random option. And then click it again. Eventually you will add all the options in the list. Each time the button is clicked an option is added randomly from a list. You should not get any duplicate items in the list and any selected value should be presered.</p>
+    <button>Add an Option</button>
+    <much-selector></much-selector>
+    <script>
+      const options = ["ranch", "farm", "orchard", "vineyard"];
+      document.querySelector("#add-possible-duplicate-option-to-a-much-selector button").addEventListener("click", () => {
+        const randomOption = options[Math.floor(Math.random() * options.length)];
+        document.querySelector("#add-possible-duplicate-option-to-a-much-selector much-selector").addOption({value: randomOption});
+      });
+    </script>
+  </div>
 </div>
 
 <!--suppress HtmlUnknownTarget -->

@@ -68,7 +68,8 @@ import OptionPresentor exposing (OptionPresenter)
 import OptionSearcher exposing (bestMatch)
 import Ports
     exposing
-        ( blurInput
+        ( addOptionsReceiver
+        , blurInput
         , disableChangedReceiver
         , errorMessage
         , focusInput
@@ -96,6 +97,7 @@ type Msg
     | SearchInputOnInput String
     | ValueChanged Json.Decode.Value
     | OptionsChanged Json.Decode.Value
+    | AddOptions Json.Decode.Value
     | PlaceholderAttributeChanged String
     | LoadingAttributeChanged Bool
     | MaxDropdownItemsChanged Int
@@ -191,6 +193,14 @@ update msg model =
                         --       of options add the selected option to the list options.
                     in
                     ( { model | options = newOptionWithOldSelectedOption }, Cmd.none )
+
+                Err error ->
+                    ( model, errorMessage (Json.Decode.errorToString error) )
+
+        AddOptions optionsJson ->
+            case Json.Decode.decodeValue Option.optionsDecoder optionsJson of
+                Ok newOptions ->
+                    ( { model | options = model.options ++ newOptions }, Cmd.none )
 
                 Err error ->
                     ( model, errorMessage (Json.Decode.errorToString error) )
@@ -636,6 +646,7 @@ subscriptions : Model -> Sub Msg
 subscriptions _ =
     Sub.batch
         [ valueChangedReceiver ValueChanged
+        , addOptionsReceiver AddOptions
         , placeholderChangedReceiver PlaceholderAttributeChanged
         , loadingChangedReceiver LoadingAttributeChanged
         , disableChangedReceiver DisabledAttributeChanged

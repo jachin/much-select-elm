@@ -1,5 +1,6 @@
 port module Ports exposing
-    ( blurInput
+    ( addOptionsReceiver
+    , blurInput
     , disableChangedReceiver
     , errorMessage
     , focusInput
@@ -37,6 +38,9 @@ port valueChangedReceiver : (Json.Decode.Value -> msg) -> Sub msg
 
 
 port optionsChangedReceiver : (Json.Decode.Value -> msg) -> Sub msg
+
+
+port addOptionsReceiver : (Json.Decode.Value -> msg) -> Sub msg
 
 
 port placeholderChangedReceiver : (String -> msg) -> Sub msg
