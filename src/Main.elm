@@ -70,6 +70,7 @@ import Ports
     exposing
         ( addOptionsReceiver
         , blurInput
+        , deselectOptionReceiver
         , disableChangedReceiver
         , errorMessage
         , focusInput
@@ -79,6 +80,7 @@ import Ports
         , placeholderChangedReceiver
         , removeOptionsReceiver
         , selectBoxWidthChangedReceiver
+        , selectOptionReceiver
         , valueChanged
         , valueChangedReceiver
         , valuesDecoder
@@ -100,6 +102,8 @@ type Msg
     | OptionsChanged Json.Decode.Value
     | AddOptions Json.Decode.Value
     | RemoveOptions Json.Decode.Value
+    | SelectOption Json.Decode.Value
+    | DeselectOption Json.Decode.Value
     | PlaceholderAttributeChanged String
     | LoadingAttributeChanged Bool
     | MaxDropdownItemsChanged Int
@@ -211,6 +215,41 @@ update msg model =
             case Json.Decode.decodeValue Option.optionsDecoder optionsJson of
                 Ok optionsToRemove ->
                     ( { model | options = Option.removeOptionsFromOptionList model.options optionsToRemove }, Cmd.none )
+
+                Err error ->
+                    ( model, errorMessage (Json.Decode.errorToString error) )
+
+        SelectOption optionJson ->
+            case Json.Decode.decodeValue Option.decoder optionJson of
+                Ok option ->
+                    let
+                        optionValue =
+                            Option.getOptionValue option
+
+                        options =
+                            case model.selectionMode of
+                                MultiSelect ->
+                                    selectOptionInListByOptionValue optionValue model.options
+
+                                SingleSelect ->
+                                    selectSingleOptionInList optionValue model.options
+                    in
+                    ( { model | options = options }, Cmd.batch [ valueChanged (selectedOptionsToTuple options) ] )
+
+                Err error ->
+                    ( model, errorMessage (Json.Decode.errorToString error) )
+
+        DeselectOption optionJson ->
+            case Json.Decode.decodeValue Option.decoder optionJson of
+                Ok option ->
+                    let
+                        optionValue =
+                            Option.getOptionValue option
+
+                        options =
+                            Option.deselectOptionInListByOptionValue optionValue model.options
+                    in
+                    ( { model | options = options }, Cmd.batch [ valueChanged (selectedOptionsToTuple options) ] )
 
                 Err error ->
                     ( model, errorMessage (Json.Decode.errorToString error) )
@@ -664,6 +703,8 @@ subscriptions _ =
         , optionsChangedReceiver OptionsChanged
         , maxDropdownItemsChangedReceiver MaxDropdownItemsChanged
         , selectBoxWidthChangedReceiver SelectBoxWidthUpdate
+        , selectOptionReceiver SelectOption
+        , deselectOptionReceiver DeselectOption
         ]
 
 

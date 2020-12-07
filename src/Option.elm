@@ -8,6 +8,7 @@ module Option exposing
     , addAdditionalOptionsToOptionList
     , decoder
     , deselectAllOptionsInOptionsList
+    , deselectOptionInListByOptionValue
     , emptyOptionGroup
     , getOptionDescription
     , getOptionDescriptionString
@@ -375,6 +376,19 @@ selectOptionInListByOptionValue value options =
         (\option_ ->
             if optionValuesEqual option_ value then
                 selectOption option_
+
+            else
+                option_
+        )
+        options
+
+
+deselectOptionInListByOptionValue : OptionValue -> List Option -> List Option
+deselectOptionInListByOptionValue value options =
+    List.map
+        (\option_ ->
+            if optionValuesEqual option_ value then
+                deselectOption option_
 
             else
                 option_
