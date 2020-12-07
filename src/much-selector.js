@@ -589,8 +589,6 @@ class MuchSelector extends HTMLElement {
   }
 
   selectOption(option) {
-    console.log("option", cleanUpOption(option));
-
     // noinspection JSUnresolvedVariable
     this._app.ports.selectOptionReceiver.send(cleanUpOption(option));
   }
