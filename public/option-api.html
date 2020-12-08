@@ -147,6 +147,36 @@
       });
     </script>
   </div>
+
+  <div id="select-and-multiple-options-in-a-multi-much-selector">
+    <h3>Use <code>selectOption</code> to select multiple values to mulit select.</h3>
+    <p>Clicking on a button shoulds add them to the selected options.</p>
+    <button id="select-basketball">Basketball</button>
+    <button id="select-baseball">Baseball</button>
+    <button id="select-football">Football</button>
+    <much-selector multi-select>
+      <select slot="select-input">
+        <option>Basketball</option>
+        <option>Baseball</option>
+        <option>Football</option>
+        <option>Hockey</option>
+        <option>Soccor</option>
+      </select>
+    </much-selector>
+    <script>
+      document.querySelector("#select-basketball").addEventListener("click", () => {
+        document.querySelector("#select-and-multiple-options-in-a-multi-much-selector much-selector").selectOption("Basketball");
+      });
+
+      document.querySelector("#select-baseball").addEventListener("click", () => {
+        document.querySelector("#select-and-multiple-options-in-a-multi-much-selector much-selector").selectOption("Baseball");
+      });
+
+      document.querySelector("#select-football").addEventListener("click", () => {
+        document.querySelector("#select-and-multiple-options-in-a-multi-much-selector much-selector").selectOption("Football");
+      });
+    </script>
+  </div>
 </div>
 
 <!--suppress HtmlUnknownTarget -->
