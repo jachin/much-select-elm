@@ -20,6 +20,7 @@ module Option exposing
     , hasSelectedOption
     , highlightOption
     , highlightOptionInListByValue
+    , isOptionInListOfOptionsByValue
     , moveHighlightedOptionDown
     , moveHighlightedOptionUp
     , newDisabledOption
@@ -43,6 +44,7 @@ module Option exposing
     , setGroup
     , setLabel
     , setSelectedOptionInNewOptions
+    , stringToOptionValue
     )
 
 import Json.Decode
@@ -80,6 +82,18 @@ optionLabelToString optionLabel =
 
 type OptionValue
     = OptionValue String
+
+
+optionValueToString : OptionValue -> String
+optionValueToString optionValue =
+    case optionValue of
+        OptionValue valueString ->
+            valueString
+
+
+stringToOptionValue : String -> OptionValue
+stringToOptionValue string =
+    OptionValue string
 
 
 type OptionDescription
@@ -226,7 +240,7 @@ selectOptionsInOptionsListByString : List String -> List Option -> List Option
 selectOptionsInOptionsListByString strings options =
     List.map
         (\option ->
-            if isOptionValueInList strings option then
+            if isOptionValueInListOfStrings strings option then
                 selectOption option
 
             else
@@ -259,9 +273,14 @@ deselectAllOptionsInOptionsList options =
         options
 
 
-isOptionValueInList : List String -> Option -> Bool
-isOptionValueInList possibleValues option =
+isOptionValueInListOfStrings : List String -> Option -> Bool
+isOptionValueInListOfStrings possibleValues option =
     List.any (\possibleValue -> getOptionValueAsString option == possibleValue) possibleValues
+
+
+isOptionInListOfOptionsByValue : OptionValue -> List Option -> Bool
+isOptionInListOfOptionsByValue optionValue options =
+    List.any (\option -> (option |> getOptionValue |> optionValueToString) == (optionValue |> optionValueToString)) options
 
 
 optionValuesEqual : Option -> OptionValue -> Bool

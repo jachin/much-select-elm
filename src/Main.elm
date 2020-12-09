@@ -117,7 +117,7 @@ type Msg
 
 
 type alias Model =
-    { initialValue : String
+    { initialValue : List String
     , placeholder : String
     , size : String
     , selectionMode : SelectionMode
@@ -655,20 +655,51 @@ type alias Flags =
 
 init : Flags -> ( Model, Cmd Msg )
 init flags =
-    ( { initialValue = flags.value
-      , placeholder = flags.placeholder
-      , size = flags.size
-      , selectionMode =
+    let
+        selectionMode =
             if flags.allowMultiSelect then
                 MultiSelect
 
             else
                 SingleSelect
 
-      -- TODO if this decoder fails we should "do" something about it.
-      , options =
-            Json.Decode.decodeString Option.optionsDecoder flags.optionsJson
-                |> Result.withDefault []
+        initialValues : List String
+        initialValues =
+            Debug.log "initial value" <|
+                case selectionMode of
+                    SingleSelect ->
+                        [ flags.value ]
+
+                    MultiSelect ->
+                        String.split "," flags.value
+
+        ( optionsWithInitialValueSelected, errorCmd ) =
+            case Json.Decode.decodeString Option.optionsDecoder flags.optionsJson of
+                Ok options ->
+                    case selectionMode of
+                        SingleSelect ->
+                            case List.head initialValues of
+                                Just initialValueStr ->
+                                    if Option.isOptionInListOfOptionsByValue (Option.stringToOptionValue initialValueStr) options then
+                                        ( Option.selectOptionsInOptionsListByString initialValues options, Cmd.none )
+
+                                    else
+                                        ( (Option.newOption initialValueStr |> Option.selectOption) :: options, Cmd.none )
+
+                                Nothing ->
+                                    ( options, Cmd.none )
+
+                        MultiSelect ->
+                            ( Option.selectOptionsInOptionsListByString initialValues options, Cmd.none )
+
+                Err error ->
+                    ( [], errorMessage (Json.Decode.errorToString error) )
+    in
+    ( { initialValue = initialValues
+      , placeholder = flags.placeholder
+      , size = flags.size
+      , selectionMode = selectionMode
+      , options = optionsWithInitialValueSelected
       , showDropdown = False
       , searchString = ""
       , loading = flags.loading
@@ -677,7 +708,7 @@ init flags =
       , focused = False
       , selectBoxWidth = 100
       }
-    , Cmd.none
+    , errorCmd
     )
 
 

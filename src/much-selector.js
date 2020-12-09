@@ -326,6 +326,10 @@ class MuchSelector extends HTMLElement {
       flags.optionsJson = JSON.stringify([]);
     }
 
+    if (this.hasAttribute("selected")) {
+      flags.value = this.getAttribute("selected");
+    }
+
     return flags;
   }
 
