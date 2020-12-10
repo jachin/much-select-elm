@@ -6,6 +6,7 @@ module Option exposing
     , OptionLabel(..)
     , OptionValue
     , addAdditionalOptionsToOptionList
+    , addAndSelectOptionsInOptionsListByString
     , decoder
     , deselectAllOptionsInOptionsList
     , deselectOptionInListByOptionValue
@@ -248,6 +249,15 @@ selectOptionsInOptionsListByString strings options =
                 deselectOption option
         )
         options
+
+
+addAndSelectOptionsInOptionsListByString : List String -> List Option -> List Option
+addAndSelectOptionsInOptionsListByString strings options =
+    let
+        newOptions =
+            List.map newSelectedOption strings
+    in
+    mergeTwoListsOfOptionsPreservingSelectedOptions newOptions options
 
 
 setSelectedOptionInNewOptions : List Option -> List Option -> List Option

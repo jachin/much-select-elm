@@ -665,13 +665,12 @@ init flags =
 
         initialValues : List String
         initialValues =
-            Debug.log "initial value" <|
-                case selectionMode of
-                    SingleSelect ->
-                        [ flags.value ]
+            case selectionMode of
+                SingleSelect ->
+                    [ flags.value ]
 
-                    MultiSelect ->
-                        String.split "," flags.value
+                MultiSelect ->
+                    String.split "," flags.value
 
         ( optionsWithInitialValueSelected, errorCmd ) =
             case Json.Decode.decodeString Option.optionsDecoder flags.optionsJson of
@@ -690,7 +689,11 @@ init flags =
                                     ( options, Cmd.none )
 
                         MultiSelect ->
-                            ( Option.selectOptionsInOptionsListByString initialValues options, Cmd.none )
+                            let
+                                optionsWithInitialValues =
+                                    Option.addAndSelectOptionsInOptionsListByString initialValues options
+                            in
+                            ( optionsWithInitialValues, Cmd.none )
 
                 Err error ->
                     ( [], errorMessage (Json.Decode.errorToString error) )
