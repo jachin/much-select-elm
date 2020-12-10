@@ -45,7 +45,8 @@
 
     <div id="add-options-including-the-selected-value">
       <h3>An initial Value (No Options) - Then Add the Options</h3>
-      <p>If there is an initial value but no options initial, then we add options (async) it should keep the selected value and "merge" the new option with the same value.</p>
+      <p>If there is an initial value but no options initially, then we add options (async).</p>
+      <p>It should keep the selected value and "merge" the new option with the same value.</p>
       <button>Click me to add options via the DOM</button>
       <much-selector selected="Coffee"></much-selector>
       <script>
@@ -64,7 +65,8 @@
 
     <div id="add-options-not-including-the-selected-value">
       <h3>An initial Value (No Options) - Then Add the Options - But not the selected value</h3>
-      <p>If there is an initial value but no options initial, then we add option (async) it should keep the selected value include the additional options in the dropdown.</p>
+      <p>If there is an initial value but no options initial, then we add options (async).</p>
+      <p>It should keep the selected value include the additional options in the dropdown.</p>
       <button>Click me to add options via the DOM</button>
       <much-selector selected="Butter"></much-selector>
       <script>
@@ -80,6 +82,28 @@
         });
       </script>
     </div>
+  </div>
+
+
+  <div id="add-options-to-a-multi-select-not-including-the-selected-value">
+    <h3>2 Initial Options - Then Add the Options - But not the selected value</h3>
+    <p>For mulit select we should support multiple initial values, then we add options (async).</p>
+    <p>It Should keep the selected values and add the new options.</p>
+    <button>Click me to add options via the DOM</button>
+    <much-selector multi-select selected="Carrots,Peas"></much-selector>
+    <script>
+      document.querySelector("#add-options-to-a-multi-select-not-including-the-selected-value button").addEventListener("click", () => {
+        document.querySelector("#add-options-to-a-multi-select-not-including-the-selected-value much-selector").innerHTML = `
+          <select slot="select-input">
+            <option>Zucchini</option>
+            <option>Lettuce</option>
+            <option>Cucumbers</option>
+            <option>Pumpkins</option>
+          </select>
+        `;
+      });
+    </script>
+  </div>
   </div>
 
   <!--suppress HtmlUnknownTarget -->

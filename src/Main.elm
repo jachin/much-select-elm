@@ -193,7 +193,7 @@ update msg model =
                 Ok newOptions ->
                     let
                         newOptionWithOldSelectedOption =
-                            Option.setSelectedOptionInNewOptions model.options newOptions
+                            Option.mergeTwoListsOfOptionsPreservingSelectedOptions model.options newOptions
 
                         -- TODO if there is an option selected that is not in this list
                         --       of options add the selected option to the list options.

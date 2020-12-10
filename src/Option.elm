@@ -21,6 +21,7 @@ module Option exposing
     , highlightOption
     , highlightOptionInListByValue
     , isOptionInListOfOptionsByValue
+    , mergeTwoListsOfOptionsPreservingSelectedOptions
     , moveHighlightedOptionDown
     , moveHighlightedOptionUp
     , newDisabledOption
@@ -264,6 +265,18 @@ setSelectedOptionInNewOptions oldOptions newOptions =
                 newOption_
         )
         newOptions
+
+
+mergeTwoListsOfOptionsPreservingSelectedOptions : List Option -> List Option -> List Option
+mergeTwoListsOfOptionsPreservingSelectedOptions optionsA optionsB =
+    let
+        superList =
+            optionsA ++ optionsB
+
+        newOptions =
+            List.Extra.uniqueBy getOptionValueAsString superList
+    in
+    setSelectedOptionInNewOptions superList newOptions
 
 
 deselectAllOptionsInOptionsList : List Option -> List Option
