@@ -12,11 +12,9 @@ module Option exposing
     , deselectOptionInListByOptionValue
     , emptyOptionGroup
     , getOptionDescription
-    , getOptionDescriptionString
     , getOptionDisplay
     , getOptionGroup
     , getOptionLabel
-    , getOptionLabelString
     , getOptionValue
     , hasSelectedOption
     , highlightOption
@@ -31,7 +29,6 @@ module Option exposing
     , optionDescriptionToBool
     , optionDescriptionToString
     , optionGroupToString
-    , optionHasDescription
     , optionLabelToString
     , optionsDecoder
     , removeHighlightOptionInList
@@ -56,11 +53,17 @@ import SelectionMode exposing (SelectionMode(..))
 
 type Option
     = Option OptionDisplay OptionLabel OptionValue OptionDescription OptionGroup
+    | EmptyOption OptionDisplay OptionLabel
 
 
 getOptionLabel : Option -> OptionLabel
-getOptionLabel (Option _ label _ _ _) =
-    label
+getOptionLabel option =
+    case option of
+        Option _ label _ _ _ ->
+            label
+
+        EmptyOption _ label ->
+            label
 
 
 type OptionDisplay
@@ -84,6 +87,7 @@ optionLabelToString optionLabel =
 
 type OptionValue
     = OptionValue String
+    | EmptyOptionValue
 
 
 optionValueToString : OptionValue -> String
@@ -91,6 +95,9 @@ optionValueToString optionValue =
     case optionValue of
         OptionValue valueString ->
             valueString
+
+        EmptyOptionValue ->
+            ""
 
 
 stringToOptionValue : String -> OptionValue
@@ -134,8 +141,13 @@ emptyOptionGroup =
 
 
 getOptionGroup : Option -> OptionGroup
-getOptionGroup (Option _ _ _ _ group) =
-    group
+getOptionGroup option =
+    case option of
+        Option _ _ _ _ optionGroup ->
+            optionGroup
+
+        EmptyOption _ _ ->
+            NoOptionGroup
 
 
 newOption : String -> Option
@@ -149,6 +161,9 @@ setLabel string option =
         Option optionDisplay _ optionValue description group ->
             Option optionDisplay (OptionLabel string) optionValue description group
 
+        EmptyOption optionDisplay _ ->
+            EmptyOption optionDisplay (OptionLabel string)
+
 
 setDescription : String -> Option -> Option
 setDescription string option =
@@ -156,12 +171,18 @@ setDescription string option =
         Option optionDisplay label optionValue _ group ->
             Option optionDisplay label optionValue (OptionDescription string) group
 
+        EmptyOption optionDisplay optionLabel ->
+            EmptyOption optionDisplay optionLabel
+
 
 setGroup : String -> Option -> Option
 setGroup string option =
     case option of
         Option optionDisplay label optionValue description _ ->
             Option optionDisplay label optionValue description (OptionGroup string)
+
+        EmptyOption optionDisplay optionLabel ->
+            EmptyOption optionDisplay optionLabel
 
 
 newSelectedOption : String -> Option
@@ -175,13 +196,23 @@ newDisabledOption string =
 
 
 getOptionDisplay : Option -> OptionDisplay
-getOptionDisplay (Option display _ _ _ _) =
-    display
+getOptionDisplay option =
+    case option of
+        Option display _ _ _ _ ->
+            display
+
+        EmptyOption display _ ->
+            display
 
 
 getOptionValue : Option -> OptionValue
-getOptionValue (Option _ _ value _ _) =
-    value
+getOptionValue option =
+    case option of
+        Option _ _ value _ _ ->
+            value
+
+        EmptyOption _ _ ->
+            EmptyOptionValue
 
 
 getOptionValueAsString : Option -> String
@@ -189,6 +220,9 @@ getOptionValueAsString option =
     case option |> getOptionValue of
         OptionValue string ->
             string
+
+        EmptyOptionValue ->
+            ""
 
 
 optionGroupToString : OptionGroup -> String
@@ -201,36 +235,14 @@ optionGroupToString optionGroup =
             ""
 
 
-getOptionLabelString : Option -> String
-getOptionLabelString (Option _ label _ _ _) =
-    optionLabelToString label
-
-
 getOptionDescription : Option -> OptionDescription
 getOptionDescription option =
     case option of
         Option _ _ _ optionDescription _ ->
             optionDescription
 
-
-getOptionDescriptionString : Option -> String
-getOptionDescriptionString option =
-    case option |> getOptionDescription of
-        OptionDescription string ->
-            string
-
-        NoDescription ->
-            ""
-
-
-optionHasDescription : Option -> Bool
-optionHasDescription option =
-    case option |> getOptionDescription of
-        OptionDescription _ ->
-            True
-
-        NoDescription ->
-            False
+        EmptyOption _ _ ->
+            NoDescription
 
 
 selectedOptionsToTuple : List Option -> List ( String, String )
@@ -438,13 +450,6 @@ deselectOptionInListByOptionValue value options =
         options
 
 
-selectOptionInList : Option -> List Option -> List Option
-selectOptionInList optionToSelect options =
-    optionToSelect
-        |> getOptionValue
-        |> (\optionValue -> selectOptionInListByOptionValue optionValue options)
-
-
 selectHighlightedOption : SelectionMode -> List Option -> List Option
 selectHighlightedOption selectionMode options =
     options
@@ -455,13 +460,23 @@ selectHighlightedOption selectionMode options =
         |> List.head
         |> (\maybeOption ->
                 case maybeOption of
-                    Just (Option _ _ value _ _) ->
-                        case selectionMode of
-                            MultiSelect ->
-                                selectOptionInListByOptionValue value options
+                    Just option ->
+                        case option of
+                            Option _ _ value _ _ ->
+                                case selectionMode of
+                                    MultiSelect ->
+                                        selectOptionInListByOptionValue value options
 
-                            SingleSelect ->
-                                selectSingleOptionInList value options
+                                    SingleSelect ->
+                                        selectSingleOptionInList value options
+
+                            EmptyOption _ _ ->
+                                case selectionMode of
+                                    MultiSelect ->
+                                        selectEmptyOption options
+
+                                    SingleSelect ->
+                                        selectEmptyOption options
 
                     Nothing ->
                         options
@@ -481,6 +496,20 @@ selectSingleOptionInList value options =
             )
 
 
+selectEmptyOption : List Option -> List Option
+selectEmptyOption options =
+    options
+        |> List.map
+            (\option_ ->
+                case option_ of
+                    Option _ _ _ _ _ ->
+                        deselectOption option_
+
+                    EmptyOption _ _ ->
+                        selectOption option_
+            )
+
+
 addAdditionalOptionsToOptionList : List Option -> List Option -> List Option
 addAdditionalOptionsToOptionList currentOptions newOptions =
     List.filter (\new -> not (optionListContainsOptionWithValue new currentOptions)) newOptions
@@ -493,117 +522,231 @@ removeOptionsFromOptionList options optionsToRemove =
 
 
 highlightOption : Option -> Option
-highlightOption (Option display label value description group) =
-    case display of
-        OptionShown ->
-            Option OptionHighlighted label value description group
+highlightOption option =
+    case option of
+        Option display label value description group ->
+            case display of
+                OptionShown ->
+                    Option OptionHighlighted label value description group
 
-        OptionHidden ->
-            Option OptionHidden label value description group
+                OptionHidden ->
+                    Option OptionHidden label value description group
 
-        OptionSelected ->
-            Option OptionSelected label value description group
+                OptionSelected ->
+                    Option OptionSelected label value description group
 
-        OptionHighlighted ->
-            Option OptionHighlighted label value description group
+                OptionHighlighted ->
+                    Option OptionHighlighted label value description group
 
-        OptionDisabled ->
-            Option OptionDisabled label value description group
+                OptionDisabled ->
+                    Option OptionDisabled label value description group
+
+        EmptyOption display label ->
+            case display of
+                OptionShown ->
+                    EmptyOption OptionHighlighted label
+
+                OptionHidden ->
+                    EmptyOption OptionHidden label
+
+                OptionSelected ->
+                    EmptyOption OptionSelected label
+
+                OptionHighlighted ->
+                    EmptyOption OptionHighlighted label
+
+                OptionDisabled ->
+                    EmptyOption OptionDisabled label
 
 
 removeHighlightOption : Option -> Option
-removeHighlightOption (Option display label value description group) =
-    case display of
-        OptionShown ->
-            Option OptionShown label value description group
+removeHighlightOption option =
+    case option of
+        Option display label value description group ->
+            case display of
+                OptionShown ->
+                    Option OptionShown label value description group
 
-        OptionHidden ->
-            Option OptionHidden label value description group
+                OptionHidden ->
+                    Option OptionHidden label value description group
 
-        OptionSelected ->
-            Option OptionSelected label value description group
+                OptionSelected ->
+                    Option OptionSelected label value description group
 
-        OptionHighlighted ->
-            Option OptionShown label value description group
+                OptionHighlighted ->
+                    Option OptionShown label value description group
 
-        OptionDisabled ->
-            Option OptionDisabled label value description group
+                OptionDisabled ->
+                    Option OptionDisabled label value description group
+
+        EmptyOption display label ->
+            case display of
+                OptionShown ->
+                    EmptyOption OptionShown label
+
+                OptionHidden ->
+                    EmptyOption OptionHidden label
+
+                OptionSelected ->
+                    EmptyOption OptionSelected label
+
+                OptionHighlighted ->
+                    EmptyOption OptionShown label
+
+                OptionDisabled ->
+                    EmptyOption OptionDisabled label
 
 
 optionIsHighlighted : Option -> Bool
-optionIsHighlighted (Option display _ _ _ _) =
-    case display of
-        OptionShown ->
-            False
+optionIsHighlighted option =
+    case option of
+        Option display _ _ _ _ ->
+            case display of
+                OptionShown ->
+                    False
 
-        OptionHidden ->
-            False
+                OptionHidden ->
+                    False
 
-        OptionSelected ->
-            False
+                OptionSelected ->
+                    False
 
-        OptionHighlighted ->
-            True
+                OptionHighlighted ->
+                    True
 
-        OptionDisabled ->
-            False
+                OptionDisabled ->
+                    False
+
+        EmptyOption display _ ->
+            case display of
+                OptionShown ->
+                    False
+
+                OptionHidden ->
+                    False
+
+                OptionSelected ->
+                    False
+
+                OptionHighlighted ->
+                    True
+
+                OptionDisabled ->
+                    False
 
 
 optionIsHighlightable : Option -> Bool
-optionIsHighlightable (Option display _ _ _ _) =
-    case display of
-        OptionShown ->
-            True
+optionIsHighlightable option =
+    case option of
+        Option display _ _ _ _ ->
+            case display of
+                OptionShown ->
+                    True
 
-        OptionHidden ->
-            False
+                OptionHidden ->
+                    False
 
-        OptionSelected ->
-            False
+                OptionSelected ->
+                    False
 
-        OptionHighlighted ->
-            False
+                OptionHighlighted ->
+                    False
 
-        OptionDisabled ->
-            False
+                OptionDisabled ->
+                    False
+
+        EmptyOption display _ ->
+            case display of
+                OptionShown ->
+                    True
+
+                OptionHidden ->
+                    False
+
+                OptionSelected ->
+                    False
+
+                OptionHighlighted ->
+                    False
+
+                OptionDisabled ->
+                    False
 
 
 selectOption : Option -> Option
-selectOption (Option display label value description group) =
-    case display of
-        OptionShown ->
-            Option OptionSelected label value description group
+selectOption option =
+    case option of
+        Option display label value description group ->
+            case display of
+                OptionShown ->
+                    Option OptionSelected label value description group
 
-        OptionHidden ->
-            Option OptionSelected label value description group
+                OptionHidden ->
+                    Option OptionSelected label value description group
 
-        OptionSelected ->
-            Option OptionSelected label value description group
+                OptionSelected ->
+                    Option OptionSelected label value description group
 
-        OptionHighlighted ->
-            Option OptionSelected label value description group
+                OptionHighlighted ->
+                    Option OptionSelected label value description group
 
-        OptionDisabled ->
-            Option OptionDisabled label value description group
+                OptionDisabled ->
+                    Option OptionDisabled label value description group
+
+        EmptyOption display label ->
+            case display of
+                OptionShown ->
+                    EmptyOption OptionSelected label
+
+                OptionHidden ->
+                    EmptyOption OptionSelected label
+
+                OptionSelected ->
+                    EmptyOption OptionSelected label
+
+                OptionHighlighted ->
+                    EmptyOption OptionSelected label
+
+                OptionDisabled ->
+                    EmptyOption OptionDisabled label
 
 
 deselectOption : Option -> Option
-deselectOption (Option display label value description group) =
-    case display of
-        OptionShown ->
-            Option OptionShown label value description group
+deselectOption option =
+    case option of
+        Option display label value description group ->
+            case display of
+                OptionShown ->
+                    Option OptionShown label value description group
 
-        OptionHidden ->
-            Option OptionHidden label value description group
+                OptionHidden ->
+                    Option OptionHidden label value description group
 
-        OptionSelected ->
-            Option OptionShown label value description group
+                OptionSelected ->
+                    Option OptionShown label value description group
 
-        OptionHighlighted ->
-            Option OptionHighlighted label value description group
+                OptionHighlighted ->
+                    Option OptionHighlighted label value description group
 
-        OptionDisabled ->
-            Option OptionDisabled label value description group
+                OptionDisabled ->
+                    Option OptionDisabled label value description group
+
+        EmptyOption display label ->
+            case display of
+                OptionShown ->
+                    EmptyOption OptionShown label
+
+                OptionHidden ->
+                    EmptyOption OptionHidden label
+
+                OptionSelected ->
+                    EmptyOption OptionShown label
+
+                OptionHighlighted ->
+                    EmptyOption OptionHighlighted label
+
+                OptionDisabled ->
+                    EmptyOption OptionDisabled label
 
 
 selectedOptions : List Option -> List Option
@@ -613,6 +756,23 @@ selectedOptions options =
             (\option_ ->
                 case option_ of
                     Option display _ _ _ _ ->
+                        case display of
+                            OptionShown ->
+                                False
+
+                            OptionHidden ->
+                                False
+
+                            OptionSelected ->
+                                True
+
+                            OptionHighlighted ->
+                                False
+
+                            OptionDisabled ->
+                                False
+
+                    EmptyOption display _ ->
                         case display of
                             OptionShown ->
                                 False
@@ -649,9 +809,7 @@ optionListContainsOptionWithValue option options =
 
 optionToValueLabelTuple : Option -> ( String, String )
 optionToValueLabelTuple option =
-    case option of
-        Option _ (OptionLabel label) (OptionValue value) _ _ ->
-            ( value, label )
+    ( getOptionValueAsString option, getOptionLabel option |> optionLabelToString )
 
 
 optionsDecoder : Json.Decode.Decoder (List Option)

@@ -173,6 +173,9 @@ update msg model =
                 Just (Option _ _ value _ _) ->
                     ( { model | searchString = string, options = highlightOptionInListByValue value model.options }, Cmd.none )
 
+                Just (EmptyOption _ _) ->
+                    ( { model | searchString = string }, Cmd.none )
+
                 Nothing ->
                     ( { model | searchString = string }, Cmd.none )
 
@@ -623,6 +626,23 @@ optionsToValuesHtml options =
             (\option ->
                 case option of
                     Option display (OptionLabel labelStr) _ _ _ ->
+                        case display of
+                            OptionShown ->
+                                text ""
+
+                            OptionHidden ->
+                                text ""
+
+                            OptionSelected ->
+                                div [ class "value" ] [ text labelStr ]
+
+                            OptionHighlighted ->
+                                text ""
+
+                            OptionDisabled ->
+                                text ""
+
+                    EmptyOption display (OptionLabel labelStr) ->
                         case display of
                             OptionShown ->
                                 text ""
