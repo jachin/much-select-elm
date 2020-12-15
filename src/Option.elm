@@ -819,6 +819,36 @@ optionsDecoder =
 
 decoder : Json.Decode.Decoder Option
 decoder =
+    Json.Decode.oneOf
+        [ decodeOptionWithoutAValue
+        , decodeOptionWithAValue
+        ]
+
+
+decodeOptionWithoutAValue : Json.Decode.Decoder Option
+decodeOptionWithoutAValue =
+    Json.Decode.field
+        "value"
+        valueDecoder
+        |> Json.Decode.andThen
+            (\value ->
+                case value of
+                    OptionValue _ ->
+                        Json.Decode.fail "It can not be an option with a value because it has a value."
+
+                    EmptyOptionValue ->
+                        Json.Decode.map2
+                            EmptyOption
+                            displayDecoder
+                            (Json.Decode.field
+                                "label"
+                                labelDecoder
+                            )
+            )
+
+
+decodeOptionWithAValue : Json.Decode.Decoder Option
+decodeOptionWithAValue =
     Json.Decode.map5 Option
         displayDecoder
         (Json.Decode.field
@@ -873,8 +903,15 @@ labelDecoder =
 valueDecoder : Json.Decode.Decoder OptionValue
 valueDecoder =
     Json.Decode.string
-        |> Json.Decode.map
-            OptionValue
+        |> Json.Decode.andThen
+            (\valueStr ->
+                case String.trim valueStr of
+                    "" ->
+                        Json.Decode.succeed EmptyOptionValue
+
+                    str ->
+                        Json.Decode.succeed (OptionValue str)
+            )
 
 
 descriptionDecoder : Json.Decode.Decoder OptionDescription
