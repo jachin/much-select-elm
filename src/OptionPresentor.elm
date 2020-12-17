@@ -212,27 +212,59 @@ highlightMarkup hay result =
     span [] (tokensToHtml (tokenize hay result))
 
 
+noBreakSpace : Char
+noBreakSpace =
+    '\u{00A0}'
+
+
+emptyLabel : String
+emptyLabel =
+    String.fromChar noBreakSpace
+
+
 prepareOptionsForPresentation : String -> List Option -> List (OptionPresenter msg)
 prepareOptionsForPresentation searchString options =
     options
         |> List.map
             (\option ->
-                let
-                    searchResult =
-                        search searchString option
+                case option of
+                    Option.EmptyOption _ label ->
+                        { display = Option.getOptionDisplay option
+                        , label = Option.getOptionLabel option
+                        , value = Option.getOptionValue option
+                        , group = Option.getOptionGroup option
+                        , description = Option.getOptionDescription option
+                        , searchResult = Nothing
+                        , totalScore = 0
+                        , labelMarkup =
+                            case label of
+                                Option.OptionLabel labelStr ->
+                                    case labelStr of
+                                        "" ->
+                                            text emptyLabel
 
-                    totalScore =
-                        searchResult.labelMatch.score + searchResult.descriptionMatch.score
-                in
-                { display = Option.getOptionDisplay option
-                , label = Option.getOptionLabel option
-                , value = Option.getOptionValue option
-                , group = Option.getOptionGroup option
-                , description = Option.getOptionDescription option
-                , searchResult = Just searchResult
-                , totalScore = totalScore
-                , labelMarkup = highlightMarkup (Option.getOptionLabel option |> Option.optionLabelToString) searchResult.labelMatch
-                , descriptionMarkup = highlightMarkup (Option.getOptionDescription option |> Option.optionDescriptionToString) searchResult.descriptionMatch
-                }
+                                        _ ->
+                                            text labelStr
+                        , descriptionMarkup = text ""
+                        }
+
+                    Option.Option _ _ _ _ _ ->
+                        let
+                            searchResult =
+                                search searchString option
+
+                            totalScore =
+                                searchResult.labelMatch.score + searchResult.descriptionMatch.score
+                        in
+                        { display = Option.getOptionDisplay option
+                        , label = Option.getOptionLabel option
+                        , value = Option.getOptionValue option
+                        , group = Option.getOptionGroup option
+                        , description = Option.getOptionDescription option
+                        , searchResult = Just searchResult
+                        , totalScore = totalScore
+                        , labelMarkup = highlightMarkup (Option.getOptionLabel option |> Option.optionLabelToString) searchResult.labelMatch
+                        , descriptionMarkup = highlightMarkup (Option.getOptionDescription option |> Option.optionDescriptionToString) searchResult.descriptionMatch
+                        }
             )
         |> List.sortBy .totalScore
