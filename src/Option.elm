@@ -152,7 +152,12 @@ getOptionGroup option =
 
 newOption : String -> Option
 newOption string =
-    Option OptionShown (OptionLabel string) (OptionValue string) NoDescription NoOptionGroup
+    case string of
+        "" ->
+            EmptyOption OptionShown (OptionLabel "")
+
+        _ ->
+            Option OptionShown (OptionLabel string) (OptionValue string) NoDescription NoOptionGroup
 
 
 setLabel : String -> Option -> Option

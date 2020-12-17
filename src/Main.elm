@@ -683,14 +683,22 @@ init flags =
             else
                 SingleSelect
 
+        initialValueStr =
+            String.trim flags.value
+
         initialValues : List String
         initialValues =
-            case selectionMode of
-                SingleSelect ->
-                    [ flags.value ]
+            case initialValueStr of
+                "" ->
+                    []
 
-                MultiSelect ->
-                    String.split "," flags.value
+                _ ->
+                    case selectionMode of
+                        SingleSelect ->
+                            [ initialValueStr ]
+
+                        MultiSelect ->
+                            String.split "," initialValueStr
 
         ( optionsWithInitialValueSelected, errorCmd ) =
             case Json.Decode.decodeString Option.optionsDecoder flags.optionsJson of
@@ -698,12 +706,12 @@ init flags =
                     case selectionMode of
                         SingleSelect ->
                             case List.head initialValues of
-                                Just initialValueStr ->
-                                    if Option.isOptionInListOfOptionsByValue (Option.stringToOptionValue initialValueStr) options then
+                                Just initialValueStr_ ->
+                                    if Option.isOptionInListOfOptionsByValue (Option.stringToOptionValue initialValueStr_) options then
                                         ( Option.selectOptionsInOptionsListByString initialValues options, Cmd.none )
 
                                     else
-                                        ( (Option.newOption initialValueStr |> Option.selectOption) :: options, Cmd.none )
+                                        ( (Option.newOption initialValueStr_ |> Option.selectOption) :: options, Cmd.none )
 
                                 Nothing ->
                                     ( options, Cmd.none )
