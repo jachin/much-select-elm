@@ -27,6 +27,53 @@
     <h4>Just an empty selector</h4>
     <much-selector></much-selector>
   </div>
+
+  <div id="empty-value-with-no-options" >
+    <h3>Empty Value with No Options</h3>
+    <much-selector selected=""></much-selector>
+  </div>
+
+  <div id="one-empty-option" >
+    <h3>One Empty Option</h3>
+    <much-selector>
+      <select>
+        <option></option>
+      </select>
+    </much-selector>
+  </div>
+
+  <div id="one-empty-selected-option" >
+    <h3>No Empty Selected Option</h3>
+    <much-selector>
+      <select>
+        <option selected></option>
+      </select>
+    </much-selector>
+  </div>
+
+  <div id="one-empty-option-with-a-label" >
+    <h3>One Empty Option</h3>
+    <h4>With a label</h4>
+    <much-selector>
+      <select>
+        <option value="">NOTHING</option>
+      </select>
+    </much-selector>
+  </div>
+
+  <div id="an-empty-option-with-a-label-and-some-other-stuff" >
+    <h3>An Empty Option with a Label and other options</h3>
+    <much-selector>
+      <select>
+        <option value="">[SELECT SPICE LEVEL]</option>
+        <option value="1">🌶</option>
+        <option value="2">🌶🌶</option>
+        <option value="3">🌶🌶🌶</option>
+        <option value="4">🌶🌶🌶🌶</option>
+        <option value="5">🌶🌶🌶🌶🌶</option>
+      </select>
+    </much-selector>
+  </div>
 </div>
 
 <!--suppress HtmlUnknownTarget -->
