@@ -124,5 +124,15 @@ suite =
                             optionsDecoder
                             listOfOptionsWithGroups
                         )
+            , test "an empty option with an empty label" <|
+                \_ ->
+                    Expect.equal
+                        (Ok [ newOption "" ])
+                        (Json.Decode.decodeString optionsDecoder """[ {"label": "", "value": "" } ]""")
+            , test "an empty option with a label" <|
+                \_ ->
+                    Expect.equal
+                        (Ok [ newOption "" |> Option.setLabel "nothing" ])
+                        (Json.Decode.decodeString optionsDecoder """[ {"label": "nothing", "value": "" } ]""")
             ]
         ]
