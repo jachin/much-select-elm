@@ -222,8 +222,8 @@ emptyLabel =
     String.fromChar noBreakSpace
 
 
-prepareOptionsForPresentation : String -> List Option -> List (OptionPresenter msg)
-prepareOptionsForPresentation searchString options =
+prepareOptionsForPresentation : Int -> String -> List Option -> List (OptionPresenter msg)
+prepareOptionsForPresentation maxDropdownItems searchString options =
     options
         |> List.map
             (\option ->
@@ -268,3 +268,4 @@ prepareOptionsForPresentation searchString options =
                         }
             )
         |> List.sortBy .totalScore
+        |> List.take maxDropdownItems

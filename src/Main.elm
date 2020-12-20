@@ -501,7 +501,7 @@ dropdown model =
                 DropdownMouseOutOption
                 DropdownMouseClickOption
                 model.selectionMode
-                (OptionPresentor.prepareOptionsForPresentation model.searchString model.options)
+                (OptionPresentor.prepareOptionsForPresentation model.maxDropdownItems model.searchString model.options)
     in
     if model.showDropdown && not (List.isEmpty model.options) then
         div

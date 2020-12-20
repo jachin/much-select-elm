@@ -1,4 +1,4 @@
-# \<much-selector>
+# \<much-select>
 
 ![Doge Meme](public/doge.jpg)
 
@@ -15,20 +15,20 @@ The goal for this project to achieve near feature parity with selectize using we
 ## Installation
 
 ```bash
-npm i much-selector-elm
+npm i much-select-elm
 ```
 
 ## Usage
 
-The npm package gives you the class `MuchSelector` (which inherits from `HTMLElement`), what you need to do is use it to define your own element.
+The npm package gives you the class `MuchSelect` (which inherits from `HTMLElement`), what you need to do is use it to define your own element.
 
 ```javascript
-import MuchSelector from "@getdrip/much-selector-elm";
+import MuchSelect from "@getdrip/much-select-elm";
 
-if (!customElements.get("much-selector")) {
+if (!customElements.get("much-select")) {
   // Putting guard rails around this because browsers do not like
   //  having the same custom element defined more than once.
-  window.customElements.define("much-selector", MuchSelector);
+  window.customElements.define("much-select", MuchSelect);
 }
 ```
 
@@ -70,11 +70,11 @@ npm run build
 
 ##### `selected`
 
-The `selected` attribute is used to set the value of the `<much-selector>`.
+The `selected` attribute is used to set the value of the `<much-select>`.
 
 ##### `placeholder`
 
-The `placeholder` attribute is used to set the placeholder in the text input of the `<much-selector>`. Just like in the `<input type="text">` it should only show up if the input is empty. 
+The `placeholder` attribute is used to set the placeholder in the text input of the `<much-select>`. Just like in the `<input type="text">` it should only show up if the input is empty. 
 
 #### Options
 

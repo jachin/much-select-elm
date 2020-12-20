@@ -16,7 +16,7 @@ module.exports = (env) => {
   return {
     mode: env.production ? "production" : "development",
     target: "web",
-    entry: env.production ? "./src/much-selector.js" : "./src/index.js",
+    entry: env.production ? "./src/much-select.js" : "./src/index.js",
     devServer: {
       publicPath: "/",
       contentBase: publicFolder,

@@ -113,7 +113,7 @@ const cleanUpOptions = (options) => options.map(cleanUpOption);
 
 // adapted from https://github.com/thread/elm-web-components
 
-class MuchSelector extends HTMLElement {
+class MuchSelect extends HTMLElement {
   constructor() {
     super();
 
@@ -409,7 +409,7 @@ class MuchSelector extends HTMLElement {
     } else {
       throw new TypeError("Max dropdown items must be a number!");
     }
-    if (newValue > 3) {
+    if (newValue < 3) {
       this._maxDropdownItems = 3;
     } else {
       this._maxDropdownItems = newValue;
@@ -603,4 +603,4 @@ class MuchSelector extends HTMLElement {
   }
 }
 
-export default MuchSelector;
+export default MuchSelect;
