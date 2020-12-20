@@ -19,6 +19,7 @@ module Option exposing
     , hasSelectedOption
     , highlightOption
     , highlightOptionInListByValue
+    , isEmptyOption
     , isOptionInListOfOptionsByValue
     , mergeTwoListsOfOptionsPreservingSelectedOptions
     , moveHighlightedOptionDown
@@ -799,6 +800,16 @@ selectedOptions options =
 hasSelectedOption : List Option -> Bool
 hasSelectedOption options =
     options |> selectedOptions |> List.isEmpty |> not
+
+
+isEmptyOption : Option -> Bool
+isEmptyOption option =
+    case option of
+        Option _ _ _ _ _ ->
+            False
+
+        EmptyOption _ _ ->
+            True
 
 
 optionListContainsOptionWithValue : Option -> List Option -> Bool

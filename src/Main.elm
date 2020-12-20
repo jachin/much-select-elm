@@ -196,10 +196,15 @@ update msg model =
                 Ok newOptions ->
                     let
                         newOptionWithOldSelectedOption =
-                            Option.mergeTwoListsOfOptionsPreservingSelectedOptions model.options newOptions
+                            case model.selectionMode of
+                                SingleSelect ->
+                                    Option.mergeTwoListsOfOptionsPreservingSelectedOptions model.options newOptions
 
-                        -- TODO if there is an option selected that is not in this list
-                        --       of options add the selected option to the list options.
+                                MultiSelect ->
+                                    -- Also filter out any empty options.
+                                    newOptions
+                                        |> List.filter (not << Option.isEmptyOption)
+                                        |> Option.mergeTwoListsOfOptionsPreservingSelectedOptions model.options
                     in
                     ( { model | options = newOptionWithOldSelectedOption }, Cmd.none )
 
@@ -718,8 +723,11 @@ init flags =
 
                         MultiSelect ->
                             let
+                                -- Don't include any empty options, that doesn't make sense.
                                 optionsWithInitialValues =
-                                    Option.addAndSelectOptionsInOptionsListByString initialValues options
+                                    options
+                                        |> List.filter (not << Option.isEmptyOption)
+                                        |> Option.addAndSelectOptionsInOptionsListByString initialValues
                             in
                             ( optionsWithInitialValues, Cmd.none )
 
