@@ -7,7 +7,9 @@
   "scripts": {
     "test": "elm-test",
     "build": "parcel build src/much-select.js",
-    "watch": "parcel public/index.html public/dropdown-options.html public/option-api.html public/empty-options.html public/initial-value.html"
+    "watch": "parcel --out-dir build/output public/index.html public/dropdown-options.html public/option-api.html public/empty-options.html public/initial-value.html",
+    "lint": "eslint",
+    "format": "elm-format"
   },
   "author": "Jachin Rupe <jachin.rupe@drip.com>",
   "license": "MIT",
