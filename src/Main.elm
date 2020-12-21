@@ -422,7 +422,7 @@ view model =
                     , tabindex 0
                     , classList
                         [ ( "placeholder", not hasOptionSelected )
-                        , ( "mulit", True )
+                        , ( "multi", True )
                         , ( "disabled", model.disabled )
                         ]
                     , css
