@@ -1,6 +1,6 @@
 {
   "name": "@getdrip/much-select-elm",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "A fancy selector web component written (mostly) in elm.",
   "main": "public/bundle.js",
   "repository": "github:DripEmail/much-select-elm",
