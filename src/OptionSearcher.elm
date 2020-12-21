@@ -1,4 +1,4 @@
-module OptionSearcher exposing (OptionSearchResult, bestMatch, replaceFancyCharters, search, simpleMatch)
+module OptionSearcher exposing (OptionSearchResult, bestMatch, replaceFancyCharacters, search, simpleMatch)
 
 import Fuzzy exposing (Result, match)
 import Option exposing (Option)
@@ -12,8 +12,8 @@ type alias OptionSearchResult =
     }
 
 
-replaceFancyCharters : String -> String
-replaceFancyCharters str =
+replaceFancyCharacters : String -> String
+replaceFancyCharacters str =
     str
         |> toCodePoints
         |> List.map
@@ -25,11 +25,14 @@ replaceFancyCharters str =
                     int
             )
         |> fromCodePoints
+        |> Debug.log "replaceFancyCharacters"
 
 
 simpleMatch : String -> String -> Result
 simpleMatch needle hay =
-    match [] [ " " ] (needle |> deburr |> replaceFancyCharters) (hay |> deburr |> replaceFancyCharters)
+    -- match [] [ " " ] (needle |> deburr |> replaceFancyCharacters) (hay |> deburr |> replaceFancyCharacters)
+    -- match [] [ " " ] (needle |> replaceFancyCharacters) (hay |> replaceFancyCharacters)
+    match [] [ " " ] needle hay
 
 
 bestMatch : String -> List Option -> Maybe Option

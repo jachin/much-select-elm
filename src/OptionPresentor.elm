@@ -269,3 +269,8 @@ prepareOptionsForPresentation maxDropdownItems searchString options =
             )
         |> List.sortBy .totalScore
         |> List.take maxDropdownItems
+
+
+
+--, labelMarkup = span [] [ Option.getOptionLabel option |> Option.optionLabelToString |> text ]
+--, descriptionMarkup = span [] [ Option.getOptionDescription option |> Option.optionDescriptionToString |> text ]
