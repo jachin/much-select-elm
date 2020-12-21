@@ -1,4 +1,4 @@
-import MuchSelector from "./much-select";
+import MuchSelector from "../src/much-select.js";
 
 if (!customElements.get("much-select")) {
   // Putting guard rails around this because browsers do not like
