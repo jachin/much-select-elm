@@ -10,3 +10,6 @@ elm-stuff
 
 ## system files
 .DS_Store
+
+# Parcel Cache
+.cache
