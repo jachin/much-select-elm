@@ -1,7 +1,7 @@
 // noinspection ES6CheckImport
 import { Elm } from "./Main.elm";
 
-import { asciiFold } from "./ascii-fold.js";
+import asciiFold from "./ascii-fold.js";
 
 const buildOptionsFromSelectElement = (selectElement) => {
   const options = [];
@@ -40,6 +40,7 @@ const stringToOptionObject = (str) => {
   return {
     value: str,
     label: str,
+    labelClean: asciiFold(str),
   };
 };
 
@@ -47,6 +48,7 @@ const numberToOptionObject = (num) => {
   return {
     value: `${num}`,
     label: `${num}`,
+    labelClean: `${num}`,
   };
 };
 
