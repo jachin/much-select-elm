@@ -1,6 +1,8 @@
 // noinspection ES6CheckImport
 import { Elm } from "./Main.elm";
 
+import { asciiFold } from "./ascii-fold.js";
+
 const buildOptionsFromSelectElement = (selectElement) => {
   const options = [];
   const optionElements = selectElement.querySelectorAll("option");
@@ -13,6 +15,7 @@ const buildOptionsFromSelectElement = (selectElement) => {
     }
     const option = { value };
     option.label = optionElement.innerText;
+    option.labelClean = asciiFold(optionElement.innerText);
     option.index = optionIndex;
     if (optionElement.hasAttribute("selected")) {
       const optionSelectedValue = optionElement.getAttribute("selected");
@@ -23,6 +26,7 @@ const buildOptionsFromSelectElement = (selectElement) => {
     }
     if (optionElement.dataset.description) {
       option.description = optionElement.dataset.description;
+      option.descriptionClean = asciiFold(option.description);
     }
     option.disabled = optionElement.hasAttribute("disabled");
     options.push(option);
@@ -82,8 +86,10 @@ const cleanUpOption = (option) => {
     if (optionMap.has("value") && !optionMap.has("label")) {
       return {
         label: optionMap.get("value"),
+        labelClean: asciiFold(optionMap.get("value")),
         value: optionMap.get("value"),
         description: optionMap.get("description"),
+        descriptionClean: asciiFold(optionMap.get("description")),
         disabled: optionMap.get("disabled"),
         index: optionMap.get("index"),
       };
@@ -91,16 +97,20 @@ const cleanUpOption = (option) => {
     if (optionMap.has("label") && !optionMap.has("value")) {
       return {
         label: optionMap.get("label"),
+        labelClean: asciiFold(optionMap.get("label")),
         value: optionMap.get("label"),
         description: optionMap.get("description"),
+        descriptionClean: asciiFold(optionMap.get("description")),
         disabled: optionMap.get("disabled"),
         index: optionMap.get("index"),
       };
     }
     return {
       label: optionMap.get("label"),
+      labelClean: asciiFold(optionMap.get("label")),
       value: optionMap.get("value"),
       description: optionMap.get("description"),
+      descriptionClean: asciiFold(optionMap.get("description")),
       disabled: optionMap.get("disabled"),
       index: optionMap.get("index"),
     };

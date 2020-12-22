@@ -4,7 +4,7 @@ import Expect
 import Html exposing (span, text)
 import Html.Attributes exposing (class)
 import OptionPresentor exposing (highlightMarkup, indexInsideMatch, tokenize)
-import OptionSearcher exposing (replaceFancyCharacters, simpleMatch)
+import OptionSearcher exposing (simpleMatch)
 import Test exposing (Test, describe, test)
 
 
@@ -27,12 +27,7 @@ colorPartialResult =
 suite : Test
 suite =
     describe "Highlighting search results"
-        [ describe "do not include fancy characters in the search"
-            [ test "like emojis, they should be replaced with blank characters" <|
-                \_ ->
-                    Expect.equal (replaceFancyCharacters "a🐇") "a\u{007F}"
-            ]
-        , describe "we need to know which characters are inside of a match and which are not"
+        [ describe "we need to know which characters are inside of a match and which are not"
             [ describe "a simple example where the whole needs matches the whole hay"
                 [ test "Expected the first character to be part of a match" <|
                     \_ ->

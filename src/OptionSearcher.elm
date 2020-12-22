@@ -1,9 +1,7 @@
-module OptionSearcher exposing (OptionSearchResult, bestMatch, replaceFancyCharacters, search, simpleMatch)
+module OptionSearcher exposing (OptionSearchResult, bestMatch, search, simpleMatch)
 
 import Fuzzy exposing (Result, match)
 import Option exposing (Option)
-import String.Deburr exposing (deburr)
-import String.Extra exposing (fromCodePoints, toCodePoints)
 
 
 type alias OptionSearchResult =
@@ -12,26 +10,8 @@ type alias OptionSearchResult =
     }
 
 
-replaceFancyCharacters : String -> String
-replaceFancyCharacters str =
-    str
-        |> toCodePoints
-        |> List.map
-            (\int ->
-                if int > 127 then
-                    127
-
-                else
-                    int
-            )
-        |> fromCodePoints
-        |> Debug.log "replaceFancyCharacters"
-
-
 simpleMatch : String -> String -> Result
 simpleMatch needle hay =
-    -- match [] [ " " ] (needle |> deburr |> replaceFancyCharacters) (hay |> deburr |> replaceFancyCharacters)
-    -- match [] [ " " ] (needle |> replaceFancyCharacters) (hay |> replaceFancyCharacters)
     match [] [ " " ] needle hay
 
 

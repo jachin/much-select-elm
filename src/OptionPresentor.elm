@@ -238,7 +238,7 @@ prepareOptionsForPresentation maxDropdownItems searchString options =
                         , totalScore = 0
                         , labelMarkup =
                             case label of
-                                Option.OptionLabel labelStr ->
+                                Option.OptionLabel labelStr _ ->
                                     case labelStr of
                                         "" ->
                                             text emptyLabel
