@@ -76,13 +76,13 @@ type OptionDisplay
 
 
 type OptionLabel
-    = OptionLabel String
+    = OptionLabel String (Maybe String)
 
 
 optionLabelToString : OptionLabel -> String
 optionLabelToString optionLabel =
     case optionLabel of
-        OptionLabel label ->
+        OptionLabel label _ ->
             label
 
 
@@ -107,14 +107,14 @@ stringToOptionValue string =
 
 
 type OptionDescription
-    = OptionDescription String
+    = OptionDescription String (Maybe String)
     | NoDescription
 
 
 optionDescriptionToString : OptionDescription -> String
 optionDescriptionToString optionDescription =
     case optionDescription of
-        OptionDescription string ->
+        OptionDescription string _ ->
             string
 
         NoDescription ->
@@ -124,7 +124,7 @@ optionDescriptionToString optionDescription =
 optionDescriptionToBool : OptionDescription -> Bool
 optionDescriptionToBool optionDescription =
     case optionDescription of
-        OptionDescription _ ->
+        OptionDescription _ _ ->
             True
 
         NoDescription ->
@@ -151,31 +151,31 @@ getOptionGroup option =
             NoOptionGroup
 
 
-newOption : String -> Option
-newOption string =
-    case string of
+newOption : String -> Maybe String -> Option
+newOption value maybeCleanLabel =
+    case value of
         "" ->
-            EmptyOption OptionShown (OptionLabel "")
+            EmptyOption OptionShown (OptionLabel "" maybeCleanLabel)
 
         _ ->
-            Option OptionShown (OptionLabel string) (OptionValue string) NoDescription NoOptionGroup
+            Option OptionShown (OptionLabel value maybeCleanLabel) (OptionValue value) NoDescription NoOptionGroup
 
 
-setLabel : String -> Option -> Option
-setLabel string option =
+setLabel : String -> Maybe String -> Option -> Option
+setLabel string maybeCleanString option =
     case option of
         Option optionDisplay _ optionValue description group ->
-            Option optionDisplay (OptionLabel string) optionValue description group
+            Option optionDisplay (OptionLabel string maybeCleanString) optionValue description group
 
         EmptyOption optionDisplay _ ->
-            EmptyOption optionDisplay (OptionLabel string)
+            EmptyOption optionDisplay (OptionLabel string maybeCleanString)
 
 
 setDescription : String -> Option -> Option
 setDescription string option =
     case option of
         Option optionDisplay label optionValue _ group ->
-            Option optionDisplay label optionValue (OptionDescription string) group
+            Option optionDisplay label optionValue (OptionDescription string Nothing) group
 
         EmptyOption optionDisplay optionLabel ->
             EmptyOption optionDisplay optionLabel
@@ -191,14 +191,14 @@ setGroup string option =
             EmptyOption optionDisplay optionLabel
 
 
-newSelectedOption : String -> Option
-newSelectedOption string =
-    Option OptionSelected (OptionLabel string) (OptionValue string) NoDescription NoOptionGroup
+newSelectedOption : String -> Maybe String -> Option
+newSelectedOption string maybeCleanLabel =
+    Option OptionSelected (OptionLabel string maybeCleanLabel) (OptionValue string) NoDescription NoOptionGroup
 
 
-newDisabledOption : String -> Option
-newDisabledOption string =
-    Option OptionDisabled (OptionLabel string) (OptionValue string) NoDescription NoOptionGroup
+newDisabledOption : String -> Maybe String -> Option
+newDisabledOption string maybeCleanLabel =
+    Option OptionDisabled (OptionLabel string maybeCleanLabel) (OptionValue string) NoDescription NoOptionGroup
 
 
 getOptionDisplay : Option -> OptionDisplay
@@ -273,7 +273,7 @@ addAndSelectOptionsInOptionsListByString : List String -> List Option -> List Op
 addAndSelectOptionsInOptionsListByString strings options =
     let
         newOptions =
-            List.map newSelectedOption strings
+            List.map (\str -> newSelectedOption str Nothing) strings
     in
     mergeTwoListsOfOptionsPreservingSelectedOptions newOptions options
 
@@ -850,16 +850,13 @@ decodeOptionWithoutAValue =
             (\value ->
                 case value of
                     OptionValue _ ->
-                        Json.Decode.fail "It can not be an option with a value because it has a value."
+                        Json.Decode.fail "It can not be an option without a value because it has a value."
 
                     EmptyOptionValue ->
                         Json.Decode.map2
                             EmptyOption
                             displayDecoder
-                            (Json.Decode.field
-                                "label"
-                                labelDecoder
-                            )
+                            labelDecoder
             )
 
 
@@ -867,10 +864,7 @@ decodeOptionWithAValue : Json.Decode.Decoder Option
 decodeOptionWithAValue =
     Json.Decode.map5 Option
         displayDecoder
-        (Json.Decode.field
-            "label"
-            labelDecoder
-        )
+        labelDecoder
         (Json.Decode.field
             "value"
             valueDecoder
@@ -911,9 +905,10 @@ displayDecoder =
 
 labelDecoder : Json.Decode.Decoder OptionLabel
 labelDecoder =
-    Json.Decode.string
-        |> Json.Decode.map
-            OptionLabel
+    Json.Decode.map2
+        OptionLabel
+        (Json.Decode.field "label" Json.Decode.string)
+        (Json.Decode.field "labelClean" (Json.Decode.nullable Json.Decode.string))
 
 
 valueDecoder : Json.Decode.Decoder OptionValue
@@ -933,8 +928,9 @@ valueDecoder =
 descriptionDecoder : Json.Decode.Decoder OptionDescription
 descriptionDecoder =
     Json.Decode.oneOf
-        [ Json.Decode.field "description" Json.Decode.string
-            |> Json.Decode.map OptionDescription
+        [ Json.Decode.map2 OptionDescription
+            (Json.Decode.field "description" Json.Decode.string)
+            (Json.Decode.field "descriptionClean" (Json.Decode.nullable Json.Decode.string))
         , Json.Decode.succeed NoDescription
         ]
 

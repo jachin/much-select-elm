@@ -14,6 +14,9 @@
   },
   "rules": {
     "prettier/prettier": "error",
-    "no-underscore-dangle": ["error", { "allowAfterThis": true }]
+    "no-underscore-dangle": ["error", { "allowAfterThis": true }],
+    "import/extensions": ["error", {"js": "always", "json": "always",
+      "elm": "always"
+    } ]
   }
 }

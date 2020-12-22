@@ -630,7 +630,7 @@ optionsToValuesHtml options =
         |> List.map
             (\option ->
                 case option of
-                    Option display (OptionLabel labelStr) _ _ _ ->
+                    Option display (OptionLabel labelStr _) _ _ _ ->
                         case display of
                             OptionShown ->
                                 text ""
@@ -647,7 +647,7 @@ optionsToValuesHtml options =
                             OptionDisabled ->
                                 text ""
 
-                    EmptyOption display (OptionLabel labelStr) ->
+                    EmptyOption display (OptionLabel labelStr _) ->
                         case display of
                             OptionShown ->
                                 text ""
@@ -716,7 +716,7 @@ init flags =
                                         ( Option.selectOptionsInOptionsListByString initialValues options, Cmd.none )
 
                                     else
-                                        ( (Option.newOption initialValueStr_ |> Option.selectOption) :: options, Cmd.none )
+                                        ( (Option.newOption initialValueStr_ Nothing |> Option.selectOption) :: options, Cmd.none )
 
                                 Nothing ->
                                     ( options, Cmd.none )
