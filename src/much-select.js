@@ -349,6 +349,43 @@ class MuchSelect extends HTMLElement {
     // TODO perhaps this delimiter should be configurable
     this.selected = valuesTuple.map((valueTuple) => valueTuple[0]).join(",");
     this.updateWidth();
+    if (
+      this.hasAttribute("multi-select") &&
+      this.getAttribute("multi-select") !== "false"
+    ) {
+      // If we are in mulit select mode put the list of values in the event.
+      const valuesObj = valuesTuple.map((valueTuple) => {
+        return { value: valueTuple[0], label: valueTuple[1] };
+      });
+      this.dispatchEvent(
+        new CustomEvent("valueChanged", {
+          bubbles: true,
+          detail: { values: valuesObj },
+        })
+      );
+    } else if (valuesTuple.length === 0) {
+      // If we are in single select mode and the value is empty.
+      this.dispatchEvent(
+        new CustomEvent("valueChanged", {
+          bubbles: true,
+          detail: { value: null },
+        })
+      );
+    } else if (valuesTuple.length === 1) {
+      // If we are in single select mode put the list of values in the event.
+      const valueObj = { value: valuesTuple[0][0], label: valuesTuple[0][1] };
+      this.dispatchEvent(
+        new CustomEvent("valueChanged", {
+          bubbles: true,
+          detail: { value: valueObj },
+        })
+      );
+    } else {
+      // If we are in single select mode and there is more than one value then something is wrong.
+      throw new TypeError(
+        `In single select mode we are expecting a single value, instead we got ${valuesTuple.length}`
+      );
+    }
   }
 
   get selected() {
