@@ -36,15 +36,13 @@ search string option =
             (string |> String.toLower)
             (option
                 |> Option.getOptionLabel
-                |> Option.optionLabelToString
-                |> String.toLower
+                |> Option.optionLabelToSearchString
             )
     , descriptionMatch =
         simpleMatch
             (string |> String.toLower)
             (option
                 |> Option.getOptionDescription
-                |> Option.optionDescriptionToString
-                |> String.toLower
+                |> Option.optionDescriptionToSearchString
             )
     }

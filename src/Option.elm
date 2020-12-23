@@ -28,8 +28,10 @@ module Option exposing
     , newOption
     , newSelectedOption
     , optionDescriptionToBool
+    , optionDescriptionToSearchString
     , optionDescriptionToString
     , optionGroupToString
+    , optionLabelToSearchString
     , optionLabelToString
     , optionsDecoder
     , removeHighlightOptionInList
@@ -86,6 +88,18 @@ optionLabelToString optionLabel =
             label
 
 
+optionLabelToSearchString : OptionLabel -> String
+optionLabelToSearchString optionLabel =
+    case optionLabel of
+        OptionLabel string maybeCleanString ->
+            case maybeCleanString of
+                Just cleanString ->
+                    cleanString
+
+                Nothing ->
+                    String.toLower string
+
+
 type OptionValue
     = OptionValue String
     | EmptyOptionValue
@@ -116,6 +130,21 @@ optionDescriptionToString optionDescription =
     case optionDescription of
         OptionDescription string _ ->
             string
+
+        NoDescription ->
+            ""
+
+
+optionDescriptionToSearchString : OptionDescription -> String
+optionDescriptionToSearchString optionDescription =
+    case optionDescription of
+        OptionDescription description maybeCleanDescription ->
+            case maybeCleanDescription of
+                Just cleanDescription ->
+                    cleanDescription
+
+                Nothing ->
+                    String.toLower description
 
         NoDescription ->
             ""
