@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!--suppress HtmlUnknownTarget -->
+  <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+  <title>Much Selector</title>
+  <link href="demo-styles.css" rel="stylesheet">
+</head>
+
+<body>
+<h1>Much-Selector - Initial Values</h1>
+
+<h2>Demo and Development Playground</h2>
+
+<nav>
+  <ol class="main-nav">
+    <li class="main-nav-item"><a href="index.html">Home</a></li>
+  </ol>
+</nav>
+
+<div class="container">
+  <div>
+    <h3>Over Ride Clear Button</h3>
+    <p>
+      Let's change how the clear button works.
+    </p>
+    <much-select selected="Blue">
+      <select slot="select-input">
+        <option>Red</option>
+        <option>Yellow</option>
+        <option>Blue</option>
+        <option>Orange</option>
+        <option>Green</option>
+        <option>Purple</option>
+      </select>
+      <div slot="clear-button">✿</div>
+    </much-select>
+  </div>
+</div>
+
+
+<script src="./index.js"></script>
+</body>
+</html>

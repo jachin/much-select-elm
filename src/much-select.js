@@ -561,6 +561,13 @@ class MuchSelect extends HTMLElement {
         top: 10px;
       }
 
+      slot[name='clear-button'] {
+        display: block;
+        position: absolute;
+        right: 30px;
+        top: 10px;
+      }
+
       #dropdown {
         background-color: #EEEEEE;
         visibility: hidden;

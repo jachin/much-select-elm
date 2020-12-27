@@ -124,12 +124,19 @@ type alias Model =
     , options : List Option
     , showDropdown : Bool
     , searchString : String
-    , loading : Bool
+    , rightSlot : RightSlot
     , maxDropdownItems : Int
     , disabled : Bool
     , focused : Bool
     , selectBoxWidth : Float
     }
+
+
+type RightSlot
+    = ShowNothing
+    | ShowLoadingIndicator
+    | ShowDropdownIndicator
+    | ShowClearButton
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -266,7 +273,24 @@ update msg model =
             ( { model | placeholder = newPlaceholder }, Cmd.none )
 
         LoadingAttributeChanged bool ->
-            ( { model | loading = bool }, Cmd.none )
+            let
+                rightSlot =
+                    if bool then
+                        ShowLoadingIndicator
+
+                    else
+                        case model.selectionMode of
+                            SingleSelect ->
+                                ShowDropdownIndicator
+
+                            MultiSelect ->
+                                if Option.hasSelectedOption model.options then
+                                    ShowClearButton
+
+                                else
+                                    ShowNothing
+            in
+            ( { model | rightSlot = rightSlot }, Cmd.none )
 
         MaxDropdownItemsChanged int ->
             ( { model | maxDropdownItems = int }, Cmd.none )
@@ -400,12 +424,18 @@ view model =
                         |> Html.Styled.Attributes.fromUnstyled
                     ]
                     []
-                , if model.loading then
-                    node "slot" [ name "loading-indicator" ] []
+                , case model.rightSlot of
+                    ShowNothing ->
+                        text ""
 
-                  else
-                    text ""
-                , dropdownIndicator model.focused model.disabled hasOptions
+                    ShowLoadingIndicator ->
+                        node "slot" [ name "loading-indicator" ] []
+
+                    ShowDropdownIndicator ->
+                        dropdownIndicator model.focused model.disabled hasOptions
+
+                    ShowClearButton ->
+                        node "slot" [ name "clear-button" ] []
                 , dropdown model
                 ]
 
@@ -741,7 +771,21 @@ init flags =
       , options = optionsWithInitialValueSelected
       , showDropdown = False
       , searchString = ""
-      , loading = flags.loading
+      , rightSlot =
+            if flags.loading then
+                ShowLoadingIndicator
+
+            else
+                case selectionMode of
+                    SingleSelect ->
+                        ShowDropdownIndicator
+
+                    MultiSelect ->
+                        if Option.hasSelectedOption optionsWithInitialValueSelected then
+                            ShowClearButton
+
+                        else
+                            ShowNothing
       , maxDropdownItems = flags.maxDropdownItems
       , disabled = flags.disabled
       , focused = False
