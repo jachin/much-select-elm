@@ -561,11 +561,12 @@ class MuchSelect extends HTMLElement {
         top: 10px;
       }
 
-      slot[name='clear-button'] {
+      #clear-button-wrapper {
         display: block;
         position: absolute;
-        right: 30px;
+        right: 5px;
         top: 10px;
+        cursor: pointer;
       }
 
       #dropdown {

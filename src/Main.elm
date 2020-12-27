@@ -114,6 +114,7 @@ type Msg
     | MoveHighlightedOptionUp
     | MoveHighlightedOptionDown
     | SelectBoxWidthUpdate Float
+    | ClearAllSelectedOptions
 
 
 type alias Model =
@@ -344,6 +345,9 @@ update msg model =
         SelectBoxWidthUpdate width ->
             ( { model | selectBoxWidth = width }, Cmd.none )
 
+        ClearAllSelectedOptions ->
+            ( { model | options = Option.deselectAllOptionsInOptionsList model.options }, Cmd.none )
+
 
 view : Model -> Html Msg
 view model =
@@ -496,6 +500,26 @@ view model =
                         |> Html.Styled.Attributes.fromUnstyled
                     ]
                     []
+                , case model.rightSlot of
+                    ShowNothing ->
+                        text ""
+
+                    ShowLoadingIndicator ->
+                        node "slot" [ name "loading-indicator" ] []
+
+                    ShowDropdownIndicator ->
+                        dropdownIndicator model.focused model.disabled hasOptionSelected
+
+                    ShowClearButton ->
+                        div
+                            [ id "clear-button-wrapper"
+                            , onClick ClearAllSelectedOptions
+                            ]
+                            [ node "slot"
+                                [ name "clear-button" ]
+                                [ text "✕"
+                                ]
+                            ]
                 , dropdown model
                 ]
 
