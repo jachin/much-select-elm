@@ -21,9 +21,8 @@
   </ol>
 </nav>
 
-
 <div class="container">
-  <div id="single-select-value-changed-event" >
+  <div id="single-select-value-changed-event">
     <h3>Single Select - <code>valueChanged</code> Event</h3>
     <much-select>
       <select>
@@ -33,13 +32,35 @@
         <option>Red Beans</option>
       </select>
     </much-select>
+
+    <p>
+      Events:
+      <table id="single-select-value-changed-event-log">
+        <thead>
+          <tr>
+            <th>Event</th>
+            <th>Details</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </p>
+
     <script>
-      document.querySelector("#single-select-value-changed-event much-select").addEventListener("valueChanged", console.log)
+      window.addEventListener("load", () => {
+        document
+          .querySelector("#single-select-value-changed-event much-select")
+          .addEventListener(
+            "valueChanged",
+            makeLogEventHandler("single-select-value-changed-event-log")
+          );
+      });
     </script>
 
   </div>
 
-  <div id="multi-select-value-changed-event" >
+  <div id="multi-select-value-changed-event">
     <h3>Multi Select - <code>valueChanged</code> Event</h3>
     <much-select multi-select="true">
       <select>
@@ -50,8 +71,28 @@
         <option>Squirrel</option>
       </select>
     </much-select>
+    <p>
+      Events:
+      <table id="multi-select-value-changed-event-log">
+        <thead>
+        <tr>
+          <th>Event</th>
+          <th>Details</th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </p>
     <script>
-      document.querySelector("#multi-select-value-changed-event much-select").addEventListener("valueChanged", console.log)
+      window.addEventListener("load", () => {
+        document
+          .querySelector("#multi-select-value-changed-event much-select")
+          .addEventListener(
+            "valueChanged",
+            makeLogEventHandler("multi-select-value-changed-event-log")
+          );
+      });
     </script>
 
   </div>
