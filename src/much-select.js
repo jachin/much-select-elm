@@ -494,6 +494,12 @@ class MuchSelect extends HTMLElement {
     const styleTag = document.createElement("style");
     styleTag.innerHTML = `
 
+      :host {
+        min-height: 40px;
+        min-width: 200px;
+        margin: 10px;
+      }
+
       slot[name='select-input'] {
         display: none;
       }
@@ -504,13 +510,6 @@ class MuchSelect extends HTMLElement {
         position: relative;
         max-width: 400px;
         min-width: 200px;
-      }
-
-      #input-filter {
-        height: 36px;
-        position: relative;
-        font-size: 25px;
-        width: 100%;
       }
 
       #value-casing {
@@ -529,7 +528,8 @@ class MuchSelect extends HTMLElement {
         font: -webkit-small-control;
         margin-top: 5px;
         padding: 4px 3px 2px 3px;
-        width: 100%;
+        display: flex;
+        flex-flow: row nowrap;
       }
 
       #value-casing.disabled {
@@ -552,6 +552,11 @@ class MuchSelect extends HTMLElement {
         vertical-align: middle;
       }
 
+      #value-casing #input-filter {
+        height: 36px;
+        font-size: 25px;
+      }
+
       #value-casing.single {
         background-image: linear-gradient(to bottom, #fefefe, #f2f2f2);
         background-repeat: repeat-x;
@@ -559,12 +564,6 @@ class MuchSelect extends HTMLElement {
 
       #value-casing.single.disabled {
         background-image: none;
-      }
-
-      #value-casing.multi .values {
-        display: flex;
-        flex-flow: row nowrap;
-        height: 100%;
       }
 
       #value-casing.multi .value {

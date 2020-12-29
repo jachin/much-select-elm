@@ -1,17 +1,7 @@
 module Main exposing (..)
 
 import Browser
-import Css
-    exposing
-        ( block
-        , display
-        , hidden
-        , none
-        , px
-        , visibility
-        , visible
-        , width
-        )
+import Css exposing (block, display, hidden, inline, none, px, visibility, visible, width)
 import Html.Styled
     exposing
         ( Html
@@ -453,6 +443,9 @@ view model =
                 hasOptionSelected =
                     Option.hasSelectedOption model.options
 
+                showPlaceholder =
+                    not hasOptionSelected && not model.focused
+
                 inputFilter =
                     input
                         [ type_ "text"
@@ -469,7 +462,6 @@ view model =
 
                               else
                                 visibility hidden
-                            , width (px model.valueCasingWidth)
                             ]
                         , Keyboard.on Keyboard.Keydown
                             [ ( Enter, SelectHighlightedOption )
@@ -488,51 +480,29 @@ view model =
                     , onFocus BringInputInFocus
                     , tabindex 0
                     , classList
-                        [ ( "placeholder", not hasOptionSelected )
+                        [ ( "placeholder", showPlaceholder )
                         , ( "multi", True )
                         , ( "disabled", model.disabled )
                         ]
                     , css
-                        [ if model.focused then
-                            display none
-
-                          else
-                            display block
-                        , width (px model.valueCasingWidth)
+                        [ width (px model.valueCasingWidth)
                         ]
                     ]
-                    [ if hasOptionSelected then
-                        div [ id "values" ] (optionsToValuesHtml model.options ++ [ inputFilter ])
+                    ([ span
+                        [ class "placeholder"
+                        , css
+                            [ if showPlaceholder then
+                                display inline
 
-                      else
-                        span [ class "placeholder" ] [ text model.placeholder ]
-                    ]
-                , input
-                    [ type_ "text"
-                    , onBlur InputBlur
-                    , onFocus InputFocus
-                    , onInput SearchInputOnInput
-                    , value model.searchString
-                    , placeholder model.placeholder
-                    , id "input-filter"
-                    , disabled model.disabled
-                    , css
-                        [ if model.focused then
-                            visibility visible
-
-                          else
-                            visibility hidden
-                        , width (px model.valueCasingWidth)
+                              else
+                                display none
+                            ]
                         ]
-                    , Keyboard.on Keyboard.Keydown
-                        [ ( Enter, SelectHighlightedOption )
-                        , ( Escape, EscapeKeyInInputFilter )
-                        , ( ArrowUp, MoveHighlightedOptionUp )
-                        , ( ArrowDown, MoveHighlightedOptionDown )
-                        ]
-                        |> Html.Styled.Attributes.fromUnstyled
-                    ]
-                    []
+                        [ text model.placeholder ]
+                     ]
+                        ++ optionsToValuesHtml model.options
+                        ++ [ inputFilter ]
+                    )
                 , case model.rightSlot of
                     ShowNothing ->
                         text ""
