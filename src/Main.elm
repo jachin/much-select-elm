@@ -346,7 +346,12 @@ update msg model =
             ( { model | selectBoxWidth = width }, Cmd.none )
 
         ClearAllSelectedOptions ->
-            ( { model | options = Option.deselectAllOptionsInOptionsList model.options }, Cmd.none )
+            ( { model
+                | options = Option.deselectAllOptionsInOptionsList model.options
+                , rightSlot = ShowNothing
+              }
+            , Cmd.none
+            )
 
 
 view : Model -> Html Msg
