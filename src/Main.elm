@@ -453,16 +453,8 @@ view model =
                         , onFocus InputFocus
                         , onInput SearchInputOnInput
                         , value model.searchString
-                        , placeholder model.placeholder
                         , id "input-filter"
                         , disabled model.disabled
-                        , css
-                            [ if model.focused then
-                                visibility visible
-
-                              else
-                                visibility hidden
-                            ]
                         , Keyboard.on Keyboard.Keydown
                             [ ( Enter, SelectHighlightedOption )
                             , ( Escape, EscapeKeyInInputFilter )

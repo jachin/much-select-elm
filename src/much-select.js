@@ -494,12 +494,25 @@ class MuchSelect extends HTMLElement {
     const styleTag = document.createElement("style");
     styleTag.innerHTML = `
 
+
       :host {
+        /*
+        This web components should take up some space on the page.
+
+        TODO: Do we really have to set this by hand? Can't we do something so that
+        this gets calculated automatically? If it must be set by hand we should probably
+        do something a bit more clever here to not hard code these values so much.
+        */
+
         min-height: 40px;
         min-width: 200px;
         margin: 10px;
       }
 
+      /*
+      If we are using a select element in the select-input slot to manage the
+      the options do not show it.
+      */
       slot[name='select-input'] {
         display: none;
       }
@@ -512,6 +525,10 @@ class MuchSelect extends HTMLElement {
         min-width: 200px;
       }
 
+      /*
+        This value casing (and what's inside of it) is supposed to be the
+        "main event".
+      */
       #value-casing {
         min-height: 34px;
         position: absolute;
@@ -544,17 +561,36 @@ class MuchSelect extends HTMLElement {
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
+        flex-basis: 1;
       }
 
       #value-casing .value {
         color: black;
         font-size: 25px;
         vertical-align: middle;
+        flex-grow: 1;
+        flex-shrink: 1;
       }
 
       #value-casing #input-filter {
+        /*
+        TODO, seems like the height and font-size should not be hardcoded.
+        */
         height: 36px;
         font-size: 25px;
+        /* The min-width let's the input shrink down as far as it needs to.
+        The with width lets it grow as much as it can.
+        */
+        min-width: 10px;
+        width: 100%;
+        /* Let's give the input a bit more room than the selected values.
+        */
+        flex-grow: 2;
+        flex-shrink: 2;
+        /* We don't want a border because the value-casing will supply the border for
+          this input.
+        */
+        border: none;
       }
 
       #value-casing.single {
@@ -567,7 +603,6 @@ class MuchSelect extends HTMLElement {
       }
 
       #value-casing.multi .value {
-        margin: 2px;
         padding: 3px;
         font-size: 20px;
         color: white;
