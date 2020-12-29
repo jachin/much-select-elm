@@ -502,23 +502,34 @@ class MuchSelect extends HTMLElement {
         margin-top: auto;
         margin-bottom: auto;
         position: relative;
+        max-width: 400px;
+        min-width: 200px;
       }
 
       #input-filter {
         height: 36px;
         position: relative;
         font-size: 25px;
+        width: 100%;
       }
 
       #select-box {
-        min-height: 36px;
+        min-height: 34px;
         position: absolute;
-        top: 0px;
-        border: 1px solid darkgray;
-        margin-top: auto;
-        margin-bottom: auto;
-        padding: 2px 3px;
+        top: -3px;
         cursor: pointer;
+        overflow: hidden;
+        -moz-appearance: textfield;
+        -webkit-appearance: textfield;
+        background-color: white;
+        background-color: -moz-field;
+        border: 1px solid darkgray;
+        box-shadow: 1px 1px 1px 0 lightgray inset;
+        font: -moz-field;
+        font: -webkit-small-control;
+        margin-top: 5px;
+        padding: 4px 3px 2px 3px;
+        width: 100%;
       }
 
       #select-box.disabled {
@@ -530,6 +541,9 @@ class MuchSelect extends HTMLElement {
         color: silver;
         font-size: 25px;
         vertical-align: middle;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
       }
 
       #select-box .value {
@@ -574,12 +588,14 @@ class MuchSelect extends HTMLElement {
         visibility: hidden;
         padding: 5px;
         position: absolute;
-        top: 50px;
+        top: 45px;
         left: 0px;
         font-size: 20px;
         min-width: 200px;
         display: inline-block;
         z-index: 10;
+        max-height: 300px;
+        overflow-y: auto;
       }
       #dropdown.showing {
         visibility: visible;
