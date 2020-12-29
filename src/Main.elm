@@ -79,8 +79,8 @@ import Ports
         , optionsChangedReceiver
         , placeholderChangedReceiver
         , removeOptionsReceiver
-        , selectBoxWidthChangedReceiver
         , selectOptionReceiver
+        , valueCasingWidthChangedReceiver
         , valueChanged
         , valueChangedReceiver
         , valuesDecoder
@@ -113,7 +113,7 @@ type Msg
     | EscapeKeyInInputFilter
     | MoveHighlightedOptionUp
     | MoveHighlightedOptionDown
-    | SelectBoxWidthUpdate Float
+    | ValueCasingWidthUpdate Float
     | ClearAllSelectedOptions
 
 
@@ -129,7 +129,7 @@ type alias Model =
     , maxDropdownItems : Int
     , disabled : Bool
     , focused : Bool
-    , selectBoxWidth : Float
+    , valueCasingWidth : Float
     }
 
 
@@ -342,8 +342,8 @@ update msg model =
         MoveHighlightedOptionDown ->
             ( { model | options = Option.moveHighlightedOptionDown model.options }, Cmd.none )
 
-        SelectBoxWidthUpdate width ->
-            ( { model | selectBoxWidth = width }, Cmd.none )
+        ValueCasingWidthUpdate width ->
+            ( { model | valueCasingWidth = width }, Cmd.none )
 
         ClearAllSelectedOptions ->
             ( { model
@@ -379,9 +379,9 @@ view model =
                     else
                         model.placeholder
             in
-            div [ id "wrapper", css [ width (px model.selectBoxWidth) ] ]
+            div [ id "wrapper", css [ width (px model.valueCasingWidth) ] ]
                 [ div
-                    [ id "select-box"
+                    [ id "value-casing"
                     , onClick BringInputInFocus
                     , onFocus BringInputInFocus
                     , tabindex 0
@@ -397,7 +397,7 @@ view model =
 
                           else
                             display block
-                        , width (px model.selectBoxWidth)
+                        , width (px model.valueCasingWidth)
                         ]
                     ]
                     [ if hasOptionSelected then
@@ -421,7 +421,7 @@ view model =
 
                           else
                             visibility hidden
-                        , width (px model.selectBoxWidth)
+                        , width (px model.valueCasingWidth)
                         ]
                     , Keyboard.on Keyboard.Keydown
                         [ ( Enter, SelectHighlightedOption )
@@ -452,10 +452,38 @@ view model =
             let
                 hasOptionSelected =
                     Option.hasSelectedOption model.options
+
+                inputFilter =
+                    input
+                        [ type_ "text"
+                        , onBlur InputBlur
+                        , onFocus InputFocus
+                        , onInput SearchInputOnInput
+                        , value model.searchString
+                        , placeholder model.placeholder
+                        , id "input-filter"
+                        , disabled model.disabled
+                        , css
+                            [ if model.focused then
+                                visibility visible
+
+                              else
+                                visibility hidden
+                            , width (px model.valueCasingWidth)
+                            ]
+                        , Keyboard.on Keyboard.Keydown
+                            [ ( Enter, SelectHighlightedOption )
+                            , ( Escape, EscapeKeyInInputFilter )
+                            , ( ArrowUp, MoveHighlightedOptionUp )
+                            , ( ArrowDown, MoveHighlightedOptionDown )
+                            ]
+                            |> Html.Styled.Attributes.fromUnstyled
+                        ]
+                        []
             in
             div [ id "wrapper", classList [ ( "disabled", model.disabled ) ] ]
                 [ div
-                    [ id "select-box"
+                    [ id "value-casing"
                     , onClick BringInputInFocus
                     , onFocus BringInputInFocus
                     , tabindex 0
@@ -470,11 +498,11 @@ view model =
 
                           else
                             display block
-                        , width (px model.selectBoxWidth)
+                        , width (px model.valueCasingWidth)
                         ]
                     ]
                     [ if hasOptionSelected then
-                        div [ id "values" ] (optionsToValuesHtml model.options)
+                        div [ id "values" ] (optionsToValuesHtml model.options ++ [ inputFilter ])
 
                       else
                         span [ class "placeholder" ] [ text model.placeholder ]
@@ -494,7 +522,7 @@ view model =
 
                           else
                             visibility hidden
-                        , width (px model.selectBoxWidth)
+                        , width (px model.valueCasingWidth)
                         ]
                     , Keyboard.on Keyboard.Keydown
                         [ ( Enter, SelectHighlightedOption )
@@ -818,7 +846,7 @@ init flags =
       , maxDropdownItems = flags.maxDropdownItems
       , disabled = flags.disabled
       , focused = False
-      , selectBoxWidth = 100
+      , valueCasingWidth = 100
       }
     , errorCmd
     )
@@ -845,7 +873,7 @@ subscriptions _ =
         , disableChangedReceiver DisabledAttributeChanged
         , optionsChangedReceiver OptionsChanged
         , maxDropdownItemsChangedReceiver MaxDropdownItemsChanged
-        , selectBoxWidthChangedReceiver SelectBoxWidthUpdate
+        , valueCasingWidthChangedReceiver ValueCasingWidthUpdate
         , selectOptionReceiver SelectOption
         , deselectOptionReceiver DeselectOption
         ]

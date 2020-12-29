@@ -293,7 +293,7 @@ class MuchSelect extends HTMLElement {
     const dropdownElement = this.shadowRoot.getElementById("dropdown");
     if (dropdownElement) {
       // noinspection JSUnresolvedVariable
-      this._app.ports.selectBoxWidthChangedReceiver.send(
+      this._app.ports.valueCasingWidthChangedReceiver.send(
         dropdownElement.offsetWidth
       );
     }
@@ -513,7 +513,7 @@ class MuchSelect extends HTMLElement {
         width: 100%;
       }
 
-      #select-box {
+      #value-casing {
         min-height: 34px;
         position: absolute;
         top: -3px;
@@ -532,12 +532,12 @@ class MuchSelect extends HTMLElement {
         width: 100%;
       }
 
-      #select-box.disabled {
+      #value-casing.disabled {
         border: 1px solid lightgray;
         cursor: pointer;
       }
 
-      #select-box .placeholder {
+      #value-casing .placeholder {
         color: silver;
         font-size: 25px;
         vertical-align: middle;
@@ -546,19 +546,36 @@ class MuchSelect extends HTMLElement {
         overflow: hidden;
       }
 
-      #select-box .value {
+      #value-casing .value {
         color: black;
         font-size: 25px;
         vertical-align: middle;
       }
 
-      #select-box.single {
+      #value-casing.single {
         background-image: linear-gradient(to bottom, #fefefe, #f2f2f2);
         background-repeat: repeat-x;
       }
 
-      #select-box.single.disabled {
+      #value-casing.single.disabled {
         background-image: none;
+      }
+
+      #value-casing.multi .values {
+        display: flex;
+        flex-flow: row nowrap;
+        height: 100%;
+      }
+
+      #value-casing.multi .value {
+        margin: 2px;
+        padding: 3px;
+        font-size: 20px;
+        color: white;
+        background-image: linear-gradient(to bottom, #080808, #90909090);
+        background-repeat: repeat-x;
+        max-width: 100px;
+        min-width: 30px;
       }
 
       #select-indicator {
