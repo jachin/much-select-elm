@@ -1,7 +1,7 @@
 module Main exposing (..)
 
 import Browser
-import Css exposing (block, display, hidden, inline, none, px, visibility, visible, width)
+import Css exposing (block, display, fontSize, hidden, inline, lineHeight, none, px, visibility, visible, width)
 import Html.Styled
     exposing
         ( Html
@@ -493,28 +493,10 @@ view model =
                         [ text model.placeholder ]
                      ]
                         ++ optionsToValuesHtml model.options
-                        ++ [ inputFilter ]
+                        ++ [ inputFilter
+                           , rightSlotHtml model.rightSlot model.focused model.disabled hasOptionSelected
+                           ]
                     )
-                , case model.rightSlot of
-                    ShowNothing ->
-                        text ""
-
-                    ShowLoadingIndicator ->
-                        node "slot" [ name "loading-indicator" ] []
-
-                    ShowDropdownIndicator ->
-                        dropdownIndicator model.focused model.disabled hasOptionSelected
-
-                    ShowClearButton ->
-                        div
-                            [ id "clear-button-wrapper"
-                            , onClick ClearAllSelectedOptions
-                            ]
-                            [ node "slot"
-                                [ name "clear-button" ]
-                                [ text "✕"
-                                ]
-                            ]
                 , dropdown model
                 ]
 
@@ -713,6 +695,35 @@ optionsToValuesHtml options =
                             OptionDisabled ->
                                 text ""
             )
+
+
+rightSlotHtml : RightSlot -> Bool -> Bool -> Bool -> Html Msg
+rightSlotHtml rightSlot focused disabled hasOptionSelected =
+    case rightSlot of
+        ShowNothing ->
+            text ""
+
+        ShowLoadingIndicator ->
+            node "slot" [ name "loading-indicator" ] []
+
+        ShowDropdownIndicator ->
+            dropdownIndicator focused disabled hasOptionSelected
+
+        ShowClearButton ->
+            div
+                [ id "clear-button-wrapper"
+                , onClick ClearAllSelectedOptions
+                ]
+                [ node "slot"
+                    [ name "clear-button"
+                    , css
+                        [ fontSize (px 30)
+                        , lineHeight (px 30)
+                        ]
+                    ]
+                    [ text "✕"
+                    ]
+                ]
 
 
 type alias Flags =

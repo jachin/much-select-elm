@@ -292,10 +292,18 @@ class MuchSelect extends HTMLElement {
   updateWidth() {
     const dropdownElement = this.shadowRoot.getElementById("dropdown");
     if (dropdownElement) {
+      let width = dropdownElement.offsetWidth;
+
+      // Clamp the width between some min and max.
+      // TODO this min and max should probably not be hard coded here.
+      if (width < 300) {
+        width = 300;
+      } else if (width > 500) {
+        width = 500;
+      }
+
       // noinspection JSUnresolvedVariable
-      this._app.ports.valueCasingWidthChangedReceiver.send(
-        dropdownElement.offsetWidth
-      );
+      this._app.ports.valueCasingWidthChangedReceiver.send(width);
     }
   }
 
@@ -549,6 +557,10 @@ class MuchSelect extends HTMLElement {
         flex-flow: row nowrap;
       }
 
+      #value-casing.multi {
+        flex-flow: row wrap;
+      }
+
       #value-casing.disabled {
         border: 1px solid lightgray;
         cursor: pointer;
@@ -564,14 +576,6 @@ class MuchSelect extends HTMLElement {
         flex-basis: 1;
       }
 
-      #value-casing .value {
-        color: black;
-        font-size: 25px;
-        vertical-align: middle;
-        flex-grow: 1;
-        flex-shrink: 1;
-      }
-
       #value-casing #input-filter {
         /*
         TODO, seems like the height and font-size should not be hardcoded.
@@ -585,8 +589,9 @@ class MuchSelect extends HTMLElement {
         width: 100%;
         /* Let's give the input a bit more room than the selected values.
         */
-        flex-grow: 2;
-        flex-shrink: 2;
+        flex-grow: 3;
+        flex-shrink: 0;
+        flex-basis: 10%;
         /* We don't want a border because the value-casing will supply the border for
           this input.
         */
@@ -606,10 +611,17 @@ class MuchSelect extends HTMLElement {
         padding: 3px;
         font-size: 20px;
         color: white;
-        background-image: linear-gradient(to bottom, #080808, #90909090);
+        background-image: linear-gradient(to bottom, #4f6a8f, #88a2bc);
         background-repeat: repeat-x;
-        max-width: 100px;
-        min-width: 30px;
+        margin: 2px 2px;
+        border-radius: 5px;
+        border: 3px solid;
+        border-color: #d99477;
+        min-width: 10px;
+
+        flex-grow: 0;
+        flex-shrink: 1;
+        flex-basis: auto;
       }
 
       #select-indicator {
@@ -629,8 +641,8 @@ class MuchSelect extends HTMLElement {
       #clear-button-wrapper {
         display: block;
         position: absolute;
-        right: 5px;
-        top: 10px;
+        right: 3px;
+        top: 7px;
         cursor: pointer;
       }
 
