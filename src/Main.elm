@@ -573,7 +573,7 @@ dropdownIndicator focused disabled hasOptions =
 dropdown : Model -> Html Msg
 dropdown model =
     let
-        options =
+        optionsHtml =
             optionsToDropdownOptions
                 DropdownMouseOverOption
                 DropdownMouseOutOption
@@ -581,15 +581,15 @@ dropdown model =
                 model.selectionMode
                 (OptionPresentor.prepareOptionsForPresentation model.maxDropdownItems model.searchString model.options)
     in
-    if model.showDropdown && not (List.isEmpty model.options) then
+    if model.showDropdown && not (List.isEmpty model.options) && not (List.isEmpty optionsHtml) then
         div
             [ id "dropdown"
             , class "showing"
             ]
-            options
+            optionsHtml
 
     else
-        div [ id "dropdown", class "hiding" ] options
+        div [ id "dropdown", class "hiding" ] optionsHtml
 
 
 optionsToDropdownOptions :
@@ -618,6 +618,7 @@ optionsToDropdownOptions mouseOverMsgConstructor mouseOutMsgConstructor clickMsg
         |> mapAccuml helper Option.emptyOptionGroup
         |> Tuple.second
         |> List.concat
+        |> List.filter (\htmlTag -> htmlTag /= text "")
 
 
 optionToDropdownOption :
