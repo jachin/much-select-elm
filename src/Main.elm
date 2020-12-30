@@ -184,7 +184,16 @@ update msg model =
             in
             case valuesResult of
                 Ok values ->
-                    ( { model | options = selectOptionsInOptionsListByString values model.options }, Cmd.none )
+                    ( { model
+                        | options = selectOptionsInOptionsListByString values model.options
+                        , rightSlot =
+                            updateRightSlot
+                                model.rightSlot
+                                model.selectionMode
+                                (Option.hasSelectedOption model.options)
+                      }
+                    , Cmd.none
+                    )
 
                 Err error ->
                     ( model, errorMessage (Json.Decode.errorToString error) )
@@ -264,24 +273,15 @@ update msg model =
             ( { model | placeholder = newPlaceholder }, Cmd.none )
 
         LoadingAttributeChanged bool ->
-            let
-                rightSlot =
-                    if bool then
-                        ShowLoadingIndicator
-
-                    else
-                        case model.selectionMode of
-                            SingleSelect ->
-                                ShowDropdownIndicator
-
-                            MultiSelect ->
-                                if Option.hasSelectedOption model.options then
-                                    ShowClearButton
-
-                                else
-                                    ShowNothing
-            in
-            ( { model | rightSlot = rightSlot }, Cmd.none )
+            ( { model
+                | rightSlot =
+                    updateRightSlotLoading
+                        bool
+                        model.selectionMode
+                        (Option.hasSelectedOption model.options)
+              }
+            , Cmd.none
+            )
 
         MaxDropdownItemsChanged int ->
             ( { model | maxDropdownItems = int }, Cmd.none )
@@ -342,6 +342,53 @@ update msg model =
               }
             , Cmd.none
             )
+
+
+updateRightSlot : RightSlot -> SelectionMode -> Bool -> RightSlot
+updateRightSlot current selectionMode hasSelectedOption =
+    case current of
+        ShowNothing ->
+            case selectionMode of
+                SingleSelect ->
+                    ShowDropdownIndicator
+
+                MultiSelect ->
+                    if hasSelectedOption then
+                        ShowClearButton
+
+                    else
+                        ShowNothing
+
+        ShowLoadingIndicator ->
+            ShowLoadingIndicator
+
+        ShowDropdownIndicator ->
+            ShowDropdownIndicator
+
+        ShowClearButton ->
+            if hasSelectedOption then
+                ShowClearButton
+
+            else
+                ShowNothing
+
+
+updateRightSlotLoading : Bool -> SelectionMode -> Bool -> RightSlot
+updateRightSlotLoading isLoading selectionMode hasSelectedOption =
+    if isLoading then
+        ShowLoadingIndicator
+
+    else
+        case selectionMode of
+            SingleSelect ->
+                ShowDropdownIndicator
+
+            MultiSelect ->
+                if hasSelectedOption then
+                    ShowClearButton
+
+                else
+                    ShowNothing
 
 
 view : Model -> Html Msg
