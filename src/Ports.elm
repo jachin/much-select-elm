@@ -10,8 +10,8 @@ port module Ports exposing
     , optionsChangedReceiver
     , placeholderChangedReceiver
     , removeOptionsReceiver
-    , selectBoxWidthChangedReceiver
     , selectOptionReceiver
+    , valueCasingWidthChangedReceiver
     , valueChanged
     , valueChangedReceiver
     , valuesDecoder
@@ -67,4 +67,4 @@ port disableChangedReceiver : (Bool -> msg) -> Sub msg
 port maxDropdownItemsChangedReceiver : (Int -> msg) -> Sub msg
 
 
-port selectBoxWidthChangedReceiver : (Float -> msg) -> Sub msg
+port valueCasingWidthChangedReceiver : (Float -> msg) -> Sub msg

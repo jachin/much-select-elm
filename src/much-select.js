@@ -1,6 +1,8 @@
 // noinspection ES6CheckImport
 import { Elm } from "./Main.elm";
 
+import asciiFold from "./ascii-fold.js";
+
 const buildOptionsFromSelectElement = (selectElement) => {
   const options = [];
   const optionElements = selectElement.querySelectorAll("option");
@@ -13,6 +15,7 @@ const buildOptionsFromSelectElement = (selectElement) => {
     }
     const option = { value };
     option.label = optionElement.innerText;
+    option.labelClean = asciiFold(optionElement.innerText);
     option.index = optionIndex;
     if (optionElement.hasAttribute("selected")) {
       const optionSelectedValue = optionElement.getAttribute("selected");
@@ -23,6 +26,7 @@ const buildOptionsFromSelectElement = (selectElement) => {
     }
     if (optionElement.dataset.description) {
       option.description = optionElement.dataset.description;
+      option.descriptionClean = asciiFold(option.description);
     }
     option.disabled = optionElement.hasAttribute("disabled");
     options.push(option);
@@ -36,6 +40,7 @@ const stringToOptionObject = (str) => {
   return {
     value: str,
     label: str,
+    labelClean: asciiFold(str),
   };
 };
 
@@ -43,6 +48,7 @@ const numberToOptionObject = (num) => {
   return {
     value: `${num}`,
     label: `${num}`,
+    labelClean: `${num}`,
   };
 };
 
@@ -82,8 +88,10 @@ const cleanUpOption = (option) => {
     if (optionMap.has("value") && !optionMap.has("label")) {
       return {
         label: optionMap.get("value"),
+        labelClean: asciiFold(optionMap.get("value")),
         value: optionMap.get("value"),
         description: optionMap.get("description"),
+        descriptionClean: asciiFold(optionMap.get("description")),
         disabled: optionMap.get("disabled"),
         index: optionMap.get("index"),
       };
@@ -91,16 +99,20 @@ const cleanUpOption = (option) => {
     if (optionMap.has("label") && !optionMap.has("value")) {
       return {
         label: optionMap.get("label"),
+        labelClean: asciiFold(optionMap.get("label")),
         value: optionMap.get("label"),
         description: optionMap.get("description"),
+        descriptionClean: asciiFold(optionMap.get("description")),
         disabled: optionMap.get("disabled"),
         index: optionMap.get("index"),
       };
     }
     return {
       label: optionMap.get("label"),
+      labelClean: asciiFold(optionMap.get("label")),
       value: optionMap.get("value"),
       description: optionMap.get("description"),
+      descriptionClean: asciiFold(optionMap.get("description")),
       disabled: optionMap.get("disabled"),
       index: optionMap.get("index"),
     };
@@ -280,10 +292,18 @@ class MuchSelect extends HTMLElement {
   updateWidth() {
     const dropdownElement = this.shadowRoot.getElementById("dropdown");
     if (dropdownElement) {
+      let width = dropdownElement.offsetWidth;
+
+      // Clamp the width between some min and max.
+      // TODO this min and max should probably not be hard coded here.
+      if (width < 300) {
+        width = 300;
+      } else if (width > 500) {
+        width = 500;
+      }
+
       // noinspection JSUnresolvedVariable
-      this._app.ports.selectBoxWidthChangedReceiver.send(
-        dropdownElement.offsetWidth
-      );
+      this._app.ports.valueCasingWidthChangedReceiver.send(width);
     }
   }
 
@@ -337,6 +357,43 @@ class MuchSelect extends HTMLElement {
     // TODO perhaps this delimiter should be configurable
     this.selected = valuesTuple.map((valueTuple) => valueTuple[0]).join(",");
     this.updateWidth();
+    if (
+      this.hasAttribute("multi-select") &&
+      this.getAttribute("multi-select") !== "false"
+    ) {
+      // If we are in mulit select mode put the list of values in the event.
+      const valuesObj = valuesTuple.map((valueTuple) => {
+        return { value: valueTuple[0], label: valueTuple[1] };
+      });
+      this.dispatchEvent(
+        new CustomEvent("valueChanged", {
+          bubbles: true,
+          detail: { values: valuesObj },
+        })
+      );
+    } else if (valuesTuple.length === 0) {
+      // If we are in single select mode and the value is empty.
+      this.dispatchEvent(
+        new CustomEvent("valueChanged", {
+          bubbles: true,
+          detail: { value: null },
+        })
+      );
+    } else if (valuesTuple.length === 1) {
+      // If we are in single select mode put the list of values in the event.
+      const valueObj = { value: valuesTuple[0][0], label: valuesTuple[0][1] };
+      this.dispatchEvent(
+        new CustomEvent("valueChanged", {
+          bubbles: true,
+          detail: { value: valueObj },
+        })
+      );
+    } else {
+      // If we are in single select mode and there is more than one value then something is wrong.
+      throw new TypeError(
+        `In single select mode we are expecting a single value, instead we got ${valuesTuple.length}`
+      );
+    }
   }
 
   get selected() {
@@ -445,6 +502,25 @@ class MuchSelect extends HTMLElement {
     const styleTag = document.createElement("style");
     styleTag.innerHTML = `
 
+
+      :host {
+        /*
+        This web components should take up some space on the page.
+
+        TODO: Do we really have to set this by hand? Can't we do something so that
+        this gets calculated automatically? If it must be set by hand we should probably
+        do something a bit more clever here to not hard code these values so much.
+        */
+
+        min-height: 40px;
+        min-width: 200px;
+        margin: 10px;
+      }
+
+      /*
+      If we are using a select element in the select-input slot to manage the
+      the options do not show it.
+      */
       slot[name='select-input'] {
         display: none;
       }
@@ -453,49 +529,99 @@ class MuchSelect extends HTMLElement {
         margin-top: auto;
         margin-bottom: auto;
         position: relative;
+        max-width: 400px;
+        min-width: 200px;
       }
 
-      #input-filter {
-        height: 36px;
-        position: relative;
-        font-size: 25px;
-      }
-
-      #select-box {
-        min-height: 36px;
+      /*
+        This value casing (and what's inside of it) is supposed to be the
+        "main event".
+      */
+      #value-casing {
+        min-height: 34px;
         position: absolute;
-        top: 0px;
-        border: 1px solid darkgray;
-        margin-top: auto;
-        margin-bottom: auto;
-        padding: 2px 3px;
+        top: -3px;
         cursor: pointer;
+        overflow: hidden;
+        -moz-appearance: textfield;
+        -webkit-appearance: textfield;
+        background-color: white;
+        background-color: -moz-field;
+        border: 1px solid darkgray;
+        box-shadow: 1px 1px 1px 0 lightgray inset;
+        font: -moz-field;
+        font: -webkit-small-control;
+        margin-top: 5px;
+        padding: 4px 3px 2px 3px;
+        display: flex;
+        flex-flow: row nowrap;
       }
 
-      #select-box.disabled {
+      #value-casing.multi {
+        flex-flow: row wrap;
+      }
+
+      #value-casing.disabled {
         border: 1px solid lightgray;
         cursor: pointer;
       }
 
-      #select-box .placeholder {
+      #value-casing .placeholder {
         color: silver;
         font-size: 25px;
         vertical-align: middle;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        flex-basis: 1;
       }
 
-      #select-box .value {
-        color: black;
+      #value-casing #input-filter {
+        /*
+        TODO, seems like the height and font-size should not be hardcoded.
+        */
+        height: 36px;
         font-size: 25px;
-        vertical-align: middle;
+        /* The min-width let's the input shrink down as far as it needs to.
+        The with width lets it grow as much as it can.
+        */
+        min-width: 10px;
+        width: 100%;
+        /* Let's give the input a bit more room than the selected values.
+        */
+        flex-grow: 3;
+        flex-shrink: 0;
+        flex-basis: 10%;
+        /* We don't want a border because the value-casing will supply the border for
+          this input.
+        */
+        border: none;
       }
 
-      #select-box.single {
+      #value-casing.single {
         background-image: linear-gradient(to bottom, #fefefe, #f2f2f2);
         background-repeat: repeat-x;
       }
 
-      #select-box.single.disabled {
+      #value-casing.single.disabled {
         background-image: none;
+      }
+
+      #value-casing.multi .value {
+        padding: 3px;
+        font-size: 20px;
+        color: white;
+        background-image: linear-gradient(to bottom, #4f6a8f, #88a2bc);
+        background-repeat: repeat-x;
+        margin: 2px 2px;
+        border-radius: 5px;
+        border: 3px solid;
+        border-color: #d99477;
+        min-width: 10px;
+
+        flex-grow: 0;
+        flex-shrink: 1;
+        flex-basis: auto;
       }
 
       #select-indicator {
@@ -512,17 +638,27 @@ class MuchSelect extends HTMLElement {
         top: 10px;
       }
 
+      #clear-button-wrapper {
+        display: block;
+        position: absolute;
+        right: 3px;
+        top: 7px;
+        cursor: pointer;
+      }
+
       #dropdown {
         background-color: #EEEEEE;
         visibility: hidden;
         padding: 5px;
         position: absolute;
-        top: 50px;
+        top: 45px;
         left: 0px;
         font-size: 20px;
         min-width: 200px;
         display: inline-block;
         z-index: 10;
+        max-height: 300px;
+        overflow-y: auto;
       }
       #dropdown.showing {
         visibility: visible;

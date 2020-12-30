@@ -14,41 +14,41 @@ import Test exposing (Test, describe, test)
 
 
 simpleOptionWithJustLabelAndValue =
-    """{"label": "Sup", "value": "Sup"}"""
+    """{"label": "Sup", "labelClean": "sup", "value": "Sup"}"""
 
 
 simpleSelectedOption =
-    """{"label": "Sup", "value": "Sup", "selected": "true"}"""
+    """{"label": "Sup", "labelClean": "sup", "value": "Sup", "selected": "true"}"""
 
 
 simpleNotSelectedOption =
-    """{"label": "Sup", "value": "Sup", "selected": "false"}"""
+    """{"label": "Sup", "labelClean": "sup", "value": "Sup", "selected": "false"}"""
 
 
 disabledOption =
-    """{"label": "Dude", "value": "Dude", "selected": "false", "disabled": true}"""
+    """{"label": "Dude", "labelClean": "dude", "value": "Dude", "selected": "false", "disabled": true}"""
 
 
 listOfOptions =
     """[
-        {"label": "one", "value": "1", "selected": "false"},
-        {"label": "two", "value": "2"},
-        {"label": "three", "value": "3", "selected": "true"}]"""
+        {"label": "one", "labelClean": "one", "value": "1", "selected": "false"},
+        {"label": "two", "labelClean": "two", "value": "2"},
+        {"label": "three", "labelClean": "three", "value": "3", "selected": "true"}]"""
 
 
 listOfOptionsWithDescriptions =
     """[
-        {"label": "straw", "value": "1", "selected": "false", "description": "👒"},
-        {"label": "sticks", "value": "2", "description": "🌳"},
-        {"label": "bricks", "value": "3", "selected": "true", "description": "🧱"}]
+        {"label": "straw", "labelClean": "straw", "value": "1", "selected": "false", "description": "👒", "descriptionClean": null},
+        {"label": "sticks", "labelClean": "sticks", "value": "2", "description": "🌳", "descriptionClean": null},
+        {"label": "bricks", "labelClean": "bricks", "value": "3", "selected": "true", "description": "🧱", "descriptionClean": null}]
     """
 
 
 listOfOptionsWithGroups =
     """[
-        {"label": "straw", "value": "1", "selected": "false", "group": "Building Material"},
-        {"label": "sticks", "value": "2", "group": "Building Material"},
-        {"label": "bricks", "value": "3", "selected": "true", "group": "Building Material"}]
+        {"label": "straw", "labelClean": "straw", "value": "1", "selected": "false", "group": "Building Material"},
+        {"label": "sticks", "labelClean": "sticks", "value": "2", "group": "Building Material"},
+        {"label": "bricks", "labelClean": "bricks", "value": "3", "selected": "true", "group": "Building Material"}]
     """
 
 
@@ -59,30 +59,30 @@ suite =
             [ test "an option with just a label and value" <|
                 \_ ->
                     Expect.equal
-                        (Ok (newOption "Sup"))
+                        (Ok (newOption "Sup" (Just "sup")))
                         (Json.Decode.decodeString decoder simpleOptionWithJustLabelAndValue)
             , test "an option that's selected" <|
                 \_ ->
                     Expect.equal
-                        (Ok (newSelectedOption "Sup"))
+                        (Ok (newSelectedOption "Sup" (Just "sup")))
                         (Json.Decode.decodeString decoder simpleSelectedOption)
             , test "an option that's not selected" <|
                 \_ ->
                     Expect.equal
-                        (Ok (newOption "Sup"))
+                        (Ok (newOption "Sup" (Just "sup")))
                         (Json.Decode.decodeString decoder simpleNotSelectedOption)
             , test "an option that's disabled" <|
                 \_ ->
                     Expect.equal
-                        (Ok (newDisabledOption "Dude"))
+                        (Ok (newDisabledOption "Dude" (Just "dude")))
                         (Json.Decode.decodeString decoder disabledOption)
             , test "a list of options" <|
                 \_ ->
                     Expect.equal
                         (Ok
-                            [ newOption "1" |> Option.setLabel "one"
-                            , newOption "2" |> Option.setLabel "two"
-                            , newSelectedOption "3" |> Option.setLabel "three"
+                            [ newOption "1" Nothing |> Option.setLabel "one" (Just "one")
+                            , newOption "2" Nothing |> Option.setLabel "two" (Just "two")
+                            , newSelectedOption "3" Nothing |> Option.setLabel "three" (Just "three")
                             ]
                         )
                         (Json.Decode.decodeString optionsDecoder listOfOptions)
@@ -90,14 +90,14 @@ suite =
                 \_ ->
                     Expect.equal
                         (Ok
-                            [ newOption "1"
-                                |> Option.setLabel "straw"
+                            [ newOption "1" Nothing
+                                |> Option.setLabel "straw" (Just "straw")
                                 |> Option.setDescription "👒"
-                            , newOption "2"
-                                |> Option.setLabel "sticks"
+                            , newOption "2" Nothing
+                                |> Option.setLabel "sticks" (Just "sticks")
                                 |> Option.setDescription "🌳"
-                            , newSelectedOption "3"
-                                |> Option.setLabel "bricks"
+                            , newSelectedOption "3" Nothing
+                                |> Option.setLabel "bricks" (Just "bricks")
                                 |> Option.setDescription "🧱"
                             ]
                         )
@@ -109,14 +109,14 @@ suite =
                 \_ ->
                     Expect.equal
                         (Ok
-                            [ newOption "1"
-                                |> Option.setLabel "straw"
+                            [ newOption "1" Nothing
+                                |> Option.setLabel "straw" (Just "straw")
                                 |> Option.setGroup "Building Material"
-                            , newOption "2"
-                                |> Option.setLabel "sticks"
+                            , newOption "2" Nothing
+                                |> Option.setLabel "sticks" (Just "sticks")
                                 |> Option.setGroup "Building Material"
-                            , newSelectedOption "3"
-                                |> Option.setLabel "bricks"
+                            , newSelectedOption "3" Nothing
+                                |> Option.setLabel "bricks" (Just "bricks")
                                 |> Option.setGroup "Building Material"
                             ]
                         )
@@ -127,12 +127,12 @@ suite =
             , test "an empty option with an empty label" <|
                 \_ ->
                     Expect.equal
-                        (Ok [ newOption "" ])
-                        (Json.Decode.decodeString optionsDecoder """[ {"label": "", "value": "" } ]""")
+                        (Ok [ newOption "" (Just "") ])
+                        (Json.Decode.decodeString optionsDecoder """[ {"label": "", "labelClean": "", "value": "" } ]""")
             , test "an empty option with a label" <|
                 \_ ->
                     Expect.equal
-                        (Ok [ newOption "" |> Option.setLabel "nothing" ])
-                        (Json.Decode.decodeString optionsDecoder """[ {"label": "nothing", "value": "" } ]""")
+                        (Ok [ newOption "" Nothing |> Option.setLabel "nothing" (Just "nothing") ])
+                        (Json.Decode.decodeString optionsDecoder """[ {"label": "nothing", "labelClean": "nothing", "value": "" } ]""")
             ]
         ]

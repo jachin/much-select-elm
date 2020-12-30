@@ -22,14 +22,14 @@
 </nav>
 
 <div class="container">
-  <div id="update-options-add-options-to-an-empty-much-selector">
+  <div id="update-options-add-options-to-an-empty-much-select">
     <h3><code>updateOptions</code></h3>
     <p>Updates the options. Here we have something with no options, click the button to add some options.</p>
     <button>Update the Options</button>
     <much-select></much-select>
     <script>
-      document.querySelector("#update-options-add-options-to-an-empty-much-selector button").addEventListener("click", () => {
-        document.querySelector("#update-options-add-options-to-an-empty-much-selector much-selector").updateOptions([
+      document.querySelector("#update-options-add-options-to-an-empty-much-select button").addEventListener("click", () => {
+        document.querySelector("#update-options-add-options-to-an-empty-much-select much-select").updateOptions([
           {value: "Bears", label: "Bears", description: "Chicago"},
           {value: "Lions", label: "Lions", description: "Detroit"},
           {value: "Packers", label: "Packers", description: "Green Bay"},
@@ -39,7 +39,7 @@
     </script>
   </div>
 
-  <div id="update-options-add-options-to-a-much-selector" >
+  <div id="update-options-add-options-to-a-much-select" >
     <h3><code>updateOptions</code></h3>
     <p>Click the button to add some random options.</p>
     <button>Update the Options</button>
@@ -50,7 +50,7 @@
         max = Math.floor(max);
         return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
       }
-      document.querySelector("#update-options-add-options-to-a-much-selector button").addEventListener("click", () => {
+      document.querySelector("#update-options-add-options-to-a-much-select button").addEventListener("click", () => {
         const randomOptions = [];
         for(let i=0; i<5; i++) {
           const num = getRandomInt(1000, 5000)
@@ -58,12 +58,12 @@
             value: num
           })
         }
-        document.querySelector("#update-options-add-options-to-a-much-selector much-selector").updateOptions(randomOptions);
+        document.querySelector("#update-options-add-options-to-a-much-select much-select").updateOptions(randomOptions);
       });
     </script>
   </div>
 
-  <div id="add-option-to-a-much-selector" >
+  <div id="add-option-to-a-much-select" >
     <h3>Use <code>addOption</code> to add a random value</h3>
     <p>Click the button to add a random option. And then click it again.</p>
     <button>Add an Option</button>
@@ -74,27 +74,27 @@
         max = Math.floor(max);
         return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
       }
-      document.querySelector("#add-option-to-a-much-selector button").addEventListener("click", () => {
-        document.querySelector("#add-option-to-a-much-selector much-selector").addOption({value: getRandomInt(1000, 5000)});
+      document.querySelector("#add-option-to-a-much-select button").addEventListener("click", () => {
+        document.querySelector("#add-option-to-a-much-select much-select").addOption({value: getRandomInt(1000, 5000)});
       });
     </script>
   </div>
 
-  <div id="add-possible-duplicate-option-to-a-much-selector" >
+  <div id="add-possible-duplicate-option-to-a-much-select" >
     <h3>Use <code>addOption</code> to add a value that might be a duplicate</h3>
     <p>Click the button to add a random option. And then click it again. Eventually you will add all the options in the list. Each time the button is clicked an option is added randomly from a list. You should not get any duplicate items in the list and any selected value should be preserved.</p>
     <button>Add an Option</button>
     <much-select></much-select>
     <script>
       const options = ["ranch", "farm", "orchard", "vineyard"];
-      document.querySelector("#add-possible-duplicate-option-to-a-much-selector button").addEventListener("click", () => {
+      document.querySelector("#add-possible-duplicate-option-to-a-much-select button").addEventListener("click", () => {
         const randomOption = options[Math.floor(Math.random() * options.length)];
-        document.querySelector("#add-possible-duplicate-option-to-a-much-selector much-selector").addOption({value: randomOption});
+        document.querySelector("#add-possible-duplicate-option-to-a-much-select much-select").addOption({value: randomOption});
       });
     </script>
   </div>
 
-  <div id="remove-an-option-from-a-much-selector" >
+  <div id="remove-an-option-from-a-much-select" >
     <h3>Use <code>removeOption</code> to remove different options</h3>
     <p>Clicking on a button should remove it from the list of options.</p>
     <button id="remove-cake">No More Cake</button>
@@ -111,20 +111,20 @@
     </much-select>
     <script>
       document.querySelector("#remove-cake").addEventListener("click", () => {
-        document.querySelector("#remove-an-option-from-a-much-selector much-selector").removeOption({value: "Cake"});
+        document.querySelector("#remove-an-option-from-a-much-select much-select").removeOption({value: "Cake"});
       });
 
       document.querySelector("#remove-pie").addEventListener("click", () => {
-        document.querySelector("#remove-an-option-from-a-much-selector much-selector").removeOption({value: "Pie"});
+        document.querySelector("#remove-an-option-from-a-much-select much-select").removeOption({value: "Pie"});
       });
 
       document.querySelector("#remove-pudding").addEventListener("click", () => {
-        document.querySelector("#remove-an-option-from-a-much-selector much-selector").removeOption({value: "Pudding"});
+        document.querySelector("#remove-an-option-from-a-much-select much-select").removeOption({value: "Pudding"});
       });
     </script>
   </div>
 
-  <div id="select-and-deselect-option-from-a-much-selector" >
+  <div id="select-and-deselect-option-from-a-much-select" >
     <h3>Use <code>selectOption</code> and <code>deselectOption</code> to change the value</h3>
     <p>Clicking on a button should remove it from the list of options.</p>
     <button id="select-folk">Select Folk</button>
@@ -140,16 +140,16 @@
     </much-select>
     <script>
       document.querySelector("#select-folk").addEventListener("click", () => {
-        document.querySelector("#select-and-deselect-option-from-a-much-selector much-selector").selectOption("Folk");
+        document.querySelector("#select-and-deselect-option-from-a-much-select much-select").selectOption("Folk");
       });
 
       document.querySelector("#deselect-folk").addEventListener("click", () => {
-        document.querySelector("#select-and-deselect-option-from-a-much-selector much-selector").deselectOption("Folk");
+        document.querySelector("#select-and-deselect-option-from-a-much-select much-select").deselectOption("Folk");
       });
     </script>
   </div>
 
-  <div id="select-and-multiple-options-in-a-multi-much-selector">
+  <div id="select-and-multiple-options-in-a-multi-much-select">
     <h3>Use <code>selectOption</code> to select multiple values to mulit select.</h3>
     <p>Clicking on a button should add them to the selected options.</p>
     <button id="select-basketball">Basketball</button>
@@ -166,15 +166,15 @@
     </much-select>
     <script>
       document.querySelector("#select-basketball").addEventListener("click", () => {
-        document.querySelector("#select-and-multiple-options-in-a-multi-much-selector much-selector").selectOption("Basketball");
+        document.querySelector("#select-and-multiple-options-in-a-multi-much-select much-select").selectOption("Basketball");
       });
 
       document.querySelector("#select-baseball").addEventListener("click", () => {
-        document.querySelector("#select-and-multiple-options-in-a-multi-much-selector much-selector").selectOption("Baseball");
+        document.querySelector("#select-and-multiple-options-in-a-multi-much-select much-select").selectOption("Baseball");
       });
 
       document.querySelector("#select-football").addEventListener("click", () => {
-        document.querySelector("#select-and-multiple-options-in-a-multi-much-selector much-selector").selectOption("Football");
+        document.querySelector("#select-and-multiple-options-in-a-multi-much-select much-select").selectOption("Football");
       });
     </script>
   </div>

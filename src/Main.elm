@@ -1,17 +1,7 @@
 module Main exposing (..)
 
 import Browser
-import Css
-    exposing
-        ( block
-        , display
-        , hidden
-        , none
-        , px
-        , visibility
-        , visible
-        , width
-        )
+import Css exposing (block, display, fontSize, hidden, inline, lineHeight, none, px, visibility, visible, width)
 import Html.Styled
     exposing
         ( Html
@@ -79,8 +69,8 @@ import Ports
         , optionsChangedReceiver
         , placeholderChangedReceiver
         , removeOptionsReceiver
-        , selectBoxWidthChangedReceiver
         , selectOptionReceiver
+        , valueCasingWidthChangedReceiver
         , valueChanged
         , valueChangedReceiver
         , valuesDecoder
@@ -113,7 +103,8 @@ type Msg
     | EscapeKeyInInputFilter
     | MoveHighlightedOptionUp
     | MoveHighlightedOptionDown
-    | SelectBoxWidthUpdate Float
+    | ValueCasingWidthUpdate Float
+    | ClearAllSelectedOptions
 
 
 type alias Model =
@@ -124,12 +115,19 @@ type alias Model =
     , options : List Option
     , showDropdown : Bool
     , searchString : String
-    , loading : Bool
+    , rightSlot : RightSlot
     , maxDropdownItems : Int
     , disabled : Bool
     , focused : Bool
-    , selectBoxWidth : Float
+    , valueCasingWidth : Float
     }
+
+
+type RightSlot
+    = ShowNothing
+    | ShowLoadingIndicator
+    | ShowDropdownIndicator
+    | ShowClearButton
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -186,7 +184,16 @@ update msg model =
             in
             case valuesResult of
                 Ok values ->
-                    ( { model | options = selectOptionsInOptionsListByString values model.options }, Cmd.none )
+                    ( { model
+                        | options = selectOptionsInOptionsListByString values model.options
+                        , rightSlot =
+                            updateRightSlot
+                                model.rightSlot
+                                model.selectionMode
+                                (Option.hasSelectedOption model.options)
+                      }
+                    , Cmd.none
+                    )
 
                 Err error ->
                     ( model, errorMessage (Json.Decode.errorToString error) )
@@ -266,7 +273,15 @@ update msg model =
             ( { model | placeholder = newPlaceholder }, Cmd.none )
 
         LoadingAttributeChanged bool ->
-            ( { model | loading = bool }, Cmd.none )
+            ( { model
+                | rightSlot =
+                    updateRightSlotLoading
+                        bool
+                        model.selectionMode
+                        (Option.hasSelectedOption model.options)
+              }
+            , Cmd.none
+            )
 
         MaxDropdownItemsChanged int ->
             ( { model | maxDropdownItems = int }, Cmd.none )
@@ -317,8 +332,63 @@ update msg model =
         MoveHighlightedOptionDown ->
             ( { model | options = Option.moveHighlightedOptionDown model.options }, Cmd.none )
 
-        SelectBoxWidthUpdate width ->
-            ( { model | selectBoxWidth = width }, Cmd.none )
+        ValueCasingWidthUpdate width ->
+            ( { model | valueCasingWidth = width }, Cmd.none )
+
+        ClearAllSelectedOptions ->
+            ( { model
+                | options = Option.deselectAllOptionsInOptionsList model.options
+                , rightSlot = ShowNothing
+              }
+            , Cmd.none
+            )
+
+
+updateRightSlot : RightSlot -> SelectionMode -> Bool -> RightSlot
+updateRightSlot current selectionMode hasSelectedOption =
+    case current of
+        ShowNothing ->
+            case selectionMode of
+                SingleSelect ->
+                    ShowDropdownIndicator
+
+                MultiSelect ->
+                    if hasSelectedOption then
+                        ShowClearButton
+
+                    else
+                        ShowNothing
+
+        ShowLoadingIndicator ->
+            ShowLoadingIndicator
+
+        ShowDropdownIndicator ->
+            ShowDropdownIndicator
+
+        ShowClearButton ->
+            if hasSelectedOption then
+                ShowClearButton
+
+            else
+                ShowNothing
+
+
+updateRightSlotLoading : Bool -> SelectionMode -> Bool -> RightSlot
+updateRightSlotLoading isLoading selectionMode hasSelectedOption =
+    if isLoading then
+        ShowLoadingIndicator
+
+    else
+        case selectionMode of
+            SingleSelect ->
+                ShowDropdownIndicator
+
+            MultiSelect ->
+                if hasSelectedOption then
+                    ShowClearButton
+
+                else
+                    ShowNothing
 
 
 view : Model -> Html Msg
@@ -346,9 +416,9 @@ view model =
                     else
                         model.placeholder
             in
-            div [ id "wrapper", css [ width (px model.selectBoxWidth) ] ]
+            div [ id "wrapper", css [ width (px model.valueCasingWidth) ] ]
                 [ div
-                    [ id "select-box"
+                    [ id "value-casing"
                     , onClick BringInputInFocus
                     , onFocus BringInputInFocus
                     , tabindex 0
@@ -364,7 +434,7 @@ view model =
 
                           else
                             display block
-                        , width (px model.selectBoxWidth)
+                        , width (px model.valueCasingWidth)
                         ]
                     ]
                     [ if hasOptionSelected then
@@ -388,7 +458,7 @@ view model =
 
                           else
                             visibility hidden
-                        , width (px model.selectBoxWidth)
+                        , width (px model.valueCasingWidth)
                         ]
                     , Keyboard.on Keyboard.Keydown
                         [ ( Enter, SelectHighlightedOption )
@@ -400,12 +470,18 @@ view model =
                         |> Html.Styled.Attributes.fromUnstyled
                     ]
                     []
-                , if model.loading then
-                    node "slot" [ name "loading-indicator" ] []
+                , case model.rightSlot of
+                    ShowNothing ->
+                        text ""
 
-                  else
-                    text ""
-                , dropdownIndicator model.focused model.disabled hasOptions
+                    ShowLoadingIndicator ->
+                        node "slot" [ name "loading-indicator" ] []
+
+                    ShowDropdownIndicator ->
+                        dropdownIndicator model.focused model.disabled hasOptions
+
+                    ShowClearButton ->
+                        node "slot" [ name "clear-button" ] []
                 , dropdown model
                 ]
 
@@ -413,59 +489,61 @@ view model =
             let
                 hasOptionSelected =
                     Option.hasSelectedOption model.options
+
+                showPlaceholder =
+                    not hasOptionSelected && not model.focused
+
+                inputFilter =
+                    input
+                        [ type_ "text"
+                        , onBlur InputBlur
+                        , onFocus InputFocus
+                        , onInput SearchInputOnInput
+                        , value model.searchString
+                        , id "input-filter"
+                        , disabled model.disabled
+                        , Keyboard.on Keyboard.Keydown
+                            [ ( Enter, SelectHighlightedOption )
+                            , ( Escape, EscapeKeyInInputFilter )
+                            , ( ArrowUp, MoveHighlightedOptionUp )
+                            , ( ArrowDown, MoveHighlightedOptionDown )
+                            ]
+                            |> Html.Styled.Attributes.fromUnstyled
+                        ]
+                        []
             in
             div [ id "wrapper", classList [ ( "disabled", model.disabled ) ] ]
                 [ div
-                    [ id "select-box"
+                    [ id "value-casing"
                     , onClick BringInputInFocus
                     , onFocus BringInputInFocus
                     , tabindex 0
                     , classList
-                        [ ( "placeholder", not hasOptionSelected )
-                        , ( "mulit", True )
+                        [ ( "placeholder", showPlaceholder )
+                        , ( "multi", True )
                         , ( "disabled", model.disabled )
                         ]
                     , css
-                        [ if model.focused then
-                            display none
-
-                          else
-                            display block
-                        , width (px model.selectBoxWidth)
+                        [ width (px model.valueCasingWidth)
                         ]
                     ]
-                    [ if hasOptionSelected then
-                        div [ id "values" ] (optionsToValuesHtml model.options)
+                    ([ span
+                        [ class "placeholder"
+                        , css
+                            [ if showPlaceholder then
+                                display inline
 
-                      else
-                        span [ class "placeholder" ] [ text model.placeholder ]
-                    ]
-                , input
-                    [ type_ "text"
-                    , onBlur InputBlur
-                    , onFocus InputFocus
-                    , onInput SearchInputOnInput
-                    , value model.searchString
-                    , placeholder model.placeholder
-                    , id "input-filter"
-                    , disabled model.disabled
-                    , css
-                        [ if model.focused then
-                            visibility visible
-
-                          else
-                            visibility hidden
-                        , width (px model.selectBoxWidth)
+                              else
+                                display none
+                            ]
                         ]
-                    , Keyboard.on Keyboard.Keydown
-                        [ ( Enter, SelectHighlightedOption )
-                        , ( Escape, EscapeKeyInInputFilter )
-                        , ( ArrowUp, MoveHighlightedOptionUp )
-                        , ( ArrowDown, MoveHighlightedOptionDown )
-                        ]
-                        |> Html.Styled.Attributes.fromUnstyled
-                    ]
-                    []
+                        [ text model.placeholder ]
+                     ]
+                        ++ optionsToValuesHtml model.options
+                        ++ [ inputFilter
+                           , rightSlotHtml model.rightSlot model.focused model.disabled hasOptionSelected
+                           ]
+                    )
                 , dropdown model
                 ]
 
@@ -495,7 +573,7 @@ dropdownIndicator focused disabled hasOptions =
 dropdown : Model -> Html Msg
 dropdown model =
     let
-        options =
+        optionsHtml =
             optionsToDropdownOptions
                 DropdownMouseOverOption
                 DropdownMouseOutOption
@@ -503,15 +581,15 @@ dropdown model =
                 model.selectionMode
                 (OptionPresentor.prepareOptionsForPresentation model.maxDropdownItems model.searchString model.options)
     in
-    if model.showDropdown && not (List.isEmpty model.options) then
+    if model.showDropdown && not (List.isEmpty model.options) && not (List.isEmpty optionsHtml) then
         div
             [ id "dropdown"
             , class "showing"
             ]
-            options
+            optionsHtml
 
     else
-        div [ id "dropdown", class "hiding" ] options
+        div [ id "dropdown", class "hiding" ] optionsHtml
 
 
 optionsToDropdownOptions :
@@ -540,6 +618,7 @@ optionsToDropdownOptions mouseOverMsgConstructor mouseOutMsgConstructor clickMsg
         |> mapAccuml helper Option.emptyOptionGroup
         |> Tuple.second
         |> List.concat
+        |> List.filter (\htmlTag -> htmlTag /= text "")
 
 
 optionToDropdownOption :
@@ -630,7 +709,7 @@ optionsToValuesHtml options =
         |> List.map
             (\option ->
                 case option of
-                    Option display (OptionLabel labelStr) _ _ _ ->
+                    Option display (OptionLabel labelStr _) _ _ _ ->
                         case display of
                             OptionShown ->
                                 text ""
@@ -647,7 +726,7 @@ optionsToValuesHtml options =
                             OptionDisabled ->
                                 text ""
 
-                    EmptyOption display (OptionLabel labelStr) ->
+                    EmptyOption display (OptionLabel labelStr _) ->
                         case display of
                             OptionShown ->
                                 text ""
@@ -664,6 +743,35 @@ optionsToValuesHtml options =
                             OptionDisabled ->
                                 text ""
             )
+
+
+rightSlotHtml : RightSlot -> Bool -> Bool -> Bool -> Html Msg
+rightSlotHtml rightSlot focused disabled hasOptionSelected =
+    case rightSlot of
+        ShowNothing ->
+            text ""
+
+        ShowLoadingIndicator ->
+            node "slot" [ name "loading-indicator" ] []
+
+        ShowDropdownIndicator ->
+            dropdownIndicator focused disabled hasOptionSelected
+
+        ShowClearButton ->
+            div
+                [ id "clear-button-wrapper"
+                , onClick ClearAllSelectedOptions
+                ]
+                [ node "slot"
+                    [ name "clear-button"
+                    , css
+                        [ fontSize (px 30)
+                        , lineHeight (px 30)
+                        ]
+                    ]
+                    [ text "✕"
+                    ]
+                ]
 
 
 type alias Flags =
@@ -716,7 +824,7 @@ init flags =
                                         ( Option.selectOptionsInOptionsListByString initialValues options, Cmd.none )
 
                                     else
-                                        ( (Option.newOption initialValueStr_ |> Option.selectOption) :: options, Cmd.none )
+                                        ( (Option.newOption initialValueStr_ Nothing |> Option.selectOption) :: options, Cmd.none )
 
                                 Nothing ->
                                     ( options, Cmd.none )
@@ -741,11 +849,25 @@ init flags =
       , options = optionsWithInitialValueSelected
       , showDropdown = False
       , searchString = ""
-      , loading = flags.loading
+      , rightSlot =
+            if flags.loading then
+                ShowLoadingIndicator
+
+            else
+                case selectionMode of
+                    SingleSelect ->
+                        ShowDropdownIndicator
+
+                    MultiSelect ->
+                        if Option.hasSelectedOption optionsWithInitialValueSelected then
+                            ShowClearButton
+
+                        else
+                            ShowNothing
       , maxDropdownItems = flags.maxDropdownItems
       , disabled = flags.disabled
       , focused = False
-      , selectBoxWidth = 100
+      , valueCasingWidth = 100
       }
     , errorCmd
     )
@@ -772,7 +894,7 @@ subscriptions _ =
         , disableChangedReceiver DisabledAttributeChanged
         , optionsChangedReceiver OptionsChanged
         , maxDropdownItemsChangedReceiver MaxDropdownItemsChanged
-        , selectBoxWidthChangedReceiver SelectBoxWidthUpdate
+        , valueCasingWidthChangedReceiver ValueCasingWidthUpdate
         , selectOptionReceiver SelectOption
         , deselectOptionReceiver DeselectOption
         ]

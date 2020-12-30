@@ -35,4 +35,4 @@ elm-stuff
 .DS_Store
 
 # Parcel Cache
-.cache
+.cache/

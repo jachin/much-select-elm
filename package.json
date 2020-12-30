@@ -7,7 +7,7 @@
   "scripts": {
     "test": "elm-test",
     "build": "parcel build src/much-select.js",
-    "watch": "parcel --out-dir build/output public/index.html public/dropdown-options.html public/option-api.html public/empty-options.html public/initial-value.html",
+    "watch": "parcel --out-dir build/output public/index.html public/dropdown-options.html public/option-api.html public/empty-options.html public/initial-value.html public/fancy-characters.html",
     "lint": "eslint",
     "format": "elm-format"
   },
