@@ -21,7 +21,6 @@ import Html.Styled.Attributes
         , disabled
         , id
         , name
-        , placeholder
         , tabindex
         , type_
         , value
@@ -399,6 +398,9 @@ view model =
                 hasOptionSelected =
                     Option.hasSelectedOption model.options
 
+                showPlaceholder =
+                    not hasOptionSelected && not model.focused
+
                 hasOptions =
                     List.isEmpty model.options |> not
 
@@ -414,7 +416,7 @@ view model =
                         model.searchString
 
                     else
-                        model.placeholder
+                        ""
             in
             div [ id "wrapper", css [ width (px model.valueCasingWidth) ] ]
                 [ div
@@ -423,7 +425,7 @@ view model =
                     , onFocus BringInputInFocus
                     , tabindex 0
                     , classList
-                        [ ( "placeholder", not hasOptionSelected )
+                        [ ( "placeholder", showPlaceholder )
                         , ( "value", hasOptionSelected )
                         , ( "single", True )
                         , ( "disabled", model.disabled )
@@ -437,52 +439,58 @@ view model =
                         , width (px model.valueCasingWidth)
                         ]
                     ]
-                    [ if hasOptionSelected then
-                        span [ class "value" ] [ text valueStr ]
+                    [ span
+                        [ class "placeholder"
+                        , css
+                            [ if showPlaceholder then
+                                display inline
 
-                      else
-                        span [ class "placeholder" ] [ text model.placeholder ]
-                    ]
-                , input
-                    [ type_ "text"
-                    , onBlur InputBlur
-                    , onFocus InputFocus
-                    , onInput SearchInputOnInput
-                    , value valueStr
-                    , placeholder model.placeholder
-                    , id "input-filter"
-                    , disabled model.disabled
-                    , css
-                        [ if model.focused then
-                            visibility visible
-
-                          else
-                            visibility hidden
-                        , width (px model.valueCasingWidth)
+                              else
+                                display none
+                            ]
                         ]
-                    , Keyboard.on Keyboard.Keydown
-                        [ ( Enter, SelectHighlightedOption )
-                        , ( Backspace, DeleteInputForSingleSelect )
-                        , ( Escape, EscapeKeyInInputFilter )
-                        , ( ArrowUp, MoveHighlightedOptionUp )
-                        , ( ArrowDown, MoveHighlightedOptionDown )
+                        [ text model.placeholder ]
+                    , span [ class "value" ] [ text valueStr ]
+                    , input
+                        [ type_ "text"
+                        , onBlur InputBlur
+                        , onFocus InputFocus
+                        , onInput SearchInputOnInput
+                        , value valueStr
+                        , id "input-filter"
+                        , disabled model.disabled
+                        , css
+                            [ if model.focused then
+                                visibility visible
+
+                              else
+                                visibility hidden
+                            , width (px model.valueCasingWidth)
+                            ]
+                        , Keyboard.on Keyboard.Keydown
+                            [ ( Enter, SelectHighlightedOption )
+                            , ( Backspace, DeleteInputForSingleSelect )
+                            , ( Escape, EscapeKeyInInputFilter )
+                            , ( ArrowUp, MoveHighlightedOptionUp )
+                            , ( ArrowDown, MoveHighlightedOptionDown )
+                            ]
+                            |> Html.Styled.Attributes.fromUnstyled
                         ]
-                        |> Html.Styled.Attributes.fromUnstyled
+                        []
+                    , case model.rightSlot of
+                        ShowNothing ->
+                            text ""
+
+                        ShowLoadingIndicator ->
+                            node "slot" [ name "loading-indicator" ] []
+
+                        ShowDropdownIndicator ->
+                            dropdownIndicator model.focused model.disabled hasOptions
+
+                        ShowClearButton ->
+                            node "slot" [ name "clear-button" ] []
+                    , dropdown model
                     ]
-                    []
-                , case model.rightSlot of
-                    ShowNothing ->
-                        text ""
-
-                    ShowLoadingIndicator ->
-                        node "slot" [ name "loading-indicator" ] []
-
-                    ShowDropdownIndicator ->
-                        dropdownIndicator model.focused model.disabled hasOptions
-
-                    ShowClearButton ->
-                        node "slot" [ name "clear-button" ] []
-                , dropdown model
                 ]
 
         MultiSelect ->

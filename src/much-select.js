@@ -539,8 +539,6 @@ class MuchSelect extends HTMLElement {
       */
       #value-casing {
         min-height: 34px;
-        position: absolute;
-        top: -3px;
         cursor: pointer;
         overflow: hidden;
         -moz-appearance: textfield;
@@ -551,7 +549,6 @@ class MuchSelect extends HTMLElement {
         box-shadow: 1px 1px 1px 0 lightgray inset;
         font: -moz-field;
         font: -webkit-small-control;
-        margin-top: 5px;
         padding: 4px 3px 2px 3px;
         display: flex;
         flex-flow: row nowrap;
