@@ -514,7 +514,6 @@ class MuchSelect extends HTMLElement {
 
         min-height: 40px;
         min-width: 200px;
-        margin: 10px;
       }
 
       /*
