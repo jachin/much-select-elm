@@ -296,8 +296,8 @@ class MuchSelect extends HTMLElement {
 
       // Clamp the width between some min and max.
       // TODO this min and max should probably not be hard coded here.
-      if (width < 300) {
-        width = 300;
+      if (width < 100) {
+        width = 100;
       } else if (width > 500) {
         width = 500;
       }
@@ -618,6 +618,10 @@ class MuchSelect extends HTMLElement {
         flex-grow: 0;
         flex-shrink: 1;
         flex-basis: auto;
+      }
+
+      #value-casing.single {
+        width: 100%;
       }
 
       #select-indicator {
