@@ -296,8 +296,8 @@ class MuchSelect extends HTMLElement {
 
       // Clamp the width between some min and max.
       // TODO this min and max should probably not be hard coded here.
-      if (width < 300) {
-        width = 300;
+      if (width < 100) {
+        width = 100;
       } else if (width > 500) {
         width = 500;
       }
@@ -514,7 +514,6 @@ class MuchSelect extends HTMLElement {
 
         min-height: 40px;
         min-width: 200px;
-        margin: 10px;
       }
 
       /*
@@ -539,8 +538,6 @@ class MuchSelect extends HTMLElement {
       */
       #value-casing {
         min-height: 34px;
-        position: absolute;
-        top: -3px;
         cursor: pointer;
         overflow: hidden;
         -moz-appearance: textfield;
@@ -551,7 +548,6 @@ class MuchSelect extends HTMLElement {
         box-shadow: 1px 1px 1px 0 lightgray inset;
         font: -moz-field;
         font: -webkit-small-control;
-        margin-top: 5px;
         padding: 4px 3px 2px 3px;
         display: flex;
         flex-flow: row nowrap;
@@ -622,6 +618,10 @@ class MuchSelect extends HTMLElement {
         flex-grow: 0;
         flex-shrink: 1;
         flex-basis: auto;
+      }
+
+      #value-casing.single {
+        width: 100%;
       }
 
       #select-indicator {
