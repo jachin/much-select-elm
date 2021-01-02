@@ -104,6 +104,11 @@ type Msg
     | MoveHighlightedOptionDown
     | ValueCasingWidthUpdate Float
     | ClearAllSelectedOptions
+      -- SelectedValueHighlight?!? WTF? Yes, this is because in multi selected
+      --  mode a user can 'highlight' any number of the selected values by clicking
+      --  on them and then delete them (with the delete key).
+      --  If you can think of a better name we're all ears.
+    | ToggleSelectedValueHighlight OptionValue
 
 
 type alias Model =
@@ -341,6 +346,9 @@ update msg model =
               }
             , Cmd.none
             )
+
+        ToggleSelectedValueHighlight _ ->
+            ( model, Cmd.none )
 
 
 updateRightSlot : RightSlot -> SelectionMode -> Bool -> RightSlot
@@ -689,6 +697,20 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
                 MultiSelect ->
                     [ optionGroupHtml, text "" ]
 
+        OptionSelectedHighlighted ->
+            case selectionMode of
+                SingleSelect ->
+                    [ optionGroupHtml
+                    , div
+                        [ class "selected"
+                        , class "option"
+                        ]
+                        [ fromUnstyled option.labelMarkup, descriptionHtml ]
+                    ]
+
+                MultiSelect ->
+                    [ optionGroupHtml, text "" ]
+
         OptionHighlighted ->
             [ optionGroupHtml
             , div
@@ -711,13 +733,13 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
             ]
 
 
-optionsToValuesHtml : List Option -> List (Html msg)
+optionsToValuesHtml : List Option -> List (Html Msg)
 optionsToValuesHtml options =
     options
         |> List.map
             (\option ->
                 case option of
-                    Option display (OptionLabel labelStr _) _ _ _ ->
+                    Option display (OptionLabel labelStr _) optionValue _ _ ->
                         case display of
                             OptionShown ->
                                 text ""
@@ -726,7 +748,14 @@ optionsToValuesHtml options =
                                 text ""
 
                             OptionSelected ->
-                                div [ class "value" ] [ text labelStr ]
+                                div [ class "value", onClick (ToggleSelectedValueHighlight optionValue) ] [ text labelStr ]
+
+                            OptionSelectedHighlighted ->
+                                div
+                                    [ classList [ ( "value", True ), ( "selectedValue", True ) ]
+                                    , onClick (ToggleSelectedValueHighlight optionValue)
+                                    ]
+                                    [ text labelStr ]
 
                             OptionHighlighted ->
                                 text ""
@@ -744,6 +773,9 @@ optionsToValuesHtml options =
 
                             OptionSelected ->
                                 div [ class "value" ] [ text labelStr ]
+
+                            OptionSelectedHighlighted ->
+                                text ""
 
                             OptionHighlighted ->
                                 text ""

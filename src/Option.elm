@@ -73,6 +73,7 @@ type OptionDisplay
     = OptionShown
     | OptionHidden
     | OptionSelected
+    | OptionSelectedHighlighted
     | OptionHighlighted
     | OptionDisabled
 
@@ -570,6 +571,9 @@ highlightOption option =
                 OptionSelected ->
                     Option OptionSelected label value description group
 
+                OptionSelectedHighlighted ->
+                    Option OptionSelectedHighlighted label value description group
+
                 OptionHighlighted ->
                     Option OptionHighlighted label value description group
 
@@ -586,6 +590,9 @@ highlightOption option =
 
                 OptionSelected ->
                     EmptyOption OptionSelected label
+
+                OptionSelectedHighlighted ->
+                    EmptyOption OptionSelectedHighlighted label
 
                 OptionHighlighted ->
                     EmptyOption OptionHighlighted label
@@ -608,6 +615,9 @@ removeHighlightOption option =
                 OptionSelected ->
                     Option OptionSelected label value description group
 
+                OptionSelectedHighlighted ->
+                    Option OptionSelectedHighlighted label value description group
+
                 OptionHighlighted ->
                     Option OptionShown label value description group
 
@@ -631,6 +641,9 @@ removeHighlightOption option =
                 OptionDisabled ->
                     EmptyOption OptionDisabled label
 
+                OptionSelectedHighlighted ->
+                    EmptyOption OptionSelectedHighlighted label
+
 
 optionIsHighlighted : Option -> Bool
 optionIsHighlighted option =
@@ -644,6 +657,9 @@ optionIsHighlighted option =
                     False
 
                 OptionSelected ->
+                    False
+
+                OptionSelectedHighlighted ->
                     False
 
                 OptionHighlighted ->
@@ -661,6 +677,9 @@ optionIsHighlighted option =
                     False
 
                 OptionSelected ->
+                    False
+
+                OptionSelectedHighlighted ->
                     False
 
                 OptionHighlighted ->
@@ -684,6 +703,9 @@ optionIsHighlightable option =
                 OptionSelected ->
                     False
 
+                OptionSelectedHighlighted ->
+                    False
+
                 OptionHighlighted ->
                     False
 
@@ -699,6 +721,9 @@ optionIsHighlightable option =
                     False
 
                 OptionSelected ->
+                    False
+
+                OptionSelectedHighlighted ->
                     False
 
                 OptionHighlighted ->
@@ -722,6 +747,9 @@ selectOption option =
                 OptionSelected ->
                     Option OptionSelected label value description group
 
+                OptionSelectedHighlighted ->
+                    Option OptionSelected label value description group
+
                 OptionHighlighted ->
                     Option OptionSelected label value description group
 
@@ -737,6 +765,9 @@ selectOption option =
                     EmptyOption OptionSelected label
 
                 OptionSelected ->
+                    EmptyOption OptionSelected label
+
+                OptionSelectedHighlighted ->
                     EmptyOption OptionSelected label
 
                 OptionHighlighted ->
@@ -760,6 +791,9 @@ deselectOption option =
                 OptionSelected ->
                     Option OptionShown label value description group
 
+                OptionSelectedHighlighted ->
+                    Option OptionShown label value description group
+
                 OptionHighlighted ->
                     Option OptionHighlighted label value description group
 
@@ -775,6 +809,9 @@ deselectOption option =
                     EmptyOption OptionHidden label
 
                 OptionSelected ->
+                    EmptyOption OptionShown label
+
+                OptionSelectedHighlighted ->
                     EmptyOption OptionShown label
 
                 OptionHighlighted ->
@@ -801,6 +838,9 @@ selectedOptions options =
                             OptionSelected ->
                                 True
 
+                            OptionSelectedHighlighted ->
+                                True
+
                             OptionHighlighted ->
                                 False
 
@@ -816,6 +856,9 @@ selectedOptions options =
                                 False
 
                             OptionSelected ->
+                                True
+
+                            OptionSelectedHighlighted ->
                                 True
 
                             OptionHighlighted ->
