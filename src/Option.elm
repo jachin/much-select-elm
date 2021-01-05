@@ -47,6 +47,7 @@ module Option exposing
     , setLabel
     , setSelectedOptionInNewOptions
     , stringToOptionValue
+    , toggleSelectedHighlightByOptionValue
     )
 
 import Json.Decode
@@ -218,6 +219,16 @@ setGroup string option =
             Option optionDisplay label optionValue description (OptionGroup string)
 
         EmptyOption optionDisplay optionLabel ->
+            EmptyOption optionDisplay optionLabel
+
+
+setOptionDisplay : OptionDisplay -> Option -> Option
+setOptionDisplay optionDisplay option =
+    case option of
+        Option _ optionLabel optionValue optionDescription optionGroup ->
+            Option optionDisplay optionLabel optionValue optionDescription optionGroup
+
+        EmptyOption _ optionLabel ->
             EmptyOption optionDisplay optionLabel
 
 
@@ -866,6 +877,41 @@ selectedOptions options =
 
                             OptionDisabled ->
                                 False
+            )
+
+
+toggleSelectedHighlightByOptionValue : List Option -> OptionValue -> List Option
+toggleSelectedHighlightByOptionValue options optionValue =
+    options
+        |> List.map
+            (\option_ ->
+                case option_ of
+                    Option optionDisplay _ optionValue_ _ _ ->
+                        if optionValue == optionValue_ then
+                            case optionDisplay of
+                                OptionShown ->
+                                    option_
+
+                                OptionHidden ->
+                                    option_
+
+                                OptionSelected ->
+                                    option_ |> setOptionDisplay OptionSelectedHighlighted
+
+                                OptionSelectedHighlighted ->
+                                    option_ |> setOptionDisplay OptionSelected
+
+                                OptionHighlighted ->
+                                    option_
+
+                                OptionDisabled ->
+                                    option_
+
+                        else
+                            option_
+
+                    EmptyOption _ _ ->
+                        option_
             )
 
 

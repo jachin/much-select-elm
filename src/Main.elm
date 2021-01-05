@@ -347,8 +347,8 @@ update msg model =
             , Cmd.none
             )
 
-        ToggleSelectedValueHighlight _ ->
-            ( model, Cmd.none )
+        ToggleSelectedValueHighlight optionValue ->
+            ( { model | options = Option.toggleSelectedHighlightByOptionValue model.options optionValue }, Cmd.none )
 
 
 updateRightSlot : RightSlot -> SelectionMode -> Bool -> RightSlot
@@ -752,7 +752,7 @@ optionsToValuesHtml options =
 
                             OptionSelectedHighlighted ->
                                 div
-                                    [ classList [ ( "value", True ), ( "selectedValue", True ) ]
+                                    [ classList [ ( "value", True ), ( "selected-value", True ) ]
                                     , onClick (ToggleSelectedValueHighlight optionValue)
                                     ]
                                     [ text labelStr ]
