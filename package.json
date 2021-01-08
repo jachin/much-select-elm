@@ -8,6 +8,8 @@
     "test": "elm-test",
     "build": "parcel build src/much-select.js",
     "watch": "parcel --out-dir build/output public/index.html public/dropdown-options.html public/option-api.html public/empty-options.html public/initial-value.html public/fancy-characters.html",
+    "build-site": "parcel build --out-dir build/site/public public/index.html public/dropdown-options.html public/option-api.html public/empty-options.html public/initial-value.html public/fancy-characters.html public/404.html",
+    "deploy-site": "npm run build-site && firebase deploy",
     "lint": "eslint",
     "format": "elm-format"
   },
