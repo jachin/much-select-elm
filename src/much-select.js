@@ -274,7 +274,7 @@ class MuchSelect extends HTMLElement {
 
       // noinspection JSUnresolvedVariable
       this._app.ports.optionsChangedReceiver.send(optionsJson);
-      this.updateWidth();
+      this.updateDimensions();
     }
   }
 
@@ -289,10 +289,12 @@ class MuchSelect extends HTMLElement {
    *  input element.
    * This needs to be called very time the options change.
    */
-  updateWidth() {
+  updateDimensions() {
     const dropdownElement = this.shadowRoot.getElementById("dropdown");
-    if (dropdownElement) {
+    const valueCasingElement = this.shadowRoot.getElementById("value-casing");
+    if (dropdownElement && valueCasingElement) {
       let width = dropdownElement.offsetWidth;
+      let height = valueCasingElement.offsetHeight;
 
       // Clamp the width between some min and max.
       // TODO this min and max should probably not be hard coded here.
@@ -302,8 +304,17 @@ class MuchSelect extends HTMLElement {
         width = 500;
       }
 
+      // Clamp the width between some min and max.
+      // TODO this min and max should probably not be hard coded here.
+      if (height < 20) {
+        height = 20;
+      }
+
       // noinspection JSUnresolvedVariable
-      this._app.ports.valueCasingWidthChangedReceiver.send(width);
+      this._app.ports.valueCasingDimensionsChangedReceiver.send({
+        width,
+        height,
+      });
     }
   }
 
@@ -356,7 +367,7 @@ class MuchSelect extends HTMLElement {
   valueChangedHandler(valuesTuple) {
     // TODO perhaps this delimiter should be configurable
     this.selected = valuesTuple.map((valueTuple) => valueTuple[0]).join(",");
-    this.updateWidth();
+    this.updateDimensions();
     if (
       this.hasAttribute("multi-select") &&
       this.getAttribute("multi-select") !== "false"
@@ -656,7 +667,6 @@ class MuchSelect extends HTMLElement {
         visibility: hidden;
         padding: 5px;
         position: absolute;
-        top: 45px;
         left: 0px;
         font-size: 20px;
         min-width: 200px;
@@ -710,7 +720,7 @@ class MuchSelect extends HTMLElement {
   updateOptions(options) {
     // noinspection JSUnresolvedVariable
     this._app.ports.optionsChangedReceiver.send(cleanUpOptions(options));
-    this.updateWidth();
+    this.updateDimensions();
   }
 
   addOption(option) {
@@ -720,7 +730,7 @@ class MuchSelect extends HTMLElement {
   addOptions(options) {
     // noinspection JSUnresolvedVariable
     this._app.ports.addOptionsReceiver.send(cleanUpOptions(options));
-    this.updateWidth();
+    this.updateDimensions();
   }
 
   removeOption(option) {
@@ -730,7 +740,7 @@ class MuchSelect extends HTMLElement {
   removeOptions(options) {
     // noinspection JSUnresolvedVariable
     this._app.ports.removeOptionsReceiver.send(cleanUpOptions(options));
-    this.updateWidth();
+    this.updateDimensions();
   }
 
   selectOption(option) {
