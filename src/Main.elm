@@ -1,20 +1,7 @@
 module Main exposing (..)
 
 import Browser
-import Css
-    exposing
-        ( block
-        , display
-        , fontSize
-        , hidden
-        , inline
-        , lineHeight
-        , none
-        , px
-        , visibility
-        , visible
-        , width
-        )
+import Css exposing (block, display, fontSize, hidden, inline, lineHeight, none, px, top, visibility, visible, width)
 import Html.Styled
     exposing
         ( Html
@@ -74,7 +61,7 @@ import Ports
         , placeholderChangedReceiver
         , removeOptionsReceiver
         , selectOptionReceiver
-        , valueCasingWidthChangedReceiver
+        , valueCasingDimensionsChangedReceiver
         , valueChanged
         , valueChangedReceiver
         , valuesDecoder
@@ -107,7 +94,7 @@ type Msg
     | EscapeKeyInInputFilter
     | MoveHighlightedOptionUp
     | MoveHighlightedOptionDown
-    | ValueCasingWidthUpdate Float
+    | ValueCasingWidthUpdate { width : Float, height : Float }
     | ClearAllSelectedOptions
       -- SelectedValueHighlight?!? WTF? Yes, this is because in multi selected
       --  mode a user can 'highlight' any number of the selected values by clicking
@@ -129,6 +116,7 @@ type alias Model =
     , disabled : Bool
     , focused : Bool
     , valueCasingWidth : Float
+    , valueCasingHeight : Float
     }
 
 
@@ -146,10 +134,18 @@ update msg model =
             ( model, Cmd.none )
 
         BringInputInFocus ->
-            ( { model | focused = True }, focusInput () )
+            if model.focused then
+                ( model, Cmd.none )
+
+            else
+                ( { model | focused = True }, focusInput () )
 
         BringInputOutOfFocus ->
-            ( { model | focused = False }, blurInput () )
+            if model.focused then
+                ( { model | focused = False }, blurInput () )
+
+            else
+                ( model, Cmd.none )
 
         InputBlur ->
             ( { model | showDropdown = False, focused = False }, Cmd.none )
@@ -341,15 +337,15 @@ update msg model =
         MoveHighlightedOptionDown ->
             ( { model | options = Option.moveHighlightedOptionDown model.options }, Cmd.none )
 
-        ValueCasingWidthUpdate width ->
-            ( { model | valueCasingWidth = width }, Cmd.none )
+        ValueCasingWidthUpdate dims ->
+            ( { model | valueCasingWidth = dims.width, valueCasingHeight = dims.height }, Cmd.none )
 
         ClearAllSelectedOptions ->
             ( { model
                 | options = Option.deselectAllOptionsInOptionsList model.options
                 , rightSlot = ShowNothing
               }
-            , Cmd.none
+            , Cmd.batch [ valueChanged [] ]
             )
 
         ToggleSelectedValueHighlight optionValue ->
@@ -606,11 +602,12 @@ dropdown model =
         div
             [ id "dropdown"
             , class "showing"
+            , css [ top (px model.valueCasingHeight) ]
             ]
             optionsHtml
 
     else
-        div [ id "dropdown", class "hiding" ] optionsHtml
+        div [ id "dropdown", class "hiding", css [ top (px model.valueCasingHeight) ] ] optionsHtml
 
 
 optionsToDropdownOptions :
@@ -921,7 +918,10 @@ init flags =
       , maxDropdownItems = flags.maxDropdownItems
       , disabled = flags.disabled
       , focused = False
+
+      -- TODO Should these be passed as flags?
       , valueCasingWidth = 100
+      , valueCasingHeight = 45
       }
     , errorCmd
     )
@@ -948,7 +948,7 @@ subscriptions _ =
         , disableChangedReceiver DisabledAttributeChanged
         , optionsChangedReceiver OptionsChanged
         , maxDropdownItemsChangedReceiver MaxDropdownItemsChanged
-        , valueCasingWidthChangedReceiver ValueCasingWidthUpdate
+        , valueCasingDimensionsChangedReceiver ValueCasingWidthUpdate
         , selectOptionReceiver SelectOption
         , deselectOptionReceiver DeselectOption
         ]
