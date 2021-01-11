@@ -1,7 +1,20 @@
 module Main exposing (..)
 
 import Browser
-import Css exposing (block, display, fontSize, hidden, inline, lineHeight, none, px, visibility, visible, width)
+import Css
+    exposing
+        ( block
+        , display
+        , fontSize
+        , hidden
+        , inline
+        , lineHeight
+        , none
+        , px
+        , visibility
+        , visible
+        , width
+        )
 import Html.Styled
     exposing
         ( Html
@@ -25,15 +38,7 @@ import Html.Styled.Attributes
         , type_
         , value
         )
-import Html.Styled.Events
-    exposing
-        ( onBlur
-        , onClick
-        , onFocus
-        , onInput
-        , onMouseEnter
-        , onMouseLeave
-        )
+import Html.Styled.Events exposing (onBlur, onClick, onFocus, onInput, onMouseDown, onMouseEnter, onMouseLeave)
 import Json.Decode
 import Keyboard exposing (Key(..))
 import Keyboard.Events as Keyboard
@@ -429,7 +434,7 @@ view model =
             div [ id "wrapper", css [ width (px model.valueCasingWidth) ] ]
                 [ div
                     [ id "value-casing"
-                    , onClick BringInputInFocus
+                    , onMouseDown BringInputInFocus
                     , onFocus BringInputInFocus
                     , tabindex 0
                     , classList
@@ -748,12 +753,21 @@ optionsToValuesHtml options =
                                 text ""
 
                             OptionSelected ->
-                                div [ class "value", onClick (ToggleSelectedValueHighlight optionValue) ] [ text labelStr ]
+                                div
+                                    [ class "value"
+                                    , mousedownPreventDefaultAndStopPropagation
+                                        (ToggleSelectedValueHighlight optionValue)
+                                    ]
+                                    [ text labelStr ]
 
                             OptionSelectedHighlighted ->
                                 div
-                                    [ classList [ ( "value", True ), ( "selected-value", True ) ]
-                                    , onClick (ToggleSelectedValueHighlight optionValue)
+                                    [ classList
+                                        [ ( "value", True )
+                                        , ( "selected-value", True )
+                                        ]
+                                    , mousedownPreventDefaultAndStopPropagation
+                                        (ToggleSelectedValueHighlight optionValue)
                                     ]
                                     [ text labelStr ]
 
@@ -943,6 +957,17 @@ subscriptions _ =
 mousedownPreventDefaultAndStopPropagation : a -> Html.Styled.Attribute a
 mousedownPreventDefaultAndStopPropagation message =
     Html.Styled.Events.custom "mousedown"
+        (Json.Decode.succeed
+            { message = message
+            , stopPropagation = True
+            , preventDefault = True
+            }
+        )
+
+
+clickPreventDefaultAndStopPropagation : a -> Html.Styled.Attribute a
+clickPreventDefaultAndStopPropagation message =
+    Html.Styled.Events.custom "click"
         (Json.Decode.succeed
             { message = message
             , stopPropagation = True
