@@ -263,8 +263,16 @@ prepareOptionsForPresentation maxDropdownItems searchString options =
                         , description = Option.getOptionDescription option
                         , searchResult = Just searchResult
                         , totalScore = totalScore
-                        , labelMarkup = highlightMarkup (Option.getOptionLabel option |> Option.optionLabelToString) searchResult.labelMatch
-                        , descriptionMarkup = highlightMarkup (Option.getOptionDescription option |> Option.optionDescriptionToString) searchResult.descriptionMatch
+                        , labelMarkup =
+                            highlightMarkup
+                                (Option.getOptionLabel option |> Option.optionLabelToString)
+                                searchResult.labelMatch
+                        , descriptionMarkup =
+                            highlightMarkup
+                                (Option.getOptionDescription option
+                                    |> Option.optionDescriptionToString
+                                )
+                                searchResult.descriptionMatch
                         }
             )
         |> List.sortBy .totalScore

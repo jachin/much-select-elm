@@ -9,6 +9,7 @@ module Option exposing
     , addAndSelectOptionsInOptionsListByString
     , decoder
     , deselectAllOptionsInOptionsList
+    , deselectAllSelectedHighlightedOptions
     , deselectOptionInListByOptionValue
     , emptyOptionGroup
     , getOptionDescription
@@ -47,6 +48,7 @@ module Option exposing
     , setLabel
     , setSelectedOptionInNewOptions
     , stringToOptionValue
+    , toggleSelectedHighlightByOptionValue
     )
 
 import Json.Decode
@@ -73,6 +75,7 @@ type OptionDisplay
     = OptionShown
     | OptionHidden
     | OptionSelected
+    | OptionSelectedHighlighted
     | OptionHighlighted
     | OptionDisabled
 
@@ -217,6 +220,16 @@ setGroup string option =
             Option optionDisplay label optionValue description (OptionGroup string)
 
         EmptyOption optionDisplay optionLabel ->
+            EmptyOption optionDisplay optionLabel
+
+
+setOptionDisplay : OptionDisplay -> Option -> Option
+setOptionDisplay optionDisplay option =
+    case option of
+        Option _ optionLabel optionValue optionDescription optionGroup ->
+            Option optionDisplay optionLabel optionValue optionDescription optionGroup
+
+        EmptyOption _ optionLabel ->
             EmptyOption optionDisplay optionLabel
 
 
@@ -570,6 +583,9 @@ highlightOption option =
                 OptionSelected ->
                     Option OptionSelected label value description group
 
+                OptionSelectedHighlighted ->
+                    Option OptionSelectedHighlighted label value description group
+
                 OptionHighlighted ->
                     Option OptionHighlighted label value description group
 
@@ -586,6 +602,9 @@ highlightOption option =
 
                 OptionSelected ->
                     EmptyOption OptionSelected label
+
+                OptionSelectedHighlighted ->
+                    EmptyOption OptionSelectedHighlighted label
 
                 OptionHighlighted ->
                     EmptyOption OptionHighlighted label
@@ -608,6 +627,9 @@ removeHighlightOption option =
                 OptionSelected ->
                     Option OptionSelected label value description group
 
+                OptionSelectedHighlighted ->
+                    Option OptionSelectedHighlighted label value description group
+
                 OptionHighlighted ->
                     Option OptionShown label value description group
 
@@ -631,6 +653,9 @@ removeHighlightOption option =
                 OptionDisabled ->
                     EmptyOption OptionDisabled label
 
+                OptionSelectedHighlighted ->
+                    EmptyOption OptionSelectedHighlighted label
+
 
 optionIsHighlighted : Option -> Bool
 optionIsHighlighted option =
@@ -644,6 +669,9 @@ optionIsHighlighted option =
                     False
 
                 OptionSelected ->
+                    False
+
+                OptionSelectedHighlighted ->
                     False
 
                 OptionHighlighted ->
@@ -661,6 +689,9 @@ optionIsHighlighted option =
                     False
 
                 OptionSelected ->
+                    False
+
+                OptionSelectedHighlighted ->
                     False
 
                 OptionHighlighted ->
@@ -684,6 +715,9 @@ optionIsHighlightable option =
                 OptionSelected ->
                     False
 
+                OptionSelectedHighlighted ->
+                    False
+
                 OptionHighlighted ->
                     False
 
@@ -699,6 +733,9 @@ optionIsHighlightable option =
                     False
 
                 OptionSelected ->
+                    False
+
+                OptionSelectedHighlighted ->
                     False
 
                 OptionHighlighted ->
@@ -722,6 +759,9 @@ selectOption option =
                 OptionSelected ->
                     Option OptionSelected label value description group
 
+                OptionSelectedHighlighted ->
+                    Option OptionSelected label value description group
+
                 OptionHighlighted ->
                     Option OptionSelected label value description group
 
@@ -737,6 +777,9 @@ selectOption option =
                     EmptyOption OptionSelected label
 
                 OptionSelected ->
+                    EmptyOption OptionSelected label
+
+                OptionSelectedHighlighted ->
                     EmptyOption OptionSelected label
 
                 OptionHighlighted ->
@@ -760,6 +803,9 @@ deselectOption option =
                 OptionSelected ->
                     Option OptionShown label value description group
 
+                OptionSelectedHighlighted ->
+                    Option OptionShown label value description group
+
                 OptionHighlighted ->
                     Option OptionHighlighted label value description group
 
@@ -775,6 +821,9 @@ deselectOption option =
                     EmptyOption OptionHidden label
 
                 OptionSelected ->
+                    EmptyOption OptionShown label
+
+                OptionSelectedHighlighted ->
                     EmptyOption OptionShown label
 
                 OptionHighlighted ->
@@ -801,6 +850,9 @@ selectedOptions options =
                             OptionSelected ->
                                 True
 
+                            OptionSelectedHighlighted ->
+                                True
+
                             OptionHighlighted ->
                                 False
 
@@ -818,11 +870,80 @@ selectedOptions options =
                             OptionSelected ->
                                 True
 
+                            OptionSelectedHighlighted ->
+                                True
+
                             OptionHighlighted ->
                                 False
 
                             OptionDisabled ->
                                 False
+            )
+
+
+toggleSelectedHighlightByOptionValue : List Option -> OptionValue -> List Option
+toggleSelectedHighlightByOptionValue options optionValue =
+    options
+        |> List.map
+            (\option_ ->
+                case option_ of
+                    Option optionDisplay _ optionValue_ _ _ ->
+                        if optionValue == optionValue_ then
+                            case optionDisplay of
+                                OptionShown ->
+                                    option_
+
+                                OptionHidden ->
+                                    option_
+
+                                OptionSelected ->
+                                    option_ |> setOptionDisplay OptionSelectedHighlighted
+
+                                OptionSelectedHighlighted ->
+                                    option_ |> setOptionDisplay OptionSelected
+
+                                OptionHighlighted ->
+                                    option_
+
+                                OptionDisabled ->
+                                    option_
+
+                        else
+                            option_
+
+                    EmptyOption _ _ ->
+                        option_
+            )
+
+
+deselectAllSelectedHighlightedOptions : List Option -> List Option
+deselectAllSelectedHighlightedOptions options =
+    options
+        |> List.map
+            (\option_ ->
+                case option_ of
+                    Option optionDisplay _ _ _ _ ->
+                        case optionDisplay of
+                            OptionShown ->
+                                option_
+
+                            OptionHidden ->
+                                option_
+
+                            OptionSelected ->
+                                option_
+
+                            OptionSelectedHighlighted ->
+                                option_ |> setOptionDisplay OptionShown
+
+                            OptionHighlighted ->
+                                option_
+
+                            OptionDisabled ->
+                                option_
+
+                    EmptyOption _ _ ->
+                        option_
             )
 
 

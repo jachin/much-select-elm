@@ -1,7 +1,7 @@
 module Main exposing (..)
 
 import Browser
-import Css exposing (block, display, fontSize, hidden, inline, lineHeight, none, px, visibility, visible, width)
+import Css exposing (block, display, fontSize, hidden, inline, lineHeight, none, px, top, visibility, visible, width)
 import Html.Styled
     exposing
         ( Html
@@ -25,15 +25,7 @@ import Html.Styled.Attributes
         , type_
         , value
         )
-import Html.Styled.Events
-    exposing
-        ( onBlur
-        , onClick
-        , onFocus
-        , onInput
-        , onMouseEnter
-        , onMouseLeave
-        )
+import Html.Styled.Events exposing (onBlur, onClick, onFocus, onInput, onMouseDown, onMouseEnter, onMouseLeave)
 import Json.Decode
 import Keyboard exposing (Key(..))
 import Keyboard.Events as Keyboard
@@ -69,7 +61,7 @@ import Ports
         , placeholderChangedReceiver
         , removeOptionsReceiver
         , selectOptionReceiver
-        , valueCasingWidthChangedReceiver
+        , valueCasingDimensionsChangedReceiver
         , valueChanged
         , valueChangedReceiver
         , valuesDecoder
@@ -102,8 +94,14 @@ type Msg
     | EscapeKeyInInputFilter
     | MoveHighlightedOptionUp
     | MoveHighlightedOptionDown
-    | ValueCasingWidthUpdate Float
+    | ValueCasingWidthUpdate { width : Float, height : Float }
     | ClearAllSelectedOptions
+      -- SelectedValueHighlight?!? WTF? Yes, this is because in multi selected
+      --  mode a user can 'highlight' any number of the selected values by clicking
+      --  on them and then delete them (with the delete key).
+      --  If you can think of a better name we're all ears.
+    | ToggleSelectedValueHighlight OptionValue
+    | DeleteSelectedAndHighlightedValues
 
 
 type alias Model =
@@ -119,6 +117,7 @@ type alias Model =
     , disabled : Bool
     , focused : Bool
     , valueCasingWidth : Float
+    , valueCasingHeight : Float
     }
 
 
@@ -136,10 +135,18 @@ update msg model =
             ( model, Cmd.none )
 
         BringInputInFocus ->
-            ( { model | focused = True }, focusInput () )
+            if model.focused then
+                ( model, Cmd.none )
+
+            else
+                ( { model | focused = True }, focusInput () )
 
         BringInputOutOfFocus ->
-            ( { model | focused = False }, blurInput () )
+            if model.focused then
+                ( { model | focused = False }, blurInput () )
+
+            else
+                ( model, Cmd.none )
 
         InputBlur ->
             ( { model | showDropdown = False, focused = False }, Cmd.none )
@@ -331,16 +338,26 @@ update msg model =
         MoveHighlightedOptionDown ->
             ( { model | options = Option.moveHighlightedOptionDown model.options }, Cmd.none )
 
-        ValueCasingWidthUpdate width ->
-            ( { model | valueCasingWidth = width }, Cmd.none )
+        ValueCasingWidthUpdate dims ->
+            ( { model | valueCasingWidth = dims.width, valueCasingHeight = dims.height }, Cmd.none )
 
         ClearAllSelectedOptions ->
             ( { model
                 | options = Option.deselectAllOptionsInOptionsList model.options
                 , rightSlot = ShowNothing
               }
-            , Cmd.none
+            , Cmd.batch [ valueChanged [] ]
             )
+
+        ToggleSelectedValueHighlight optionValue ->
+            ( { model | options = Option.toggleSelectedHighlightByOptionValue model.options optionValue }, Cmd.none )
+
+        DeleteSelectedAndHighlightedValues ->
+            let
+                newOptions =
+                    Option.deselectAllSelectedHighlightedOptions model.options
+            in
+            ( { model | options = newOptions }, valueChanged (selectedOptionsToTuple newOptions) )
 
 
 updateRightSlot : RightSlot -> SelectionMode -> Bool -> RightSlot
@@ -421,7 +438,7 @@ view model =
             div [ id "wrapper", css [ width (px model.valueCasingWidth) ] ]
                 [ div
                     [ id "value-casing"
-                    , onClick BringInputInFocus
+                    , onMouseDown BringInputInFocus
                     , onFocus BringInputInFocus
                     , tabindex 0
                     , classList
@@ -525,6 +542,11 @@ view model =
                     [ id "value-casing"
                     , onClick BringInputInFocus
                     , onFocus BringInputInFocus
+                    , Keyboard.on Keyboard.Keydown
+                        [ ( Delete, DeleteSelectedAndHighlightedValues )
+                        , ( Backspace, DeleteSelectedAndHighlightedValues )
+                        ]
+                        |> Html.Styled.Attributes.fromUnstyled
                     , tabindex 0
                     , classList
                         [ ( "placeholder", showPlaceholder )
@@ -593,11 +615,12 @@ dropdown model =
         div
             [ id "dropdown"
             , class "showing"
+            , css [ top (px model.valueCasingHeight) ]
             ]
             optionsHtml
 
     else
-        div [ id "dropdown", class "hiding" ] optionsHtml
+        div [ id "dropdown", class "hiding", css [ top (px model.valueCasingHeight) ] ] optionsHtml
 
 
 optionsToDropdownOptions :
@@ -689,6 +712,20 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
                 MultiSelect ->
                     [ optionGroupHtml, text "" ]
 
+        OptionSelectedHighlighted ->
+            case selectionMode of
+                SingleSelect ->
+                    [ optionGroupHtml
+                    , div
+                        [ class "selected"
+                        , class "option"
+                        ]
+                        [ fromUnstyled option.labelMarkup, descriptionHtml ]
+                    ]
+
+                MultiSelect ->
+                    [ optionGroupHtml, text "" ]
+
         OptionHighlighted ->
             [ optionGroupHtml
             , div
@@ -711,13 +748,13 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
             ]
 
 
-optionsToValuesHtml : List Option -> List (Html msg)
+optionsToValuesHtml : List Option -> List (Html Msg)
 optionsToValuesHtml options =
     options
         |> List.map
             (\option ->
                 case option of
-                    Option display (OptionLabel labelStr _) _ _ _ ->
+                    Option display (OptionLabel labelStr _) optionValue _ _ ->
                         case display of
                             OptionShown ->
                                 text ""
@@ -726,7 +763,23 @@ optionsToValuesHtml options =
                                 text ""
 
                             OptionSelected ->
-                                div [ class "value" ] [ text labelStr ]
+                                div
+                                    [ class "value"
+                                    , mousedownPreventDefaultAndStopPropagation
+                                        (ToggleSelectedValueHighlight optionValue)
+                                    ]
+                                    [ text labelStr ]
+
+                            OptionSelectedHighlighted ->
+                                div
+                                    [ classList
+                                        [ ( "value", True )
+                                        , ( "selected-value", True )
+                                        ]
+                                    , mousedownPreventDefaultAndStopPropagation
+                                        (ToggleSelectedValueHighlight optionValue)
+                                    ]
+                                    [ text labelStr ]
 
                             OptionHighlighted ->
                                 text ""
@@ -744,6 +797,9 @@ optionsToValuesHtml options =
 
                             OptionSelected ->
                                 div [ class "value" ] [ text labelStr ]
+
+                            OptionSelectedHighlighted ->
+                                text ""
 
                             OptionHighlighted ->
                                 text ""
@@ -875,7 +931,10 @@ init flags =
       , maxDropdownItems = flags.maxDropdownItems
       , disabled = flags.disabled
       , focused = False
+
+      -- TODO Should these be passed as flags?
       , valueCasingWidth = 100
+      , valueCasingHeight = 45
       }
     , errorCmd
     )
@@ -902,7 +961,7 @@ subscriptions _ =
         , disableChangedReceiver DisabledAttributeChanged
         , optionsChangedReceiver OptionsChanged
         , maxDropdownItemsChangedReceiver MaxDropdownItemsChanged
-        , valueCasingWidthChangedReceiver ValueCasingWidthUpdate
+        , valueCasingDimensionsChangedReceiver ValueCasingWidthUpdate
         , selectOptionReceiver SelectOption
         , deselectOptionReceiver DeselectOption
         ]
