@@ -66,7 +66,7 @@ import Ports
         , valueChangedReceiver
         , valuesDecoder
         )
-import SelectionMode exposing (SelectionMode(..))
+import SelectionMode exposing (CustomOptions(..), SelectionMode(..))
 
 
 type Msg
@@ -164,10 +164,10 @@ update msg model =
             let
                 options =
                     case model.selectionMode of
-                        MultiSelect ->
+                        MultiSelect _ ->
                             selectOptionInListByOptionValue optionValue model.options
 
-                        SingleSelect ->
+                        SingleSelect _ ->
                             selectSingleOptionInList optionValue model.options
             in
             ( { model | options = options }, Cmd.batch [ valueChanged (selectedOptionsToTuple options), blurInput () ] )
@@ -213,10 +213,10 @@ update msg model =
                     let
                         newOptionWithOldSelectedOption =
                             case model.selectionMode of
-                                SingleSelect ->
+                                SingleSelect _ ->
                                     Option.mergeTwoListsOfOptionsPreservingSelectedOptions model.options newOptions
 
-                                MultiSelect ->
+                                MultiSelect _ ->
                                     -- Also filter out any empty options.
                                     newOptions
                                         |> List.filter (not << Option.isEmptyOption)
@@ -252,10 +252,10 @@ update msg model =
 
                         options =
                             case model.selectionMode of
-                                MultiSelect ->
+                                MultiSelect _ ->
                                     selectOptionInListByOptionValue optionValue model.options
 
-                                SingleSelect ->
+                                SingleSelect _ ->
                                     selectSingleOptionInList optionValue model.options
                     in
                     ( { model | options = options }, Cmd.batch [ valueChanged (selectedOptionsToTuple options) ] )
@@ -304,7 +304,7 @@ update msg model =
                     selectHighlightedOption model.selectionMode model.options
             in
             case model.selectionMode of
-                SingleSelect ->
+                SingleSelect _ ->
                     ( { model | options = options, searchString = "" }
                     , Cmd.batch
                         [ valueChanged (selectedOptionsToTuple options)
@@ -312,12 +312,12 @@ update msg model =
                         ]
                     )
 
-                MultiSelect ->
+                MultiSelect _ ->
                     ( { model | options = options, searchString = "" }, valueChanged (selectedOptionsToTuple options) )
 
         DeleteInputForSingleSelect ->
             case model.selectionMode of
-                SingleSelect ->
+                SingleSelect _ ->
                     if Option.hasSelectedOption model.options then
                         ( { model
                             | options = Option.deselectAllOptionsInOptionsList model.options
@@ -329,7 +329,7 @@ update msg model =
                     else
                         ( model, Cmd.none )
 
-                MultiSelect ->
+                MultiSelect _ ->
                     ( model, Cmd.none )
 
         EscapeKeyInInputFilter ->
@@ -368,10 +368,10 @@ updateRightSlot current selectionMode hasSelectedOption =
     case current of
         ShowNothing ->
             case selectionMode of
-                SingleSelect ->
+                SingleSelect _ ->
                     ShowDropdownIndicator
 
-                MultiSelect ->
+                MultiSelect _ ->
                     if hasSelectedOption then
                         ShowClearButton
 
@@ -399,10 +399,10 @@ updateRightSlotLoading isLoading selectionMode hasSelectedOption =
 
     else
         case selectionMode of
-            SingleSelect ->
+            SingleSelect _ ->
                 ShowDropdownIndicator
 
-            MultiSelect ->
+            MultiSelect _ ->
                 if hasSelectedOption then
                     ShowClearButton
 
@@ -413,7 +413,7 @@ updateRightSlotLoading isLoading selectionMode hasSelectedOption =
 view : Model -> Html Msg
 view model =
     case model.selectionMode of
-        SingleSelect ->
+        SingleSelect _ ->
             let
                 hasOptionSelected =
                     Option.hasSelectedOption model.options
@@ -513,7 +513,7 @@ view model =
                     ]
                 ]
 
-        MultiSelect ->
+        MultiSelect _ ->
             let
                 hasOptionSelected =
                     Option.hasSelectedOption model.options
@@ -703,7 +703,7 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
 
         OptionSelected ->
             case selectionMode of
-                SingleSelect ->
+                SingleSelect _ ->
                     [ optionGroupHtml
                     , div
                         [ class "selected"
@@ -712,12 +712,12 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
                         [ fromUnstyled option.labelMarkup, descriptionHtml ]
                     ]
 
-                MultiSelect ->
+                MultiSelect _ ->
                     [ optionGroupHtml, text "" ]
 
         OptionSelectedHighlighted ->
             case selectionMode of
-                SingleSelect ->
+                SingleSelect _ ->
                     [ optionGroupHtml
                     , div
                         [ class "selected"
@@ -726,7 +726,7 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
                         [ fromUnstyled option.labelMarkup, descriptionHtml ]
                     ]
 
-                MultiSelect ->
+                MultiSelect _ ->
                     [ optionGroupHtml, text "" ]
 
         OptionHighlighted ->
@@ -883,18 +883,26 @@ type alias Flags =
     , loading : Bool
     , maxDropdownItems : Int
     , disabled : Bool
+    , allowCustomOptions : Bool
     }
 
 
 init : Flags -> ( Model, Cmd Msg )
 init flags =
     let
-        selectionMode =
-            if flags.allowMultiSelect then
-                MultiSelect
+        allowCustomOptions =
+            if flags.allowCustomOptions then
+                AllowCustomOptions
 
             else
-                SingleSelect
+                NoCustomOptions
+
+        selectionMode =
+            if flags.allowMultiSelect then
+                MultiSelect allowCustomOptions
+
+            else
+                SingleSelect allowCustomOptions
 
         initialValueStr =
             String.trim flags.value
@@ -907,17 +915,17 @@ init flags =
 
                 _ ->
                     case selectionMode of
-                        SingleSelect ->
+                        SingleSelect _ ->
                             [ initialValueStr ]
 
-                        MultiSelect ->
+                        MultiSelect _ ->
                             String.split "," initialValueStr
 
         ( optionsWithInitialValueSelected, errorCmd ) =
             case Json.Decode.decodeString Option.optionsDecoder flags.optionsJson of
                 Ok options ->
                     case selectionMode of
-                        SingleSelect ->
+                        SingleSelect _ ->
                             case List.head initialValues of
                                 Just initialValueStr_ ->
                                     if Option.isOptionInListOfOptionsByValue (Option.stringToOptionValue initialValueStr_) options then
@@ -929,7 +937,7 @@ init flags =
                                 Nothing ->
                                     ( options, Cmd.none )
 
-                        MultiSelect ->
+                        MultiSelect _ ->
                             let
                                 -- Don't include any empty options, that doesn't make sense.
                                 optionsWithInitialValues =
@@ -955,10 +963,10 @@ init flags =
 
             else
                 case selectionMode of
-                    SingleSelect ->
+                    SingleSelect _ ->
                         ShowDropdownIndicator
 
-                    MultiSelect ->
+                    MultiSelect _ ->
                         if Option.hasSelectedOption optionsWithInitialValueSelected then
                             ShowClearButton
 

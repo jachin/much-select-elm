@@ -361,6 +361,7 @@ class MuchSelect extends HTMLElement {
     flags.disabled = this.disabled;
     flags.loading = this.loading;
     flags.maxDropdownItems = this.maxDropdownItems;
+    flags.allowCustomOptions = this.allowCustomOptions;
 
     const selectElement = this.querySelector("select");
     if (selectElement) {
@@ -538,7 +539,7 @@ class MuchSelect extends HTMLElement {
     } else {
       this.removeAttribute("allow-custom-options");
     }
-
+    // noinspection JSUnresolvedVariable
     this._app.ports.allowCustomOptionsReceiver.send(this._allowCustomOptions);
   }
 

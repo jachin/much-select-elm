@@ -540,26 +540,26 @@ selectHighlightedOption selectionMode options =
                         case option of
                             Option _ _ value _ _ ->
                                 case selectionMode of
-                                    MultiSelect ->
+                                    MultiSelect _ ->
                                         selectOptionInListByOptionValue value options
 
-                                    SingleSelect ->
+                                    SingleSelect _ ->
                                         selectSingleOptionInList value options
 
                             CustomOption _ _ value ->
                                 case selectionMode of
-                                    MultiSelect ->
+                                    MultiSelect _ ->
                                         selectOptionInListByOptionValue value options
 
-                                    SingleSelect ->
+                                    SingleSelect _ ->
                                         selectSingleOptionInList value options
 
                             EmptyOption _ _ ->
                                 case selectionMode of
-                                    MultiSelect ->
+                                    MultiSelect _ ->
                                         selectEmptyOption options
 
-                                    SingleSelect ->
+                                    SingleSelect _ ->
                                         selectEmptyOption options
 
                     Nothing ->

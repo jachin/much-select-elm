@@ -1,6 +1,11 @@
-module SelectionMode exposing (SelectionMode(..))
+module SelectionMode exposing (CustomOptions(..), SelectionMode(..))
+
+
+type CustomOptions
+    = AllowCustomOptions
+    | NoCustomOptions
 
 
 type SelectionMode
-    = SingleSelect
-    | MultiSelect
+    = SingleSelect CustomOptions
+    | MultiSelect CustomOptions
