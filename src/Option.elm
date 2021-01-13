@@ -58,6 +58,7 @@ import SelectionMode exposing (SelectionMode(..))
 
 type Option
     = Option OptionDisplay OptionLabel OptionValue OptionDescription OptionGroup
+    | CustomOption OptionDisplay OptionLabel OptionValue
     | EmptyOption OptionDisplay OptionLabel
 
 
@@ -68,6 +69,9 @@ getOptionLabel option =
             label
 
         EmptyOption _ label ->
+            label
+
+        CustomOption _ label _ ->
             label
 
 
@@ -179,6 +183,9 @@ getOptionGroup option =
         Option _ _ _ _ optionGroup ->
             optionGroup
 
+        CustomOption _ _ _ ->
+            NoOptionGroup
+
         EmptyOption _ _ ->
             NoOptionGroup
 
@@ -199,6 +206,9 @@ setLabel string maybeCleanString option =
         Option optionDisplay _ optionValue description group ->
             Option optionDisplay (OptionLabel string maybeCleanString) optionValue description group
 
+        CustomOption optionDisplay _ _ ->
+            CustomOption optionDisplay (OptionLabel string maybeCleanString) (OptionValue string)
+
         EmptyOption optionDisplay _ ->
             EmptyOption optionDisplay (OptionLabel string maybeCleanString)
 
@@ -208,6 +218,9 @@ setDescription string option =
     case option of
         Option optionDisplay label optionValue _ group ->
             Option optionDisplay label optionValue (OptionDescription string Nothing) group
+
+        CustomOption optionDisplay optionLabel optionValue ->
+            CustomOption optionDisplay optionLabel optionValue
 
         EmptyOption optionDisplay optionLabel ->
             EmptyOption optionDisplay optionLabel
@@ -219,6 +232,9 @@ setGroup string option =
         Option optionDisplay label optionValue description _ ->
             Option optionDisplay label optionValue description (OptionGroup string)
 
+        CustomOption optionDisplay optionLabel optionValue ->
+            CustomOption optionDisplay optionLabel optionValue
+
         EmptyOption optionDisplay optionLabel ->
             EmptyOption optionDisplay optionLabel
 
@@ -228,6 +244,9 @@ setOptionDisplay optionDisplay option =
     case option of
         Option _ optionLabel optionValue optionDescription optionGroup ->
             Option optionDisplay optionLabel optionValue optionDescription optionGroup
+
+        CustomOption _ optionLabel optionValue ->
+            CustomOption optionDisplay optionLabel optionValue
 
         EmptyOption _ optionLabel ->
             EmptyOption optionDisplay optionLabel
@@ -249,6 +268,9 @@ getOptionDisplay option =
         Option display _ _ _ _ ->
             display
 
+        CustomOption display _ _ ->
+            display
+
         EmptyOption display _ ->
             display
 
@@ -257,6 +279,9 @@ getOptionValue : Option -> OptionValue
 getOptionValue option =
     case option of
         Option _ _ value _ _ ->
+            value
+
+        CustomOption _ _ value ->
             value
 
         EmptyOption _ _ ->
@@ -288,6 +313,9 @@ getOptionDescription option =
     case option of
         Option _ _ _ optionDescription _ ->
             optionDescription
+
+        CustomOption _ _ _ ->
+            NoDescription
 
         EmptyOption _ _ ->
             NoDescription
@@ -518,6 +546,14 @@ selectHighlightedOption selectionMode options =
                                     SingleSelect ->
                                         selectSingleOptionInList value options
 
+                            CustomOption _ _ value ->
+                                case selectionMode of
+                                    MultiSelect ->
+                                        selectOptionInListByOptionValue value options
+
+                                    SingleSelect ->
+                                        selectSingleOptionInList value options
+
                             EmptyOption _ _ ->
                                 case selectionMode of
                                     MultiSelect ->
@@ -551,6 +587,9 @@ selectEmptyOption options =
             (\option_ ->
                 case option_ of
                     Option _ _ _ _ _ ->
+                        deselectOption option_
+
+                    CustomOption _ _ _ ->
                         deselectOption option_
 
                     EmptyOption _ _ ->
@@ -591,6 +630,26 @@ highlightOption option =
 
                 OptionDisabled ->
                     Option OptionDisabled label value description group
+
+        CustomOption display label value ->
+            case display of
+                OptionShown ->
+                    CustomOption OptionHighlighted label value
+
+                OptionHidden ->
+                    CustomOption OptionHidden label value
+
+                OptionSelected ->
+                    CustomOption OptionSelected label value
+
+                OptionSelectedHighlighted ->
+                    CustomOption OptionSelectedHighlighted label value
+
+                OptionHighlighted ->
+                    CustomOption OptionHighlighted label value
+
+                OptionDisabled ->
+                    CustomOption OptionDisabled label value
 
         EmptyOption display label ->
             case display of
@@ -636,6 +695,26 @@ removeHighlightOption option =
                 OptionDisabled ->
                     Option OptionDisabled label value description group
 
+        CustomOption display label value ->
+            case display of
+                OptionShown ->
+                    CustomOption OptionShown label value
+
+                OptionHidden ->
+                    CustomOption OptionHidden label value
+
+                OptionSelected ->
+                    CustomOption OptionSelected label value
+
+                OptionSelectedHighlighted ->
+                    CustomOption OptionSelectedHighlighted label value
+
+                OptionHighlighted ->
+                    CustomOption OptionShown label value
+
+                OptionDisabled ->
+                    CustomOption OptionDisabled label value
+
         EmptyOption display label ->
             case display of
                 OptionShown ->
@@ -661,6 +740,26 @@ optionIsHighlighted : Option -> Bool
 optionIsHighlighted option =
     case option of
         Option display _ _ _ _ ->
+            case display of
+                OptionShown ->
+                    False
+
+                OptionHidden ->
+                    False
+
+                OptionSelected ->
+                    False
+
+                OptionSelectedHighlighted ->
+                    False
+
+                OptionHighlighted ->
+                    True
+
+                OptionDisabled ->
+                    False
+
+        CustomOption display _ _ ->
             case display of
                 OptionShown ->
                     False
@@ -724,6 +823,26 @@ optionIsHighlightable option =
                 OptionDisabled ->
                     False
 
+        CustomOption display _ _ ->
+            case display of
+                OptionShown ->
+                    True
+
+                OptionHidden ->
+                    False
+
+                OptionSelected ->
+                    False
+
+                OptionSelectedHighlighted ->
+                    False
+
+                OptionHighlighted ->
+                    False
+
+                OptionDisabled ->
+                    False
+
         EmptyOption display _ ->
             case display of
                 OptionShown ->
@@ -767,6 +886,26 @@ selectOption option =
 
                 OptionDisabled ->
                     Option OptionDisabled label value description group
+
+        CustomOption display label value ->
+            case display of
+                OptionShown ->
+                    CustomOption OptionSelected label value
+
+                OptionHidden ->
+                    CustomOption OptionHidden label value
+
+                OptionSelected ->
+                    CustomOption OptionSelected label value
+
+                OptionSelectedHighlighted ->
+                    CustomOption OptionSelectedHighlighted label value
+
+                OptionHighlighted ->
+                    CustomOption OptionHighlighted label value
+
+                OptionDisabled ->
+                    CustomOption OptionDisabled label value
 
         EmptyOption display label ->
             case display of
@@ -812,6 +951,26 @@ deselectOption option =
                 OptionDisabled ->
                     Option OptionDisabled label value description group
 
+        CustomOption display label value ->
+            case display of
+                OptionShown ->
+                    CustomOption OptionShown label value
+
+                OptionHidden ->
+                    CustomOption OptionHidden label value
+
+                OptionSelected ->
+                    CustomOption OptionShown label value
+
+                OptionSelectedHighlighted ->
+                    CustomOption OptionSelectedHighlighted label value
+
+                OptionHighlighted ->
+                    CustomOption OptionHighlighted label value
+
+                OptionDisabled ->
+                    CustomOption OptionDisabled label value
+
         EmptyOption display label ->
             case display of
                 OptionShown ->
@@ -840,6 +999,26 @@ selectedOptions options =
             (\option_ ->
                 case option_ of
                     Option display _ _ _ _ ->
+                        case display of
+                            OptionShown ->
+                                False
+
+                            OptionHidden ->
+                                False
+
+                            OptionSelected ->
+                                True
+
+                            OptionSelectedHighlighted ->
+                                True
+
+                            OptionHighlighted ->
+                                False
+
+                            OptionDisabled ->
+                                False
+
+                    CustomOption display _ _ ->
                         case display of
                             OptionShown ->
                                 False
@@ -911,6 +1090,30 @@ toggleSelectedHighlightByOptionValue options optionValue =
                         else
                             option_
 
+                    CustomOption optionDisplay _ optionValue_ ->
+                        if optionValue == optionValue_ then
+                            case optionDisplay of
+                                OptionShown ->
+                                    option_
+
+                                OptionHidden ->
+                                    option_
+
+                                OptionSelected ->
+                                    option_ |> setOptionDisplay OptionSelectedHighlighted
+
+                                OptionSelectedHighlighted ->
+                                    option_ |> setOptionDisplay OptionSelected
+
+                                OptionHighlighted ->
+                                    option_
+
+                                OptionDisabled ->
+                                    option_
+
+                        else
+                            option_
+
                     EmptyOption _ _ ->
                         option_
             )
@@ -923,6 +1126,26 @@ deselectAllSelectedHighlightedOptions options =
             (\option_ ->
                 case option_ of
                     Option optionDisplay _ _ _ _ ->
+                        case optionDisplay of
+                            OptionShown ->
+                                option_
+
+                            OptionHidden ->
+                                option_
+
+                            OptionSelected ->
+                                option_
+
+                            OptionSelectedHighlighted ->
+                                option_ |> setOptionDisplay OptionShown
+
+                            OptionHighlighted ->
+                                option_
+
+                            OptionDisabled ->
+                                option_
+
+                    CustomOption optionDisplay _ _ ->
                         case optionDisplay of
                             OptionShown ->
                                 option_
@@ -956,6 +1179,9 @@ isEmptyOption : Option -> Bool
 isEmptyOption option =
     case option of
         Option _ _ _ _ _ ->
+            False
+
+        CustomOption _ _ _ ->
             False
 
         EmptyOption _ _ ->

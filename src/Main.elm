@@ -177,6 +177,9 @@ update msg model =
                 Just (Option _ _ value _ _) ->
                     ( { model | searchString = string, options = highlightOptionInListByValue value model.options }, Cmd.none )
 
+                Just (CustomOption _ _ _) ->
+                    ( { model | searchString = string }, Cmd.none )
+
                 Just (EmptyOption _ _) ->
                     ( { model | searchString = string }, Cmd.none )
 
@@ -755,6 +758,39 @@ optionsToValuesHtml options =
             (\option ->
                 case option of
                     Option display (OptionLabel labelStr _) optionValue _ _ ->
+                        case display of
+                            OptionShown ->
+                                text ""
+
+                            OptionHidden ->
+                                text ""
+
+                            OptionSelected ->
+                                div
+                                    [ class "value"
+                                    , mousedownPreventDefaultAndStopPropagation
+                                        (ToggleSelectedValueHighlight optionValue)
+                                    ]
+                                    [ text labelStr ]
+
+                            OptionSelectedHighlighted ->
+                                div
+                                    [ classList
+                                        [ ( "value", True )
+                                        , ( "selected-value", True )
+                                        ]
+                                    , mousedownPreventDefaultAndStopPropagation
+                                        (ToggleSelectedValueHighlight optionValue)
+                                    ]
+                                    [ text labelStr ]
+
+                            OptionHighlighted ->
+                                text ""
+
+                            OptionDisabled ->
+                                text ""
+
+                    CustomOption display (OptionLabel labelStr _) optionValue ->
                         case display of
                             OptionShown ->
                                 text ""
