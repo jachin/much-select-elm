@@ -182,10 +182,12 @@ class MuchSelect extends HTMLElement {
   attributeChangedCallback(name, oldValue, newValue) {
     if (name === "selected") {
       if (oldValue !== newValue) {
+        this.updateDimensions();
         this.selected = newValue;
       }
     } else if (name === "placeholder") {
       if (oldValue !== newValue) {
+        this.updateDimensions();
         this.placeholder = newValue;
       }
     } else if (name === "disabled") {
@@ -290,32 +292,34 @@ class MuchSelect extends HTMLElement {
    * This needs to be called very time the options change.
    */
   updateDimensions() {
-    const dropdownElement = this.shadowRoot.getElementById("dropdown");
-    const valueCasingElement = this.shadowRoot.getElementById("value-casing");
-    if (dropdownElement && valueCasingElement) {
-      let width = dropdownElement.offsetWidth;
-      let height = valueCasingElement.offsetHeight;
+    window.requestAnimationFrame(() => {
+      const dropdownElement = this.shadowRoot.getElementById("dropdown");
+      const valueCasingElement = this.shadowRoot.getElementById("value-casing");
+      if (dropdownElement && valueCasingElement) {
+        let width = dropdownElement.offsetWidth;
+        let height = valueCasingElement.offsetHeight;
 
-      // Clamp the width between some min and max.
-      // TODO this min and max should probably not be hard coded here.
-      if (width < 100) {
-        width = 100;
-      } else if (width > 500) {
-        width = 500;
+        // Clamp the width between some min and max.
+        // TODO this min and max should probably not be hard coded here.
+        if (width < 100) {
+          width = 100;
+        } else if (width > 500) {
+          width = 500;
+        }
+
+        // Clamp the width between some min and max.
+        // TODO this min and max should probably not be hard coded here.
+        if (height < 20) {
+          height = 20;
+        }
+
+        // noinspection JSUnresolvedVariable
+        this._app.ports.valueCasingDimensionsChangedReceiver.send({
+          width,
+          height,
+        });
       }
-
-      // Clamp the width between some min and max.
-      // TODO this min and max should probably not be hard coded here.
-      if (height < 20) {
-        height = 20;
-      }
-
-      // noinspection JSUnresolvedVariable
-      this._app.ports.valueCasingDimensionsChangedReceiver.send({
-        width,
-        height,
-      });
-    }
+    });
   }
 
   buildFlags() {
