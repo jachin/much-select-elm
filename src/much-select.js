@@ -36,21 +36,17 @@ const buildOptionsFromSelectElement = (selectElement) => {
 
 const notNullOrUndefined = (thing) => thing !== null && thing !== undefined;
 
-const stringToOptionObject = (str) => {
-  return {
-    value: str,
-    label: str,
-    labelClean: asciiFold(str),
-  };
-};
+const stringToOptionObject = (str) => ({
+  value: str,
+  label: str,
+  labelClean: asciiFold(str),
+});
 
-const numberToOptionObject = (num) => {
-  return {
-    value: `${num}`,
-    label: `${num}`,
-    labelClean: `${num}`,
-  };
-};
+const numberToOptionObject = (num) => ({
+  value: `${num}`,
+  label: `${num}`,
+  labelClean: `${num}`,
+});
 
 const cleanUpOption = (option) => {
   if (typeof option === "string") {
@@ -160,6 +156,12 @@ class MuchSelect extends HTMLElement {
     this._maxDropdownItems = 10000;
 
     /**
+     * @type {boolean}
+     * @private
+     */
+    this._allowCustomOptions = false;
+
+    /**
      * @type {null|object}
      * @private
      */
@@ -175,6 +177,7 @@ class MuchSelect extends HTMLElement {
       "placeholder",
       "loading",
       "max-dropdown-items",
+      "allow-custom-options",
     ];
   }
 
@@ -197,6 +200,10 @@ class MuchSelect extends HTMLElement {
     } else if (name === "max-dropdown-items") {
       if (oldValue !== newValue) {
         this.maxDropdownItems = newValue;
+      }
+    } else if (name === "allow-custom-options") {
+      if (oldValue !== newValue) {
+        this.allowCustomOptions = newValue;
       }
     } else if (name === "loading") {
       if (oldValue !== newValue) {
@@ -380,9 +387,10 @@ class MuchSelect extends HTMLElement {
       this.getAttribute("multi-select") !== "false"
     ) {
       // If we are in mulit select mode put the list of values in the event.
-      const valuesObj = valuesTuple.map((valueTuple) => {
-        return { value: valueTuple[0], label: valueTuple[1] };
-      });
+      const valuesObj = valuesTuple.map((valueTuple) => ({
+        value: valueTuple[0],
+        label: valueTuple[1],
+      }));
       this.dispatchEvent(
         new CustomEvent("valueChanged", {
           bubbles: true,
@@ -513,6 +521,25 @@ class MuchSelect extends HTMLElement {
     }
     // noinspection JSUnresolvedVariable
     this._app.ports.loadingChangedReceiver.send(this._loading);
+  }
+
+  get allowCustomOptions() {
+    return this._allowCustomOptions;
+  }
+
+  set allowCustomOptions(value) {
+    if (value === "false") {
+      this._allowCustomOptions = false;
+    } else {
+      this._allowCustomOptions = !!value;
+    }
+    if (this._allowCustomOptions) {
+      this.setAttribute("allow-custom-options", "true");
+    } else {
+      this.removeAttribute("allow-custom-options");
+    }
+
+    this._app.ports.allowCustomOptionsReceiver.send(this._allowCustomOptions);
   }
 
   // eslint-disable-next-line class-methods-use-this
