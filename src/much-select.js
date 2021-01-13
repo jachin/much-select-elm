@@ -287,9 +287,12 @@ class MuchSelect extends HTMLElement {
   }
 
   /**
-   * This method updates the width this widget when it's not selected, so when it is selected it matches the
-   *  input element.
-   * This needs to be called very time the options change.
+   * This method updates the width this widget when it's not selected, so when
+   *  it is selected it matches the input element.
+   * This needs to be called very time the options or the values change (or
+   *  anything else that might change the height or width of the much-select.
+   * It waits for 1 frame before doing calculating what the height and width
+   *  should be.
    */
   updateDimensions() {
     window.requestAnimationFrame(() => {

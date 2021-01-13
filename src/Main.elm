@@ -101,6 +101,7 @@ type Msg
       --  on them and then delete them (with the delete key).
       --  If you can think of a better name we're all ears.
     | ToggleSelectedValueHighlight OptionValue
+    | DeleteSelectedAndHighlightedValues
 
 
 type alias Model =
@@ -351,6 +352,13 @@ update msg model =
         ToggleSelectedValueHighlight optionValue ->
             ( { model | options = Option.toggleSelectedHighlightByOptionValue model.options optionValue }, Cmd.none )
 
+        DeleteSelectedAndHighlightedValues ->
+            let
+                newOptions =
+                    Option.deselectAllSelectedHighlightedOptions model.options
+            in
+            ( { model | options = newOptions }, valueChanged (selectedOptionsToTuple newOptions) )
+
 
 updateRightSlot : RightSlot -> SelectionMode -> Bool -> RightSlot
 updateRightSlot current selectionMode hasSelectedOption =
@@ -534,6 +542,11 @@ view model =
                     [ id "value-casing"
                     , onClick BringInputInFocus
                     , onFocus BringInputInFocus
+                    , Keyboard.on Keyboard.Keydown
+                        [ ( Delete, DeleteSelectedAndHighlightedValues )
+                        , ( Backspace, DeleteSelectedAndHighlightedValues )
+                        ]
+                        |> Html.Styled.Attributes.fromUnstyled
                     , tabindex 0
                     , classList
                         [ ( "placeholder", showPlaceholder )
@@ -957,17 +970,6 @@ subscriptions _ =
 mousedownPreventDefaultAndStopPropagation : a -> Html.Styled.Attribute a
 mousedownPreventDefaultAndStopPropagation message =
     Html.Styled.Events.custom "mousedown"
-        (Json.Decode.succeed
-            { message = message
-            , stopPropagation = True
-            , preventDefault = True
-            }
-        )
-
-
-clickPreventDefaultAndStopPropagation : a -> Html.Styled.Attribute a
-clickPreventDefaultAndStopPropagation message =
-    Html.Styled.Events.custom "click"
         (Json.Decode.succeed
             { message = message
             , stopPropagation = True

@@ -9,6 +9,7 @@ module Option exposing
     , addAndSelectOptionsInOptionsListByString
     , decoder
     , deselectAllOptionsInOptionsList
+    , deselectAllSelectedHighlightedOptions
     , deselectOptionInListByOptionValue
     , emptyOptionGroup
     , getOptionDescription
@@ -909,6 +910,37 @@ toggleSelectedHighlightByOptionValue options optionValue =
 
                         else
                             option_
+
+                    EmptyOption _ _ ->
+                        option_
+            )
+
+
+deselectAllSelectedHighlightedOptions : List Option -> List Option
+deselectAllSelectedHighlightedOptions options =
+    options
+        |> List.map
+            (\option_ ->
+                case option_ of
+                    Option optionDisplay _ _ _ _ ->
+                        case optionDisplay of
+                            OptionShown ->
+                                option_
+
+                            OptionHidden ->
+                                option_
+
+                            OptionSelected ->
+                                option_
+
+                            OptionSelectedHighlighted ->
+                                option_ |> setOptionDisplay OptionShown
+
+                            OptionHighlighted ->
+                                option_
+
+                            OptionDisabled ->
+                                option_
 
                     EmptyOption _ _ ->
                         option_
