@@ -12,7 +12,7 @@
 
 <body>
 
-<h1>Much-Selector</h1>
+<h1>Much-Select</h1>
 
 <h2>Demo and Development Playground</h2>
 
@@ -104,7 +104,7 @@
 
   <div>
     <h3>An initial value</h3>
-    <p>Set using the <code>selected</code> attribute on the <code>&lt;much-selector&gt;</code></p>
+    <p>Set using the <code>selected</code> attribute on the <code>&lt;much-select&gt;</code></p>
     <much-select selected="Blue">
       <select slot="select-input">
         <option data-description="scarlet, vermilion, ruby, ruby red, ruby-colored, cherry">Red</option>
@@ -133,7 +133,7 @@
 
   <div>
     <h3>Disabled</h3>
-    <p>Disable the <code>&lt;much-selector&gt;</code> with the <code>disabled</code> attribute.</p>
+    <p>Disable the <code>&lt;much-select&gt;</code> with the <code>disabled</code> attribute.</p>
     <much-select disabled="disabled">
       <select slot="select-input">
         <option>Red</option>
@@ -247,7 +247,7 @@
   <div>
     <h3>Change Options With the Dom</h3>
     <button id="change-the-dom">Click me to change the dom</button>
-    <much-select id="change-the-dom-much-selector">
+    <much-select id="change-the-dom-much-select">
       <select id="change-the-dom-select" slot="select-input">
         <option value="1">These</option>
         <option value="2">are</option>
@@ -257,7 +257,7 @@
     </much-select>
     <script>
       document.getElementById("change-the-dom").addEventListener("click", () => {
-        document.getElementById("change-the-dom-much-selector").innerHTML = `
+        document.getElementById("change-the-dom-much-select").innerHTML = `
           <select id="change-the-dom-select" slot="select-input">
             <option value="100">New</option>
             <option value="200">options</option>
