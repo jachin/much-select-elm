@@ -5,9 +5,10 @@
   "main": "dist/much-select.js",
   "repository": "github:DripEmail/much-select-elm",
   "scripts": {
+    "start": "./scripts/serve.sh",
     "test": "elm-test",
     "build": "./scripts/build.sh",
-    "watch": "./scripts/watch.sh",
+    "serve": "scripts/serve.sh",
     "build-site": "./scripts/build-site.sh",
     "deploy-site": "npm run build-site && firebase deploy",
     "lint": "eslint",

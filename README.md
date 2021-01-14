@@ -49,10 +49,10 @@ npm install
 To run a webpack development server with the sandbox/demo page:
 
 ```bash
-npm run watch
+npm start
 ```
 
-Now you can visit http://localhost:8000
+Now you can visit http://localhost:1234
 
 ### Production Build
 
