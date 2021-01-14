@@ -1,7 +1,7 @@
 module Main exposing (..)
 
 import Browser
-import Css exposing (block, display, fontSize, hidden, inline, lineHeight, none, px, visibility, visible, width)
+import Css exposing (block, display, fontSize, hidden, inline, lineHeight, none, px, top, visibility, visible, width)
 import Html.Styled
     exposing
         ( Html
@@ -21,20 +21,11 @@ import Html.Styled.Attributes
         , disabled
         , id
         , name
-        , placeholder
         , tabindex
         , type_
         , value
         )
-import Html.Styled.Events
-    exposing
-        ( onBlur
-        , onClick
-        , onFocus
-        , onInput
-        , onMouseEnter
-        , onMouseLeave
-        )
+import Html.Styled.Events exposing (onBlur, onClick, onFocus, onInput, onMouseDown, onMouseEnter, onMouseLeave)
 import Json.Decode
 import Keyboard exposing (Key(..))
 import Keyboard.Events as Keyboard
@@ -70,12 +61,12 @@ import Ports
         , placeholderChangedReceiver
         , removeOptionsReceiver
         , selectOptionReceiver
-        , valueCasingWidthChangedReceiver
+        , valueCasingDimensionsChangedReceiver
         , valueChanged
         , valueChangedReceiver
         , valuesDecoder
         )
-import SelectionMode exposing (SelectionMode(..))
+import SelectionMode exposing (CustomOptions(..), SelectionMode(..))
 
 
 type Msg
@@ -103,8 +94,14 @@ type Msg
     | EscapeKeyInInputFilter
     | MoveHighlightedOptionUp
     | MoveHighlightedOptionDown
-    | ValueCasingWidthUpdate Float
+    | ValueCasingWidthUpdate { width : Float, height : Float }
     | ClearAllSelectedOptions
+      -- SelectedValueHighlight?!? WTF? Yes, this is because in multi selected
+      --  mode a user can 'highlight' any number of the selected values by clicking
+      --  on them and then delete them (with the delete key).
+      --  If you can think of a better name we're all ears.
+    | ToggleSelectedValueHighlight OptionValue
+    | DeleteSelectedAndHighlightedValues
 
 
 type alias Model =
@@ -120,6 +117,7 @@ type alias Model =
     , disabled : Bool
     , focused : Bool
     , valueCasingWidth : Float
+    , valueCasingHeight : Float
     }
 
 
@@ -137,10 +135,18 @@ update msg model =
             ( model, Cmd.none )
 
         BringInputInFocus ->
-            ( { model | focused = True }, focusInput () )
+            if model.focused then
+                ( model, Cmd.none )
+
+            else
+                ( { model | focused = True }, focusInput () )
 
         BringInputOutOfFocus ->
-            ( { model | focused = False }, blurInput () )
+            if model.focused then
+                ( { model | focused = False }, blurInput () )
+
+            else
+                ( model, Cmd.none )
 
         InputBlur ->
             ( { model | showDropdown = False, focused = False }, Cmd.none )
@@ -158,10 +164,10 @@ update msg model =
             let
                 options =
                     case model.selectionMode of
-                        MultiSelect ->
+                        MultiSelect _ ->
                             selectOptionInListByOptionValue optionValue model.options
 
-                        SingleSelect ->
+                        SingleSelect _ ->
                             selectSingleOptionInList optionValue model.options
             in
             ( { model | options = options }, Cmd.batch [ valueChanged (selectedOptionsToTuple options), blurInput () ] )
@@ -170,6 +176,9 @@ update msg model =
             case bestMatch string model.options of
                 Just (Option _ _ value _ _) ->
                     ( { model | searchString = string, options = highlightOptionInListByValue value model.options }, Cmd.none )
+
+                Just (CustomOption _ _ _) ->
+                    ( { model | searchString = string }, Cmd.none )
 
                 Just (EmptyOption _ _) ->
                     ( { model | searchString = string }, Cmd.none )
@@ -204,10 +213,10 @@ update msg model =
                     let
                         newOptionWithOldSelectedOption =
                             case model.selectionMode of
-                                SingleSelect ->
+                                SingleSelect _ ->
                                     Option.mergeTwoListsOfOptionsPreservingSelectedOptions model.options newOptions
 
-                                MultiSelect ->
+                                MultiSelect _ ->
                                     -- Also filter out any empty options.
                                     newOptions
                                         |> List.filter (not << Option.isEmptyOption)
@@ -243,10 +252,10 @@ update msg model =
 
                         options =
                             case model.selectionMode of
-                                MultiSelect ->
+                                MultiSelect _ ->
                                     selectOptionInListByOptionValue optionValue model.options
 
-                                SingleSelect ->
+                                SingleSelect _ ->
                                     selectSingleOptionInList optionValue model.options
                     in
                     ( { model | options = options }, Cmd.batch [ valueChanged (selectedOptionsToTuple options) ] )
@@ -295,7 +304,7 @@ update msg model =
                     selectHighlightedOption model.selectionMode model.options
             in
             case model.selectionMode of
-                SingleSelect ->
+                SingleSelect _ ->
                     ( { model | options = options, searchString = "" }
                     , Cmd.batch
                         [ valueChanged (selectedOptionsToTuple options)
@@ -303,12 +312,12 @@ update msg model =
                         ]
                     )
 
-                MultiSelect ->
+                MultiSelect _ ->
                     ( { model | options = options, searchString = "" }, valueChanged (selectedOptionsToTuple options) )
 
         DeleteInputForSingleSelect ->
             case model.selectionMode of
-                SingleSelect ->
+                SingleSelect _ ->
                     if Option.hasSelectedOption model.options then
                         ( { model
                             | options = Option.deselectAllOptionsInOptionsList model.options
@@ -320,7 +329,7 @@ update msg model =
                     else
                         ( model, Cmd.none )
 
-                MultiSelect ->
+                MultiSelect _ ->
                     ( model, Cmd.none )
 
         EscapeKeyInInputFilter ->
@@ -332,16 +341,26 @@ update msg model =
         MoveHighlightedOptionDown ->
             ( { model | options = Option.moveHighlightedOptionDown model.options }, Cmd.none )
 
-        ValueCasingWidthUpdate width ->
-            ( { model | valueCasingWidth = width }, Cmd.none )
+        ValueCasingWidthUpdate dims ->
+            ( { model | valueCasingWidth = dims.width, valueCasingHeight = dims.height }, Cmd.none )
 
         ClearAllSelectedOptions ->
             ( { model
                 | options = Option.deselectAllOptionsInOptionsList model.options
                 , rightSlot = ShowNothing
               }
-            , Cmd.none
+            , Cmd.batch [ valueChanged [] ]
             )
+
+        ToggleSelectedValueHighlight optionValue ->
+            ( { model | options = Option.toggleSelectedHighlightByOptionValue model.options optionValue }, Cmd.none )
+
+        DeleteSelectedAndHighlightedValues ->
+            let
+                newOptions =
+                    Option.deselectAllSelectedHighlightedOptions model.options
+            in
+            ( { model | options = newOptions }, valueChanged (selectedOptionsToTuple newOptions) )
 
 
 updateRightSlot : RightSlot -> SelectionMode -> Bool -> RightSlot
@@ -349,10 +368,10 @@ updateRightSlot current selectionMode hasSelectedOption =
     case current of
         ShowNothing ->
             case selectionMode of
-                SingleSelect ->
+                SingleSelect _ ->
                     ShowDropdownIndicator
 
-                MultiSelect ->
+                MultiSelect _ ->
                     if hasSelectedOption then
                         ShowClearButton
 
@@ -380,10 +399,10 @@ updateRightSlotLoading isLoading selectionMode hasSelectedOption =
 
     else
         case selectionMode of
-            SingleSelect ->
+            SingleSelect _ ->
                 ShowDropdownIndicator
 
-            MultiSelect ->
+            MultiSelect _ ->
                 if hasSelectedOption then
                     ShowClearButton
 
@@ -394,10 +413,13 @@ updateRightSlotLoading isLoading selectionMode hasSelectedOption =
 view : Model -> Html Msg
 view model =
     case model.selectionMode of
-        SingleSelect ->
+        SingleSelect _ ->
             let
                 hasOptionSelected =
                     Option.hasSelectedOption model.options
+
+                showPlaceholder =
+                    not hasOptionSelected && not model.focused
 
                 hasOptions =
                     List.isEmpty model.options |> not
@@ -414,16 +436,16 @@ view model =
                         model.searchString
 
                     else
-                        model.placeholder
+                        ""
             in
             div [ id "wrapper", css [ width (px model.valueCasingWidth) ] ]
                 [ div
                     [ id "value-casing"
-                    , onClick BringInputInFocus
+                    , onMouseDown BringInputInFocus
                     , onFocus BringInputInFocus
                     , tabindex 0
                     , classList
-                        [ ( "placeholder", not hasOptionSelected )
+                        [ ( "placeholder", showPlaceholder )
                         , ( "value", hasOptionSelected )
                         , ( "single", True )
                         , ( "disabled", model.disabled )
@@ -437,55 +459,61 @@ view model =
                         , width (px model.valueCasingWidth)
                         ]
                     ]
-                    [ if hasOptionSelected then
-                        span [ class "value" ] [ text valueStr ]
+                    [ span
+                        [ class "placeholder"
+                        , css
+                            [ if showPlaceholder then
+                                display inline
 
-                      else
-                        span [ class "placeholder" ] [ text model.placeholder ]
-                    ]
-                , input
-                    [ type_ "text"
-                    , onBlur InputBlur
-                    , onFocus InputFocus
-                    , onInput SearchInputOnInput
-                    , value valueStr
-                    , placeholder model.placeholder
-                    , id "input-filter"
-                    , disabled model.disabled
-                    , css
-                        [ if model.focused then
-                            visibility visible
-
-                          else
-                            visibility hidden
-                        , width (px model.valueCasingWidth)
+                              else
+                                display none
+                            ]
                         ]
-                    , Keyboard.on Keyboard.Keydown
-                        [ ( Enter, SelectHighlightedOption )
-                        , ( Backspace, DeleteInputForSingleSelect )
-                        , ( Escape, EscapeKeyInInputFilter )
-                        , ( ArrowUp, MoveHighlightedOptionUp )
-                        , ( ArrowDown, MoveHighlightedOptionDown )
+                        [ text model.placeholder ]
+                    , span [ class "value" ] [ text valueStr ]
+                    , input
+                        [ type_ "text"
+                        , onBlur InputBlur
+                        , onFocus InputFocus
+                        , onInput SearchInputOnInput
+                        , value valueStr
+                        , id "input-filter"
+                        , disabled model.disabled
+                        , css
+                            [ if model.focused then
+                                visibility visible
+
+                              else
+                                visibility hidden
+                            , width (px model.valueCasingWidth)
+                            ]
+                        , Keyboard.on Keyboard.Keydown
+                            [ ( Enter, SelectHighlightedOption )
+                            , ( Backspace, DeleteInputForSingleSelect )
+                            , ( Escape, EscapeKeyInInputFilter )
+                            , ( ArrowUp, MoveHighlightedOptionUp )
+                            , ( ArrowDown, MoveHighlightedOptionDown )
+                            ]
+                            |> Html.Styled.Attributes.fromUnstyled
                         ]
-                        |> Html.Styled.Attributes.fromUnstyled
+                        []
+                    , case model.rightSlot of
+                        ShowNothing ->
+                            text ""
+
+                        ShowLoadingIndicator ->
+                            node "slot" [ name "loading-indicator" ] []
+
+                        ShowDropdownIndicator ->
+                            dropdownIndicator model.focused model.disabled hasOptions
+
+                        ShowClearButton ->
+                            node "slot" [ name "clear-button" ] []
+                    , dropdown model
                     ]
-                    []
-                , case model.rightSlot of
-                    ShowNothing ->
-                        text ""
-
-                    ShowLoadingIndicator ->
-                        node "slot" [ name "loading-indicator" ] []
-
-                    ShowDropdownIndicator ->
-                        dropdownIndicator model.focused model.disabled hasOptions
-
-                    ShowClearButton ->
-                        node "slot" [ name "clear-button" ] []
-                , dropdown model
                 ]
 
-        MultiSelect ->
+        MultiSelect _ ->
             let
                 hasOptionSelected =
                     Option.hasSelectedOption model.options
@@ -517,6 +545,11 @@ view model =
                     [ id "value-casing"
                     , onClick BringInputInFocus
                     , onFocus BringInputInFocus
+                    , Keyboard.on Keyboard.Keydown
+                        [ ( Delete, DeleteSelectedAndHighlightedValues )
+                        , ( Backspace, DeleteSelectedAndHighlightedValues )
+                        ]
+                        |> Html.Styled.Attributes.fromUnstyled
                     , tabindex 0
                     , classList
                         [ ( "placeholder", showPlaceholder )
@@ -585,11 +618,12 @@ dropdown model =
         div
             [ id "dropdown"
             , class "showing"
+            , css [ top (px model.valueCasingHeight) ]
             ]
             optionsHtml
 
     else
-        div [ id "dropdown", class "hiding" ] optionsHtml
+        div [ id "dropdown", class "hiding", css [ top (px model.valueCasingHeight) ] ] optionsHtml
 
 
 optionsToDropdownOptions :
@@ -669,7 +703,7 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
 
         OptionSelected ->
             case selectionMode of
-                SingleSelect ->
+                SingleSelect _ ->
                     [ optionGroupHtml
                     , div
                         [ class "selected"
@@ -678,7 +712,21 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
                         [ fromUnstyled option.labelMarkup, descriptionHtml ]
                     ]
 
-                MultiSelect ->
+                MultiSelect _ ->
+                    [ optionGroupHtml, text "" ]
+
+        OptionSelectedHighlighted ->
+            case selectionMode of
+                SingleSelect _ ->
+                    [ optionGroupHtml
+                    , div
+                        [ class "selected"
+                        , class "option"
+                        ]
+                        [ fromUnstyled option.labelMarkup, descriptionHtml ]
+                    ]
+
+                MultiSelect _ ->
                     [ optionGroupHtml, text "" ]
 
         OptionHighlighted ->
@@ -703,13 +751,13 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
             ]
 
 
-optionsToValuesHtml : List Option -> List (Html msg)
+optionsToValuesHtml : List Option -> List (Html Msg)
 optionsToValuesHtml options =
     options
         |> List.map
             (\option ->
                 case option of
-                    Option display (OptionLabel labelStr _) _ _ _ ->
+                    Option display (OptionLabel labelStr _) optionValue _ _ ->
                         case display of
                             OptionShown ->
                                 text ""
@@ -718,7 +766,56 @@ optionsToValuesHtml options =
                                 text ""
 
                             OptionSelected ->
-                                div [ class "value" ] [ text labelStr ]
+                                div
+                                    [ class "value"
+                                    , mousedownPreventDefaultAndStopPropagation
+                                        (ToggleSelectedValueHighlight optionValue)
+                                    ]
+                                    [ text labelStr ]
+
+                            OptionSelectedHighlighted ->
+                                div
+                                    [ classList
+                                        [ ( "value", True )
+                                        , ( "selected-value", True )
+                                        ]
+                                    , mousedownPreventDefaultAndStopPropagation
+                                        (ToggleSelectedValueHighlight optionValue)
+                                    ]
+                                    [ text labelStr ]
+
+                            OptionHighlighted ->
+                                text ""
+
+                            OptionDisabled ->
+                                text ""
+
+                    CustomOption display (OptionLabel labelStr _) optionValue ->
+                        case display of
+                            OptionShown ->
+                                text ""
+
+                            OptionHidden ->
+                                text ""
+
+                            OptionSelected ->
+                                div
+                                    [ class "value"
+                                    , mousedownPreventDefaultAndStopPropagation
+                                        (ToggleSelectedValueHighlight optionValue)
+                                    ]
+                                    [ text labelStr ]
+
+                            OptionSelectedHighlighted ->
+                                div
+                                    [ classList
+                                        [ ( "value", True )
+                                        , ( "selected-value", True )
+                                        ]
+                                    , mousedownPreventDefaultAndStopPropagation
+                                        (ToggleSelectedValueHighlight optionValue)
+                                    ]
+                                    [ text labelStr ]
 
                             OptionHighlighted ->
                                 text ""
@@ -736,6 +833,9 @@ optionsToValuesHtml options =
 
                             OptionSelected ->
                                 div [ class "value" ] [ text labelStr ]
+
+                            OptionSelectedHighlighted ->
+                                text ""
 
                             OptionHighlighted ->
                                 text ""
@@ -783,18 +883,26 @@ type alias Flags =
     , loading : Bool
     , maxDropdownItems : Int
     , disabled : Bool
+    , allowCustomOptions : Bool
     }
 
 
 init : Flags -> ( Model, Cmd Msg )
 init flags =
     let
-        selectionMode =
-            if flags.allowMultiSelect then
-                MultiSelect
+        allowCustomOptions =
+            if flags.allowCustomOptions then
+                AllowCustomOptions
 
             else
-                SingleSelect
+                NoCustomOptions
+
+        selectionMode =
+            if flags.allowMultiSelect then
+                MultiSelect allowCustomOptions
+
+            else
+                SingleSelect allowCustomOptions
 
         initialValueStr =
             String.trim flags.value
@@ -807,17 +915,17 @@ init flags =
 
                 _ ->
                     case selectionMode of
-                        SingleSelect ->
+                        SingleSelect _ ->
                             [ initialValueStr ]
 
-                        MultiSelect ->
+                        MultiSelect _ ->
                             String.split "," initialValueStr
 
         ( optionsWithInitialValueSelected, errorCmd ) =
             case Json.Decode.decodeString Option.optionsDecoder flags.optionsJson of
                 Ok options ->
                     case selectionMode of
-                        SingleSelect ->
+                        SingleSelect _ ->
                             case List.head initialValues of
                                 Just initialValueStr_ ->
                                     if Option.isOptionInListOfOptionsByValue (Option.stringToOptionValue initialValueStr_) options then
@@ -829,7 +937,7 @@ init flags =
                                 Nothing ->
                                     ( options, Cmd.none )
 
-                        MultiSelect ->
+                        MultiSelect _ ->
                             let
                                 -- Don't include any empty options, that doesn't make sense.
                                 optionsWithInitialValues =
@@ -855,10 +963,10 @@ init flags =
 
             else
                 case selectionMode of
-                    SingleSelect ->
+                    SingleSelect _ ->
                         ShowDropdownIndicator
 
-                    MultiSelect ->
+                    MultiSelect _ ->
                         if Option.hasSelectedOption optionsWithInitialValueSelected then
                             ShowClearButton
 
@@ -867,7 +975,10 @@ init flags =
       , maxDropdownItems = flags.maxDropdownItems
       , disabled = flags.disabled
       , focused = False
+
+      -- TODO Should these be passed as flags?
       , valueCasingWidth = 100
+      , valueCasingHeight = 45
       }
     , errorCmd
     )
@@ -894,7 +1005,7 @@ subscriptions _ =
         , disableChangedReceiver DisabledAttributeChanged
         , optionsChangedReceiver OptionsChanged
         , maxDropdownItemsChangedReceiver MaxDropdownItemsChanged
-        , valueCasingWidthChangedReceiver ValueCasingWidthUpdate
+        , valueCasingDimensionsChangedReceiver ValueCasingWidthUpdate
         , selectOptionReceiver SelectOption
         , deselectOptionReceiver DeselectOption
         ]

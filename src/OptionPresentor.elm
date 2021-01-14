@@ -248,6 +248,21 @@ prepareOptionsForPresentation maxDropdownItems searchString options =
                         , descriptionMarkup = text ""
                         }
 
+                    Option.CustomOption _ label _ ->
+                        { display = Option.getOptionDisplay option
+                        , label = Option.getOptionLabel option
+                        , value = Option.getOptionValue option
+                        , group = Option.getOptionGroup option
+                        , description = Option.getOptionDescription option
+                        , searchResult = Nothing
+                        , totalScore = 0
+                        , labelMarkup =
+                            case label of
+                                Option.OptionLabel labelStr _ ->
+                                    text labelStr
+                        , descriptionMarkup = text ""
+                        }
+
                     Option.Option _ _ _ _ _ ->
                         let
                             searchResult =
@@ -263,8 +278,16 @@ prepareOptionsForPresentation maxDropdownItems searchString options =
                         , description = Option.getOptionDescription option
                         , searchResult = Just searchResult
                         , totalScore = totalScore
-                        , labelMarkup = highlightMarkup (Option.getOptionLabel option |> Option.optionLabelToString) searchResult.labelMatch
-                        , descriptionMarkup = highlightMarkup (Option.getOptionDescription option |> Option.optionDescriptionToString) searchResult.descriptionMatch
+                        , labelMarkup =
+                            highlightMarkup
+                                (Option.getOptionLabel option |> Option.optionLabelToString)
+                                searchResult.labelMatch
+                        , descriptionMarkup =
+                            highlightMarkup
+                                (Option.getOptionDescription option
+                                    |> Option.optionDescriptionToString
+                                )
+                                searchResult.descriptionMatch
                         }
             )
         |> List.sortBy .totalScore

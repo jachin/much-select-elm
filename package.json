@@ -6,8 +6,10 @@
   "repository": "github:DripEmail/much-select-elm",
   "scripts": {
     "test": "elm-test",
-    "build": "parcel build src/much-select.js",
-    "watch": "parcel --out-dir build/output public/index.html public/dropdown-options.html public/option-api.html public/empty-options.html public/initial-value.html public/fancy-characters.html",
+    "build": "./scripts/build.sh",
+    "watch": "./scripts/watch.sh",
+    "build-site": "./scripts/build-site.sh",
+    "deploy-site": "npm run build-site && firebase deploy",
     "lint": "eslint",
     "format": "elm-format"
   },
@@ -17,14 +19,16 @@
   "devDependencies": {
     "elm": "0.19.1-3",
     "elm-format": "^0.8.4",
+    "elm-hot": "^1.1.5",
     "elm-test": "^0.19.1-revision4",
-    "eslint": "^7.13.0",
+    "eslint": "^7.17.0",
     "eslint-config-airbnb-base": "^14.2.1",
-    "eslint-config-prettier": "^6.15.0",
+    "eslint-config-prettier": "^7.1.0",
     "eslint-loader": "^4.0.2",
     "eslint-plugin-import": "^2.22.1",
-    "eslint-plugin-prettier": "^3.1.4",
+    "eslint-plugin-prettier": "^3.3.1",
+    "node-elm-compiler": "^5.0.5",
     "parcel-bundler": "^1.12.4",
-    "prettier": "^2.2.0"
+    "prettier": "^2.2.1"
   }
 }

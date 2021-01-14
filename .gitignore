@@ -36,3 +36,8 @@ elm-stuff
 
 # Parcel Cache
 .cache/
+
+# Firebase Hosting
+**/.firebase
+**/.firebaserc
+firebase-debug.log

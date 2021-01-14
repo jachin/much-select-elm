@@ -11,7 +11,7 @@ port module Ports exposing
     , placeholderChangedReceiver
     , removeOptionsReceiver
     , selectOptionReceiver
-    , valueCasingWidthChangedReceiver
+    , valueCasingDimensionsChangedReceiver
     , valueChanged
     , valueChangedReceiver
     , valuesDecoder
@@ -67,4 +67,4 @@ port disableChangedReceiver : (Bool -> msg) -> Sub msg
 port maxDropdownItemsChangedReceiver : (Int -> msg) -> Sub msg
 
 
-port valueCasingWidthChangedReceiver : (Float -> msg) -> Sub msg
+port valueCasingDimensionsChangedReceiver : ({ width : Float, height : Float } -> msg) -> Sub msg
