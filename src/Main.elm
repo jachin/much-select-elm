@@ -1,7 +1,21 @@
 module Main exposing (..)
 
 import Browser
-import Css exposing (block, display, fontSize, hidden, inline, lineHeight, none, px, top, visibility, visible, width)
+import Css
+    exposing
+        ( block
+        , display
+        , fontSize
+        , hidden
+        , inline
+        , lineHeight
+        , none
+        , px
+        , top
+        , visibility
+        , visible
+        , width
+        )
 import Html.Styled
     exposing
         ( Html
@@ -25,7 +39,16 @@ import Html.Styled.Attributes
         , type_
         , value
         )
-import Html.Styled.Events exposing (onBlur, onClick, onFocus, onInput, onMouseDown, onMouseEnter, onMouseLeave)
+import Html.Styled.Events
+    exposing
+        ( onBlur
+        , onClick
+        , onFocus
+        , onInput
+        , onMouseDown
+        , onMouseEnter
+        , onMouseLeave
+        )
 import Json.Decode
 import Keyboard exposing (Key(..))
 import Keyboard.Events as Keyboard
@@ -50,6 +73,7 @@ import OptionSearcher exposing (bestMatch)
 import Ports
     exposing
         ( addOptionsReceiver
+        , allowCustomOptionsReceiver
         , blurInput
         , deselectOptionReceiver
         , disableChangedReceiver
@@ -88,6 +112,7 @@ type Msg
     | PlaceholderAttributeChanged String
     | LoadingAttributeChanged Bool
     | MaxDropdownItemsChanged Int
+    | AllowCustomOptionsChanged Bool
     | DisabledAttributeChanged Bool
     | SelectHighlightedOption
     | DeleteInputForSingleSelect
@@ -294,6 +319,11 @@ update msg model =
 
         MaxDropdownItemsChanged int ->
             ( { model | maxDropdownItems = int }, Cmd.none )
+
+        AllowCustomOptionsChanged canAddCustomOptions ->
+            ( { model | selectionMode = SelectionMode.setAllowCustomOptionsWithBool canAddCustomOptions model.selectionMode }
+            , Cmd.none
+            )
 
         DisabledAttributeChanged bool ->
             ( { model | disabled = bool }, Cmd.none )
@@ -1005,6 +1035,7 @@ subscriptions _ =
         , disableChangedReceiver DisabledAttributeChanged
         , optionsChangedReceiver OptionsChanged
         , maxDropdownItemsChangedReceiver MaxDropdownItemsChanged
+        , allowCustomOptionsReceiver AllowCustomOptionsChanged
         , valueCasingDimensionsChangedReceiver ValueCasingWidthUpdate
         , selectOptionReceiver SelectOption
         , deselectOptionReceiver DeselectOption
