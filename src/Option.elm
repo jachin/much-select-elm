@@ -49,6 +49,7 @@ module Option exposing
     , setSelectedOptionInNewOptions
     , stringToOptionValue
     , toggleSelectedHighlightByOptionValue
+    , updateOrAddCustomOption
     )
 
 import Json.Decode
@@ -399,6 +400,32 @@ optionValuesEqual option optionValue =
     getOptionValue option == optionValue
 
 
+updateOrAddCustomOption : String -> List Option -> List Option
+updateOrAddCustomOption string options =
+    let
+        options_ =
+            List.Extra.dropWhile
+                (\option_ ->
+                    case option_ of
+                        CustomOption _ _ _ ->
+                            True
+
+                        Option _ _ _ _ _ ->
+                            False
+
+                        EmptyOption _ _ ->
+                            False
+                )
+                options
+    in
+    [ CustomOption
+        OptionShown
+        (OptionLabel ("Add " ++ string ++ "…") Nothing)
+        (OptionValue string)
+    ]
+        ++ options_
+
+
 highlightedOptionIndex : List Option -> Maybe Int
 highlightedOptionIndex options =
     List.Extra.findIndex (\option -> optionIsHighlighted option) options
@@ -505,7 +532,20 @@ selectOptionInListByOptionValue value options =
     List.map
         (\option_ ->
             if optionValuesEqual option_ value then
-                selectOption option_
+                case option_ of
+                    Option _ _ _ _ _ ->
+                        selectOption option_
+
+                    CustomOption _ _ _ ->
+                        case value of
+                            OptionValue valueStr ->
+                                selectOption option_ |> setLabel valueStr Nothing
+
+                            EmptyOptionValue ->
+                                selectOption option_
+
+                    EmptyOption _ _ ->
+                        selectOption option_
 
             else
                 option_
@@ -573,7 +613,20 @@ selectSingleOptionInList value options =
         |> List.map
             (\option_ ->
                 if optionValuesEqual option_ value then
-                    selectOption option_
+                    case option_ of
+                        Option _ _ _ _ _ ->
+                            selectOption option_
+
+                        CustomOption _ _ optionValue ->
+                            case optionValue of
+                                OptionValue valueStr ->
+                                    selectOption option_ |> setLabel valueStr Nothing |> Debug.log "custom option selected"
+
+                                EmptyOptionValue ->
+                                    selectOption option_
+
+                        EmptyOption _ _ ->
+                            selectOption option_
 
                 else
                     deselectOption option_
@@ -902,7 +955,7 @@ selectOption option =
                     CustomOption OptionSelectedHighlighted label value
 
                 OptionHighlighted ->
-                    CustomOption OptionHighlighted label value
+                    CustomOption OptionSelected label value
 
                 OptionDisabled ->
                     CustomOption OptionDisabled label value

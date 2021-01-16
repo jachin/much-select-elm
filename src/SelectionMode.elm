@@ -1,4 +1,4 @@
-module SelectionMode exposing (CustomOptions(..), SelectionMode(..), setAllowCustomOptionsWithBool)
+module SelectionMode exposing (CustomOptions(..), SelectionMode(..), getCustomOptions, setAllowCustomOptionsWithBool)
 
 
 type CustomOptions
@@ -9,6 +9,16 @@ type CustomOptions
 type SelectionMode
     = SingleSelect CustomOptions
     | MultiSelect CustomOptions
+
+
+getCustomOptions : SelectionMode -> CustomOptions
+getCustomOptions selectionMode =
+    case selectionMode of
+        SingleSelect customOptions ->
+            customOptions
+
+        MultiSelect customOptions ->
+            customOptions
 
 
 setAllowCustomOptionsWithBool : Bool -> SelectionMode -> SelectionMode

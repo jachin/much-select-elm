@@ -198,18 +198,27 @@ update msg model =
             ( { model | options = options }, Cmd.batch [ valueChanged (selectedOptionsToTuple options), blurInput () ] )
 
         SearchInputOnInput string ->
+            let
+                options =
+                    case SelectionMode.getCustomOptions model.selectionMode of
+                        AllowCustomOptions ->
+                            Option.updateOrAddCustomOption string model.options
+
+                        NoCustomOptions ->
+                            model.options
+            in
             case bestMatch string model.options of
                 Just (Option _ _ value _ _) ->
-                    ( { model | searchString = string, options = highlightOptionInListByValue value model.options }, Cmd.none )
+                    ( { model | searchString = string, options = highlightOptionInListByValue value options }, Cmd.none )
 
-                Just (CustomOption _ _ _) ->
-                    ( { model | searchString = string }, Cmd.none )
+                Just (CustomOption _ _ value) ->
+                    ( { model | searchString = string, options = highlightOptionInListByValue value options }, Cmd.none )
 
                 Just (EmptyOption _ _) ->
-                    ( { model | searchString = string }, Cmd.none )
+                    ( { model | searchString = string, options = options }, Cmd.none )
 
                 Nothing ->
-                    ( { model | searchString = string }, Cmd.none )
+                    ( { model | searchString = string, options = options }, Cmd.none )
 
         ValueChanged valuesJson ->
             let
