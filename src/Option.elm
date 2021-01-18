@@ -408,8 +408,20 @@ optionValuesEqual option optionValue =
 
 
 updateOrAddCustomOption : String -> List Option -> List Option
-updateOrAddCustomOption string options =
+updateOrAddCustomOption searchString options =
     let
+        showAddOption =
+            options
+                |> List.any
+                    (\option_ ->
+                        (option_
+                            |> getOptionLabel
+                            |> optionLabelToSearchString
+                        )
+                            == String.toLower searchString
+                    )
+                |> not
+
         options_ =
             List.Extra.dropWhile
                 (\option_ ->
@@ -425,12 +437,16 @@ updateOrAddCustomOption string options =
                 )
                 options
     in
-    [ CustomOption
-        OptionShown
-        (OptionLabel ("Add " ++ string ++ "…") Nothing)
-        (OptionValue string)
-    ]
-        ++ options_
+    if showAddOption then
+        [ CustomOption
+            OptionShown
+            (OptionLabel ("Add " ++ searchString ++ "…") Nothing)
+            (OptionValue searchString)
+        ]
+            ++ options_
+
+    else
+        options_
 
 
 highlightedOptionIndex : List Option -> Maybe Int
