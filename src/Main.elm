@@ -75,6 +75,7 @@ import Ports
         ( addOptionsReceiver
         , allowCustomOptionsReceiver
         , blurInput
+        , customOptionCreated
         , deselectOptionReceiver
         , disableChangedReceiver
         , errorMessage
@@ -195,7 +196,12 @@ update msg model =
                         SingleSelect _ ->
                             selectSingleOptionInList optionValue model.options
             in
-            ( { model | options = options }, Cmd.batch [ valueChanged (selectedOptionsToTuple options), blurInput () ] )
+            ( { model | options = options }
+            , Cmd.batch
+                [ makeCommandMessagesWhenValuesChanges options
+                , blurInput ()
+                ]
+            )
 
         SearchInputOnInput string ->
             let
@@ -209,10 +215,20 @@ update msg model =
             in
             case bestMatch string model.options of
                 Just (Option _ _ value _ _) ->
-                    ( { model | searchString = string, options = highlightOptionInListByValue value options }, Cmd.none )
+                    ( { model
+                        | searchString = string
+                        , options = highlightOptionInListByValue value options
+                      }
+                    , Cmd.none
+                    )
 
                 Just (CustomOption _ _ value) ->
-                    ( { model | searchString = string, options = highlightOptionInListByValue value options }, Cmd.none )
+                    ( { model
+                        | searchString = string
+                        , options = highlightOptionInListByValue value options
+                      }
+                    , Cmd.none
+                    )
 
                 Just (EmptyOption _ _) ->
                     ( { model | searchString = string, options = options }, Cmd.none )
@@ -292,7 +308,7 @@ update msg model =
                                 SingleSelect _ ->
                                     selectSingleOptionInList optionValue model.options
                     in
-                    ( { model | options = options }, Cmd.batch [ valueChanged (selectedOptionsToTuple options) ] )
+                    ( { model | options = options }, makeCommandMessagesWhenValuesChanges options )
 
                 Err error ->
                     ( model, errorMessage (Json.Decode.errorToString error) )
@@ -307,7 +323,7 @@ update msg model =
                         options =
                             Option.deselectOptionInListByOptionValue optionValue model.options
                     in
-                    ( { model | options = options }, Cmd.batch [ valueChanged (selectedOptionsToTuple options) ] )
+                    ( { model | options = options }, makeCommandMessagesWhenValuesChanges options )
 
                 Err error ->
                     ( model, errorMessage (Json.Decode.errorToString error) )
@@ -346,13 +362,13 @@ update msg model =
                 SingleSelect _ ->
                     ( { model | options = options, searchString = "" }
                     , Cmd.batch
-                        [ valueChanged (selectedOptionsToTuple options)
+                        [ makeCommandMessagesWhenValuesChanges options
                         , blurInput ()
                         ]
                     )
 
                 MultiSelect _ ->
-                    ( { model | options = options, searchString = "" }, valueChanged (selectedOptionsToTuple options) )
+                    ( { model | options = options, searchString = "" }, makeCommandMessagesWhenValuesChanges options )
 
         DeleteInputForSingleSelect ->
             case model.selectionMode of
@@ -388,7 +404,7 @@ update msg model =
                 | options = Option.deselectAllOptionsInOptionsList model.options
                 , rightSlot = ShowNothing
               }
-            , Cmd.batch [ valueChanged [] ]
+            , makeCommandMessagesWhenValuesChanges []
             )
 
         ToggleSelectedValueHighlight optionValue ->
@@ -911,6 +927,22 @@ rightSlotHtml rightSlot focused disabled hasOptionSelected =
                     [ text "✕"
                     ]
                 ]
+
+
+makeCommandMessagesWhenValuesChanges : List Option -> Cmd Msg
+makeCommandMessagesWhenValuesChanges options =
+    let
+        selectedCustomOptions =
+            Option.customSelectedOptions options
+
+        customOptionCmd =
+            if List.isEmpty selectedCustomOptions then
+                Cmd.none
+
+            else
+                customOptionCreated (Option.optionsValues selectedCustomOptions)
+    in
+    Cmd.batch [ valueChanged (selectedOptionsToTuple options), customOptionCmd ]
 
 
 type alias Flags =

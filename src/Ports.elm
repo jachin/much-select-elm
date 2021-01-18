@@ -2,6 +2,7 @@ port module Ports exposing
     ( addOptionsReceiver
     , allowCustomOptionsReceiver
     , blurInput
+    , customOptionCreated
     , deselectOptionReceiver
     , disableChangedReceiver
     , errorMessage
@@ -25,6 +26,9 @@ port errorMessage : String -> Cmd msg
 
 
 port valueChanged : List ( String, String ) -> Cmd msg
+
+
+port customOptionCreated : List String -> Cmd msg
 
 
 port blurInput : () -> Cmd msg

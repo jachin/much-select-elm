@@ -22,12 +22,35 @@
 </nav>
 
 <div class="container">
-  <div>
+  <div id="empty-single-select-value-changed-example">
     <h3>Add Custom Options</h3>
     <p>
       Using the <code>allow-custom-options</code> attribute to allow the user to choose a their own value (one that is not in the list of options).
     </p>
     <much-select allow-custom-options="true"></much-select>
+    <p>
+      Events:
+    <table id="single-select-custom-option-event-log">
+      <thead>
+      <tr>
+        <th>Event</th>
+        <th>Details</th>
+      </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+    </p>
+    <script>
+      window.addEventListener("load", () => {
+        document
+          .querySelector("#empty-single-select-value-changed-example much-select")
+          .addEventListener(
+            "customValueSelected",
+            makeLogEventHandler("single-select-custom-option-event-log")
+          );
+      });
+    </script>
   </div>
 </div>
 

@@ -7,6 +7,7 @@ module Option exposing
     , OptionValue
     , addAdditionalOptionsToOptionList
     , addAndSelectOptionsInOptionsListByString
+    , customSelectedOptions
     , decoder
     , deselectAllOptionsInOptionsList
     , deselectAllSelectedHighlightedOptions
@@ -35,6 +36,7 @@ module Option exposing
     , optionLabelToSearchString
     , optionLabelToString
     , optionsDecoder
+    , optionsValues
     , removeHighlightOptionInList
     , removeOptionsFromOptionList
     , selectHighlightedOption
@@ -325,6 +327,11 @@ getOptionDescription option =
 selectedOptionsToTuple : List Option -> List ( String, String )
 selectedOptionsToTuple options =
     options |> selectedOptions |> List.map optionToValueLabelTuple
+
+
+optionsValues : List Option -> List String
+optionsValues options =
+    List.map getOptionValueAsString options
 
 
 selectOptionsInOptionsListByString : List String -> List Option -> List Option
@@ -620,7 +627,7 @@ selectSingleOptionInList value options =
                         CustomOption _ _ optionValue ->
                             case optionValue of
                                 OptionValue valueStr ->
-                                    selectOption option_ |> setLabel valueStr Nothing |> Debug.log "custom option selected"
+                                    selectOption option_ |> setLabel valueStr Nothing
 
                                 EmptyOptionValue ->
                                     selectOption option_
@@ -1255,6 +1262,29 @@ optionListContainsOptionWithValue option options =
 optionToValueLabelTuple : Option -> ( String, String )
 optionToValueLabelTuple option =
     ( getOptionValueAsString option, getOptionLabel option |> optionLabelToString )
+
+
+customSelectedOptions : List Option -> List Option
+customSelectedOptions =
+    customOptions >> selectedOptions
+
+
+customOptions : List Option -> List Option
+customOptions options =
+    List.filter isCustomOption options
+
+
+isCustomOption : Option -> Bool
+isCustomOption option =
+    case option of
+        Option _ _ _ _ _ ->
+            False
+
+        CustomOption _ _ _ ->
+            True
+
+        EmptyOption _ _ ->
+            False
 
 
 optionsDecoder : Json.Decode.Decoder (List Option)
