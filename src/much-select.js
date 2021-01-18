@@ -245,7 +245,7 @@ class MuchSelect extends HTMLElement {
       );
 
       // noinspection JSUnresolvedVariable
-      this._app.ports.customOptionCreated.subscribe(
+      this._app.ports.customOptionSelected.subscribe(
         this.customOptionSelected.bind(this)
       );
 

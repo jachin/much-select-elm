@@ -75,7 +75,7 @@ import Ports
         ( addOptionsReceiver
         , allowCustomOptionsReceiver
         , blurInput
-        , customOptionCreated
+        , customOptionSelected
         , deselectOptionReceiver
         , disableChangedReceiver
         , errorMessage
@@ -940,7 +940,7 @@ makeCommandMessagesWhenValuesChanges options =
                 Cmd.none
 
             else
-                customOptionCreated (Option.optionsValues selectedCustomOptions)
+                customOptionSelected (Option.optionsValues selectedCustomOptions)
     in
     Cmd.batch [ valueChanged (selectedOptionsToTuple options), customOptionCmd ]
 
