@@ -28,8 +28,7 @@
       Using the <code>allow-custom-options</code> attribute to allow the user to choose a their own value (one that is not in the list of options).
     </p>
     <much-select allow-custom-options="true"></much-select>
-    <p>
-      Events:
+    <p>Events:</p>
     <table id="single-select-custom-option-event-log">
       <thead>
       <tr>
@@ -40,7 +39,6 @@
       <tbody>
       </tbody>
     </table>
-    </p>
     <script>
       window.addEventListener("load", () => {
         document
@@ -48,6 +46,42 @@
           .addEventListener(
             "customValueSelected",
             makeLogEventHandler("single-select-custom-option-event-log")
+          );
+      });
+    </script>
+  </div>
+
+  <div id="not-empty-single-select-value-changed-example">
+    <h3>Add Custom Options (or select from the existing options)</h3>
+    <p>
+      If we type in an option that matches an existing option is should <em>not</em>
+      show the option to add a custom option.
+    </p>
+    <much-select allow-custom-options="true">
+      <select>
+        <option>Flashlight</option>
+        <option>Lantern</option>
+        <option>Candle</option>
+      </select>
+    </much-select>
+    <p>Events:</p>
+    <table id="not-empty-single-select-custom-option-event-log">
+      <thead>
+      <tr>
+        <th>Event</th>
+        <th>Details</th>
+      </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+    <script>
+      window.addEventListener("load", () => {
+        document
+          .querySelector("#not-empty-single-select-value-changed-example much-select")
+          .addEventListener(
+            "customValueSelected",
+            makeLogEventHandler("not-empty-single-select-custom-option-event-log")
           );
       });
     </script>
