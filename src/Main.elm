@@ -200,7 +200,7 @@ update msg model =
             in
             ( { model | options = options }
             , Cmd.batch
-                [ makeCommandMessagesWhenValuesChanges options
+                [ makeCommandMessagesWhenValuesChanges options (Just optionValue)
                 , blurInput ()
                 ]
             )
@@ -314,7 +314,7 @@ update msg model =
                                 SingleSelect _ ->
                                     selectSingleOptionInList optionValue model.options
                     in
-                    ( { model | options = options }, makeCommandMessagesWhenValuesChanges options )
+                    ( { model | options = options }, makeCommandMessagesWhenValuesChanges options (Just optionValue) )
 
                 Err error ->
                     ( model, errorMessage (Json.Decode.errorToString error) )
@@ -329,7 +329,7 @@ update msg model =
                         options =
                             Option.deselectOptionInListByOptionValue optionValue model.options
                     in
-                    ( { model | options = options }, makeCommandMessagesWhenValuesChanges options )
+                    ( { model | options = options }, makeCommandMessagesWhenValuesChanges options Nothing )
 
                 Err error ->
                     ( model, errorMessage (Json.Decode.errorToString error) )
@@ -368,13 +368,17 @@ update msg model =
                 SingleSelect _ ->
                     ( { model | options = options, searchString = "" }
                     , Cmd.batch
-                        [ makeCommandMessagesWhenValuesChanges options
+                        -- TODO Figure out what the highlighted option in here
+                        [ makeCommandMessagesWhenValuesChanges options Nothing
                         , blurInput ()
                         ]
                     )
 
                 MultiSelect _ ->
-                    ( { model | options = options, searchString = "" }, makeCommandMessagesWhenValuesChanges options )
+                    ( { model | options = options, searchString = "" }
+                      -- TODO Figure out what the highlighted option in here
+                    , makeCommandMessagesWhenValuesChanges options Nothing
+                    )
 
         DeleteInputForSingleSelect ->
             case model.selectionMode of
@@ -410,7 +414,7 @@ update msg model =
                 | options = Option.deselectAllOptionsInOptionsList model.options
                 , rightSlot = ShowNothing
               }
-            , makeCommandMessagesWhenValuesChanges []
+            , makeCommandMessagesWhenValuesChanges [] Nothing
             )
 
         ToggleSelectedValueHighlight optionValue ->
@@ -926,8 +930,8 @@ rightSlotHtml rightSlot focused disabled hasOptionSelected =
                 ]
 
 
-makeCommandMessagesWhenValuesChanges : List Option -> Cmd Msg
-makeCommandMessagesWhenValuesChanges selectedOptions =
+makeCommandMessagesWhenValuesChanges : List Option -> Maybe selectedValue -> Cmd Msg
+makeCommandMessagesWhenValuesChanges selectedOptions maybeSelectedValue =
     let
         selectedCustomOptions =
             Option.customSelectedOptions selectedOptions
@@ -945,8 +949,21 @@ makeCommandMessagesWhenValuesChanges selectedOptions =
 
             else
                 customOptionSelected (Option.optionsValues selectedCustomOptions)
+
+        addItemCmd =
+            case maybeSelectedValue of
+                Just selectedValue ->
+                    Cmd.none
+
+                Nothing ->
+                    Cmd.none
     in
-    Cmd.batch [ valueChanged (selectedOptionsToTuple selectedOptions), customOptionCmd, clearCmd ]
+    Cmd.batch
+        [ valueChanged (selectedOptionsToTuple selectedOptions)
+        , customOptionCmd
+        , clearCmd
+        , addItemCmd
+        ]
 
 
 type alias Flags =
