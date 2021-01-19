@@ -713,11 +713,21 @@ class MuchSelect extends HTMLElement {
         width: 100%;
       }
 
-      #select-indicator {
+      #dropdown-indicator {
         position: absolute;
         right: 3px;
-        top: 3px;
+        top: 15px;
         cursor: pointer;
+        display: block;
+        transition: transform 0.25s;
+      }
+
+      #dropdown-indicator.down {
+        transform: rotate(180deg);
+      }
+
+      #dropdown-indicator.up {
+        transform: rotate(none);
       }
 
       slot[name='loading-indicator'] {

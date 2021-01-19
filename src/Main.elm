@@ -641,21 +641,12 @@ dropdownIndicator focused disabled hasOptions =
     if disabled || not hasOptions then
         text ""
 
-    else if focused then
-        div
-            [ id "select-indicator"
-            , mousedownPreventDefaultAndStopPropagation BringInputOutOfFocus
-            , class "down"
-            ]
-            [ text "🔽" ]
-
     else
         div
-            [ id "select-indicator"
-            , mousedownPreventDefaultAndStopPropagation BringInputInFocus
-            , class "up"
+            [ id "dropdown-indicator"
+            , classList [ ( "down", focused ), ( "up", not focused ) ]
             ]
-            [ text "🔼" ]
+            [ text "▾" ]
 
 
 dropdown : Model -> Html Msg
