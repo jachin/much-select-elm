@@ -1364,6 +1364,17 @@ displayDecoder =
                             Json.Decode.fail "Option is not selected"
                 )
         , Json.Decode.field
+            "selected"
+            Json.Decode.bool
+            |> Json.Decode.andThen
+                (\isSelected ->
+                    if isSelected then
+                        Json.Decode.succeed OptionSelected
+
+                    else
+                        Json.Decode.succeed OptionShown
+                )
+        , Json.Decode.field
             "disabled"
             Json.Decode.bool
             |> Json.Decode.andThen
