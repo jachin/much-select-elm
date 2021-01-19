@@ -1,6 +1,8 @@
 port module Ports exposing
     ( addOptionsReceiver
+    , allowCustomOptionsReceiver
     , blurInput
+    , customOptionSelected
     , deselectOptionReceiver
     , disableChangedReceiver
     , errorMessage
@@ -24,6 +26,9 @@ port errorMessage : String -> Cmd msg
 
 
 port valueChanged : List ( String, String ) -> Cmd msg
+
+
+port customOptionSelected : List String -> Cmd msg
 
 
 port blurInput : () -> Cmd msg
@@ -65,6 +70,9 @@ port disableChangedReceiver : (Bool -> msg) -> Sub msg
 
 
 port maxDropdownItemsChangedReceiver : (Int -> msg) -> Sub msg
+
+
+port allowCustomOptionsReceiver : (Bool -> msg) -> Sub msg
 
 
 port valueCasingDimensionsChangedReceiver : ({ width : Float, height : Float } -> msg) -> Sub msg

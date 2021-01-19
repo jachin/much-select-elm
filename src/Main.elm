@@ -1,7 +1,21 @@
 module Main exposing (..)
 
 import Browser
-import Css exposing (block, display, fontSize, hidden, inline, lineHeight, none, px, top, visibility, visible, width)
+import Css
+    exposing
+        ( block
+        , display
+        , fontSize
+        , hidden
+        , inline
+        , lineHeight
+        , none
+        , px
+        , top
+        , visibility
+        , visible
+        , width
+        )
 import Html.Styled
     exposing
         ( Html
@@ -25,7 +39,16 @@ import Html.Styled.Attributes
         , type_
         , value
         )
-import Html.Styled.Events exposing (onBlur, onClick, onFocus, onInput, onMouseDown, onMouseEnter, onMouseLeave)
+import Html.Styled.Events
+    exposing
+        ( onBlur
+        , onClick
+        , onFocus
+        , onInput
+        , onMouseDown
+        , onMouseEnter
+        , onMouseLeave
+        )
 import Json.Decode
 import Keyboard exposing (Key(..))
 import Keyboard.Events as Keyboard
@@ -50,7 +73,9 @@ import OptionSearcher exposing (bestMatch)
 import Ports
     exposing
         ( addOptionsReceiver
+        , allowCustomOptionsReceiver
         , blurInput
+        , customOptionSelected
         , deselectOptionReceiver
         , disableChangedReceiver
         , errorMessage
@@ -88,6 +113,7 @@ type Msg
     | PlaceholderAttributeChanged String
     | LoadingAttributeChanged Bool
     | MaxDropdownItemsChanged Int
+    | AllowCustomOptionsChanged Bool
     | DisabledAttributeChanged Bool
     | SelectHighlightedOption
     | DeleteInputForSingleSelect
@@ -170,21 +196,45 @@ update msg model =
                         SingleSelect _ ->
                             selectSingleOptionInList optionValue model.options
             in
-            ( { model | options = options }, Cmd.batch [ valueChanged (selectedOptionsToTuple options), blurInput () ] )
+            ( { model | options = options }
+            , Cmd.batch
+                [ makeCommandMessagesWhenValuesChanges options
+                , blurInput ()
+                ]
+            )
 
         SearchInputOnInput string ->
+            let
+                options =
+                    case SelectionMode.getCustomOptions model.selectionMode of
+                        AllowCustomOptions ->
+                            Option.updateOrAddCustomOption string model.options
+
+                        NoCustomOptions ->
+                            model.options
+            in
             case bestMatch string model.options of
                 Just (Option _ _ value _ _) ->
-                    ( { model | searchString = string, options = highlightOptionInListByValue value model.options }, Cmd.none )
+                    ( { model
+                        | searchString = string
+                        , options = highlightOptionInListByValue value options
+                      }
+                    , Cmd.none
+                    )
 
-                Just (CustomOption _ _ _) ->
-                    ( { model | searchString = string }, Cmd.none )
+                Just (CustomOption _ _ value) ->
+                    ( { model
+                        | searchString = string
+                        , options = highlightOptionInListByValue value options
+                      }
+                    , Cmd.none
+                    )
 
                 Just (EmptyOption _ _) ->
-                    ( { model | searchString = string }, Cmd.none )
+                    ( { model | searchString = string, options = options }, Cmd.none )
 
                 Nothing ->
-                    ( { model | searchString = string }, Cmd.none )
+                    ( { model | searchString = string, options = options }, Cmd.none )
 
         ValueChanged valuesJson ->
             let
@@ -258,7 +308,7 @@ update msg model =
                                 SingleSelect _ ->
                                     selectSingleOptionInList optionValue model.options
                     in
-                    ( { model | options = options }, Cmd.batch [ valueChanged (selectedOptionsToTuple options) ] )
+                    ( { model | options = options }, makeCommandMessagesWhenValuesChanges options )
 
                 Err error ->
                     ( model, errorMessage (Json.Decode.errorToString error) )
@@ -273,7 +323,7 @@ update msg model =
                         options =
                             Option.deselectOptionInListByOptionValue optionValue model.options
                     in
-                    ( { model | options = options }, Cmd.batch [ valueChanged (selectedOptionsToTuple options) ] )
+                    ( { model | options = options }, makeCommandMessagesWhenValuesChanges options )
 
                 Err error ->
                     ( model, errorMessage (Json.Decode.errorToString error) )
@@ -295,6 +345,11 @@ update msg model =
         MaxDropdownItemsChanged int ->
             ( { model | maxDropdownItems = int }, Cmd.none )
 
+        AllowCustomOptionsChanged canAddCustomOptions ->
+            ( { model | selectionMode = SelectionMode.setAllowCustomOptionsWithBool canAddCustomOptions model.selectionMode }
+            , Cmd.none
+            )
+
         DisabledAttributeChanged bool ->
             ( { model | disabled = bool }, Cmd.none )
 
@@ -307,13 +362,13 @@ update msg model =
                 SingleSelect _ ->
                     ( { model | options = options, searchString = "" }
                     , Cmd.batch
-                        [ valueChanged (selectedOptionsToTuple options)
+                        [ makeCommandMessagesWhenValuesChanges options
                         , blurInput ()
                         ]
                     )
 
                 MultiSelect _ ->
-                    ( { model | options = options, searchString = "" }, valueChanged (selectedOptionsToTuple options) )
+                    ( { model | options = options, searchString = "" }, makeCommandMessagesWhenValuesChanges options )
 
         DeleteInputForSingleSelect ->
             case model.selectionMode of
@@ -349,7 +404,7 @@ update msg model =
                 | options = Option.deselectAllOptionsInOptionsList model.options
                 , rightSlot = ShowNothing
               }
-            , Cmd.batch [ valueChanged [] ]
+            , makeCommandMessagesWhenValuesChanges []
             )
 
         ToggleSelectedValueHighlight optionValue ->
@@ -874,6 +929,22 @@ rightSlotHtml rightSlot focused disabled hasOptionSelected =
                 ]
 
 
+makeCommandMessagesWhenValuesChanges : List Option -> Cmd Msg
+makeCommandMessagesWhenValuesChanges options =
+    let
+        selectedCustomOptions =
+            Option.customSelectedOptions options
+
+        customOptionCmd =
+            if List.isEmpty selectedCustomOptions then
+                Cmd.none
+
+            else
+                customOptionSelected (Option.optionsValues selectedCustomOptions)
+    in
+    Cmd.batch [ valueChanged (selectedOptionsToTuple options), customOptionCmd ]
+
+
 type alias Flags =
     { value : String
     , placeholder : String
@@ -1005,6 +1076,7 @@ subscriptions _ =
         , disableChangedReceiver DisabledAttributeChanged
         , optionsChangedReceiver OptionsChanged
         , maxDropdownItemsChangedReceiver MaxDropdownItemsChanged
+        , allowCustomOptionsReceiver AllowCustomOptionsChanged
         , valueCasingDimensionsChangedReceiver ValueCasingWidthUpdate
         , selectOptionReceiver SelectOption
         , deselectOptionReceiver DeselectOption

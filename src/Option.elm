@@ -7,6 +7,7 @@ module Option exposing
     , OptionValue
     , addAdditionalOptionsToOptionList
     , addAndSelectOptionsInOptionsListByString
+    , customSelectedOptions
     , decoder
     , deselectAllOptionsInOptionsList
     , deselectAllSelectedHighlightedOptions
@@ -35,6 +36,7 @@ module Option exposing
     , optionLabelToSearchString
     , optionLabelToString
     , optionsDecoder
+    , optionsValues
     , removeHighlightOptionInList
     , removeOptionsFromOptionList
     , selectHighlightedOption
@@ -49,6 +51,7 @@ module Option exposing
     , setSelectedOptionInNewOptions
     , stringToOptionValue
     , toggleSelectedHighlightByOptionValue
+    , updateOrAddCustomOption
     )
 
 import Json.Decode
@@ -326,6 +329,11 @@ selectedOptionsToTuple options =
     options |> selectedOptions |> List.map optionToValueLabelTuple
 
 
+optionsValues : List Option -> List String
+optionsValues options =
+    List.map getOptionValueAsString options
+
+
 selectOptionsInOptionsListByString : List String -> List Option -> List Option
 selectOptionsInOptionsListByString strings options =
     List.map
@@ -397,6 +405,48 @@ isOptionInListOfOptionsByValue optionValue options =
 optionValuesEqual : Option -> OptionValue -> Bool
 optionValuesEqual option optionValue =
     getOptionValue option == optionValue
+
+
+updateOrAddCustomOption : String -> List Option -> List Option
+updateOrAddCustomOption searchString options =
+    let
+        showAddOption =
+            options
+                |> List.any
+                    (\option_ ->
+                        (option_
+                            |> getOptionLabel
+                            |> optionLabelToSearchString
+                        )
+                            == String.toLower searchString
+                    )
+                |> not
+
+        options_ =
+            List.Extra.dropWhile
+                (\option_ ->
+                    case option_ of
+                        CustomOption _ _ _ ->
+                            True
+
+                        Option _ _ _ _ _ ->
+                            False
+
+                        EmptyOption _ _ ->
+                            False
+                )
+                options
+    in
+    if showAddOption then
+        [ CustomOption
+            OptionShown
+            (OptionLabel ("Add " ++ searchString ++ "…") Nothing)
+            (OptionValue searchString)
+        ]
+            ++ options_
+
+    else
+        options_
 
 
 highlightedOptionIndex : List Option -> Maybe Int
@@ -505,7 +555,20 @@ selectOptionInListByOptionValue value options =
     List.map
         (\option_ ->
             if optionValuesEqual option_ value then
-                selectOption option_
+                case option_ of
+                    Option _ _ _ _ _ ->
+                        selectOption option_
+
+                    CustomOption _ _ _ ->
+                        case value of
+                            OptionValue valueStr ->
+                                selectOption option_ |> setLabel valueStr Nothing
+
+                            EmptyOptionValue ->
+                                selectOption option_
+
+                    EmptyOption _ _ ->
+                        selectOption option_
 
             else
                 option_
@@ -573,7 +636,20 @@ selectSingleOptionInList value options =
         |> List.map
             (\option_ ->
                 if optionValuesEqual option_ value then
-                    selectOption option_
+                    case option_ of
+                        Option _ _ _ _ _ ->
+                            selectOption option_
+
+                        CustomOption _ _ optionValue ->
+                            case optionValue of
+                                OptionValue valueStr ->
+                                    selectOption option_ |> setLabel valueStr Nothing
+
+                                EmptyOptionValue ->
+                                    selectOption option_
+
+                        EmptyOption _ _ ->
+                            selectOption option_
 
                 else
                     deselectOption option_
@@ -902,7 +978,7 @@ selectOption option =
                     CustomOption OptionSelectedHighlighted label value
 
                 OptionHighlighted ->
-                    CustomOption OptionHighlighted label value
+                    CustomOption OptionSelected label value
 
                 OptionDisabled ->
                     CustomOption OptionDisabled label value
@@ -1202,6 +1278,29 @@ optionListContainsOptionWithValue option options =
 optionToValueLabelTuple : Option -> ( String, String )
 optionToValueLabelTuple option =
     ( getOptionValueAsString option, getOptionLabel option |> optionLabelToString )
+
+
+customSelectedOptions : List Option -> List Option
+customSelectedOptions =
+    customOptions >> selectedOptions
+
+
+customOptions : List Option -> List Option
+customOptions options =
+    List.filter isCustomOption options
+
+
+isCustomOption : Option -> Bool
+isCustomOption option =
+    case option of
+        Option _ _ _ _ _ ->
+            False
+
+        CustomOption _ _ _ ->
+            True
+
+        EmptyOption _ _ ->
+            False
 
 
 optionsDecoder : Json.Decode.Decoder (List Option)

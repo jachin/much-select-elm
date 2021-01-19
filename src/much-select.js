@@ -244,6 +244,11 @@ class MuchSelect extends HTMLElement {
         this.valueChangedHandler.bind(this)
       );
 
+      // noinspection JSUnresolvedVariable
+      this._app.ports.customOptionSelected.subscribe(
+        this.customOptionSelected.bind(this)
+      );
+
       // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
       this._app.ports.blurInput.subscribe(() => {
         const inputFilterElement = this.shadowRoot.getElementById(
@@ -387,7 +392,7 @@ class MuchSelect extends HTMLElement {
       this.hasAttribute("multi-select") &&
       this.getAttribute("multi-select") !== "false"
     ) {
-      // If we are in mulit select mode put the list of values in the event.
+      // If we are in multi select mode put the list of values in the event.
       const valuesObj = valuesTuple.map((valueTuple) => ({
         value: valueTuple[0],
         label: valueTuple[1],
@@ -419,6 +424,39 @@ class MuchSelect extends HTMLElement {
       // If we are in single select mode and there is more than one value then something is wrong.
       throw new TypeError(
         `In single select mode we are expecting a single value, instead we got ${valuesTuple.length}`
+      );
+    }
+  }
+
+  customOptionSelected(values) {
+    if (
+      this.hasAttribute("multi-select") &&
+      this.getAttribute("multi-select") !== "false" &&
+      values.length > 0
+    ) {
+      // If we are in multi select mode put the list of values in the event.
+      this.dispatchEvent(
+        new CustomEvent("customValueSelected", {
+          bubbles: true,
+          detail: {
+            values,
+          },
+        })
+      );
+    } else if (values.length === 1) {
+      // If we are in single select mode put the list of values in the event.
+      this.dispatchEvent(
+        new CustomEvent("customValueSelected", {
+          bubbles: true,
+          detail: {
+            value: values[0],
+          },
+        })
+      );
+    } else {
+      // If we are in single select mode and there is not one value then something is wrong.
+      throw new TypeError(
+        `In single select mode we are expecting a single custom option, instead we got ${values.length}`
       );
     }
   }
@@ -789,4 +827,5 @@ class MuchSelect extends HTMLElement {
   }
 }
 
+// noinspection JSUnusedGlobalSymbols
 export default MuchSelect;
