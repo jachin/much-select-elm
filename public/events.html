@@ -94,7 +94,50 @@
           );
       });
     </script>
+  </div>
 
+  <div id="search-keyboard-events">
+    <h3>Search/Filter Keyboard Events</h3>
+    <much-select multi-select="true">
+      <select>
+        <option>Bear</option>
+        <option>Fox</option>
+        <option>Owl</option>
+        <option>Mouse</option>
+        <option>Squirrel</option>
+      </select>
+    </much-select>
+    <p>
+      Key Press Events:
+    <table id="search-keyboard-events-log">
+      <thead>
+      <tr>
+        <th>Event</th>
+        <th>Details</th>
+      </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+    </p>
+    <script>
+      window.addEventListener("load", () => {
+        document
+          .querySelector("#search-keyboard-events much-select")
+          .addEventListener(
+            "inputKeyUp",
+            makeLogEventHandler("search-keyboard-events-log")
+          );
+      });
+      window.addEventListener("load", () => {
+        document
+          .querySelector("#search-keyboard-events much-select")
+          .addEventListener(
+            "inputKeyUpDebounced",
+            makeLogEventHandler("search-keyboard-events-log")
+          );
+      });
+    </script>
   </div>
 </div>
 

@@ -119,6 +119,16 @@ const cleanUpOption = (option) => {
 
 const cleanUpOptions = (options) => options.map(cleanUpOption);
 
+const makeDebouncedFunc = (func, timeout = 500) => {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      func.apply(this, args);
+    }, timeout);
+  };
+};
+
 // adapted from https://github.com/thread/elm-web-components
 
 class MuchSelect extends HTMLElement {
@@ -168,6 +178,15 @@ class MuchSelect extends HTMLElement {
     this._app = null;
 
     this._onSlotChange = this._onSlotChange.bind(this);
+
+    this._inputKeypressDebounceHandler = makeDebouncedFunc((searchString) => {
+      this.dispatchEvent(
+        new CustomEvent("inputKeyUpDebounced", {
+          bubbles: true,
+          detail: { searchString },
+        })
+      );
+    });
   }
 
   static get observedAttributes() {
@@ -243,6 +262,17 @@ class MuchSelect extends HTMLElement {
       this._app.ports.valueChanged.subscribe(
         this.valueChangedHandler.bind(this)
       );
+
+      this._app.ports.inputKeyUp.subscribe((searchString) => {
+        this.dispatchEvent(
+          new CustomEvent("inputKeyUp", {
+            bubbles: true,
+            detail: { searchString },
+          })
+        );
+
+        this._inputKeypressDebounceHandler(searchString);
+      });
 
       // noinspection JSUnresolvedVariable
       this._app.ports.customOptionSelected.subscribe(

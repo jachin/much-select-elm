@@ -70,27 +70,7 @@ import Option
         )
 import OptionPresentor exposing (OptionPresenter)
 import OptionSearcher exposing (bestMatch)
-import Ports
-    exposing
-        ( addOptionsReceiver
-        , allowCustomOptionsReceiver
-        , blurInput
-        , customOptionSelected
-        , deselectOptionReceiver
-        , disableChangedReceiver
-        , errorMessage
-        , focusInput
-        , loadingChangedReceiver
-        , maxDropdownItemsChangedReceiver
-        , optionsChangedReceiver
-        , placeholderChangedReceiver
-        , removeOptionsReceiver
-        , selectOptionReceiver
-        , valueCasingDimensionsChangedReceiver
-        , valueChanged
-        , valueChangedReceiver
-        , valuesDecoder
-        )
+import Ports exposing (addOptionsReceiver, allowCustomOptionsReceiver, blurInput, customOptionSelected, deselectOptionReceiver, disableChangedReceiver, errorMessage, focusInput, inputKeyUp, loadingChangedReceiver, maxDropdownItemsChangedReceiver, optionsChangedReceiver, placeholderChangedReceiver, removeOptionsReceiver, selectOptionReceiver, valueCasingDimensionsChangedReceiver, valueChanged, valueChangedReceiver, valuesDecoder)
 import SelectionMode exposing (CustomOptions(..), SelectionMode(..))
 
 
@@ -219,7 +199,7 @@ update msg model =
                         | searchString = string
                         , options = highlightOptionInListByValue value options
                       }
-                    , Cmd.none
+                    , inputKeyUp string
                     )
 
                 Just (CustomOption _ _ value) ->
@@ -227,14 +207,18 @@ update msg model =
                         | searchString = string
                         , options = highlightOptionInListByValue value options
                       }
-                    , Cmd.none
+                    , inputKeyUp string
                     )
 
                 Just (EmptyOption _ _) ->
-                    ( { model | searchString = string, options = options }, Cmd.none )
+                    ( { model | searchString = string, options = options }
+                    , inputKeyUp string
+                    )
 
                 Nothing ->
-                    ( { model | searchString = string, options = options }, Cmd.none )
+                    ( { model | searchString = string, options = options }
+                    , inputKeyUp string
+                    )
 
         ValueChanged valuesJson ->
             let
