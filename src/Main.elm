@@ -70,7 +70,29 @@ import Option
         )
 import OptionPresentor exposing (OptionPresenter)
 import OptionSearcher exposing (bestMatch)
-import Ports exposing (addOptionsReceiver, allowCustomOptionsReceiver, blurInput, customOptionSelected, deselectOptionReceiver, disableChangedReceiver, errorMessage, focusInput, inputKeyUp, loadingChangedReceiver, maxDropdownItemsChangedReceiver, optionsChangedReceiver, placeholderChangedReceiver, removeOptionsReceiver, selectOptionReceiver, valueCasingDimensionsChangedReceiver, valueChanged, valueChangedReceiver, valuesDecoder)
+import Ports
+    exposing
+        ( addOptionsReceiver
+        , allowCustomOptionsReceiver
+        , blurInput
+        , customOptionSelected
+        , deselectOptionReceiver
+        , disableChangedReceiver
+        , errorMessage
+        , focusInput
+        , inputKeyUp
+        , loadingChangedReceiver
+        , maxDropdownItemsChangedReceiver
+        , optionsChangedReceiver
+        , placeholderChangedReceiver
+        , removeOptionsReceiver
+        , selectOptionReceiver
+        , valueCasingDimensionsChangedReceiver
+        , valueChanged
+        , valueChangedReceiver
+        , valueCleared
+        , valuesDecoder
+        )
 import SelectionMode exposing (CustomOptions(..), SelectionMode(..))
 
 
@@ -905,10 +927,17 @@ rightSlotHtml rightSlot focused disabled hasOptionSelected =
 
 
 makeCommandMessagesWhenValuesChanges : List Option -> Cmd Msg
-makeCommandMessagesWhenValuesChanges options =
+makeCommandMessagesWhenValuesChanges selectedOptions =
     let
         selectedCustomOptions =
-            Option.customSelectedOptions options
+            Option.customSelectedOptions selectedOptions
+
+        clearCmd =
+            if List.isEmpty selectedOptions then
+                valueCleared ()
+
+            else
+                Cmd.none
 
         customOptionCmd =
             if List.isEmpty selectedCustomOptions then
@@ -917,7 +946,7 @@ makeCommandMessagesWhenValuesChanges options =
             else
                 customOptionSelected (Option.optionsValues selectedCustomOptions)
     in
-    Cmd.batch [ valueChanged (selectedOptionsToTuple options), customOptionCmd ]
+    Cmd.batch [ valueChanged (selectedOptionsToTuple selectedOptions), customOptionCmd, clearCmd ]
 
 
 type alias Flags =

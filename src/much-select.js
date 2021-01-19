@@ -263,6 +263,7 @@ class MuchSelect extends HTMLElement {
         this.valueChangedHandler.bind(this)
       );
 
+      // noinspection JSUnresolvedVariable
       this._app.ports.inputKeyUp.subscribe((searchString) => {
         this.dispatchEvent(
           new CustomEvent("inputKeyUp", {
@@ -272,6 +273,15 @@ class MuchSelect extends HTMLElement {
         );
 
         this._inputKeypressDebounceHandler(searchString);
+      });
+
+      // noinspection JSUnresolvedVariable
+      this._app.ports.valueCleared.subscribe(() => {
+        this.dispatchEvent(
+          new CustomEvent("valueCleared", {
+            bubbles: true,
+          })
+        );
       });
 
       // noinspection JSUnresolvedVariable

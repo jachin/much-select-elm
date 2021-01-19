@@ -17,6 +17,7 @@ port module Ports exposing
     , valueCasingDimensionsChangedReceiver
     , valueChanged
     , valueChangedReceiver
+    , valueCleared
     , valuesDecoder
     )
 
@@ -30,6 +31,9 @@ port valueChanged : List ( String, String ) -> Cmd msg
 
 
 port customOptionSelected : List String -> Cmd msg
+
+
+port valueCleared : () -> Cmd msg
 
 
 port inputKeyUp : String -> Cmd msg
