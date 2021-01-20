@@ -15,7 +15,7 @@ port module Ports exposing
     , valueChanged
     , valueChangedReceiver
     , valuesDecoder
-    )
+    , deselectItem)
 
 import Json.Decode
 
@@ -31,6 +31,7 @@ port blurInput : () -> Cmd msg
 
 port focusInput : () -> Cmd msg
 
+port deselectItem: String -> Cmd msg
 
 valuesDecoder : Json.Decode.Decoder (List String)
 valuesDecoder =

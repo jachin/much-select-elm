@@ -49,7 +49,7 @@ module Option exposing
     , setSelectedOptionInNewOptions
     , stringToOptionValue
     , toggleSelectedHighlightByOptionValue
-    )
+    , getOptionValueAsString)
 
 import Json.Decode
 import List.Extra

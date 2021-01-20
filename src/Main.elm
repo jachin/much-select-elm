@@ -47,25 +47,7 @@ import Option
         )
 import OptionPresentor exposing (OptionPresenter)
 import OptionSearcher exposing (bestMatch)
-import Ports
-    exposing
-        ( addOptionsReceiver
-        , blurInput
-        , deselectOptionReceiver
-        , disableChangedReceiver
-        , errorMessage
-        , focusInput
-        , loadingChangedReceiver
-        , maxDropdownItemsChangedReceiver
-        , optionsChangedReceiver
-        , placeholderChangedReceiver
-        , removeOptionsReceiver
-        , selectOptionReceiver
-        , valueCasingDimensionsChangedReceiver
-        , valueChanged
-        , valueChangedReceiver
-        , valuesDecoder
-        )
+import Ports exposing (addOptionsReceiver, blurInput, deselectItem, deselectOptionReceiver, disableChangedReceiver, errorMessage, focusInput, loadingChangedReceiver, maxDropdownItemsChangedReceiver, optionsChangedReceiver, placeholderChangedReceiver, removeOptionsReceiver, selectOptionReceiver, valueCasingDimensionsChangedReceiver, valueChanged, valueChangedReceiver, valuesDecoder)
 import SelectionMode exposing (CustomOptions(..), SelectionMode(..))
 
 
@@ -273,7 +255,7 @@ update msg model =
                         options =
                             Option.deselectOptionInListByOptionValue optionValue model.options
                     in
-                    ( { model | options = options }, Cmd.batch [ valueChanged (selectedOptionsToTuple options) ] )
+                    ( { model | options = options }, Cmd.batch [ valueChanged (selectedOptionsToTuple options), deselectItem (Option.getOptionValueAsString option) ] )
 
                 Err error ->
                     ( model, errorMessage (Json.Decode.errorToString error) )
@@ -360,7 +342,7 @@ update msg model =
                 newOptions =
                     Option.deselectAllSelectedHighlightedOptions model.options
             in
-            ( { model | options = newOptions }, valueChanged (selectedOptionsToTuple newOptions) )
+            ( { model | options = newOptions }, Cmd.batch [ valueChanged (selectedOptionsToTuple newOptions),  deselectItem "maybe doesn't matter"] )
 
 
 updateRightSlot : RightSlot -> SelectionMode -> Bool -> RightSlot

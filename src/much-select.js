@@ -266,6 +266,16 @@ class MuchSelect extends HTMLElement {
         });
       });
 
+      // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
+      this._app.ports.deselectItem.subscribe((deselectedValue) => {
+        this.dispatchEvent(
+          new CustomEvent("deselectItem", {
+            bubbles: true,
+            detail: { values: deselectedValue },
+          })
+        );
+      });
+
       const slot = this.shadowRoot.querySelector("slot[name=select-input]");
       if (slot) {
         slot.addEventListener("slotchange", this._onSlotChange);
@@ -387,7 +397,7 @@ class MuchSelect extends HTMLElement {
       this.hasAttribute("multi-select") &&
       this.getAttribute("multi-select") !== "false"
     ) {
-      // If we are in mulit select mode put the list of values in the event.
+      // If we are in multi select mode put the list of values in the event.
       const valuesObj = valuesTuple.map((valueTuple) => ({
         value: valueTuple[0],
         label: valueTuple[1],
