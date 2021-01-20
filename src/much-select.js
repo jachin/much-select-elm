@@ -264,6 +264,19 @@ class MuchSelect extends HTMLElement {
       );
 
       // noinspection JSUnresolvedVariable
+      this._app.ports.addItem.subscribe((valueLabelPair) => {
+        this.dispatchEvent(
+          new CustomEvent("addItem", {
+            bubbles: true,
+            detail: {
+              value: valueLabelPair[0],
+              label: valueLabelPair[1],
+            },
+          })
+        );
+      });
+
+      // noinspection JSUnresolvedVariable
       this._app.ports.inputKeyUp.subscribe((searchString) => {
         this.dispatchEvent(
           new CustomEvent("inputKeyUp", {

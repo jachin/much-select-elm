@@ -72,7 +72,8 @@ import OptionPresentor exposing (OptionPresenter)
 import OptionSearcher exposing (bestMatch)
 import Ports
     exposing
-        ( addOptionsReceiver
+        ( addItem
+        , addOptionsReceiver
         , allowCustomOptionsReceiver
         , blurInput
         , customOptionSelected
@@ -930,7 +931,7 @@ rightSlotHtml rightSlot focused disabled hasOptionSelected =
                 ]
 
 
-makeCommandMessagesWhenValuesChanges : List Option -> Maybe selectedValue -> Cmd Msg
+makeCommandMessagesWhenValuesChanges : List Option -> Maybe OptionValue -> Cmd Msg
 makeCommandMessagesWhenValuesChanges selectedOptions maybeSelectedValue =
     let
         selectedCustomOptions =
@@ -950,10 +951,16 @@ makeCommandMessagesWhenValuesChanges selectedOptions maybeSelectedValue =
             else
                 customOptionSelected (Option.optionsValues selectedCustomOptions)
 
+        -- Any time we select a new value we need to emit an `addItem` event.
         addItemCmd =
             case maybeSelectedValue of
                 Just selectedValue ->
-                    Cmd.none
+                    case Option.findOptionByOptionValue selectedValue selectedOptions of
+                        Just option ->
+                            addItem (Option.optionToValueLabelTuple option)
+
+                        Nothing ->
+                            Cmd.none
 
                 Nothing ->
                     Cmd.none

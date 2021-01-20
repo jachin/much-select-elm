@@ -13,6 +13,7 @@ module Option exposing
     , deselectAllSelectedHighlightedOptions
     , deselectOptionInListByOptionValue
     , emptyOptionGroup
+    , findOptionByOptionValue
     , getOptionDescription
     , getOptionDisplay
     , getOptionGroup
@@ -35,6 +36,7 @@ module Option exposing
     , optionGroupToString
     , optionLabelToSearchString
     , optionLabelToString
+    , optionToValueLabelTuple
     , optionsDecoder
     , optionsValues
     , removeHighlightOptionInList
@@ -400,6 +402,11 @@ isOptionValueInListOfStrings possibleValues option =
 isOptionInListOfOptionsByValue : OptionValue -> List Option -> Bool
 isOptionInListOfOptionsByValue optionValue options =
     List.any (\option -> (option |> getOptionValue |> optionValueToString) == (optionValue |> optionValueToString)) options
+
+
+findOptionByOptionValue : OptionValue -> List Option -> Maybe Option
+findOptionByOptionValue optionValue options =
+    List.Extra.find (\option -> (option |> getOptionValue) == optionValue) options
 
 
 optionValuesEqual : Option -> OptionValue -> Bool
