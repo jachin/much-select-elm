@@ -394,7 +394,7 @@ update msg model =
                         )
 
                     else
-                        ( model, Cmd.none )
+                        ( model, deselectItem () )
 
                 MultiSelect _ ->
                     ( model, Cmd.none )
@@ -427,7 +427,7 @@ update msg model =
                 newOptions =
                     Option.deselectAllSelectedHighlightedOptions model.options
             in
-            ( { model | options = newOptions }, valueChanged (selectedOptionsToTuple newOptions))
+            ( { model | options = newOptions }, valueChanged (selectedOptionsToTuple newOptions) )
 
 
 updateRightSlot : RightSlot -> SelectionMode -> Bool -> RightSlot
