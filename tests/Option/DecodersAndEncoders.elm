@@ -18,6 +18,10 @@ simpleOptionWithJustLabelAndValue =
 
 
 simpleSelectedOption =
+    """{"label": "Sup", "labelClean": "sup", "value": "Sup", "selected": true}"""
+
+
+simpleSelectedOptionSelectedIsAString =
     """{"label": "Sup", "labelClean": "sup", "value": "Sup", "selected": "true"}"""
 
 
@@ -66,6 +70,11 @@ suite =
                     Expect.equal
                         (Ok (newSelectedOption "Sup" (Just "sup")))
                         (Json.Decode.decodeString decoder simpleSelectedOption)
+            , test "an option that's selected (using the 'true' string)" <|
+                \_ ->
+                    Expect.equal
+                        (Ok (newSelectedOption "Sup" (Just "sup")))
+                        (Json.Decode.decodeString decoder simpleSelectedOptionSelectedIsAString)
             , test "an option that's not selected" <|
                 \_ ->
                     Expect.equal

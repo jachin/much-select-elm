@@ -12,6 +12,11 @@ The need for this project is that we want to use selectize.js however we need th
 
 The goal for this project to achieve near feature parity with selectize using web components. The API will be different, so it will not be a drop in replacement but hopefully it will not be too hard to replace one with the other.
 
+### Other Similar Projects
+
+- [React Select](https://react-select.com/home)
+- [inkuzmin/elm-multiselect](https://package.elm-lang.org/packages/inkuzmin/elm-multiselect/)
+
 ## Installation
 
 ```bash

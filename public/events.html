@@ -35,18 +35,17 @@
 
     <p>
       Events:
-      <table id="single-select-value-changed-event-log">
-        <thead>
-          <tr>
-            <th>Event</th>
-            <th>Details</th>
-          </tr>
-        </thead>
-        <tbody>
-        </tbody>
-      </table>
     </p>
-
+    <table id="single-select-value-changed-event-log">
+      <thead>
+        <tr>
+          <th>Event</th>
+          <th>Details</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
     <script>
       window.addEventListener("load", () => {
         document
@@ -57,7 +56,42 @@
           );
       });
     </script>
+  </div>
 
+  <div id="single-select-add-item-event">
+    <h3>Single Select - <code>addItem</code> Event</h3>
+    <much-select>
+      <select>
+        <option value="hob">The Hobbit</option>
+        <option value="lotr1">The Fellowship of the Ring</option>
+        <option value="lotr2">The Two Towers</option>
+        <option value="lotr3">The Return of the King</option>
+      </select>
+    </much-select>
+
+    <p>
+      Events:
+    </p>
+    <table id="single-select-add-item-event-log">
+      <thead>
+      <tr>
+        <th>Event</th>
+        <th>Details</th>
+      </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+    <script>
+      window.addEventListener("load", () => {
+        document
+          .querySelector("#single-select-add-item-event much-select")
+          .addEventListener(
+            "addItem",
+            makeLogEventHandler("single-select-add-item-event-log")
+          );
+      });
+    </script>
   </div>
 
   <div id="multi-select-value-changed-event">
@@ -73,17 +107,17 @@
     </much-select>
     <p>
       Events:
-      <table id="multi-select-value-changed-event-log">
-        <thead>
-        <tr>
-          <th>Event</th>
-          <th>Details</th>
-        </tr>
-        </thead>
-        <tbody>
-        </tbody>
-      </table>
     </p>
+    <table id="multi-select-value-changed-event-log">
+      <thead>
+      <tr>
+        <th>Event</th>
+        <th>Details</th>
+      </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
     <script>
       window.addEventListener("load", () => {
         document
@@ -94,7 +128,84 @@
           );
       });
     </script>
+  </div>
 
+  <div id="search-keyboard-events">
+    <h3>Search/Filter Keyboard Events</h3>
+    <much-select>
+      <select>
+        <option>Frodo</option>
+        <option>Sam</option>
+        <option>Merry</option>
+        <option>Pippin</option>
+      </select>
+    </much-select>
+    <p>
+      Key Press Events:
+    </p>
+    <table id="search-keyboard-events-log">
+      <thead>
+      <tr>
+        <th>Event</th>
+        <th>Details</th>
+      </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+
+    <script>
+      window.addEventListener("load", () => {
+        document
+          .querySelector("#search-keyboard-events much-select")
+          .addEventListener(
+            "inputKeyUp",
+            makeLogEventHandler("search-keyboard-events-log")
+          );
+      });
+      window.addEventListener("load", () => {
+        document
+          .querySelector("#search-keyboard-events much-select")
+          .addEventListener(
+            "inputKeyUpDebounced",
+            makeLogEventHandler("search-keyboard-events-log")
+          );
+      });
+    </script>
+  </div>
+
+  <div id="multi-select-value-cleared">
+    <h3>Multi Select - <code>valueCleared</code> Event</h3>
+    <much-select multi-select="true">
+      <select>
+        <option selected="selected">Pineapple</option>
+        <option selected="selected">Pine cone</option>
+        <option>Pine nut</option>
+      </select>
+    </much-select>
+    <p>
+      Events:
+    <table id="multi-select-value-cleared-event-log">
+      <thead>
+      <tr>
+        <th>Event</th>
+        <th>Details</th>
+      </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+    </p>
+    <script>
+      window.addEventListener("load", () => {
+        document
+          .querySelector("#multi-select-value-cleared much-select")
+          .addEventListener(
+            "valueCleared",
+            makeLogEventHandler("multi-select-value-cleared-event-log")
+          );
+      });
+    </script>
   </div>
 
   <div id="single-select-deselect-item-event">

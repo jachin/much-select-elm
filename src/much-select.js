@@ -119,6 +119,16 @@ const cleanUpOption = (option) => {
 
 const cleanUpOptions = (options) => options.map(cleanUpOption);
 
+const makeDebouncedFunc = (func, timeout = 500) => {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      func.apply(this, args);
+    }, timeout);
+  };
+};
+
 // adapted from https://github.com/thread/elm-web-components
 
 class MuchSelect extends HTMLElement {
@@ -168,6 +178,15 @@ class MuchSelect extends HTMLElement {
     this._app = null;
 
     this._onSlotChange = this._onSlotChange.bind(this);
+
+    this._inputKeypressDebounceHandler = makeDebouncedFunc((searchString) => {
+      this.dispatchEvent(
+        new CustomEvent("inputKeyUpDebounced", {
+          bubbles: true,
+          detail: { searchString },
+        })
+      );
+    });
   }
 
   static get observedAttributes() {
@@ -242,6 +261,45 @@ class MuchSelect extends HTMLElement {
       // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
       this._app.ports.valueChanged.subscribe(
         this.valueChangedHandler.bind(this)
+      );
+
+      // noinspection JSUnresolvedVariable
+      this._app.ports.addItem.subscribe((valueLabelPair) => {
+        this.dispatchEvent(
+          new CustomEvent("addItem", {
+            bubbles: true,
+            detail: {
+              value: valueLabelPair[0],
+              label: valueLabelPair[1],
+            },
+          })
+        );
+      });
+
+      // noinspection JSUnresolvedVariable
+      this._app.ports.inputKeyUp.subscribe((searchString) => {
+        this.dispatchEvent(
+          new CustomEvent("inputKeyUp", {
+            bubbles: true,
+            detail: { searchString },
+          })
+        );
+
+        this._inputKeypressDebounceHandler(searchString);
+      });
+
+      // noinspection JSUnresolvedVariable
+      this._app.ports.valueCleared.subscribe(() => {
+        this.dispatchEvent(
+          new CustomEvent("valueCleared", {
+            bubbles: true,
+          })
+        );
+      });
+
+      // noinspection JSUnresolvedVariable
+      this._app.ports.customOptionSelected.subscribe(
+        this.customOptionSelected.bind(this)
       );
 
       // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
@@ -429,6 +487,39 @@ class MuchSelect extends HTMLElement {
       // If we are in single select mode and there is more than one value then something is wrong.
       throw new TypeError(
         `In single select mode we are expecting a single value, instead we got ${valuesTuple.length}`
+      );
+    }
+  }
+
+  customOptionSelected(values) {
+    if (
+      this.hasAttribute("multi-select") &&
+      this.getAttribute("multi-select") !== "false" &&
+      values.length > 0
+    ) {
+      // If we are in multi select mode put the list of values in the event.
+      this.dispatchEvent(
+        new CustomEvent("customValueSelected", {
+          bubbles: true,
+          detail: {
+            values,
+          },
+        })
+      );
+    } else if (values.length === 1) {
+      // If we are in single select mode put the list of values in the event.
+      this.dispatchEvent(
+        new CustomEvent("customValueSelected", {
+          bubbles: true,
+          detail: {
+            value: values[0],
+          },
+        })
+      );
+    } else {
+      // If we are in single select mode and there is not one value then something is wrong.
+      throw new TypeError(
+        `In single select mode we are expecting a single custom option, instead we got ${values.length}`
       );
     }
   }
@@ -685,11 +776,21 @@ class MuchSelect extends HTMLElement {
         width: 100%;
       }
 
-      #select-indicator {
+      #dropdown-indicator {
         position: absolute;
         right: 3px;
-        top: 3px;
+        top: 15px;
         cursor: pointer;
+        display: block;
+        transition: transform 0.25s;
+      }
+
+      #dropdown-indicator.down {
+        transform: rotate(180deg);
+      }
+
+      #dropdown-indicator.up {
+        transform: rotate(none);
       }
 
       slot[name='loading-indicator'] {
@@ -799,4 +900,5 @@ class MuchSelect extends HTMLElement {
   }
 }
 
+// noinspection JSUnusedGlobalSymbols
 export default MuchSelect;
