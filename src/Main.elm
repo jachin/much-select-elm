@@ -108,6 +108,7 @@ type Msg
     | DropdownMouseOutOption OptionValue
     | DropdownMouseClickOption OptionValue
     | SearchInputOnInput String
+    | HandleInputKeyUp Int
     | ValueChanged Json.Decode.Value
     | OptionsChanged Json.Decode.Value
     | AddOptions Json.Decode.Value
@@ -148,6 +149,7 @@ type alias Model =
     , focused : Bool
     , valueCasingWidth : Float
     , valueCasingHeight : Float
+    , deleteKeyPressed : Bool
     }
 
 
@@ -429,6 +431,13 @@ update msg model =
             in
             ( { model | options = newOptions }, valueChanged (selectedOptionsToTuple newOptions) )
 
+        HandleInputKeyUp keyCode ->
+            let
+                isDeleteKey =
+                    keyCode == 8
+            in
+            ( { model | deleteKeyPressed = isDeleteKey }, Cmd.none )
+
 
 updateRightSlot : RightSlot -> SelectionMode -> Bool -> RightSlot
 updateRightSlot current selectionMode hasSelectedOption =
@@ -477,6 +486,11 @@ updateRightSlotLoading isLoading selectionMode hasSelectedOption =
                     ShowNothing
 
 
+onInputKeyUp : (Int -> msg) -> Html.Styled.Attribute msg
+onInputKeyUp tagger =
+    Html.Styled.Events.on "keyup" (Json.Decode.map tagger Html.Styled.Events.keyCode)
+
+
 view : Model -> Html Msg
 view model =
     case model.selectionMode of
@@ -499,7 +513,7 @@ view model =
                             |> List.head
                             |> Maybe.withDefault ""
 
-                    else if model.focused then
+                    else if model.focused && not model.deleteKeyPressed then
                         model.searchString
 
                     else
@@ -543,6 +557,7 @@ view model =
                         , onBlur InputBlur
                         , onFocus InputFocus
                         , onInput SearchInputOnInput
+                        , onInputKeyUp HandleInputKeyUp
                         , value valueStr
                         , id "input-filter"
                         , disabled model.disabled
@@ -1051,6 +1066,7 @@ init flags =
                     ( [], errorMessage (Json.Decode.errorToString error) )
     in
     ( { initialValue = initialValues
+      , deleteKeyPressed = False
       , placeholder = flags.placeholder
       , size = flags.size
       , selectionMode = selectionMode
