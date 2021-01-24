@@ -740,6 +740,13 @@ class MuchSelect extends HTMLElement {
         background-image: none;
       }
 
+      #value-casing.single .value {
+        padding: 3px;
+        font-size: 20px;
+        margin: 2px 2px;
+        min-width: 10px;
+      }
+
       #value-casing.multi .value {
         padding: 3px;
         font-size: 20px;
