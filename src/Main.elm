@@ -108,7 +108,6 @@ type Msg
     | DropdownMouseOutOption OptionValue
     | DropdownMouseClickOption OptionValue
     | SearchInputOnInput String
-    | HandleInputKeyUp Int
     | ValueChanged Json.Decode.Value
     | OptionsChanged Json.Decode.Value
     | AddOptions Json.Decode.Value
@@ -202,7 +201,7 @@ update msg model =
                         SingleSelect _ ->
                             selectSingleOptionInList optionValue model.options
             in
-            ( { model | options = options }
+            ( { model | options = options, searchString = "" }
             , Cmd.batch
                 [ makeCommandMessagesWhenValuesChanges options (Just optionValue)
                 , blurInput ()
@@ -318,7 +317,7 @@ update msg model =
                                 SingleSelect _ ->
                                     selectSingleOptionInList optionValue model.options
                     in
-                    ( { model | options = options }, makeCommandMessagesWhenValuesChanges options (Just optionValue) )
+                    ( { model | options = options, searchString = "" }, makeCommandMessagesWhenValuesChanges options (Just optionValue) )
 
                 Err error ->
                     ( model, errorMessage (Json.Decode.errorToString error) )
@@ -388,12 +387,7 @@ update msg model =
             case model.selectionMode of
                 SingleSelect _ ->
                     if Option.hasSelectedOption model.options then
-                        ( { model
-                            | options = Option.deselectAllOptionsInOptionsList model.options
-                            , searchString = ""
-                          }
-                        , Cmd.none
-                        )
+                        clearAllSelectedOption model
 
                     else
                         ( model, deselectItem () )
@@ -414,12 +408,7 @@ update msg model =
             ( { model | valueCasingWidth = dims.width, valueCasingHeight = dims.height }, Cmd.none )
 
         ClearAllSelectedOptions ->
-            ( { model
-                | options = Option.deselectAllOptionsInOptionsList model.options
-                , rightSlot = ShowNothing
-              }
-            , makeCommandMessagesWhenValuesChanges [] Nothing
-            )
+            clearAllSelectedOption model
 
         ToggleSelectedValueHighlight optionValue ->
             ( { model | options = Option.toggleSelectedHighlightByOptionValue model.options optionValue }, Cmd.none )
@@ -431,12 +420,16 @@ update msg model =
             in
             ( { model | options = newOptions }, valueChanged (selectedOptionsToTuple newOptions) )
 
-        HandleInputKeyUp keyCode ->
-            let
-                isDeleteKey =
-                    keyCode == 8
-            in
-            ( { model | deleteKeyPressed = isDeleteKey }, Cmd.none )
+
+clearAllSelectedOption : Model -> ( Model, Cmd Msg )
+clearAllSelectedOption model =
+    ( { model
+        | options = Option.deselectAllOptionsInOptionsList model.options
+        , rightSlot = ShowNothing
+        , searchString = ""
+      }
+    , makeCommandMessagesWhenValuesChanges [] Nothing
+    )
 
 
 updateRightSlot : RightSlot -> SelectionMode -> Bool -> RightSlot
@@ -486,11 +479,6 @@ updateRightSlotLoading isLoading selectionMode hasSelectedOption =
                     ShowNothing
 
 
-onInputKeyUp : (Int -> msg) -> Html.Styled.Attribute msg
-onInputKeyUp tagger =
-    Html.Styled.Events.on "keyup" (Json.Decode.map tagger Html.Styled.Events.keyCode)
-
-
 view : Model -> Html Msg
 view model =
     case model.selectionMode of
@@ -503,21 +491,30 @@ view model =
                     not hasOptionSelected && not model.focused
 
                 hasOptions =
-                    List.isEmpty model.options |> not
+                    (List.isEmpty model.options |> not) && String.isEmpty model.searchString
+
+                _ =
+                    Debug.log "hasOptionSelected" hasOptionSelected
 
                 valueStr =
                     if hasOptionSelected then
-                        model.options
-                            |> Option.selectedOptionsToTuple
-                            |> List.map Tuple.second
-                            |> List.head
-                            |> Maybe.withDefault ""
-
-                    else if model.focused && not model.deleteKeyPressed then
-                        model.searchString
+                        "hey"
+                        --let
+                        --    _ =
+                        --        Debug.log "hasOptionSelected && not model.deleteKeyPressed" ""
+                        --in
+                        --model.options
+                        --    |> Option.selectedOptionsToTuple
+                        --    |> List.map Tuple.second
+                        --    |> List.head
+                        --    |> Maybe.withDefault ""
 
                     else
-                        ""
+                        let
+                            _ =
+                                Debug.log "else" ""
+                        in
+                        model.searchString
             in
             div [ id "wrapper", css [ width (px model.valueCasingWidth) ] ]
                 [ div
@@ -568,7 +565,6 @@ view model =
                         , onBlur InputBlur
                         , onFocus InputFocus
                         , onInput SearchInputOnInput
-                        , onInputKeyUp HandleInputKeyUp
                         , value valueStr
                         , id "input-filter"
                         , disabled model.disabled
