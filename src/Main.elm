@@ -551,7 +551,18 @@ view model =
                             ]
                         ]
                         [ text model.placeholder ]
-                    , span [ class "value" ] [ text valueStr ]
+                    , span
+                        [ class "value"
+                        , css
+                            [ if model.focused then
+                                display none
+
+                              else
+                                display inline
+                            , width (px model.valueCasingWidth)
+                            ]
+                        ]
+                        [ text valueStr ]
                     , input
                         [ type_ "text"
                         , onBlur InputBlur
