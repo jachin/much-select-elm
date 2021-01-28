@@ -655,22 +655,35 @@ singleSelectInputField searchString isDisabled focused hasSelectedOptions valueC
             Keyboard.on Keyboard.Keydown
                 [ ( Enter, SelectHighlightedOption )
                 , ( Backspace, DeleteInputForSingleSelect )
+                , ( Delete, DeleteInputForSingleSelect )
                 , ( Escape, EscapeKeyInInputFilter )
                 , ( ArrowUp, MoveHighlightedOptionUp )
                 , ( ArrowDown, MoveHighlightedOptionDown )
                 ]
+
+        idAttr =
+            id "input-filter"
+
+        typeAttr =
+            type_ "text"
+
+        onBlurAttr =
+            onBlur InputBlur
+
+        onFocusAttr =
+            onFocus InputFocus
     in
     if isDisabled then
         text ""
 
     else if hasSelectedOptions then
         input
-            [ type_ "text"
-            , onBlur InputBlur
-            , onFocus InputFocus
+            [ typeAttr
+            , idAttr
+            , onBlurAttr
+            , onFocusAttr
             , value ""
             , maxlength 0
-            , id "input-filter"
             , css
                 [ if focused then
                     visibility visible
@@ -686,12 +699,12 @@ singleSelectInputField searchString isDisabled focused hasSelectedOptions valueC
 
     else
         input
-            [ type_ "text"
-            , onBlur InputBlur
-            , onFocus InputFocus
+            [ typeAttr
+            , idAttr
+            , onBlurAttr
+            , onFocusAttr
             , onInput SearchInputOnInput
             , value searchString
-            , id "input-filter"
             , css
                 [ if focused then
                     visibility visible
