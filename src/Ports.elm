@@ -4,6 +4,7 @@ port module Ports exposing
     , allowCustomOptionsReceiver
     , blurInput
     , customOptionSelected
+    , deselectItem
     , deselectOptionReceiver
     , disableChangedReceiver
     , errorMessage
@@ -51,6 +52,9 @@ port blurInput : () -> Cmd msg
 
 
 port focusInput : () -> Cmd msg
+
+
+port deselectItem : () -> Cmd msg
 
 
 valuesDecoder : Json.Decode.Decoder (List String)

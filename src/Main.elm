@@ -3,7 +3,8 @@ module Main exposing (..)
 import Browser
 import Css
     exposing
-        ( block
+        ( auto
+        , block
         , display
         , fontSize
         , hidden
@@ -34,6 +35,7 @@ import Html.Styled.Attributes
         , css
         , disabled
         , id
+        , maxlength
         , name
         , tabindex
         , type_
@@ -77,6 +79,7 @@ import Ports
         , allowCustomOptionsReceiver
         , blurInput
         , customOptionSelected
+        , deselectItem
         , deselectOptionReceiver
         , disableChangedReceiver
         , errorMessage
@@ -147,6 +150,7 @@ type alias Model =
     , focused : Bool
     , valueCasingWidth : Float
     , valueCasingHeight : Float
+    , deleteKeyPressed : Bool
     }
 
 
@@ -199,7 +203,7 @@ update msg model =
                         SingleSelect _ ->
                             selectSingleOptionInList optionValue model.options
             in
-            ( { model | options = options }
+            ( { model | options = options, searchString = "" }
             , Cmd.batch
                 [ makeCommandMessagesWhenValuesChanges options (Just optionValue)
                 , blurInput ()
@@ -315,7 +319,7 @@ update msg model =
                                 SingleSelect _ ->
                                     selectSingleOptionInList optionValue model.options
                     in
-                    ( { model | options = options }, makeCommandMessagesWhenValuesChanges options (Just optionValue) )
+                    ( { model | options = options, searchString = "" }, makeCommandMessagesWhenValuesChanges options (Just optionValue) )
 
                 Err error ->
                     ( model, errorMessage (Json.Decode.errorToString error) )
@@ -385,15 +389,10 @@ update msg model =
             case model.selectionMode of
                 SingleSelect _ ->
                     if Option.hasSelectedOption model.options then
-                        ( { model
-                            | options = Option.deselectAllOptionsInOptionsList model.options
-                            , searchString = ""
-                          }
-                        , Cmd.none
-                        )
+                        clearAllSelectedOption model
 
                     else
-                        ( model, Cmd.none )
+                        ( model, deselectItem () )
 
                 MultiSelect _ ->
                     ( model, Cmd.none )
@@ -411,12 +410,7 @@ update msg model =
             ( { model | valueCasingWidth = dims.width, valueCasingHeight = dims.height }, Cmd.none )
 
         ClearAllSelectedOptions ->
-            ( { model
-                | options = Option.deselectAllOptionsInOptionsList model.options
-                , rightSlot = ShowNothing
-              }
-            , makeCommandMessagesWhenValuesChanges [] Nothing
-            )
+            clearAllSelectedOption model
 
         ToggleSelectedValueHighlight optionValue ->
             ( { model | options = Option.toggleSelectedHighlightByOptionValue model.options optionValue }, Cmd.none )
@@ -427,6 +421,17 @@ update msg model =
                     Option.deselectAllSelectedHighlightedOptions model.options
             in
             ( { model | options = newOptions }, valueChanged (selectedOptionsToTuple newOptions) )
+
+
+clearAllSelectedOption : Model -> ( Model, Cmd Msg )
+clearAllSelectedOption model =
+    ( { model
+        | options = Option.deselectAllOptionsInOptionsList model.options
+        , rightSlot = ShowNothing
+        , searchString = ""
+      }
+    , makeCommandMessagesWhenValuesChanges [] Nothing
+    )
 
 
 updateRightSlot : RightSlot -> SelectionMode -> Bool -> RightSlot
@@ -488,7 +493,7 @@ view model =
                     not hasOptionSelected && not model.focused
 
                 hasOptions =
-                    List.isEmpty model.options |> not
+                    (List.isEmpty model.options |> not) && String.isEmpty model.searchString
 
                 valueStr =
                     if hasOptionSelected then
@@ -498,11 +503,12 @@ view model =
                             |> List.head
                             |> Maybe.withDefault ""
 
-                    else if model.focused then
-                        model.searchString
-
                     else
-                        ""
+                        let
+                            _ =
+                                Debug.log "else" ""
+                        in
+                        model.searchString
             in
             div [ id "wrapper", css [ width (px model.valueCasingWidth) ] ]
                 [ div
@@ -539,41 +545,25 @@ view model =
                     , span
                         [ class "value"
                         , css
-                            [ if model.focused then
-                                display none
+                            [ if hasOptionSelected then
+                                display inline
 
                               else
-                                display inline
-                            , width (px model.valueCasingWidth)
+                                display none
+                            , if model.focused then
+                                width auto
+
+                              else
+                                width (px model.valueCasingWidth)
                             ]
                         ]
                         [ text valueStr ]
-                    , input
-                        [ type_ "text"
-                        , onBlur InputBlur
-                        , onFocus InputFocus
-                        , onInput SearchInputOnInput
-                        , value valueStr
-                        , id "input-filter"
-                        , disabled model.disabled
-                        , css
-                            [ if model.focused then
-                                visibility visible
-
-                              else
-                                visibility hidden
-                            , width (px model.valueCasingWidth)
-                            ]
-                        , Keyboard.on Keyboard.Keydown
-                            [ ( Enter, SelectHighlightedOption )
-                            , ( Backspace, DeleteInputForSingleSelect )
-                            , ( Escape, EscapeKeyInInputFilter )
-                            , ( ArrowUp, MoveHighlightedOptionUp )
-                            , ( ArrowDown, MoveHighlightedOptionDown )
-                            ]
-                            |> Html.Styled.Attributes.fromUnstyled
-                        ]
-                        []
+                    , singleSelectInputField
+                        model.searchString
+                        model.disabled
+                        model.focused
+                        hasOptionSelected
+                        model.valueCasingWidth
                     , case model.rightSlot of
                         ShowNothing ->
                             text ""
@@ -656,6 +646,77 @@ view model =
                     )
                 , dropdown model
                 ]
+
+
+singleSelectInputField : String -> Bool -> Bool -> Bool -> Float -> Html Msg
+singleSelectInputField searchString isDisabled focused hasSelectedOptions valueCasingWidth =
+    let
+        keyboardEvents =
+            Keyboard.on Keyboard.Keydown
+                [ ( Enter, SelectHighlightedOption )
+                , ( Backspace, DeleteInputForSingleSelect )
+                , ( Delete, DeleteInputForSingleSelect )
+                , ( Escape, EscapeKeyInInputFilter )
+                , ( ArrowUp, MoveHighlightedOptionUp )
+                , ( ArrowDown, MoveHighlightedOptionDown )
+                ]
+
+        idAttr =
+            id "input-filter"
+
+        typeAttr =
+            type_ "text"
+
+        onBlurAttr =
+            onBlur InputBlur
+
+        onFocusAttr =
+            onFocus InputFocus
+    in
+    if isDisabled then
+        text ""
+
+    else if hasSelectedOptions then
+        input
+            [ typeAttr
+            , idAttr
+            , onBlurAttr
+            , onFocusAttr
+            , value ""
+            , maxlength 0
+            , css
+                [ if focused then
+                    visibility visible
+
+                  else
+                    visibility hidden
+                , width (px valueCasingWidth)
+                ]
+            , keyboardEvents
+                |> Html.Styled.Attributes.fromUnstyled
+            ]
+            []
+
+    else
+        input
+            [ typeAttr
+            , idAttr
+            , onBlurAttr
+            , onFocusAttr
+            , onInput SearchInputOnInput
+            , value searchString
+            , css
+                [ if focused then
+                    visibility visible
+
+                  else
+                    visibility hidden
+                , width (px valueCasingWidth)
+                ]
+            , keyboardEvents
+                |> Html.Styled.Attributes.fromUnstyled
+            ]
+            []
 
 
 dropdownIndicator : Bool -> Bool -> Bool -> Html Msg
@@ -1061,6 +1122,7 @@ init flags =
                     ( [], errorMessage (Json.Decode.errorToString error) )
     in
     ( { initialValue = initialValues
+      , deleteKeyPressed = False
       , placeholder = flags.placeholder
       , size = flags.size
       , selectionMode = selectionMode
