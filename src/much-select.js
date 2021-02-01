@@ -700,6 +700,15 @@ class MuchSelect extends HTMLElement {
         flex-flow: row nowrap;
       }
 
+      #value-casing:hover, #value-casing:focus {
+        /*
+        TODO: I'm not sure this is the best place or the best way to indicate this
+        "input" is focused.
+        */
+        outline: none;
+        border-color: blue;
+      }
+
       #value-casing.multi {
         flex-flow: row wrap;
       }
@@ -739,6 +748,14 @@ class MuchSelect extends HTMLElement {
           this input.
         */
         border: none;
+      }
+
+      #input-filter:hover, #input-filter:focus {
+        /*
+        We do not want an outline on the input (filter) because we want everything
+        inside of the #value-casing to (kinda) act like a text input.
+        */
+        outline: none;
       }
 
       #value-casing.single {

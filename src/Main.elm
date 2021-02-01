@@ -3,7 +3,8 @@ module Main exposing (..)
 import Browser
 import Css
     exposing
-        ( block
+        ( auto
+        , block
         , display
         , fontSize
         , hidden
@@ -34,6 +35,7 @@ import Html.Styled.Attributes
         , css
         , disabled
         , id
+        , maxlength
         , name
         , tabindex
         , type_
@@ -493,21 +495,13 @@ view model =
                 hasOptions =
                     (List.isEmpty model.options |> not) && String.isEmpty model.searchString
 
-                _ =
-                    Debug.log "hasOptionSelected" hasOptionSelected
-
                 valueStr =
                     if hasOptionSelected then
-                        "hey"
-                        --let
-                        --    _ =
-                        --        Debug.log "hasOptionSelected && not model.deleteKeyPressed" ""
-                        --in
-                        --model.options
-                        --    |> Option.selectedOptionsToTuple
-                        --    |> List.map Tuple.second
-                        --    |> List.head
-                        --    |> Maybe.withDefault ""
+                        model.options
+                            |> Option.selectedOptionsToTuple
+                            |> List.map Tuple.second
+                            |> List.head
+                            |> Maybe.withDefault ""
 
                     else
                         let
@@ -551,41 +545,25 @@ view model =
                     , span
                         [ class "value"
                         , css
-                            [ if model.focused then
-                                display none
+                            [ if hasOptionSelected then
+                                display inline
 
                               else
-                                display inline
-                            , width (px model.valueCasingWidth)
+                                display none
+                            , if model.focused then
+                                width auto
+
+                              else
+                                width (px model.valueCasingWidth)
                             ]
                         ]
                         [ text valueStr ]
-                    , input
-                        [ type_ "text"
-                        , onBlur InputBlur
-                        , onFocus InputFocus
-                        , onInput SearchInputOnInput
-                        , value valueStr
-                        , id "input-filter"
-                        , disabled model.disabled
-                        , css
-                            [ if model.focused then
-                                visibility visible
-
-                              else
-                                visibility hidden
-                            , width (px model.valueCasingWidth)
-                            ]
-                        , Keyboard.on Keyboard.Keydown
-                            [ ( Enter, SelectHighlightedOption )
-                            , ( Backspace, DeleteInputForSingleSelect )
-                            , ( Escape, EscapeKeyInInputFilter )
-                            , ( ArrowUp, MoveHighlightedOptionUp )
-                            , ( ArrowDown, MoveHighlightedOptionDown )
-                            ]
-                            |> Html.Styled.Attributes.fromUnstyled
-                        ]
-                        []
+                    , singleSelectInputField
+                        model.searchString
+                        model.disabled
+                        model.focused
+                        hasOptionSelected
+                        model.valueCasingWidth
                     , case model.rightSlot of
                         ShowNothing ->
                             text ""
@@ -668,6 +646,77 @@ view model =
                     )
                 , dropdown model
                 ]
+
+
+singleSelectInputField : String -> Bool -> Bool -> Bool -> Float -> Html Msg
+singleSelectInputField searchString isDisabled focused hasSelectedOptions valueCasingWidth =
+    let
+        keyboardEvents =
+            Keyboard.on Keyboard.Keydown
+                [ ( Enter, SelectHighlightedOption )
+                , ( Backspace, DeleteInputForSingleSelect )
+                , ( Delete, DeleteInputForSingleSelect )
+                , ( Escape, EscapeKeyInInputFilter )
+                , ( ArrowUp, MoveHighlightedOptionUp )
+                , ( ArrowDown, MoveHighlightedOptionDown )
+                ]
+
+        idAttr =
+            id "input-filter"
+
+        typeAttr =
+            type_ "text"
+
+        onBlurAttr =
+            onBlur InputBlur
+
+        onFocusAttr =
+            onFocus InputFocus
+    in
+    if isDisabled then
+        text ""
+
+    else if hasSelectedOptions then
+        input
+            [ typeAttr
+            , idAttr
+            , onBlurAttr
+            , onFocusAttr
+            , value ""
+            , maxlength 0
+            , css
+                [ if focused then
+                    visibility visible
+
+                  else
+                    visibility hidden
+                , width (px valueCasingWidth)
+                ]
+            , keyboardEvents
+                |> Html.Styled.Attributes.fromUnstyled
+            ]
+            []
+
+    else
+        input
+            [ typeAttr
+            , idAttr
+            , onBlurAttr
+            , onFocusAttr
+            , onInput SearchInputOnInput
+            , value searchString
+            , css
+                [ if focused then
+                    visibility visible
+
+                  else
+                    visibility hidden
+                , width (px valueCasingWidth)
+                ]
+            , keyboardEvents
+                |> Html.Styled.Attributes.fromUnstyled
+            ]
+            []
 
 
 dropdownIndicator : Bool -> Bool -> Bool -> Html Msg
