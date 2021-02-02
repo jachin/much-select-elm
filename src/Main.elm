@@ -390,7 +390,6 @@ update msg model =
                 SingleSelect _ ->
                     if Option.hasSelectedOption model.options then
                         -- if there are ANY selected options, clear them all;
-                        -- this will need to be addressed for multiselect (Jachin mentioned this)
                         clearAllSelectedOption model
 
                     else
@@ -428,14 +427,13 @@ update msg model =
 clearAllSelectedOption : Model -> ( Model, Cmd Msg )
 clearAllSelectedOption model =
     let
-        -- this whole thing likely needs to end up in makeCommandMessagesWhenValuesChanges
         deselectedItems =
             if List.isEmpty <| Option.selectedOptionsToTuple model.options then
-                -- there are no deselected options. Shouldn't ever get here.
+                -- no deselected options
                 []
 
             else
-                -- we have a deselect happening. return the deselected value as a tuple.
+                -- an option has been deselected. return the deselected value as a tuple.
                 Option.selectedOptionsToTuple model.options
 
         deselectEventMsg =
@@ -443,7 +441,6 @@ clearAllSelectedOption model =
                 Cmd.none
 
             else
-                -- encode deselectedItems because deselectItem is a Port to JS
                 deselectItem deselectedItems
     in
     ( { model
