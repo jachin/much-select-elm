@@ -24,8 +24,8 @@
     <li class="main-nav-item"><a href="empty-options.html">Empty Options</a></li>
     <li class="main-nav-item"><a href="dropdown-options.html">Dropdown Options</a></li>
     <li class="main-nav-item"><a href="fancy-characters.html">Fancy Characters</a></li>
-    <li class="main-nav-item"><a href="clear-button.html">Clear Button</a></li>
     <li class="main-nav-item"><a href="custom-options.html">Custom Options</a></li>
+    <li class="main-nav-item"><a href="slots.html">Slots</a></li>
   </ol>
 </nav>
 
@@ -159,62 +159,6 @@
         <option>Green</option>
         <option>Purple</option>
       </select>
-      <svg slot="loading-indicator" width="25" height="25" viewBox="0 0 105 105" xmlns="http://www.w3.org/2000/svg" fill="#000">
-        <circle cx="12.5" cy="12.5" r="12.5">
-          <animate attributeName="fill-opacity"
-                   begin="0s" dur="1s"
-                   values="1;.2;1" calcMode="linear"
-                   repeatCount="indefinite" />
-        </circle>
-        <circle cx="12.5" cy="52.5" r="12.5" fill-opacity=".5">
-          <animate attributeName="fill-opacity"
-                   begin="100ms" dur="1s"
-                   values="1;.2;1" calcMode="linear"
-                   repeatCount="indefinite" />
-        </circle>
-        <circle cx="52.5" cy="12.5" r="12.5">
-          <animate attributeName="fill-opacity"
-                   begin="300ms" dur="1s"
-                   values="1;.2;1" calcMode="linear"
-                   repeatCount="indefinite" />
-        </circle>
-        <circle cx="52.5" cy="52.5" r="12.5">
-          <animate attributeName="fill-opacity"
-                   begin="600ms" dur="1s"
-                   values="1;.2;1" calcMode="linear"
-                   repeatCount="indefinite" />
-        </circle>
-        <circle cx="92.5" cy="12.5" r="12.5">
-          <animate attributeName="fill-opacity"
-                   begin="800ms" dur="1s"
-                   values="1;.2;1" calcMode="linear"
-                   repeatCount="indefinite" />
-        </circle>
-        <circle cx="92.5" cy="52.5" r="12.5">
-          <animate attributeName="fill-opacity"
-                   begin="400ms" dur="1s"
-                   values="1;.2;1" calcMode="linear"
-                   repeatCount="indefinite" />
-        </circle>
-        <circle cx="12.5" cy="92.5" r="12.5">
-          <animate attributeName="fill-opacity"
-                   begin="700ms" dur="1s"
-                   values="1;.2;1" calcMode="linear"
-                   repeatCount="indefinite" />
-        </circle>
-        <circle cx="52.5" cy="92.5" r="12.5">
-          <animate attributeName="fill-opacity"
-                   begin="500ms" dur="1s"
-                   values="1;.2;1" calcMode="linear"
-                   repeatCount="indefinite" />
-        </circle>
-        <circle cx="92.5" cy="92.5" r="12.5">
-          <animate attributeName="fill-opacity"
-                   begin="200ms" dur="1s"
-                   values="1;.2;1" calcMode="linear"
-                   repeatCount="indefinite" />
-        </circle>
-      </svg>
     </much-select>
     <button>Toggle loading attribute</button>
     <script>
@@ -292,7 +236,7 @@
 
     <script>
       const muchSelect = document.querySelector("#remote-api-example much-select");
-      
+
       muchSelect.addEventListener("inputKeyUpDebounced", evt => {
         const searchString = evt.detail.searchString;
         if (searchString.length < 3) {
