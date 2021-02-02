@@ -586,7 +586,7 @@ view model =
                             text ""
 
                         ShowLoadingIndicator ->
-                            node "slot" [ name "loading-indicator" ] []
+                            node "slot" [ name "loading-indicator" ] [ defaultLoadingIndicator ]
 
                         ShowDropdownIndicator ->
                             dropdownIndicator model.focused model.disabled hasOptions
@@ -998,7 +998,9 @@ rightSlotHtml rightSlot focused disabled hasOptionSelected =
             text ""
 
         ShowLoadingIndicator ->
-            node "slot" [ name "loading-indicator" ] []
+            node "slot"
+                [ name "loading-indicator" ]
+                [ defaultLoadingIndicator ]
 
         ShowDropdownIndicator ->
             dropdownIndicator focused disabled hasOptionSelected
@@ -1018,6 +1020,11 @@ rightSlotHtml rightSlot focused disabled hasOptionSelected =
                     [ text "✕"
                     ]
                 ]
+
+
+defaultLoadingIndicator : Html msg
+defaultLoadingIndicator =
+    div [ class "default-loading-indicator" ] []
 
 
 makeCommandMessagesWhenValuesChanges : List Option -> Maybe OptionValue -> Cmd Msg

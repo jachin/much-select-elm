@@ -240,14 +240,12 @@ class MuchSelect extends HTMLElement {
       // User shadow DOM.
       const parentDiv = this.attachShadow({ mode: "open" });
 
-      const elmDiv = document.createElement("div");
-      const selectMenuInputSlot = document.createElement("slot");
-      selectMenuInputSlot.setAttribute("name", "select-input");
+      const html = this.templateTag.content.cloneNode(true);
+      parentDiv.append(html);
 
-      parentDiv.innerHTML = "";
-      parentDiv.appendChild(this.styleTag);
-      parentDiv.appendChild(elmDiv);
-      parentDiv.appendChild(selectMenuInputSlot);
+      const elmDiv = parentDiv.querySelector("#mount-node");
+
+      console.log("elmDiv", elmDiv);
 
       // noinspection JSUnresolvedVariable
       this._app = Elm.Main.init({
@@ -650,10 +648,7 @@ class MuchSelect extends HTMLElement {
 
   // eslint-disable-next-line class-methods-use-this
   get styleTag() {
-    const styleTag = document.createElement("style");
-    styleTag.innerHTML = `
-
-
+    return `<style>
       :host {
         /*
         This web components should take up some space on the page.
@@ -886,9 +881,34 @@ class MuchSelect extends HTMLElement {
         font-size: 0.85rem;
         padding: 3px;
       }
-      .highlight { color: blue }`;
 
-    return styleTag;
+      .highlight { color: blue }
+
+      .default-loading-indicator {
+        height: 18px;
+        width: 18px;
+        border: 5px solid rgba(150, 150, 150, 0.2);
+        border-radius: 50%;
+        border-top-color: rgb(150, 150, 150);
+        animation: rotate 1s 0s infinite ease-in-out alternate;
+      }
+      @keyframes rotate {
+        0%   { transform: rotate(0);      }
+        100% { transform: rotate(360deg); }
+      }
+    </style>`;
+  }
+
+  get templateTag() {
+    const templateTag = document.createElement("template");
+    templateTag.innerHTML = `
+      <div>
+        ${this.styleTag}
+        <slot name="select-input"></slot>
+        <div id="mount-node"></div>
+      </div>
+    `;
+    return templateTag;
   }
 
   updateOptions(options) {

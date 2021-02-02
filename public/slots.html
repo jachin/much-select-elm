@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!--suppress HtmlUnknownTarget -->
+  <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+  <title>Much Select</title>
+  <link href="demo-styles.css" rel="stylesheet">
+</head>
+
+<body>
+
+<h1>Much-Select</h1>
+
+<h2>Demo and Development Playground</h2>
+
+<nav>
+  <ol class="main-nav">
+    <li class="main-nav-item"><a href="index.html">Home</a></li>
+  </ol>
+</nav>
+
+<div class="container">
+
+  <div id="loading-indicator">
+    <h3>Custom Loading Indicator</h3>
+    <p>Use the loading slot to provide a custom loading indicator.</p>
+    <much-select loading="loading">
+      <select slot="select-input">
+        <option>Red</option>
+        <option>Yellow</option>
+        <option>Blue</option>
+        <option>Orange</option>
+        <option>Green</option>
+        <option>Purple</option>
+      </select>
+      <svg slot="loading-indicator" width="25" height="25" viewBox="0 0 105 105" xmlns="http://www.w3.org/2000/svg" fill="#000">
+        <circle cx="12.5" cy="12.5" r="12.5">
+          <animate attributeName="fill-opacity"
+                   begin="0s" dur="1s"
+                   values="1;.2;1" calcMode="linear"
+                   repeatCount="indefinite" />
+        </circle>
+        <circle cx="12.5" cy="52.5" r="12.5" fill-opacity=".5">
+          <animate attributeName="fill-opacity"
+                   begin="100ms" dur="1s"
+                   values="1;.2;1" calcMode="linear"
+                   repeatCount="indefinite" />
+        </circle>
+        <circle cx="52.5" cy="12.5" r="12.5">
+          <animate attributeName="fill-opacity"
+                   begin="300ms" dur="1s"
+                   values="1;.2;1" calcMode="linear"
+                   repeatCount="indefinite" />
+        </circle>
+        <circle cx="52.5" cy="52.5" r="12.5">
+          <animate attributeName="fill-opacity"
+                   begin="600ms" dur="1s"
+                   values="1;.2;1" calcMode="linear"
+                   repeatCount="indefinite" />
+        </circle>
+        <circle cx="92.5" cy="12.5" r="12.5">
+          <animate attributeName="fill-opacity"
+                   begin="800ms" dur="1s"
+                   values="1;.2;1" calcMode="linear"
+                   repeatCount="indefinite" />
+        </circle>
+        <circle cx="92.5" cy="52.5" r="12.5">
+          <animate attributeName="fill-opacity"
+                   begin="400ms" dur="1s"
+                   values="1;.2;1" calcMode="linear"
+                   repeatCount="indefinite" />
+        </circle>
+        <circle cx="12.5" cy="92.5" r="12.5">
+          <animate attributeName="fill-opacity"
+                   begin="700ms" dur="1s"
+                   values="1;.2;1" calcMode="linear"
+                   repeatCount="indefinite" />
+        </circle>
+        <circle cx="52.5" cy="92.5" r="12.5">
+          <animate attributeName="fill-opacity"
+                   begin="500ms" dur="1s"
+                   values="1;.2;1" calcMode="linear"
+                   repeatCount="indefinite" />
+        </circle>
+        <circle cx="92.5" cy="92.5" r="12.5">
+          <animate attributeName="fill-opacity"
+                   begin="200ms" dur="1s"
+                   values="1;.2;1" calcMode="linear"
+                   repeatCount="indefinite" />
+        </circle>
+      </svg>
+    </much-select>
+    <button>Toggle loading attribute</button>
+    <script>
+      document.querySelector("#loading-indicator button").addEventListener("click", () => {
+        const muchSelectElement = document.querySelector("#loading-indicator much-select");
+        if (muchSelectElement.hasAttribute("loading")) {
+          muchSelectElement.removeAttribute("loading");
+        } else {
+          muchSelectElement.setAttribute("loading", "loading");
+        }
+
+      });
+    </script>
+  </div>
+
+</div>
+
+<script src="./index.js"></script>
+</body>
+</html>
