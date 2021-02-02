@@ -54,7 +54,7 @@ port blurInput : () -> Cmd msg
 port focusInput : () -> Cmd msg
 
 
-port deselectItem : () -> Cmd msg
+port deselectItem : List ( String, String ) -> Cmd msg
 
 
 valuesDecoder : Json.Decode.Decoder (List String)

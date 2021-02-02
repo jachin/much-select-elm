@@ -389,10 +389,11 @@ update msg model =
             case model.selectionMode of
                 SingleSelect _ ->
                     if Option.hasSelectedOption model.options then
+                        -- if there are ANY selected options, clear them all;
                         clearAllSelectedOption model
 
                     else
-                        ( model, deselectItem () )
+                        ( model, deselectItem [] )
 
                 MultiSelect _ ->
                     ( model, Cmd.none )
@@ -425,12 +426,32 @@ update msg model =
 
 clearAllSelectedOption : Model -> ( Model, Cmd Msg )
 clearAllSelectedOption model =
+    let
+        deselectedItems =
+            if List.isEmpty <| Option.selectedOptionsToTuple model.options then
+                -- no deselected options
+                []
+
+            else
+                -- an option has been deselected. return the deselected value as a tuple.
+                Option.selectedOptionsToTuple model.options
+
+        deselectEventMsg =
+            if List.isEmpty deselectedItems then
+                Cmd.none
+
+            else
+                deselectItem deselectedItems
+    in
     ( { model
         | options = Option.deselectAllOptionsInOptionsList model.options
         , rightSlot = ShowNothing
         , searchString = ""
       }
-    , makeCommandMessagesWhenValuesChanges [] Nothing
+    , Cmd.batch
+        [ makeCommandMessagesWhenValuesChanges [] Nothing
+        , deselectEventMsg
+        ]
     )
 
 
@@ -504,10 +525,6 @@ view model =
                             |> Maybe.withDefault ""
 
                     else
-                        let
-                            _ =
-                                Debug.log "else" ""
-                        in
                         model.searchString
             in
             div [ id "wrapper", css [ width (px model.valueCasingWidth) ] ]
