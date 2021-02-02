@@ -884,6 +884,12 @@ class MuchSelect extends HTMLElement {
 
       .highlight { color: blue }
 
+      /* This loading indicator was copied (almost exactly)
+        from this article.
+        https://dev.to/devmount/learn-css-animation-by-creating-pure-css-loaders-3lm6
+
+        It was chosen because it was so simple and short.
+      */
       .default-loading-indicator {
         height: 18px;
         width: 18px;
