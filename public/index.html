@@ -286,35 +286,39 @@
     </much-select>
 
     <script>
-      const muchSelect = document.querySelector("#remote-api-example-pt2 much-select");
+      const muchSelect = document.querySelector(
+        "#remote-api-example-pt2 much-select"
+      );
       let possibleOptions = window.much_select_options;
 
-      const searchForOptions = (searchString => {
-          return () => {
-            // only searching against label. description should be searchable at some point.
-            possibleOptions.filter(opt => opt.label.includes(searchString))
-              .forEach(opt => {
-                  muchSelect.addOption(opt);
-                }
-              );
-          }}
-      );
+      const searchForOptions = (searchString) => {
+        return () => {
+          // only searching against label. description should be searchable at some point.
+          possibleOptions
+            .filter((opt) => opt.label.includes(searchString))
+            .forEach((opt) => {
+              muchSelect.addOption(opt);
+            });
+        };
+      };
 
-      muchSelect.addEventListener("ready", evt => {
-        if (muchSelect.getAttribute("selected") && muchSelect.getAttribute("selected").length > 0) {
+      muchSelect.addEventListener("ready", (evt) => {
+        if (
+          muchSelect.getAttribute("selected") &&
+          muchSelect.getAttribute("selected").length > 0
+        ) {
           // search
           const query = muchSelect.getAttribute("selected");
 
           window.setTimeout(searchForOptions(query), 2000);
-
         } else {
-          possibleOptions.forEach(option => {
+          possibleOptions.forEach((option) => {
             muchSelect.addOption(option);
           });
         }
-      })
+      });
 
-      muchSelect.addEventListener("inputKeyUpDebounced", evt => {
+      muchSelect.addEventListener("inputKeyUpDebounced", (evt) => {
         const searchString = evt.detail.searchString;
         if (searchString.length < 3) {
           // Lets not search unless we have at least 3 characters in the search string.
@@ -328,7 +332,7 @@
         // The API is just too fast, slow it down a bit so we can watch
         //  it work.
         window.setTimeout(searchForOptions(searchString), 2000);
-      })
+      });
     </script>
   </div>
 </div>
