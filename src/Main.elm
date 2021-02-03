@@ -72,31 +72,7 @@ import Option
         )
 import OptionPresentor exposing (OptionPresenter)
 import OptionSearcher exposing (bestMatch)
-import Ports
-    exposing
-        ( addItem
-        , addOptionsReceiver
-        , allowCustomOptionsReceiver
-        , blurInput
-        , customOptionSelected
-        , deselectItem
-        , deselectOptionReceiver
-        , disableChangedReceiver
-        , errorMessage
-        , focusInput
-        , inputKeyUp
-        , loadingChangedReceiver
-        , maxDropdownItemsChangedReceiver
-        , optionsChangedReceiver
-        , placeholderChangedReceiver
-        , removeOptionsReceiver
-        , selectOptionReceiver
-        , valueCasingDimensionsChangedReceiver
-        , valueChanged
-        , valueChangedReceiver
-        , valueCleared
-        , valuesDecoder
-        )
+import Ports exposing (addItem, addOptionsReceiver, allowCustomOptionsReceiver, blurInput, customOptionSelected, deselectItem, deselectOptionReceiver, disableChangedReceiver, errorMessage, focusInput, inputKeyUp, loadingChangedReceiver, maxDropdownItemsChangedReceiver, muchSelectIsReady, optionsChangedReceiver, placeholderChangedReceiver, removeOptionsReceiver, selectOptionReceiver, valueCasingDimensionsChangedReceiver, valueChanged, valueChangedReceiver, valueCleared, valuesDecoder)
 import SelectionMode exposing (CustomOptions(..), SelectionMode(..))
 
 
@@ -1176,7 +1152,7 @@ init flags =
       , valueCasingWidth = 100
       , valueCasingHeight = 45
       }
-    , errorCmd
+    , Cmd.batch [ errorCmd, muchSelectIsReady () ]
     )
 
 

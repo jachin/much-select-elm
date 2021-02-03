@@ -245,11 +245,15 @@ class MuchSelect extends HTMLElement {
 
       const elmDiv = parentDiv.querySelector("#mount-node");
 
-
       // noinspection JSUnresolvedVariable
       this._app = Elm.Main.init({
         flags,
         node: elmDiv,
+      });
+
+      // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
+      this._app.ports.muchSelectIsReady.subscribe(() => {
+        this.dispatchEvent(new CustomEvent("ready", { bubbles: true }));
       });
 
       // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall

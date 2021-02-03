@@ -274,6 +274,150 @@
     </script>
   </div>
 
+  <div id="remote-api-example-pt2">
+    <h3>Remote API (Pt 2)</h3>
+    <p>As you type we'll query the remote API for additional options.</p>
+    <p>This dropdown searches the <a href="https://rickandmortyapi.com/">Rick and Morty</a> API for characters from the show by name.</p>
+    <much-select max-dropdown-items="3">
+      <select slot="select-menu-input">
+        <option selected="true">Andorra la Vella</option>
+      </select>
+    </much-select>
+
+    <script>
+      const muchSelect = document.querySelector("#remote-api-example-pt2 much-select");
+
+      const possibleOptions = [
+        "les Escaldes,Andorra,Escaldes-Engordany,3040051",
+        "Andorra la Vella,Andorra,Andorra la Vella,3041563",
+        "Umm al Qaywayn,United Arab Emirates,Umm al Qaywayn,290594",
+        "Ras al-Khaimah,United Arab Emirates,Raʼs al Khaymah,291074",
+        "Khawr Fakkān,United Arab Emirates,Ash Shāriqah,291696",
+        "Dubai,United Arab Emirates,Dubai,292223",
+        "Dibba Al-Fujairah,United Arab Emirates,Al Fujayrah,292231",
+        "Dibba Al-Hisn,United Arab Emirates,Al Fujayrah,292239",
+        "Sharjah,United Arab Emirates,Ash Shāriqah,292672",
+        "Ar Ruways,United Arab Emirates,Abu Dhabi,292688",
+        "Al Fujayrah,United Arab Emirates,Al Fujayrah,292878",
+        "Al Ain,United Arab Emirates,Abu Dhabi,292913",
+        "Ajman,United Arab Emirates,Ajman,292932",
+        "Adh Dhayd,United Arab Emirates,Ash Shāriqah,292953",
+        "Abu Dhabi,United Arab Emirates,Abu Dhabi,292968",
+        "Zaranj,Afghanistan,Nīmrūz,1120985",
+        "Taloqan,Afghanistan,Takhār,1123004",
+        "Shīnḏanḏ,Afghanistan,Herat,1125155",
+        "Shibirghān,Afghanistan,Jowzjān,1125444",
+        "Shahrak,Afghanistan,Ghowr,1125896",
+        "Sar-e Pul,Afghanistan,Sar-e Pol,1127110",
+        "Sang-e Chārak,Afghanistan,Sar-e Pol,1127628",
+        "Aībak,Afghanistan,Samangān,1127768",
+        "Rustāq,Afghanistan,Takhār,1128265",
+        "Qarqīn,Afghanistan,Jowzjān,1129516",
+        "Qarāwul,Afghanistan,Kunduz,1129648",
+        "Pul-e Khumrī,Afghanistan,Wilāyat-e Baghlān,1130490",
+        "Paghmān,Afghanistan,Kabul,1131316",
+        "Nahrīn,Afghanistan,Wilāyat-e Baghlān,1132495",
+        "Maymana,Afghanistan,Faryab,1133453",
+        "Mehtar Lām,Afghanistan,Laghmān,1133574",
+        "Mazār-e Sharīf,Afghanistan,Balkh,1133616",
+        "Lashkar Gāh,Afghanistan,Helmand,1134720",
+        "Kushk,Afghanistan,Herat,1135158",
+        "Kunduz,Afghanistan,Kunduz,1135689",
+        "Khōst,Afghanistan,Khowst,1136469",
+        "Khulm,Afghanistan,Balkh,1136575",
+        "Khāsh,Afghanistan,Nīmrūz,1136863",
+        "Khanabad,Afghanistan,Kunduz,1137168",
+        "Karukh,Afghanistan,Herat,1137807",
+        "Kandahār,Afghanistan,Kandahār,1138336",
+        "Kabul,Afghanistan,Kabul,1138958",
+        "Jalālābād,Afghanistan,Nangarhār,1139715",
+        "Jabal os Saraj,Afghanistan,Parvān,1139807",
+        "Herāt,Afghanistan,Herat,1140026",
+        "Ghormach,Afghanistan,Badghis,1141089",
+        "Ghazni,Afghanistan,Ghaznī,1141269",
+        "Gereshk,Afghanistan,Helmand,1141540",
+        "Gardēz,Afghanistan,Paktia,1141857",
+        "Fayzabad,Afghanistan,Badakhshan,1142170",
+        "Farah,Afghanistan,Farah,1142264",
+        "Kafir Qala,Afghanistan,Herat,1142404",
+        "Charikar,Afghanistan,Parvān,1145352",
+        "Barakī Barak,Afghanistan,Lowgar,1147066",
+        "Bāmyān,Afghanistan,Bāmīān,1147242",
+        "Balkh,Afghanistan,Balkh,1147290",
+        "Baghlān,Afghanistan,Wilāyat-e Baghlān,1147540",
+        "Ārt Khwājah,Afghanistan,Takhār,1148106",
+        "Āsmār,Afghanistan,Konar,1148205",
+        "Asadābād,Afghanistan,Konar,1148311",
+        "Andkhōy,Afghanistan,Faryab,1148658",
+        "Bāzārak,Afghanistan,Panjshir,1429434",
+        "Markaz-e Woluswalī-ye Āchīn,Afghanistan,Nangarhār,1469706",
+        "Saint John’s,Antigua and Barbuda,Saint John,3576022",
+        "The Valley,Anguilla,N/A,3573374",
+        "Sarandë,Albania,Vlorë,363243",
+        "Kukës,Albania,Kukës,782661",
+        "Korçë,Albania,Korçë,782756",
+        "Gjirokastër,Albania,Gjirokastër,783148",
+        "Elbasan,Albania,Elbasan,783263",
+        "Burrel,Albania,Dibër,783493",
+        "Vlorë,Albania,Vlorë,3183719",
+        "Tirana,Albania,Tiranë,3183875",
+        "Shkodër,Albania,Shkodër,3184081",
+        "Patos Fshat,Albania,Fier,3184517",
+        "Lushnjë,Albania,Fier,3184862",
+        "Lezhë,Albania,Lezhë,3184935",
+        "Laç,Albania,Lezhë,3185012",
+        "Kuçovë,Albania,Berat,3185060",
+        "Krujë,Albania,Durrës,3185082",
+        "Kavajë,Albania,Tiranë,3185211",
+        "Fier-Çifçi,Albania,Fier,3185670",
+        "Fier,Albania,Fier,3185672",
+        "Durrës,Albania,Durrës,3185728",
+        "Berat,Albania,Berat,3186084",
+        "Kapan,Armenia,Syunik Province,174875",
+        "Goris,Armenia,Syunik Province,174895",
+      ];
+      const searchForOptions = (searchString => {
+          return () => {
+            possibleOptions.filter(s => s.includes(searchString))
+              .forEach(s => {
+                  console.log("s", s);
+                  muchSelect.addOption({ value: s });
+                }
+              );
+          }}
+      );
+
+      muchSelect.addEventListener("ready", evt => {
+        if (muchSelect.getAttribute("selected") && muchSelect.getAttribute("selected").length > 0) {
+          // search
+          const query = muchSelect.getAttribute("selected");
+
+          window.setTimeout(searchForOptions(query), 2000);
+
+        } else {
+          possibleOptions.slice(0, 29).forEach(option => {
+            muchSelect.addOption({ value: option });
+          });
+        }
+      })
+
+      muchSelect.addEventListener("inputKeyUpDebounced", evt => {
+        const searchString = evt.detail.searchString;
+        if (searchString.length < 3) {
+          // Lets not search unless we have at least 3 characters in the search string.
+          return;
+        }
+
+        // This could take a while, so the user knows something is going on
+        //  lets throw up the loading indicator.
+        muchSelect.loading = true;
+
+        // The API is just too fast, slow it down a bit so we can watch
+        //  it work.
+        window.setTimeout(searchForOptions(searchString), 2000);
+      })
+    </script>
+  </div>
 </div>
 
 <script src="./index.js"></script>
