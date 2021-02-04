@@ -369,7 +369,7 @@ update msg model =
                         clearAllSelectedOption model
 
                     else
-                        ( model, deselectItem [] )
+                        ( model, Cmd.none )
 
                 MultiSelect _ ->
                     ( model, Cmd.none )
