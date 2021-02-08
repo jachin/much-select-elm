@@ -3,7 +3,7 @@
     flex-wrap: wrap;
     align-content: center;
     align-items: flex-start;
-    justify-content: space-between;
+    justify-content: space-around;
 }
 
 .container > div {
@@ -16,17 +16,28 @@
 }
 
 nav {
-    border-bottom: 1px solid black;
+    width: 100vw;
+    padding: 1em;
+    background-color: aliceblue;
 }
 
-.main-nav ol {
+ol.main-nav {
+    margin: 0;
+    display: flex;
+}
+
+ol.main-nav > li {
     list-style-type: none;
-    padding-left: 0;
 }
 
-.main-nav-item {
-    display: inline-block;
+ol.main-nav > li > a {
+    padding: 1em;
 }
+
+ol.main-nav > li > a:hover {
+    background-color: powderblue;
+}
+
 
 much-select:not(:defined) {
     visibility: hidden;
