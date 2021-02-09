@@ -857,7 +857,6 @@ class MuchSelect extends HTMLElement {
       #dropdown {
         background-color: #EEEEEE;
         visibility: hidden;
-        padding: 5px;
         position: absolute;
         left: 0;
         font-size: 20px;
