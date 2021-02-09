@@ -38,6 +38,7 @@ import Html.Styled.Attributes
         , id
         , maxlength
         , name
+        , placeholder
         , style
         , tabindex
         , type_
@@ -559,17 +560,6 @@ view model =
                         ]
                     ]
                     [ span
-                        [ class "placeholder"
-                        , css
-                            [ if showPlaceholder then
-                                display inline
-
-                              else
-                                display none
-                            ]
-                        ]
-                        [ text model.placeholder ]
-                    , span
                         [ class "value"
                         , css
                             [ if hasOptionSelected then
@@ -589,6 +579,7 @@ view model =
                         model.searchString
                         model.disabled
                         model.focused
+                        model.placeholder
                         hasOptionSelected
                     , case model.rightSlot of
                         ShowNothing ->
@@ -674,8 +665,8 @@ view model =
                 ]
 
 
-singleSelectInputField : String -> Bool -> Bool -> Bool -> Html Msg
-singleSelectInputField searchString isDisabled focused hasSelectedOptions =
+singleSelectInputField : String -> Bool -> Bool -> String -> Bool -> Html Msg
+singleSelectInputField searchString isDisabled focused placeholder_ hasSelectedOptions =
     let
         keyboardEvents =
             Keyboard.on Keyboard.Keydown
@@ -698,11 +689,25 @@ singleSelectInputField searchString isDisabled focused hasSelectedOptions =
 
         onFocusAttr =
             onFocus InputFocus
+
+        showPlaceholder =
+            not hasSelectedOptions && not focused
+
+        placeholderAttribute =
+            if showPlaceholder then
+                placeholder placeholder_
+
+            else
+                style "" ""
+
+        showInput =
+            showPlaceholder || focused
     in
     if isDisabled then
         input
             [ disabled True
             , idAttr
+            , placeholderAttribute
             ]
             []
 
@@ -714,8 +719,9 @@ singleSelectInputField searchString isDisabled focused hasSelectedOptions =
             , onFocusAttr
             , value ""
             , maxlength 0
+            , placeholderAttribute
             , css
-                [ if focused then
+                [ if showInput then
                     visibility visible
 
                   else
@@ -735,8 +741,9 @@ singleSelectInputField searchString isDisabled focused hasSelectedOptions =
             , onFocusAttr
             , onInput SearchInputOnInput
             , value searchString
+            , placeholderAttribute
             , css
-                [ if focused then
+                [ if showInput then
                     visibility visible
 
                   else

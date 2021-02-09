@@ -734,7 +734,6 @@ class MuchSelect extends HTMLElement {
       #value-casing .placeholder {
         color: silver;
         font-size: 25px;
-        vertical-align: middle;
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
@@ -769,6 +768,7 @@ class MuchSelect extends HTMLElement {
         inside of the #value-casing to (kinda) act like a text input.
         */
         outline: none;
+        background: none;
       }
 
       #input-filter:disabled {
