@@ -187,6 +187,13 @@ class MuchSelect extends HTMLElement {
         })
       );
     });
+
+    // noinspection JSUnresolvedFunction
+    this._resizeObserver = new ResizeObserver(() => {
+      // When the size changes we need to tell Elm so it can
+      //  adjust things like the width of the dropdown.
+      this.updateDimensions();
+    });
   }
 
   static get observedAttributes() {
@@ -250,6 +257,9 @@ class MuchSelect extends HTMLElement {
         flags,
         node: elmDiv,
       });
+
+      const wrapperDiv = parentDiv.querySelector("#wrapper");
+      this._resizeObserver.observe(wrapperDiv);
 
       // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
       this._app.ports.muchSelectIsReady.subscribe(() => {
@@ -349,6 +359,12 @@ class MuchSelect extends HTMLElement {
     }
   }
 
+  // noinspection JSUnusedGlobalSymbols
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this._resizeObserver.disconnect();
+  }
+
   _onSlotChange() {
     const selectElement = this.querySelector("select");
     if (selectElement) {
@@ -376,10 +392,9 @@ class MuchSelect extends HTMLElement {
    */
   updateDimensions() {
     window.requestAnimationFrame(() => {
-      const dropdownElement = this.shadowRoot.getElementById("dropdown");
       const valueCasingElement = this.shadowRoot.getElementById("value-casing");
-      if (dropdownElement && valueCasingElement) {
-        let width = dropdownElement.offsetWidth;
+      if (valueCasingElement) {
+        let width = valueCasingElement.offsetWidth;
         let height = valueCasingElement.offsetHeight;
 
         // Clamp the width between some min and max.
@@ -651,6 +666,7 @@ class MuchSelect extends HTMLElement {
 
   // eslint-disable-next-line class-methods-use-this
   get styleTag() {
+    // noinspection CssInvalidPropertyValue
     return `<style>
       :host {
         /*
@@ -677,7 +693,7 @@ class MuchSelect extends HTMLElement {
         margin-top: auto;
         margin-bottom: auto;
         position: relative;
-        max-width: 400px;
+        width: 100%;
         min-width: 200px;
       }
 
@@ -723,11 +739,10 @@ class MuchSelect extends HTMLElement {
       #value-casing .placeholder {
         color: silver;
         font-size: 25px;
-        vertical-align: middle;
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
-        flex-basis: 1;
+        flex-basis: auto;
       }
 
       #value-casing #input-filter {
@@ -758,6 +773,17 @@ class MuchSelect extends HTMLElement {
         inside of the #value-casing to (kinda) act like a text input.
         */
         outline: none;
+        background: none;
+      }
+
+      #input-filter:disabled {
+        /*
+        Removing the default background color on the disabled input.
+        We might want to do some additional styling for "disabled"
+        much-selects but that should probably happen on the value-casing
+        div.
+        */
+        background: none;
       }
 
       #value-casing.single {
@@ -784,8 +810,7 @@ class MuchSelect extends HTMLElement {
         background-repeat: repeat-x;
         margin: 2px 2px;
         border-radius: 5px;
-        border: 3px solid;
-        border-color: #d99477;
+        border: 3px solid #d99477;
         min-width: 10px;
 
         flex-grow: 0;
@@ -816,7 +841,7 @@ class MuchSelect extends HTMLElement {
       }
 
       #dropdown-indicator.up {
-        transform: rotate(none);
+        transform: rotate(0deg);
       }
 
       slot[name='loading-indicator'] {
@@ -837,9 +862,8 @@ class MuchSelect extends HTMLElement {
       #dropdown {
         background-color: #EEEEEE;
         visibility: hidden;
-        padding: 5px;
         position: absolute;
-        left: 0px;
+        left: 0;
         font-size: 20px;
         min-width: 200px;
         display: inline-block;

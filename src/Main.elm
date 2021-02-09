@@ -11,6 +11,7 @@ import Css
         , inline
         , lineHeight
         , none
+        , pct
         , px
         , top
         , visibility
@@ -37,6 +38,8 @@ import Html.Styled.Attributes
         , id
         , maxlength
         , name
+        , placeholder
+        , style
         , tabindex
         , type_
         , value
@@ -480,6 +483,14 @@ updateRightSlotLoading isLoading selectionMode hasSelectedOption =
 
 view : Model -> Html Msg
 view model =
+    let
+        tabIndexAttribute =
+            if model.disabled then
+                style "" ""
+
+            else
+                tabindex 0
+    in
     case model.selectionMode of
         SingleSelect _ ->
             let
@@ -503,12 +514,12 @@ view model =
                     else
                         model.searchString
             in
-            div [ id "wrapper", css [ width (px model.valueCasingWidth) ] ]
+            div [ id "wrapper", css [ width (pct 100.0) ] ]
                 [ div
                     [ id "value-casing"
                     , onMouseDown BringInputInFocus
                     , onFocus BringInputInFocus
-                    , tabindex 0
+                    , tabIndexAttribute
                     , classList
                         [ ( "placeholder", showPlaceholder )
                         , ( "value", hasOptionSelected )
@@ -521,21 +532,10 @@ view model =
 
                           else
                             display block
-                        , width (px model.valueCasingWidth)
+                        , width (pct 100.0)
                         ]
                     ]
                     [ span
-                        [ class "placeholder"
-                        , css
-                            [ if showPlaceholder then
-                                display inline
-
-                              else
-                                display none
-                            ]
-                        ]
-                        [ text model.placeholder ]
-                    , span
                         [ class "value"
                         , css
                             [ if hasOptionSelected then
@@ -547,7 +547,7 @@ view model =
                                 width auto
 
                               else
-                                width (px model.valueCasingWidth)
+                                width (pct 100.0)
                             ]
                         ]
                         [ text valueStr ]
@@ -555,8 +555,8 @@ view model =
                         model.searchString
                         model.disabled
                         model.focused
+                        model.placeholder
                         hasOptionSelected
-                        model.valueCasingWidth
                     , case model.rightSlot of
                         ShowNothing ->
                             text ""
@@ -610,14 +610,14 @@ view model =
                         , ( Backspace, DeleteSelectedAndHighlightedValues )
                         ]
                         |> Html.Styled.Attributes.fromUnstyled
-                    , tabindex 0
+                    , tabIndexAttribute
                     , classList
                         [ ( "placeholder", showPlaceholder )
                         , ( "multi", True )
                         , ( "disabled", model.disabled )
                         ]
                     , css
-                        [ width (px model.valueCasingWidth)
+                        [ width (pct 100.0)
                         ]
                     ]
                     ([ span
@@ -641,8 +641,8 @@ view model =
                 ]
 
 
-singleSelectInputField : String -> Bool -> Bool -> Bool -> Float -> Html Msg
-singleSelectInputField searchString isDisabled focused hasSelectedOptions valueCasingWidth =
+singleSelectInputField : String -> Bool -> Bool -> String -> Bool -> Html Msg
+singleSelectInputField searchString isDisabled focused placeholder_ hasSelectedOptions =
     let
         keyboardEvents =
             Keyboard.on Keyboard.Keydown
@@ -665,9 +665,27 @@ singleSelectInputField searchString isDisabled focused hasSelectedOptions valueC
 
         onFocusAttr =
             onFocus InputFocus
+
+        showPlaceholder =
+            not hasSelectedOptions && not focused
+
+        placeholderAttribute =
+            if showPlaceholder then
+                placeholder placeholder_
+
+            else
+                style "" ""
+
+        showInput =
+            showPlaceholder || focused
     in
     if isDisabled then
-        text ""
+        input
+            [ disabled True
+            , idAttr
+            , placeholderAttribute
+            ]
+            []
 
     else if hasSelectedOptions then
         input
@@ -677,13 +695,14 @@ singleSelectInputField searchString isDisabled focused hasSelectedOptions valueC
             , onFocusAttr
             , value ""
             , maxlength 0
+            , placeholderAttribute
             , css
-                [ if focused then
+                [ if showInput then
                     visibility visible
 
                   else
                     visibility hidden
-                , width (px valueCasingWidth)
+                , width (pct 100.0)
                 ]
             , keyboardEvents
                 |> Html.Styled.Attributes.fromUnstyled
@@ -698,13 +717,14 @@ singleSelectInputField searchString isDisabled focused hasSelectedOptions valueC
             , onFocusAttr
             , onInput SearchInputOnInput
             , value searchString
+            , placeholderAttribute
             , css
-                [ if focused then
+                [ if showInput then
                     visibility visible
 
                   else
                     visibility hidden
-                , width (px valueCasingWidth)
+                , width (pct 100.0)
                 ]
             , keyboardEvents
                 |> Html.Styled.Attributes.fromUnstyled
@@ -735,17 +755,31 @@ dropdown model =
                 DropdownMouseClickOption
                 model.selectionMode
                 (OptionPresentor.prepareOptionsForPresentation model.maxDropdownItems model.searchString model.options)
+
+        dropdownCss =
+            css
+                [ top (px model.valueCasingHeight)
+                , width (px model.valueCasingWidth)
+                ]
     in
-    if model.showDropdown && not (List.isEmpty model.options) && not (List.isEmpty optionsHtml) then
+    if model.disabled then
+        text ""
+
+    else if model.showDropdown && not (List.isEmpty model.options) && not (List.isEmpty optionsHtml) then
         div
             [ id "dropdown"
             , class "showing"
-            , css [ top (px model.valueCasingHeight) ]
+            , dropdownCss
             ]
             optionsHtml
 
     else
-        div [ id "dropdown", class "hiding", css [ top (px model.valueCasingHeight) ] ] optionsHtml
+        div
+            [ id "dropdown"
+            , class "hiding"
+            , dropdownCss
+            ]
+            optionsHtml
 
 
 optionsToDropdownOptions :
