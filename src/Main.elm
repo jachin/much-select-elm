@@ -11,6 +11,7 @@ import Css
         , inline
         , lineHeight
         , none
+        , pct
         , px
         , top
         , visibility
@@ -527,7 +528,7 @@ view model =
                     else
                         model.searchString
             in
-            div [ id "wrapper", css [ width (px model.valueCasingWidth) ] ]
+            div [ id "wrapper", css [ width (pct 100.0) ] ]
                 [ div
                     [ id "value-casing"
                     , onMouseDown BringInputInFocus
@@ -545,7 +546,7 @@ view model =
 
                           else
                             display block
-                        , width (px model.valueCasingWidth)
+                        , width (pct 100.0)
                         ]
                     ]
                     [ span
@@ -571,7 +572,7 @@ view model =
                                 width auto
 
                               else
-                                width (px model.valueCasingWidth)
+                                width (pct 100.0)
                             ]
                         ]
                         [ text valueStr ]
@@ -580,7 +581,6 @@ view model =
                         model.disabled
                         model.focused
                         hasOptionSelected
-                        model.valueCasingWidth
                     , case model.rightSlot of
                         ShowNothing ->
                             text ""
@@ -641,7 +641,7 @@ view model =
                         , ( "disabled", model.disabled )
                         ]
                     , css
-                        [ width (px model.valueCasingWidth)
+                        [ width (pct 100.0)
                         ]
                     ]
                     ([ span
@@ -665,8 +665,8 @@ view model =
                 ]
 
 
-singleSelectInputField : String -> Bool -> Bool -> Bool -> Float -> Html Msg
-singleSelectInputField searchString isDisabled focused hasSelectedOptions valueCasingWidth =
+singleSelectInputField : String -> Bool -> Bool -> Bool -> Html Msg
+singleSelectInputField searchString isDisabled focused hasSelectedOptions =
     let
         keyboardEvents =
             Keyboard.on Keyboard.Keydown
@@ -691,7 +691,11 @@ singleSelectInputField searchString isDisabled focused hasSelectedOptions valueC
             onFocus InputFocus
     in
     if isDisabled then
-        text ""
+        input
+            [ disabled True
+            , idAttr
+            ]
+            []
 
     else if hasSelectedOptions then
         input
@@ -707,7 +711,7 @@ singleSelectInputField searchString isDisabled focused hasSelectedOptions valueC
 
                   else
                     visibility hidden
-                , width (px valueCasingWidth)
+                , width (pct 100.0)
                 ]
             , keyboardEvents
                 |> Html.Styled.Attributes.fromUnstyled
@@ -728,7 +732,7 @@ singleSelectInputField searchString isDisabled focused hasSelectedOptions valueC
 
                   else
                     visibility hidden
-                , width (px valueCasingWidth)
+                , width (pct 100.0)
                 ]
             , keyboardEvents
                 |> Html.Styled.Attributes.fromUnstyled
@@ -759,17 +763,31 @@ dropdown model =
                 DropdownMouseClickOption
                 model.selectionMode
                 (OptionPresentor.prepareOptionsForPresentation model.maxDropdownItems model.searchString model.options)
+
+        dropdownCss =
+            css
+                [ top (px model.valueCasingHeight)
+                , width (px model.valueCasingWidth)
+                ]
     in
-    if model.showDropdown && not (List.isEmpty model.options) && not (List.isEmpty optionsHtml) then
+    if model.disabled then
+        text ""
+
+    else if model.showDropdown && not (List.isEmpty model.options) && not (List.isEmpty optionsHtml) then
         div
             [ id "dropdown"
             , class "showing"
-            , css [ top (px model.valueCasingHeight) ]
+            , dropdownCss
             ]
             optionsHtml
 
     else
-        div [ id "dropdown", class "hiding", css [ top (px model.valueCasingHeight) ] ] optionsHtml
+        div
+            [ id "dropdown"
+            , class "hiding"
+            , dropdownCss
+            ]
+            optionsHtml
 
 
 optionsToDropdownOptions :
