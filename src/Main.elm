@@ -38,6 +38,7 @@ import Html.Styled.Attributes
         , id
         , maxlength
         , name
+        , style
         , tabindex
         , type_
         , value
@@ -505,6 +506,14 @@ updateRightSlotLoading isLoading selectionMode hasSelectedOption =
 
 view : Model -> Html Msg
 view model =
+    let
+        tabIndexAttribute =
+            if model.disabled then
+                style "" ""
+
+            else
+                tabindex 0
+    in
     case model.selectionMode of
         SingleSelect _ ->
             let
@@ -533,7 +542,7 @@ view model =
                     [ id "value-casing"
                     , onMouseDown BringInputInFocus
                     , onFocus BringInputInFocus
-                    , tabindex 0
+                    , tabIndexAttribute
                     , classList
                         [ ( "placeholder", showPlaceholder )
                         , ( "value", hasOptionSelected )
@@ -634,7 +643,7 @@ view model =
                         , ( Backspace, DeleteSelectedAndHighlightedValues )
                         ]
                         |> Html.Styled.Attributes.fromUnstyled
-                    , tabindex 0
+                    , tabIndexAttribute
                     , classList
                         [ ( "placeholder", showPlaceholder )
                         , ( "multi", True )

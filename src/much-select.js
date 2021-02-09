@@ -772,6 +772,12 @@ class MuchSelect extends HTMLElement {
       }
 
       #input-filter:disabled {
+        /*
+        Removing the default background color on the disabled input.
+        We might want to do some additional styling for "disabled"
+        much-selects but that should probably happen on the value-casing
+        div.
+        */
         background: none;
       }
 
