@@ -13,11 +13,12 @@
     flex-shrink: 1;
     flex-basis: 20%;
     border: 1px solid black;
+    display: flex;
+    flex-direction: column;
 }
 
 nav {
-    width: 100vw;
-    padding: 1em;
+    padding: 1em 0;
     background-color: aliceblue;
 }
 

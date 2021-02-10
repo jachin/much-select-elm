@@ -538,42 +538,24 @@ view model =
                     else
                         model.searchString
             in
-            div [ id "wrapper", css [ width (pct 100.0) ] ]
+            div [ id "wrapper" ]
                 [ div
                     [ id "value-casing"
                     , onMouseDown BringInputInFocus
                     , onFocus BringInputInFocus
                     , tabIndexAttribute
                     , classList
-                        [ ( "placeholder", showPlaceholder )
-                        , ( "value", hasOptionSelected )
+                        [ ( "show-placeholder", showPlaceholder )
+                        , ( "has-option-selected", hasOptionSelected )
+                        , ( "no-option-selected", not hasOptionSelected )
                         , ( "single", True )
                         , ( "disabled", model.disabled )
-                        ]
-                    , css
-                        [ if model.focused then
-                            display none
-
-                          else
-                            display block
-                        , width (pct 100.0)
+                        , ( "focused", model.focused )
+                        , ( "not-focused", model.focused )
                         ]
                     ]
                     [ span
-                        [ class "value"
-                        , css
-                            [ if hasOptionSelected then
-                                display inline
-
-                              else
-                                display none
-                            , if model.focused then
-                                width auto
-
-                              else
-                                width (pct 100.0)
-                            ]
-                        ]
+                        [ id "selected-value" ]
                         [ text valueStr ]
                     , singleSelectInputField
                         model.searchString
@@ -720,14 +702,6 @@ singleSelectInputField searchString isDisabled focused placeholder_ hasSelectedO
             , value ""
             , maxlength 0
             , placeholderAttribute
-            , css
-                [ if showInput then
-                    visibility visible
-
-                  else
-                    visibility hidden
-                , width (pct 100.0)
-                ]
             , keyboardEvents
                 |> Html.Styled.Attributes.fromUnstyled
             ]
@@ -742,14 +716,6 @@ singleSelectInputField searchString isDisabled focused placeholder_ hasSelectedO
             , onInput SearchInputOnInput
             , value searchString
             , placeholderAttribute
-            , css
-                [ if showInput then
-                    visibility visible
-
-                  else
-                    visibility hidden
-                , width (pct 100.0)
-                ]
             , keyboardEvents
                 |> Html.Styled.Attributes.fromUnstyled
             ]
