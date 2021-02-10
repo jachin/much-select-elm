@@ -759,6 +759,13 @@ class MuchSelect extends HTMLElement {
           this input.
         */
         border: none;
+
+        /*
+        We do not want an outline on the input (filter) because we want everything
+        inside of the #value-casing to (kinda) act like a text input.
+        */
+        outline: none;
+        background: none;
       }
 
       #input-filter:hover, #input-filter:focus {
@@ -767,7 +774,7 @@ class MuchSelect extends HTMLElement {
         inside of the #value-casing to (kinda) act like a text input.
         */
         outline: none;
-        background: none;
+        background: white;
       }
 
       #input-filter:disabled {
