@@ -748,7 +748,6 @@ class MuchSelect extends HTMLElement {
         The with width lets it grow as much as it can.
         */
         min-width: 10px;
-        /*width: 100%;*/
         /* Let's give the input a bit more room than the selected values.
         */
         flex-grow: 3;
