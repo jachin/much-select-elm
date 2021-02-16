@@ -18,17 +18,20 @@
 }
 
 nav {
-    padding: 1em 0;
+    padding: 0.5em;
     background-color: aliceblue;
 }
 
 ol.main-nav {
-    margin: 0;
+    margin: 0.5em;
     display: flex;
+    flex-wrap: wrap;
 }
 
 ol.main-nav > li {
+    margin: 0.5em;
     list-style-type: none;
+    white-space: nowrap;
 }
 
 ol.main-nav > li > a {
