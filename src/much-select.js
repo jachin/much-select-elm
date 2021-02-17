@@ -136,6 +136,15 @@ class MuchSelect extends HTMLElement {
     super();
 
     /**
+     * Used in the CSS and elsewhere to determine what the
+     *  minium width should be.
+     * TODO Perhaps this should be a property or attribute.
+     * @type {number}
+     * @private
+     */
+    this._minimunWidth = 200;
+
+    /**
      * @type {string|null}
      * @private
      */
@@ -392,12 +401,9 @@ class MuchSelect extends HTMLElement {
         let width = valueCasingElement.offsetWidth;
         let height = valueCasingElement.offsetHeight;
 
-        // Clamp the width between some min and max.
-        // TODO this min and max should probably not be hard coded here.
-        if (width < 100) {
-          width = 100;
-        } else if (width > 500) {
-          width = 500;
+        // Prevent the width from falling below some threshold.
+        if (width < this._minimunWidth) {
+          width = this._minimunWidth;
         }
 
         // Clamp the width between some min and max.
@@ -673,7 +679,7 @@ class MuchSelect extends HTMLElement {
         */
 
         min-height: 40px;
-        min-width: 200px;
+        min-width: ${this._minimunWidth}px;
       }
 
       /*
@@ -688,7 +694,7 @@ class MuchSelect extends HTMLElement {
         margin-top: auto;
         margin-bottom: auto;
         position: relative;
-        min-width: 200px;
+        min-width: ${this._minimunWidth}px;
       }
 
       /*
@@ -861,7 +867,6 @@ class MuchSelect extends HTMLElement {
         position: absolute;
         left: 0;
         font-size: 20px;
-        min-width: 200px;
         display: inline-block;
         z-index: 10;
         max-height: 300px;
