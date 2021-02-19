@@ -137,7 +137,7 @@ class MuchSelect extends HTMLElement {
 
     /**
      * Used in the CSS and elsewhere to determine what the
-     *  minium width should be.
+     *  minimum width should be.
      * TODO Perhaps this should be a property or attribute.
      * @type {number}
      * @private
@@ -249,42 +249,29 @@ class MuchSelect extends HTMLElement {
 
   // noinspection JSUnusedGlobalSymbols
   connectedCallback() {
-    // eslint-disable-next-line no-useless-catch
-    try {
-      const flags = this.buildFlags();
-
-      // User shadow DOM.
-      const parentDiv = this.attachShadow({ mode: "open" });
-
-      const html = this.templateTag.content.cloneNode(true);
-      parentDiv.append(html);
-
-      const elmDiv = parentDiv.querySelector("#mount-node");
-
-      // noinspection JSUnresolvedVariable
-      this._app = Elm.Main.init({
-        flags,
-        node: elmDiv,
-      });
-
+    this.parentDivPromise.then((parentDiv) => {
       const wrapperDiv = parentDiv.querySelector("#wrapper");
       this._resizeObserver.observe(wrapperDiv);
+    });
 
-      // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
-      this._app.ports.muchSelectIsReady.subscribe(() => {
-        this.dispatchEvent(new CustomEvent("ready", { bubbles: true }));
-      });
+    // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
+    this._app.ports.muchSelectIsReady.subscribe(() => {
+      this.dispatchEvent(new CustomEvent("ready", { bubbles: true }));
+    });
 
-      // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
-      this._app.ports.errorMessage.subscribe(this.errorHandler.bind(this));
+    // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
+    this.appPromise.then((app) =>
+      app.ports.errorMessage.subscribe(this.errorHandler.bind(this))
+    );
 
-      // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
-      this._app.ports.valueChanged.subscribe(
-        this.valueChangedHandler.bind(this)
-      );
+    // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
+    this.appPromise.then((app) =>
+      app.ports.valueChanged.subscribe(this.valueChangedHandler.bind(this))
+    );
 
-      // noinspection JSUnresolvedVariable
-      this._app.ports.addItem.subscribe((valueLabelPair) => {
+    // noinspection JSUnresolvedVariable
+    this.appPromise.then((app) =>
+      app.ports.addItem.subscribe((valueLabelPair) => {
         this.dispatchEvent(
           new CustomEvent("addItem", {
             bubbles: true,
@@ -294,10 +281,12 @@ class MuchSelect extends HTMLElement {
             },
           })
         );
-      });
+      })
+    );
 
-      // noinspection JSUnresolvedVariable
-      this._app.ports.inputKeyUp.subscribe((searchString) => {
+    // noinspection JSUnresolvedVariable
+    this.appPromise.then((app) =>
+      app.ports.inputKeyUp.subscribe((searchString) => {
         this.dispatchEvent(
           new CustomEvent("inputKeyUp", {
             bubbles: true,
@@ -306,34 +295,42 @@ class MuchSelect extends HTMLElement {
         );
 
         this._inputKeypressDebounceHandler(searchString);
-      });
+      })
+    );
 
-      // noinspection JSUnresolvedVariable
-      this._app.ports.valueCleared.subscribe(() => {
+    // noinspection JSUnresolvedVariable
+    this.appPromise.then((app) =>
+      app.ports.valueCleared.subscribe(() => {
         this.dispatchEvent(
           new CustomEvent("valueCleared", {
             bubbles: true,
           })
         );
-      });
+      })
+    );
 
-      // noinspection JSUnresolvedVariable
-      this._app.ports.customOptionSelected.subscribe(
+    // noinspection JSUnresolvedVariable
+    this.appPromise.then((app) =>
+      app.ports.customOptionSelected.subscribe(
         this.customOptionSelected.bind(this)
-      );
+      )
+    );
 
-      // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
-      this._app.ports.blurInput.subscribe(() => {
+    // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
+    this.appPromise.then((app) =>
+      app.ports.blurInput.subscribe(() => {
         const inputFilterElement = this.shadowRoot.getElementById(
           "input-filter"
         );
         if (inputFilterElement) {
           inputFilterElement.blur();
         }
-      });
+      })
+    );
 
-      // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
-      this._app.ports.focusInput.subscribe(() => {
+    // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
+    this.appPromise.then((app) =>
+      app.ports.focusInput.subscribe(() => {
         window.requestAnimationFrame(() => {
           const inputFilterElement = this.shadowRoot.getElementById(
             "input-filter"
@@ -342,10 +339,12 @@ class MuchSelect extends HTMLElement {
             this.shadowRoot.getElementById("input-filter").focus();
           }
         });
-      });
+      })
+    );
 
-      // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
-      this._app.ports.deselectItem.subscribe((deselectedValue) => {
+    // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
+    this.appPromise.then((app) =>
+      app.ports.deselectItem.subscribe((deselectedValue) => {
         const formattedValue = {
           label: deselectedValue[0][1],
           value: deselectedValue[0][0],
@@ -356,15 +355,12 @@ class MuchSelect extends HTMLElement {
             detail: formattedValue,
           })
         );
-      });
+      })
+    );
 
-      const slot = this.shadowRoot.querySelector("slot[name=select-input]");
-      if (slot) {
-        slot.addEventListener("slotchange", this._onSlotChange);
-      }
-    } catch (error) {
-      // TODO Do something interesting here
-      throw error;
+    const slot = this.shadowRoot.querySelector("slot[name=select-input]");
+    if (slot) {
+      slot.addEventListener("slotchange", this._onSlotChange);
     }
   }
 
@@ -550,6 +546,44 @@ class MuchSelect extends HTMLElement {
     }
   }
 
+  get appPromise() {
+    if (this._appPromise) {
+      return this._appPromise;
+    }
+    this._appPromise = new Promise((resolve, reject) => {
+      if (this._app) {
+        resolve(this._app);
+      } else {
+        try {
+          const flags = this.buildFlags();
+
+          // User shadow DOM.
+          this._parentDiv = this.attachShadow({ mode: "open" });
+
+          const html = this.templateTag.content.cloneNode(true);
+          this._parentDiv.append(html);
+
+          const elmDiv = this._parentDiv.querySelector("#mount-node");
+
+          // noinspection JSUnresolvedVariable
+          this._app = Elm.Main.init({
+            flags,
+            node: elmDiv,
+          });
+
+          resolve(this._app);
+        } catch (error) {
+          reject(error);
+        }
+      }
+    });
+    return this._appPromise;
+  }
+
+  get parentDivPromise() {
+    return this.appPromise.then(() => this._parentDiv);
+  }
+
   get selected() {
     return this._selected;
   }
@@ -579,10 +613,11 @@ class MuchSelect extends HTMLElement {
 
   set placeholder(placeholder) {
     this.setAttribute("placeholder", placeholder);
-    // TODO Convert this._app to a function that get a promise that returns _app
-    //  when it is ready.
+
     // noinspection JSUnresolvedVariable
-    this._app.ports.placeholderChangedReceiver.send(placeholder);
+    this.appPromise.then((app) =>
+      app.ports.placeholderChangedReceiver.send(placeholder)
+    );
 
     this._placeholder = placeholder;
   }
@@ -604,7 +639,9 @@ class MuchSelect extends HTMLElement {
       this.removeAttribute("disabled");
     }
     // noinspection JSUnresolvedVariable
-    this._app.ports.disableChangedReceiver.send(this._disabled);
+    this.appPromise.then((app) =>
+      app.ports.disableChangedReceiver.send(this._disabled)
+    );
   }
 
   get maxDropdownItems() {
@@ -627,8 +664,8 @@ class MuchSelect extends HTMLElement {
       this.setAttribute("max-dropdown-items", newValue);
     }
     // noinspection JSUnresolvedVariable
-    this._app.ports.maxDropdownItemsChangedReceiver.send(
-      this._maxDropdownItems
+    this.appPromise.then((app) =>
+      app.ports.maxDropdownItemsChangedReceiver.send(this._maxDropdownItems)
     );
   }
 
@@ -648,7 +685,9 @@ class MuchSelect extends HTMLElement {
       this.removeAttribute("loading");
     }
     // noinspection JSUnresolvedVariable
-    this._app.ports.loadingChangedReceiver.send(this._loading);
+    this.appPromise.then((app) =>
+      app.ports.loadingChangedReceiver.send(this._loading)
+    );
   }
 
   get allowCustomOptions() {
@@ -667,7 +706,9 @@ class MuchSelect extends HTMLElement {
       this.removeAttribute("allow-custom-options");
     }
     // noinspection JSUnresolvedVariable
-    this._app.ports.allowCustomOptionsReceiver.send(this._allowCustomOptions);
+    this.appPromise.then((app) =>
+      app.ports.allowCustomOptionsReceiver.send(this._allowCustomOptions)
+    );
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -952,7 +993,9 @@ class MuchSelect extends HTMLElement {
 
   updateOptions(options) {
     // noinspection JSUnresolvedVariable
-    this._app.ports.optionsChangedReceiver.send(cleanUpOptions(options));
+    this.appPromise.then((app) =>
+      app.ports.optionsChangedReceiver.send(cleanUpOptions(options))
+    );
     this.updateDimensions();
   }
 
@@ -962,7 +1005,9 @@ class MuchSelect extends HTMLElement {
 
   addOptions(options) {
     // noinspection JSUnresolvedVariable
-    this._app.ports.addOptionsReceiver.send(cleanUpOptions(options));
+    this.appPromise.then((app) =>
+      app.ports.addOptionsReceiver.send(cleanUpOptions(options))
+    );
     this.updateDimensions();
   }
 
@@ -972,18 +1017,24 @@ class MuchSelect extends HTMLElement {
 
   removeOptions(options) {
     // noinspection JSUnresolvedVariable
-    this._app.ports.removeOptionsReceiver.send(cleanUpOptions(options));
+    this.appPromise.then((app) =>
+      app.ports.removeOptionsReceiver.send(cleanUpOptions(options))
+    );
     this.updateDimensions();
   }
 
   selectOption(option) {
     // noinspection JSUnresolvedVariable
-    this._app.ports.selectOptionReceiver.send(cleanUpOption(option));
+    this.appPromise.then((app) =>
+      app.ports.selectOptionReceiver.send(cleanUpOption(option))
+    );
   }
 
   deselectOption(option) {
     // noinspection JSUnresolvedVariable
-    this._app.ports.deselectOptionReceiver.send(cleanUpOption(option));
+    this.appPromise.then((app) =>
+      app.ports.deselectOptionReceiver.send(cleanUpOption(option))
+    );
   }
 }
 
