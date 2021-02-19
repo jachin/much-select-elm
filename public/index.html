@@ -299,6 +299,9 @@
             .forEach((opt) => {
               muchSelect.addOption(opt);
             });
+          setTimeout(function() {
+            muchSelect.loading = false;
+          }, 500);
         };
       };
 
