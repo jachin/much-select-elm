@@ -136,6 +136,15 @@ class MuchSelect extends HTMLElement {
     super();
 
     /**
+     * Used in the CSS and elsewhere to determine what the
+     *  minium width should be.
+     * TODO Perhaps this should be a property or attribute.
+     * @type {number}
+     * @private
+     */
+    this._minimunWidth = 200;
+
+    /**
      * @type {string|null}
      * @private
      */
@@ -397,12 +406,9 @@ class MuchSelect extends HTMLElement {
         let width = valueCasingElement.offsetWidth;
         let height = valueCasingElement.offsetHeight;
 
-        // Clamp the width between some min and max.
-        // TODO this min and max should probably not be hard coded here.
-        if (width < 100) {
-          width = 100;
-        } else if (width > 500) {
-          width = 500;
+        // Prevent the width from falling below some threshold.
+        if (width < this._minimunWidth) {
+          width = this._minimunWidth;
         }
 
         // Clamp the width between some min and max.
@@ -678,7 +684,7 @@ class MuchSelect extends HTMLElement {
         */
 
         min-height: 40px;
-        min-width: 200px;
+        min-width: ${this._minimunWidth}px;
       }
 
       /*
@@ -693,8 +699,7 @@ class MuchSelect extends HTMLElement {
         margin-top: auto;
         margin-bottom: auto;
         position: relative;
-        width: 100%;
-        min-width: 200px;
+        min-width: ${this._minimunWidth}px;
       }
 
       /*
@@ -704,7 +709,6 @@ class MuchSelect extends HTMLElement {
       #value-casing {
         min-height: 34px;
         cursor: pointer;
-        overflow: hidden;
         -moz-appearance: textfield;
         -webkit-appearance: textfield;
         background-color: white;
@@ -755,16 +759,23 @@ class MuchSelect extends HTMLElement {
         The with width lets it grow as much as it can.
         */
         min-width: 10px;
-        width: 100%;
         /* Let's give the input a bit more room than the selected values.
         */
         flex-grow: 3;
         flex-shrink: 0;
         flex-basis: 10%;
+
         /* We don't want a border because the value-casing will supply the border for
           this input.
         */
         border: none;
+
+        /*
+        We do not want an outline on the input (filter) because we want everything
+        inside of the #value-casing to (kinda) act like a text input.
+        */
+        outline: none;
+        background: none;
       }
 
       #input-filter:hover, #input-filter:focus {
@@ -773,7 +784,7 @@ class MuchSelect extends HTMLElement {
         inside of the #value-casing to (kinda) act like a text input.
         */
         outline: none;
-        background: none;
+        background: white;
       }
 
       #input-filter:disabled {
@@ -795,7 +806,7 @@ class MuchSelect extends HTMLElement {
         background-image: none;
       }
 
-      #value-casing.single .value {
+      #value-casing.single.has-option-selected #selected-value {
         padding: 3px;
         font-size: 20px;
         margin: 2px 2px;
@@ -821,10 +832,6 @@ class MuchSelect extends HTMLElement {
       #value-casing.multi .value.selected-value {
         background-image: linear-gradient(to bottom, #d99477, #efb680);
         background-repeat: repeat-x;
-      }
-
-      #value-casing.single {
-        width: 100%;
       }
 
       #dropdown-indicator {
@@ -865,7 +872,6 @@ class MuchSelect extends HTMLElement {
         position: absolute;
         left: 0;
         font-size: 20px;
-        min-width: 200px;
         display: inline-block;
         z-index: 10;
         max-height: 300px;
