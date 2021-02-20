@@ -255,9 +255,11 @@ class MuchSelect extends HTMLElement {
     });
 
     // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
-    this._app.ports.muchSelectIsReady.subscribe(() => {
-      this.dispatchEvent(new CustomEvent("ready", { bubbles: true }));
-    });
+    this.appPromise.then((app) =>
+      app.ports.muchSelectIsReady.subscribe(() => {
+        this.dispatchEvent(new CustomEvent("ready", { bubbles: true }));
+      })
+    );
 
     // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
     this.appPromise.then((app) =>
