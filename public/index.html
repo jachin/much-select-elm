@@ -275,10 +275,10 @@
     </script>
   </div>
 
-  <div id="remote-api-example-pt2">
-    <h3>Remote API (Pt 2)</h3>
-    <p>As you type we'll query the remote API for additional options.</p>
-    <p>This dropdown searches the <a href="https://rickandmortyapi.com/">Rick and Morty</a> API for characters from the show by name.</p>
+  <div id="selected-option-with-async-options">
+    <h3>Async Loading Options</h3>
+    <p>In this example we start with a single selected value, then asynchronously load in a bunch more options.</p>
+    <p>The description for the selected gets loaded in with all async options.</p>
     <much-select max-dropdown-items="30">
       <select slot="select-menu-input">
         <option selected="true" value="les Escaldes">les Escaldes</option>
@@ -287,7 +287,7 @@
 
     <script>
       const muchSelect = document.querySelector(
-        "#remote-api-example-pt2 much-select"
+        "#selected-option-with-async-options much-select"
       );
       let possibleOptions = window.much_select_options;
 
