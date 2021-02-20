@@ -3,19 +3,14 @@ module Main exposing (..)
 import Browser
 import Css
     exposing
-        ( auto
-        , block
-        , display
+        ( display
         , fontSize
-        , hidden
         , inline
         , lineHeight
         , none
         , pct
         , px
         , top
-        , visibility
-        , visible
         , width
         )
 import Html.Styled
@@ -90,6 +85,7 @@ import Ports
         , inputKeyUp
         , loadingChangedReceiver
         , maxDropdownItemsChangedReceiver
+        , muchSelectIsReady
         , optionsChangedReceiver
         , placeholderChangedReceiver
         , removeOptionsReceiver
@@ -396,7 +392,7 @@ update msg model =
                         clearAllSelectedOption model
 
                     else
-                        ( model, deselectItem [] )
+                        ( model, Cmd.none )
 
                 MultiSelect _ ->
                     ( model, Cmd.none )
@@ -1176,7 +1172,7 @@ init flags =
       , valueCasingWidth = 100
       , valueCasingHeight = 45
       }
-    , errorCmd
+    , Cmd.batch [ errorCmd, muchSelectIsReady () ]
     )
 
 

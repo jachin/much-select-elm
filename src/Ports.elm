@@ -12,6 +12,7 @@ port module Ports exposing
     , inputKeyUp
     , loadingChangedReceiver
     , maxDropdownItemsChangedReceiver
+    , muchSelectIsReady
     , optionsChangedReceiver
     , placeholderChangedReceiver
     , removeOptionsReceiver
@@ -24,6 +25,9 @@ port module Ports exposing
     )
 
 import Json.Decode
+
+
+port muchSelectIsReady : () -> Cmd msg
 
 
 port errorMessage : String -> Cmd msg
