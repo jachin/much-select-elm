@@ -3,19 +3,14 @@ module Main exposing (..)
 import Browser
 import Css
     exposing
-        ( auto
-        , block
-        , display
+        ( display
         , fontSize
-        , hidden
         , inline
         , lineHeight
         , none
         , pct
         , px
         , top
-        , visibility
-        , visible
         , width
         )
 import Html.Styled
@@ -75,7 +70,32 @@ import Option
         )
 import OptionPresentor exposing (OptionPresenter)
 import OptionSearcher exposing (bestMatch)
-import Ports exposing (addItem, addOptionsReceiver, allowCustomOptionsReceiver, blurInput, customOptionSelected, deselectItem, deselectOptionReceiver, disableChangedReceiver, errorMessage, focusInput, inputKeyUp, loadingChangedReceiver, maxDropdownItemsChangedReceiver, muchSelectIsReady, optionsChangedReceiver, placeholderChangedReceiver, removeOptionsReceiver, selectOptionReceiver, valueCasingDimensionsChangedReceiver, valueChanged, valueChangedReceiver, valueCleared, valuesDecoder)
+import Ports
+    exposing
+        ( addItem
+        , addOptionsReceiver
+        , allowCustomOptionsReceiver
+        , blurInput
+        , customOptionSelected
+        , deselectItem
+        , deselectOptionReceiver
+        , disableChangedReceiver
+        , errorMessage
+        , focusInput
+        , inputKeyUp
+        , loadingChangedReceiver
+        , maxDropdownItemsChangedReceiver
+        , muchSelectIsReady
+        , optionsChangedReceiver
+        , placeholderChangedReceiver
+        , removeOptionsReceiver
+        , selectOptionReceiver
+        , valueCasingDimensionsChangedReceiver
+        , valueChanged
+        , valueChangedReceiver
+        , valueCleared
+        , valuesDecoder
+        )
 import SelectionMode exposing (CustomOptions(..), SelectionMode(..))
 
 
