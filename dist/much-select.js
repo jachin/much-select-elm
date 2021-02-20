@@ -1,3 +1,4 @@
+// noinspection ES6CheckImport
 import { Elm } from "./elm-main.js";
 
 import asciiFold from "./ascii-fold.js";
@@ -255,6 +256,13 @@ class MuchSelect extends HTMLElement {
 
     // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
     this.appPromise.then((app) =>
+      app.ports.muchSelectIsReady.subscribe(() => {
+        this.dispatchEvent(new CustomEvent("ready", { bubbles: true }));
+      })
+    );
+
+    // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
+    this.appPromise.then((app) =>
       app.ports.errorMessage.subscribe(this.errorHandler.bind(this))
     );
 
@@ -360,7 +368,6 @@ class MuchSelect extends HTMLElement {
 
   // noinspection JSUnusedGlobalSymbols
   disconnectedCallback() {
-    super.disconnectedCallback();
     this._resizeObserver.disconnect();
   }
 

@@ -236,42 +236,44 @@
     </much-select>
 
     <script>
-      const muchSelect = document.querySelector("#remote-api-example much-select");
+      (() => {
+        const muchSelect = document.querySelector("#remote-api-example much-select");
 
-      muchSelect.addEventListener("inputKeyUpDebounced", evt => {
-        const searchString = evt.detail.searchString;
-        if (searchString.length < 3) {
-          // Lets not search unless we have at least 3 characters in the search string.
-          return;
-        }
-        const url = new URL("https://rickandmortyapi.com/api/character/");
-        url.searchParams.set("name", searchString);
-        const searchRequest = new Request(url.toString());
+        muchSelect.addEventListener("inputKeyUpDebounced", evt => {
+          const searchString = evt.detail.searchString;
+          if (searchString.length < 3) {
+            // Lets not search unless we have at least 3 characters in the search string.
+            return;
+          }
+          const url = new URL("https://rickandmortyapi.com/api/character/");
+          url.searchParams.set("name", searchString);
+          const searchRequest = new Request(url.toString());
 
-        // This could take a while, so the user knows something is going on
-        //  lets throw up the loading indicator.
-        muchSelect.loading = true;
+          // This could take a while, so the user knows something is going on
+          //  lets throw up the loading indicator.
+          muchSelect.loading = true;
 
-        const searchRickAndMortyCharactersByName = () => {
-          fetch(searchRequest)
-            .then(response => {
-              if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`)
-              }
-              return response.json()
-            })
-            .then(data => {
-              data.results.forEach(result => {
-                muchSelect.addOption({value: result.name});
-              });
-              muchSelect.loading = false;
-            })
-        }
+          const searchRickAndMortyCharactersByName = () => {
+            fetch(searchRequest)
+              .then(response => {
+                if (!response.ok) {
+                  throw new Error(`HTTP error! status: ${response.status}`)
+                }
+                return response.json()
+              })
+              .then(data => {
+                data.results.forEach(result => {
+                  muchSelect.addOption({value: result.name});
+                });
+                muchSelect.loading = false;
+              })
+          }
 
-        // The API is just too fast, slow it down a bit so we can watch
-        //  it work.
-        window.setTimeout(searchRickAndMortyCharactersByName, 2000);
-      })
+          // The API is just too fast, slow it down a bit so we can watch
+          //  it work.
+          window.setTimeout(searchRickAndMortyCharactersByName, 2000);
+        })
+      })();
     </script>
   </div>
 
@@ -286,56 +288,58 @@
     </much-select>
 
     <script>
-      const muchSelect = document.querySelector(
-        "#selected-option-with-async-options much-select"
-      );
-      let possibleOptions = window.much_select_options;
+      (() => {
+        const muchSelect = document.querySelector(
+          "#selected-option-with-async-options much-select"
+        );
+        let possibleOptions = window.much_select_options;
 
-      const searchForOptions = (searchString) => {
-        return () => {
-          // only searching against label. description should be searchable at some point.
-          possibleOptions
-            .filter((opt) => opt.label.includes(searchString))
-            .forEach((opt) => {
-              muchSelect.addOption(opt);
-            });
-          setTimeout(function() {
-            muchSelect.loading = false;
-          }, 500);
+        const searchForOptions = (searchString) => {
+          return () => {
+            // only searching against label. description should be searchable at some point.
+            possibleOptions
+              .filter((opt) => opt.label.includes(searchString))
+              .forEach((opt) => {
+                muchSelect.addOption(opt);
+              });
+            setTimeout(function() {
+              muchSelect.loading = false;
+            }, 500);
+          };
         };
-      };
 
-      muchSelect.addEventListener("ready", (evt) => {
-        if (
-          muchSelect.getAttribute("selected") &&
-          muchSelect.getAttribute("selected").length > 0
-        ) {
-          // search
-          const query = muchSelect.getAttribute("selected");
+        muchSelect.addEventListener("ready", (evt) => {
+          if (
+            muchSelect.getAttribute("selected") &&
+            muchSelect.getAttribute("selected").length > 0
+          ) {
+            // search
+            const query = muchSelect.getAttribute("selected");
 
-          window.setTimeout(searchForOptions(query), 2000);
-        } else {
-          possibleOptions.forEach((option) => {
-            muchSelect.addOption(option);
-          });
-        }
-      });
+            window.setTimeout(searchForOptions(query), 2000);
+          } else {
+            possibleOptions.forEach((option) => {
+              muchSelect.addOption(option);
+            });
+          }
+        });
 
-      muchSelect.addEventListener("inputKeyUpDebounced", (evt) => {
-        const searchString = evt.detail.searchString;
-        if (searchString.length < 3) {
-          // Lets not search unless we have at least 3 characters in the search string.
-          return;
-        }
+        muchSelect.addEventListener("inputKeyUpDebounced", (evt) => {
+          const searchString = evt.detail.searchString;
+          if (searchString.length < 3) {
+            // Lets not search unless we have at least 3 characters in the search string.
+            return;
+          }
 
-        // This could take a while, so the user knows something is going on
-        //  lets throw up the loading indicator.
-        muchSelect.loading = true;
+          // This could take a while, so the user knows something is going on
+          //  lets throw up the loading indicator.
+          muchSelect.loading = true;
 
-        // The API is just too fast, slow it down a bit so we can watch
-        //  it work.
-        window.setTimeout(searchForOptions(searchString), 2000);
-      });
+          // The API is just too fast, slow it down a bit so we can watch
+          //  it work.
+          window.setTimeout(searchForOptions(searchString), 2000);
+        });
+      })();
     </script>
   </div>
 </div>

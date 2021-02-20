@@ -5635,6 +5635,7 @@ var $author$project$Option$addAndSelectOptionsInOptionsListByString = F2(
 			strings);
 		return A2($author$project$Option$mergeTwoListsOfOptionsPreservingSelectedOptions, newOptions, options);
 	});
+var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Basics$composeL = F3(
 	function (g, f, x) {
 		return g(
@@ -5707,6 +5708,12 @@ var $author$project$Option$isOptionInListOfOptionsByValue = F2(
 			},
 			options);
 	});
+var $elm$json$Json$Encode$null = _Json_encodeNull;
+var $author$project$Ports$muchSelectIsReady = _Platform_outgoingPort(
+	'muchSelectIsReady',
+	function ($) {
+		return $elm$json$Json$Encode$null;
+	});
 var $author$project$Option$OptionShown = 0;
 var $author$project$Option$newOption = F2(
 	function (value, maybeCleanLabel) {
@@ -5725,7 +5732,6 @@ var $author$project$Option$newOption = F2(
 				$author$project$Option$NoOptionGroup);
 		}
 	});
-var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $author$project$Option$OptionDescription = F2(
 	function (a, b) {
@@ -6010,7 +6016,12 @@ var $author$project$Main$init = function (flags) {
 			bn: 45,
 			bo: 100
 		},
-		errorCmd);
+		$elm$core$Platform$Cmd$batch(
+			_List_fromArray(
+				[
+					errorCmd,
+					$author$project$Ports$muchSelectIsReady(0)
+				])));
 };
 var $elm$json$Json$Decode$int = _Json_decodeInt;
 var $author$project$Main$AddOptions = function (a) {
@@ -8715,7 +8726,6 @@ var $author$project$OptionSearcher$bestMatch = F2(
 				},
 				options));
 	});
-var $elm$json$Json$Encode$null = _Json_encodeNull;
 var $author$project$Ports$blurInput = _Platform_outgoingPort(
 	'blurInput',
 	function ($) {
@@ -9971,9 +9981,7 @@ var $author$project$Main$update = F2(
 			case 21:
 				var _v16 = model.t;
 				if (!_v16.$) {
-					return $author$project$Option$hasSelectedOption(model.a) ? $author$project$Main$clearAllSelectedOption(model) : _Utils_Tuple2(
-						model,
-						$author$project$Ports$deselectItem(_List_Nil));
+					return $author$project$Option$hasSelectedOption(model.a) ? $author$project$Main$clearAllSelectedOption(model) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				} else {
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				}
