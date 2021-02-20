@@ -366,7 +366,6 @@ class MuchSelect extends HTMLElement {
 
   // noinspection JSUnusedGlobalSymbols
   disconnectedCallback() {
-    super.disconnectedCallback();
     this._resizeObserver.disconnect();
   }
 
