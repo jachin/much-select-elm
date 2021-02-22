@@ -14,7 +14,7 @@
     "build-site": "./scripts/build-site.sh",
     "deploy-site": "npm run build-site && firebase deploy",
     "lint": "eslint",
-    "format": "elm-format",
+    "format": "elm-format"
   },
   "author": "Jachin Rupe <jachin.rupe@drip.com>",
   "license": "MIT",
