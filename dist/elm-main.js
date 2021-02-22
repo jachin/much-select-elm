@@ -6009,7 +6009,7 @@ var $author$project$Main$init = function (flags) {
 					}
 				}
 			}(),
-			o: '',
+			p: '',
 			t: selectionMode,
 			aT: false,
 			aU: flags.aU,
@@ -8901,7 +8901,7 @@ var $author$project$Main$clearAllSelectedOption = function (model) {
 			{
 				a: $author$project$Option$deselectAllOptionsInOptionsList(model.a),
 				Z: 0,
-				o: ''
+				p: ''
 			}),
 		$elm$core$Platform$Cmd$batch(
 			_List_fromArray(
@@ -9713,7 +9713,7 @@ var $author$project$Main$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{a: options, o: ''}),
+						{a: options, p: ''}),
 					$elm$core$Platform$Cmd$batch(
 						_List_fromArray(
 							[
@@ -9744,7 +9744,7 @@ var $author$project$Main$update = F2(
 									model,
 									{
 										a: A2($author$project$Option$highlightOptionInListByValue, value, options),
-										o: string
+										p: string
 									}),
 								$author$project$Ports$inputKeyUp(string));
 						case 1:
@@ -9755,7 +9755,7 @@ var $author$project$Main$update = F2(
 									model,
 									{
 										a: A2($author$project$Option$highlightOptionInListByValue, value, options),
-										o: string
+										p: string
 									}),
 								$author$project$Ports$inputKeyUp(string));
 						default:
@@ -9763,14 +9763,14 @@ var $author$project$Main$update = F2(
 							return _Utils_Tuple2(
 								_Utils_update(
 									model,
-									{a: options, o: string}),
+									{a: options, p: string}),
 								$author$project$Ports$inputKeyUp(string));
 					}
 				} else {
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
-							{a: options, o: string}),
+							{a: options, p: string}),
 						$author$project$Ports$inputKeyUp(string));
 				}
 			case 9:
@@ -9883,7 +9883,7 @@ var $author$project$Main$update = F2(
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
-							{a: options, o: ''}),
+							{a: options, p: ''}),
 						A2(
 							$author$project$Main$makeCommandMessagesWhenValuesChanges,
 							options,
@@ -9964,7 +9964,7 @@ var $author$project$Main$update = F2(
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
-							{a: options, o: ''}),
+							{a: options, p: ''}),
 						$elm$core$Platform$Cmd$batch(
 							_List_fromArray(
 								[
@@ -9975,7 +9975,7 @@ var $author$project$Main$update = F2(
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
-							{a: options, o: ''}),
+							{a: options, p: ''}),
 						A2($author$project$Main$makeCommandMessagesWhenValuesChanges, options, $elm$core$Maybe$Nothing));
 				}
 			case 21:
@@ -9989,7 +9989,7 @@ var $author$project$Main$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{o: ''}),
+						{p: ''}),
 					$author$project$Ports$blurInput(0));
 			case 23:
 				return _Utils_Tuple2(
@@ -11712,7 +11712,7 @@ var $author$project$Main$dropdown = function (model) {
 		$author$project$Main$DropdownMouseOutOption,
 		$author$project$Main$DropdownMouseClickOption,
 		model.t,
-		A3($author$project$OptionPresentor$prepareOptionsForPresentation, model.af, model.o, model.a));
+		A3($author$project$OptionPresentor$prepareOptionsForPresentation, model.af, model.p, model.a));
 	var dropdownCss = $rtfeldman$elm_css$Html$Styled$Attributes$css(
 		_List_fromArray(
 			[
@@ -12553,7 +12553,7 @@ var $author$project$Main$view = function (model) {
 	var tabIndexAttribute = model.q ? A2($rtfeldman$elm_css$Html$Styled$Attributes$style, '', '') : $rtfeldman$elm_css$Html$Styled$Attributes$tabindex(0);
 	var _v0 = model.t;
 	if (!_v0.$) {
-		var hasOptions = (!$elm$core$List$isEmpty(model.a)) && $elm$core$String$isEmpty(model.o);
+		var hasOptions = (!$elm$core$List$isEmpty(model.a)) && $elm$core$String$isEmpty(model.p);
 		var hasOptionSelected = $author$project$Option$hasSelectedOption(model.a);
 		var showPlaceholder = (!hasOptionSelected) && (!model.v);
 		var valueStr = hasOptionSelected ? A2(
@@ -12563,7 +12563,7 @@ var $author$project$Main$view = function (model) {
 				A2(
 					$elm$core$List$map,
 					$elm$core$Tuple$second,
-					$author$project$Option$selectedOptionsToTuple(model.a)))) : model.o;
+					$author$project$Option$selectedOptionsToTuple(model.a)))) : '';
 		return A2(
 			$rtfeldman$elm_css$Html$Styled$div,
 			_List_fromArray(
@@ -12604,7 +12604,7 @@ var $author$project$Main$view = function (model) {
 								[
 									$rtfeldman$elm_css$Html$Styled$text(valueStr)
 								])),
-							A5($author$project$Main$singleSelectInputField, model.o, model.q, model.v, model.X, hasOptionSelected),
+							A5($author$project$Main$singleSelectInputField, model.p, model.q, model.v, model.X, hasOptionSelected),
 							function () {
 							var _v1 = model.Z;
 							switch (_v1) {
@@ -12645,7 +12645,7 @@ var $author$project$Main$view = function (model) {
 					$rtfeldman$elm_css$Html$Styled$Events$onBlur($author$project$Main$InputBlur),
 					$rtfeldman$elm_css$Html$Styled$Events$onFocus($author$project$Main$InputFocus),
 					$rtfeldman$elm_css$Html$Styled$Events$onInput($author$project$Main$SearchInputOnInput),
-					$rtfeldman$elm_css$Html$Styled$Attributes$value(model.o),
+					$rtfeldman$elm_css$Html$Styled$Attributes$value(model.p),
 					$rtfeldman$elm_css$Html$Styled$Attributes$id('input-filter'),
 					$rtfeldman$elm_css$Html$Styled$Attributes$disabled(model.q),
 					$rtfeldman$elm_css$Html$Styled$Attributes$fromUnstyled(
