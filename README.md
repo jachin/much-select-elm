@@ -47,6 +47,7 @@ Just do like you'd expect to get started. Only development dependencies.
 
 ``` bash
 npm install
+npx elm-tooling install
 ```
 
 ### Watch and Develop
