@@ -532,7 +532,7 @@ view model =
                             |> Maybe.withDefault ""
 
                     else
-                        model.searchString
+                        ""
             in
             div [ id "wrapper" ]
                 [ div
