@@ -596,15 +596,13 @@ class MuchSelect extends HTMLElement {
       // TODO perhaps this delimiter should be configurable
       const values = value.split(",");
 
-      // TODO Convert this._app to a function that get a promise that returns _app
-      //  when it is ready.
       // noinspection JSUnresolvedVariable
-      this._app.ports.valueChangedReceiver.send(values);
+      this.appPromise.then((app) =>
+        app.ports.valueChangedReceiver.send(values)
+      );
     } else {
-      // TODO Convert this._app to a function that get a promise that returns _app
-      //  when it is ready.
       // noinspection JSUnresolvedVariable
-      this._app.ports.valueChangedReceiver.send([]);
+      this.appPromise.then((app) => app.ports.valueChangedReceiver.send([]));
     }
   }
 
