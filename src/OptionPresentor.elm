@@ -20,7 +20,8 @@ import Option
         , OptionLabel
         , OptionValue
         )
-import OptionSearcher exposing (OptionSearchResult, search)
+import OptionSearchFilter exposing (OptionSearchResult)
+import OptionSearcher exposing (search)
 import Stack
 import String.Graphemes
 
@@ -248,7 +249,7 @@ prepareOptionsForPresentation maxDropdownItems searchString options =
                         , descriptionMarkup = text ""
                         }
 
-                    Option.CustomOption _ label _ ->
+                    Option.CustomOption _ label _ _ ->
                         { display = Option.getOptionDisplay option
                         , label = Option.getOptionLabel option
                         , value = Option.getOptionValue option
@@ -263,7 +264,7 @@ prepareOptionsForPresentation maxDropdownItems searchString options =
                         , descriptionMarkup = text ""
                         }
 
-                    Option.Option _ _ _ _ _ ->
+                    Option.Option _ _ _ _ _ _ ->
                         let
                             searchResult =
                                 search searchString option
@@ -292,8 +293,3 @@ prepareOptionsForPresentation maxDropdownItems searchString options =
             )
         |> List.sortBy .totalScore
         |> List.take maxDropdownItems
-
-
-
---, labelMarkup = span [] [ Option.getOptionLabel option |> Option.optionLabelToString |> text ]
---, descriptionMarkup = span [] [ Option.getOptionDescription option |> Option.optionDescriptionToString |> text ]

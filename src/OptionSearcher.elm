@@ -1,13 +1,8 @@
-module OptionSearcher exposing (OptionSearchResult, bestMatch, search, simpleMatch)
+module OptionSearcher exposing (bestMatch, search, simpleMatch)
 
 import Fuzzy exposing (Result, match)
 import Option exposing (Option)
-
-
-type alias OptionSearchResult =
-    { labelMatch : Result
-    , descriptionMatch : Result
-    }
+import OptionSearchFilter exposing (OptionSearchResult)
 
 
 simpleMatch : String -> String -> Result

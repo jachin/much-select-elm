@@ -58,25 +58,26 @@ module Option exposing
 
 import Json.Decode
 import List.Extra
+import OptionSearchFilter exposing (OptionSearchFilter)
 import SelectionMode exposing (SelectionMode(..))
 
 
 type Option
-    = Option OptionDisplay OptionLabel OptionValue OptionDescription OptionGroup
-    | CustomOption OptionDisplay OptionLabel OptionValue
+    = Option OptionDisplay OptionLabel OptionValue OptionDescription OptionGroup OptionSearchFilter
+    | CustomOption OptionDisplay OptionLabel OptionValue OptionSearchFilter
     | EmptyOption OptionDisplay OptionLabel
 
 
 getOptionLabel : Option -> OptionLabel
 getOptionLabel option =
     case option of
-        Option _ label _ _ _ ->
+        Option _ label _ _ _ _ ->
+            label
+
+        CustomOption _ label _ _ ->
             label
 
         EmptyOption _ label ->
-            label
-
-        CustomOption _ label _ ->
             label
 
 
@@ -185,10 +186,10 @@ emptyOptionGroup =
 getOptionGroup : Option -> OptionGroup
 getOptionGroup option =
     case option of
-        Option _ _ _ _ optionGroup ->
+        Option _ _ _ _ optionGroup _ ->
             optionGroup
 
-        CustomOption _ _ _ ->
+        CustomOption _ _ _ _ ->
             NoOptionGroup
 
         EmptyOption _ _ ->
@@ -202,17 +203,33 @@ newOption value maybeCleanLabel =
             EmptyOption OptionShown (OptionLabel "" maybeCleanLabel)
 
         _ ->
-            Option OptionShown (OptionLabel value maybeCleanLabel) (OptionValue value) NoDescription NoOptionGroup
+            Option
+                OptionShown
+                (OptionLabel value maybeCleanLabel)
+                (OptionValue value)
+                NoDescription
+                NoOptionGroup
+                OptionSearchFilter.new
 
 
 setLabel : String -> Maybe String -> Option -> Option
 setLabel string maybeCleanString option =
     case option of
-        Option optionDisplay _ optionValue description group ->
-            Option optionDisplay (OptionLabel string maybeCleanString) optionValue description group
+        Option optionDisplay _ optionValue description group search ->
+            Option
+                optionDisplay
+                (OptionLabel string maybeCleanString)
+                optionValue
+                description
+                group
+                search
 
-        CustomOption optionDisplay _ _ ->
-            CustomOption optionDisplay (OptionLabel string maybeCleanString) (OptionValue string)
+        CustomOption optionDisplay _ _ search ->
+            CustomOption
+                optionDisplay
+                (OptionLabel string maybeCleanString)
+                (OptionValue string)
+                search
 
         EmptyOption optionDisplay _ ->
             EmptyOption optionDisplay (OptionLabel string maybeCleanString)
@@ -221,11 +238,20 @@ setLabel string maybeCleanString option =
 setDescription : String -> Option -> Option
 setDescription string option =
     case option of
-        Option optionDisplay label optionValue _ group ->
-            Option optionDisplay label optionValue (OptionDescription string Nothing) group
+        Option optionDisplay label optionValue _ group search ->
+            Option optionDisplay
+                label
+                optionValue
+                (OptionDescription string Nothing)
+                group
+                search
 
-        CustomOption optionDisplay optionLabel optionValue ->
-            CustomOption optionDisplay optionLabel optionValue
+        CustomOption optionDisplay optionLabel optionValue search ->
+            CustomOption
+                optionDisplay
+                optionLabel
+                optionValue
+                search
 
         EmptyOption optionDisplay optionLabel ->
             EmptyOption optionDisplay optionLabel
@@ -234,11 +260,19 @@ setDescription string option =
 setGroup : String -> Option -> Option
 setGroup string option =
     case option of
-        Option optionDisplay label optionValue description _ ->
-            Option optionDisplay label optionValue description (OptionGroup string)
+        Option optionDisplay label optionValue description _ search ->
+            Option optionDisplay
+                label
+                optionValue
+                description
+                (OptionGroup string)
+                search
 
-        CustomOption optionDisplay optionLabel optionValue ->
-            CustomOption optionDisplay optionLabel optionValue
+        CustomOption optionDisplay optionLabel optionValue search ->
+            CustomOption optionDisplay
+                optionLabel
+                optionValue
+                search
 
         EmptyOption optionDisplay optionLabel ->
             EmptyOption optionDisplay optionLabel
@@ -247,11 +281,20 @@ setGroup string option =
 setOptionDisplay : OptionDisplay -> Option -> Option
 setOptionDisplay optionDisplay option =
     case option of
-        Option _ optionLabel optionValue optionDescription optionGroup ->
-            Option optionDisplay optionLabel optionValue optionDescription optionGroup
+        Option _ optionLabel optionValue optionDescription optionGroup search ->
+            Option
+                optionDisplay
+                optionLabel
+                optionValue
+                optionDescription
+                optionGroup
+                search
 
-        CustomOption _ optionLabel optionValue ->
-            CustomOption optionDisplay optionLabel optionValue
+        CustomOption _ optionLabel optionValue search ->
+            CustomOption optionDisplay
+                optionLabel
+                optionValue
+                search
 
         EmptyOption _ optionLabel ->
             EmptyOption optionDisplay optionLabel
@@ -259,21 +302,31 @@ setOptionDisplay optionDisplay option =
 
 newSelectedOption : String -> Maybe String -> Option
 newSelectedOption string maybeCleanLabel =
-    Option OptionSelected (OptionLabel string maybeCleanLabel) (OptionValue string) NoDescription NoOptionGroup
+    Option OptionSelected
+        (OptionLabel string maybeCleanLabel)
+        (OptionValue string)
+        NoDescription
+        NoOptionGroup
+        OptionSearchFilter.new
 
 
 newDisabledOption : String -> Maybe String -> Option
 newDisabledOption string maybeCleanLabel =
-    Option OptionDisabled (OptionLabel string maybeCleanLabel) (OptionValue string) NoDescription NoOptionGroup
+    Option OptionDisabled
+        (OptionLabel string maybeCleanLabel)
+        (OptionValue string)
+        NoDescription
+        NoOptionGroup
+        OptionSearchFilter.new
 
 
 getOptionDisplay : Option -> OptionDisplay
 getOptionDisplay option =
     case option of
-        Option display _ _ _ _ ->
+        Option display _ _ _ _ _ ->
             display
 
-        CustomOption display _ _ ->
+        CustomOption display _ _ _ ->
             display
 
         EmptyOption display _ ->
@@ -283,10 +336,10 @@ getOptionDisplay option =
 getOptionValue : Option -> OptionValue
 getOptionValue option =
     case option of
-        Option _ _ value _ _ ->
+        Option _ _ value _ _ _ ->
             value
 
-        CustomOption _ _ value ->
+        CustomOption _ _ value _ ->
             value
 
         EmptyOption _ _ ->
@@ -316,10 +369,10 @@ optionGroupToString optionGroup =
 getOptionDescription : Option -> OptionDescription
 getOptionDescription option =
     case option of
-        Option _ _ _ optionDescription _ ->
+        Option _ _ _ optionDescription _ _ ->
             optionDescription
 
-        CustomOption _ _ _ ->
+        CustomOption _ _ _ _ ->
             NoDescription
 
         EmptyOption _ _ ->
@@ -433,10 +486,10 @@ updateOrAddCustomOption searchString options =
             List.Extra.dropWhile
                 (\option_ ->
                     case option_ of
-                        CustomOption _ _ _ ->
+                        CustomOption _ _ _ _ ->
                             True
 
-                        Option _ _ _ _ _ ->
+                        Option _ _ _ _ _ _ ->
                             False
 
                         EmptyOption _ _ ->
@@ -449,6 +502,7 @@ updateOrAddCustomOption searchString options =
             OptionShown
             (OptionLabel ("Add " ++ searchString ++ "…") Nothing)
             (OptionValue searchString)
+            OptionSearchFilter.new
         ]
             ++ options_
 
@@ -563,10 +617,10 @@ selectOptionInListByOptionValue value options =
         (\option_ ->
             if optionValuesEqual option_ value then
                 case option_ of
-                    Option _ _ _ _ _ ->
+                    Option _ _ _ _ _ _ ->
                         selectOption option_
 
-                    CustomOption _ _ _ ->
+                    CustomOption _ _ _ _ ->
                         case value of
                             OptionValue valueStr ->
                                 selectOption option_ |> setLabel valueStr Nothing
@@ -608,7 +662,7 @@ selectHighlightedOption selectionMode options =
                 case maybeOption of
                     Just option ->
                         case option of
-                            Option _ _ value _ _ ->
+                            Option _ _ value _ _ _ ->
                                 case selectionMode of
                                     MultiSelect _ ->
                                         selectOptionInListByOptionValue value options
@@ -616,7 +670,7 @@ selectHighlightedOption selectionMode options =
                                     SingleSelect _ ->
                                         selectSingleOptionInList value options
 
-                            CustomOption _ _ value ->
+                            CustomOption _ _ value _ ->
                                 case selectionMode of
                                     MultiSelect _ ->
                                         selectOptionInListByOptionValue value options
@@ -644,10 +698,10 @@ selectSingleOptionInList value options =
             (\option_ ->
                 if optionValuesEqual option_ value then
                     case option_ of
-                        Option _ _ _ _ _ ->
+                        Option _ _ _ _ _ _ ->
                             selectOption option_
 
-                        CustomOption _ _ optionValue ->
+                        CustomOption _ _ optionValue _ ->
                             case optionValue of
                                 OptionValue valueStr ->
                                     selectOption option_ |> setLabel valueStr Nothing
@@ -669,10 +723,10 @@ selectEmptyOption options =
         |> List.map
             (\option_ ->
                 case option_ of
-                    Option _ _ _ _ _ ->
+                    Option _ _ _ _ _ _ ->
                         deselectOption option_
 
-                    CustomOption _ _ _ ->
+                    CustomOption _ _ _ _ ->
                         deselectOption option_
 
                     EmptyOption _ _ ->
@@ -694,45 +748,45 @@ removeOptionsFromOptionList options optionsToRemove =
 highlightOption : Option -> Option
 highlightOption option =
     case option of
-        Option display label value description group ->
+        Option display label value description group search ->
             case display of
                 OptionShown ->
-                    Option OptionHighlighted label value description group
+                    Option OptionHighlighted label value description group search
 
                 OptionHidden ->
-                    Option OptionHidden label value description group
+                    Option OptionHidden label value description group search
 
                 OptionSelected ->
-                    Option OptionSelected label value description group
+                    Option OptionSelected label value description group search
 
                 OptionSelectedHighlighted ->
-                    Option OptionSelectedHighlighted label value description group
+                    Option OptionSelectedHighlighted label value description group search
 
                 OptionHighlighted ->
-                    Option OptionHighlighted label value description group
+                    Option OptionHighlighted label value description group search
 
                 OptionDisabled ->
-                    Option OptionDisabled label value description group
+                    Option OptionDisabled label value description group search
 
-        CustomOption display label value ->
+        CustomOption display label value search ->
             case display of
                 OptionShown ->
-                    CustomOption OptionHighlighted label value
+                    CustomOption OptionHighlighted label value search
 
                 OptionHidden ->
-                    CustomOption OptionHidden label value
+                    CustomOption OptionHidden label value search
 
                 OptionSelected ->
-                    CustomOption OptionSelected label value
+                    CustomOption OptionSelected label value search
 
                 OptionSelectedHighlighted ->
-                    CustomOption OptionSelectedHighlighted label value
+                    CustomOption OptionSelectedHighlighted label value search
 
                 OptionHighlighted ->
-                    CustomOption OptionHighlighted label value
+                    CustomOption OptionHighlighted label value search
 
                 OptionDisabled ->
-                    CustomOption OptionDisabled label value
+                    CustomOption OptionDisabled label value search
 
         EmptyOption display label ->
             case display of
@@ -758,45 +812,69 @@ highlightOption option =
 removeHighlightOption : Option -> Option
 removeHighlightOption option =
     case option of
-        Option display label value description group ->
+        Option display label value description group search ->
             case display of
                 OptionShown ->
-                    Option OptionShown label value description group
+                    Option OptionShown
+                        label
+                        value
+                        description
+                        group
+                        search
 
                 OptionHidden ->
-                    Option OptionHidden label value description group
+                    Option OptionHidden
+                        label
+                        value
+                        description
+                        group
+                        search
 
                 OptionSelected ->
-                    Option OptionSelected label value description group
+                    Option OptionSelected
+                        label
+                        value
+                        description
+                        group
+                        search
 
                 OptionSelectedHighlighted ->
-                    Option OptionSelectedHighlighted label value description group
+                    Option OptionSelectedHighlighted
+                        label
+                        value
+                        description
+                        group
+                        search
 
                 OptionHighlighted ->
-                    Option OptionShown label value description group
+                    Option OptionShown label value description group search
 
                 OptionDisabled ->
-                    Option OptionDisabled label value description group
+                    Option OptionDisabled label value description group search
 
-        CustomOption display label value ->
+        CustomOption display label value search ->
             case display of
                 OptionShown ->
-                    CustomOption OptionShown label value
+                    CustomOption OptionShown label value search
 
                 OptionHidden ->
-                    CustomOption OptionHidden label value
+                    CustomOption OptionHidden label value search
 
                 OptionSelected ->
-                    CustomOption OptionSelected label value
+                    CustomOption OptionSelected label value search
 
                 OptionSelectedHighlighted ->
-                    CustomOption OptionSelectedHighlighted label value
+                    CustomOption
+                        OptionSelectedHighlighted
+                        label
+                        value
+                        search
 
                 OptionHighlighted ->
-                    CustomOption OptionShown label value
+                    CustomOption OptionShown label value search
 
                 OptionDisabled ->
-                    CustomOption OptionDisabled label value
+                    CustomOption OptionDisabled label value search
 
         EmptyOption display label ->
             case display of
@@ -822,7 +900,7 @@ removeHighlightOption option =
 optionIsHighlighted : Option -> Bool
 optionIsHighlighted option =
     case option of
-        Option display _ _ _ _ ->
+        Option display _ _ _ _ _ ->
             case display of
                 OptionShown ->
                     False
@@ -842,7 +920,7 @@ optionIsHighlighted option =
                 OptionDisabled ->
                     False
 
-        CustomOption display _ _ ->
+        CustomOption display _ _ _ ->
             case display of
                 OptionShown ->
                     False
@@ -886,7 +964,7 @@ optionIsHighlighted option =
 optionIsHighlightable : Option -> Bool
 optionIsHighlightable option =
     case option of
-        Option display _ _ _ _ ->
+        Option display _ _ _ _ _ ->
             case display of
                 OptionShown ->
                     True
@@ -906,7 +984,7 @@ optionIsHighlightable option =
                 OptionDisabled ->
                     False
 
-        CustomOption display _ _ ->
+        CustomOption display _ _ _ ->
             case display of
                 OptionShown ->
                     True
@@ -950,45 +1028,45 @@ optionIsHighlightable option =
 selectOption : Option -> Option
 selectOption option =
     case option of
-        Option display label value description group ->
+        Option display label value description group search ->
             case display of
                 OptionShown ->
-                    Option OptionSelected label value description group
+                    Option OptionSelected label value description group search
 
                 OptionHidden ->
-                    Option OptionSelected label value description group
+                    Option OptionSelected label value description group search
 
                 OptionSelected ->
-                    Option OptionSelected label value description group
+                    Option OptionSelected label value description group search
 
                 OptionSelectedHighlighted ->
-                    Option OptionSelected label value description group
+                    Option OptionSelected label value description group search
 
                 OptionHighlighted ->
-                    Option OptionSelected label value description group
+                    Option OptionSelected label value description group search
 
                 OptionDisabled ->
-                    Option OptionDisabled label value description group
+                    Option OptionDisabled label value description group search
 
-        CustomOption display label value ->
+        CustomOption display label value search ->
             case display of
                 OptionShown ->
-                    CustomOption OptionSelected label value
+                    CustomOption OptionSelected label value search
 
                 OptionHidden ->
-                    CustomOption OptionHidden label value
+                    CustomOption OptionHidden label value search
 
                 OptionSelected ->
-                    CustomOption OptionSelected label value
+                    CustomOption OptionSelected label value search
 
                 OptionSelectedHighlighted ->
-                    CustomOption OptionSelectedHighlighted label value
+                    CustomOption OptionSelectedHighlighted label value search
 
                 OptionHighlighted ->
-                    CustomOption OptionSelected label value
+                    CustomOption OptionSelected label value search
 
                 OptionDisabled ->
-                    CustomOption OptionDisabled label value
+                    CustomOption OptionDisabled label value search
 
         EmptyOption display label ->
             case display of
@@ -1014,45 +1092,50 @@ selectOption option =
 deselectOption : Option -> Option
 deselectOption option =
     case option of
-        Option display label value description group ->
+        Option display label value description group search ->
             case display of
                 OptionShown ->
-                    Option OptionShown label value description group
+                    Option OptionShown label value description group search
 
                 OptionHidden ->
-                    Option OptionHidden label value description group
+                    Option OptionHidden label value description group search
 
                 OptionSelected ->
-                    Option OptionShown label value description group
+                    Option OptionShown label value description group search
 
                 OptionSelectedHighlighted ->
-                    Option OptionShown label value description group
+                    Option OptionShown label value description group search
 
                 OptionHighlighted ->
-                    Option OptionHighlighted label value description group
+                    Option OptionHighlighted
+                        label
+                        value
+                        description
+                        group
+                        search
 
                 OptionDisabled ->
-                    Option OptionDisabled label value description group
+                    Option OptionDisabled label value description group search
 
-        CustomOption display label value ->
+        CustomOption display label value search ->
             case display of
                 OptionShown ->
-                    CustomOption OptionShown label value
+                    CustomOption OptionShown label value search
 
                 OptionHidden ->
-                    CustomOption OptionHidden label value
+                    CustomOption OptionHidden label value search
 
                 OptionSelected ->
-                    CustomOption OptionShown label value
+                    CustomOption OptionShown label value search
 
                 OptionSelectedHighlighted ->
-                    CustomOption OptionSelectedHighlighted label value
+                    CustomOption OptionSelectedHighlighted label value search
 
                 OptionHighlighted ->
-                    CustomOption OptionHighlighted label value
+                    CustomOption OptionHighlighted label value search
 
                 OptionDisabled ->
-                    CustomOption OptionDisabled label value
+                    CustomOption OptionDisabled label value search
 
         EmptyOption display label ->
             case display of
@@ -1081,7 +1164,7 @@ selectedOptions options =
         |> List.filter
             (\option_ ->
                 case option_ of
-                    Option display _ _ _ _ ->
+                    Option display _ _ _ _ _ ->
                         case display of
                             OptionShown ->
                                 False
@@ -1101,7 +1184,7 @@ selectedOptions options =
                             OptionDisabled ->
                                 False
 
-                    CustomOption display _ _ ->
+                    CustomOption display _ _ _ ->
                         case display of
                             OptionShown ->
                                 False
@@ -1149,7 +1232,7 @@ toggleSelectedHighlightByOptionValue options optionValue =
         |> List.map
             (\option_ ->
                 case option_ of
-                    Option optionDisplay _ optionValue_ _ _ ->
+                    Option optionDisplay _ optionValue_ _ _ _ ->
                         if optionValue == optionValue_ then
                             case optionDisplay of
                                 OptionShown ->
@@ -1173,7 +1256,7 @@ toggleSelectedHighlightByOptionValue options optionValue =
                         else
                             option_
 
-                    CustomOption optionDisplay _ optionValue_ ->
+                    CustomOption optionDisplay _ optionValue_ _ ->
                         if optionValue == optionValue_ then
                             case optionDisplay of
                                 OptionShown ->
@@ -1208,7 +1291,7 @@ deselectAllSelectedHighlightedOptions options =
         |> List.map
             (\option_ ->
                 case option_ of
-                    Option optionDisplay _ _ _ _ ->
+                    Option optionDisplay _ _ _ _ _ ->
                         case optionDisplay of
                             OptionShown ->
                                 option_
@@ -1228,7 +1311,7 @@ deselectAllSelectedHighlightedOptions options =
                             OptionDisabled ->
                                 option_
 
-                    CustomOption optionDisplay _ _ ->
+                    CustomOption optionDisplay _ _ _ ->
                         case optionDisplay of
                             OptionShown ->
                                 option_
@@ -1261,10 +1344,10 @@ hasSelectedOption options =
 isEmptyOption : Option -> Bool
 isEmptyOption option =
     case option of
-        Option _ _ _ _ _ ->
+        Option _ _ _ _ _ _ ->
             False
 
-        CustomOption _ _ _ ->
+        CustomOption _ _ _ _ ->
             False
 
         EmptyOption _ _ ->
@@ -1300,10 +1383,10 @@ customOptions options =
 isCustomOption : Option -> Bool
 isCustomOption option =
     case option of
-        Option _ _ _ _ _ ->
+        Option _ _ _ _ _ _ ->
             False
 
-        CustomOption _ _ _ ->
+        CustomOption _ _ _ _ ->
             True
 
         EmptyOption _ _ ->
@@ -1344,7 +1427,7 @@ decodeOptionWithoutAValue =
 
 decodeOptionWithAValue : Json.Decode.Decoder Option
 decodeOptionWithAValue =
-    Json.Decode.map5 Option
+    Json.Decode.map6 Option
         displayDecoder
         labelDecoder
         (Json.Decode.field
@@ -1353,6 +1436,7 @@ decodeOptionWithAValue =
         )
         descriptionDecoder
         optionGroupDecoder
+        (Json.Decode.succeed OptionSearchFilter.new)
 
 
 displayDecoder : Json.Decode.Decoder OptionDisplay

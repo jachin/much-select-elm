@@ -220,7 +220,7 @@ update msg model =
                             model.options
             in
             case bestMatch string model.options of
-                Just (Option _ _ value _ _) ->
+                Just (Option _ _ value _ _ _) ->
                     ( { model
                         | searchString = string
                         , options = highlightOptionInListByValue value options
@@ -228,7 +228,7 @@ update msg model =
                     , inputKeyUp string
                     )
 
-                Just (CustomOption _ _ value) ->
+                Just (CustomOption _ _ value _) ->
                     ( { model
                         | searchString = string
                         , options = highlightOptionInListByValue value options
@@ -677,9 +677,6 @@ singleSelectInputField searchString isDisabled focused placeholder_ hasSelectedO
 
             else
                 style "" ""
-
-        showInput =
-            showPlaceholder || focused
     in
     if isDisabled then
         input
@@ -899,7 +896,7 @@ optionsToValuesHtml options =
         |> List.map
             (\option ->
                 case option of
-                    Option display (OptionLabel labelStr _) optionValue _ _ ->
+                    Option display (OptionLabel labelStr _) optionValue _ _ _ ->
                         case display of
                             OptionShown ->
                                 text ""
@@ -932,7 +929,7 @@ optionsToValuesHtml options =
                             OptionDisabled ->
                                 text ""
 
-                    CustomOption display (OptionLabel labelStr _) optionValue ->
+                    CustomOption display (OptionLabel labelStr _) optionValue _ ->
                         case display of
                             OptionShown ->
                                 text ""
