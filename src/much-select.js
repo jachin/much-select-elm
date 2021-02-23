@@ -376,9 +376,11 @@ class MuchSelect extends HTMLElement {
     if (selectElement) {
       const optionsJson = buildOptionsFromSelectElement(selectElement);
 
-      // noinspection JSUnresolvedVariable
-      this._app.ports.optionsChangedReceiver.send(optionsJson);
-      this.updateDimensions();
+      this.appPromise.then((app) => {
+        // noinspection JSUnresolvedVariable
+        app.ports.optionsChangedReceiver.send(optionsJson);
+        this.updateDimensions();
+      });
     }
   }
 
@@ -414,10 +416,12 @@ class MuchSelect extends HTMLElement {
           height = 20;
         }
 
-        // noinspection JSUnresolvedVariable
-        this._app.ports.valueCasingDimensionsChangedReceiver.send({
-          width,
-          height,
+        this.appPromise.then((app) => {
+          // noinspection JSUnresolvedVariable
+          app.ports.valueCasingDimensionsChangedReceiver.send({
+            width,
+            height,
+          });
         });
       }
     });
