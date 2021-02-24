@@ -53,24 +53,40 @@ updateOptions selectionMode searchString options =
 
 updateOrAddCustomOption : String -> SelectionMode -> List Option -> List Option
 updateOrAddCustomOption searchString selectionMode options =
-    case SelectionMode.getCustomOptions selectionMode of
-        AllowCustomOptions ->
-            Option.updateOrAddCustomOption searchString options
-
-        NoCustomOptions ->
+    case searchString of
+        "" ->
             options
+
+        _ ->
+            case SelectionMode.getCustomOptions selectionMode of
+                AllowCustomOptions ->
+                    Option.updateOrAddCustomOption searchString options
+
+                NoCustomOptions ->
+                    options
 
 
 updateOptionsWithSearchString : String -> List Option -> List Option
 updateOptionsWithSearchString searchString options =
-    options
-        |> List.map
-            (\option ->
-                let
-                    searchResult =
-                        search searchString option
-                in
-                Option.setOptionSearchFilter
-                    (Just (OptionSearchFilter.new (searchResult.labelMatch.score + searchResult.descriptionMatch.score) searchResult))
-                    option
-            )
+    case searchString of
+        "" ->
+            options
+                |> List.map
+                    (\option ->
+                        Option.setOptionSearchFilter
+                            Nothing
+                            option
+                    )
+
+        _ ->
+            options
+                |> List.map
+                    (\option ->
+                        let
+                            searchResult =
+                                search searchString option
+                        in
+                        Option.setOptionSearchFilter
+                            (Just (OptionSearchFilter.new (searchResult.labelMatch.score + searchResult.descriptionMatch.score) searchResult))
+                            option
+                    )
