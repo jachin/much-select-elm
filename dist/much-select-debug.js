@@ -1,5 +1,5 @@
 // noinspection ES6CheckImport
-import { Elm } from "./elm-main.js";
+import { Elm } from "./elm-main-debug.js";
 
 import asciiFold from "./ascii-fold.js";
 
