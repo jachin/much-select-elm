@@ -5,7 +5,7 @@ import Fuzzy exposing (Result)
 
 type alias OptionSearchFilter =
     { totalScore : Int
-    , searchResult : Maybe OptionSearchResult
+    , searchResult : OptionSearchResult
     }
 
 
@@ -15,8 +15,8 @@ type alias OptionSearchResult =
     }
 
 
-new : OptionSearchFilter
-new =
-    { totalScore = 0
-    , searchResult = Nothing
+new : Int -> OptionSearchResult -> OptionSearchFilter
+new totalScore searchResult =
+    { totalScore = totalScore
+    , searchResult = searchResult
     }

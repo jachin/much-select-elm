@@ -1,8 +1,9 @@
-module OptionSearcher exposing (bestMatch, search, simpleMatch)
+module OptionSearcher exposing (bestMatch, search, simpleMatch, updateOptions)
 
 import Fuzzy exposing (Result, match)
 import Option exposing (Option)
 import OptionSearchFilter exposing (OptionSearchResult)
+import SelectionMode exposing (CustomOptions(..), SelectionMode)
 
 
 simpleMatch : String -> String -> Result
@@ -41,3 +42,35 @@ search string option =
                 |> Option.optionDescriptionToSearchString
             )
     }
+
+
+updateOptions : SelectionMode -> String -> List Option -> List Option
+updateOptions selectionMode searchString options =
+    options
+        |> updateOrAddCustomOption searchString selectionMode
+        |> updateOptionsWithSearchString searchString
+
+
+updateOrAddCustomOption : String -> SelectionMode -> List Option -> List Option
+updateOrAddCustomOption searchString selectionMode options =
+    case SelectionMode.getCustomOptions selectionMode of
+        AllowCustomOptions ->
+            Option.updateOrAddCustomOption searchString options
+
+        NoCustomOptions ->
+            options
+
+
+updateOptionsWithSearchString : String -> List Option -> List Option
+updateOptionsWithSearchString searchString options =
+    options
+        |> List.map
+            (\option ->
+                let
+                    searchResult =
+                        search searchString option
+                in
+                Option.setOptionSearchFilter
+                    (Just (OptionSearchFilter.new (searchResult.labelMatch.score + searchResult.descriptionMatch.score) searchResult))
+                    option
+            )

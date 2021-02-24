@@ -21,7 +21,6 @@ import Option
         , OptionValue
         )
 import OptionSearchFilter exposing (OptionSearchResult)
-import OptionSearcher exposing (search)
 import Stack
 import String.Graphemes
 
@@ -264,32 +263,46 @@ prepareOptionsForPresentation maxDropdownItems searchString options =
                         , descriptionMarkup = text ""
                         }
 
-                    Option.Option _ _ _ _ _ _ ->
-                        let
-                            searchResult =
-                                search searchString option
-
-                            totalScore =
-                                searchResult.labelMatch.score + searchResult.descriptionMatch.score
-                        in
+                    Option.Option _ _ _ _ _ maybeSearchFilter ->
                         { display = Option.getOptionDisplay option
                         , label = Option.getOptionLabel option
                         , value = Option.getOptionValue option
                         , group = Option.getOptionGroup option
                         , description = Option.getOptionDescription option
-                        , searchResult = Just searchResult
-                        , totalScore = totalScore
+                        , searchResult = Maybe.map .searchResult maybeSearchFilter
+                        , totalScore = Maybe.map .totalScore maybeSearchFilter |> Maybe.withDefault 0
                         , labelMarkup =
-                            highlightMarkup
-                                (Option.getOptionLabel option |> Option.optionLabelToString)
-                                searchResult.labelMatch
+                            case maybeSearchFilter of
+                                Just searchFilter ->
+                                    highlightMarkup
+                                        (Option.getOptionLabel option |> Option.optionLabelToString)
+                                        searchFilter.searchResult.labelMatch
+
+                                Nothing ->
+                                    span []
+                                        [ text
+                                            (option
+                                                |> Option.getOptionLabel
+                                                |> Option.optionLabelToString
+                                            )
+                                        ]
                         , descriptionMarkup =
-                            highlightMarkup
-                                (Option.getOptionDescription option
-                                    |> Option.optionDescriptionToString
-                                )
-                                searchResult.descriptionMatch
+                            case maybeSearchFilter of
+                                Just searchFilter ->
+                                    highlightMarkup
+                                        (Option.getOptionDescription option
+                                            |> Option.optionDescriptionToString
+                                        )
+                                        searchFilter.searchResult.descriptionMatch
+
+                                Nothing ->
+                                    span []
+                                        [ text
+                                            (option
+                                                |> Option.getOptionDescription
+                                                |> Option.optionDescriptionToString
+                                            )
+                                        ]
                         }
             )
-        |> List.sortBy .totalScore
         |> List.take maxDropdownItems

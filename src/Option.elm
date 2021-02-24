@@ -50,6 +50,7 @@ module Option exposing
     , setDescription
     , setGroup
     , setLabel
+    , setOptionSearchFilter
     , setSelectedOptionInNewOptions
     , stringToOptionValue
     , toggleSelectedHighlightByOptionValue
@@ -63,8 +64,8 @@ import SelectionMode exposing (SelectionMode(..))
 
 
 type Option
-    = Option OptionDisplay OptionLabel OptionValue OptionDescription OptionGroup OptionSearchFilter
-    | CustomOption OptionDisplay OptionLabel OptionValue OptionSearchFilter
+    = Option OptionDisplay OptionLabel OptionValue OptionDescription OptionGroup (Maybe OptionSearchFilter)
+    | CustomOption OptionDisplay OptionLabel OptionValue (Maybe OptionSearchFilter)
     | EmptyOption OptionDisplay OptionLabel
 
 
@@ -209,7 +210,7 @@ newOption value maybeCleanLabel =
                 (OptionValue value)
                 NoDescription
                 NoOptionGroup
-                OptionSearchFilter.new
+                Nothing
 
 
 setLabel : String -> Maybe String -> Option -> Option
@@ -300,6 +301,31 @@ setOptionDisplay optionDisplay option =
             EmptyOption optionDisplay optionLabel
 
 
+setOptionSearchFilter : Maybe OptionSearchFilter -> Option -> Option
+setOptionSearchFilter maybeOptionSearchFilter option =
+    case option of
+        Option optionDisplay optionLabel optionValue optionDescription optionGroup _ ->
+            Option
+                optionDisplay
+                optionLabel
+                optionValue
+                optionDescription
+                optionGroup
+                maybeOptionSearchFilter
+
+        CustomOption optionDisplay optionLabel optionValue _ ->
+            CustomOption
+                optionDisplay
+                optionLabel
+                optionValue
+                maybeOptionSearchFilter
+
+        EmptyOption optionDisplay optionLabel ->
+            EmptyOption
+                optionDisplay
+                optionLabel
+
+
 newSelectedOption : String -> Maybe String -> Option
 newSelectedOption string maybeCleanLabel =
     Option OptionSelected
@@ -307,7 +333,7 @@ newSelectedOption string maybeCleanLabel =
         (OptionValue string)
         NoDescription
         NoOptionGroup
-        OptionSearchFilter.new
+        Nothing
 
 
 newDisabledOption : String -> Maybe String -> Option
@@ -317,7 +343,7 @@ newDisabledOption string maybeCleanLabel =
         (OptionValue string)
         NoDescription
         NoOptionGroup
-        OptionSearchFilter.new
+        Nothing
 
 
 getOptionDisplay : Option -> OptionDisplay
@@ -502,7 +528,7 @@ updateOrAddCustomOption searchString options =
             OptionShown
             (OptionLabel ("Add " ++ searchString ++ "…") Nothing)
             (OptionValue searchString)
-            OptionSearchFilter.new
+            Nothing
         ]
             ++ options_
 
@@ -1436,7 +1462,7 @@ decodeOptionWithAValue =
         )
         descriptionDecoder
         optionGroupDecoder
-        (Json.Decode.succeed OptionSearchFilter.new)
+        (Json.Decode.succeed Nothing)
 
 
 displayDecoder : Json.Decode.Decoder OptionDisplay

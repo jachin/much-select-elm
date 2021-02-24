@@ -209,42 +209,13 @@ update msg model =
                 ]
             )
 
-        SearchInputOnInput string ->
-            let
-                options =
-                    case SelectionMode.getCustomOptions model.selectionMode of
-                        AllowCustomOptions ->
-                            Option.updateOrAddCustomOption string model.options
-
-                        NoCustomOptions ->
-                            model.options
-            in
-            case bestMatch string model.options of
-                Just (Option _ _ value _ _ _) ->
-                    ( { model
-                        | searchString = string
-                        , options = highlightOptionInListByValue value options
-                      }
-                    , inputKeyUp string
-                    )
-
-                Just (CustomOption _ _ value _) ->
-                    ( { model
-                        | searchString = string
-                        , options = highlightOptionInListByValue value options
-                      }
-                    , inputKeyUp string
-                    )
-
-                Just (EmptyOption _ _) ->
-                    ( { model | searchString = string, options = options }
-                    , inputKeyUp string
-                    )
-
-                Nothing ->
-                    ( { model | searchString = string, options = options }
-                    , inputKeyUp string
-                    )
+        SearchInputOnInput searchString ->
+            ( { model
+                | searchString = searchString
+                , options = OptionSearcher.updateOptions model.selectionMode searchString model.options
+              }
+            , inputKeyUp searchString
+            )
 
         ValueChanged valuesJson ->
             let
