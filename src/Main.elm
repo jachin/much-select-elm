@@ -67,7 +67,8 @@ import Option
         , selectSingleOptionInList
         , selectedOptionsToTuple
         )
-import OptionSearcher exposing (bestMatch)
+import OptionPresentor exposing (tokensToHtml)
+import OptionSearcher
 import Ports
     exposing
         ( addItem
@@ -793,17 +794,37 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
         descriptionHtml : Html msg
         descriptionHtml =
             if option |> Option.getOptionDescription |> Option.optionDescriptionToBool then
-                div
-                    [ class "description"
-                    ]
-                    [ span [] [ Option.getOptionDescription option |> Option.optionDescriptionToString |> text ] ]
+                case Option.getMaybeOptionSearchFilter option of
+                    Just optionSearchFilter ->
+                        div
+                            [ class "description"
+                            ]
+                            [ span [] (tokensToHtml optionSearchFilter.descriptionTokens)
+                            ]
+
+                    Nothing ->
+                        div
+                            [ class "description"
+                            ]
+                            [ span []
+                                [ option
+                                    |> Option.getOptionDescription
+                                    |> Option.optionDescriptionToString
+                                    |> text
+                                ]
+                            ]
 
             else
                 text ""
 
         labelHtml : Html msg
         labelHtml =
-            span [] [ Option.getOptionLabel option |> Option.optionLabelToString |> text ]
+            case Option.getMaybeOptionSearchFilter option of
+                Just optionSearchFilter ->
+                    span [] (tokensToHtml optionSearchFilter.labelTokens)
+
+                Nothing ->
+                    span [] [ Option.getOptionLabel option |> Option.optionLabelToString |> text ]
     in
     case Option.getOptionDisplay option of
         OptionShown ->

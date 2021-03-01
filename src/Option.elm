@@ -14,6 +14,7 @@ module Option exposing
     , deselectOptionInListByOptionValue
     , emptyOptionGroup
     , findOptionByOptionValue
+    , getMaybeOptionSearchFilter
     , getOptionDescription
     , getOptionDisplay
     , getOptionGroup
@@ -403,6 +404,19 @@ getOptionDescription option =
 
         EmptyOption _ _ ->
             NoDescription
+
+
+getMaybeOptionSearchFilter : Option -> Maybe OptionSearchFilter
+getMaybeOptionSearchFilter option =
+    case option of
+        Option _ _ _ _ _ maybeOptionSearchFilter ->
+            maybeOptionSearchFilter
+
+        CustomOption _ _ _ maybeOptionSearchFilter ->
+            maybeOptionSearchFilter
+
+        EmptyOption _ _ ->
+            Nothing
 
 
 selectedOptionsToTuple : List Option -> List ( String, String )

@@ -2,6 +2,7 @@ module OptionSearcher exposing (bestMatch, search, simpleMatch, updateOptions)
 
 import Fuzzy exposing (Result, match)
 import Option exposing (Option)
+import OptionPresentor exposing (tokenize)
 import OptionSearchFilter exposing (OptionSearchResult)
 import SelectionMode exposing (CustomOptions(..), SelectionMode)
 
@@ -83,10 +84,24 @@ updateOptionsWithSearchString searchString options =
                 |> List.map
                     (\option ->
                         let
+                            searchResult : OptionSearchResult
                             searchResult =
                                 search searchString option
+
+                            labelTokens =
+                                tokenize (option |> Option.getOptionLabel |> Option.optionLabelToString) searchResult.labelMatch
+
+                            descriptionTokens =
+                                tokenize (option |> Option.getOptionDescription |> Option.optionDescriptionToString) searchResult.descriptionMatch
                         in
                         Option.setOptionSearchFilter
-                            (Just (OptionSearchFilter.new (searchResult.labelMatch.score + searchResult.descriptionMatch.score) searchResult))
+                            (Just
+                                (OptionSearchFilter.new
+                                    (searchResult.labelMatch.score + searchResult.descriptionMatch.score)
+                                    searchResult
+                                    labelTokens
+                                    descriptionTokens
+                                )
+                            )
                             option
                     )
