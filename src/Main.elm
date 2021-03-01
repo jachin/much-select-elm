@@ -17,7 +17,6 @@ import Html.Styled
     exposing
         ( Html
         , div
-        , fromUnstyled
         , input
         , node
         , span
@@ -68,7 +67,6 @@ import Option
         , selectSingleOptionInList
         , selectedOptionsToTuple
         )
-import OptionPresentor exposing (OptionPresenter)
 import OptionSearcher exposing (bestMatch)
 import Ports
     exposing
@@ -708,7 +706,7 @@ dropdown model =
                 DropdownMouseOutOption
                 DropdownMouseClickOption
                 model.selectionMode
-                (OptionPresentor.prepareOptionsForPresentation model.maxDropdownItems model.searchString model.options)
+                model.options
 
         dropdownCss =
             css
@@ -741,7 +739,7 @@ optionsToDropdownOptions :
     -> (OptionValue -> msg)
     -> (OptionValue -> msg)
     -> SelectionMode
-    -> List (OptionPresenter msg)
+    -> List Option
     -> List (Html msg)
 optionsToDropdownOptions mouseOverMsgConstructor mouseOutMsgConstructor clickMsgConstructor selectionMode options =
     let
@@ -752,10 +750,10 @@ optionsToDropdownOptions mouseOverMsgConstructor mouseOutMsgConstructor clickMsg
                 clickMsgConstructor
                 selectionMode
 
-        helper : OptionGroup -> OptionPresenter msg -> ( OptionGroup, List (Html msg) )
+        helper : OptionGroup -> Option -> ( OptionGroup, List (Html msg) )
         helper previousGroup option_ =
-            ( option_.group
-            , option_ |> partialWithSelectionMode (previousGroup /= option_.group)
+            ( Option.getOptionGroup option_
+            , option_ |> partialWithSelectionMode (previousGroup /= Option.getOptionGroup option_)
             )
     in
     options
@@ -771,7 +769,7 @@ optionToDropdownOption :
     -> (OptionValue -> msg)
     -> SelectionMode
     -> Bool
-    -> OptionPresenter msg
+    -> Option
     -> List (Html msg)
 optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgConstructor selectionMode prependOptionGroup option =
     let
@@ -780,32 +778,43 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
                 div
                     [ class "optgroup"
                     ]
-                    [ span [ class "optgroup-header" ] [ text (Option.optionGroupToString option.group) ] ]
+                    [ span [ class "optgroup-header" ]
+                        [ text
+                            (option
+                                |> Option.getOptionGroup
+                                |> Option.optionGroupToString
+                            )
+                        ]
+                    ]
 
             else
                 text ""
 
         descriptionHtml : Html msg
         descriptionHtml =
-            if OptionPresentor.hasDescription option then
+            if option |> Option.getOptionDescription |> Option.optionDescriptionToBool then
                 div
                     [ class "description"
                     ]
-                    [ fromUnstyled option.descriptionMarkup ]
+                    [ span [] [ Option.getOptionDescription option |> Option.optionDescriptionToString |> text ] ]
 
             else
                 text ""
+
+        labelHtml : Html msg
+        labelHtml =
+            span [] [ Option.getOptionLabel option |> Option.optionLabelToString |> text ]
     in
-    case option.display of
+    case Option.getOptionDisplay option of
         OptionShown ->
             [ optionGroupHtml
             , div
-                [ onMouseEnter (mouseOverMsgConstructor option.value)
-                , onMouseLeave (mouseOutMsgConstructor option.value)
-                , mousedownPreventDefaultAndStopPropagation (clickMsgConstructor option.value)
+                [ onMouseEnter (option |> Option.getOptionValue |> mouseOverMsgConstructor)
+                , onMouseLeave (option |> Option.getOptionValue |> mouseOutMsgConstructor)
+                , mousedownPreventDefaultAndStopPropagation (option |> Option.getOptionValue |> clickMsgConstructor)
                 , class "option"
                 ]
-                [ fromUnstyled option.labelMarkup, descriptionHtml ]
+                [ labelHtml, descriptionHtml ]
             ]
 
         OptionHidden ->
@@ -819,7 +828,7 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
                         [ class "selected"
                         , class "option"
                         ]
-                        [ fromUnstyled option.labelMarkup, descriptionHtml ]
+                        [ labelHtml, descriptionHtml ]
                     ]
 
                 MultiSelect _ ->
@@ -833,7 +842,7 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
                         [ class "selected"
                         , class "option"
                         ]
-                        [ fromUnstyled option.labelMarkup, descriptionHtml ]
+                        [ labelHtml, descriptionHtml ]
                     ]
 
                 MultiSelect _ ->
@@ -842,13 +851,13 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
         OptionHighlighted ->
             [ optionGroupHtml
             , div
-                [ onMouseEnter (mouseOverMsgConstructor option.value)
-                , onMouseLeave (mouseOutMsgConstructor option.value)
-                , mousedownPreventDefaultAndStopPropagation (clickMsgConstructor option.value)
+                [ onMouseEnter (option |> Option.getOptionValue |> mouseOverMsgConstructor)
+                , onMouseLeave (option |> Option.getOptionValue |> mouseOutMsgConstructor)
+                , mousedownPreventDefaultAndStopPropagation (option |> Option.getOptionValue |> clickMsgConstructor)
                 , class "highlighted"
                 , class "option"
                 ]
-                [ fromUnstyled option.labelMarkup, descriptionHtml ]
+                [ labelHtml, descriptionHtml ]
             ]
 
         OptionDisabled ->
@@ -857,7 +866,7 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
                 [ class "disabled"
                 , class "option"
                 ]
-                [ fromUnstyled option.labelMarkup, descriptionHtml ]
+                [ labelHtml, descriptionHtml ]
             ]
 
 

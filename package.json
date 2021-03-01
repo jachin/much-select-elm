@@ -18,7 +18,6 @@
   },
   "author": "Jachin Rupe <jachin.rupe@drip.com>",
   "license": "MIT",
-  "dependencies": {},
   "devDependencies": {
     "elm-esm": "^1.1.2",
     "elm-format": "^0.8.5",
