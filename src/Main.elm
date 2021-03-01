@@ -211,7 +211,9 @@ update msg model =
         SearchInputOnInput searchString ->
             ( { model
                 | searchString = searchString
-                , options = OptionSearcher.updateOptions model.selectionMode searchString model.options
+                , options =
+                    OptionSearcher.updateOptions model.selectionMode searchString model.options
+                        |> Option.sortOptionsByTotalScore
               }
             , inputKeyUp searchString
             )

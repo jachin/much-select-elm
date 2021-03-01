@@ -53,6 +53,7 @@ module Option exposing
     , setLabel
     , setOptionSearchFilter
     , setSelectedOptionInNewOptions
+    , sortOptionsByTotalScore
     , stringToOptionValue
     , toggleSelectedHighlightByOptionValue
     , updateOrAddCustomOption
@@ -783,6 +784,18 @@ addAdditionalOptionsToOptionList currentOptions newOptions =
 removeOptionsFromOptionList : List Option -> List Option -> List Option
 removeOptionsFromOptionList options optionsToRemove =
     List.filter (\option -> not (optionListContainsOptionWithValue option optionsToRemove)) options
+
+
+sortOptionsByTotalScore : List Option -> List Option
+sortOptionsByTotalScore options =
+    List.sortBy
+        (\option ->
+            option
+                |> getMaybeOptionSearchFilter
+                |> Maybe.map .totalScore
+                |> Maybe.withDefault 100000
+        )
+        options
 
 
 highlightOption : Option -> Option
