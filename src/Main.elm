@@ -201,7 +201,7 @@ update msg model =
                         SingleSelect _ ->
                             selectSingleOptionInList optionValue model.options
             in
-            ( { model | options = options, searchString = "" }
+            ( updateModelWithSearchStringChanges "" options model
             , Cmd.batch
                 [ makeCommandMessagesWhenValuesChanges options (Just optionValue)
                 , blurInput ()
@@ -209,12 +209,7 @@ update msg model =
             )
 
         SearchInputOnInput searchString ->
-            ( { model
-                | searchString = searchString
-                , options =
-                    OptionSearcher.updateOptions model.selectionMode searchString model.options
-                        |> Option.sortOptionsByTotalScore
-              }
+            ( updateModelWithSearchStringChanges searchString model.options model
             , inputKeyUp searchString
             )
 
@@ -290,7 +285,9 @@ update msg model =
                                 SingleSelect _ ->
                                     selectSingleOptionInList optionValue model.options
                     in
-                    ( { model | options = options, searchString = "" }, makeCommandMessagesWhenValuesChanges options (Just optionValue) )
+                    ( updateModelWithSearchStringChanges "" options model
+                    , makeCommandMessagesWhenValuesChanges options (Just optionValue)
+                    )
 
                 Err error ->
                     ( model, errorMessage (Json.Decode.errorToString error) )
@@ -342,7 +339,7 @@ update msg model =
             in
             case model.selectionMode of
                 SingleSelect _ ->
-                    ( { model | options = options, searchString = "" }
+                    ( updateModelWithSearchStringChanges "" options model
                     , Cmd.batch
                         -- TODO Figure out what the highlighted option in here
                         [ makeCommandMessagesWhenValuesChanges options Nothing
@@ -370,7 +367,7 @@ update msg model =
                     ( model, Cmd.none )
 
         EscapeKeyInInputFilter ->
-            ( { model | searchString = "" }, blurInput () )
+            ( updateModelWithSearchStringChanges "" model.options model, blurInput () )
 
         MoveHighlightedOptionUp ->
             ( { model | options = Option.moveHighlightedOptionUp model.options }, Cmd.none )
@@ -424,6 +421,16 @@ clearAllSelectedOption model =
         , deselectEventMsg
         ]
     )
+
+
+updateModelWithSearchStringChanges : String -> List Option -> Model -> Model
+updateModelWithSearchStringChanges searchString options model =
+    { model
+        | searchString = searchString
+        , options =
+            OptionSearcher.updateOptions model.selectionMode searchString options
+                |> Option.sortOptionsByTotalScore
+    }
 
 
 updateRightSlot : RightSlot -> SelectionMode -> Bool -> RightSlot
