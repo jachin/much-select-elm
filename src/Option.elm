@@ -22,6 +22,7 @@ module Option exposing
     , getOptionValue
     , hasSelectedOption
     , highlightOption
+    , highlightOptionInList
     , highlightOptionInListByValue
     , isEmptyOption
     , isOptionInListOfOptionsByValue

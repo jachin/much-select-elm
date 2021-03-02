@@ -425,12 +425,40 @@ clearAllSelectedOption model =
 
 updateModelWithSearchStringChanges : String -> List Option -> Model -> Model
 updateModelWithSearchStringChanges searchString options model =
-    { model
-        | searchString = searchString
-        , options =
+    let
+        optionsUpdatedWithSearchString =
             OptionSearcher.updateOptions model.selectionMode searchString options
-                |> Option.sortOptionsByTotalScore
-    }
+    in
+    case searchString of
+        "" ->
+            { model
+                | searchString = searchString
+                , options =
+                    OptionSearcher.updateOptions model.selectionMode searchString options
+                        |> Option.sortOptionsByTotalScore
+            }
+
+        _ ->
+            let
+                optionsSortedByTotalScore =
+                    optionsUpdatedWithSearchString
+                        |> Option.sortOptionsByTotalScore
+
+                maybeFirstOption =
+                    List.head optionsSortedByTotalScore
+
+                optionsSortedByTotalScoreWithTheFirstOptionHighlighted =
+                    case maybeFirstOption of
+                        Just firstOption ->
+                            Option.highlightOptionInList firstOption optionsSortedByTotalScore
+
+                        Nothing ->
+                            optionsSortedByTotalScore
+            in
+            { model
+                | searchString = searchString
+                , options = optionsSortedByTotalScoreWithTheFirstOptionHighlighted
+            }
 
 
 updateRightSlot : RightSlot -> SelectionMode -> Bool -> RightSlot
