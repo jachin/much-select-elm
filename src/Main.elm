@@ -435,7 +435,7 @@ updateModelWithSearchStringChanges searchString options model =
                 | searchString = searchString
                 , options =
                     OptionSearcher.updateOptions model.selectionMode searchString options
-                        |> Option.sortOptionsByTotalScore
+                        |> Option.sortOptionsByGroupAndLabel
             }
 
         _ ->

@@ -54,6 +54,7 @@ module Option exposing
     , setLabel
     , setOptionSearchFilter
     , setSelectedOptionInNewOptions
+    , sortOptionsByGroupAndLabel
     , sortOptionsByTotalScore
     , stringToOptionValue
     , toggleSelectedHighlightByOptionValue
@@ -795,6 +796,29 @@ sortOptionsByTotalScore options =
                 |> getMaybeOptionSearchFilter
                 |> Maybe.map .totalScore
                 |> Maybe.withDefault 100000
+        )
+        options
+
+
+sortOptionsByGroupAndLabel : List Option -> List Option
+sortOptionsByGroupAndLabel options =
+    options
+        |> List.Extra.groupWhile
+            (\optionA optionB ->
+                getOptionGroup optionA == getOptionGroup optionB
+            )
+        |> List.map (\( option_, options_ ) -> List.append [ option_ ] options_)
+        |> List.map (\options_ -> sortOptionsByLabel options_)
+        |> List.concat
+
+
+sortOptionsByLabel : List Option -> List Option
+sortOptionsByLabel options =
+    List.sortBy
+        (\option ->
+            option
+                |> getOptionLabel
+                |> optionLabelToString
         )
         options
 

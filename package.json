@@ -23,7 +23,7 @@
     "elm-format": "^0.8.5",
     "elm-hot": "^1.1.6",
     "elm-outdated": "^1.1.1",
-    "elm-test": "^0.19.1-revision6",
+    "elm-test": "github:rtfeldman/node-test-runner#master",
     "elm-tooling": "^1.2.0",
     "eslint": "^7.20.0",
     "eslint-config-airbnb-base": "^14.2.1",
