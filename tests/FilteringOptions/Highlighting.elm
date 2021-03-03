@@ -1,8 +1,8 @@
 module FilteringOptions.Highlighting exposing (suite)
 
 import Expect
-import Html exposing (span, text)
-import Html.Attributes exposing (class)
+import Html.Styled exposing (span, text)
+import Html.Styled.Attributes exposing (class)
 import OptionPresentor exposing (highlightMarkup, indexInsideMatch, tokenize)
 import OptionSearcher exposing (simpleMatch)
 import Test exposing (Test, describe, test)

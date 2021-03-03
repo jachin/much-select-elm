@@ -119,11 +119,30 @@ const cleanUpOption = (option) => {
 
 const cleanUpOptions = (options) => options.map(cleanUpOption);
 
+const makeDebouncedFunc = (func, timeout = 500) => {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      func.apply(this, args);
+    }, timeout);
+  };
+};
+
 // adapted from https://github.com/thread/elm-web-components
 
 class MuchSelect extends HTMLElement {
   constructor() {
     super();
+
+    /**
+     * Used in the CSS and elsewhere to determine what the
+     *  minimum width should be.
+     * TODO Perhaps this should be a property or attribute.
+     * @type {number}
+     * @private
+     */
+    this._minimunWidth = 200;
 
     /**
      * @type {string|null}
@@ -168,6 +187,22 @@ class MuchSelect extends HTMLElement {
     this._app = null;
 
     this._onSlotChange = this._onSlotChange.bind(this);
+
+    this._inputKeypressDebounceHandler = makeDebouncedFunc((searchString) => {
+      this.dispatchEvent(
+        new CustomEvent("inputKeyUpDebounced", {
+          bubbles: true,
+          detail: { searchString },
+        })
+      );
+    });
+
+    // noinspection JSUnresolvedFunction
+    this._resizeObserver = new ResizeObserver(() => {
+      // When the size changes we need to tell Elm so it can
+      //  adjust things like the width of the dropdown.
+      this.updateDimensions();
+    });
   }
 
   static get observedAttributes() {
@@ -214,48 +249,90 @@ class MuchSelect extends HTMLElement {
 
   // noinspection JSUnusedGlobalSymbols
   connectedCallback() {
-    // eslint-disable-next-line no-useless-catch
-    try {
-      const flags = this.buildFlags();
+    this.parentDivPromise.then((parentDiv) => {
+      const wrapperDiv = parentDiv.querySelector("#wrapper");
+      this._resizeObserver.observe(wrapperDiv);
+    });
 
-      // User shadow DOM.
-      const parentDiv = this.attachShadow({ mode: "open" });
+    // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
+    this.appPromise.then((app) =>
+      app.ports.muchSelectIsReady.subscribe(() => {
+        this.dispatchEvent(new CustomEvent("ready", { bubbles: true }));
+      })
+    );
 
-      const elmDiv = document.createElement("div");
-      const selectMenuInputSlot = document.createElement("slot");
-      selectMenuInputSlot.setAttribute("name", "select-input");
+    // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
+    this.appPromise.then((app) =>
+      app.ports.errorMessage.subscribe(this.errorHandler.bind(this))
+    );
 
-      parentDiv.innerHTML = "";
-      parentDiv.appendChild(this.styleTag);
-      parentDiv.appendChild(elmDiv);
-      parentDiv.appendChild(selectMenuInputSlot);
+    // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
+    this.appPromise.then((app) =>
+      app.ports.valueChanged.subscribe(this.valueChangedHandler.bind(this))
+    );
 
-      // noinspection JSUnresolvedVariable
-      this._app = Elm.Main.init({
-        flags,
-        node: elmDiv,
-      });
+    // noinspection JSUnresolvedVariable
+    this.appPromise.then((app) =>
+      app.ports.addItem.subscribe((valueLabelPair) => {
+        this.dispatchEvent(
+          new CustomEvent("addItem", {
+            bubbles: true,
+            detail: {
+              value: valueLabelPair[0],
+              label: valueLabelPair[1],
+            },
+          })
+        );
+      })
+    );
 
-      // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
-      this._app.ports.errorMessage.subscribe(this.errorHandler.bind(this));
+    // noinspection JSUnresolvedVariable
+    this.appPromise.then((app) =>
+      app.ports.inputKeyUp.subscribe((searchString) => {
+        this.dispatchEvent(
+          new CustomEvent("inputKeyUp", {
+            bubbles: true,
+            detail: { searchString },
+          })
+        );
 
-      // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
-      this._app.ports.valueChanged.subscribe(
-        this.valueChangedHandler.bind(this)
-      );
+        this._inputKeypressDebounceHandler(searchString);
+      })
+    );
 
-      // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
-      this._app.ports.blurInput.subscribe(() => {
+    // noinspection JSUnresolvedVariable
+    this.appPromise.then((app) =>
+      app.ports.valueCleared.subscribe(() => {
+        this.dispatchEvent(
+          new CustomEvent("valueCleared", {
+            bubbles: true,
+          })
+        );
+      })
+    );
+
+    // noinspection JSUnresolvedVariable
+    this.appPromise.then((app) =>
+      app.ports.customOptionSelected.subscribe(
+        this.customOptionSelected.bind(this)
+      )
+    );
+
+    // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
+    this.appPromise.then((app) =>
+      app.ports.blurInput.subscribe(() => {
         const inputFilterElement = this.shadowRoot.getElementById(
           "input-filter"
         );
         if (inputFilterElement) {
           inputFilterElement.blur();
         }
-      });
+      })
+    );
 
-      // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
-      this._app.ports.focusInput.subscribe(() => {
+    // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
+    this.appPromise.then((app) =>
+      app.ports.focusInput.subscribe(() => {
         window.requestAnimationFrame(() => {
           const inputFilterElement = this.shadowRoot.getElementById(
             "input-filter"
@@ -264,16 +341,34 @@ class MuchSelect extends HTMLElement {
             this.shadowRoot.getElementById("input-filter").focus();
           }
         });
-      });
+      })
+    );
 
-      const slot = this.shadowRoot.querySelector("slot[name=select-input]");
-      if (slot) {
-        slot.addEventListener("slotchange", this._onSlotChange);
-      }
-    } catch (error) {
-      // TODO Do something interesting here
-      throw error;
+    // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
+    this.appPromise.then((app) =>
+      app.ports.deselectItem.subscribe((deselectedValue) => {
+        const formattedValue = {
+          label: deselectedValue[0][1],
+          value: deselectedValue[0][0],
+        };
+        this.dispatchEvent(
+          new CustomEvent("deselectItem", {
+            bubbles: true,
+            detail: formattedValue,
+          })
+        );
+      })
+    );
+
+    const slot = this.shadowRoot.querySelector("slot[name=select-input]");
+    if (slot) {
+      slot.addEventListener("slotchange", this._onSlotChange);
     }
+  }
+
+  // noinspection JSUnusedGlobalSymbols
+  disconnectedCallback() {
+    this._resizeObserver.disconnect();
   }
 
   _onSlotChange() {
@@ -281,9 +376,11 @@ class MuchSelect extends HTMLElement {
     if (selectElement) {
       const optionsJson = buildOptionsFromSelectElement(selectElement);
 
-      // noinspection JSUnresolvedVariable
-      this._app.ports.optionsChangedReceiver.send(optionsJson);
-      this.updateDimensions();
+      this.appPromise.then((app) => {
+        // noinspection JSUnresolvedVariable
+        app.ports.optionsChangedReceiver.send(optionsJson);
+        this.updateDimensions();
+      });
     }
   }
 
@@ -303,18 +400,14 @@ class MuchSelect extends HTMLElement {
    */
   updateDimensions() {
     window.requestAnimationFrame(() => {
-      const dropdownElement = this.shadowRoot.getElementById("dropdown");
       const valueCasingElement = this.shadowRoot.getElementById("value-casing");
-      if (dropdownElement && valueCasingElement) {
-        let width = dropdownElement.offsetWidth;
+      if (valueCasingElement) {
+        let width = valueCasingElement.offsetWidth;
         let height = valueCasingElement.offsetHeight;
 
-        // Clamp the width between some min and max.
-        // TODO this min and max should probably not be hard coded here.
-        if (width < 100) {
-          width = 100;
-        } else if (width > 500) {
-          width = 500;
+        // Prevent the width from falling below some threshold.
+        if (width < this._minimunWidth) {
+          width = this._minimunWidth;
         }
 
         // Clamp the width between some min and max.
@@ -323,10 +416,12 @@ class MuchSelect extends HTMLElement {
           height = 20;
         }
 
-        // noinspection JSUnresolvedVariable
-        this._app.ports.valueCasingDimensionsChangedReceiver.send({
-          width,
-          height,
+        this.appPromise.then((app) => {
+          // noinspection JSUnresolvedVariable
+          app.ports.valueCasingDimensionsChangedReceiver.send({
+            width,
+            height,
+          });
         });
       }
     });
@@ -387,7 +482,7 @@ class MuchSelect extends HTMLElement {
       this.hasAttribute("multi-select") &&
       this.getAttribute("multi-select") !== "false"
     ) {
-      // If we are in mulit select mode put the list of values in the event.
+      // If we are in multi select mode put the list of values in the event.
       const valuesObj = valuesTuple.map((valueTuple) => ({
         value: valueTuple[0],
         label: valueTuple[1],
@@ -423,6 +518,77 @@ class MuchSelect extends HTMLElement {
     }
   }
 
+  customOptionSelected(values) {
+    if (
+      this.hasAttribute("multi-select") &&
+      this.getAttribute("multi-select") !== "false" &&
+      values.length > 0
+    ) {
+      // If we are in multi select mode put the list of values in the event.
+      this.dispatchEvent(
+        new CustomEvent("customValueSelected", {
+          bubbles: true,
+          detail: {
+            values,
+          },
+        })
+      );
+    } else if (values.length === 1) {
+      // If we are in single select mode put the list of values in the event.
+      this.dispatchEvent(
+        new CustomEvent("customValueSelected", {
+          bubbles: true,
+          detail: {
+            value: values[0],
+          },
+        })
+      );
+    } else {
+      // If we are in single select mode and there is not one value then something is wrong.
+      throw new TypeError(
+        `In single select mode we are expecting a single custom option, instead we got ${values.length}`
+      );
+    }
+  }
+
+  get appPromise() {
+    if (this._appPromise) {
+      return this._appPromise;
+    }
+    this._appPromise = new Promise((resolve, reject) => {
+      if (this._app) {
+        resolve(this._app);
+      } else {
+        try {
+          const flags = this.buildFlags();
+
+          // User shadow DOM.
+          this._parentDiv = this.attachShadow({ mode: "open" });
+
+          const html = this.templateTag.content.cloneNode(true);
+          this._parentDiv.append(html);
+
+          const elmDiv = this._parentDiv.querySelector("#mount-node");
+
+          // noinspection JSUnresolvedVariable
+          this._app = Elm.Main.init({
+            flags,
+            node: elmDiv,
+          });
+
+          resolve(this._app);
+        } catch (error) {
+          reject(error);
+        }
+      }
+    });
+    return this._appPromise;
+  }
+
+  get parentDivPromise() {
+    return this.appPromise.then(() => this._parentDiv);
+  }
+
   get selected() {
     return this._selected;
   }
@@ -434,15 +600,13 @@ class MuchSelect extends HTMLElement {
       // TODO perhaps this delimiter should be configurable
       const values = value.split(",");
 
-      // TODO Convert this._app to a function that get a promise that returns _app
-      //  when it is ready.
       // noinspection JSUnresolvedVariable
-      this._app.ports.valueChangedReceiver.send(values);
+      this.appPromise.then((app) =>
+        app.ports.valueChangedReceiver.send(values)
+      );
     } else {
-      // TODO Convert this._app to a function that get a promise that returns _app
-      //  when it is ready.
       // noinspection JSUnresolvedVariable
-      this._app.ports.valueChangedReceiver.send([]);
+      this.appPromise.then((app) => app.ports.valueChangedReceiver.send([]));
     }
   }
 
@@ -452,10 +616,11 @@ class MuchSelect extends HTMLElement {
 
   set placeholder(placeholder) {
     this.setAttribute("placeholder", placeholder);
-    // TODO Convert this._app to a function that get a promise that returns _app
-    //  when it is ready.
+
     // noinspection JSUnresolvedVariable
-    this._app.ports.placeholderChangedReceiver.send(placeholder);
+    this.appPromise.then((app) =>
+      app.ports.placeholderChangedReceiver.send(placeholder)
+    );
 
     this._placeholder = placeholder;
   }
@@ -477,7 +642,9 @@ class MuchSelect extends HTMLElement {
       this.removeAttribute("disabled");
     }
     // noinspection JSUnresolvedVariable
-    this._app.ports.disableChangedReceiver.send(this._disabled);
+    this.appPromise.then((app) =>
+      app.ports.disableChangedReceiver.send(this._disabled)
+    );
   }
 
   get maxDropdownItems() {
@@ -500,8 +667,8 @@ class MuchSelect extends HTMLElement {
       this.setAttribute("max-dropdown-items", newValue);
     }
     // noinspection JSUnresolvedVariable
-    this._app.ports.maxDropdownItemsChangedReceiver.send(
-      this._maxDropdownItems
+    this.appPromise.then((app) =>
+      app.ports.maxDropdownItemsChangedReceiver.send(this._maxDropdownItems)
     );
   }
 
@@ -521,7 +688,9 @@ class MuchSelect extends HTMLElement {
       this.removeAttribute("loading");
     }
     // noinspection JSUnresolvedVariable
-    this._app.ports.loadingChangedReceiver.send(this._loading);
+    this.appPromise.then((app) =>
+      app.ports.loadingChangedReceiver.send(this._loading)
+    );
   }
 
   get allowCustomOptions() {
@@ -540,15 +709,15 @@ class MuchSelect extends HTMLElement {
       this.removeAttribute("allow-custom-options");
     }
     // noinspection JSUnresolvedVariable
-    this._app.ports.allowCustomOptionsReceiver.send(this._allowCustomOptions);
+    this.appPromise.then((app) =>
+      app.ports.allowCustomOptionsReceiver.send(this._allowCustomOptions)
+    );
   }
 
   // eslint-disable-next-line class-methods-use-this
   get styleTag() {
-    const styleTag = document.createElement("style");
-    styleTag.innerHTML = `
-
-
+    // noinspection CssInvalidPropertyValue
+    return `<style>
       :host {
         /*
         This web components should take up some space on the page.
@@ -559,7 +728,7 @@ class MuchSelect extends HTMLElement {
         */
 
         min-height: 40px;
-        min-width: 200px;
+        min-width: ${this._minimunWidth}px;
       }
 
       /*
@@ -574,8 +743,7 @@ class MuchSelect extends HTMLElement {
         margin-top: auto;
         margin-bottom: auto;
         position: relative;
-        max-width: 400px;
-        min-width: 200px;
+        min-width: ${this._minimunWidth}px;
       }
 
       /*
@@ -585,7 +753,6 @@ class MuchSelect extends HTMLElement {
       #value-casing {
         min-height: 34px;
         cursor: pointer;
-        overflow: hidden;
         -moz-appearance: textfield;
         -webkit-appearance: textfield;
         background-color: white;
@@ -597,6 +764,15 @@ class MuchSelect extends HTMLElement {
         padding: 4px 3px 2px 3px;
         display: flex;
         flex-flow: row nowrap;
+      }
+
+      #value-casing:hover, #value-casing:focus {
+        /*
+        TODO: I'm not sure this is the best place or the best way to indicate this
+        "input" is focused.
+        */
+        outline: none;
+        border-color: blue;
       }
 
       #value-casing.multi {
@@ -611,11 +787,10 @@ class MuchSelect extends HTMLElement {
       #value-casing .placeholder {
         color: silver;
         font-size: 25px;
-        vertical-align: middle;
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
-        flex-basis: 1;
+        flex-basis: auto;
       }
 
       #value-casing #input-filter {
@@ -628,16 +803,42 @@ class MuchSelect extends HTMLElement {
         The with width lets it grow as much as it can.
         */
         min-width: 10px;
-        width: 100%;
         /* Let's give the input a bit more room than the selected values.
         */
         flex-grow: 3;
         flex-shrink: 0;
         flex-basis: 10%;
+
         /* We don't want a border because the value-casing will supply the border for
           this input.
         */
         border: none;
+
+        /*
+        We do not want an outline on the input (filter) because we want everything
+        inside of the #value-casing to (kinda) act like a text input.
+        */
+        outline: none;
+        background: none;
+      }
+
+      #input-filter:hover, #input-filter:focus {
+        /*
+        We do not want an outline on the input (filter) because we want everything
+        inside of the #value-casing to (kinda) act like a text input.
+        */
+        outline: none;
+        background: white;
+      }
+
+      #input-filter:disabled {
+        /*
+        Removing the default background color on the disabled input.
+        We might want to do some additional styling for "disabled"
+        much-selects but that should probably happen on the value-casing
+        div.
+        */
+        background: none;
       }
 
       #value-casing.single {
@@ -649,6 +850,13 @@ class MuchSelect extends HTMLElement {
         background-image: none;
       }
 
+      #value-casing.single.has-option-selected #selected-value {
+        padding: 3px;
+        font-size: 20px;
+        margin: 2px 2px;
+        min-width: 10px;
+      }
+
       #value-casing.multi .value {
         padding: 3px;
         font-size: 20px;
@@ -657,8 +865,7 @@ class MuchSelect extends HTMLElement {
         background-repeat: repeat-x;
         margin: 2px 2px;
         border-radius: 5px;
-        border: 3px solid;
-        border-color: #d99477;
+        border: 3px solid #d99477;
         min-width: 10px;
 
         flex-grow: 0;
@@ -671,15 +878,21 @@ class MuchSelect extends HTMLElement {
         background-repeat: repeat-x;
       }
 
-      #value-casing.single {
-        width: 100%;
-      }
-
-      #select-indicator {
+      #dropdown-indicator {
         position: absolute;
         right: 3px;
-        top: 3px;
+        top: 15px;
         cursor: pointer;
+        display: block;
+        transition: transform 0.25s;
+      }
+
+      #dropdown-indicator.down {
+        transform: rotate(180deg);
+      }
+
+      #dropdown-indicator.up {
+        transform: rotate(0deg);
       }
 
       slot[name='loading-indicator'] {
@@ -700,11 +913,9 @@ class MuchSelect extends HTMLElement {
       #dropdown {
         background-color: #EEEEEE;
         visibility: hidden;
-        padding: 5px;
         position: absolute;
-        left: 0px;
+        left: 0;
         font-size: 20px;
-        min-width: 200px;
         display: inline-block;
         z-index: 10;
         max-height: 300px;
@@ -747,14 +958,47 @@ class MuchSelect extends HTMLElement {
         font-size: 0.85rem;
         padding: 3px;
       }
-      .highlight { color: blue }`;
 
-    return styleTag;
+      .highlight { color: blue }
+
+      /* This loading indicator was copied (almost exactly)
+        from this article.
+        https://dev.to/devmount/learn-css-animation-by-creating-pure-css-loaders-3lm6
+
+        It was chosen because it was so simple and short.
+      */
+      .default-loading-indicator {
+        height: 18px;
+        width: 18px;
+        border: 5px solid rgba(150, 150, 150, 0.2);
+        border-radius: 50%;
+        border-top-color: rgb(150, 150, 150);
+        animation: rotate 1s 0s infinite ease-in-out alternate;
+      }
+      @keyframes rotate {
+        0%   { transform: rotate(0);      }
+        100% { transform: rotate(360deg); }
+      }
+    </style>`;
+  }
+
+  get templateTag() {
+    const templateTag = document.createElement("template");
+    templateTag.innerHTML = `
+      <div>
+        ${this.styleTag}
+        <slot name="select-input"></slot>
+        <div id="mount-node"></div>
+      </div>
+    `;
+    return templateTag;
   }
 
   updateOptions(options) {
     // noinspection JSUnresolvedVariable
-    this._app.ports.optionsChangedReceiver.send(cleanUpOptions(options));
+    this.appPromise.then((app) =>
+      app.ports.optionsChangedReceiver.send(cleanUpOptions(options))
+    );
     this.updateDimensions();
   }
 
@@ -764,7 +1008,9 @@ class MuchSelect extends HTMLElement {
 
   addOptions(options) {
     // noinspection JSUnresolvedVariable
-    this._app.ports.addOptionsReceiver.send(cleanUpOptions(options));
+    this.appPromise.then((app) =>
+      app.ports.addOptionsReceiver.send(cleanUpOptions(options))
+    );
     this.updateDimensions();
   }
 
@@ -774,19 +1020,26 @@ class MuchSelect extends HTMLElement {
 
   removeOptions(options) {
     // noinspection JSUnresolvedVariable
-    this._app.ports.removeOptionsReceiver.send(cleanUpOptions(options));
+    this.appPromise.then((app) =>
+      app.ports.removeOptionsReceiver.send(cleanUpOptions(options))
+    );
     this.updateDimensions();
   }
 
   selectOption(option) {
     // noinspection JSUnresolvedVariable
-    this._app.ports.selectOptionReceiver.send(cleanUpOption(option));
+    this.appPromise.then((app) =>
+      app.ports.selectOptionReceiver.send(cleanUpOption(option))
+    );
   }
 
   deselectOption(option) {
     // noinspection JSUnresolvedVariable
-    this._app.ports.deselectOptionReceiver.send(cleanUpOption(option));
+    this.appPromise.then((app) =>
+      app.ports.deselectOptionReceiver.send(cleanUpOption(option))
+    );
   }
 }
 
+// noinspection JSUnusedGlobalSymbols
 export default MuchSelect;

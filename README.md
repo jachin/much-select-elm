@@ -12,6 +12,11 @@ The need for this project is that we want to use selectize.js however we need th
 
 The goal for this project to achieve near feature parity with selectize using web components. The API will be different, so it will not be a drop in replacement but hopefully it will not be too hard to replace one with the other.
 
+### Other Similar Projects
+
+- [React Select](https://react-select.com/home)
+- [inkuzmin/elm-multiselect](https://package.elm-lang.org/packages/inkuzmin/elm-multiselect/)
+
 ## Installation
 
 ```bash
@@ -42,6 +47,7 @@ Just do like you'd expect to get started. Only development dependencies.
 
 ``` bash
 npm install
+npx elm-tooling install
 ```
 
 ### Watch and Develop
@@ -49,10 +55,10 @@ npm install
 To run a webpack development server with the sandbox/demo page:
 
 ```bash
-npm run watch
+npm start
 ```
 
-Now you can visit http://localhost:8000
+Now you can visit http://localhost:1234
 
 ### Production Build
 

@@ -1,0 +1,32 @@
+# JetBrains
+.idea/
+
+# Scripts are not needed
+scripts/
+
+# Firebase config data is not needed in the npm package
+firebase.json
+.firebaserc
+.firebase/
+
+# system files
+.DS_Store
+
+# Parcel Cache
+.cache/
+
+# elm-stuff is not needed  in the npm package
+elm-stuff/
+
+# VS Code
+/.vscode
+
+# npm
+/node_modules/
+/npm-debug.log
+
+
+# The public site
+public/
+build/site
+build/output
