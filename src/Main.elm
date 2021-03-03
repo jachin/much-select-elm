@@ -654,13 +654,47 @@ singleSelectInputField : String -> Bool -> Bool -> String -> Bool -> Html Msg
 singleSelectInputField searchString isDisabled focused placeholder_ hasSelectedOptions =
     let
         keyboardEvents =
-            Keyboard.on Keyboard.Keydown
-                [ ( Enter, SelectHighlightedOption )
-                , ( Backspace, DeleteInputForSingleSelect )
-                , ( Delete, DeleteInputForSingleSelect )
-                , ( Escape, EscapeKeyInInputFilter )
-                , ( ArrowUp, MoveHighlightedOptionUp )
-                , ( ArrowDown, MoveHighlightedOptionDown )
+            Keyboard.customPerKey Keyboard.Keydown
+                [ ( Enter
+                  , { message = SelectHighlightedOption
+                    , preventDefault = False
+                    , stopPropagation = False
+                    }
+                  )
+                , ( Backspace
+                  , { message = DeleteInputForSingleSelect
+                    , preventDefault = False
+                    , stopPropagation = False
+                    }
+                  )
+                , ( Delete
+                  , { message = DeleteInputForSingleSelect
+                    , preventDefault = False
+                    , stopPropagation = False
+                    }
+                  )
+                , ( Escape
+                  , { message = EscapeKeyInInputFilter
+                    , preventDefault = False
+                    , stopPropagation = False
+                    }
+                  )
+
+                -- We need to prevent default on these because when we use the arrow keys we want to move
+                --  the highlighted option up and down but we do not want to move the cursor in the text box
+                --  to the end and the beginning of the input.
+                , ( ArrowUp
+                  , { message = MoveHighlightedOptionUp
+                    , preventDefault = True
+                    , stopPropagation = False
+                    }
+                  )
+                , ( ArrowDown
+                  , { message = MoveHighlightedOptionDown
+                    , preventDefault = True
+                    , stopPropagation = False
+                    }
+                  )
                 ]
 
         idAttr =
