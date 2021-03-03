@@ -738,13 +738,16 @@ dropdownIndicator focused disabled hasOptions =
 dropdown : Model -> Html Msg
 dropdown model =
     let
+        optionsToShow =
+            List.take model.maxDropdownItems model.options
+
         optionsHtml =
             optionsToDropdownOptions
                 DropdownMouseOverOption
                 DropdownMouseOutOption
                 DropdownMouseClickOption
                 model.selectionMode
-                model.options
+                optionsToShow
 
         dropdownCss =
             css
