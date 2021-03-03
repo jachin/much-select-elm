@@ -803,7 +803,7 @@ sortOptionsByTotalScore options =
 sortOptionsByGroupAndLabel : List Option -> List Option
 sortOptionsByGroupAndLabel options =
     options
-        |> List.Extra.groupWhile
+        |> List.Extra.gatherWith
             (\optionA optionB ->
                 getOptionGroup optionA == getOptionGroup optionB
             )
