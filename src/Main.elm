@@ -17,7 +17,6 @@ import Html.Styled
     exposing
         ( Html
         , div
-        , fromUnstyled
         , input
         , node
         , span
@@ -68,8 +67,8 @@ import Option
         , selectSingleOptionInList
         , selectedOptionsToTuple
         )
-import OptionPresentor exposing (OptionPresenter)
-import OptionSearcher exposing (bestMatch)
+import OptionPresentor exposing (tokensToHtml)
+import OptionSearcher
 import Ports
     exposing
         ( addItem
@@ -202,49 +201,17 @@ update msg model =
                         SingleSelect _ ->
                             selectSingleOptionInList optionValue model.options
             in
-            ( { model | options = options, searchString = "" }
+            ( updateModelWithSearchStringChanges "" options model
             , Cmd.batch
                 [ makeCommandMessagesWhenValuesChanges options (Just optionValue)
                 , blurInput ()
                 ]
             )
 
-        SearchInputOnInput string ->
-            let
-                options =
-                    case SelectionMode.getCustomOptions model.selectionMode of
-                        AllowCustomOptions ->
-                            Option.updateOrAddCustomOption string model.options
-
-                        NoCustomOptions ->
-                            model.options
-            in
-            case bestMatch string model.options of
-                Just (Option _ _ value _ _) ->
-                    ( { model
-                        | searchString = string
-                        , options = highlightOptionInListByValue value options
-                      }
-                    , inputKeyUp string
-                    )
-
-                Just (CustomOption _ _ value) ->
-                    ( { model
-                        | searchString = string
-                        , options = highlightOptionInListByValue value options
-                      }
-                    , inputKeyUp string
-                    )
-
-                Just (EmptyOption _ _) ->
-                    ( { model | searchString = string, options = options }
-                    , inputKeyUp string
-                    )
-
-                Nothing ->
-                    ( { model | searchString = string, options = options }
-                    , inputKeyUp string
-                    )
+        SearchInputOnInput searchString ->
+            ( updateModelWithSearchStringChanges searchString model.options model
+            , inputKeyUp searchString
+            )
 
         ValueChanged valuesJson ->
             let
@@ -318,7 +285,9 @@ update msg model =
                                 SingleSelect _ ->
                                     selectSingleOptionInList optionValue model.options
                     in
-                    ( { model | options = options, searchString = "" }, makeCommandMessagesWhenValuesChanges options (Just optionValue) )
+                    ( updateModelWithSearchStringChanges "" options model
+                    , makeCommandMessagesWhenValuesChanges options (Just optionValue)
+                    )
 
                 Err error ->
                     ( model, errorMessage (Json.Decode.errorToString error) )
@@ -370,7 +339,7 @@ update msg model =
             in
             case model.selectionMode of
                 SingleSelect _ ->
-                    ( { model | options = options, searchString = "" }
+                    ( updateModelWithSearchStringChanges "" options model
                     , Cmd.batch
                         -- TODO Figure out what the highlighted option in here
                         [ makeCommandMessagesWhenValuesChanges options Nothing
@@ -398,7 +367,7 @@ update msg model =
                     ( model, Cmd.none )
 
         EscapeKeyInInputFilter ->
-            ( { model | searchString = "" }, blurInput () )
+            ( updateModelWithSearchStringChanges "" model.options model, blurInput () )
 
         MoveHighlightedOptionUp ->
             ( { model | options = Option.moveHighlightedOptionUp model.options }, Cmd.none )
@@ -452,6 +421,44 @@ clearAllSelectedOption model =
         , deselectEventMsg
         ]
     )
+
+
+updateModelWithSearchStringChanges : String -> List Option -> Model -> Model
+updateModelWithSearchStringChanges searchString options model =
+    let
+        optionsUpdatedWithSearchString =
+            OptionSearcher.updateOptions model.selectionMode searchString options
+    in
+    case searchString of
+        "" ->
+            { model
+                | searchString = searchString
+                , options =
+                    OptionSearcher.updateOptions model.selectionMode searchString options
+                        |> Option.sortOptionsByGroupAndLabel
+            }
+
+        _ ->
+            let
+                optionsSortedByTotalScore =
+                    optionsUpdatedWithSearchString
+                        |> Option.sortOptionsByTotalScore
+
+                maybeFirstOption =
+                    List.head optionsSortedByTotalScore
+
+                optionsSortedByTotalScoreWithTheFirstOptionHighlighted =
+                    case maybeFirstOption of
+                        Just firstOption ->
+                            Option.highlightOptionInList firstOption optionsSortedByTotalScore
+
+                        Nothing ->
+                            optionsSortedByTotalScore
+            in
+            { model
+                | searchString = searchString
+                , options = optionsSortedByTotalScoreWithTheFirstOptionHighlighted
+            }
 
 
 updateRightSlot : RightSlot -> SelectionMode -> Bool -> RightSlot
@@ -677,9 +684,6 @@ singleSelectInputField searchString isDisabled focused placeholder_ hasSelectedO
 
             else
                 style "" ""
-
-        showInput =
-            showPlaceholder || focused
     in
     if isDisabled then
         input
@@ -740,7 +744,7 @@ dropdown model =
                 DropdownMouseOutOption
                 DropdownMouseClickOption
                 model.selectionMode
-                (OptionPresentor.prepareOptionsForPresentation model.maxDropdownItems model.searchString model.options)
+                model.options
 
         dropdownCss =
             css
@@ -773,7 +777,7 @@ optionsToDropdownOptions :
     -> (OptionValue -> msg)
     -> (OptionValue -> msg)
     -> SelectionMode
-    -> List (OptionPresenter msg)
+    -> List Option
     -> List (Html msg)
 optionsToDropdownOptions mouseOverMsgConstructor mouseOutMsgConstructor clickMsgConstructor selectionMode options =
     let
@@ -784,10 +788,10 @@ optionsToDropdownOptions mouseOverMsgConstructor mouseOutMsgConstructor clickMsg
                 clickMsgConstructor
                 selectionMode
 
-        helper : OptionGroup -> OptionPresenter msg -> ( OptionGroup, List (Html msg) )
+        helper : OptionGroup -> Option -> ( OptionGroup, List (Html msg) )
         helper previousGroup option_ =
-            ( option_.group
-            , option_ |> partialWithSelectionMode (previousGroup /= option_.group)
+            ( Option.getOptionGroup option_
+            , option_ |> partialWithSelectionMode (previousGroup /= Option.getOptionGroup option_)
             )
     in
     options
@@ -803,7 +807,7 @@ optionToDropdownOption :
     -> (OptionValue -> msg)
     -> SelectionMode
     -> Bool
-    -> OptionPresenter msg
+    -> Option
     -> List (Html msg)
 optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgConstructor selectionMode prependOptionGroup option =
     let
@@ -812,32 +816,63 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
                 div
                     [ class "optgroup"
                     ]
-                    [ span [ class "optgroup-header" ] [ text (Option.optionGroupToString option.group) ] ]
+                    [ span [ class "optgroup-header" ]
+                        [ text
+                            (option
+                                |> Option.getOptionGroup
+                                |> Option.optionGroupToString
+                            )
+                        ]
+                    ]
 
             else
                 text ""
 
         descriptionHtml : Html msg
         descriptionHtml =
-            if OptionPresentor.hasDescription option then
-                div
-                    [ class "description"
-                    ]
-                    [ fromUnstyled option.descriptionMarkup ]
+            if option |> Option.getOptionDescription |> Option.optionDescriptionToBool then
+                case Option.getMaybeOptionSearchFilter option of
+                    Just optionSearchFilter ->
+                        div
+                            [ class "description"
+                            ]
+                            [ span [] (tokensToHtml optionSearchFilter.descriptionTokens)
+                            ]
+
+                    Nothing ->
+                        div
+                            [ class "description"
+                            ]
+                            [ span []
+                                [ option
+                                    |> Option.getOptionDescription
+                                    |> Option.optionDescriptionToString
+                                    |> text
+                                ]
+                            ]
 
             else
                 text ""
+
+        labelHtml : Html msg
+        labelHtml =
+            case Option.getMaybeOptionSearchFilter option of
+                Just optionSearchFilter ->
+                    span [] (tokensToHtml optionSearchFilter.labelTokens)
+
+                Nothing ->
+                    span [] [ Option.getOptionLabel option |> Option.optionLabelToString |> text ]
     in
-    case option.display of
+    case Option.getOptionDisplay option of
         OptionShown ->
             [ optionGroupHtml
             , div
-                [ onMouseEnter (mouseOverMsgConstructor option.value)
-                , onMouseLeave (mouseOutMsgConstructor option.value)
-                , mousedownPreventDefaultAndStopPropagation (clickMsgConstructor option.value)
+                [ onMouseEnter (option |> Option.getOptionValue |> mouseOverMsgConstructor)
+                , onMouseLeave (option |> Option.getOptionValue |> mouseOutMsgConstructor)
+                , mousedownPreventDefaultAndStopPropagation (option |> Option.getOptionValue |> clickMsgConstructor)
                 , class "option"
                 ]
-                [ fromUnstyled option.labelMarkup, descriptionHtml ]
+                [ labelHtml, descriptionHtml ]
             ]
 
         OptionHidden ->
@@ -851,7 +886,7 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
                         [ class "selected"
                         , class "option"
                         ]
-                        [ fromUnstyled option.labelMarkup, descriptionHtml ]
+                        [ labelHtml, descriptionHtml ]
                     ]
 
                 MultiSelect _ ->
@@ -865,7 +900,7 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
                         [ class "selected"
                         , class "option"
                         ]
-                        [ fromUnstyled option.labelMarkup, descriptionHtml ]
+                        [ labelHtml, descriptionHtml ]
                     ]
 
                 MultiSelect _ ->
@@ -874,13 +909,13 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
         OptionHighlighted ->
             [ optionGroupHtml
             , div
-                [ onMouseEnter (mouseOverMsgConstructor option.value)
-                , onMouseLeave (mouseOutMsgConstructor option.value)
-                , mousedownPreventDefaultAndStopPropagation (clickMsgConstructor option.value)
+                [ onMouseEnter (option |> Option.getOptionValue |> mouseOverMsgConstructor)
+                , onMouseLeave (option |> Option.getOptionValue |> mouseOutMsgConstructor)
+                , mousedownPreventDefaultAndStopPropagation (option |> Option.getOptionValue |> clickMsgConstructor)
                 , class "highlighted"
                 , class "option"
                 ]
-                [ fromUnstyled option.labelMarkup, descriptionHtml ]
+                [ labelHtml, descriptionHtml ]
             ]
 
         OptionDisabled ->
@@ -889,7 +924,7 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
                 [ class "disabled"
                 , class "option"
                 ]
-                [ fromUnstyled option.labelMarkup, descriptionHtml ]
+                [ labelHtml, descriptionHtml ]
             ]
 
 
@@ -899,7 +934,7 @@ optionsToValuesHtml options =
         |> List.map
             (\option ->
                 case option of
-                    Option display (OptionLabel labelStr _) optionValue _ _ ->
+                    Option display (OptionLabel labelStr _) optionValue _ _ _ ->
                         case display of
                             OptionShown ->
                                 text ""
@@ -932,7 +967,7 @@ optionsToValuesHtml options =
                             OptionDisabled ->
                                 text ""
 
-                    CustomOption display (OptionLabel labelStr _) optionValue ->
+                    CustomOption display (OptionLabel labelStr _) optionValue _ ->
                         case display of
                             OptionShown ->
                                 text ""
