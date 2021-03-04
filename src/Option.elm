@@ -14,8 +14,7 @@ module Option exposing
     , deselectOptionInListByOptionValue
     , emptyOptionGroup
     , filterOptionsToShowInDropdown
-    , findHighlightedOption
-    , findHighlightedOptionIndex
+    , findHighlightedOrSelectedOptionIndex
     , findOptionByOptionValue
     , getMaybeOptionSearchFilter
     , getOptionDescription
@@ -353,6 +352,40 @@ newDisabledOption string maybeCleanLabel =
         Nothing
 
 
+isOptionSelected : Option -> Bool
+isOptionSelected option =
+    let
+        isOptionDisplaySelected optionDisplay =
+            case optionDisplay of
+                OptionShown ->
+                    False
+
+                OptionHidden ->
+                    False
+
+                OptionSelected ->
+                    True
+
+                OptionSelectedHighlighted ->
+                    True
+
+                OptionHighlighted ->
+                    False
+
+                OptionDisabled ->
+                    False
+    in
+    case option of
+        Option optionDisplay _ _ _ _ _ ->
+            isOptionDisplaySelected optionDisplay
+
+        CustomOption optionDisplay _ _ _ ->
+            isOptionDisplaySelected optionDisplay
+
+        EmptyOption optionDisplay _ ->
+            isOptionDisplaySelected optionDisplay
+
+
 getOptionDisplay : Option -> OptionDisplay
 getOptionDisplay option =
     case option of
@@ -558,12 +591,22 @@ updateOrAddCustomOption searchString options =
 
 findHighlightedOptionIndex : List Option -> Maybe Int
 findHighlightedOptionIndex options =
-    List.Extra.findIndex (\option -> optionIsHighlighted option) options
+    List.Extra.findIndex (\option -> isOptionHighlighted option) options
 
 
-findHighlightedOption : List Option -> Maybe Option
-findHighlightedOption options =
-    List.Extra.find (\option -> optionIsHighlighted option) options
+findSelectedOptionIndex : List Option -> Maybe Int
+findSelectedOptionIndex options =
+    List.Extra.findIndex (\option -> isOptionSelected option) options
+
+
+findHighlightedOrSelectedOptionIndex : List Option -> Maybe Int
+findHighlightedOrSelectedOptionIndex options =
+    case findHighlightedOptionIndex options of
+        Just index ->
+            Just index
+
+        Nothing ->
+            findSelectedOptionIndex options
 
 
 filterOptionsToShowInDropdown : List Option -> List Option
@@ -731,7 +774,7 @@ selectHighlightedOption selectionMode options =
     options
         |> List.filter
             (\option ->
-                optionIsHighlighted option
+                isOptionHighlighted option
             )
         |> List.head
         |> (\maybeOption ->
@@ -1008,8 +1051,8 @@ removeHighlightOption option =
                     EmptyOption OptionSelectedHighlighted label
 
 
-optionIsHighlighted : Option -> Bool
-optionIsHighlighted option =
+isOptionHighlighted : Option -> Bool
+isOptionHighlighted option =
     case option of
         Option display _ _ _ _ _ ->
             case display of

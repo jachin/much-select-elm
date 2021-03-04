@@ -568,7 +568,7 @@ figureOutWhichOptionsToShow maxNumberOfDropdownItems options =
         optionsThatCouldBeShown
 
     else
-        case Option.findHighlightedOptionIndex optionsThatCouldBeShown of
+        case Option.findHighlightedOrSelectedOptionIndex optionsThatCouldBeShown of
             Just index ->
                 case index of
                     0 ->
