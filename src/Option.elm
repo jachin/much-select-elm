@@ -687,7 +687,7 @@ moveHighlightedOptionUp options =
     let
         maybeHigherSibling =
             options
-                |> findHighlightedOptionIndex
+                |> findHighlightedOrSelectedOptionIndex
                 |> Maybe.andThen (\index -> findClosestHighlightableOptionGoingUp index options)
     in
     case maybeHigherSibling of
@@ -715,7 +715,7 @@ moveHighlightedOptionDown options =
     let
         maybeLowerSibling =
             options
-                |> findHighlightedOptionIndex
+                |> findHighlightedOrSelectedOptionIndex
                 |> Maybe.andThen (\index -> findClosestHighlightableOptionGoingDown index options)
     in
     case maybeLowerSibling of

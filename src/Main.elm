@@ -453,7 +453,7 @@ update msg model =
         ClearAllSelectedOptions ->
             clearAllSelectedOption model
 
-        ToggleSelectedValueHighlight optionValue ->
+        ToggleSelectedValueHighlight _ ->
             let
                 updatedOptions =
                     Option.moveHighlightedOptionDown model.options
