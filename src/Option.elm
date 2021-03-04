@@ -13,6 +13,9 @@ module Option exposing
     , deselectAllSelectedHighlightedOptions
     , deselectOptionInListByOptionValue
     , emptyOptionGroup
+    , filterOptionsToShowInDropdown
+    , findHighlightedOption
+    , findHighlightedOptionIndex
     , findOptionByOptionValue
     , getMaybeOptionSearchFilter
     , getOptionDescription
@@ -553,9 +556,39 @@ updateOrAddCustomOption searchString options =
         options_
 
 
-highlightedOptionIndex : List Option -> Maybe Int
-highlightedOptionIndex options =
+findHighlightedOptionIndex : List Option -> Maybe Int
+findHighlightedOptionIndex options =
     List.Extra.findIndex (\option -> optionIsHighlighted option) options
+
+
+findHighlightedOption : List Option -> Maybe Option
+findHighlightedOption options =
+    List.Extra.find (\option -> optionIsHighlighted option) options
+
+
+filterOptionsToShowInDropdown : List Option -> List Option
+filterOptionsToShowInDropdown =
+    List.filter
+        (\option ->
+            case getOptionDisplay option of
+                OptionShown ->
+                    True
+
+                OptionHidden ->
+                    False
+
+                OptionSelected ->
+                    True
+
+                OptionSelectedHighlighted ->
+                    True
+
+                OptionHighlighted ->
+                    True
+
+                OptionDisabled ->
+                    False
+        )
 
 
 highlightOptionInList : Option -> List Option -> List Option
@@ -610,7 +643,7 @@ moveHighlightedOptionUp options =
     let
         maybeHigherSibling =
             options
-                |> highlightedOptionIndex
+                |> findHighlightedOptionIndex
                 |> Maybe.andThen (\index -> findClosestHighlightableOptionGoingUp index options)
     in
     case maybeHigherSibling of
@@ -638,7 +671,7 @@ moveHighlightedOptionDown options =
     let
         maybeLowerSibling =
             options
-                |> highlightedOptionIndex
+                |> findHighlightedOptionIndex
                 |> Maybe.andThen (\index -> findClosestHighlightableOptionGoingDown index options)
     in
     case maybeLowerSibling of

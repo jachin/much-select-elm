@@ -88,6 +88,7 @@ import Ports
         , optionsChangedReceiver
         , placeholderChangedReceiver
         , removeOptionsReceiver
+        , scrollDropdownToElement
         , selectOptionReceiver
         , valueCasingDimensionsChangedReceiver
         , valueChanged
@@ -140,6 +141,7 @@ type alias Model =
     , size : String
     , selectionMode : SelectionMode
     , options : List Option
+    , optionsForTheDropdown : List Option
     , showDropdown : Bool
     , searchString : String
     , rightSlot : RightSlot
@@ -201,7 +203,7 @@ update msg model =
                         SingleSelect _ ->
                             selectSingleOptionInList optionValue model.options
             in
-            ( updateModelWithSearchStringChanges "" options model
+            ( updateModelWithSearchStringChanges model.maxDropdownItems "" options model
             , Cmd.batch
                 [ makeCommandMessagesWhenValuesChanges options (Just optionValue)
                 , blurInput ()
@@ -209,7 +211,7 @@ update msg model =
             )
 
         SearchInputOnInput searchString ->
-            ( updateModelWithSearchStringChanges searchString model.options model
+            ( updateModelWithSearchStringChanges model.maxDropdownItems searchString model.options model
             , inputKeyUp searchString
             )
 
@@ -285,7 +287,7 @@ update msg model =
                                 SingleSelect _ ->
                                     selectSingleOptionInList optionValue model.options
                     in
-                    ( updateModelWithSearchStringChanges "" options model
+                    ( updateModelWithSearchStringChanges model.maxDropdownItems "" options model
                     , makeCommandMessagesWhenValuesChanges options (Just optionValue)
                     )
 
@@ -339,7 +341,7 @@ update msg model =
             in
             case model.selectionMode of
                 SingleSelect _ ->
-                    ( updateModelWithSearchStringChanges "" options model
+                    ( updateModelWithSearchStringChanges model.maxDropdownItems "" options model
                     , Cmd.batch
                         -- TODO Figure out what the highlighted option in here
                         [ makeCommandMessagesWhenValuesChanges options Nothing
@@ -367,13 +369,13 @@ update msg model =
                     ( model, Cmd.none )
 
         EscapeKeyInInputFilter ->
-            ( updateModelWithSearchStringChanges "" model.options model, blurInput () )
+            ( updateModelWithSearchStringChanges model.maxDropdownItems "" model.options model, blurInput () )
 
         MoveHighlightedOptionUp ->
-            ( { model | options = Option.moveHighlightedOptionUp model.options }, Cmd.none )
+            ( { model | options = Option.moveHighlightedOptionUp model.options }, scrollDropdownToElement "something" )
 
         MoveHighlightedOptionDown ->
-            ( { model | options = Option.moveHighlightedOptionDown model.options }, Cmd.none )
+            ( { model | options = Option.moveHighlightedOptionDown model.options }, scrollDropdownToElement "something" )
 
         ValueCasingWidthUpdate dims ->
             ( { model | valueCasingWidth = dims.width, valueCasingHeight = dims.height }, Cmd.none )
@@ -423,8 +425,8 @@ clearAllSelectedOption model =
     )
 
 
-updateModelWithSearchStringChanges : String -> List Option -> Model -> Model
-updateModelWithSearchStringChanges searchString options model =
+updateModelWithSearchStringChanges : Int -> String -> List Option -> Model -> Model
+updateModelWithSearchStringChanges maxNumberOfDropdownItems searchString options model =
     let
         optionsUpdatedWithSearchString =
             OptionSearcher.updateOptions model.selectionMode searchString options
@@ -459,6 +461,52 @@ updateModelWithSearchStringChanges searchString options model =
                 | searchString = searchString
                 , options = optionsSortedByTotalScoreWithTheFirstOptionHighlighted
             }
+
+
+figureOutWhichOptionsToShow : Int -> List Option -> List Option
+figureOutWhichOptionsToShow maxNumberOfDropdownItems options =
+    let
+        optionsThatCouldBeShown =
+            Option.filterOptionsToShowInDropdown options
+    in
+    if List.length optionsThatCouldBeShown <= maxNumberOfDropdownItems then
+        optionsThatCouldBeShown
+
+    else
+        case Option.findHighlightedOptionIndex optionsThatCouldBeShown of
+            Just index ->
+                case index of
+                    0 ->
+                        List.take maxNumberOfDropdownItems optionsThatCouldBeShown
+
+                    _ ->
+                        if index == List.length optionsThatCouldBeShown - 1 then
+                            List.drop (List.length options - maxNumberOfDropdownItems) optionsThatCouldBeShown
+
+                        else
+                            let
+                                half =
+                                    maxNumberOfDropdownItems // 2
+                            in
+                            if index + half > List.length optionsThatCouldBeShown - 1 then
+                                let
+                                    extra =
+                                        index + half - List.length optionsThatCouldBeShown - 1
+                                in
+                                List.drop (index - half - extra) options
+
+                            else if index - half < 0 then
+                                let
+                                    extra =
+                                        abs (index - half)
+                                in
+                                List.take (index + half + extra) options
+
+                            else
+                                options |> List.drop (index - half) |> List.take maxNumberOfDropdownItems
+
+            Nothing ->
+                List.take maxNumberOfDropdownItems options
 
 
 updateRightSlot : RightSlot -> SelectionMode -> Bool -> RightSlot
@@ -1219,6 +1267,7 @@ init flags =
       , size = flags.size
       , selectionMode = selectionMode
       , options = optionsWithInitialValueSelected
+      , optionsForTheDropdown = []
       , showDropdown = False
       , searchString = ""
       , rightSlot =

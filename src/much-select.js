@@ -360,6 +360,25 @@ class MuchSelect extends HTMLElement {
       })
     );
 
+    // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
+    this.appPromise.then((app) =>
+      app.ports.scrollDropdownToElement.subscribe(() => {
+        // const dropdown = this.shadowRoot.getElementById("dropdown");
+        const highlightedOption = this.shadowRoot.querySelector(
+          "#dropdown .option.highlighted"
+        );
+        // console.log("scrollDropdownToElement", highlightedOption);
+
+        // const topPos = highlightedOption.offsetTop;
+        // dropdown.scrollTop = topPos;
+        if (highlightedOption) {
+          highlightedOption.scrollIntoView({
+            behavior: "smooth",
+          });
+        }
+      })
+    );
+
     const slot = this.shadowRoot.querySelector("slot[name=select-input]");
     if (slot) {
       slot.addEventListener("slotchange", this._onSlotChange);
