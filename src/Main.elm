@@ -468,6 +468,9 @@ figureOutWhichOptionsToShow maxNumberOfDropdownItems options =
     let
         optionsThatCouldBeShown =
             Option.filterOptionsToShowInDropdown options
+
+        lastIndexOfOptions =
+            List.length optionsThatCouldBeShown - 1
     in
     if List.length optionsThatCouldBeShown <= maxNumberOfDropdownItems then
         optionsThatCouldBeShown
@@ -486,24 +489,18 @@ figureOutWhichOptionsToShow maxNumberOfDropdownItems options =
                         else
                             let
                                 half =
-                                    maxNumberOfDropdownItems // 2
+                                    (maxNumberOfDropdownItems // 2) + 1
                             in
-                            if index + half > List.length optionsThatCouldBeShown - 1 then
-                                let
-                                    extra =
-                                        index + half - List.length optionsThatCouldBeShown - 1
-                                in
-                                List.drop (index - half - extra) options
+                            if index + half > lastIndexOfOptions then
+                                -- The "window" runs off the "tail" of the list, so just take the last options
+                                List.drop (List.length options - maxNumberOfDropdownItems) optionsThatCouldBeShown
 
                             else if index - half < 0 then
-                                let
-                                    extra =
-                                        abs (index - half)
-                                in
-                                List.take (index + half + extra) options
+                                -- The "window" runs off the "head" of the list, so just take the first options
+                                List.take maxNumberOfDropdownItems optionsThatCouldBeShown
 
                             else
-                                options |> List.drop (index - half) |> List.take maxNumberOfDropdownItems
+                                options |> List.drop (index + 1 - half) |> List.take maxNumberOfDropdownItems
 
             Nothing ->
                 List.take maxNumberOfDropdownItems options

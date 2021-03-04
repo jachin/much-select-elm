@@ -118,5 +118,41 @@ suite =
                             , chisel
                             ]
                         )
+            , test "it shows the maximum number of options before the highlighted option if the highlighted option is the last one" <|
+                \_ ->
+                    Expect.equalLists
+                        (figureOutWhichOptionsToShow 5 (highlightOptionInList signalTester tools))
+                        (highlightOptionInList signalTester
+                            [ sawZaw
+                            , wrench
+                            , hammer
+                            , chisel
+                            , signalTester
+                            ]
+                        )
+            , test "it shows the maximum number of options but offset if the highlighted option is just after the first one" <|
+                \_ ->
+                    Expect.equalLists
+                        (figureOutWhichOptionsToShow 5 (highlightOptionInList drill tools))
+                        (highlightOptionInList drill
+                            [ screwDriver
+                            , drill
+                            , multiMeter
+                            , sawZaw
+                            , wrench
+                            ]
+                        )
+            , test "it shows the maximum number of options but offset if the highlighted option is just before the last one" <|
+                \_ ->
+                    Expect.equalLists
+                        (figureOutWhichOptionsToShow 5 (highlightOptionInList chisel tools))
+                        (highlightOptionInList chisel
+                            [ sawZaw
+                            , wrench
+                            , hammer
+                            , chisel
+                            , signalTester
+                            ]
+                        )
             ]
         ]
