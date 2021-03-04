@@ -46,6 +46,11 @@ sawZaw =
         |> setGroup "Power Tool"
 
 
+xActoKnife =
+    newOption "xActo" Nothing
+        |> setGroup "Hand Tool"
+
+
 tools =
     [ screwDriver
     , drill
@@ -55,6 +60,7 @@ tools =
     , hammer
     , chisel
     , signalTester
+    , xActoKnife
     ]
 
 
@@ -82,17 +88,17 @@ suite =
             [ test "it should show all the options if nothing in highlighted" <|
                 \_ ->
                     Expect.equalLists
-                        (figureOutWhichOptionsToShow 8 tools)
+                        (figureOutWhichOptionsToShow 9 tools)
                         tools
             , test "it should show no options if the list is empty" <|
                 \_ ->
                     Expect.equalLists
-                        (figureOutWhichOptionsToShow 8 [])
+                        (figureOutWhichOptionsToShow 9 [])
                         []
             , test "it shows all the options even if something is highlighted" <|
                 \_ ->
                     Expect.equalLists
-                        (figureOutWhichOptionsToShow 8 (highlightOptionInList wrench tools))
+                        (figureOutWhichOptionsToShow 9 (highlightOptionInList wrench tools))
                         (highlightOptionInList wrench tools)
             ]
         , describe "when we have more options than the max (which is odd)"
@@ -121,13 +127,13 @@ suite =
             , test "it shows the maximum number of options before the highlighted option if the highlighted option is the last one" <|
                 \_ ->
                     Expect.equalLists
-                        (figureOutWhichOptionsToShow 5 (highlightOptionInList signalTester tools))
-                        (highlightOptionInList signalTester
-                            [ sawZaw
-                            , wrench
+                        (figureOutWhichOptionsToShow 5 (highlightOptionInList xActoKnife tools))
+                        (highlightOptionInList xActoKnife
+                            [ wrench
                             , hammer
                             , chisel
                             , signalTester
+                            , xActoKnife
                             ]
                         )
             , test "it shows the maximum number of options but offset if the highlighted option is just after the first one" <|
@@ -145,13 +151,78 @@ suite =
             , test "it shows the maximum number of options but offset if the highlighted option is just before the last one" <|
                 \_ ->
                     Expect.equalLists
-                        (figureOutWhichOptionsToShow 5 (highlightOptionInList chisel tools))
-                        (highlightOptionInList chisel
+                        (figureOutWhichOptionsToShow 5 (highlightOptionInList signalTester tools))
+                        (highlightOptionInList signalTester
+                            [ wrench
+                            , hammer
+                            , chisel
+                            , signalTester
+                            , xActoKnife
+                            ]
+                        )
+            ]
+        , describe "when we have more options than the max (which is even)"
+            [ test "it should show all the maximum number of options starting at the start of the list if nothing in highlighted" <|
+                \_ ->
+                    Expect.equalLists
+                        (figureOutWhichOptionsToShow 6 tools)
+                        [ screwDriver
+                        , drill
+                        , multiMeter
+                        , sawZaw
+                        , wrench
+                        , hammer
+                        ]
+            , test "it shows the options around the highlighted option, but with an extra option after the highlighted option" <|
+                \_ ->
+                    Expect.equalLists
+                        (highlightOptionInList wrench
+                            [ multiMeter
+                            , sawZaw
+                            , wrench
+                            , hammer
+                            , chisel
+                            , signalTester
+                            ]
+                        )
+                        (figureOutWhichOptionsToShow 6 (highlightOptionInList wrench tools))
+            , test "it shows the maximum number of options before the highlighted option if the highlighted option is the last one" <|
+                \_ ->
+                    Expect.equalLists
+                        (figureOutWhichOptionsToShow 6 (highlightOptionInList xActoKnife tools))
+                        (highlightOptionInList xActoKnife
                             [ sawZaw
                             , wrench
                             , hammer
                             , chisel
                             , signalTester
+                            , xActoKnife
+                            ]
+                        )
+            , test "it shows the maximum number of options but offset if the highlighted option is just after the first one" <|
+                \_ ->
+                    Expect.equalLists
+                        (figureOutWhichOptionsToShow 6 (highlightOptionInList drill tools))
+                        (highlightOptionInList drill
+                            [ screwDriver
+                            , drill
+                            , multiMeter
+                            , sawZaw
+                            , wrench
+                            , hammer
+                            ]
+                        )
+            , test "it shows the maximum number of options but offset if the highlighted option is just before the last one" <|
+                \_ ->
+                    Expect.equalLists
+                        (figureOutWhichOptionsToShow 6 (highlightOptionInList signalTester tools))
+                        (highlightOptionInList signalTester
+                            [ sawZaw
+                            , wrench
+                            , hammer
+                            , chisel
+                            , signalTester
+                            , xActoKnife
                             ]
                         )
             ]

@@ -488,8 +488,16 @@ figureOutWhichOptionsToShow maxNumberOfDropdownItems options =
 
                         else
                             let
+                                isEven =
+                                    modBy 2 maxNumberOfDropdownItems
+                                        == 0
+
                                 half =
-                                    (maxNumberOfDropdownItems // 2) + 1
+                                    if isEven then
+                                        maxNumberOfDropdownItems // 2
+
+                                    else
+                                        (maxNumberOfDropdownItems // 2) + 1
                             in
                             if index + half > lastIndexOfOptions then
                                 -- The "window" runs off the "tail" of the list, so just take the last options
@@ -498,6 +506,9 @@ figureOutWhichOptionsToShow maxNumberOfDropdownItems options =
                             else if index - half < 0 then
                                 -- The "window" runs off the "head" of the list, so just take the first options
                                 List.take maxNumberOfDropdownItems optionsThatCouldBeShown
+
+                            else if isEven then
+                                options |> List.drop (index + 1 - half) |> List.take maxNumberOfDropdownItems
 
                             else
                                 options |> List.drop (index + 1 - half) |> List.take maxNumberOfDropdownItems
