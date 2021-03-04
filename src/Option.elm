@@ -47,6 +47,7 @@ module Option exposing
     , removeOptionsFromOptionList
     , selectHighlightedOption
     , selectOption
+    , selectOptionInList
     , selectOptionInListByOptionValue
     , selectOptionsInOptionsListByString
     , selectSingleOptionInList
@@ -728,6 +729,11 @@ moveHighlightedOptionDown options =
 
                 Nothing ->
                     options
+
+
+selectOptionInList : Option -> List Option -> List Option
+selectOptionInList option options =
+    selectOptionInListByOptionValue (getOptionValue option) options
 
 
 selectOptionInListByOptionValue : OptionValue -> List Option -> List Option

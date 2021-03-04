@@ -2,7 +2,7 @@ module FilteringOptions.MaxNumberOfDropdownItems exposing (suite)
 
 import Expect
 import Main exposing (figureOutWhichOptionsToShow)
-import Option exposing (highlightOptionInList, newOption, setGroup)
+import Option exposing (highlightOptionInList, newOption, selectOptionInList, setGroup)
 import Test exposing (Test, describe, test)
 
 
@@ -224,6 +224,35 @@ suite =
                             , signalTester
                             , xActoKnife
                             ]
+                        )
+            ]
+        , describe "when we only have a selected option (nothing in highlighted)"
+            [ test "it should show the options around the selected option" <|
+                \_ ->
+                    Expect.equalLists
+                        (selectOptionInList wrench
+                            [ sawZaw
+                            , wrench
+                            , hammer
+                            ]
+                        )
+                        (figureOutWhichOptionsToShow 3 (selectOptionInList wrench tools))
+            ]
+        , describe "when we options that are selected and highlighted"
+            [ test "it should show the options around the highlighted option" <|
+                \_ ->
+                    Expect.equalLists
+                        (highlightOptionInList wrench
+                            [ sawZaw
+                            , wrench
+                            , hammer
+                            ]
+                        )
+                        (figureOutWhichOptionsToShow 3
+                            (tools
+                                |> highlightOptionInList wrench
+                                |> selectOptionInList xActoKnife
+                            )
                         )
             ]
         ]
