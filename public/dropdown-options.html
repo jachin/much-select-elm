@@ -22,9 +22,29 @@
 </nav>
 
 <div class="container">
+
   <div id="max-number-of-dropdown-items">
     <h3>Maximum Number of Dropdown Items</h3>
     <p>Option "beyond" the limit are still accessible by searching</p>
+    <much-select max-dropdown-items="5">
+      <select slot="select-input">
+        <option>Hydrogen</option>
+        <option>Lithium</option>
+        <option>Sodium</option>
+        <option>Potassium</option>
+        <option>Rubidium</option>
+        <option>Caesium</option>
+        <option>Francium</option>
+        <option>Lanthanum</option>
+        <option>Actinium</option>
+      </select>
+    </much-select>
+
+  </div>
+
+  <div id="max-number-of-dropdown-items-big-list">
+    <h3>Maximum Number of Dropdown Items in a Big List</h3>
+    <p>See how it behaves with a massive number of options</p>
     <much-select max-dropdown-items="10">
       <select slot="select-input">
         <option>Unenlagia</option>
