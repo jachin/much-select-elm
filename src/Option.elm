@@ -63,10 +63,10 @@ module Option exposing
 
 import Json.Decode
 import List.Extra
-import OptionLabel exposing (OptionLabel(..), labelDecoder, optionLabelToSearchString, optionLabelToString)
+import OptionLabel exposing (OptionLabel(..), getSortRank, labelDecoder, optionLabelToSearchString, optionLabelToString)
 import OptionSearchFilter exposing (OptionSearchFilter)
 import SelectionMode exposing (SelectionMode(..))
-import SortRank exposing (SortRank(..))
+import SortRank exposing (SortRank(..), getAutoIndexForSorting)
 
 
 type Option
@@ -879,6 +879,13 @@ sortOptionsByLabel options =
                 |> optionLabelToString
         )
         options
+        |> List.sortBy
+            (\option ->
+                option
+                    |> getOptionLabel
+                    |> getSortRank
+                    |> getAutoIndexForSorting
+            )
 
 
 highlightOption : Option -> Option

@@ -27,6 +27,13 @@ optionLabelToSearchString optionLabel =
                     String.toLower string
 
 
+getSortRank : OptionLabel -> SortRank
+getSortRank optionLabel =
+    case optionLabel of
+        OptionLabel _ _ sortRank ->
+            sortRank
+
+
 labelDecoder : Json.Decode.Decoder OptionLabel
 labelDecoder =
     Json.Decode.map3
