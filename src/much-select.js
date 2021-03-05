@@ -252,6 +252,14 @@ class MuchSelect extends HTMLElement {
     this.parentDivPromise.then((parentDiv) => {
       const wrapperDiv = parentDiv.querySelector("#wrapper");
       this._resizeObserver.observe(wrapperDiv);
+
+      parentDiv.addEventListener("mousedown", (evt) => {
+        // This stops the dropdown from flashes when the user clicks
+        //  on a optgroup. And it kinda makes sense. we don't want
+        //  mousedown events escaping and effecting the DOM.
+        evt.stopImmediatePropagation();
+        evt.preventDefault();
+      });
     });
 
     // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
@@ -946,6 +954,7 @@ class MuchSelect extends HTMLElement {
         z-index: 10;
         max-height: 300px;
         overflow-y: auto;
+        cursor: default;
       }
       #dropdown.showing {
         visibility: visible;
