@@ -1,6 +1,7 @@
 module OptionLabel exposing (..)
 
-import SortRank exposing (SortRank)
+import Json.Decode
+import SortRank exposing (SortRank, sortRankDecoder)
 
 
 type OptionLabel
@@ -24,3 +25,12 @@ optionLabelToSearchString optionLabel =
 
                 Nothing ->
                     String.toLower string
+
+
+labelDecoder : Json.Decode.Decoder OptionLabel
+labelDecoder =
+    Json.Decode.map3
+        OptionLabel
+        (Json.Decode.field "label" Json.Decode.string)
+        (Json.Decode.field "labelClean" (Json.Decode.nullable Json.Decode.string))
+        sortRankDecoder

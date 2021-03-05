@@ -63,10 +63,10 @@ module Option exposing
 
 import Json.Decode
 import List.Extra
-import OptionLabel exposing (OptionLabel(..), optionLabelToSearchString, optionLabelToString)
+import OptionLabel exposing (OptionLabel(..), labelDecoder, optionLabelToSearchString, optionLabelToString)
 import OptionSearchFilter exposing (OptionSearchFilter)
 import SelectionMode exposing (SelectionMode(..))
-import SortRank exposing (SortRank(..), sortRankDecoder)
+import SortRank exposing (SortRank(..))
 
 
 type Option
@@ -1614,15 +1614,6 @@ displayDecoder =
                 )
         , Json.Decode.succeed OptionShown
         ]
-
-
-labelDecoder : Json.Decode.Decoder OptionLabel
-labelDecoder =
-    Json.Decode.map3
-        OptionLabel
-        (Json.Decode.field "label" Json.Decode.string)
-        (Json.Decode.field "labelClean" (Json.Decode.nullable Json.Decode.string))
-        sortRankDecoder
 
 
 valueDecoder : Json.Decode.Decoder OptionValue
