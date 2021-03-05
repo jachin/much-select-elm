@@ -870,6 +870,13 @@ sortOptionsByGroupAndLabel options =
         |> List.concat
 
 
+
+-- TODO This isn't done yet. It needs to be more complex.
+--  It should sort primarily by the weight (bigger numbers should show up first)
+--  Then it should sort by index
+--  Last it should sort by labe.
+
+
 sortOptionsByLabel : List Option -> List Option
 sortOptionsByLabel options =
     List.sortBy
