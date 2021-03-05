@@ -372,9 +372,15 @@ class MuchSelect extends HTMLElement {
         //  then scroll the dropdown to the highlighted option.
         if (highlightedOption) {
           if (dropdown.scrollHeight > dropdown.clientHeight) {
-            highlightedOption.scrollIntoView({
-              behavior: "smooth",
-            });
+            const optionHeight = highlightedOption.clientHeight;
+            const optionTop = highlightedOption.offsetTop - optionHeight;
+            const optionBottom = optionTop + optionHeight + optionHeight;
+            const dropdownTop = dropdown.scrollTop;
+            const dropdownBottom = dropdownTop + dropdown.clientHeight;
+
+            if (!(optionTop >= dropdownTop && optionBottom <= dropdownBottom)) {
+              dropdown.scrollTop = optionTop;
+            }
           }
         }
       })
