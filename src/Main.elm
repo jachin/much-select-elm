@@ -96,6 +96,7 @@ import Ports
         , valueCleared
         , valuesDecoder
         )
+import PositiveInt exposing (PositiveInt)
 import SelectionMode exposing (CustomOptions(..), SelectionMode(..))
 
 
@@ -145,7 +146,7 @@ type alias Model =
     , showDropdown : Bool
     , searchString : String
     , rightSlot : RightSlot
-    , maxDropdownItems : Int
+    , maxDropdownItems : PositiveInt
     , disabled : Bool
     , focused : Bool
     , valueCasingWidth : Float
@@ -371,9 +372,13 @@ update msg model =
             )
 
         MaxDropdownItemsChanged int ->
+            let
+                maxDropdownItems =
+                    PositiveInt.new int
+            in
             ( { model
-                | maxDropdownItems = int
-                , optionsForTheDropdown = figureOutWhichOptionsToShow int model.options
+                | maxDropdownItems = maxDropdownItems
+                , optionsForTheDropdown = figureOutWhichOptionsToShow maxDropdownItems model.options
               }
             , Cmd.none
             )
@@ -509,7 +514,7 @@ clearAllSelectedOption model =
     )
 
 
-updateModelWithSearchStringChanges : Int -> String -> List Option -> Model -> Model
+updateModelWithSearchStringChanges : PositiveInt -> String -> List Option -> Model -> Model
 updateModelWithSearchStringChanges maxNumberOfDropdownItems searchString options model =
     let
         optionsUpdatedWithSearchString =
@@ -555,14 +560,17 @@ updateModelWithSearchStringChanges maxNumberOfDropdownItems searchString options
             }
 
 
-figureOutWhichOptionsToShow : Int -> List Option -> List Option
-figureOutWhichOptionsToShow maxNumberOfDropdownItems options =
+figureOutWhichOptionsToShow : PositiveInt -> List Option -> List Option
+figureOutWhichOptionsToShow maxDropdownItems options =
     let
         optionsThatCouldBeShown =
             Option.filterOptionsToShowInDropdown options
 
         lastIndexOfOptions =
             List.length optionsThatCouldBeShown - 1
+
+        maxNumberOfDropdownItems =
+            PositiveInt.toInt maxDropdownItems
     in
     if List.length optionsThatCouldBeShown <= maxNumberOfDropdownItems then
         optionsThatCouldBeShown
@@ -1295,6 +1303,9 @@ type alias Flags =
 init : Flags -> ( Model, Cmd Msg )
 init flags =
     let
+        maxDropdownItems =
+            PositiveInt.new flags.maxDropdownItems
+
         allowCustomOptions =
             if flags.allowCustomOptions then
                 AllowCustomOptions
@@ -1363,7 +1374,7 @@ init flags =
       , options = optionsWithInitialValueSelected
       , optionsForTheDropdown =
             figureOutWhichOptionsToShow
-                flags.maxDropdownItems
+                maxDropdownItems
                 optionsWithInitialValueSelected
       , showDropdown = False
       , searchString = ""
@@ -1382,7 +1393,7 @@ init flags =
 
                         else
                             ShowNothing
-      , maxDropdownItems = flags.maxDropdownItems
+      , maxDropdownItems = maxDropdownItems
       , disabled = flags.disabled
       , focused = False
 
