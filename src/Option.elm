@@ -3,7 +3,6 @@ module Option exposing
     , OptionDescription
     , OptionDisplay(..)
     , OptionGroup
-    , OptionLabel(..)
     , OptionValue
     , addAdditionalOptionsToOptionList
     , addAndSelectOptionsInOptionsListByString
@@ -38,8 +37,6 @@ module Option exposing
     , optionDescriptionToSearchString
     , optionDescriptionToString
     , optionGroupToString
-    , optionLabelToSearchString
-    , optionLabelToString
     , optionToValueLabelTuple
     , optionsDecoder
     , optionsValues
@@ -66,6 +63,7 @@ module Option exposing
 
 import Json.Decode
 import List.Extra
+import OptionLabel exposing (OptionLabel(..), optionLabelToSearchString, optionLabelToString)
 import OptionSearchFilter exposing (OptionSearchFilter)
 import SelectionMode exposing (SelectionMode(..))
 import SortRank exposing (SortRank(..), sortRankDecoder)
@@ -97,29 +95,6 @@ type OptionDisplay
     | OptionSelectedHighlighted
     | OptionHighlighted
     | OptionDisabled
-
-
-type OptionLabel
-    = OptionLabel String (Maybe String) SortRank
-
-
-optionLabelToString : OptionLabel -> String
-optionLabelToString optionLabel =
-    case optionLabel of
-        OptionLabel label _ _ ->
-            label
-
-
-optionLabelToSearchString : OptionLabel -> String
-optionLabelToSearchString optionLabel =
-    case optionLabel of
-        OptionLabel string maybeCleanString _ ->
-            case maybeCleanString of
-                Just cleanString ->
-                    cleanString
-
-                Nothing ->
-                    String.toLower string
 
 
 type OptionValue

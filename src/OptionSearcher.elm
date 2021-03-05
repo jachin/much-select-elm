@@ -1,7 +1,8 @@
-module OptionSearcher exposing (bestMatch, search, simpleMatch, updateOptions)
+module OptionSearcher exposing (search, simpleMatch, updateOptions)
 
 import Fuzzy exposing (Result, match)
 import Option exposing (Option)
+import OptionLabel exposing (optionLabelToSearchString, optionLabelToString)
 import OptionPresentor exposing (tokenize)
 import OptionSearchFilter exposing (OptionSearchResult)
 import SelectionMode exposing (CustomOptions(..), SelectionMode)
@@ -12,20 +13,6 @@ simpleMatch needle hay =
     match [] [ " " ] needle hay
 
 
-bestMatch : String -> List Option -> Maybe Option
-bestMatch string options =
-    options
-        |> List.sortBy
-            (\option ->
-                let
-                    searchResult =
-                        search string option
-                in
-                searchResult.labelMatch.score + searchResult.descriptionMatch.score
-            )
-        |> List.head
-
-
 search : String -> Option -> OptionSearchResult
 search string option =
     { labelMatch =
@@ -33,7 +20,7 @@ search string option =
             (string |> String.toLower)
             (option
                 |> Option.getOptionLabel
-                |> Option.optionLabelToSearchString
+                |> optionLabelToSearchString
             )
     , descriptionMatch =
         simpleMatch
@@ -89,7 +76,7 @@ updateOptionsWithSearchString searchString options =
                                 search searchString option
 
                             labelTokens =
-                                tokenize (option |> Option.getOptionLabel |> Option.optionLabelToString) searchResult.labelMatch
+                                tokenize (option |> Option.getOptionLabel |> optionLabelToString) searchResult.labelMatch
 
                             descriptionTokens =
                                 tokenize (option |> Option.getOptionDescription |> Option.optionDescriptionToString) searchResult.descriptionMatch

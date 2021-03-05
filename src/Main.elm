@@ -57,7 +57,6 @@ import Option
         ( Option(..)
         , OptionDisplay(..)
         , OptionGroup
-        , OptionLabel(..)
         , OptionValue
         , highlightOptionInListByValue
         , removeHighlightOptionInList
@@ -67,6 +66,7 @@ import Option
         , selectSingleOptionInList
         , selectedOptionsToTuple
         )
+import OptionLabel exposing (OptionLabel(..), optionLabelToString)
 import OptionPresentor exposing (tokensToHtml)
 import OptionSearcher
 import Ports
@@ -1048,7 +1048,7 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
                     span [] (tokensToHtml optionSearchFilter.labelTokens)
 
                 Nothing ->
-                    span [] [ Option.getOptionLabel option |> Option.optionLabelToString |> text ]
+                    span [] [ Option.getOptionLabel option |> optionLabelToString |> text ]
     in
     case Option.getOptionDisplay option of
         OptionShown ->

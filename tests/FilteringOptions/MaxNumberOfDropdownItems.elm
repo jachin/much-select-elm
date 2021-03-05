@@ -3,6 +3,7 @@ module FilteringOptions.MaxNumberOfDropdownItems exposing (suite)
 import Expect
 import Main exposing (figureOutWhichOptionsToShow)
 import Option exposing (highlightOptionInList, newOption, selectOptionInList, setGroup)
+import PositiveInt
 import Test exposing (Test, describe, test)
 
 
@@ -64,6 +65,26 @@ tools =
     ]
 
 
+ten =
+    PositiveInt.new 10
+
+
+nine =
+    PositiveInt.new 9
+
+
+five =
+    PositiveInt.new 5
+
+
+six =
+    PositiveInt.new 6
+
+
+three =
+    PositiveInt.new 3
+
+
 suite : Test
 suite =
     describe "Calculate which options to show in the dropdown"
@@ -71,41 +92,41 @@ suite =
             [ test "it should show all the options if nothing in highlighted" <|
                 \_ ->
                     Expect.equalLists
-                        (figureOutWhichOptionsToShow 10 tools)
+                        (figureOutWhichOptionsToShow ten tools)
                         tools
             , test "it should show no options if the list is empty" <|
                 \_ ->
                     Expect.equalLists
-                        (figureOutWhichOptionsToShow 10 [])
+                        (figureOutWhichOptionsToShow ten [])
                         []
             , test "it shows all the options even if something is highlighted" <|
                 \_ ->
                     Expect.equalLists
-                        (figureOutWhichOptionsToShow 10 (highlightOptionInList wrench tools))
+                        (figureOutWhichOptionsToShow ten (highlightOptionInList wrench tools))
                         (highlightOptionInList wrench tools)
             ]
         , describe "when we have the same number of options as the max"
             [ test "it should show all the options if nothing in highlighted" <|
                 \_ ->
                     Expect.equalLists
-                        (figureOutWhichOptionsToShow 9 tools)
+                        (figureOutWhichOptionsToShow nine tools)
                         tools
             , test "it should show no options if the list is empty" <|
                 \_ ->
                     Expect.equalLists
-                        (figureOutWhichOptionsToShow 9 [])
+                        (figureOutWhichOptionsToShow nine [])
                         []
             , test "it shows all the options even if something is highlighted" <|
                 \_ ->
                     Expect.equalLists
-                        (figureOutWhichOptionsToShow 9 (highlightOptionInList wrench tools))
+                        (figureOutWhichOptionsToShow nine (highlightOptionInList wrench tools))
                         (highlightOptionInList wrench tools)
             ]
         , describe "when we have more options than the max (which is odd)"
             [ test "it should show all the maximum number of options starting at the start of the list if nothing in highlighted" <|
                 \_ ->
                     Expect.equalLists
-                        (figureOutWhichOptionsToShow 5 tools)
+                        (figureOutWhichOptionsToShow five tools)
                         [ screwDriver
                         , drill
                         , multiMeter
@@ -115,7 +136,7 @@ suite =
             , test "it shows the options around the highlighted option" <|
                 \_ ->
                     Expect.equalLists
-                        (figureOutWhichOptionsToShow 5 (highlightOptionInList wrench tools))
+                        (figureOutWhichOptionsToShow five (highlightOptionInList wrench tools))
                         (highlightOptionInList wrench
                             [ multiMeter
                             , sawZaw
@@ -127,7 +148,7 @@ suite =
             , test "it shows the maximum number of options before the highlighted option if the highlighted option is the last one" <|
                 \_ ->
                     Expect.equalLists
-                        (figureOutWhichOptionsToShow 5 (highlightOptionInList xActoKnife tools))
+                        (figureOutWhichOptionsToShow five (highlightOptionInList xActoKnife tools))
                         (highlightOptionInList xActoKnife
                             [ wrench
                             , hammer
@@ -139,7 +160,7 @@ suite =
             , test "it shows the maximum number of options but offset if the highlighted option is just after the first one" <|
                 \_ ->
                     Expect.equalLists
-                        (figureOutWhichOptionsToShow 5 (highlightOptionInList drill tools))
+                        (figureOutWhichOptionsToShow five (highlightOptionInList drill tools))
                         (highlightOptionInList drill
                             [ screwDriver
                             , drill
@@ -151,7 +172,7 @@ suite =
             , test "it shows the maximum number of options but offset if the highlighted option is just before the last one" <|
                 \_ ->
                     Expect.equalLists
-                        (figureOutWhichOptionsToShow 5 (highlightOptionInList signalTester tools))
+                        (figureOutWhichOptionsToShow five (highlightOptionInList signalTester tools))
                         (highlightOptionInList signalTester
                             [ wrench
                             , hammer
@@ -165,7 +186,7 @@ suite =
             [ test "it should show all the maximum number of options starting at the start of the list if nothing in highlighted" <|
                 \_ ->
                     Expect.equalLists
-                        (figureOutWhichOptionsToShow 6 tools)
+                        (figureOutWhichOptionsToShow six tools)
                         [ screwDriver
                         , drill
                         , multiMeter
@@ -185,11 +206,11 @@ suite =
                             , signalTester
                             ]
                         )
-                        (figureOutWhichOptionsToShow 6 (highlightOptionInList wrench tools))
+                        (figureOutWhichOptionsToShow six (highlightOptionInList wrench tools))
             , test "it shows the maximum number of options before the highlighted option if the highlighted option is the last one" <|
                 \_ ->
                     Expect.equalLists
-                        (figureOutWhichOptionsToShow 6 (highlightOptionInList xActoKnife tools))
+                        (figureOutWhichOptionsToShow six (highlightOptionInList xActoKnife tools))
                         (highlightOptionInList xActoKnife
                             [ sawZaw
                             , wrench
@@ -202,7 +223,7 @@ suite =
             , test "it shows the maximum number of options but offset if the highlighted option is just after the first one" <|
                 \_ ->
                     Expect.equalLists
-                        (figureOutWhichOptionsToShow 6 (highlightOptionInList drill tools))
+                        (figureOutWhichOptionsToShow six (highlightOptionInList drill tools))
                         (highlightOptionInList drill
                             [ screwDriver
                             , drill
@@ -215,7 +236,7 @@ suite =
             , test "it shows the maximum number of options but offset if the highlighted option is just before the last one" <|
                 \_ ->
                     Expect.equalLists
-                        (figureOutWhichOptionsToShow 6 (highlightOptionInList signalTester tools))
+                        (figureOutWhichOptionsToShow six (highlightOptionInList signalTester tools))
                         (highlightOptionInList signalTester
                             [ sawZaw
                             , wrench
@@ -236,7 +257,7 @@ suite =
                             , hammer
                             ]
                         )
-                        (figureOutWhichOptionsToShow 3 (selectOptionInList wrench tools))
+                        (figureOutWhichOptionsToShow three (selectOptionInList wrench tools))
             ]
         , describe "when we options that are selected and highlighted"
             [ test "it should show the options around the highlighted option" <|
@@ -248,7 +269,7 @@ suite =
                             , hammer
                             ]
                         )
-                        (figureOutWhichOptionsToShow 3
+                        (figureOutWhichOptionsToShow three
                             (tools
                                 |> highlightOptionInList wrench
                                 |> selectOptionInList xActoKnife
