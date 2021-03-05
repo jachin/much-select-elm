@@ -363,18 +363,19 @@ class MuchSelect extends HTMLElement {
     // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
     this.appPromise.then((app) =>
       app.ports.scrollDropdownToElement.subscribe(() => {
-        // const dropdown = this.shadowRoot.getElementById("dropdown");
+        const dropdown = this.shadowRoot.getElementById("dropdown");
         const highlightedOption = this.shadowRoot.querySelector(
           "#dropdown .option.highlighted"
         );
-        // console.log("scrollDropdownToElement", highlightedOption);
 
-        // const topPos = highlightedOption.offsetTop;
-        // dropdown.scrollTop = topPos;
+        // If we found the highlight option AND there are vertical scroll bars
+        //  then scroll the dropdown to the highlighted option.
         if (highlightedOption) {
-          highlightedOption.scrollIntoView({
-            behavior: "smooth",
-          });
+          if (dropdown.scrollHeight > dropdown.clientHeight) {
+            highlightedOption.scrollIntoView({
+              behavior: "smooth",
+            });
+          }
         }
       })
     );
