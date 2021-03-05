@@ -68,6 +68,7 @@ import Json.Decode
 import List.Extra
 import OptionSearchFilter exposing (OptionSearchFilter)
 import SelectionMode exposing (SelectionMode(..))
+import SortRank exposing (SortRank(..), sortRankDecoder)
 
 
 type Option
@@ -99,20 +100,20 @@ type OptionDisplay
 
 
 type OptionLabel
-    = OptionLabel String (Maybe String)
+    = OptionLabel String (Maybe String) SortRank
 
 
 optionLabelToString : OptionLabel -> String
 optionLabelToString optionLabel =
     case optionLabel of
-        OptionLabel label _ ->
+        OptionLabel label _ _ ->
             label
 
 
 optionLabelToSearchString : OptionLabel -> String
 optionLabelToSearchString optionLabel =
     case optionLabel of
-        OptionLabel string maybeCleanString ->
+        OptionLabel string maybeCleanString _ ->
             case maybeCleanString of
                 Just cleanString ->
                     cleanString
@@ -208,12 +209,12 @@ newOption : String -> Maybe String -> Option
 newOption value maybeCleanLabel =
     case value of
         "" ->
-            EmptyOption OptionShown (OptionLabel "" maybeCleanLabel)
+            EmptyOption OptionShown (OptionLabel "" maybeCleanLabel NoSortRank)
 
         _ ->
             Option
                 OptionShown
-                (OptionLabel value maybeCleanLabel)
+                (OptionLabel value maybeCleanLabel NoSortRank)
                 (OptionValue value)
                 NoDescription
                 NoOptionGroup
@@ -226,7 +227,7 @@ setLabel string maybeCleanString option =
         Option optionDisplay _ optionValue description group search ->
             Option
                 optionDisplay
-                (OptionLabel string maybeCleanString)
+                (OptionLabel string maybeCleanString NoSortRank)
                 optionValue
                 description
                 group
@@ -235,12 +236,12 @@ setLabel string maybeCleanString option =
         CustomOption optionDisplay _ _ search ->
             CustomOption
                 optionDisplay
-                (OptionLabel string maybeCleanString)
+                (OptionLabel string maybeCleanString NoSortRank)
                 (OptionValue string)
                 search
 
         EmptyOption optionDisplay _ ->
-            EmptyOption optionDisplay (OptionLabel string maybeCleanString)
+            EmptyOption optionDisplay (OptionLabel string maybeCleanString NoSortRank)
 
 
 setDescription : String -> Option -> Option
@@ -336,7 +337,7 @@ setOptionSearchFilter maybeOptionSearchFilter option =
 newSelectedOption : String -> Maybe String -> Option
 newSelectedOption string maybeCleanLabel =
     Option OptionSelected
-        (OptionLabel string maybeCleanLabel)
+        (OptionLabel string maybeCleanLabel NoSortRank)
         (OptionValue string)
         NoDescription
         NoOptionGroup
@@ -346,7 +347,7 @@ newSelectedOption string maybeCleanLabel =
 newDisabledOption : String -> Maybe String -> Option
 newDisabledOption string maybeCleanLabel =
     Option OptionDisabled
-        (OptionLabel string maybeCleanLabel)
+        (OptionLabel string maybeCleanLabel NoSortRank)
         (OptionValue string)
         NoDescription
         NoOptionGroup
@@ -580,7 +581,7 @@ updateOrAddCustomOption searchString options =
     if showAddOption then
         [ CustomOption
             OptionShown
-            (OptionLabel ("Add " ++ searchString ++ "…") Nothing)
+            (OptionLabel ("Add " ++ searchString ++ "…") Nothing NoSortRank)
             (OptionValue searchString)
             Nothing
         ]
@@ -1642,10 +1643,11 @@ displayDecoder =
 
 labelDecoder : Json.Decode.Decoder OptionLabel
 labelDecoder =
-    Json.Decode.map2
+    Json.Decode.map3
         OptionLabel
         (Json.Decode.field "label" Json.Decode.string)
         (Json.Decode.field "labelClean" (Json.Decode.nullable Json.Decode.string))
+        sortRankDecoder
 
 
 valueDecoder : Json.Decode.Decoder OptionValue

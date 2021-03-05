@@ -1121,7 +1121,7 @@ optionsToValuesHtml options =
         |> List.map
             (\option ->
                 case option of
-                    Option display (OptionLabel labelStr _) optionValue _ _ _ ->
+                    Option display (OptionLabel labelStr _ _) optionValue _ _ _ ->
                         case display of
                             OptionShown ->
                                 text ""
@@ -1154,7 +1154,7 @@ optionsToValuesHtml options =
                             OptionDisabled ->
                                 text ""
 
-                    CustomOption display (OptionLabel labelStr _) optionValue _ ->
+                    CustomOption display (OptionLabel labelStr _ _) optionValue _ ->
                         case display of
                             OptionShown ->
                                 text ""
@@ -1187,7 +1187,7 @@ optionsToValuesHtml options =
                             OptionDisabled ->
                                 text ""
 
-                    EmptyOption display (OptionLabel labelStr _) ->
+                    EmptyOption display (OptionLabel labelStr _ _) ->
                         case display of
                             OptionShown ->
                                 text ""

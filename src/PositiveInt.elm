@@ -1,4 +1,4 @@
-module PositiveInt exposing (PositiveInt, new, toInt)
+module PositiveInt exposing (PositiveInt, maybeNew, new, toInt)
 
 
 type PositiveInt
@@ -8,6 +8,15 @@ type PositiveInt
 new : Int -> PositiveInt
 new int =
     PositiveInt (abs int)
+
+
+maybeNew : Int -> Maybe PositiveInt
+maybeNew int =
+    if int >= 0 then
+        Just (PositiveInt int)
+
+    else
+        Nothing
 
 
 toInt : PositiveInt -> Int
