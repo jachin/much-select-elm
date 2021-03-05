@@ -360,6 +360,26 @@ class MuchSelect extends HTMLElement {
       })
     );
 
+    // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
+    this.appPromise.then((app) =>
+      app.ports.scrollDropdownToElement.subscribe(() => {
+        const dropdown = this.shadowRoot.getElementById("dropdown");
+        const highlightedOption = this.shadowRoot.querySelector(
+          "#dropdown .option.highlighted"
+        );
+
+        // If we found the highlight option AND there are vertical scroll bars
+        //  then scroll the dropdown to the highlighted option.
+        if (highlightedOption) {
+          if (dropdown.scrollHeight > dropdown.clientHeight) {
+            highlightedOption.scrollIntoView({
+              behavior: "smooth",
+            });
+          }
+        }
+      })
+    );
+
     const slot = this.shadowRoot.querySelector("slot[name=select-input]");
     if (slot) {
       slot.addEventListener("slotchange", this._onSlotChange);

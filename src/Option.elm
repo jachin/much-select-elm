@@ -3,7 +3,6 @@ module Option exposing
     , OptionDescription
     , OptionDisplay(..)
     , OptionGroup
-    , OptionLabel(..)
     , OptionValue
     , addAdditionalOptionsToOptionList
     , addAndSelectOptionsInOptionsListByString
@@ -13,6 +12,8 @@ module Option exposing
     , deselectAllSelectedHighlightedOptions
     , deselectOptionInListByOptionValue
     , emptyOptionGroup
+    , filterOptionsToShowInDropdown
+    , findHighlightedOrSelectedOptionIndex
     , findOptionByOptionValue
     , getMaybeOptionSearchFilter
     , getOptionDescription
@@ -36,8 +37,6 @@ module Option exposing
     , optionDescriptionToSearchString
     , optionDescriptionToString
     , optionGroupToString
-    , optionLabelToSearchString
-    , optionLabelToString
     , optionToValueLabelTuple
     , optionsDecoder
     , optionsValues
@@ -45,6 +44,7 @@ module Option exposing
     , removeOptionsFromOptionList
     , selectHighlightedOption
     , selectOption
+    , selectOptionInList
     , selectOptionInListByOptionValue
     , selectOptionsInOptionsListByString
     , selectSingleOptionInList
@@ -63,8 +63,10 @@ module Option exposing
 
 import Json.Decode
 import List.Extra
+import OptionLabel exposing (OptionLabel(..), getSortRank, labelDecoder, optionLabelToSearchString, optionLabelToString)
 import OptionSearchFilter exposing (OptionSearchFilter)
 import SelectionMode exposing (SelectionMode(..))
+import SortRank exposing (SortRank(..), getAutoIndexForSorting)
 
 
 type Option
@@ -93,29 +95,6 @@ type OptionDisplay
     | OptionSelectedHighlighted
     | OptionHighlighted
     | OptionDisabled
-
-
-type OptionLabel
-    = OptionLabel String (Maybe String)
-
-
-optionLabelToString : OptionLabel -> String
-optionLabelToString optionLabel =
-    case optionLabel of
-        OptionLabel label _ ->
-            label
-
-
-optionLabelToSearchString : OptionLabel -> String
-optionLabelToSearchString optionLabel =
-    case optionLabel of
-        OptionLabel string maybeCleanString ->
-            case maybeCleanString of
-                Just cleanString ->
-                    cleanString
-
-                Nothing ->
-                    String.toLower string
 
 
 type OptionValue
@@ -205,12 +184,12 @@ newOption : String -> Maybe String -> Option
 newOption value maybeCleanLabel =
     case value of
         "" ->
-            EmptyOption OptionShown (OptionLabel "" maybeCleanLabel)
+            EmptyOption OptionShown (OptionLabel "" maybeCleanLabel NoSortRank)
 
         _ ->
             Option
                 OptionShown
-                (OptionLabel value maybeCleanLabel)
+                (OptionLabel value maybeCleanLabel NoSortRank)
                 (OptionValue value)
                 NoDescription
                 NoOptionGroup
@@ -223,7 +202,7 @@ setLabel string maybeCleanString option =
         Option optionDisplay _ optionValue description group search ->
             Option
                 optionDisplay
-                (OptionLabel string maybeCleanString)
+                (OptionLabel string maybeCleanString NoSortRank)
                 optionValue
                 description
                 group
@@ -232,12 +211,12 @@ setLabel string maybeCleanString option =
         CustomOption optionDisplay _ _ search ->
             CustomOption
                 optionDisplay
-                (OptionLabel string maybeCleanString)
+                (OptionLabel string maybeCleanString NoSortRank)
                 (OptionValue string)
                 search
 
         EmptyOption optionDisplay _ ->
-            EmptyOption optionDisplay (OptionLabel string maybeCleanString)
+            EmptyOption optionDisplay (OptionLabel string maybeCleanString NoSortRank)
 
 
 setDescription : String -> Option -> Option
@@ -333,7 +312,7 @@ setOptionSearchFilter maybeOptionSearchFilter option =
 newSelectedOption : String -> Maybe String -> Option
 newSelectedOption string maybeCleanLabel =
     Option OptionSelected
-        (OptionLabel string maybeCleanLabel)
+        (OptionLabel string maybeCleanLabel NoSortRank)
         (OptionValue string)
         NoDescription
         NoOptionGroup
@@ -343,11 +322,45 @@ newSelectedOption string maybeCleanLabel =
 newDisabledOption : String -> Maybe String -> Option
 newDisabledOption string maybeCleanLabel =
     Option OptionDisabled
-        (OptionLabel string maybeCleanLabel)
+        (OptionLabel string maybeCleanLabel NoSortRank)
         (OptionValue string)
         NoDescription
         NoOptionGroup
         Nothing
+
+
+isOptionSelected : Option -> Bool
+isOptionSelected option =
+    let
+        isOptionDisplaySelected optionDisplay =
+            case optionDisplay of
+                OptionShown ->
+                    False
+
+                OptionHidden ->
+                    False
+
+                OptionSelected ->
+                    True
+
+                OptionSelectedHighlighted ->
+                    True
+
+                OptionHighlighted ->
+                    False
+
+                OptionDisabled ->
+                    False
+    in
+    case option of
+        Option optionDisplay _ _ _ _ _ ->
+            isOptionDisplaySelected optionDisplay
+
+        CustomOption optionDisplay _ _ _ ->
+            isOptionDisplaySelected optionDisplay
+
+        EmptyOption optionDisplay _ ->
+            isOptionDisplaySelected optionDisplay
 
 
 getOptionDisplay : Option -> OptionDisplay
@@ -543,7 +556,7 @@ updateOrAddCustomOption searchString options =
     if showAddOption then
         [ CustomOption
             OptionShown
-            (OptionLabel ("Add " ++ searchString ++ "…") Nothing)
+            (OptionLabel ("Add " ++ searchString ++ "…") Nothing NoSortRank)
             (OptionValue searchString)
             Nothing
         ]
@@ -553,9 +566,49 @@ updateOrAddCustomOption searchString options =
         options_
 
 
-highlightedOptionIndex : List Option -> Maybe Int
-highlightedOptionIndex options =
-    List.Extra.findIndex (\option -> optionIsHighlighted option) options
+findHighlightedOptionIndex : List Option -> Maybe Int
+findHighlightedOptionIndex options =
+    List.Extra.findIndex (\option -> isOptionHighlighted option) options
+
+
+findSelectedOptionIndex : List Option -> Maybe Int
+findSelectedOptionIndex options =
+    List.Extra.findIndex (\option -> isOptionSelected option) options
+
+
+findHighlightedOrSelectedOptionIndex : List Option -> Maybe Int
+findHighlightedOrSelectedOptionIndex options =
+    case findHighlightedOptionIndex options of
+        Just index ->
+            Just index
+
+        Nothing ->
+            findSelectedOptionIndex options
+
+
+filterOptionsToShowInDropdown : List Option -> List Option
+filterOptionsToShowInDropdown =
+    List.filter
+        (\option ->
+            case getOptionDisplay option of
+                OptionShown ->
+                    True
+
+                OptionHidden ->
+                    False
+
+                OptionSelected ->
+                    True
+
+                OptionSelectedHighlighted ->
+                    True
+
+                OptionHighlighted ->
+                    True
+
+                OptionDisabled ->
+                    False
+        )
 
 
 highlightOptionInList : Option -> List Option -> List Option
@@ -610,7 +663,7 @@ moveHighlightedOptionUp options =
     let
         maybeHigherSibling =
             options
-                |> highlightedOptionIndex
+                |> findHighlightedOrSelectedOptionIndex
                 |> Maybe.andThen (\index -> findClosestHighlightableOptionGoingUp index options)
     in
     case maybeHigherSibling of
@@ -638,7 +691,7 @@ moveHighlightedOptionDown options =
     let
         maybeLowerSibling =
             options
-                |> highlightedOptionIndex
+                |> findHighlightedOrSelectedOptionIndex
                 |> Maybe.andThen (\index -> findClosestHighlightableOptionGoingDown index options)
     in
     case maybeLowerSibling of
@@ -652,6 +705,11 @@ moveHighlightedOptionDown options =
 
                 Nothing ->
                     options
+
+
+selectOptionInList : Option -> List Option -> List Option
+selectOptionInList option options =
+    selectOptionInListByOptionValue (getOptionValue option) options
 
 
 selectOptionInListByOptionValue : OptionValue -> List Option -> List Option
@@ -698,7 +756,7 @@ selectHighlightedOption selectionMode options =
     options
         |> List.filter
             (\option ->
-                optionIsHighlighted option
+                isOptionHighlighted option
             )
         |> List.head
         |> (\maybeOption ->
@@ -812,6 +870,13 @@ sortOptionsByGroupAndLabel options =
         |> List.concat
 
 
+
+-- TODO This isn't done yet. It needs to be more complex.
+--  It should sort primarily by the weight (bigger numbers should show up first)
+--  Then it should sort by index
+--  Last it should sort by labe.
+
+
 sortOptionsByLabel : List Option -> List Option
 sortOptionsByLabel options =
     List.sortBy
@@ -821,6 +886,13 @@ sortOptionsByLabel options =
                 |> optionLabelToString
         )
         options
+        |> List.sortBy
+            (\option ->
+                option
+                    |> getOptionLabel
+                    |> getSortRank
+                    |> getAutoIndexForSorting
+            )
 
 
 highlightOption : Option -> Option
@@ -975,8 +1047,8 @@ removeHighlightOption option =
                     EmptyOption OptionSelectedHighlighted label
 
 
-optionIsHighlighted : Option -> Bool
-optionIsHighlighted option =
+isOptionHighlighted : Option -> Bool
+isOptionHighlighted option =
     case option of
         Option display _ _ _ _ _ ->
             case display of
@@ -1556,14 +1628,6 @@ displayDecoder =
                 )
         , Json.Decode.succeed OptionShown
         ]
-
-
-labelDecoder : Json.Decode.Decoder OptionLabel
-labelDecoder =
-    Json.Decode.map2
-        OptionLabel
-        (Json.Decode.field "label" Json.Decode.string)
-        (Json.Decode.field "labelClean" (Json.Decode.nullable Json.Decode.string))
 
 
 valueDecoder : Json.Decode.Decoder OptionValue

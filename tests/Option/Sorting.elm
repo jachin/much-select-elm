@@ -1,7 +1,15 @@
 module Option.Sorting exposing (suite)
 
 import Expect
-import Option exposing (Option(..), newOption, optionGroupToString, optionLabelToString, setGroup, sortOptionsByGroupAndLabel)
+import Option
+    exposing
+        ( Option(..)
+        , newOption
+        , optionGroupToString
+        , setGroup
+        , sortOptionsByGroupAndLabel
+        )
+import OptionLabel exposing (optionLabelToString)
 import Test exposing (Test, describe, test)
 
 
