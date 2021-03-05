@@ -6,8 +6,8 @@ module OptionPresentor exposing
     )
 
 import Fuzzy exposing (Result, match)
-import Html.Styled exposing (Html, span, text)
-import Html.Styled.Attributes exposing (class)
+import Html exposing (Html, span, text)
+import Html.Attributes exposing (class)
 import List.Extra
 import Stack
 import String.Graphemes

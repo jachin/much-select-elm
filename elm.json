@@ -16,7 +16,6 @@
             "mhoare/elm-stack": "3.1.2",
             "ohanhi/keyboard": "2.0.1",
             "robinheghan/keyboard-events": "1.0.0",
-            "rtfeldman/elm-css": "16.1.0",
             "tripokey/elm-fuzzy": "5.2.1"
         },
         "indirect": {

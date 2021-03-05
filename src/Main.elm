@@ -1,19 +1,7 @@
 module Main exposing (..)
 
 import Browser
-import Css
-    exposing
-        ( display
-        , fontSize
-        , inline
-        , lineHeight
-        , none
-        , pct
-        , px
-        , top
-        , width
-        )
-import Html.Styled
+import Html
     exposing
         ( Html
         , div
@@ -21,13 +9,11 @@ import Html.Styled
         , node
         , span
         , text
-        , toUnstyled
         )
-import Html.Styled.Attributes
+import Html.Attributes
     exposing
         ( class
         , classList
-        , css
         , disabled
         , id
         , maxlength
@@ -38,7 +24,7 @@ import Html.Styled.Attributes
         , type_
         , value
         )
-import Html.Styled.Events
+import Html.Events
     exposing
         ( onBlur
         , onClick
@@ -758,7 +744,6 @@ view model =
                             , ( ArrowUp, MoveHighlightedOptionUp )
                             , ( ArrowDown, MoveHighlightedOptionDown )
                             ]
-                            |> Html.Styled.Attributes.fromUnstyled
                         ]
                         []
             in
@@ -771,26 +756,15 @@ view model =
                         [ ( Delete, DeleteSelectedAndHighlightedValues )
                         , ( Backspace, DeleteSelectedAndHighlightedValues )
                         ]
-                        |> Html.Styled.Attributes.fromUnstyled
                     , tabIndexAttribute
                     , classList
                         [ ( "placeholder", showPlaceholder )
                         , ( "multi", True )
                         , ( "disabled", model.disabled )
                         ]
-                    , css
-                        [ width (pct 100.0)
-                        ]
                     ]
                     ([ span
                         [ class "placeholder"
-                        , css
-                            [ if showPlaceholder then
-                                display inline
-
-                              else
-                                display none
-                            ]
                         ]
                         [ text model.placeholder ]
                      ]
@@ -890,7 +864,6 @@ singleSelectInputField searchString isDisabled focused placeholder_ hasSelectedO
             , maxlength 0
             , placeholderAttribute
             , keyboardEvents
-                |> Html.Styled.Attributes.fromUnstyled
             ]
             []
 
@@ -904,7 +877,6 @@ singleSelectInputField searchString isDisabled focused placeholder_ hasSelectedO
             , value searchString
             , placeholderAttribute
             , keyboardEvents
-                |> Html.Styled.Attributes.fromUnstyled
             ]
             []
 
@@ -934,28 +906,32 @@ dropdown model =
                 model.optionsForTheDropdown
 
         dropdownCss =
-            css
-                [ top (px model.valueCasingHeight)
-                , width (px model.valueCasingWidth)
-                ]
+            [ style "top"
+                (String.fromFloat model.valueCasingHeight ++ "px")
+            , style
+                "width"
+                (String.fromFloat model.valueCasingWidth ++ "px")
+            ]
     in
     if model.disabled then
         text ""
 
     else if model.showDropdown && not (List.isEmpty model.optionsForTheDropdown) && not (List.isEmpty optionsHtml) then
         div
-            [ id "dropdown"
-            , class "showing"
-            , dropdownCss
-            ]
+            ([ id "dropdown"
+             , class "showing"
+             ]
+                ++ dropdownCss
+            )
             optionsHtml
 
     else
         div
-            [ id "dropdown"
-            , class "hiding"
-            , dropdownCss
-            ]
+            ([ id "dropdown"
+             , class "hiding"
+             ]
+                ++ dropdownCss
+            )
             optionsHtml
 
 
@@ -1230,10 +1206,6 @@ rightSlotHtml rightSlot focused disabled hasOptionSelected =
                 ]
                 [ node "slot"
                     [ name "clear-button"
-                    , css
-                        [ fontSize (px 30)
-                        , lineHeight (px 30)
-                        ]
                     ]
                     [ text "✕"
                     ]
@@ -1411,7 +1383,7 @@ main =
         { init = init
         , update = update
         , subscriptions = subscriptions
-        , view = view >> toUnstyled
+        , view = view
         }
 
 
@@ -1433,9 +1405,9 @@ subscriptions _ =
         ]
 
 
-mousedownPreventDefaultAndStopPropagation : a -> Html.Styled.Attribute a
+mousedownPreventDefaultAndStopPropagation : a -> Html.Attribute a
 mousedownPreventDefaultAndStopPropagation message =
-    Html.Styled.Events.custom "mousedown"
+    Html.Events.custom "mousedown"
         (Json.Decode.succeed
             { message = message
             , stopPropagation = True
