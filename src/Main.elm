@@ -487,9 +487,13 @@ clearAllSelectedOption model =
 
             else
                 deselectItem deselectedItems
+
+        newOptions =
+            Option.deselectAllOptionsInOptionsList model.options
     in
     ( { model
-        | options = Option.deselectAllOptionsInOptionsList model.options
+        | options = Option.deselectAllOptionsInOptionsList newOptions
+        , optionsForTheDropdown = figureOutWhichOptionsToShow model.maxDropdownItems newOptions
         , rightSlot = ShowNothing
         , searchString = ""
       }
