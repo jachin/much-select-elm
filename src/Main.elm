@@ -1335,7 +1335,11 @@ init flags =
                                         ( (Option.newOption initialValueStr_ Nothing |> Option.selectOption) :: options, Cmd.none )
 
                                 Nothing ->
-                                    ( options |> List.Extra.uniqueBy Option.getOptionValueAsString, Cmd.none )
+                                    let
+                                        optionsWithUniqueValues =
+                                            options |> List.Extra.uniqueBy Option.getOptionValueAsString
+                                    in
+                                    ( optionsWithUniqueValues, Cmd.none )
 
                         MultiSelect _ ->
                             let
