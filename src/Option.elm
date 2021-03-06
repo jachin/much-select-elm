@@ -21,6 +21,7 @@ module Option exposing
     , getOptionGroup
     , getOptionLabel
     , getOptionValue
+    , getOptionValueAsString
     , hasSelectedOption
     , highlightOption
     , highlightOptionInList

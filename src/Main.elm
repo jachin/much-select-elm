@@ -1321,13 +1321,21 @@ init flags =
                             case List.head initialValues of
                                 Just initialValueStr_ ->
                                     if Option.isOptionInListOfOptionsByValue (Option.stringToOptionValue initialValueStr_) options then
-                                        ( Option.selectOptionsInOptionsListByString initialValues options, Cmd.none )
+                                        let
+                                            optionsWithUniqueValues =
+                                                options |> List.Extra.uniqueBy Option.getOptionValueAsString
+                                        in
+                                        ( Option.selectOptionsInOptionsListByString
+                                            initialValues
+                                            optionsWithUniqueValues
+                                        , Cmd.none
+                                        )
 
                                     else
                                         ( (Option.newOption initialValueStr_ Nothing |> Option.selectOption) :: options, Cmd.none )
 
                                 Nothing ->
-                                    ( options, Cmd.none )
+                                    ( options |> List.Extra.uniqueBy Option.getOptionValueAsString, Cmd.none )
 
                         MultiSelect _ ->
                             let
