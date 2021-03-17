@@ -56,6 +56,25 @@ listOfOptionsWithGroups =
     """
 
 
+listOfOptionsWithJustValues =
+    """
+    [
+      {
+        "value": "The Enormous Crocodile"
+      },
+      {
+        "value": "James and the Giant Peach"
+      },
+      {
+        "value": "Matilda"
+      },
+      {
+        "value": "The BFG"
+      }
+    ]
+    """
+
+
 suite : Test
 suite =
     describe "The Option modules"
@@ -143,5 +162,9 @@ suite =
                     Expect.equal
                         (Ok [ newOption "" Nothing |> Option.setLabel "nothing" (Just "nothing") ])
                         (Json.Decode.decodeString optionsDecoder """[ {"label": "nothing", "labelClean": "nothing", "value": "" } ]""")
+            , test "a list of options with just values should fail" <|
+                \_ ->
+                    Expect.err
+                        (Json.Decode.decodeString optionsDecoder listOfOptionsWithJustValues)
             ]
         ]
