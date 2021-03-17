@@ -913,11 +913,11 @@ dropdown model =
             if List.length model.optionsForTheDropdown < List.length model.options then
                 div [ id "dropdown-footer" ]
                     [ text
-                        ("Showing "
+                        ("showing "
                             ++ (model.optionsForTheDropdown |> List.length |> String.fromInt)
                             ++ " of "
                             ++ (model.options |> List.length |> String.fromInt)
-                            ++ " options."
+                            ++ " options"
                         )
                     ]
 
