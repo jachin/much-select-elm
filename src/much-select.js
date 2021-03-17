@@ -914,11 +914,12 @@ class MuchSelect extends HTMLElement {
 
       #dropdown-indicator {
         position: absolute;
-        right: 3px;
+        right: 5px;
         top: 15px;
         cursor: pointer;
         display: block;
         transition: transform 0.25s;
+        font-family: "Times New Roman" serif;
       }
 
       #dropdown-indicator.down {
@@ -962,6 +963,15 @@ class MuchSelect extends HTMLElement {
       #dropdown.hiding {
         visibility: hidden;
       }
+
+      #dropdown-footer {
+        font-size: 50%;
+        text-align: center;
+        color: gray;
+        background-color: lightgray;
+        padding: 5px;
+      }
+
       .optgroup {
         background-color: gray;
         font-size: 0.85rem;

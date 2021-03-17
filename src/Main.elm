@@ -909,6 +909,21 @@ dropdown model =
                 model.selectionMode
                 model.optionsForTheDropdown
 
+        dropdownFooterHtml =
+            if List.length model.optionsForTheDropdown < List.length model.options then
+                div [ id "dropdown-footer" ]
+                    [ text
+                        ("showing "
+                            ++ (model.optionsForTheDropdown |> List.length |> String.fromInt)
+                            ++ " of "
+                            ++ (model.options |> List.length |> String.fromInt)
+                            ++ " options"
+                        )
+                    ]
+
+            else
+                text ""
+
         dropdownCss =
             [ style "top"
                 (String.fromFloat model.valueCasingHeight ++ "px")
@@ -927,7 +942,7 @@ dropdown model =
              ]
                 ++ dropdownCss
             )
-            optionsHtml
+            (optionsHtml ++ [ dropdownFooterHtml ])
 
     else
         div
@@ -936,7 +951,7 @@ dropdown model =
              ]
                 ++ dropdownCss
             )
-            optionsHtml
+            (optionsHtml ++ [ dropdownFooterHtml ])
 
 
 optionsToDropdownOptions :
