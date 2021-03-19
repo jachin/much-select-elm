@@ -16,6 +16,7 @@ port module Ports exposing
     , optionsChangedReceiver
     , placeholderChangedReceiver
     , removeOptionsReceiver
+    , scrollDropdownToElement
     , selectOptionReceiver
     , valueCasingDimensionsChangedReceiver
     , valueChanged
@@ -59,6 +60,9 @@ port focusInput : () -> Cmd msg
 
 
 port deselectItem : List ( String, String ) -> Cmd msg
+
+
+port scrollDropdownToElement : String -> Cmd msg
 
 
 valuesDecoder : Json.Decode.Decoder (List String)

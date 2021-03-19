@@ -136,6 +136,7 @@
   <div>
     <h3>Disabled</h3>
     <p>Disable the <code>&lt;much-select&gt;</code> with the <code>disabled</code> attribute.</p>
+    <p>This has a disabled "yellow" option.</p>
     <much-select disabled="disabled">
       <select slot="select-input">
         <option>Red</option>
@@ -342,6 +343,30 @@
       })();
     </script>
   </div>
+
+  <div id="custom-options-that-persist">
+    <h3>Custom Options That Persist</h3>
+    <much-select allow-custom-options="allow-custom-options">
+      <select slot="select-menu-input">
+        <option value="Bánh mì">Bánh mì</option>
+        <option value="Cheesesteak">Cheesesteak</option>
+        <option value="Cheesesteak">Po' boy</option>
+      </select>
+    </much-select>
+
+    <script>
+      (() => {
+        const muchSelect = document.querySelector(
+          "#custom-options-that-persist much-select"
+        );
+
+        muchSelect.addEventListener("customValueSelected", (evt) => {
+          console.log("customValueSelected", evt);
+        });
+      })();
+    </script>
+  </div>
+
 </div>
 
 <script src="./index.js" type="module"></script>

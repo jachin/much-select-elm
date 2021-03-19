@@ -1,19 +1,7 @@
 module Main exposing (..)
 
 import Browser
-import Css
-    exposing
-        ( display
-        , fontSize
-        , inline
-        , lineHeight
-        , none
-        , pct
-        , px
-        , top
-        , width
-        )
-import Html.Styled
+import Html
     exposing
         ( Html
         , div
@@ -21,13 +9,11 @@ import Html.Styled
         , node
         , span
         , text
-        , toUnstyled
         )
-import Html.Styled.Attributes
+import Html.Attributes
     exposing
         ( class
         , classList
-        , css
         , disabled
         , id
         , maxlength
@@ -38,7 +24,7 @@ import Html.Styled.Attributes
         , type_
         , value
         )
-import Html.Styled.Events
+import Html.Events
     exposing
         ( onBlur
         , onClick
@@ -57,7 +43,6 @@ import Option
         ( Option(..)
         , OptionDisplay(..)
         , OptionGroup
-        , OptionLabel(..)
         , OptionValue
         , highlightOptionInListByValue
         , removeHighlightOptionInList
@@ -67,6 +52,7 @@ import Option
         , selectSingleOptionInList
         , selectedOptionsToTuple
         )
+import OptionLabel exposing (OptionLabel(..), optionLabelToString)
 import OptionPresentor exposing (tokensToHtml)
 import OptionSearcher
 import Ports
@@ -88,6 +74,7 @@ import Ports
         , optionsChangedReceiver
         , placeholderChangedReceiver
         , removeOptionsReceiver
+        , scrollDropdownToElement
         , selectOptionReceiver
         , valueCasingDimensionsChangedReceiver
         , valueChanged
@@ -95,6 +82,7 @@ import Ports
         , valueCleared
         , valuesDecoder
         )
+import PositiveInt exposing (PositiveInt)
 import SelectionMode exposing (CustomOptions(..), SelectionMode(..))
 
 
@@ -140,10 +128,11 @@ type alias Model =
     , size : String
     , selectionMode : SelectionMode
     , options : List Option
+    , optionsForTheDropdown : List Option
     , showDropdown : Bool
     , searchString : String
     , rightSlot : RightSlot
-    , maxDropdownItems : Int
+    , maxDropdownItems : PositiveInt
     , disabled : Bool
     , focused : Bool
     , valueCasingWidth : Float
@@ -186,10 +175,34 @@ update msg model =
             ( { model | showDropdown = True }, Cmd.none )
 
         DropdownMouseOverOption optionValue ->
-            ( { model | options = highlightOptionInListByValue optionValue model.options }, Cmd.none )
+            let
+                updateOptions =
+                    highlightOptionInListByValue optionValue model.options
+
+                optionsForTheDropdown =
+                    highlightOptionInListByValue optionValue model.optionsForTheDropdown
+            in
+            ( { model
+                | options = updateOptions
+                , optionsForTheDropdown = optionsForTheDropdown
+              }
+            , Cmd.none
+            )
 
         DropdownMouseOutOption optionValue ->
-            ( { model | options = removeHighlightOptionInList optionValue model.options }, Cmd.none )
+            let
+                updatedOptions =
+                    removeHighlightOptionInList optionValue model.options
+
+                optionsForTheDropdown =
+                    removeHighlightOptionInList optionValue model.optionsForTheDropdown
+            in
+            ( { model
+                | options = updatedOptions
+                , optionsForTheDropdown = optionsForTheDropdown
+              }
+            , Cmd.none
+            )
 
         DropdownMouseClickOption optionValue ->
             let
@@ -201,7 +214,7 @@ update msg model =
                         SingleSelect _ ->
                             selectSingleOptionInList optionValue model.options
             in
-            ( updateModelWithSearchStringChanges "" options model
+            ( updateModelWithSearchStringChanges model.maxDropdownItems "" options model
             , Cmd.batch
                 [ makeCommandMessagesWhenValuesChanges options (Just optionValue)
                 , blurInput ()
@@ -209,7 +222,7 @@ update msg model =
             )
 
         SearchInputOnInput searchString ->
-            ( updateModelWithSearchStringChanges searchString model.options model
+            ( updateModelWithSearchStringChanges model.maxDropdownItems searchString model.options model
             , inputKeyUp searchString
             )
 
@@ -257,7 +270,16 @@ update msg model =
         AddOptions optionsJson ->
             case Json.Decode.decodeValue Option.optionsDecoder optionsJson of
                 Ok newOptions ->
-                    ( { model | options = Option.addAdditionalOptionsToOptionList model.options newOptions }, Cmd.none )
+                    let
+                        updatedOptions =
+                            Option.addAdditionalOptionsToOptionList model.options newOptions
+                    in
+                    ( { model
+                        | options = updatedOptions
+                        , optionsForTheDropdown = figureOutWhichOptionsToShow model.maxDropdownItems updatedOptions
+                      }
+                    , Cmd.none
+                    )
 
                 Err error ->
                     ( model, errorMessage (Json.Decode.errorToString error) )
@@ -265,7 +287,16 @@ update msg model =
         RemoveOptions optionsJson ->
             case Json.Decode.decodeValue Option.optionsDecoder optionsJson of
                 Ok optionsToRemove ->
-                    ( { model | options = Option.removeOptionsFromOptionList model.options optionsToRemove }, Cmd.none )
+                    let
+                        updatedOptions =
+                            Option.removeOptionsFromOptionList model.options optionsToRemove
+                    in
+                    ( { model
+                        | options = updatedOptions
+                        , optionsForTheDropdown = figureOutWhichOptionsToShow model.maxDropdownItems updatedOptions
+                      }
+                    , Cmd.none
+                    )
 
                 Err error ->
                     ( model, errorMessage (Json.Decode.errorToString error) )
@@ -285,7 +316,7 @@ update msg model =
                                 SingleSelect _ ->
                                     selectSingleOptionInList optionValue model.options
                     in
-                    ( updateModelWithSearchStringChanges "" options model
+                    ( updateModelWithSearchStringChanges model.maxDropdownItems "" options model
                     , makeCommandMessagesWhenValuesChanges options (Just optionValue)
                     )
 
@@ -302,7 +333,12 @@ update msg model =
                         options =
                             Option.deselectOptionInListByOptionValue optionValue model.options
                     in
-                    ( { model | options = options }, makeCommandMessagesWhenValuesChanges options Nothing )
+                    ( { model
+                        | options = options
+                        , optionsForTheDropdown = figureOutWhichOptionsToShow model.maxDropdownItems options
+                      }
+                    , makeCommandMessagesWhenValuesChanges options Nothing
+                    )
 
                 Err error ->
                     ( model, errorMessage (Json.Decode.errorToString error) )
@@ -322,7 +358,16 @@ update msg model =
             )
 
         MaxDropdownItemsChanged int ->
-            ( { model | maxDropdownItems = int }, Cmd.none )
+            let
+                maxDropdownItems =
+                    PositiveInt.new int
+            in
+            ( { model
+                | maxDropdownItems = maxDropdownItems
+                , optionsForTheDropdown = figureOutWhichOptionsToShow maxDropdownItems model.options
+              }
+            , Cmd.none
+            )
 
         AllowCustomOptionsChanged canAddCustomOptions ->
             ( { model | selectionMode = SelectionMode.setAllowCustomOptionsWithBool canAddCustomOptions model.selectionMode }
@@ -339,7 +384,7 @@ update msg model =
             in
             case model.selectionMode of
                 SingleSelect _ ->
-                    ( updateModelWithSearchStringChanges "" options model
+                    ( updateModelWithSearchStringChanges model.maxDropdownItems "" options model
                     , Cmd.batch
                         -- TODO Figure out what the highlighted option in here
                         [ makeCommandMessagesWhenValuesChanges options Nothing
@@ -367,13 +412,31 @@ update msg model =
                     ( model, Cmd.none )
 
         EscapeKeyInInputFilter ->
-            ( updateModelWithSearchStringChanges "" model.options model, blurInput () )
+            ( updateModelWithSearchStringChanges model.maxDropdownItems "" model.options model, blurInput () )
 
         MoveHighlightedOptionUp ->
-            ( { model | options = Option.moveHighlightedOptionUp model.options }, Cmd.none )
+            let
+                updatedOptions =
+                    Option.moveHighlightedOptionUp model.options
+            in
+            ( { model
+                | options = Option.moveHighlightedOptionUp model.options
+                , optionsForTheDropdown = figureOutWhichOptionsToShow model.maxDropdownItems updatedOptions
+              }
+            , scrollDropdownToElement "something"
+            )
 
         MoveHighlightedOptionDown ->
-            ( { model | options = Option.moveHighlightedOptionDown model.options }, Cmd.none )
+            let
+                updatedOptions =
+                    Option.moveHighlightedOptionDown model.options
+            in
+            ( { model
+                | options = updatedOptions
+                , optionsForTheDropdown = figureOutWhichOptionsToShow model.maxDropdownItems updatedOptions
+              }
+            , scrollDropdownToElement "something"
+            )
 
         ValueCasingWidthUpdate dims ->
             ( { model | valueCasingWidth = dims.width, valueCasingHeight = dims.height }, Cmd.none )
@@ -381,15 +444,29 @@ update msg model =
         ClearAllSelectedOptions ->
             clearAllSelectedOption model
 
-        ToggleSelectedValueHighlight optionValue ->
-            ( { model | options = Option.toggleSelectedHighlightByOptionValue model.options optionValue }, Cmd.none )
+        ToggleSelectedValueHighlight _ ->
+            let
+                updatedOptions =
+                    Option.moveHighlightedOptionDown model.options
+            in
+            ( { model
+                | options = updatedOptions
+                , optionsForTheDropdown = figureOutWhichOptionsToShow model.maxDropdownItems updatedOptions
+              }
+            , Cmd.none
+            )
 
         DeleteSelectedAndHighlightedValues ->
             let
                 newOptions =
                     Option.deselectAllSelectedHighlightedOptions model.options
             in
-            ( { model | options = newOptions }, valueChanged (selectedOptionsToTuple newOptions) )
+            ( { model
+                | options = newOptions
+                , optionsForTheDropdown = figureOutWhichOptionsToShow model.maxDropdownItems newOptions
+              }
+            , valueChanged (selectedOptionsToTuple newOptions)
+            )
 
 
 clearAllSelectedOption : Model -> ( Model, Cmd Msg )
@@ -410,9 +487,13 @@ clearAllSelectedOption model =
 
             else
                 deselectItem deselectedItems
+
+        newOptions =
+            Option.deselectAllOptionsInOptionsList model.options
     in
     ( { model
-        | options = Option.deselectAllOptionsInOptionsList model.options
+        | options = Option.deselectAllOptionsInOptionsList newOptions
+        , optionsForTheDropdown = figureOutWhichOptionsToShow model.maxDropdownItems newOptions
         , rightSlot = ShowNothing
         , searchString = ""
       }
@@ -423,19 +504,23 @@ clearAllSelectedOption model =
     )
 
 
-updateModelWithSearchStringChanges : String -> List Option -> Model -> Model
-updateModelWithSearchStringChanges searchString options model =
+updateModelWithSearchStringChanges : PositiveInt -> String -> List Option -> Model -> Model
+updateModelWithSearchStringChanges maxNumberOfDropdownItems searchString options model =
     let
         optionsUpdatedWithSearchString =
             OptionSearcher.updateOptions model.selectionMode searchString options
     in
     case searchString of
         "" ->
-            { model
-                | searchString = searchString
-                , options =
+            let
+                updatedOptions =
                     OptionSearcher.updateOptions model.selectionMode searchString options
                         |> Option.sortOptionsByGroupAndLabel
+            in
+            { model
+                | searchString = searchString
+                , options = updatedOptions
+                , optionsForTheDropdown = figureOutWhichOptionsToShow maxNumberOfDropdownItems updatedOptions
             }
 
         _ ->
@@ -458,7 +543,65 @@ updateModelWithSearchStringChanges searchString options model =
             { model
                 | searchString = searchString
                 , options = optionsSortedByTotalScoreWithTheFirstOptionHighlighted
+                , optionsForTheDropdown =
+                    figureOutWhichOptionsToShow
+                        maxNumberOfDropdownItems
+                        optionsSortedByTotalScoreWithTheFirstOptionHighlighted
             }
+
+
+figureOutWhichOptionsToShow : PositiveInt -> List Option -> List Option
+figureOutWhichOptionsToShow maxDropdownItems options =
+    let
+        optionsThatCouldBeShown =
+            Option.filterOptionsToShowInDropdown options
+
+        lastIndexOfOptions =
+            List.length optionsThatCouldBeShown - 1
+
+        maxNumberOfDropdownItems =
+            PositiveInt.toInt maxDropdownItems
+    in
+    if List.length optionsThatCouldBeShown <= maxNumberOfDropdownItems then
+        optionsThatCouldBeShown
+
+    else
+        case Option.findHighlightedOrSelectedOptionIndex optionsThatCouldBeShown of
+            Just index ->
+                case index of
+                    0 ->
+                        List.take maxNumberOfDropdownItems optionsThatCouldBeShown
+
+                    _ ->
+                        if index == List.length optionsThatCouldBeShown - 1 then
+                            List.drop (List.length options - maxNumberOfDropdownItems) optionsThatCouldBeShown
+
+                        else
+                            let
+                                isEven =
+                                    modBy 2 maxNumberOfDropdownItems
+                                        == 0
+
+                                half =
+                                    if isEven then
+                                        maxNumberOfDropdownItems // 2
+
+                                    else
+                                        (maxNumberOfDropdownItems // 2) + 1
+                            in
+                            if index + half > lastIndexOfOptions then
+                                -- The "window" runs off the "tail" of the list, so just take the last options
+                                List.drop (List.length options - maxNumberOfDropdownItems) optionsThatCouldBeShown
+
+                            else if index - half < 0 then
+                                -- The "window" runs off the "head" of the list, so just take the first options
+                                List.take maxNumberOfDropdownItems optionsThatCouldBeShown
+
+                            else
+                                options |> List.drop (index + 1 - half) |> List.take maxNumberOfDropdownItems
+
+            Nothing ->
+                List.take maxNumberOfDropdownItems options
 
 
 updateRightSlot : RightSlot -> SelectionMode -> Bool -> RightSlot
@@ -605,7 +748,6 @@ view model =
                             , ( ArrowUp, MoveHighlightedOptionUp )
                             , ( ArrowDown, MoveHighlightedOptionDown )
                             ]
-                            |> Html.Styled.Attributes.fromUnstyled
                         ]
                         []
             in
@@ -618,26 +760,15 @@ view model =
                         [ ( Delete, DeleteSelectedAndHighlightedValues )
                         , ( Backspace, DeleteSelectedAndHighlightedValues )
                         ]
-                        |> Html.Styled.Attributes.fromUnstyled
                     , tabIndexAttribute
                     , classList
                         [ ( "placeholder", showPlaceholder )
                         , ( "multi", True )
                         , ( "disabled", model.disabled )
                         ]
-                    , css
-                        [ width (pct 100.0)
-                        ]
                     ]
                     ([ span
                         [ class "placeholder"
-                        , css
-                            [ if showPlaceholder then
-                                display inline
-
-                              else
-                                display none
-                            ]
                         ]
                         [ text model.placeholder ]
                      ]
@@ -654,13 +785,47 @@ singleSelectInputField : String -> Bool -> Bool -> String -> Bool -> Html Msg
 singleSelectInputField searchString isDisabled focused placeholder_ hasSelectedOptions =
     let
         keyboardEvents =
-            Keyboard.on Keyboard.Keydown
-                [ ( Enter, SelectHighlightedOption )
-                , ( Backspace, DeleteInputForSingleSelect )
-                , ( Delete, DeleteInputForSingleSelect )
-                , ( Escape, EscapeKeyInInputFilter )
-                , ( ArrowUp, MoveHighlightedOptionUp )
-                , ( ArrowDown, MoveHighlightedOptionDown )
+            Keyboard.customPerKey Keyboard.Keydown
+                [ ( Enter
+                  , { message = SelectHighlightedOption
+                    , preventDefault = False
+                    , stopPropagation = False
+                    }
+                  )
+                , ( Backspace
+                  , { message = DeleteInputForSingleSelect
+                    , preventDefault = False
+                    , stopPropagation = False
+                    }
+                  )
+                , ( Delete
+                  , { message = DeleteInputForSingleSelect
+                    , preventDefault = False
+                    , stopPropagation = False
+                    }
+                  )
+                , ( Escape
+                  , { message = EscapeKeyInInputFilter
+                    , preventDefault = False
+                    , stopPropagation = False
+                    }
+                  )
+
+                -- We need to prevent default on these because when we use the arrow keys we want to move
+                --  the highlighted option up and down but we do not want to move the cursor in the text box
+                --  to the end and the beginning of the input.
+                , ( ArrowUp
+                  , { message = MoveHighlightedOptionUp
+                    , preventDefault = True
+                    , stopPropagation = False
+                    }
+                  )
+                , ( ArrowDown
+                  , { message = MoveHighlightedOptionDown
+                    , preventDefault = True
+                    , stopPropagation = False
+                    }
+                  )
                 ]
 
         idAttr =
@@ -703,7 +868,6 @@ singleSelectInputField searchString isDisabled focused placeholder_ hasSelectedO
             , maxlength 0
             , placeholderAttribute
             , keyboardEvents
-                |> Html.Styled.Attributes.fromUnstyled
             ]
             []
 
@@ -717,7 +881,6 @@ singleSelectInputField searchString isDisabled focused placeholder_ hasSelectedO
             , value searchString
             , placeholderAttribute
             , keyboardEvents
-                |> Html.Styled.Attributes.fromUnstyled
             ]
             []
 
@@ -744,32 +907,51 @@ dropdown model =
                 DropdownMouseOutOption
                 DropdownMouseClickOption
                 model.selectionMode
-                model.options
+                model.optionsForTheDropdown
+
+        dropdownFooterHtml =
+            if List.length model.optionsForTheDropdown < List.length model.options then
+                div [ id "dropdown-footer" ]
+                    [ text
+                        ("showing "
+                            ++ (model.optionsForTheDropdown |> List.length |> String.fromInt)
+                            ++ " of "
+                            ++ (model.options |> List.length |> String.fromInt)
+                            ++ " options"
+                        )
+                    ]
+
+            else
+                text ""
 
         dropdownCss =
-            css
-                [ top (px model.valueCasingHeight)
-                , width (px model.valueCasingWidth)
-                ]
+            [ style "top"
+                (String.fromFloat model.valueCasingHeight ++ "px")
+            , style
+                "width"
+                (String.fromFloat model.valueCasingWidth ++ "px")
+            ]
     in
     if model.disabled then
         text ""
 
-    else if model.showDropdown && not (List.isEmpty model.options) && not (List.isEmpty optionsHtml) then
+    else if model.showDropdown && not (List.isEmpty model.optionsForTheDropdown) && not (List.isEmpty optionsHtml) then
         div
-            [ id "dropdown"
-            , class "showing"
-            , dropdownCss
-            ]
-            optionsHtml
+            ([ id "dropdown"
+             , class "showing"
+             ]
+                ++ dropdownCss
+            )
+            (optionsHtml ++ [ dropdownFooterHtml ])
 
     else
         div
-            [ id "dropdown"
-            , class "hiding"
-            , dropdownCss
-            ]
-            optionsHtml
+            ([ id "dropdown"
+             , class "hiding"
+             ]
+                ++ dropdownCss
+            )
+            (optionsHtml ++ [ dropdownFooterHtml ])
 
 
 optionsToDropdownOptions :
@@ -861,7 +1043,7 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
                     span [] (tokensToHtml optionSearchFilter.labelTokens)
 
                 Nothing ->
-                    span [] [ Option.getOptionLabel option |> Option.optionLabelToString |> text ]
+                    span [] [ Option.getOptionLabel option |> optionLabelToString |> text ]
     in
     case Option.getOptionDisplay option of
         OptionShown ->
@@ -934,7 +1116,7 @@ optionsToValuesHtml options =
         |> List.map
             (\option ->
                 case option of
-                    Option display (OptionLabel labelStr _) optionValue _ _ _ ->
+                    Option display (OptionLabel labelStr _ _) optionValue _ _ _ ->
                         case display of
                             OptionShown ->
                                 text ""
@@ -967,7 +1149,7 @@ optionsToValuesHtml options =
                             OptionDisabled ->
                                 text ""
 
-                    CustomOption display (OptionLabel labelStr _) optionValue _ ->
+                    CustomOption display (OptionLabel labelStr _ _) optionValue _ ->
                         case display of
                             OptionShown ->
                                 text ""
@@ -1000,7 +1182,7 @@ optionsToValuesHtml options =
                             OptionDisabled ->
                                 text ""
 
-                    EmptyOption display (OptionLabel labelStr _) ->
+                    EmptyOption display (OptionLabel labelStr _ _) ->
                         case display of
                             OptionShown ->
                                 text ""
@@ -1043,10 +1225,6 @@ rightSlotHtml rightSlot focused disabled hasOptionSelected =
                 ]
                 [ node "slot"
                     [ name "clear-button"
-                    , css
-                        [ fontSize (px 30)
-                        , lineHeight (px 30)
-                        ]
                     ]
                     [ text "✕"
                     ]
@@ -1116,6 +1294,9 @@ type alias Flags =
 init : Flags -> ( Model, Cmd Msg )
 init flags =
     let
+        maxDropdownItems =
+            PositiveInt.new flags.maxDropdownItems
+
         allowCustomOptions =
             if flags.allowCustomOptions then
                 AllowCustomOptions
@@ -1155,13 +1336,25 @@ init flags =
                             case List.head initialValues of
                                 Just initialValueStr_ ->
                                     if Option.isOptionInListOfOptionsByValue (Option.stringToOptionValue initialValueStr_) options then
-                                        ( Option.selectOptionsInOptionsListByString initialValues options, Cmd.none )
+                                        let
+                                            optionsWithUniqueValues =
+                                                options |> List.Extra.uniqueBy Option.getOptionValueAsString
+                                        in
+                                        ( Option.selectOptionsInOptionsListByString
+                                            initialValues
+                                            optionsWithUniqueValues
+                                        , Cmd.none
+                                        )
 
                                     else
                                         ( (Option.newOption initialValueStr_ Nothing |> Option.selectOption) :: options, Cmd.none )
 
                                 Nothing ->
-                                    ( options, Cmd.none )
+                                    let
+                                        optionsWithUniqueValues =
+                                            options |> List.Extra.uniqueBy Option.getOptionValueAsString
+                                    in
+                                    ( optionsWithUniqueValues, Cmd.none )
 
                         MultiSelect _ ->
                             let
@@ -1182,6 +1375,10 @@ init flags =
       , size = flags.size
       , selectionMode = selectionMode
       , options = optionsWithInitialValueSelected
+      , optionsForTheDropdown =
+            figureOutWhichOptionsToShow
+                maxDropdownItems
+                optionsWithInitialValueSelected
       , showDropdown = False
       , searchString = ""
       , rightSlot =
@@ -1199,7 +1396,7 @@ init flags =
 
                         else
                             ShowNothing
-      , maxDropdownItems = flags.maxDropdownItems
+      , maxDropdownItems = maxDropdownItems
       , disabled = flags.disabled
       , focused = False
 
@@ -1217,7 +1414,7 @@ main =
         { init = init
         , update = update
         , subscriptions = subscriptions
-        , view = view >> toUnstyled
+        , view = view
         }
 
 
@@ -1239,9 +1436,9 @@ subscriptions _ =
         ]
 
 
-mousedownPreventDefaultAndStopPropagation : a -> Html.Styled.Attribute a
+mousedownPreventDefaultAndStopPropagation : a -> Html.Attribute a
 mousedownPreventDefaultAndStopPropagation message =
-    Html.Styled.Events.custom "mousedown"
+    Html.Events.custom "mousedown"
         (Json.Decode.succeed
             { message = message
             , stopPropagation = True

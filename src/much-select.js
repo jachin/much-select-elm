@@ -252,6 +252,14 @@ class MuchSelect extends HTMLElement {
     this.parentDivPromise.then((parentDiv) => {
       const wrapperDiv = parentDiv.querySelector("#wrapper");
       this._resizeObserver.observe(wrapperDiv);
+
+      parentDiv.addEventListener("mousedown", (evt) => {
+        // This stops the dropdown from flashes when the user clicks
+        //  on a optgroup. And it kinda makes sense. we don't want
+        //  mousedown events escaping and effecting the DOM.
+        evt.stopImmediatePropagation();
+        evt.preventDefault();
+      });
     });
 
     // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
@@ -357,6 +365,32 @@ class MuchSelect extends HTMLElement {
             detail: formattedValue,
           })
         );
+      })
+    );
+
+    // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
+    this.appPromise.then((app) =>
+      app.ports.scrollDropdownToElement.subscribe(() => {
+        const dropdown = this.shadowRoot.getElementById("dropdown");
+        const highlightedOption = this.shadowRoot.querySelector(
+          "#dropdown .option.highlighted"
+        );
+
+        // If we found the highlight option AND there are vertical scroll bars
+        //  then scroll the dropdown to the highlighted option.
+        if (highlightedOption) {
+          if (dropdown.scrollHeight > dropdown.clientHeight) {
+            const optionHeight = highlightedOption.clientHeight;
+            const optionTop = highlightedOption.offsetTop - optionHeight;
+            const optionBottom = optionTop + optionHeight + optionHeight;
+            const dropdownTop = dropdown.scrollTop;
+            const dropdownBottom = dropdownTop + dropdown.clientHeight;
+
+            if (!(optionTop >= dropdownTop && optionBottom <= dropdownBottom)) {
+              dropdown.scrollTop = optionTop;
+            }
+          }
+        }
       })
     );
 
@@ -880,11 +914,12 @@ class MuchSelect extends HTMLElement {
 
       #dropdown-indicator {
         position: absolute;
-        right: 3px;
+        right: 5px;
         top: 15px;
         cursor: pointer;
         display: block;
         transition: transform 0.25s;
+        font-family: "Times New Roman" serif;
       }
 
       #dropdown-indicator.down {
@@ -920,6 +955,7 @@ class MuchSelect extends HTMLElement {
         z-index: 10;
         max-height: 300px;
         overflow-y: auto;
+        cursor: default;
       }
       #dropdown.showing {
         visibility: visible;
@@ -927,6 +963,15 @@ class MuchSelect extends HTMLElement {
       #dropdown.hiding {
         visibility: hidden;
       }
+
+      #dropdown-footer {
+        font-size: 50%;
+        text-align: center;
+        color: gray;
+        background-color: lightgray;
+        padding: 5px;
+      }
+
       .optgroup {
         background-color: gray;
         font-size: 0.85rem;
