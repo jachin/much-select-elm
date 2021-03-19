@@ -14397,7 +14397,10 @@ var $author$project$Main$update = F2(
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
-							{options: newOptionWithOldSelectedOption}),
+							{
+								options: newOptionWithOldSelectedOption,
+								optionsForTheDropdown: A2($author$project$Main$figureOutWhichOptionsToShow, model.maxDropdownItems, newOptionWithOldSelectedOption)
+							}),
 						$elm$core$Platform$Cmd$none);
 				} else {
 					var error = _v3.a;
