@@ -281,8 +281,7 @@ class MuchSelect extends HTMLElement {
 
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
-      app.ports.addItem.subscribe((valueLabelPair) => {
-        // TODO Change this port's name to addOption
+      app.ports.addOption.subscribe((valueLabelPair) => {
         this.dispatchEvent(
           new CustomEvent("addOption", {
             bubbles: true,

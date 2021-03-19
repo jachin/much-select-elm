@@ -1,5 +1,5 @@
 port module Ports exposing
-    ( addItem
+    ( addOption
     , addOptionsReceiver
     , allowCustomOptionsReceiver
     , blurInput
@@ -47,7 +47,7 @@ port valueCleared : () -> Cmd msg
 -- What's up with this odd name "addItem", its how selectize referred to selected options.
 
 
-port addItem : ( String, String ) -> Cmd msg
+port addOption : ( String, String ) -> Cmd msg
 
 
 port inputKeyUp : String -> Cmd msg

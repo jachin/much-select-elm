@@ -57,7 +57,7 @@ import OptionPresentor exposing (tokensToHtml)
 import OptionSearcher
 import Ports
     exposing
-        ( addItem
+        ( addOption
         , addOptionsReceiver
         , allowCustomOptionsReceiver
         , blurInput
@@ -1267,7 +1267,7 @@ makeCommandMessagesWhenValuesChanges selectedOptions maybeSelectedValue =
                 Just selectedValue ->
                     case Option.findOptionByOptionValue selectedValue selectedOptions of
                         Just option ->
-                            addItem (Option.optionToValueLabelTuple option)
+                            addOption (Option.optionToValueLabelTuple option)
 
                         Nothing ->
                             Cmd.none

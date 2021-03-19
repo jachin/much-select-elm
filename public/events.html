@@ -58,8 +58,8 @@
     </script>
   </div>
 
-  <div id="single-select-add-item-event">
-    <h3>Single Select - <code>addItem</code> Event</h3>
+  <div id="single-select-add-option-event">
+    <h3>Single Select - <code>addOption</code> Event</h3>
     <p>Not a great name. Here for backwards compatibility.</p>
     <much-select>
       <select>
@@ -86,9 +86,9 @@
     <script>
       window.addEventListener("load", () => {
         document
-          .querySelector("#single-select-add-item-event much-select")
+          .querySelector("#single-select-add-option-event much-select")
           .addEventListener(
-            "addItem",
+            "addOption",
             makeLogEventHandler("single-select-add-item-event-log")
           );
       });
