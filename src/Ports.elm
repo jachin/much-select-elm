@@ -1,10 +1,8 @@
 port module Ports exposing
-    ( addOption
-    , addOptionsReceiver
+    ( addOptionsReceiver
     , allowCustomOptionsReceiver
     , blurInput
     , customOptionSelected
-    , deselectItem
     , deselectOptionReceiver
     , disableChangedReceiver
     , errorMessage
@@ -13,6 +11,8 @@ port module Ports exposing
     , loadingChangedReceiver
     , maxDropdownItemsChangedReceiver
     , muchSelectIsReady
+    , optionDeselected
+    , optionSelected
     , optionsChangedReceiver
     , placeholderChangedReceiver
     , removeOptionsReceiver
@@ -43,11 +43,10 @@ port customOptionSelected : List String -> Cmd msg
 port valueCleared : () -> Cmd msg
 
 
+port optionSelected : ( String, String ) -> Cmd msg
 
--- What's up with this odd name "addItem", its how selectize referred to selected options.
 
-
-port addOption : ( String, String ) -> Cmd msg
+port optionDeselected : List ( String, String ) -> Cmd msg
 
 
 port inputKeyUp : String -> Cmd msg
@@ -57,9 +56,6 @@ port blurInput : () -> Cmd msg
 
 
 port focusInput : () -> Cmd msg
-
-
-port deselectItem : List ( String, String ) -> Cmd msg
 
 
 port scrollDropdownToElement : String -> Cmd msg

@@ -57,12 +57,10 @@ import OptionPresentor exposing (tokensToHtml)
 import OptionSearcher
 import Ports
     exposing
-        ( addOption
-        , addOptionsReceiver
+        ( addOptionsReceiver
         , allowCustomOptionsReceiver
         , blurInput
         , customOptionSelected
-        , deselectItem
         , deselectOptionReceiver
         , disableChangedReceiver
         , errorMessage
@@ -71,6 +69,8 @@ import Ports
         , loadingChangedReceiver
         , maxDropdownItemsChangedReceiver
         , muchSelectIsReady
+        , optionDeselected
+        , optionSelected
         , optionsChangedReceiver
         , placeholderChangedReceiver
         , removeOptionsReceiver
@@ -491,7 +491,7 @@ clearAllSelectedOption model =
                 Cmd.none
 
             else
-                deselectItem deselectedItems
+                optionDeselected deselectedItems
 
         newOptions =
             Option.deselectAllOptionsInOptionsList model.options
@@ -1261,13 +1261,13 @@ makeCommandMessagesWhenValuesChanges selectedOptions maybeSelectedValue =
             else
                 customOptionSelected (Option.optionsValues selectedCustomOptions)
 
-        -- Any time we select a new value we need to emit an `addItem` event.
-        addItemCmd =
+        -- Any time we select a new value we need to emit an `optionSelected` event.
+        optionSelectedCmd =
             case maybeSelectedValue of
                 Just selectedValue ->
                     case Option.findOptionByOptionValue selectedValue selectedOptions of
                         Just option ->
-                            addOption (Option.optionToValueLabelTuple option)
+                            optionSelected (Option.optionToValueLabelTuple option)
 
                         Nothing ->
                             Cmd.none
@@ -1279,7 +1279,7 @@ makeCommandMessagesWhenValuesChanges selectedOptions maybeSelectedValue =
         [ valueChanged (selectedOptionsToTuple selectedOptions)
         , customOptionCmd
         , clearCmd
-        , addItemCmd
+        , optionSelectedCmd
         ]
 
 

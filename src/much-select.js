@@ -281,9 +281,9 @@ class MuchSelect extends HTMLElement {
 
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
-      app.ports.addOption.subscribe((valueLabelPair) => {
+      app.ports.optionSelected.subscribe((valueLabelPair) => {
         this.dispatchEvent(
-          new CustomEvent("addOption", {
+          new CustomEvent("optionSelected", {
             bubbles: true,
             detail: {
               value: valueLabelPair[0],
@@ -370,11 +370,17 @@ class MuchSelect extends HTMLElement {
 
     // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
     this.appPromise.then((app) =>
-      app.ports.deselectItem.subscribe((deselectedValue) => {
+      app.ports.optionDeselected.subscribe((deselectedValue) => {
         const formattedValue = {
           label: deselectedValue[0][1],
           value: deselectedValue[0][0],
         };
+        this.dispatchEvent(
+          new CustomEvent("optionDeselected", {
+            bubbles: true,
+            detail: formattedValue,
+          })
+        );
         this.dispatchEvent(
           new CustomEvent("deselectItem", {
             bubbles: true,

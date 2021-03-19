@@ -86,4 +86,28 @@ The `placeholder` attribute is used to set the placeholder in the text input of 
 
 ### Events
 
+##### `valueChanged`
+
+This event fires any time the value changes.
+
+##### `valueCleared`
+
+This event fires if the `<much-select>` is cleared.
+
+##### `optionSelected`
+
+This event fires if the `<much-select>` is in single or multi select mode but it's _mostly_ for mulit select mode. It will just have the newly selected option in it (not all the selected options like the `valueChanged` event).
+
+##### `optionDeselected`
+
+This event fires if the `<much-select>` is in single or multi select mode but it's _mostly_ for mulit select mode. It will just have the newly deselected option in it. This is kinda of the inverse of the `optionSelected` event.
+
+##### `inputKeyUp`
+
+This event fires every time a user types in the `#input-filter` for filtering the options.
+
+##### `inputKeyUpDebounced`
+
+This event fires every time a user types in the `#input-filter` but is debounced by half a second. The idea here is if you want to hook a `<much-select>` up to an API you can use this event to kick off your API call to add additional options based on what the user is has "searched" for.
+
 ### Functions
