@@ -282,6 +282,17 @@ class MuchSelect extends HTMLElement {
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
       app.ports.addItem.subscribe((valueLabelPair) => {
+        // TODO Change this port's name to addOption
+        this.dispatchEvent(
+          new CustomEvent("addOption", {
+            bubbles: true,
+            detail: {
+              value: valueLabelPair[0],
+              label: valueLabelPair[1],
+            },
+          })
+        );
+        // The addItem event is for backwards compatibility.
         this.dispatchEvent(
           new CustomEvent("addItem", {
             bubbles: true,
@@ -313,6 +324,12 @@ class MuchSelect extends HTMLElement {
       app.ports.valueCleared.subscribe(() => {
         this.dispatchEvent(
           new CustomEvent("valueCleared", {
+            bubbles: true,
+          })
+        );
+        // The cleared event is for backwards compatibility.
+        this.dispatchEvent(
+          new CustomEvent("cleared", {
             bubbles: true,
           })
         );
@@ -527,10 +544,24 @@ class MuchSelect extends HTMLElement {
           detail: { values: valuesObj },
         })
       );
+      // The change event is for backwards compatibility.
+      this.dispatchEvent(
+        new CustomEvent("change", {
+          bubbles: true,
+          detail: { values: valuesObj },
+        })
+      );
     } else if (valuesTuple.length === 0) {
       // If we are in single select mode and the value is empty.
       this.dispatchEvent(
         new CustomEvent("valueChanged", {
+          bubbles: true,
+          detail: { value: null },
+        })
+      );
+      // The change event is for backwards compatibility.
+      this.dispatchEvent(
+        new CustomEvent("change", {
           bubbles: true,
           detail: { value: null },
         })
@@ -540,6 +571,13 @@ class MuchSelect extends HTMLElement {
       const valueObj = { value: valuesTuple[0][0], label: valuesTuple[0][1] };
       this.dispatchEvent(
         new CustomEvent("valueChanged", {
+          bubbles: true,
+          detail: { value: valueObj },
+        })
+      );
+      // The change event is for backwards compatibility.
+      this.dispatchEvent(
+        new CustomEvent("changed", {
           bubbles: true,
           detail: { value: valueObj },
         })
