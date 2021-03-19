@@ -262,7 +262,12 @@ update msg model =
                                         |> List.filter (not << Option.isEmptyOption)
                                         |> Option.mergeTwoListsOfOptionsPreservingSelectedOptions model.options
                     in
-                    ( { model | options = newOptionWithOldSelectedOption }, Cmd.none )
+                    ( { model
+                        | options = newOptionWithOldSelectedOption
+                        , optionsForTheDropdown = figureOutWhichOptionsToShow model.maxDropdownItems newOptionWithOldSelectedOption
+                      }
+                    , Cmd.none
+                    )
 
                 Err error ->
                     ( model, errorMessage (Json.Decode.errorToString error) )
