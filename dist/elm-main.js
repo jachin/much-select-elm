@@ -6514,35 +6514,6 @@ var $elm$json$Json$Encode$list = F2(
 				_Json_emptyArray(0),
 				entries));
 	});
-var $author$project$Ports$deselectItem = _Platform_outgoingPort(
-	'deselectItem',
-	$elm$json$Json$Encode$list(
-		function ($) {
-			var a = $.a;
-			var b = $.b;
-			return A2(
-				$elm$json$Json$Encode$list,
-				$elm$core$Basics$identity,
-				_List_fromArray(
-					[
-						$elm$json$Json$Encode$string(a),
-						$elm$json$Json$Encode$string(b)
-					]));
-		}));
-var $author$project$Ports$addItem = _Platform_outgoingPort(
-	'addItem',
-	function ($) {
-		var a = $.a;
-		var b = $.b;
-		return A2(
-			$elm$json$Json$Encode$list,
-			$elm$core$Basics$identity,
-			_List_fromArray(
-				[
-					$elm$json$Json$Encode$string(a),
-					$elm$json$Json$Encode$string(b)
-				]));
-	});
 var $author$project$Ports$customOptionSelected = _Platform_outgoingPort(
 	'customOptionSelected',
 	$elm$json$Json$Encode$list($elm$json$Json$Encode$string));
@@ -6596,6 +6567,20 @@ var $author$project$Option$findOptionByOptionValue = F2(
 					optionValue);
 			},
 			options);
+	});
+var $author$project$Ports$optionSelected = _Platform_outgoingPort(
+	'optionSelected',
+	function ($) {
+		var a = $.a;
+		var b = $.b;
+		return A2(
+			$elm$json$Json$Encode$list,
+			$elm$core$Basics$identity,
+			_List_fromArray(
+				[
+					$elm$json$Json$Encode$string(a),
+					$elm$json$Json$Encode$string(b)
+				]));
 	});
 var $author$project$Option$getOptionLabel = function (option) {
 	switch (option.$) {
@@ -6652,16 +6637,13 @@ var $author$project$Ports$valueCleared = _Platform_outgoingPort(
 var $author$project$Main$makeCommandMessagesWhenValuesChanges = F2(
 	function (selectedOptions, maybeSelectedValue) {
 		var selectedCustomOptions = $author$project$Option$customSelectedOptions(selectedOptions);
-		var customOptionCmd = $elm$core$List$isEmpty(selectedCustomOptions) ? $elm$core$Platform$Cmd$none : $author$project$Ports$customOptionSelected(
-			$author$project$Option$optionsValues(selectedCustomOptions));
-		var clearCmd = $elm$core$List$isEmpty(selectedOptions) ? $author$project$Ports$valueCleared(0) : $elm$core$Platform$Cmd$none;
-		var addItemCmd = function () {
+		var optionSelectedCmd = function () {
 			if (!maybeSelectedValue.$) {
 				var selectedValue = maybeSelectedValue.a;
 				var _v1 = A2($author$project$Option$findOptionByOptionValue, selectedValue, selectedOptions);
 				if (!_v1.$) {
 					var option = _v1.a;
-					return $author$project$Ports$addItem(
+					return $author$project$Ports$optionSelected(
 						$author$project$Option$optionToValueLabelTuple(option));
 				} else {
 					return $elm$core$Platform$Cmd$none;
@@ -6670,6 +6652,9 @@ var $author$project$Main$makeCommandMessagesWhenValuesChanges = F2(
 				return $elm$core$Platform$Cmd$none;
 			}
 		}();
+		var customOptionCmd = $elm$core$List$isEmpty(selectedCustomOptions) ? $elm$core$Platform$Cmd$none : $author$project$Ports$customOptionSelected(
+			$author$project$Option$optionsValues(selectedCustomOptions));
+		var clearCmd = $elm$core$List$isEmpty(selectedOptions) ? $author$project$Ports$valueCleared(0) : $elm$core$Platform$Cmd$none;
 		return $elm$core$Platform$Cmd$batch(
 			_List_fromArray(
 				[
@@ -6677,14 +6662,29 @@ var $author$project$Main$makeCommandMessagesWhenValuesChanges = F2(
 					$author$project$Option$selectedOptionsToTuple(selectedOptions)),
 					customOptionCmd,
 					clearCmd,
-					addItemCmd
+					optionSelectedCmd
 				]));
 	});
+var $author$project$Ports$optionDeselected = _Platform_outgoingPort(
+	'optionDeselected',
+	$elm$json$Json$Encode$list(
+		function ($) {
+			var a = $.a;
+			var b = $.b;
+			return A2(
+				$elm$json$Json$Encode$list,
+				$elm$core$Basics$identity,
+				_List_fromArray(
+					[
+						$elm$json$Json$Encode$string(a),
+						$elm$json$Json$Encode$string(b)
+					]));
+		}));
 var $author$project$Main$clearAllSelectedOption = function (model) {
 	var newOptions = $author$project$Option$deselectAllOptionsInOptionsList(model.a);
 	var deselectedItems = $elm$core$List$isEmpty(
 		$author$project$Option$selectedOptionsToTuple(model.a)) ? _List_Nil : $author$project$Option$selectedOptionsToTuple(model.a);
-	var deselectEventMsg = $elm$core$List$isEmpty(deselectedItems) ? $elm$core$Platform$Cmd$none : $author$project$Ports$deselectItem(deselectedItems);
+	var deselectEventMsg = $elm$core$List$isEmpty(deselectedItems) ? $elm$core$Platform$Cmd$none : $author$project$Ports$optionDeselected(deselectedItems);
 	return _Utils_Tuple2(
 		_Utils_update(
 			model,
