@@ -14356,11 +14356,13 @@ var $author$project$Main$update = F2(
 				var valuesResult = A2($elm$json$Json$Decode$decodeValue, $author$project$Ports$valuesDecoder, valuesJson);
 				if (valuesResult.$ === 'Ok') {
 					var values = valuesResult.a;
+					var newOptions = A2($author$project$Option$selectOptionsInOptionsListByString, values, model.options);
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
 							{
-								options: A2($author$project$Option$selectOptionsInOptionsListByString, values, model.options),
+								options: newOptions,
+								optionsForTheDropdown: A2($author$project$Main$figureOutWhichOptionsToShow, model.maxDropdownItems, newOptions),
 								rightSlot: A3(
 									$author$project$Main$updateRightSlot,
 									model.rightSlot,
@@ -14706,6 +14708,7 @@ var $elm_community$list_extra$List$Extra$mapAccuml = F3(
 			accFinal,
 			$elm$core$List$reverse(generatedList));
 	});
+var $elm$html$Html$Attributes$attribute = $elm$virtual_dom$VirtualDom$attribute;
 var $elm$virtual_dom$VirtualDom$Custom = function (a) {
 	return {$: 'Custom', a: a};
 };
@@ -14771,6 +14774,10 @@ var $author$project$OptionPresentor$tokensToHtml = function (list) {
 };
 var $author$project$Main$optionToDropdownOption = F6(
 	function (mouseOverMsgConstructor, mouseOutMsgConstructor, clickMsgConstructor, selectionMode, prependOptionGroup, option) {
+		var valueDataAttribute = A2(
+			$elm$html$Html$Attributes$attribute,
+			'data-value',
+			$author$project$Option$getOptionValueAsString(option));
 		var optionGroupHtml = prependOptionGroup ? A2(
 			$elm$html$Html$div,
 			_List_fromArray(
@@ -14874,7 +14881,8 @@ var $author$project$Main$optionToDropdownOption = F6(
 								$author$project$Main$mousedownPreventDefaultAndStopPropagation(
 								clickMsgConstructor(
 									$author$project$Option$getOptionValue(option))),
-								$elm$html$Html$Attributes$class('option')
+								$elm$html$Html$Attributes$class('option'),
+								valueDataAttribute
 							]),
 						_List_fromArray(
 							[labelHtml, descriptionHtml]))
@@ -14895,7 +14903,8 @@ var $author$project$Main$optionToDropdownOption = F6(
 							_List_fromArray(
 								[
 									$elm$html$Html$Attributes$class('selected'),
-									$elm$html$Html$Attributes$class('option')
+									$elm$html$Html$Attributes$class('option'),
+									valueDataAttribute
 								]),
 							_List_fromArray(
 								[labelHtml, descriptionHtml]))
@@ -14917,7 +14926,8 @@ var $author$project$Main$optionToDropdownOption = F6(
 							_List_fromArray(
 								[
 									$elm$html$Html$Attributes$class('selected'),
-									$elm$html$Html$Attributes$class('option')
+									$elm$html$Html$Attributes$class('option'),
+									valueDataAttribute
 								]),
 							_List_fromArray(
 								[labelHtml, descriptionHtml]))
@@ -14947,7 +14957,8 @@ var $author$project$Main$optionToDropdownOption = F6(
 								clickMsgConstructor(
 									$author$project$Option$getOptionValue(option))),
 								$elm$html$Html$Attributes$class('highlighted'),
-								$elm$html$Html$Attributes$class('option')
+								$elm$html$Html$Attributes$class('option'),
+								valueDataAttribute
 							]),
 						_List_fromArray(
 							[labelHtml, descriptionHtml]))
@@ -14961,7 +14972,8 @@ var $author$project$Main$optionToDropdownOption = F6(
 						_List_fromArray(
 							[
 								$elm$html$Html$Attributes$class('disabled'),
-								$elm$html$Html$Attributes$class('option')
+								$elm$html$Html$Attributes$class('option'),
+								valueDataAttribute
 							]),
 						_List_fromArray(
 							[labelHtml, descriptionHtml]))

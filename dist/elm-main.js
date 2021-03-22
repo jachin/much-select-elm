@@ -6377,7 +6377,7 @@ var $author$project$Main$init = function (flags) {
 			bc: initialValues,
 			g: maxDropdownItems,
 			a: optionsWithInitialValueSelected,
-			f: A2($author$project$Main$figureOutWhichOptionsToShow, maxDropdownItems, optionsWithInitialValueSelected),
+			e: A2($author$project$Main$figureOutWhichOptionsToShow, maxDropdownItems, optionsWithInitialValueSelected),
 			G: flags.G,
 			I: function () {
 				if (flags.aH) {
@@ -6690,7 +6690,7 @@ var $author$project$Main$clearAllSelectedOption = function (model) {
 			model,
 			{
 				a: $author$project$Option$deselectAllOptionsInOptionsList(newOptions),
-				f: A2($author$project$Main$figureOutWhichOptionsToShow, model.g, newOptions),
+				e: A2($author$project$Main$figureOutWhichOptionsToShow, model.g, newOptions),
 				I: 0,
 				E: ''
 			}),
@@ -9038,7 +9038,7 @@ var $author$project$Main$updateModelWithSearchStringChanges = F4(
 				model,
 				{
 					a: updatedOptions,
-					f: A2($author$project$Main$figureOutWhichOptionsToShow, maxNumberOfDropdownItems, updatedOptions),
+					e: A2($author$project$Main$figureOutWhichOptionsToShow, maxNumberOfDropdownItems, updatedOptions),
 					E: searchString
 				});
 		} else {
@@ -9056,7 +9056,7 @@ var $author$project$Main$updateModelWithSearchStringChanges = F4(
 				model,
 				{
 					a: optionsSortedByTotalScoreWithTheFirstOptionHighlighted,
-					f: A2($author$project$Main$figureOutWhichOptionsToShow, maxNumberOfDropdownItems, optionsSortedByTotalScoreWithTheFirstOptionHighlighted),
+					e: A2($author$project$Main$figureOutWhichOptionsToShow, maxNumberOfDropdownItems, optionsSortedByTotalScoreWithTheFirstOptionHighlighted),
 					E: searchString
 				});
 		}
@@ -9123,20 +9123,20 @@ var $author$project$Main$update = F2(
 			case 5:
 				var optionValue = msg.a;
 				var updateOptions = A2($author$project$Option$highlightOptionInListByValue, optionValue, model.a);
-				var optionsForTheDropdown = A2($author$project$Option$highlightOptionInListByValue, optionValue, model.f);
+				var optionsForTheDropdown = A2($author$project$Option$highlightOptionInListByValue, optionValue, model.e);
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{a: updateOptions, f: optionsForTheDropdown}),
+						{a: updateOptions, e: optionsForTheDropdown}),
 					$elm$core$Platform$Cmd$none);
 			case 6:
 				var optionValue = msg.a;
 				var updatedOptions = A2($author$project$Option$removeHighlightOptionInList, optionValue, model.a);
-				var optionsForTheDropdown = A2($author$project$Option$removeHighlightOptionInList, optionValue, model.f);
+				var optionsForTheDropdown = A2($author$project$Option$removeHighlightOptionInList, optionValue, model.e);
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{a: updatedOptions, f: optionsForTheDropdown}),
+						{a: updatedOptions, e: optionsForTheDropdown}),
 					$elm$core$Platform$Cmd$none);
 			case 7:
 				var optionValue = msg.a;
@@ -9169,11 +9169,13 @@ var $author$project$Main$update = F2(
 				var valuesResult = A2($elm$json$Json$Decode$decodeValue, $author$project$Ports$valuesDecoder, valuesJson);
 				if (!valuesResult.$) {
 					var values = valuesResult.a;
+					var newOptions = A2($author$project$Option$selectOptionsInOptionsListByString, values, model.a);
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
 							{
-								a: A2($author$project$Option$selectOptionsInOptionsListByString, values, model.a),
+								a: newOptions,
+								e: A2($author$project$Main$figureOutWhichOptionsToShow, model.g, newOptions),
 								I: A3(
 									$author$project$Main$updateRightSlot,
 									model.I,
@@ -9212,7 +9214,7 @@ var $author$project$Main$update = F2(
 							model,
 							{
 								a: newOptionWithOldSelectedOption,
-								f: A2($author$project$Main$figureOutWhichOptionsToShow, model.g, newOptionWithOldSelectedOption)
+								e: A2($author$project$Main$figureOutWhichOptionsToShow, model.g, newOptionWithOldSelectedOption)
 							}),
 						$elm$core$Platform$Cmd$none);
 				} else {
@@ -9233,7 +9235,7 @@ var $author$project$Main$update = F2(
 							model,
 							{
 								a: updatedOptions,
-								f: A2($author$project$Main$figureOutWhichOptionsToShow, model.g, updatedOptions)
+								e: A2($author$project$Main$figureOutWhichOptionsToShow, model.g, updatedOptions)
 							}),
 						$elm$core$Platform$Cmd$none);
 				} else {
@@ -9254,7 +9256,7 @@ var $author$project$Main$update = F2(
 							model,
 							{
 								a: updatedOptions,
-								f: A2($author$project$Main$figureOutWhichOptionsToShow, model.g, updatedOptions)
+								e: A2($author$project$Main$figureOutWhichOptionsToShow, model.g, updatedOptions)
 							}),
 						$elm$core$Platform$Cmd$none);
 				} else {
@@ -9303,7 +9305,7 @@ var $author$project$Main$update = F2(
 							model,
 							{
 								a: options,
-								f: A2($author$project$Main$figureOutWhichOptionsToShow, model.g, options)
+								e: A2($author$project$Main$figureOutWhichOptionsToShow, model.g, options)
 							}),
 						A2($author$project$Main$makeCommandMessagesWhenValuesChanges, options, $elm$core$Maybe$Nothing));
 				} else {
@@ -9341,7 +9343,7 @@ var $author$project$Main$update = F2(
 						model,
 						{
 							g: maxDropdownItems,
-							f: A2($author$project$Main$figureOutWhichOptionsToShow, maxDropdownItems, model.a)
+							e: A2($author$project$Main$figureOutWhichOptionsToShow, maxDropdownItems, model.a)
 						}),
 					$elm$core$Platform$Cmd$none);
 			case 18:
@@ -9397,7 +9399,7 @@ var $author$project$Main$update = F2(
 						model,
 						{
 							a: $author$project$Option$moveHighlightedOptionUp(model.a),
-							f: A2($author$project$Main$figureOutWhichOptionsToShow, model.g, updatedOptions)
+							e: A2($author$project$Main$figureOutWhichOptionsToShow, model.g, updatedOptions)
 						}),
 					$author$project$Ports$scrollDropdownToElement('something'));
 			case 24:
@@ -9407,7 +9409,7 @@ var $author$project$Main$update = F2(
 						model,
 						{
 							a: updatedOptions,
-							f: A2($author$project$Main$figureOutWhichOptionsToShow, model.g, updatedOptions)
+							e: A2($author$project$Main$figureOutWhichOptionsToShow, model.g, updatedOptions)
 						}),
 					$author$project$Ports$scrollDropdownToElement('something'));
 			case 25:
@@ -9426,7 +9428,7 @@ var $author$project$Main$update = F2(
 						model,
 						{
 							a: updatedOptions,
-							f: A2($author$project$Main$figureOutWhichOptionsToShow, model.g, updatedOptions)
+							e: A2($author$project$Main$figureOutWhichOptionsToShow, model.g, updatedOptions)
 						}),
 					$elm$core$Platform$Cmd$none);
 			default:
@@ -9436,7 +9438,7 @@ var $author$project$Main$update = F2(
 						model,
 						{
 							a: newOptions,
-							f: A2($author$project$Main$figureOutWhichOptionsToShow, model.g, newOptions)
+							e: A2($author$project$Main$figureOutWhichOptionsToShow, model.g, newOptions)
 						}),
 					$author$project$Ports$valueChanged(
 						$author$project$Option$selectedOptionsToTuple(newOptions)));
@@ -9531,6 +9533,14 @@ var $elm_community$list_extra$List$Extra$mapAccuml = F3(
 			$elm$core$List$reverse(generatedList));
 	});
 var $elm$core$Basics$neq = _Utils_notEqual;
+var $elm$virtual_dom$VirtualDom$attribute = F2(
+	function (key, value) {
+		return A2(
+			_VirtualDom_attribute,
+			_VirtualDom_noOnOrFormAction(key),
+			_VirtualDom_noJavaScriptOrHtmlUri(value));
+	});
+var $elm$html$Html$Attributes$attribute = $elm$virtual_dom$VirtualDom$attribute;
 var $elm$virtual_dom$VirtualDom$Custom = function (a) {
 	return {$: 3, a: a};
 };
@@ -9610,6 +9620,10 @@ var $author$project$OptionPresentor$tokensToHtml = function (list) {
 };
 var $author$project$Main$optionToDropdownOption = F6(
 	function (mouseOverMsgConstructor, mouseOutMsgConstructor, clickMsgConstructor, selectionMode, prependOptionGroup, option) {
+		var valueDataAttribute = A2(
+			$elm$html$Html$Attributes$attribute,
+			'data-value',
+			$author$project$Option$getOptionValueAsString(option));
 		var optionGroupHtml = prependOptionGroup ? A2(
 			$elm$html$Html$div,
 			_List_fromArray(
@@ -9713,7 +9727,8 @@ var $author$project$Main$optionToDropdownOption = F6(
 								$author$project$Main$mousedownPreventDefaultAndStopPropagation(
 								clickMsgConstructor(
 									$author$project$Option$getOptionValue(option))),
-								$elm$html$Html$Attributes$class('option')
+								$elm$html$Html$Attributes$class('option'),
+								valueDataAttribute
 							]),
 						_List_fromArray(
 							[labelHtml, descriptionHtml]))
@@ -9734,7 +9749,8 @@ var $author$project$Main$optionToDropdownOption = F6(
 							_List_fromArray(
 								[
 									$elm$html$Html$Attributes$class('selected'),
-									$elm$html$Html$Attributes$class('option')
+									$elm$html$Html$Attributes$class('option'),
+									valueDataAttribute
 								]),
 							_List_fromArray(
 								[labelHtml, descriptionHtml]))
@@ -9756,7 +9772,8 @@ var $author$project$Main$optionToDropdownOption = F6(
 							_List_fromArray(
 								[
 									$elm$html$Html$Attributes$class('selected'),
-									$elm$html$Html$Attributes$class('option')
+									$elm$html$Html$Attributes$class('option'),
+									valueDataAttribute
 								]),
 							_List_fromArray(
 								[labelHtml, descriptionHtml]))
@@ -9786,7 +9803,8 @@ var $author$project$Main$optionToDropdownOption = F6(
 								clickMsgConstructor(
 									$author$project$Option$getOptionValue(option))),
 								$elm$html$Html$Attributes$class('highlighted'),
-								$elm$html$Html$Attributes$class('option')
+								$elm$html$Html$Attributes$class('option'),
+								valueDataAttribute
 							]),
 						_List_fromArray(
 							[labelHtml, descriptionHtml]))
@@ -9800,7 +9818,8 @@ var $author$project$Main$optionToDropdownOption = F6(
 						_List_fromArray(
 							[
 								$elm$html$Html$Attributes$class('disabled'),
-								$elm$html$Html$Attributes$class('option')
+								$elm$html$Html$Attributes$class('option'),
+								valueDataAttribute
 							]),
 						_List_fromArray(
 							[labelHtml, descriptionHtml]))
@@ -9834,9 +9853,9 @@ var $author$project$Main$optionsToDropdownOptions = F5(
 var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
 var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
 var $author$project$Main$dropdown = function (model) {
-	var optionsHtml = A5($author$project$Main$optionsToDropdownOptions, $author$project$Main$DropdownMouseOverOption, $author$project$Main$DropdownMouseOutOption, $author$project$Main$DropdownMouseClickOption, model.l, model.f);
+	var optionsHtml = A5($author$project$Main$optionsToDropdownOptions, $author$project$Main$DropdownMouseOverOption, $author$project$Main$DropdownMouseOutOption, $author$project$Main$DropdownMouseClickOption, model.l, model.e);
 	var dropdownFooterHtml = (_Utils_cmp(
-		$elm$core$List$length(model.f),
+		$elm$core$List$length(model.e),
 		$elm$core$List$length(model.a)) < 0) ? A2(
 		$elm$html$Html$div,
 		_List_fromArray(
@@ -9847,7 +9866,7 @@ var $author$project$Main$dropdown = function (model) {
 			[
 				$elm$html$Html$text(
 				'showing ' + ($elm$core$String$fromInt(
-					$elm$core$List$length(model.f)) + (' of ' + ($elm$core$String$fromInt(
+					$elm$core$List$length(model.e)) + (' of ' + ($elm$core$String$fromInt(
 					$elm$core$List$length(model.a)) + ' options'))))
 			])) : $elm$html$Html$text('');
 	var dropdownCss = _List_fromArray(
@@ -9861,7 +9880,7 @@ var $author$project$Main$dropdown = function (model) {
 			'width',
 			$elm$core$String$fromFloat(model.az) + 'px')
 		]);
-	return model.m ? $elm$html$Html$text('') : ((model.af && ((!$elm$core$List$isEmpty(model.f)) && (!$elm$core$List$isEmpty(optionsHtml)))) ? A2(
+	return model.m ? $elm$html$Html$text('') : ((model.af && ((!$elm$core$List$isEmpty(model.e)) && (!$elm$core$List$isEmpty(optionsHtml)))) ? A2(
 		$elm$html$Html$div,
 		_Utils_ap(
 			_List_fromArray(
