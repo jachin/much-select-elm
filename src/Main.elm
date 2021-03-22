@@ -233,8 +233,13 @@ update msg model =
             in
             case valuesResult of
                 Ok values ->
+                    let
+                        newOptions =
+                            selectOptionsInOptionsListByString values model.options
+                    in
                     ( { model
-                        | options = selectOptionsInOptionsListByString values model.options
+                        | options = newOptions
+                        , optionsForTheDropdown = figureOutWhichOptionsToShow model.maxDropdownItems newOptions
                         , rightSlot =
                             updateRightSlot
                                 model.rightSlot
@@ -1049,6 +1054,9 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
 
                 Nothing ->
                     span [] [ Option.getOptionLabel option |> optionLabelToString |> text ]
+
+        valueDataAttribute =
+            Html.Attributes.attribute "data-value" (Option.getOptionValueAsString option)
     in
     case Option.getOptionDisplay option of
         OptionShown ->
@@ -1058,6 +1066,7 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
                 , onMouseLeave (option |> Option.getOptionValue |> mouseOutMsgConstructor)
                 , mousedownPreventDefaultAndStopPropagation (option |> Option.getOptionValue |> clickMsgConstructor)
                 , class "option"
+                , valueDataAttribute
                 ]
                 [ labelHtml, descriptionHtml ]
             ]
@@ -1072,6 +1081,7 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
                     , div
                         [ class "selected"
                         , class "option"
+                        , valueDataAttribute
                         ]
                         [ labelHtml, descriptionHtml ]
                     ]
@@ -1086,6 +1096,7 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
                     , div
                         [ class "selected"
                         , class "option"
+                        , valueDataAttribute
                         ]
                         [ labelHtml, descriptionHtml ]
                     ]
@@ -1101,6 +1112,7 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
                 , mousedownPreventDefaultAndStopPropagation (option |> Option.getOptionValue |> clickMsgConstructor)
                 , class "highlighted"
                 , class "option"
+                , valueDataAttribute
                 ]
                 [ labelHtml, descriptionHtml ]
             ]
@@ -1110,6 +1122,7 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
             , div
                 [ class "disabled"
                 , class "option"
+                , valueDataAttribute
                 ]
                 [ labelHtml, descriptionHtml ]
             ]
