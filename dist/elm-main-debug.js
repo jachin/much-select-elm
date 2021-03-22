@@ -14356,7 +14356,7 @@ var $author$project$Main$update = F2(
 				var valuesResult = A2($elm$json$Json$Decode$decodeValue, $author$project$Ports$valuesDecoder, valuesJson);
 				if (valuesResult.$ === 'Ok') {
 					var values = valuesResult.a;
-					var newOptions = A2($author$project$Option$selectOptionsInOptionsListByString, values, model.options);
+					var newOptions = A2($author$project$Option$addAndSelectOptionsInOptionsListByString, values, model.options);
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
