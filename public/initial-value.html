@@ -82,18 +82,16 @@
         });
       </script>
     </div>
-  </div>
 
-
-  <div id="add-options-to-a-multi-select-not-including-the-selected-value">
-    <h3>2 Initial Options - Then Add the Options - But not the selected value</h3>
-    <p>For mulit select we should support multiple initial values, then we add options (async).</p>
-    <p>It Should keep the selected values and add the new options.</p>
-    <button>Click me to add options via the DOM</button>
-    <much-select multi-select selected="Carrots,Peas"></much-select>
-    <script>
-      document.querySelector("#add-options-to-a-multi-select-not-including-the-selected-value button").addEventListener("click", () => {
-        document.querySelector("#add-options-to-a-multi-select-not-including-the-selected-value much-select").innerHTML = `
+    <div id="add-options-to-a-multi-select-not-including-the-selected-value">
+      <h3>2 Initial Options - Then Add the Options - But not the selected value</h3>
+      <p>For mulit select we should support multiple initial values, then we add options (async).</p>
+      <p>It Should keep the selected values and add the new options.</p>
+      <button>Click me to add options via the DOM</button>
+      <much-select multi-select selected="Carrots,Peas"></much-select>
+      <script>
+        document.querySelector("#add-options-to-a-multi-select-not-including-the-selected-value button").addEventListener("click", () => {
+          document.querySelector("#add-options-to-a-multi-select-not-including-the-selected-value much-select").innerHTML = `
           <select slot="select-input">
             <option>Zucchini</option>
             <option>Lettuce</option>
@@ -101,9 +99,9 @@
             <option>Pumpkins</option>
           </select>
         `;
-      });
-    </script>
-  </div>
+        });
+      </script>
+    </div>
   </div>
 
   <script src="./index.js" type="module"></script>
