@@ -235,7 +235,7 @@ update msg model =
                 Ok values ->
                     let
                         newOptions =
-                            selectOptionsInOptionsListByString values model.options
+                            Option.addAndSelectOptionsInOptionsListByString values model.options
                     in
                     ( { model
                         | options = newOptions
