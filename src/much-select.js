@@ -148,7 +148,7 @@ class MuchSelect extends HTMLElement {
      * @type {string|null}
      * @private
      */
-    this._selected = null;
+    this._selectedValue = null;
 
     /**
      * @type {string|null}
@@ -207,7 +207,7 @@ class MuchSelect extends HTMLElement {
 
   static get observedAttributes() {
     return [
-      "selected",
+      "selected-value",
       "disabled",
       "placeholder",
       "loading",
@@ -218,10 +218,10 @@ class MuchSelect extends HTMLElement {
 
   // noinspection JSUnusedGlobalSymbols
   attributeChangedCallback(name, oldValue, newValue) {
-    if (name === "selected") {
+    if (name === "selected-value") {
       if (oldValue !== newValue) {
         this.updateDimensions();
-        this.selected = newValue;
+        this.selectedValue = newValue;
       }
     } else if (name === "placeholder") {
       if (oldValue !== newValue) {
@@ -485,8 +485,8 @@ class MuchSelect extends HTMLElement {
 
   buildFlags() {
     const flags = {};
-    if (this.selected) {
-      flags.value = this.selected;
+    if (this.selectedValue) {
+      flags.value = this.selectedValue;
     } else {
       flags.value = "";
     }
@@ -532,7 +532,9 @@ class MuchSelect extends HTMLElement {
 
   valueChangedHandler(valuesTuple) {
     // TODO perhaps this delimiter should be configurable
-    this.selected = valuesTuple.map((valueTuple) => valueTuple[0]).join(",");
+    this.selectedValue = valuesTuple
+      .map((valueTuple) => valueTuple[0])
+      .join(",");
     this.updateDimensions();
     if (
       this.hasAttribute("multi-select") &&
@@ -652,7 +654,6 @@ class MuchSelect extends HTMLElement {
             flags,
             node: elmDiv,
           });
-
           resolve(this._app);
         } catch (error) {
           reject(error);
@@ -666,12 +667,12 @@ class MuchSelect extends HTMLElement {
     return this.appPromise.then(() => this._parentDiv);
   }
 
-  get selected() {
-    return this._selected;
+  get selectedValue() {
+    return this._selectedValue;
   }
 
-  set selected(value) {
-    this.setAttribute("selected", value);
+  set selectedValue(value) {
+    this.setAttribute("selected-value", value);
 
     if (value) {
       // TODO perhaps this delimiter should be configurable

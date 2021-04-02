@@ -25,7 +25,7 @@
     <div>
       <h3>An initial value</h3>
       <p>Set using the <code>selected</code> attribute on the <code>&lt;much-select&gt;</code></p>
-      <much-select selected="Blue">
+      <much-select selected-value="Blue">
         <select slot="select-input">
           <option>Red</option>
           <option>Yellow</option>
@@ -40,7 +40,7 @@
     <div>
       <h3>An initial Value (No Options)</h3>
       <p>If there is an initial value but no options it should create one for the initial value</p>
-      <much-select selected="Coffee"></much-select>
+      <much-select selected-value="Coffee"></much-select>
     </div>
 
     <div id="add-options-including-the-selected-value">
@@ -48,7 +48,7 @@
       <p>If there is an initial value but no options initially, then we add options (async).</p>
       <p>It should keep the selected value and "merge" the new option with the same value.</p>
       <button>Click me to add options via the DOM</button>
-      <much-select selected="Coffee"></much-select>
+      <much-select selected-value="Coffee"></much-select>
       <script>
         document.querySelector("#add-options-including-the-selected-value button").addEventListener("click", () => {
           document.querySelector("#add-options-including-the-selected-value much-select").innerHTML = `
@@ -68,7 +68,7 @@
       <p>If there is an initial value but no options initial, then we add options (async).</p>
       <p>It should keep the selected value include the additional options in the dropdown.</p>
       <button>Click me to add options via the DOM</button>
-      <much-select selected="Butter"></much-select>
+      <much-select selected-value="Butter"></much-select>
       <script>
         document.querySelector("#add-options-not-including-the-selected-value button").addEventListener("click", () => {
           document.querySelector("#add-options-not-including-the-selected-value much-select").innerHTML = `
@@ -88,7 +88,7 @@
       <p>For mulit select we should support multiple initial values, then we add options (async).</p>
       <p>It Should keep the selected values and add the new options.</p>
       <button>Click me to add options via the DOM</button>
-      <much-select multi-select selected="Carrots,Peas"></much-select>
+      <much-select multi-select selected-value="Carrots,Peas"></much-select>
       <script>
         document.querySelector("#add-options-to-a-multi-select-not-including-the-selected-value button").addEventListener("click", () => {
           document.querySelector("#add-options-to-a-multi-select-not-including-the-selected-value much-select").innerHTML = `
