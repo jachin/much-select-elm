@@ -74,9 +74,9 @@ npm run build
 
 #### Attributes
 
-##### `selected`
+##### `selected-value`
 
-The `selected` attribute is used to set the value of the `<much-select>`.
+The `selected-value` attribute is used to set the value of the `<much-select>`.
 
 ##### `placeholder`
 
@@ -108,6 +108,6 @@ This event fires every time a user types in the `#input-filter` for filtering th
 
 ##### `inputKeyUpDebounced`
 
-This event fires every time a user types in the `#input-filter` but is debounced by half a second. The idea here is if you want to hook a `<much-select>` up to an API you can use this event to kick off your API call to add additional options based on what the user is has "searched" for.
+This event fires every time a user types in the `#input-filter` but is debounced by half a second. The idea here is if you want to hook a `<much-select>` up to an API you can use this event to kick off your API calls to add additional options based on what the user is has "searched" for.
 
 ### Functions
