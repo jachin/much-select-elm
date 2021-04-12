@@ -465,7 +465,7 @@ addAndSelectOptionsInOptionsListByString strings options =
         newOptions =
             List.map (\str -> newSelectedOption str Nothing) strings
     in
-    mergeTwoListsOfOptionsPreservingSelectedOptions newOptions options
+    mergeTwoListsOfOptionsPreservingSelectedOptions options newOptions
 
 
 setSelectedOptionInNewOptions : List Option -> List Option -> List Option

@@ -1,7 +1,7 @@
 module Option.AddingOptions exposing (suite)
 
 import Expect
-import Option exposing (addAdditionalOptionsToOptionList, newOption)
+import Option exposing (addAdditionalOptionsToOptionList, addAndSelectOptionsInOptionsListByString, newOption, selectOption, setLabel)
 import Test exposing (Test, describe, test)
 
 
@@ -14,7 +14,8 @@ timecop1983 =
 
 
 wolfClub =
-    newOption "W O L F C L U B" Nothing
+    newOption "Wolf Club" Nothing
+        |> setLabel "W O L F C L U B" Nothing
 
 
 waveshaper =
@@ -39,4 +40,16 @@ suite =
                 Expect.equalLists
                     (addAdditionalOptionsToOptionList [ timecop1983, heartBones ] [ heartBones ])
                     [ timecop1983, heartBones ]
+        , describe "and selecting them"
+            [ test "with the same value of an option already in the list preserver the label" <|
+                \_ ->
+                    Expect.equalLists
+                        (addAndSelectOptionsInOptionsListByString [ "Wolf Club" ] [ wolfClub ])
+                        [ selectOption wolfClub ]
+            , test "with the same value of a selected option already in the list preserver the label" <|
+                \_ ->
+                    Expect.equalLists
+                        (addAndSelectOptionsInOptionsListByString [ "Wolf Club" ] [ selectOption wolfClub ])
+                        [ selectOption wolfClub ]
+            ]
         ]
