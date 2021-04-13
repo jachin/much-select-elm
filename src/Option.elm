@@ -50,9 +50,9 @@ module Option exposing
     , selectOptionsInOptionsListByString
     , selectSingleOptionInList
     , selectedOptionsToTuple
-    , setDescription
-    , setGroup
-    , setLabel
+    , setDescriptionWithString
+    , setGroupWithString
+    , setLabelWithString
     , setOptionSearchFilter
     , setSelectedOptionInNewOptions
     , sortOptionsByGroupAndLabel
@@ -197,8 +197,8 @@ newOption value maybeCleanLabel =
                 Nothing
 
 
-setLabel : String -> Maybe String -> Option -> Option
-setLabel string maybeCleanString option =
+setLabelWithString : String -> Maybe String -> Option -> Option
+setLabelWithString string maybeCleanString option =
     case option of
         Option optionDisplay _ optionValue description group search ->
             Option
@@ -220,8 +220,32 @@ setLabel string maybeCleanString option =
             EmptyOption optionDisplay (OptionLabel string maybeCleanString NoSortRank)
 
 
-setDescription : String -> Option -> Option
-setDescription string option =
+setLabel : OptionLabel -> Option -> Option
+setLabel label option =
+    case option of
+        Option optionDisplay _ optionValue description group search ->
+            Option
+                optionDisplay
+                label
+                optionValue
+                description
+                group
+                search
+
+        CustomOption optionDisplay _ _ search ->
+            CustomOption
+                optionDisplay
+                label
+                (OptionValue (optionLabelToString label))
+                search
+
+        EmptyOption optionDisplay _ ->
+            EmptyOption optionDisplay
+                label
+
+
+setDescriptionWithString : String -> Option -> Option
+setDescriptionWithString string option =
     case option of
         Option optionDisplay label optionValue _ group search ->
             Option optionDisplay
@@ -242,8 +266,51 @@ setDescription string option =
             EmptyOption optionDisplay optionLabel
 
 
-setGroup : String -> Option -> Option
-setGroup string option =
+setDescription : OptionDescription -> Option -> Option
+setDescription description option =
+    case option of
+        Option optionDisplay label optionValue _ group search ->
+            Option optionDisplay
+                label
+                optionValue
+                description
+                group
+                search
+
+        CustomOption optionDisplay optionLabel optionValue search ->
+            CustomOption
+                optionDisplay
+                optionLabel
+                optionValue
+                search
+
+        EmptyOption optionDisplay optionLabel ->
+            EmptyOption optionDisplay optionLabel
+
+
+setGroup : OptionGroup -> Option -> Option
+setGroup optionGroup option =
+    case option of
+        Option optionDisplay label optionValue description _ search ->
+            Option optionDisplay
+                label
+                optionValue
+                description
+                optionGroup
+                search
+
+        CustomOption optionDisplay optionLabel optionValue search ->
+            CustomOption optionDisplay
+                optionLabel
+                optionValue
+                search
+
+        EmptyOption optionDisplay optionLabel ->
+            EmptyOption optionDisplay optionLabel
+
+
+setGroupWithString : String -> Option -> Option
+setGroupWithString string option =
     case option of
         Option optionDisplay label optionValue description _ search ->
             Option optionDisplay
@@ -465,7 +532,7 @@ addAndSelectOptionsInOptionsListByString strings options =
         newOptions =
             List.map (\str -> newSelectedOption str Nothing) strings
     in
-    mergeTwoListsOfOptionsPreservingSelectedOptions options newOptions
+    mergeTwoListsOfOptionsPreservingSelectedOptions newOptions options
 
 
 setSelectedOptionInNewOptions : List Option -> List Option -> List Option
@@ -485,11 +552,55 @@ setSelectedOptionInNewOptions oldOptions newOptions =
         newOptions
 
 
+{-| This function is a little strange but here's what it does. It takes 2 lists of option.
+First it looks to see if any option values the second list match any option values in the first list
+If they do it takes the label, description, and group from the option in second list and uses it to update
+the option in the first list.
+
+Then it concatenates the 2 lists together and filters them by unique option value, dropping identical
+values later in the list.
+
+The idea here is that the label, description, and group can be updated for existing option and new options
+can be added at the same time.
+
+One place this comes up is when we have an initial value for a MuchSelect, and then later the "full" list of options
+comes in, including the extra stuff (like label, description, and group).
+|
+
+-}
 mergeTwoListsOfOptionsPreservingSelectedOptions : List Option -> List Option -> List Option
 mergeTwoListsOfOptionsPreservingSelectedOptions optionsA optionsB =
     let
+        combineOptions optionA optionB =
+            let
+                optionBLabel =
+                    getOptionLabel optionB
+
+                optionBDescription =
+                    getOptionDescription optionB
+
+                optionBGroup =
+                    getOptionGroup optionB
+            in
+            optionA
+                |> setDescription optionBDescription
+                |> setLabel optionBLabel
+                |> setGroup optionBGroup
+
+        updatedOptionsA =
+            List.map
+                (\optionA ->
+                    case findOptionByOptionValue (getOptionValue optionA) optionsB of
+                        Just optionB ->
+                            combineOptions optionA optionB
+
+                        Nothing ->
+                            optionA
+                )
+                optionsA
+
         superList =
-            optionsA ++ optionsB
+            updatedOptionsA ++ optionsB
 
         newOptions =
             List.Extra.uniqueBy getOptionValueAsString superList
@@ -725,7 +836,7 @@ selectOptionInListByOptionValue value options =
                     CustomOption _ _ _ _ ->
                         case value of
                             OptionValue valueStr ->
-                                selectOption option_ |> setLabel valueStr Nothing
+                                selectOption option_ |> setLabelWithString valueStr Nothing
 
                             EmptyOptionValue ->
                                 selectOption option_
@@ -806,7 +917,7 @@ selectSingleOptionInList value options =
                         CustomOption _ _ optionValue _ ->
                             case optionValue of
                                 OptionValue valueStr ->
-                                    selectOption option_ |> setLabel valueStr Nothing
+                                    selectOption option_ |> setLabelWithString valueStr Nothing
 
                                 EmptyOptionValue ->
                                     selectOption option_
