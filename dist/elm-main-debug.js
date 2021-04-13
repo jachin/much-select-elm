@@ -10845,7 +10845,7 @@ var $author$project$Option$addAndSelectOptionsInOptionsListByString = F2(
 				return A2($author$project$Option$newSelectedOption, str, $elm$core$Maybe$Nothing);
 			},
 			strings);
-		return A2($author$project$Option$mergeTwoListsOfOptionsPreservingSelectedOptions, newOptions, options);
+		return A2($author$project$Option$mergeTwoListsOfOptionsPreservingSelectedOptions, options, newOptions);
 	});
 var $author$project$Ports$errorMessage = _Platform_outgoingPort('errorMessage', $elm$json$Json$Encode$string);
 var $author$project$Option$getOptionDisplay = function (option) {

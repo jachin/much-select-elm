@@ -5595,7 +5595,7 @@ var $author$project$Option$addAndSelectOptionsInOptionsListByString = F2(
 				return A2($author$project$Option$newSelectedOption, str, $elm$core$Maybe$Nothing);
 			},
 			strings);
-		return A2($author$project$Option$mergeTwoListsOfOptionsPreservingSelectedOptions, newOptions, options);
+		return A2($author$project$Option$mergeTwoListsOfOptionsPreservingSelectedOptions, options, newOptions);
 	});
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Basics$composeL = F3(
