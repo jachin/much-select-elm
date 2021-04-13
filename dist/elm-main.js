@@ -5161,6 +5161,27 @@ var $author$project$Main$ShowNothing = 0;
 var $author$project$SelectionMode$SingleSelect = function (a) {
 	return {$: 0, a: a};
 };
+var $elm_community$list_extra$List$Extra$find = F2(
+	function (predicate, list) {
+		find:
+		while (true) {
+			if (!list.b) {
+				return $elm$core$Maybe$Nothing;
+			} else {
+				var first = list.a;
+				var rest = list.b;
+				if (predicate(first)) {
+					return $elm$core$Maybe$Just(first);
+				} else {
+					var $temp$predicate = predicate,
+						$temp$list = rest;
+					predicate = $temp$predicate;
+					list = $temp$list;
+					continue find;
+				}
+			}
+		}
+	});
 var $author$project$Option$EmptyOptionValue = {$: 1};
 var $author$project$Option$getOptionValue = function (option) {
 	switch (option.$) {
@@ -5174,6 +5195,54 @@ var $author$project$Option$getOptionValue = function (option) {
 			return $author$project$Option$EmptyOptionValue;
 	}
 };
+var $author$project$Option$findOptionByOptionValue = F2(
+	function (optionValue, options) {
+		return A2(
+			$elm_community$list_extra$List$Extra$find,
+			function (option) {
+				return _Utils_eq(
+					$author$project$Option$getOptionValue(option),
+					optionValue);
+			},
+			options);
+	});
+var $author$project$Option$NoDescription = {$: 1};
+var $author$project$Option$getOptionDescription = function (option) {
+	switch (option.$) {
+		case 0:
+			var optionDescription = option.d;
+			return optionDescription;
+		case 1:
+			return $author$project$Option$NoDescription;
+		default:
+			return $author$project$Option$NoDescription;
+	}
+};
+var $author$project$Option$NoOptionGroup = {$: 1};
+var $author$project$Option$getOptionGroup = function (option) {
+	switch (option.$) {
+		case 0:
+			var optionGroup = option.e;
+			return optionGroup;
+		case 1:
+			return $author$project$Option$NoOptionGroup;
+		default:
+			return $author$project$Option$NoOptionGroup;
+	}
+};
+var $author$project$Option$getOptionLabel = function (option) {
+	switch (option.$) {
+		case 0:
+			var label = option.b;
+			return label;
+		case 1:
+			var label = option.b;
+			return label;
+		default:
+			var label = option.b;
+			return label;
+	}
+};
 var $author$project$Option$getOptionValueAsString = function (option) {
 	var _v0 = $author$project$Option$getOptionValue(option);
 	if (!_v0.$) {
@@ -5183,6 +5252,94 @@ var $author$project$Option$getOptionValueAsString = function (option) {
 		return '';
 	}
 };
+var $author$project$Option$CustomOption = F4(
+	function (a, b, c, d) {
+		return {$: 1, a: a, b: b, c: c, d: d};
+	});
+var $author$project$Option$EmptyOption = F2(
+	function (a, b) {
+		return {$: 2, a: a, b: b};
+	});
+var $author$project$Option$Option = F6(
+	function (a, b, c, d, e, f) {
+		return {$: 0, a: a, b: b, c: c, d: d, e: e, f: f};
+	});
+var $author$project$Option$setDescription = F2(
+	function (description, option) {
+		switch (option.$) {
+			case 0:
+				var optionDisplay = option.a;
+				var label = option.b;
+				var optionValue = option.c;
+				var group = option.e;
+				var search = option.f;
+				return A6($author$project$Option$Option, optionDisplay, label, optionValue, description, group, search);
+			case 1:
+				var optionDisplay = option.a;
+				var optionLabel = option.b;
+				var optionValue = option.c;
+				var search = option.d;
+				return A4($author$project$Option$CustomOption, optionDisplay, optionLabel, optionValue, search);
+			default:
+				var optionDisplay = option.a;
+				var optionLabel = option.b;
+				return A2($author$project$Option$EmptyOption, optionDisplay, optionLabel);
+		}
+	});
+var $author$project$Option$setGroup = F2(
+	function (optionGroup, option) {
+		switch (option.$) {
+			case 0:
+				var optionDisplay = option.a;
+				var label = option.b;
+				var optionValue = option.c;
+				var description = option.d;
+				var search = option.f;
+				return A6($author$project$Option$Option, optionDisplay, label, optionValue, description, optionGroup, search);
+			case 1:
+				var optionDisplay = option.a;
+				var optionLabel = option.b;
+				var optionValue = option.c;
+				var search = option.d;
+				return A4($author$project$Option$CustomOption, optionDisplay, optionLabel, optionValue, search);
+			default:
+				var optionDisplay = option.a;
+				var optionLabel = option.b;
+				return A2($author$project$Option$EmptyOption, optionDisplay, optionLabel);
+		}
+	});
+var $author$project$Option$OptionValue = function (a) {
+	return {$: 0, a: a};
+};
+var $author$project$OptionLabel$optionLabelToString = function (optionLabel) {
+	var label = optionLabel.a;
+	return label;
+};
+var $author$project$Option$setLabel = F2(
+	function (label, option) {
+		switch (option.$) {
+			case 0:
+				var optionDisplay = option.a;
+				var optionValue = option.c;
+				var description = option.d;
+				var group = option.e;
+				var search = option.f;
+				return A6($author$project$Option$Option, optionDisplay, label, optionValue, description, group, search);
+			case 1:
+				var optionDisplay = option.a;
+				var search = option.d;
+				return A4(
+					$author$project$Option$CustomOption,
+					optionDisplay,
+					label,
+					$author$project$Option$OptionValue(
+						$author$project$OptionLabel$optionLabelToString(label)),
+					search);
+			default:
+				var optionDisplay = option.a;
+				return A2($author$project$Option$EmptyOption, optionDisplay, label);
+		}
+	});
 var $elm$core$List$filter = F2(
 	function (isGood, list) {
 		return A3(
@@ -5214,18 +5371,6 @@ var $author$project$Option$optionListContainsOptionWithValue = F2(
 						optionValue);
 				},
 				options));
-	});
-var $author$project$Option$CustomOption = F4(
-	function (a, b, c, d) {
-		return {$: 1, a: a, b: b, c: c, d: d};
-	});
-var $author$project$Option$EmptyOption = F2(
-	function (a, b) {
-		return {$: 2, a: a, b: b};
-	});
-var $author$project$Option$Option = F6(
-	function (a, b, c, d, e, f) {
-		return {$: 0, a: a, b: b, c: c, d: d, e: e, f: f};
 	});
 var $author$project$Option$OptionDisabled = 5;
 var $author$project$Option$OptionHidden = 1;
@@ -5562,20 +5707,43 @@ var $elm_community$list_extra$List$Extra$uniqueBy = F2(
 	});
 var $author$project$Option$mergeTwoListsOfOptionsPreservingSelectedOptions = F2(
 	function (optionsA, optionsB) {
-		var superList = _Utils_ap(optionsA, optionsB);
+		var combineOptions = F2(
+			function (optionA, optionB) {
+				var optionBLabel = $author$project$Option$getOptionLabel(optionB);
+				var optionBGroup = $author$project$Option$getOptionGroup(optionB);
+				var optionBDescription = $author$project$Option$getOptionDescription(optionB);
+				return A2(
+					$author$project$Option$setGroup,
+					optionBGroup,
+					A2(
+						$author$project$Option$setLabel,
+						optionBLabel,
+						A2($author$project$Option$setDescription, optionBDescription, optionA)));
+			});
+		var updatedOptionsA = A2(
+			$elm$core$List$map,
+			function (optionA) {
+				var _v0 = A2(
+					$author$project$Option$findOptionByOptionValue,
+					$author$project$Option$getOptionValue(optionA),
+					optionsB);
+				if (!_v0.$) {
+					var optionB = _v0.a;
+					return A2(combineOptions, optionA, optionB);
+				} else {
+					return optionA;
+				}
+			},
+			optionsA);
+		var superList = _Utils_ap(updatedOptionsA, optionsB);
 		var newOptions = A2($elm_community$list_extra$List$Extra$uniqueBy, $author$project$Option$getOptionValueAsString, superList);
 		return A2($author$project$Option$setSelectedOptionInNewOptions, superList, newOptions);
 	});
-var $author$project$Option$NoDescription = {$: 1};
-var $author$project$Option$NoOptionGroup = {$: 1};
 var $author$project$SortRank$NoSortRank = {$: 2};
 var $author$project$OptionLabel$OptionLabel = F3(
 	function (a, b, c) {
 		return {$: 0, a: a, b: b, c: c};
 	});
-var $author$project$Option$OptionValue = function (a) {
-	return {$: 0, a: a};
-};
 var $author$project$Option$newSelectedOption = F2(
 	function (string, maybeCleanLabel) {
 		return A6(
@@ -5595,7 +5763,7 @@ var $author$project$Option$addAndSelectOptionsInOptionsListByString = F2(
 				return A2($author$project$Option$newSelectedOption, str, $elm$core$Maybe$Nothing);
 			},
 			strings);
-		return A2($author$project$Option$mergeTwoListsOfOptionsPreservingSelectedOptions, options, newOptions);
+		return A2($author$project$Option$mergeTwoListsOfOptionsPreservingSelectedOptions, newOptions, options);
 	});
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Basics$composeL = F3(
@@ -6536,38 +6704,6 @@ var $author$project$Option$customOptions = function (options) {
 	return A2($elm$core$List$filter, $author$project$Option$isCustomOption, options);
 };
 var $author$project$Option$customSelectedOptions = A2($elm$core$Basics$composeR, $author$project$Option$customOptions, $author$project$Option$selectedOptions);
-var $elm_community$list_extra$List$Extra$find = F2(
-	function (predicate, list) {
-		find:
-		while (true) {
-			if (!list.b) {
-				return $elm$core$Maybe$Nothing;
-			} else {
-				var first = list.a;
-				var rest = list.b;
-				if (predicate(first)) {
-					return $elm$core$Maybe$Just(first);
-				} else {
-					var $temp$predicate = predicate,
-						$temp$list = rest;
-					predicate = $temp$predicate;
-					list = $temp$list;
-					continue find;
-				}
-			}
-		}
-	});
-var $author$project$Option$findOptionByOptionValue = F2(
-	function (optionValue, options) {
-		return A2(
-			$elm_community$list_extra$List$Extra$find,
-			function (option) {
-				return _Utils_eq(
-					$author$project$Option$getOptionValue(option),
-					optionValue);
-			},
-			options);
-	});
 var $author$project$Ports$optionSelected = _Platform_outgoingPort(
 	'optionSelected',
 	function ($) {
@@ -6582,23 +6718,6 @@ var $author$project$Ports$optionSelected = _Platform_outgoingPort(
 					$elm$json$Json$Encode$string(b)
 				]));
 	});
-var $author$project$Option$getOptionLabel = function (option) {
-	switch (option.$) {
-		case 0:
-			var label = option.b;
-			return label;
-		case 1:
-			var label = option.b;
-			return label;
-		default:
-			var label = option.b;
-			return label;
-	}
-};
-var $author$project$OptionLabel$optionLabelToString = function (optionLabel) {
-	var label = optionLabel.a;
-	return label;
-};
 var $author$project$Option$optionToValueLabelTuple = function (option) {
 	return _Utils_Tuple2(
 		$author$project$Option$getOptionValueAsString(option),
@@ -7086,7 +7205,7 @@ var $author$project$Option$selectEmptyOption = function (options) {
 		},
 		options);
 };
-var $author$project$Option$setLabel = F3(
+var $author$project$Option$setLabelWithString = F3(
 	function (string, maybeCleanString, option) {
 		switch (option.$) {
 			case 0:
@@ -7133,7 +7252,7 @@ var $author$project$Option$selectOptionInListByOptionValue = F2(
 							if (!value.$) {
 								var valueStr = value.a;
 								return A3(
-									$author$project$Option$setLabel,
+									$author$project$Option$setLabelWithString,
 									valueStr,
 									$elm$core$Maybe$Nothing,
 									$author$project$Option$selectOption(option_));
@@ -7163,7 +7282,7 @@ var $author$project$Option$selectSingleOptionInList = F2(
 							if (!optionValue.$) {
 								var valueStr = optionValue.a;
 								return A3(
-									$author$project$Option$setLabel,
+									$author$project$Option$setLabelWithString,
 									valueStr,
 									$elm$core$Maybe$Nothing,
 									$author$project$Option$selectOption(option_));
@@ -7281,17 +7400,6 @@ var $elm_community$list_extra$List$Extra$gatherWith = F2(
 			});
 		return A2(helper, list, _List_Nil);
 	});
-var $author$project$Option$getOptionGroup = function (option) {
-	switch (option.$) {
-		case 0:
-			var optionGroup = option.e;
-			return optionGroup;
-		case 1:
-			return $author$project$Option$NoOptionGroup;
-		default:
-			return $author$project$Option$NoOptionGroup;
-	}
-};
 var $author$project$SortRank$getAutoIndexForSorting = function (sortRank) {
 	switch (sortRank.$) {
 		case 0:
@@ -7398,17 +7506,6 @@ var $author$project$Option$sortOptionsByTotalScore = function (options) {
 					$author$project$Option$getMaybeOptionSearchFilter(option)));
 		},
 		options);
-};
-var $author$project$Option$getOptionDescription = function (option) {
-	switch (option.$) {
-		case 0:
-			var optionDescription = option.d;
-			return optionDescription;
-		case 1:
-			return $author$project$Option$NoDescription;
-		default:
-			return $author$project$Option$NoDescription;
-	}
 };
 var $author$project$OptionSearchFilter$new = F4(
 	function (totalScore, searchResult, labelTokens, descriptionTokens) {
