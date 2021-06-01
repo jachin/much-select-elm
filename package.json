@@ -1,6 +1,6 @@
 {
   "name": "@getdrip/much-select-elm",
-  "version": "0.1.0",
+  "version": "0.2.2",
   "description": "A fancy selector web component written (mostly) in elm.",
   "main": "dist/much-select.js",
   "type": "module",
@@ -9,6 +9,7 @@
   "scripts": {
     "start": "./scripts/serve.sh",
     "test": "elm-test",
+    "web-test-runner": "web-test-runner \"tests/**/*.test.js\" --node-resolve",
     "build": "./scripts/build.sh",
     "serve": "scripts/serve.sh",
     "build-site": "./scripts/build-site.sh",
@@ -19,20 +20,22 @@
   "author": "Jachin Rupe <jachin.rupe@drip.com>",
   "license": "MIT",
   "devDependencies": {
+    "@esm-bundle/chai": "^4.3.4",
+    "@web/test-runner": "^0.13.4",
     "elm-esm": "^1.1.2",
     "elm-format": "^0.8.5",
     "elm-hot": "^1.1.6",
     "elm-outdated": "^1.1.1",
-    "elm-test": "github:rtfeldman/node-test-runner#master",
-    "elm-tooling": "^1.2.0",
-    "eslint": "^7.20.0",
+    "elm-test": "0.19.1-revision7",
+    "elm-tooling": "^1.3.0",
+    "eslint": "^7.26.0",
     "eslint-config-airbnb-base": "^14.2.1",
-    "eslint-config-prettier": "^7.2.0",
+    "eslint-config-prettier": "^8.3.0",
     "eslint-loader": "^4.0.2",
-    "eslint-plugin-import": "^2.22.1",
-    "eslint-plugin-prettier": "^3.3.1",
-    "node-elm-compiler": "^5.0.5",
+    "eslint-plugin-import": "^2.23.2",
+    "eslint-plugin-prettier": "^3.4.0",
+    "node-elm-compiler": "^5.0.6",
     "parcel-bundler": "^1.12.4",
-    "prettier": "^2.2.1"
+    "prettier": "^2.3.0"
   }
 }

@@ -57,12 +57,10 @@ import OptionPresentor exposing (tokensToHtml)
 import OptionSearcher
 import Ports
     exposing
-        ( addItem
-        , addOptionsReceiver
+        ( addOptionsReceiver
         , allowCustomOptionsReceiver
         , blurInput
         , customOptionSelected
-        , deselectItem
         , deselectOptionReceiver
         , disableChangedReceiver
         , errorMessage
@@ -71,6 +69,8 @@ import Ports
         , loadingChangedReceiver
         , maxDropdownItemsChangedReceiver
         , muchSelectIsReady
+        , optionDeselected
+        , optionSelected
         , optionsChangedReceiver
         , placeholderChangedReceiver
         , removeOptionsReceiver
@@ -233,8 +233,13 @@ update msg model =
             in
             case valuesResult of
                 Ok values ->
+                    let
+                        newOptions =
+                            Option.addAndSelectOptionsInOptionsListByString values model.options
+                    in
                     ( { model
-                        | options = selectOptionsInOptionsListByString values model.options
+                        | options = newOptions
+                        , optionsForTheDropdown = figureOutWhichOptionsToShow model.maxDropdownItems newOptions
                         , rightSlot =
                             updateRightSlot
                                 model.rightSlot
@@ -262,7 +267,12 @@ update msg model =
                                         |> List.filter (not << Option.isEmptyOption)
                                         |> Option.mergeTwoListsOfOptionsPreservingSelectedOptions model.options
                     in
-                    ( { model | options = newOptionWithOldSelectedOption }, Cmd.none )
+                    ( { model
+                        | options = newOptionWithOldSelectedOption
+                        , optionsForTheDropdown = figureOutWhichOptionsToShow model.maxDropdownItems newOptionWithOldSelectedOption
+                      }
+                    , Cmd.none
+                    )
 
                 Err error ->
                     ( model, errorMessage (Json.Decode.errorToString error) )
@@ -486,7 +496,7 @@ clearAllSelectedOption model =
                 Cmd.none
 
             else
-                deselectItem deselectedItems
+                optionDeselected deselectedItems
 
         newOptions =
             Option.deselectAllOptionsInOptionsList model.options
@@ -1044,6 +1054,9 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
 
                 Nothing ->
                     span [] [ Option.getOptionLabel option |> optionLabelToString |> text ]
+
+        valueDataAttribute =
+            Html.Attributes.attribute "data-value" (Option.getOptionValueAsString option)
     in
     case Option.getOptionDisplay option of
         OptionShown ->
@@ -1053,6 +1066,7 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
                 , onMouseLeave (option |> Option.getOptionValue |> mouseOutMsgConstructor)
                 , mousedownPreventDefaultAndStopPropagation (option |> Option.getOptionValue |> clickMsgConstructor)
                 , class "option"
+                , valueDataAttribute
                 ]
                 [ labelHtml, descriptionHtml ]
             ]
@@ -1067,6 +1081,7 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
                     , div
                         [ class "selected"
                         , class "option"
+                        , valueDataAttribute
                         ]
                         [ labelHtml, descriptionHtml ]
                     ]
@@ -1081,6 +1096,7 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
                     , div
                         [ class "selected"
                         , class "option"
+                        , valueDataAttribute
                         ]
                         [ labelHtml, descriptionHtml ]
                     ]
@@ -1096,6 +1112,7 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
                 , mousedownPreventDefaultAndStopPropagation (option |> Option.getOptionValue |> clickMsgConstructor)
                 , class "highlighted"
                 , class "option"
+                , valueDataAttribute
                 ]
                 [ labelHtml, descriptionHtml ]
             ]
@@ -1105,6 +1122,7 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
             , div
                 [ class "disabled"
                 , class "option"
+                , valueDataAttribute
                 ]
                 [ labelHtml, descriptionHtml ]
             ]
@@ -1256,13 +1274,13 @@ makeCommandMessagesWhenValuesChanges selectedOptions maybeSelectedValue =
             else
                 customOptionSelected (Option.optionsValues selectedCustomOptions)
 
-        -- Any time we select a new value we need to emit an `addItem` event.
-        addItemCmd =
+        -- Any time we select a new value we need to emit an `optionSelected` event.
+        optionSelectedCmd =
             case maybeSelectedValue of
                 Just selectedValue ->
                     case Option.findOptionByOptionValue selectedValue selectedOptions of
                         Just option ->
-                            addItem (Option.optionToValueLabelTuple option)
+                            optionSelected (Option.optionToValueLabelTuple option)
 
                         Nothing ->
                             Cmd.none
@@ -1274,7 +1292,7 @@ makeCommandMessagesWhenValuesChanges selectedOptions maybeSelectedValue =
         [ valueChanged (selectedOptionsToTuple selectedOptions)
         , customOptionCmd
         , clearCmd
-        , addItemCmd
+        , optionSelectedCmd
         ]
 
 

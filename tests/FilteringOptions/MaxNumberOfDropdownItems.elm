@@ -2,54 +2,54 @@ module FilteringOptions.MaxNumberOfDropdownItems exposing (suite)
 
 import Expect
 import Main exposing (figureOutWhichOptionsToShow)
-import Option exposing (highlightOptionInList, newOption, selectOptionInList, setGroup)
+import Option exposing (highlightOptionInList, newOption, selectOptionInList, setGroupWithString)
 import PositiveInt
 import Test exposing (Test, describe, test)
 
 
 screwDriver =
     newOption "Screw Driver" Nothing
-        |> setGroup "Hand Tool"
+        |> setGroupWithString "Hand Tool"
 
 
 wrench =
     newOption "Wrench" Nothing
-        |> setGroup "Hand Tool"
+        |> setGroupWithString "Hand Tool"
 
 
 hammer =
     newOption "Hammer" Nothing
-        |> setGroup "Hand Tool"
+        |> setGroupWithString "Hand Tool"
 
 
 chisel =
     newOption "Chisel" Nothing
-        |> setGroup "Hand Tool"
+        |> setGroupWithString "Hand Tool"
 
 
 multiMeter =
     newOption "Multi Meter" Nothing
-        |> setGroup "Electronic Instrument"
+        |> setGroupWithString "Electronic Instrument"
 
 
 signalTester =
     newOption "Signal Tester" Nothing
-        |> setGroup "Electronic Instrument"
+        |> setGroupWithString "Electronic Instrument"
 
 
 drill =
     newOption "Drill" Nothing
-        |> setGroup "Power Tool"
+        |> setGroupWithString "Power Tool"
 
 
 sawZaw =
     newOption "Saw Zaw" Nothing
-        |> setGroup "Power Tool"
+        |> setGroupWithString "Power Tool"
 
 
 xActoKnife =
     newOption "xActo" Nothing
-        |> setGroup "Hand Tool"
+        |> setGroupWithString "Hand Tool"
 
 
 tools =

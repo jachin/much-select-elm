@@ -148,7 +148,7 @@ class MuchSelect extends HTMLElement {
      * @type {string|null}
      * @private
      */
-    this._selected = null;
+    this._selectedValue = null;
 
     /**
      * @type {string|null}
@@ -207,7 +207,7 @@ class MuchSelect extends HTMLElement {
 
   static get observedAttributes() {
     return [
-      "selected",
+      "selected-value",
       "disabled",
       "placeholder",
       "loading",
@@ -218,10 +218,10 @@ class MuchSelect extends HTMLElement {
 
   // noinspection JSUnusedGlobalSymbols
   attributeChangedCallback(name, oldValue, newValue) {
-    if (name === "selected") {
+    if (name === "selected-value") {
       if (oldValue !== newValue) {
         this.updateDimensions();
-        this.selected = newValue;
+        this.selectedValue = newValue;
       }
     } else if (name === "placeholder") {
       if (oldValue !== newValue) {
@@ -281,7 +281,17 @@ class MuchSelect extends HTMLElement {
 
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
-      app.ports.addItem.subscribe((valueLabelPair) => {
+      app.ports.optionSelected.subscribe((valueLabelPair) => {
+        this.dispatchEvent(
+          new CustomEvent("optionSelected", {
+            bubbles: true,
+            detail: {
+              value: valueLabelPair[0],
+              label: valueLabelPair[1],
+            },
+          })
+        );
+        // The addItem event is for backwards compatibility.
         this.dispatchEvent(
           new CustomEvent("addItem", {
             bubbles: true,
@@ -313,6 +323,12 @@ class MuchSelect extends HTMLElement {
       app.ports.valueCleared.subscribe(() => {
         this.dispatchEvent(
           new CustomEvent("valueCleared", {
+            bubbles: true,
+          })
+        );
+        // The cleared event is for backwards compatibility.
+        this.dispatchEvent(
+          new CustomEvent("cleared", {
             bubbles: true,
           })
         );
@@ -354,11 +370,17 @@ class MuchSelect extends HTMLElement {
 
     // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
     this.appPromise.then((app) =>
-      app.ports.deselectItem.subscribe((deselectedValue) => {
+      app.ports.optionDeselected.subscribe((deselectedValue) => {
         const formattedValue = {
           label: deselectedValue[0][1],
           value: deselectedValue[0][0],
         };
+        this.dispatchEvent(
+          new CustomEvent("optionDeselected", {
+            bubbles: true,
+            detail: formattedValue,
+          })
+        );
         this.dispatchEvent(
           new CustomEvent("deselectItem", {
             bubbles: true,
@@ -463,8 +485,8 @@ class MuchSelect extends HTMLElement {
 
   buildFlags() {
     const flags = {};
-    if (this.selected) {
-      flags.value = this.selected;
+    if (this.selectedValue) {
+      flags.value = this.selectedValue;
     } else {
       flags.value = "";
     }
@@ -510,7 +532,9 @@ class MuchSelect extends HTMLElement {
 
   valueChangedHandler(valuesTuple) {
     // TODO perhaps this delimiter should be configurable
-    this.selected = valuesTuple.map((valueTuple) => valueTuple[0]).join(",");
+    this.selectedValue = valuesTuple
+      .map((valueTuple) => valueTuple[0])
+      .join(",");
     this.updateDimensions();
     if (
       this.hasAttribute("multi-select") &&
@@ -527,10 +551,24 @@ class MuchSelect extends HTMLElement {
           detail: { values: valuesObj },
         })
       );
+      // The change event is for backwards compatibility.
+      this.dispatchEvent(
+        new CustomEvent("change", {
+          bubbles: true,
+          detail: { values: valuesObj },
+        })
+      );
     } else if (valuesTuple.length === 0) {
       // If we are in single select mode and the value is empty.
       this.dispatchEvent(
         new CustomEvent("valueChanged", {
+          bubbles: true,
+          detail: { value: null },
+        })
+      );
+      // The change event is for backwards compatibility.
+      this.dispatchEvent(
+        new CustomEvent("change", {
           bubbles: true,
           detail: { value: null },
         })
@@ -540,6 +578,13 @@ class MuchSelect extends HTMLElement {
       const valueObj = { value: valuesTuple[0][0], label: valuesTuple[0][1] };
       this.dispatchEvent(
         new CustomEvent("valueChanged", {
+          bubbles: true,
+          detail: { value: valueObj },
+        })
+      );
+      // The change event is for backwards compatibility.
+      this.dispatchEvent(
+        new CustomEvent("changed", {
           bubbles: true,
           detail: { value: valueObj },
         })
@@ -609,7 +654,6 @@ class MuchSelect extends HTMLElement {
             flags,
             node: elmDiv,
           });
-
           resolve(this._app);
         } catch (error) {
           reject(error);
@@ -623,12 +667,12 @@ class MuchSelect extends HTMLElement {
     return this.appPromise.then(() => this._parentDiv);
   }
 
-  get selected() {
-    return this._selected;
+  get selectedValue() {
+    return this._selectedValue;
   }
 
-  set selected(value) {
-    this.setAttribute("selected", value);
+  set selectedValue(value) {
+    this.setAttribute("selected-value", value);
 
     if (value) {
       // TODO perhaps this delimiter should be configurable

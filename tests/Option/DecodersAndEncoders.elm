@@ -108,9 +108,9 @@ suite =
                 \_ ->
                     Expect.equal
                         (Ok
-                            [ newOption "1" Nothing |> Option.setLabel "one" (Just "one")
-                            , newOption "2" Nothing |> Option.setLabel "two" (Just "two")
-                            , newSelectedOption "3" Nothing |> Option.setLabel "three" (Just "three")
+                            [ newOption "1" Nothing |> Option.setLabelWithString "one" (Just "one")
+                            , newOption "2" Nothing |> Option.setLabelWithString "two" (Just "two")
+                            , newSelectedOption "3" Nothing |> Option.setLabelWithString "three" (Just "three")
                             ]
                         )
                         (Json.Decode.decodeString optionsDecoder listOfOptions)
@@ -119,14 +119,14 @@ suite =
                     Expect.equal
                         (Ok
                             [ newOption "1" Nothing
-                                |> Option.setLabel "straw" (Just "straw")
-                                |> Option.setDescription "👒"
+                                |> Option.setLabelWithString "straw" (Just "straw")
+                                |> Option.setDescriptionWithString "👒"
                             , newOption "2" Nothing
-                                |> Option.setLabel "sticks" (Just "sticks")
-                                |> Option.setDescription "🌳"
+                                |> Option.setLabelWithString "sticks" (Just "sticks")
+                                |> Option.setDescriptionWithString "🌳"
                             , newSelectedOption "3" Nothing
-                                |> Option.setLabel "bricks" (Just "bricks")
-                                |> Option.setDescription "🧱"
+                                |> Option.setLabelWithString "bricks" (Just "bricks")
+                                |> Option.setDescriptionWithString "🧱"
                             ]
                         )
                         (Json.Decode.decodeString
@@ -138,14 +138,14 @@ suite =
                     Expect.equal
                         (Ok
                             [ newOption "1" Nothing
-                                |> Option.setLabel "straw" (Just "straw")
-                                |> Option.setGroup "Building Material"
+                                |> Option.setLabelWithString "straw" (Just "straw")
+                                |> Option.setGroupWithString "Building Material"
                             , newOption "2" Nothing
-                                |> Option.setLabel "sticks" (Just "sticks")
-                                |> Option.setGroup "Building Material"
+                                |> Option.setLabelWithString "sticks" (Just "sticks")
+                                |> Option.setGroupWithString "Building Material"
                             , newSelectedOption "3" Nothing
-                                |> Option.setLabel "bricks" (Just "bricks")
-                                |> Option.setGroup "Building Material"
+                                |> Option.setLabelWithString "bricks" (Just "bricks")
+                                |> Option.setGroupWithString "Building Material"
                             ]
                         )
                         (Json.Decode.decodeString
@@ -160,7 +160,7 @@ suite =
             , test "an empty option with a label" <|
                 \_ ->
                     Expect.equal
-                        (Ok [ newOption "" Nothing |> Option.setLabel "nothing" (Just "nothing") ])
+                        (Ok [ newOption "" Nothing |> Option.setLabelWithString "nothing" (Just "nothing") ])
                         (Json.Decode.decodeString optionsDecoder """[ {"label": "nothing", "labelClean": "nothing", "value": "" } ]""")
             , test "a list of options with just values should fail" <|
                 \_ ->

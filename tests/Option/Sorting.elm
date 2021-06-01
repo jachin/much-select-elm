@@ -6,7 +6,7 @@ import Option
         ( Option(..)
         , newOption
         , optionGroupToString
-        , setGroup
+        , setGroupWithString
         , sortOptionsByGroupAndLabel
         )
 import OptionLabel exposing (optionLabelToString)
@@ -39,42 +39,42 @@ musicList =
 
 screwDriver =
     newOption "Screw Driver" Nothing
-        |> setGroup "Hand Tool"
+        |> setGroupWithString "Hand Tool"
 
 
 wrench =
     newOption "Wrench" Nothing
-        |> setGroup "Hand Tool"
+        |> setGroupWithString "Hand Tool"
 
 
 hammer =
     newOption "Hammer" Nothing
-        |> setGroup "Hand Tool"
+        |> setGroupWithString "Hand Tool"
 
 
 chisel =
     newOption "Chisel" Nothing
-        |> setGroup "Hand Tool"
+        |> setGroupWithString "Hand Tool"
 
 
 multiMeter =
     newOption "Multi Meter" Nothing
-        |> setGroup "Electronic Instrument"
+        |> setGroupWithString "Electronic Instrument"
 
 
 signalTester =
     newOption "Signal Tester" Nothing
-        |> setGroup "Electronic Instrument"
+        |> setGroupWithString "Electronic Instrument"
 
 
 drill =
     newOption "Drill" Nothing
-        |> setGroup "Power Tool"
+        |> setGroupWithString "Power Tool"
 
 
 sawZaw =
     newOption "Saw Zaw" Nothing
-        |> setGroup "Power Tool"
+        |> setGroupWithString "Power Tool"
 
 
 tools =

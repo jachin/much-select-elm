@@ -1,5 +1,6 @@
 module IntegrationTests.DisplayingOptions exposing (suite)
 
+import Html.Attributes
 import Main exposing (Flags)
 import ProgramTest
     exposing
@@ -10,7 +11,7 @@ import ProgramTest
         , expectViewHasNot
         )
 import Test exposing (Test, describe, test)
-import Test.Html.Selector exposing (text)
+import Test.Html.Selector exposing (classes, text)
 
 
 flagsEmptyOptionsWithOrangeSelected =
@@ -94,6 +95,19 @@ flagsBookOptions =
     }
 
 
+flagsBookOptionsWithValue =
+    { value = "Matilda"
+    , placeholder = "A book"
+    , size = ""
+    , allowMultiSelect = False
+    , optionsJson = booksJson
+    , loading = False
+    , maxDropdownItems = 2
+    , disabled = False
+    , allowCustomOptions = False
+    }
+
+
 flagsBookOptionsWithSelected =
     { value = ""
     , placeholder = "A book"
@@ -131,6 +145,15 @@ suite =
                     |> expectViewHas
                         [ text "Orange"
                         ]
+        , describe "with initial options"
+            [ test "if there is an initial selected attribute and a list of options where the selection is not reflected the value should still be selected" <|
+                \() ->
+                    start flagsBookOptionsWithValue
+                        |> expectViewHas
+                            [ classes [ "selected", "option" ]
+                            , Test.Html.Selector.attribute (Html.Attributes.attribute "data-value" "Matilda")
+                            ]
+            ]
         , describe "if there are more options that there are max dropdown options"
             [ test "only show the first ones" <|
                 \_ ->
