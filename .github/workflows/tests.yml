@@ -16,7 +16,9 @@
               ${{ runner.os }}-build-${{ env.cache-name }}-
               ${{ runner.os }}-build-
               ${{ runner.os }}-
-        - name: Install Dependencies
+        - name: Install NPM Dependencies
           run: npm install
+        - name: Install Elm Tools
+          run: npx elm-tooling install
         - run: npm run lint
         - run: npm run test
