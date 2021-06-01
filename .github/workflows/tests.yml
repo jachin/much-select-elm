@@ -1,6 +1,6 @@
   on: [push]
   jobs:
-    eslint:
+    tests-and-linters:
       runs-on: ubuntu-latest
       steps:
         - uses: actions/checkout@v2
@@ -20,5 +20,9 @@
           run: npm install
         - name: Install Elm Tools
           run: npx elm-tooling install
-        - run: npm run lint
-        - run: npm run test
+        - name: elm-format
+          run: npx elm-format --validate
+        - name: eslint
+          run: npm run lint
+        - name: elm unit tests
+          run: npm run test
