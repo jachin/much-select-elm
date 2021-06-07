@@ -1,13 +1,13 @@
 {
   "name": "@getdrip/much-select-elm",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "A fancy selector web component written (mostly) in elm.",
   "main": "dist/much-select.js",
   "type": "module",
   "module": "dist/much-select.js",
   "repository": "github:DripEmail/much-select-elm",
   "engines": {
-    "node": "14.17.0",
+    "node": ">=12.14",
     "npm": ">=7.13.0"
   },
   "scripts": {
