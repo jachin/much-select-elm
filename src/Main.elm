@@ -48,7 +48,6 @@ import Option
         , removeHighlightOptionInList
         , selectHighlightedOption
         , selectOptionInListByOptionValue
-        , selectOptionsInOptionsListByString
         , selectSingleOptionInList
         , selectedOptionsToTuple
         )
@@ -1079,7 +1078,10 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
                 SingleSelect _ ->
                     [ optionGroupHtml
                     , div
-                        [ class "selected"
+                        [ onMouseEnter (option |> Option.getOptionValue |> mouseOverMsgConstructor)
+                        , onMouseLeave (option |> Option.getOptionValue |> mouseOutMsgConstructor)
+                        , mousedownPreventDefaultAndStopPropagation (option |> Option.getOptionValue |> clickMsgConstructor)
+                        , class "selected"
                         , class "option"
                         , valueDataAttribute
                         ]
@@ -1094,7 +1096,11 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
                 SingleSelect _ ->
                     [ optionGroupHtml
                     , div
-                        [ class "selected"
+                        [ onMouseEnter (option |> Option.getOptionValue |> mouseOverMsgConstructor)
+                        , onMouseLeave (option |> Option.getOptionValue |> mouseOutMsgConstructor)
+                        , mousedownPreventDefaultAndStopPropagation (option |> Option.getOptionValue |> clickMsgConstructor)
+                        , class "selected"
+                        , class "highlighted"
                         , class "option"
                         , valueDataAttribute
                         ]

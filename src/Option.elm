@@ -1019,7 +1019,7 @@ highlightOption option =
                     Option OptionHidden label value description group search
 
                 OptionSelected ->
-                    Option OptionSelected label value description group search
+                    Option OptionSelectedHighlighted label value description group search
 
                 OptionSelectedHighlighted ->
                     Option OptionSelectedHighlighted label value description group search
@@ -1039,7 +1039,7 @@ highlightOption option =
                     CustomOption OptionHidden label value search
 
                 OptionSelected ->
-                    CustomOption OptionSelected label value search
+                    CustomOption OptionSelectedHighlighted label value search
 
                 OptionSelectedHighlighted ->
                     CustomOption OptionSelectedHighlighted label value search
@@ -1059,7 +1059,7 @@ highlightOption option =
                     EmptyOption OptionHidden label
 
                 OptionSelected ->
-                    EmptyOption OptionSelected label
+                    EmptyOption OptionSelectedHighlighted label
 
                 OptionSelectedHighlighted ->
                     EmptyOption OptionSelectedHighlighted label
@@ -1101,7 +1101,7 @@ removeHighlightOption option =
                         search
 
                 OptionSelectedHighlighted ->
-                    Option OptionSelectedHighlighted
+                    Option OptionSelected
                         label
                         value
                         description
@@ -1127,7 +1127,7 @@ removeHighlightOption option =
 
                 OptionSelectedHighlighted ->
                     CustomOption
-                        OptionSelectedHighlighted
+                        OptionSelected
                         label
                         value
                         search
