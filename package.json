@@ -6,6 +6,10 @@
   "type": "module",
   "module": "dist/much-select.js",
   "repository": "github:DripEmail/much-select-elm",
+  "engines": {
+    "node": "14.17.0",
+    "npm": ">=7.13.0"
+  },
   "scripts": {
     "start": "./scripts/serve.sh",
     "test": "elm-test",
