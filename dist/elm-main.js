@@ -6919,7 +6919,7 @@ var $author$project$Option$highlightOption = function (option) {
 				case 1:
 					return A6($author$project$Option$Option, 1, label, value, description, group, search);
 				case 2:
-					return A6($author$project$Option$Option, 2, label, value, description, group, search);
+					return A6($author$project$Option$Option, 3, label, value, description, group, search);
 				case 3:
 					return A6($author$project$Option$Option, 3, label, value, description, group, search);
 				case 4:
@@ -6938,7 +6938,7 @@ var $author$project$Option$highlightOption = function (option) {
 				case 1:
 					return A4($author$project$Option$CustomOption, 1, label, value, search);
 				case 2:
-					return A4($author$project$Option$CustomOption, 2, label, value, search);
+					return A4($author$project$Option$CustomOption, 3, label, value, search);
 				case 3:
 					return A4($author$project$Option$CustomOption, 3, label, value, search);
 				case 4:
@@ -6955,7 +6955,7 @@ var $author$project$Option$highlightOption = function (option) {
 				case 1:
 					return A2($author$project$Option$EmptyOption, 1, label);
 				case 2:
-					return A2($author$project$Option$EmptyOption, 2, label);
+					return A2($author$project$Option$EmptyOption, 3, label);
 				case 3:
 					return A2($author$project$Option$EmptyOption, 3, label);
 				case 4:
@@ -6982,7 +6982,7 @@ var $author$project$Option$removeHighlightOption = function (option) {
 				case 2:
 					return A6($author$project$Option$Option, 2, label, value, description, group, search);
 				case 3:
-					return A6($author$project$Option$Option, 3, label, value, description, group, search);
+					return A6($author$project$Option$Option, 2, label, value, description, group, search);
 				case 4:
 					return A6($author$project$Option$Option, 0, label, value, description, group, search);
 				default:
@@ -7001,7 +7001,7 @@ var $author$project$Option$removeHighlightOption = function (option) {
 				case 2:
 					return A4($author$project$Option$CustomOption, 2, label, value, search);
 				case 3:
-					return A4($author$project$Option$CustomOption, 3, label, value, search);
+					return A4($author$project$Option$CustomOption, 2, label, value, search);
 				case 4:
 					return A4($author$project$Option$CustomOption, 0, label, value, search);
 				default:
@@ -9845,6 +9845,15 @@ var $author$project$Main$optionToDropdownOption = F6(
 							$elm$html$Html$div,
 							_List_fromArray(
 								[
+									$elm$html$Html$Events$onMouseEnter(
+									mouseOverMsgConstructor(
+										$author$project$Option$getOptionValue(option))),
+									$elm$html$Html$Events$onMouseLeave(
+									mouseOutMsgConstructor(
+										$author$project$Option$getOptionValue(option))),
+									$author$project$Main$mousedownPreventDefaultAndStopPropagation(
+									clickMsgConstructor(
+										$author$project$Option$getOptionValue(option))),
 									$elm$html$Html$Attributes$class('selected'),
 									$elm$html$Html$Attributes$class('option'),
 									valueDataAttribute
@@ -9868,7 +9877,17 @@ var $author$project$Main$optionToDropdownOption = F6(
 							$elm$html$Html$div,
 							_List_fromArray(
 								[
+									$elm$html$Html$Events$onMouseEnter(
+									mouseOverMsgConstructor(
+										$author$project$Option$getOptionValue(option))),
+									$elm$html$Html$Events$onMouseLeave(
+									mouseOutMsgConstructor(
+										$author$project$Option$getOptionValue(option))),
+									$author$project$Main$mousedownPreventDefaultAndStopPropagation(
+									clickMsgConstructor(
+										$author$project$Option$getOptionValue(option))),
 									$elm$html$Html$Attributes$class('selected'),
+									$elm$html$Html$Attributes$class('highlighted'),
 									$elm$html$Html$Attributes$class('option'),
 									valueDataAttribute
 								]),

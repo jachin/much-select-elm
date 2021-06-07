@@ -12118,7 +12118,7 @@ var $author$project$Option$highlightOption = function (option) {
 				case 'OptionHidden':
 					return A6($author$project$Option$Option, $author$project$Option$OptionHidden, label, value, description, group, search);
 				case 'OptionSelected':
-					return A6($author$project$Option$Option, $author$project$Option$OptionSelected, label, value, description, group, search);
+					return A6($author$project$Option$Option, $author$project$Option$OptionSelectedHighlighted, label, value, description, group, search);
 				case 'OptionSelectedHighlighted':
 					return A6($author$project$Option$Option, $author$project$Option$OptionSelectedHighlighted, label, value, description, group, search);
 				case 'OptionHighlighted':
@@ -12137,7 +12137,7 @@ var $author$project$Option$highlightOption = function (option) {
 				case 'OptionHidden':
 					return A4($author$project$Option$CustomOption, $author$project$Option$OptionHidden, label, value, search);
 				case 'OptionSelected':
-					return A4($author$project$Option$CustomOption, $author$project$Option$OptionSelected, label, value, search);
+					return A4($author$project$Option$CustomOption, $author$project$Option$OptionSelectedHighlighted, label, value, search);
 				case 'OptionSelectedHighlighted':
 					return A4($author$project$Option$CustomOption, $author$project$Option$OptionSelectedHighlighted, label, value, search);
 				case 'OptionHighlighted':
@@ -12154,7 +12154,7 @@ var $author$project$Option$highlightOption = function (option) {
 				case 'OptionHidden':
 					return A2($author$project$Option$EmptyOption, $author$project$Option$OptionHidden, label);
 				case 'OptionSelected':
-					return A2($author$project$Option$EmptyOption, $author$project$Option$OptionSelected, label);
+					return A2($author$project$Option$EmptyOption, $author$project$Option$OptionSelectedHighlighted, label);
 				case 'OptionSelectedHighlighted':
 					return A2($author$project$Option$EmptyOption, $author$project$Option$OptionSelectedHighlighted, label);
 				case 'OptionHighlighted':
@@ -12181,7 +12181,7 @@ var $author$project$Option$removeHighlightOption = function (option) {
 				case 'OptionSelected':
 					return A6($author$project$Option$Option, $author$project$Option$OptionSelected, label, value, description, group, search);
 				case 'OptionSelectedHighlighted':
-					return A6($author$project$Option$Option, $author$project$Option$OptionSelectedHighlighted, label, value, description, group, search);
+					return A6($author$project$Option$Option, $author$project$Option$OptionSelected, label, value, description, group, search);
 				case 'OptionHighlighted':
 					return A6($author$project$Option$Option, $author$project$Option$OptionShown, label, value, description, group, search);
 				default:
@@ -12200,7 +12200,7 @@ var $author$project$Option$removeHighlightOption = function (option) {
 				case 'OptionSelected':
 					return A4($author$project$Option$CustomOption, $author$project$Option$OptionSelected, label, value, search);
 				case 'OptionSelectedHighlighted':
-					return A4($author$project$Option$CustomOption, $author$project$Option$OptionSelectedHighlighted, label, value, search);
+					return A4($author$project$Option$CustomOption, $author$project$Option$OptionSelected, label, value, search);
 				case 'OptionHighlighted':
 					return A4($author$project$Option$CustomOption, $author$project$Option$OptionShown, label, value, search);
 				default:
@@ -14999,6 +14999,15 @@ var $author$project$Main$optionToDropdownOption = F6(
 							$elm$html$Html$div,
 							_List_fromArray(
 								[
+									$elm$html$Html$Events$onMouseEnter(
+									mouseOverMsgConstructor(
+										$author$project$Option$getOptionValue(option))),
+									$elm$html$Html$Events$onMouseLeave(
+									mouseOutMsgConstructor(
+										$author$project$Option$getOptionValue(option))),
+									$author$project$Main$mousedownPreventDefaultAndStopPropagation(
+									clickMsgConstructor(
+										$author$project$Option$getOptionValue(option))),
 									$elm$html$Html$Attributes$class('selected'),
 									$elm$html$Html$Attributes$class('option'),
 									valueDataAttribute
@@ -15022,7 +15031,17 @@ var $author$project$Main$optionToDropdownOption = F6(
 							$elm$html$Html$div,
 							_List_fromArray(
 								[
+									$elm$html$Html$Events$onMouseEnter(
+									mouseOverMsgConstructor(
+										$author$project$Option$getOptionValue(option))),
+									$elm$html$Html$Events$onMouseLeave(
+									mouseOutMsgConstructor(
+										$author$project$Option$getOptionValue(option))),
+									$author$project$Main$mousedownPreventDefaultAndStopPropagation(
+									clickMsgConstructor(
+										$author$project$Option$getOptionValue(option))),
 									$elm$html$Html$Attributes$class('selected'),
+									$elm$html$Html$Attributes$class('highlighted'),
 									$elm$html$Html$Attributes$class('option'),
 									valueDataAttribute
 								]),
