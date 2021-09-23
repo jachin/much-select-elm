@@ -1,4 +1,4 @@
-module SelectionMode exposing (CustomOptions(..), SelectionMode(..), getCustomOptions, setAllowCustomOptionsWithBool)
+module SelectionMode exposing (CustomOptions(..), SelectedItemPlacementMode(..), SelectionMode(..), getCustomOptions, getSelectedItemPlacementMode, setAllowCustomOptionsWithBool, setSelectedItemStaysInPlace)
 
 
 type CustomOptions
@@ -7,14 +7,19 @@ type CustomOptions
 
 
 type SelectionMode
-    = SingleSelect CustomOptions
+    = SingleSelect CustomOptions SelectedItemPlacementMode
     | MultiSelect CustomOptions
+
+
+type SelectedItemPlacementMode
+    = SelectedItemStaysInPlace
+    | SelectedItemMovesToTheTop
 
 
 getCustomOptions : SelectionMode -> CustomOptions
 getCustomOptions selectionMode =
     case selectionMode of
-        SingleSelect customOptions ->
+        SingleSelect customOptions _ ->
             customOptions
 
         MultiSelect customOptions ->
@@ -24,12 +29,12 @@ getCustomOptions selectionMode =
 setAllowCustomOptionsWithBool : Bool -> SelectionMode -> SelectionMode
 setAllowCustomOptionsWithBool bool mode =
     case mode of
-        SingleSelect _ ->
+        SingleSelect _ selectedItemPlacementMode ->
             if bool then
-                SingleSelect AllowCustomOptions
+                SingleSelect AllowCustomOptions selectedItemPlacementMode
 
             else
-                SingleSelect NoCustomOptions
+                SingleSelect NoCustomOptions selectedItemPlacementMode
 
         MultiSelect _ ->
             if bool then
@@ -37,3 +42,27 @@ setAllowCustomOptionsWithBool bool mode =
 
             else
                 MultiSelect NoCustomOptions
+
+
+getSelectedItemPlacementMode : SelectionMode -> SelectedItemPlacementMode
+getSelectedItemPlacementMode selectionMode =
+    case selectionMode of
+        SingleSelect _ selectedItemPlacementMode ->
+            selectedItemPlacementMode
+
+        MultiSelect _ ->
+            SelectedItemStaysInPlace
+
+
+setSelectedItemStaysInPlace : Bool -> SelectionMode -> SelectionMode
+setSelectedItemStaysInPlace selectedItemStaysInPlace selectionMode =
+    case selectionMode of
+        SingleSelect customOptions _ ->
+            if selectedItemStaysInPlace then
+                SingleSelect customOptions SelectedItemStaysInPlace
+
+            else
+                SingleSelect customOptions SelectedItemMovesToTheTop
+
+        MultiSelect _ ->
+            selectionMode

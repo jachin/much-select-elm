@@ -66,7 +66,7 @@ import Json.Decode
 import List.Extra
 import OptionLabel exposing (OptionLabel(..), getSortRank, labelDecoder, optionLabelToSearchString, optionLabelToString)
 import OptionSearchFilter exposing (OptionSearchFilter)
-import SelectionMode exposing (SelectionMode(..))
+import SelectionMode exposing (SelectedItemPlacementMode(..), SelectionMode(..))
 import SortRank exposing (SortRank(..), getAutoIndexForSorting)
 
 
@@ -526,13 +526,13 @@ selectOptionsInOptionsListByString strings options =
         options
 
 
-addAndSelectOptionsInOptionsListByString : List String -> List Option -> List Option
-addAndSelectOptionsInOptionsListByString strings options =
+addAndSelectOptionsInOptionsListByString : SelectedItemPlacementMode -> List String -> List Option -> List Option
+addAndSelectOptionsInOptionsListByString selectedItemPlacementMode strings options =
     let
         newOptions =
             List.map (\str -> newSelectedOption str Nothing) strings
     in
-    mergeTwoListsOfOptionsPreservingSelectedOptions newOptions options
+    mergeTwoListsOfOptionsPreservingSelectedOptions selectedItemPlacementMode newOptions options
 
 
 setSelectedOptionInNewOptions : List Option -> List Option -> List Option
@@ -568,8 +568,8 @@ comes in, including the extra stuff (like label, description, and group).
 |
 
 -}
-mergeTwoListsOfOptionsPreservingSelectedOptions : List Option -> List Option -> List Option
-mergeTwoListsOfOptionsPreservingSelectedOptions optionsA optionsB =
+mergeTwoListsOfOptionsPreservingSelectedOptions : SelectedItemPlacementMode -> List Option -> List Option -> List Option
+mergeTwoListsOfOptionsPreservingSelectedOptions selectedItemPlacementMode optionsA optionsB =
     let
         combineOptions optionA optionB =
             let
@@ -600,7 +600,12 @@ mergeTwoListsOfOptionsPreservingSelectedOptions optionsA optionsB =
                 optionsA
 
         superList =
-            updatedOptionsA ++ optionsB
+            case selectedItemPlacementMode of
+                SelectedItemStaysInPlace ->
+                    optionsB ++ updatedOptionsA
+
+                SelectedItemMovesToTheTop ->
+                    updatedOptionsA ++ optionsB
 
         newOptions =
             List.Extra.uniqueBy getOptionValueAsString superList
@@ -880,7 +885,7 @@ selectHighlightedOption selectionMode options =
                                     MultiSelect _ ->
                                         selectOptionInListByOptionValue value options
 
-                                    SingleSelect _ ->
+                                    SingleSelect _ _ ->
                                         selectSingleOptionInList value options
 
                             CustomOption _ _ value _ ->
@@ -888,7 +893,7 @@ selectHighlightedOption selectionMode options =
                                     MultiSelect _ ->
                                         selectOptionInListByOptionValue value options
 
-                                    SingleSelect _ ->
+                                    SingleSelect _ _ ->
                                         selectSingleOptionInList value options
 
                             EmptyOption _ _ ->
@@ -896,7 +901,7 @@ selectHighlightedOption selectionMode options =
                                     MultiSelect _ ->
                                         selectEmptyOption options
 
-                                    SingleSelect _ ->
+                                    SingleSelect _ _ ->
                                         selectEmptyOption options
 
                     Nothing ->

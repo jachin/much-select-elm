@@ -18,6 +18,7 @@ port module Ports exposing
     , removeOptionsReceiver
     , scrollDropdownToElement
     , selectOptionReceiver
+    , selectedItemStaysInPlaceChangedReceiver
     , valueCasingDimensionsChangedReceiver
     , valueChanged
     , valueChangedReceiver
@@ -91,6 +92,9 @@ port loadingChangedReceiver : (Bool -> msg) -> Sub msg
 
 
 port disableChangedReceiver : (Bool -> msg) -> Sub msg
+
+
+port selectedItemStaysInPlaceChangedReceiver : (Bool -> msg) -> Sub msg
 
 
 port maxDropdownItemsChangedReceiver : (Int -> msg) -> Sub msg
