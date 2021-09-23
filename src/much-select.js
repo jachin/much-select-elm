@@ -181,6 +181,12 @@ class MuchSelect extends HTMLElement {
     this._allowCustomOptions = false;
 
     /**
+     * @type {boolean}
+     * @private
+     */
+    this._selectedItemStaysInPlace = true;
+
+    /**
      * @type {null|object}
      * @private
      */
@@ -213,6 +219,7 @@ class MuchSelect extends HTMLElement {
       "loading",
       "max-dropdown-items",
       "allow-custom-options",
+      "selected-option-goes-to-top",
     ];
   }
 
@@ -243,6 +250,10 @@ class MuchSelect extends HTMLElement {
     } else if (name === "loading") {
       if (oldValue !== newValue) {
         this.loading = newValue;
+      }
+    } else if (name === "selected-option-goes-to-top") {
+      if (oldValue !== newValue) {
+        this.selectedItemGOesToTop = newValue;
       }
     }
   }
@@ -345,9 +356,8 @@ class MuchSelect extends HTMLElement {
     // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
     this.appPromise.then((app) =>
       app.ports.blurInput.subscribe(() => {
-        const inputFilterElement = this.shadowRoot.getElementById(
-          "input-filter"
-        );
+        const inputFilterElement =
+          this.shadowRoot.getElementById("input-filter");
         if (inputFilterElement) {
           inputFilterElement.blur();
         }
@@ -358,9 +368,8 @@ class MuchSelect extends HTMLElement {
     this.appPromise.then((app) =>
       app.ports.focusInput.subscribe(() => {
         window.requestAnimationFrame(() => {
-          const inputFilterElement = this.shadowRoot.getElementById(
-            "input-filter"
-          );
+          const inputFilterElement =
+            this.shadowRoot.getElementById("input-filter");
           if (inputFilterElement) {
             this.shadowRoot.getElementById("input-filter").focus();
           }
@@ -511,6 +520,7 @@ class MuchSelect extends HTMLElement {
 
     flags.disabled = this.disabled;
     flags.loading = this.loading;
+    flags.selectedItemStaysInPlace = this.selectedItemStaysInPlace;
     flags.maxDropdownItems = this.maxDropdownItems;
     flags.allowCustomOptions = this.allowCustomOptions;
 
@@ -789,6 +799,40 @@ class MuchSelect extends HTMLElement {
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
       app.ports.allowCustomOptionsReceiver.send(this._allowCustomOptions)
+    );
+  }
+
+  get selectedItemStaysInPlace() {
+    return this._selectedItemStaysInPlace;
+  }
+
+  set selectedItemGOesToTop(value) {
+    if (value === "") {
+      this.selectedItemStaysInPlace = false;
+    } else if (value === null) {
+      this.selectedItemStaysInPlace = true;
+    } else {
+      this.selectedItemStaysInPlace = !value;
+    }
+  }
+
+  set selectedItemStaysInPlace(value) {
+    if (value === "false") {
+      this._selectedItemStaysInPlace = false;
+    } else {
+      this._selectedItemStaysInPlace = !!value;
+    }
+
+    if (!this._selectedItemStaysInPlace) {
+      this.setAttribute("selected-option-goes-to-top", "");
+    } else {
+      this.removeAttribute("selected-option-goes-to-top");
+    }
+    // noinspection JSUnresolvedVariable
+    this.appPromise.then((app) =>
+      app.ports.selectedItemStaysInPlaceChangedReceiver.send(
+        this._selectedItemStaysInPlace
+      )
     );
   }
 

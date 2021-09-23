@@ -14,6 +14,7 @@ import Test exposing (Test, describe, test)
 import Test.Html.Selector exposing (classes, text)
 
 
+flagsEmptyOptionsWithOrangeSelected : Flags
 flagsEmptyOptionsWithOrangeSelected =
     { value = "Orange"
     , placeholder = "What is your favorite color"
@@ -24,6 +25,7 @@ flagsEmptyOptionsWithOrangeSelected =
     , maxDropdownItems = 10
     , disabled = False
     , allowCustomOptions = False
+    , selectedItemStaysInPlace = True
     }
 
 
@@ -82,6 +84,7 @@ booksJsonWithSelected =
 """
 
 
+flagsBookOptions : Flags
 flagsBookOptions =
     { value = ""
     , placeholder = "A book"
@@ -92,9 +95,11 @@ flagsBookOptions =
     , maxDropdownItems = 2
     , disabled = False
     , allowCustomOptions = False
+    , selectedItemStaysInPlace = True
     }
 
 
+flagsBookOptionsWithValue : Flags
 flagsBookOptionsWithValue =
     { value = "Matilda"
     , placeholder = "A book"
@@ -105,9 +110,11 @@ flagsBookOptionsWithValue =
     , maxDropdownItems = 2
     , disabled = False
     , allowCustomOptions = False
+    , selectedItemStaysInPlace = True
     }
 
 
+flagsBookOptionsWithSelected : Flags
 flagsBookOptionsWithSelected =
     { value = ""
     , placeholder = "A book"
@@ -118,6 +125,7 @@ flagsBookOptionsWithSelected =
     , maxDropdownItems = 2
     , disabled = False
     , allowCustomOptions = False
+    , selectedItemStaysInPlace = True
     }
 
 

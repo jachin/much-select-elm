@@ -75,6 +75,7 @@ import Ports
         , removeOptionsReceiver
         , scrollDropdownToElement
         , selectOptionReceiver
+        , selectedItemStaysInPlaceChangedReceiver
         , valueCasingDimensionsChangedReceiver
         , valueChanged
         , valueChangedReceiver
@@ -82,7 +83,12 @@ import Ports
         , valuesDecoder
         )
 import PositiveInt exposing (PositiveInt)
-import SelectionMode exposing (CustomOptions(..), SelectionMode(..))
+import SelectionMode
+    exposing
+        ( CustomOptions(..)
+        , SelectedItemPlacementMode(..)
+        , SelectionMode(..)
+        )
 
 
 type Msg
@@ -106,6 +112,7 @@ type Msg
     | MaxDropdownItemsChanged Int
     | AllowCustomOptionsChanged Bool
     | DisabledAttributeChanged Bool
+    | SelectedItemStaysInPlaceChanged Bool
     | SelectHighlightedOption
     | DeleteInputForSingleSelect
     | EscapeKeyInInputFilter
@@ -210,7 +217,7 @@ update msg model =
                         MultiSelect _ ->
                             selectOptionInListByOptionValue optionValue model.options
 
-                        SingleSelect _ ->
+                        SingleSelect _ _ ->
                             selectSingleOptionInList optionValue model.options
             in
             ( updateModelWithSearchStringChanges model.maxDropdownItems "" options model
@@ -234,7 +241,10 @@ update msg model =
                 Ok values ->
                     let
                         newOptions =
-                            Option.addAndSelectOptionsInOptionsListByString values model.options
+                            Option.addAndSelectOptionsInOptionsListByString
+                                (SelectionMode.getSelectedItemPlacementMode model.selectionMode)
+                                values
+                                model.options
                     in
                     ( { model
                         | options = newOptions
@@ -257,14 +267,14 @@ update msg model =
                     let
                         newOptionWithOldSelectedOption =
                             case model.selectionMode of
-                                SingleSelect _ ->
-                                    Option.mergeTwoListsOfOptionsPreservingSelectedOptions model.options newOptions
+                                SingleSelect _ selectedItemPlacementMode ->
+                                    Option.mergeTwoListsOfOptionsPreservingSelectedOptions selectedItemPlacementMode model.options newOptions
 
                                 MultiSelect _ ->
                                     -- Also filter out any empty options.
                                     newOptions
                                         |> List.filter (not << Option.isEmptyOption)
-                                        |> Option.mergeTwoListsOfOptionsPreservingSelectedOptions model.options
+                                        |> Option.mergeTwoListsOfOptionsPreservingSelectedOptions SelectedItemStaysInPlace model.options
                     in
                     ( { model
                         | options = newOptionWithOldSelectedOption
@@ -322,7 +332,7 @@ update msg model =
                                 MultiSelect _ ->
                                     selectOptionInListByOptionValue optionValue model.options
 
-                                SingleSelect _ ->
+                                SingleSelect _ _ ->
                                     selectSingleOptionInList optionValue model.options
                     in
                     ( updateModelWithSearchStringChanges model.maxDropdownItems "" options model
@@ -386,13 +396,23 @@ update msg model =
         DisabledAttributeChanged bool ->
             ( { model | disabled = bool }, Cmd.none )
 
+        SelectedItemStaysInPlaceChanged selectedItemStaysInPlace ->
+            ( { model
+                | selectionMode =
+                    SelectionMode.setSelectedItemStaysInPlace
+                        selectedItemStaysInPlace
+                        model.selectionMode
+              }
+            , Cmd.none
+            )
+
         SelectHighlightedOption ->
             let
                 options =
                     selectHighlightedOption model.selectionMode model.options
             in
             case model.selectionMode of
-                SingleSelect _ ->
+                SingleSelect _ _ ->
                     ( updateModelWithSearchStringChanges model.maxDropdownItems "" options model
                     , Cmd.batch
                         -- TODO Figure out what the highlighted option in here
@@ -409,7 +429,7 @@ update msg model =
 
         DeleteInputForSingleSelect ->
             case model.selectionMode of
-                SingleSelect _ ->
+                SingleSelect _ _ ->
                     if Option.hasSelectedOption model.options then
                         -- if there are ANY selected options, clear them all;
                         clearAllSelectedOption model
@@ -618,7 +638,7 @@ updateRightSlot current selectionMode hasSelectedOption =
     case current of
         ShowNothing ->
             case selectionMode of
-                SingleSelect _ ->
+                SingleSelect _ _ ->
                     ShowDropdownIndicator
 
                 MultiSelect _ ->
@@ -649,7 +669,7 @@ updateRightSlotLoading isLoading selectionMode hasSelectedOption =
 
     else
         case selectionMode of
-            SingleSelect _ ->
+            SingleSelect _ _ ->
                 ShowDropdownIndicator
 
             MultiSelect _ ->
@@ -671,7 +691,7 @@ view model =
                 tabindex 0
     in
     case model.selectionMode of
-        SingleSelect _ ->
+        SingleSelect _ _ ->
             let
                 hasOptionSelected =
                     Option.hasSelectedOption model.options
@@ -1075,7 +1095,7 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
 
         OptionSelected ->
             case selectionMode of
-                SingleSelect _ ->
+                SingleSelect _ _ ->
                     [ optionGroupHtml
                     , div
                         [ onMouseEnter (option |> Option.getOptionValue |> mouseOverMsgConstructor)
@@ -1093,7 +1113,7 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
 
         OptionSelectedHighlighted ->
             case selectionMode of
-                SingleSelect _ ->
+                SingleSelect _ _ ->
                     [ optionGroupHtml
                     , div
                         [ onMouseEnter (option |> Option.getOptionValue |> mouseOverMsgConstructor)
@@ -1312,6 +1332,7 @@ type alias Flags =
     , maxDropdownItems : Int
     , disabled : Bool
     , allowCustomOptions : Bool
+    , selectedItemStaysInPlace : Bool
     }
 
 
@@ -1328,12 +1349,19 @@ init flags =
             else
                 NoCustomOptions
 
+        selectedItemPlacementMode =
+            if flags.selectedItemStaysInPlace then
+                SelectedItemStaysInPlace
+
+            else
+                SelectedItemMovesToTheTop
+
         selectionMode =
             if flags.allowMultiSelect then
                 MultiSelect allowCustomOptions
 
             else
-                SingleSelect allowCustomOptions
+                SingleSelect allowCustomOptions selectedItemPlacementMode
 
         initialValueStr =
             String.trim flags.value
@@ -1346,7 +1374,7 @@ init flags =
 
                 _ ->
                     case selectionMode of
-                        SingleSelect _ ->
+                        SingleSelect _ _ ->
                             [ initialValueStr ]
 
                         MultiSelect _ ->
@@ -1356,7 +1384,7 @@ init flags =
             case Json.Decode.decodeString Option.optionsDecoder flags.optionsJson of
                 Ok options ->
                     case selectionMode of
-                        SingleSelect _ ->
+                        SingleSelect _ _ ->
                             case List.head initialValues of
                                 Just initialValueStr_ ->
                                     if Option.isOptionInListOfOptionsByValue (Option.stringToOptionValue initialValueStr_) options then
@@ -1386,7 +1414,7 @@ init flags =
                                 optionsWithInitialValues =
                                     options
                                         |> List.filter (not << Option.isEmptyOption)
-                                        |> Option.addAndSelectOptionsInOptionsListByString initialValues
+                                        |> Option.addAndSelectOptionsInOptionsListByString SelectedItemStaysInPlace initialValues
                             in
                             ( optionsWithInitialValues, Cmd.none )
 
@@ -1411,7 +1439,7 @@ init flags =
 
             else
                 case selectionMode of
-                    SingleSelect _ ->
+                    SingleSelect _ _ ->
                         ShowDropdownIndicator
 
                     MultiSelect _ ->
@@ -1451,6 +1479,7 @@ subscriptions _ =
         , placeholderChangedReceiver PlaceholderAttributeChanged
         , loadingChangedReceiver LoadingAttributeChanged
         , disableChangedReceiver DisabledAttributeChanged
+        , selectedItemStaysInPlaceChangedReceiver SelectedItemStaysInPlaceChanged
         , optionsChangedReceiver OptionsChanged
         , maxDropdownItemsChangedReceiver MaxDropdownItemsChanged
         , allowCustomOptionsReceiver AllowCustomOptionsChanged
