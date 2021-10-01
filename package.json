@@ -1,6 +1,6 @@
 {
   "name": "@getdrip/much-select-elm",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "A fancy selector web component written (mostly) in elm.",
   "main": "dist/much-select.js",
   "type": "module",
