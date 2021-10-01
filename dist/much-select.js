@@ -271,6 +271,8 @@ class MuchSelect extends HTMLElement {
         evt.stopImmediatePropagation();
         evt.preventDefault();
       });
+
+      this.dispatchEvent(new CustomEvent("muchSelectReady"));
     });
 
     // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
