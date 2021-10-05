@@ -9,19 +9,16 @@ const makeLogEventHandler = (logElementId) => {
       <strong><code>${event.type}</code></strong>
     </td>
     <td><code>${detailStr}</code></td>`;
-    document
-      .getElementById(logElementId)
-      .querySelector("tbody")
-      .prepend(tr);
+    document.getElementById(logElementId).querySelector("tbody").prepend(tr);
 
     window.setTimeout(() => {
-      let logItemNode = document.getElementById(eventElementId);
+      const logItemNode = document.getElementById(eventElementId);
       if (logItemNode.parentNode) {
         logItemNode.parentNode.removeChild(logItemNode);
       }
-    }, 5000)
-  }
+    }, 5000);
+  };
   return logEvent;
-}
+};
 
 export default makeLogEventHandler;
