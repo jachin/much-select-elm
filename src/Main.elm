@@ -175,7 +175,7 @@ update msg model =
                 ( model, Cmd.none )
 
         InputBlur ->
-            ( { model | showDropdown = False, focused = False }, Cmd.none )
+            ( { model | showDropdown = False, focused = False, searchString = "" }, Cmd.none )
 
         InputFocus ->
             ( { model | showDropdown = True }, Cmd.none )
