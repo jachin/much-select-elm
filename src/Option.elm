@@ -724,7 +724,7 @@ filterOptionsToShowInDropdown =
                     True
 
                 OptionDisabled ->
-                    False
+                    True
         )
 
 
