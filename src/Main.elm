@@ -125,7 +125,7 @@ type Msg
       --  on them and then delete them (with the delete key).
       --  If you can think of a better name we're all ears.
     | ToggleSelectedValueHighlight OptionValue
-    | DeleteSelectedAndHighlightedValues
+    | DeleteKeydownForMultiSelect
 
 
 type alias Model =
@@ -485,7 +485,7 @@ update msg model =
             , Cmd.none
             )
 
-        DeleteSelectedAndHighlightedValues ->
+        DeleteKeydownForMultiSelect ->
             let
                 newOptions =
                     Option.deselectAllSelectedHighlightedOptions model.options
@@ -786,8 +786,8 @@ view model =
                     , onClick BringInputInFocus
                     , onFocus BringInputInFocus
                     , Keyboard.on Keyboard.Keydown
-                        [ ( Delete, DeleteSelectedAndHighlightedValues )
-                        , ( Backspace, DeleteSelectedAndHighlightedValues )
+                        [ ( Delete, DeleteKeydownForMultiSelect )
+                        , ( Backspace, DeleteKeydownForMultiSelect )
                         ]
                     , tabIndexAttribute
                     , classList
@@ -1093,7 +1093,7 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
         OptionHidden ->
             [ optionGroupHtml, text "" ]
 
-        OptionSelected ->
+        OptionSelected _ ->
             case selectionMode of
                 SingleSelect _ _ ->
                     [ optionGroupHtml
@@ -1111,7 +1111,7 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
                 MultiSelect _ ->
                     [ optionGroupHtml, text "" ]
 
-        OptionSelectedHighlighted ->
+        OptionSelectedHighlighted _ ->
             case selectionMode of
                 SingleSelect _ _ ->
                     [ optionGroupHtml
@@ -1168,7 +1168,7 @@ optionsToValuesHtml options =
                             OptionHidden ->
                                 text ""
 
-                            OptionSelected ->
+                            OptionSelected _ ->
                                 div
                                     [ class "value"
                                     , mousedownPreventDefaultAndStopPropagation
@@ -1176,7 +1176,7 @@ optionsToValuesHtml options =
                                     ]
                                     [ text labelStr ]
 
-                            OptionSelectedHighlighted ->
+                            OptionSelectedHighlighted _ ->
                                 div
                                     [ classList
                                         [ ( "value", True )
@@ -1201,7 +1201,7 @@ optionsToValuesHtml options =
                             OptionHidden ->
                                 text ""
 
-                            OptionSelected ->
+                            OptionSelected _ ->
                                 div
                                     [ class "value"
                                     , mousedownPreventDefaultAndStopPropagation
@@ -1209,7 +1209,7 @@ optionsToValuesHtml options =
                                     ]
                                     [ text labelStr ]
 
-                            OptionSelectedHighlighted ->
+                            OptionSelectedHighlighted _ ->
                                 div
                                     [ classList
                                         [ ( "value", True )
@@ -1234,10 +1234,10 @@ optionsToValuesHtml options =
                             OptionHidden ->
                                 text ""
 
-                            OptionSelected ->
+                            OptionSelected _ ->
                                 div [ class "value" ] [ text labelStr ]
 
-                            OptionSelectedHighlighted ->
+                            OptionSelectedHighlighted _ ->
                                 text ""
 
                             OptionHighlighted ->

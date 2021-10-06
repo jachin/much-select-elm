@@ -92,8 +92,8 @@ getOptionLabel option =
 type OptionDisplay
     = OptionShown
     | OptionHidden
-    | OptionSelected
-    | OptionSelectedHighlighted
+    | OptionSelected Int
+    | OptionSelectedHighlighted Int
     | OptionHighlighted
     | OptionDisabled
 
@@ -379,7 +379,7 @@ setOptionSearchFilter maybeOptionSearchFilter option =
 
 newSelectedOption : String -> Maybe String -> Option
 newSelectedOption string maybeCleanLabel =
-    Option OptionSelected
+    Option (OptionSelected 0)
         (OptionLabel string maybeCleanLabel NoSortRank)
         (OptionValue string)
         NoDescription
@@ -408,10 +408,10 @@ isOptionSelected option =
                 OptionHidden ->
                     False
 
-                OptionSelected ->
+                OptionSelected _ ->
                     True
 
-                OptionSelectedHighlighted ->
+                OptionSelectedHighlighted _ ->
                     True
 
                 OptionHighlighted ->
@@ -714,10 +714,10 @@ filterOptionsToShowInDropdown =
                 OptionHidden ->
                     False
 
-                OptionSelected ->
+                OptionSelected _ ->
                     True
 
-                OptionSelectedHighlighted ->
+                OptionSelectedHighlighted _ ->
                     True
 
                 OptionHighlighted ->
@@ -1023,11 +1023,11 @@ highlightOption option =
                 OptionHidden ->
                     Option OptionHidden label value description group search
 
-                OptionSelected ->
-                    Option OptionSelectedHighlighted label value description group search
+                OptionSelected selectedIndex ->
+                    Option (OptionSelectedHighlighted selectedIndex) label value description group search
 
-                OptionSelectedHighlighted ->
-                    Option OptionSelectedHighlighted label value description group search
+                OptionSelectedHighlighted selectedIndex ->
+                    Option (OptionSelectedHighlighted selectedIndex) label value description group search
 
                 OptionHighlighted ->
                     Option OptionHighlighted label value description group search
@@ -1043,11 +1043,11 @@ highlightOption option =
                 OptionHidden ->
                     CustomOption OptionHidden label value search
 
-                OptionSelected ->
-                    CustomOption OptionSelectedHighlighted label value search
+                OptionSelected selectedIndex ->
+                    CustomOption (OptionSelectedHighlighted selectedIndex) label value search
 
-                OptionSelectedHighlighted ->
-                    CustomOption OptionSelectedHighlighted label value search
+                OptionSelectedHighlighted selectedIndex ->
+                    CustomOption (OptionSelectedHighlighted selectedIndex) label value search
 
                 OptionHighlighted ->
                     CustomOption OptionHighlighted label value search
@@ -1063,11 +1063,11 @@ highlightOption option =
                 OptionHidden ->
                     EmptyOption OptionHidden label
 
-                OptionSelected ->
-                    EmptyOption OptionSelectedHighlighted label
+                OptionSelected selectedIndex ->
+                    EmptyOption (OptionSelectedHighlighted selectedIndex) label
 
-                OptionSelectedHighlighted ->
-                    EmptyOption OptionSelectedHighlighted label
+                OptionSelectedHighlighted selectedIndex ->
+                    EmptyOption (OptionSelectedHighlighted selectedIndex) label
 
                 OptionHighlighted ->
                     EmptyOption OptionHighlighted label
@@ -1097,16 +1097,16 @@ removeHighlightOption option =
                         group
                         search
 
-                OptionSelected ->
-                    Option OptionSelected
+                OptionSelected selectedIndex ->
+                    Option (OptionSelected selectedIndex)
                         label
                         value
                         description
                         group
                         search
 
-                OptionSelectedHighlighted ->
-                    Option OptionSelected
+                OptionSelectedHighlighted selectedIndex ->
+                    Option (OptionSelected selectedIndex)
                         label
                         value
                         description
@@ -1127,12 +1127,12 @@ removeHighlightOption option =
                 OptionHidden ->
                     CustomOption OptionHidden label value search
 
-                OptionSelected ->
-                    CustomOption OptionSelected label value search
+                OptionSelected selectedIndex ->
+                    CustomOption (OptionSelected selectedIndex) label value search
 
-                OptionSelectedHighlighted ->
+                OptionSelectedHighlighted selectedIndex ->
                     CustomOption
-                        OptionSelected
+                        (OptionSelected selectedIndex)
                         label
                         value
                         search
@@ -1151,8 +1151,8 @@ removeHighlightOption option =
                 OptionHidden ->
                     EmptyOption OptionHidden label
 
-                OptionSelected ->
-                    EmptyOption OptionSelected label
+                OptionSelected selectedIndex ->
+                    EmptyOption (OptionSelected selectedIndex) label
 
                 OptionHighlighted ->
                     EmptyOption OptionShown label
@@ -1160,8 +1160,8 @@ removeHighlightOption option =
                 OptionDisabled ->
                     EmptyOption OptionDisabled label
 
-                OptionSelectedHighlighted ->
-                    EmptyOption OptionSelectedHighlighted label
+                OptionSelectedHighlighted selectedIndex ->
+                    EmptyOption (OptionSelectedHighlighted selectedIndex) label
 
 
 isOptionHighlighted : Option -> Bool
@@ -1175,10 +1175,10 @@ isOptionHighlighted option =
                 OptionHidden ->
                     False
 
-                OptionSelected ->
+                OptionSelected _ ->
                     False
 
-                OptionSelectedHighlighted ->
+                OptionSelectedHighlighted _ ->
                     False
 
                 OptionHighlighted ->
@@ -1195,10 +1195,10 @@ isOptionHighlighted option =
                 OptionHidden ->
                     False
 
-                OptionSelected ->
+                OptionSelected _ ->
                     False
 
-                OptionSelectedHighlighted ->
+                OptionSelectedHighlighted _ ->
                     False
 
                 OptionHighlighted ->
@@ -1215,10 +1215,10 @@ isOptionHighlighted option =
                 OptionHidden ->
                     False
 
-                OptionSelected ->
+                OptionSelected _ ->
                     False
 
-                OptionSelectedHighlighted ->
+                OptionSelectedHighlighted _ ->
                     False
 
                 OptionHighlighted ->
@@ -1239,10 +1239,10 @@ optionIsHighlightable option =
                 OptionHidden ->
                     False
 
-                OptionSelected ->
+                OptionSelected _ ->
                     False
 
-                OptionSelectedHighlighted ->
+                OptionSelectedHighlighted _ ->
                     False
 
                 OptionHighlighted ->
@@ -1259,10 +1259,10 @@ optionIsHighlightable option =
                 OptionHidden ->
                     False
 
-                OptionSelected ->
+                OptionSelected _ ->
                     False
 
-                OptionSelectedHighlighted ->
+                OptionSelectedHighlighted _ ->
                     False
 
                 OptionHighlighted ->
@@ -1279,10 +1279,10 @@ optionIsHighlightable option =
                 OptionHidden ->
                     False
 
-                OptionSelected ->
+                OptionSelected _ ->
                     False
 
-                OptionSelectedHighlighted ->
+                OptionSelectedHighlighted _ ->
                     False
 
                 OptionHighlighted ->
@@ -1298,19 +1298,19 @@ selectOption option =
         Option display label value description group search ->
             case display of
                 OptionShown ->
-                    Option OptionSelected label value description group search
+                    Option (OptionSelected 0) label value description group search
 
                 OptionHidden ->
-                    Option OptionSelected label value description group search
+                    Option (OptionSelected 0) label value description group search
 
-                OptionSelected ->
-                    Option OptionSelected label value description group search
+                OptionSelected selectedIndex ->
+                    Option (OptionSelected selectedIndex) label value description group search
 
-                OptionSelectedHighlighted ->
-                    Option OptionSelected label value description group search
+                OptionSelectedHighlighted selectedIndex ->
+                    Option (OptionSelected selectedIndex) label value description group search
 
                 OptionHighlighted ->
-                    Option OptionSelected label value description group search
+                    Option (OptionSelected 0) label value description group search
 
                 OptionDisabled ->
                     Option OptionDisabled label value description group search
@@ -1318,19 +1318,19 @@ selectOption option =
         CustomOption display label value search ->
             case display of
                 OptionShown ->
-                    CustomOption OptionSelected label value search
+                    CustomOption (OptionSelected 0) label value search
 
                 OptionHidden ->
                     CustomOption OptionHidden label value search
 
-                OptionSelected ->
-                    CustomOption OptionSelected label value search
+                OptionSelected selecteIndex ->
+                    CustomOption (OptionSelected selecteIndex) label value search
 
-                OptionSelectedHighlighted ->
-                    CustomOption OptionSelectedHighlighted label value search
+                OptionSelectedHighlighted selecteIndex ->
+                    CustomOption (OptionSelectedHighlighted selecteIndex) label value search
 
                 OptionHighlighted ->
-                    CustomOption OptionSelected label value search
+                    CustomOption (OptionSelected 0) label value search
 
                 OptionDisabled ->
                     CustomOption OptionDisabled label value search
@@ -1338,19 +1338,19 @@ selectOption option =
         EmptyOption display label ->
             case display of
                 OptionShown ->
-                    EmptyOption OptionSelected label
+                    EmptyOption (OptionSelected 0) label
 
                 OptionHidden ->
-                    EmptyOption OptionSelected label
+                    EmptyOption (OptionSelected 0) label
 
-                OptionSelected ->
-                    EmptyOption OptionSelected label
+                OptionSelected selectedIndex ->
+                    EmptyOption (OptionSelected selectedIndex) label
 
-                OptionSelectedHighlighted ->
-                    EmptyOption OptionSelected label
+                OptionSelectedHighlighted selectedIndex ->
+                    EmptyOption (OptionSelected selectedIndex) label
 
                 OptionHighlighted ->
-                    EmptyOption OptionSelected label
+                    EmptyOption (OptionSelected 0) label
 
                 OptionDisabled ->
                     EmptyOption OptionDisabled label
@@ -1367,10 +1367,10 @@ deselectOption option =
                 OptionHidden ->
                     Option OptionHidden label value description group search
 
-                OptionSelected ->
+                OptionSelected _ ->
                     Option OptionShown label value description group search
 
-                OptionSelectedHighlighted ->
+                OptionSelectedHighlighted _ ->
                     Option OptionShown label value description group search
 
                 OptionHighlighted ->
@@ -1392,11 +1392,11 @@ deselectOption option =
                 OptionHidden ->
                     CustomOption OptionHidden label value search
 
-                OptionSelected ->
+                OptionSelected _ ->
                     CustomOption OptionShown label value search
 
-                OptionSelectedHighlighted ->
-                    CustomOption OptionSelectedHighlighted label value search
+                OptionSelectedHighlighted _ ->
+                    CustomOption OptionShown label value search
 
                 OptionHighlighted ->
                     CustomOption OptionHighlighted label value search
@@ -1412,10 +1412,10 @@ deselectOption option =
                 OptionHidden ->
                     EmptyOption OptionHidden label
 
-                OptionSelected ->
+                OptionSelected _ ->
                     EmptyOption OptionShown label
 
-                OptionSelectedHighlighted ->
+                OptionSelectedHighlighted _ ->
                     EmptyOption OptionShown label
 
                 OptionHighlighted ->
@@ -1427,6 +1427,7 @@ deselectOption option =
 
 selectedOptions : List Option -> List Option
 selectedOptions options =
+    -- TODO sort the results by the selected index
     options
         |> List.filter
             (\option_ ->
@@ -1439,10 +1440,10 @@ selectedOptions options =
                             OptionHidden ->
                                 False
 
-                            OptionSelected ->
+                            OptionSelected _ ->
                                 True
 
-                            OptionSelectedHighlighted ->
+                            OptionSelectedHighlighted _ ->
                                 True
 
                             OptionHighlighted ->
@@ -1459,10 +1460,10 @@ selectedOptions options =
                             OptionHidden ->
                                 False
 
-                            OptionSelected ->
+                            OptionSelected _ ->
                                 True
 
-                            OptionSelectedHighlighted ->
+                            OptionSelectedHighlighted _ ->
                                 True
 
                             OptionHighlighted ->
@@ -1479,10 +1480,10 @@ selectedOptions options =
                             OptionHidden ->
                                 False
 
-                            OptionSelected ->
+                            OptionSelected _ ->
                                 True
 
-                            OptionSelectedHighlighted ->
+                            OptionSelectedHighlighted _ ->
                                 True
 
                             OptionHighlighted ->
@@ -1508,11 +1509,11 @@ toggleSelectedHighlightByOptionValue options optionValue =
                                 OptionHidden ->
                                     option_
 
-                                OptionSelected ->
-                                    option_ |> setOptionDisplay OptionSelectedHighlighted
+                                OptionSelected selectedIndex ->
+                                    option_ |> setOptionDisplay (OptionSelectedHighlighted selectedIndex)
 
-                                OptionSelectedHighlighted ->
-                                    option_ |> setOptionDisplay OptionSelected
+                                OptionSelectedHighlighted selectedIndex ->
+                                    option_ |> setOptionDisplay (OptionSelected selectedIndex)
 
                                 OptionHighlighted ->
                                     option_
@@ -1532,11 +1533,11 @@ toggleSelectedHighlightByOptionValue options optionValue =
                                 OptionHidden ->
                                     option_
 
-                                OptionSelected ->
-                                    option_ |> setOptionDisplay OptionSelectedHighlighted
+                                OptionSelected selectedIndex ->
+                                    option_ |> setOptionDisplay (OptionSelectedHighlighted selectedIndex)
 
-                                OptionSelectedHighlighted ->
-                                    option_ |> setOptionDisplay OptionSelected
+                                OptionSelectedHighlighted selectedIndex ->
+                                    option_ |> setOptionDisplay (OptionSelected selectedIndex)
 
                                 OptionHighlighted ->
                                     option_
@@ -1566,10 +1567,10 @@ deselectAllSelectedHighlightedOptions options =
                             OptionHidden ->
                                 option_
 
-                            OptionSelected ->
+                            OptionSelected _ ->
                                 option_
 
-                            OptionSelectedHighlighted ->
+                            OptionSelectedHighlighted _ ->
                                 option_ |> setOptionDisplay OptionShown
 
                             OptionHighlighted ->
@@ -1586,10 +1587,10 @@ deselectAllSelectedHighlightedOptions options =
                             OptionHidden ->
                                 option_
 
-                            OptionSelected ->
+                            OptionSelected _ ->
                                 option_
 
-                            OptionSelectedHighlighted ->
+                            OptionSelectedHighlighted _ ->
                                 option_ |> setOptionDisplay OptionShown
 
                             OptionHighlighted ->
@@ -1716,7 +1717,7 @@ displayDecoder =
                 (\str ->
                     case str of
                         "true" ->
-                            Json.Decode.succeed OptionSelected
+                            Json.Decode.succeed (OptionSelected 0)
 
                         _ ->
                             Json.Decode.fail "Option is not selected"
@@ -1727,7 +1728,7 @@ displayDecoder =
             |> Json.Decode.andThen
                 (\isSelected ->
                     if isSelected then
-                        Json.Decode.succeed OptionSelected
+                        Json.Decode.succeed (OptionSelected 0)
 
                     else
                         Json.Decode.succeed OptionShown
