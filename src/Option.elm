@@ -47,6 +47,7 @@ module Option exposing
     , selectOption
     , selectOptionInList
     , selectOptionInListByOptionValue
+    , selectOptionsInList
     , selectOptionsInOptionsListByString
     , selectSingleOptionInList
     , selectedOptionsToTuple
@@ -513,17 +514,22 @@ optionsValues options =
     List.map getOptionValueAsString options
 
 
+
+{- This takes a list of string and a list of options.
+   Then it selects any matching options (looking at values of the options).
+
+   It also deselects any options that are NOT in the the list of string.
+-}
+
+
 selectOptionsInOptionsListByString : List String -> List Option -> List Option
 selectOptionsInOptionsListByString strings options =
-    List.map
-        (\option ->
-            if isOptionValueInListOfStrings strings option then
-                selectOption option
-
-            else
-                deselectOption option
-        )
-        options
+    let
+        optionsToSelect =
+            List.filter (isOptionValueInListOfStrings strings) options
+    in
+    -- TODO deselect the options NOT in the list of strings
+    selectOptionsInList optionsToSelect options
 
 
 addAndSelectOptionsInOptionsListByString : SelectedItemPlacementMode -> List String -> List Option -> List Option
@@ -538,18 +544,15 @@ addAndSelectOptionsInOptionsListByString selectedItemPlacementMode strings optio
 setSelectedOptionInNewOptions : List Option -> List Option -> List Option
 setSelectedOptionInNewOptions oldOptions newOptions =
     let
+        oldSelectedOption : List Option
         oldSelectedOption =
             oldOptions |> selectedOptions
-    in
-    List.map
-        (\newOption_ ->
-            if optionListContainsOptionWithValue newOption_ oldSelectedOption then
-                selectOption newOption_
 
-            else
-                newOption_
-        )
-        newOptions
+        newSelectedOptions : List Option
+        newSelectedOptions =
+            List.filter (\newOption_ -> optionListContainsOptionWithValue newOption_ oldSelectedOption) newOptions
+    in
+    selectOptionsInList newSelectedOptions newOptions
 
 
 {-| This function is a little strange but here's what it does. It takes 2 lists of option.
@@ -829,25 +832,38 @@ selectOptionInList option options =
     selectOptionInListByOptionValue (getOptionValue option) options
 
 
+
+{- Take a list of option to select and select them all.
+
+   If there are other options that are also selected, leave them as selected.
+-}
+
+
+selectOptionsInList : List Option -> List Option -> List Option
+selectOptionsInList optionsToSelect options =
+    List.concatMap (\optionToSelect -> selectOptionInList optionToSelect options) optionsToSelect
+
+
 selectOptionInListByOptionValue : OptionValue -> List Option -> List Option
 selectOptionInListByOptionValue value options =
+    -- TODO Replace the 0's with a calculated selected index
     List.map
         (\option_ ->
             if optionValuesEqual option_ value then
                 case option_ of
                     Option _ _ _ _ _ _ ->
-                        selectOption option_
+                        selectOption 0 option_
 
                     CustomOption _ _ _ _ ->
                         case value of
                             OptionValue valueStr ->
-                                selectOption option_ |> setLabelWithString valueStr Nothing
+                                selectOption 0 option_ |> setLabelWithString valueStr Nothing
 
                             EmptyOptionValue ->
-                                selectOption option_
+                                selectOption 0 option_
 
                     EmptyOption _ _ ->
-                        selectOption option_
+                        selectOption 0 option_
 
             else
                 option_
@@ -917,18 +933,18 @@ selectSingleOptionInList value options =
                 if optionValuesEqual option_ value then
                     case option_ of
                         Option _ _ _ _ _ _ ->
-                            selectOption option_
+                            selectOption 0 option_
 
                         CustomOption _ _ optionValue _ ->
                             case optionValue of
                                 OptionValue valueStr ->
-                                    selectOption option_ |> setLabelWithString valueStr Nothing
+                                    selectOption 0 option_ |> setLabelWithString valueStr Nothing
 
                                 EmptyOptionValue ->
-                                    selectOption option_
+                                    selectOption 0 option_
 
                         EmptyOption _ _ ->
-                            selectOption option_
+                            selectOption 0 option_
 
                 else
                     deselectOption option_
@@ -948,7 +964,7 @@ selectEmptyOption options =
                         deselectOption option_
 
                     EmptyOption _ _ ->
-                        selectOption option_
+                        selectOption 0 option_
             )
 
 
@@ -1292,16 +1308,16 @@ optionIsHighlightable option =
                     False
 
 
-selectOption : Option -> Option
-selectOption option =
+selectOption : Int -> Option -> Option
+selectOption selectionIndex option =
     case option of
         Option display label value description group search ->
             case display of
                 OptionShown ->
-                    Option (OptionSelected 0) label value description group search
+                    Option (OptionSelected selectionIndex) label value description group search
 
                 OptionHidden ->
-                    Option (OptionSelected 0) label value description group search
+                    Option (OptionSelected selectionIndex) label value description group search
 
                 OptionSelected selectedIndex ->
                     Option (OptionSelected selectedIndex) label value description group search
@@ -1310,7 +1326,7 @@ selectOption option =
                     Option (OptionSelected selectedIndex) label value description group search
 
                 OptionHighlighted ->
-                    Option (OptionSelected 0) label value description group search
+                    Option (OptionSelected selectionIndex) label value description group search
 
                 OptionDisabled ->
                     Option OptionDisabled label value description group search
@@ -1318,7 +1334,7 @@ selectOption option =
         CustomOption display label value search ->
             case display of
                 OptionShown ->
-                    CustomOption (OptionSelected 0) label value search
+                    CustomOption (OptionSelected selectionIndex) label value search
 
                 OptionHidden ->
                     CustomOption OptionHidden label value search
@@ -1330,7 +1346,7 @@ selectOption option =
                     CustomOption (OptionSelectedHighlighted selecteIndex) label value search
 
                 OptionHighlighted ->
-                    CustomOption (OptionSelected 0) label value search
+                    CustomOption (OptionSelected selectionIndex) label value search
 
                 OptionDisabled ->
                     CustomOption OptionDisabled label value search
@@ -1338,10 +1354,10 @@ selectOption option =
         EmptyOption display label ->
             case display of
                 OptionShown ->
-                    EmptyOption (OptionSelected 0) label
+                    EmptyOption (OptionSelected selectionIndex) label
 
                 OptionHidden ->
-                    EmptyOption (OptionSelected 0) label
+                    EmptyOption (OptionSelected selectionIndex) label
 
                 OptionSelected selectedIndex ->
                     EmptyOption (OptionSelected selectedIndex) label
@@ -1350,7 +1366,7 @@ selectOption option =
                     EmptyOption (OptionSelected selectedIndex) label
 
                 OptionHighlighted ->
-                    EmptyOption (OptionSelected 0) label
+                    EmptyOption (OptionSelected selectionIndex) label
 
                 OptionDisabled ->
                     EmptyOption OptionDisabled label

@@ -1399,7 +1399,8 @@ init flags =
                                         )
 
                                     else
-                                        ( (Option.newOption initialValueStr_ Nothing |> Option.selectOption) :: options, Cmd.none )
+                                        -- TODO Perhaps we should call a helper function instead of calling selectOption here
+                                        ( (Option.newOption initialValueStr_ Nothing |> Option.selectOption 0) :: options, Cmd.none )
 
                                 Nothing ->
                                     let
