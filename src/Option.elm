@@ -10,6 +10,7 @@ module Option exposing
     , decoder
     , deselectAllOptionsInOptionsList
     , deselectAllSelectedHighlightedOptions
+    , deselectEveryOptionExceptOptionsInList
     , deselectOptionInListByOptionValue
     , emptyOptionGroup
     , filterOptionsToShowInDropdown
@@ -530,6 +531,7 @@ selectOptionsInOptionsListByString strings options =
     in
     -- TODO deselect the options NOT in the list of strings
     selectOptionsInList optionsToSelect options
+        |> deselectEveryOptionExceptOptionsInList optionsToSelect
 
 
 addAndSelectOptionsInOptionsListByString : SelectedItemPlacementMode -> List String -> List Option -> List Option
@@ -841,7 +843,39 @@ selectOptionInList option options =
 
 selectOptionsInList : List Option -> List Option -> List Option
 selectOptionsInList optionsToSelect options =
-    List.concatMap (\optionToSelect -> selectOptionInList optionToSelect options) optionsToSelect
+    let
+        helper : List Option -> Option -> ( List Option, List Option )
+        helper newOptions optionToSelect =
+            ( selectOptionInList optionToSelect newOptions, [] )
+    in
+    List.Extra.mapAccuml helper options optionsToSelect
+        |> Tuple.first
+
+
+deselectEveryOptionExceptOptionsInList : List Option -> List Option -> List Option
+deselectEveryOptionExceptOptionsInList optionsNotToDeselect options =
+    List.map
+        (\option ->
+            let
+                test : Option -> Bool
+                test optionNotToDeselect =
+                    optionValuesEqual optionNotToDeselect (getOptionValue option)
+            in
+            if List.any test optionsNotToDeselect then
+                option
+
+            else
+                deselectOption option
+        )
+        options
+
+
+
+{- Look through the list of options, if we find one that matches the given option value
+   then select it and return a new list of options with the found option selected.
+
+   If we do not find the option value return the same list of options.
+-}
 
 
 selectOptionInListByOptionValue : OptionValue -> List Option -> List Option
