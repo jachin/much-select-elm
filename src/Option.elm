@@ -529,7 +529,6 @@ selectOptionsInOptionsListByString strings options =
         optionsToSelect =
             List.filter (isOptionValueInListOfStrings strings) options
     in
-    -- TODO deselect the options NOT in the list of strings
     selectOptionsInList optionsToSelect options
         |> deselectEveryOptionExceptOptionsInList optionsToSelect
 
