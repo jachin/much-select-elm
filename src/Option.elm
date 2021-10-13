@@ -446,6 +446,41 @@ getOptionDisplay option =
             display
 
 
+getOptionSelectedIndex : Option -> Int
+getOptionSelectedIndex option =
+    case option of
+        Option optionDisplay _ _ _ _ _ ->
+            optionDisplayToSelectedIndex optionDisplay
+
+        CustomOption optionDisplay _ _ _ ->
+            optionDisplayToSelectedIndex optionDisplay
+
+        EmptyOption optionDisplay _ ->
+            optionDisplayToSelectedIndex optionDisplay
+
+
+optionDisplayToSelectedIndex : OptionDisplay -> Int
+optionDisplayToSelectedIndex optionDisplay =
+    case optionDisplay of
+        OptionShown ->
+            -1
+
+        OptionHidden ->
+            -1
+
+        OptionSelected int ->
+            int
+
+        OptionSelectedHighlighted int ->
+            int
+
+        OptionHighlighted ->
+            -1
+
+        OptionDisabled ->
+            -1
+
+
 getOptionValue : Option -> OptionValue
 getOptionValue option =
     case option of
@@ -883,24 +918,38 @@ deselectEveryOptionExceptOptionsInList optionsNotToDeselect options =
 
 selectOptionInListByOptionValue : OptionValue -> List Option -> List Option
 selectOptionInListByOptionValue value options =
-    -- TODO Replace the 0's with a calculated selected index
+    let
+        nextSelectedIndex =
+            List.foldl
+                (\selectedOption highestIndex ->
+                    if getOptionSelectedIndex selectedOption > highestIndex then
+                        getOptionSelectedIndex selectedOption
+
+                    else
+                        highestIndex
+                )
+                -1
+                options
+                + 1
+    in
     List.map
         (\option_ ->
             if optionValuesEqual option_ value then
                 case option_ of
                     Option _ _ _ _ _ _ ->
-                        selectOption 0 option_
+                        selectOption nextSelectedIndex option_
 
                     CustomOption _ _ _ _ ->
                         case value of
                             OptionValue valueStr ->
-                                selectOption 0 option_ |> setLabelWithString valueStr Nothing
+                                selectOption nextSelectedIndex option_
+                                    |> setLabelWithString valueStr Nothing
 
                             EmptyOptionValue ->
-                                selectOption 0 option_
+                                selectOption nextSelectedIndex option_
 
                     EmptyOption _ _ ->
-                        selectOption 0 option_
+                        selectOption nextSelectedIndex option_
 
             else
                 option_
@@ -1376,11 +1425,11 @@ selectOption selectionIndex option =
                 OptionHidden ->
                     CustomOption OptionHidden label value search
 
-                OptionSelected selecteIndex ->
-                    CustomOption (OptionSelected selecteIndex) label value search
+                OptionSelected selectedIndex ->
+                    CustomOption (OptionSelected selectedIndex) label value search
 
-                OptionSelectedHighlighted selecteIndex ->
-                    CustomOption (OptionSelectedHighlighted selecteIndex) label value search
+                OptionSelectedHighlighted selectedIndex ->
+                    CustomOption (OptionSelectedHighlighted selectedIndex) label value search
 
                 OptionHighlighted ->
                     CustomOption (OptionSelected selectionIndex) label value search

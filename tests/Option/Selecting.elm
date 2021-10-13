@@ -1,7 +1,17 @@
 module Option.Selecting exposing (suite)
 
 import Expect
-import Option exposing (deselectEveryOptionExceptOptionsInList, newOption, selectOption, selectOptionInListByOptionValue, selectOptionsInList, selectOptionsInOptionsListByString, selectSingleOptionInList, stringToOptionValue)
+import Option
+    exposing
+        ( deselectEveryOptionExceptOptionsInList
+        , newOption
+        , selectOption
+        , selectOptionInListByOptionValue
+        , selectOptionsInList
+        , selectOptionsInOptionsListByString
+        , selectSingleOptionInList
+        , stringToOptionValue
+        )
 import Test exposing (Test, describe, test)
 
 
@@ -52,7 +62,7 @@ suite =
                     )
                     [ matthew
                     , selectOption 0 mark
-                    , selectOption 0 luke
+                    , selectOption 1 luke
                     , john
                     ]
         , test "one and only one option should... just... select one option" <|
@@ -71,7 +81,7 @@ suite =
                     (deselectEveryOptionExceptOptionsInList [ mark ]
                         [ matthew
                         , selectOption 0 mark
-                        , selectOption 0 luke
+                        , selectOption 1 luke
                         , john
                         ]
                     )
@@ -103,7 +113,7 @@ suite =
                         )
                         [ selectOption 0 matthew
                         , mark
-                        , selectOption 0 luke
+                        , selectOption 1 luke
                         , john
                         ]
             , test "select 2 different options" <|
@@ -111,15 +121,15 @@ suite =
                     Expect.equalLists
                         ([ selectOption 0 matthew
                          , mark
-                         , selectOption 0 luke
+                         , selectOption 1 luke
                          , john
                          ]
                             |> selectOptionsInOptionsListByString [ "Mark", "John" ]
                         )
                         [ matthew
-                        , selectOption 0 mark
+                        , selectOption 2 mark
                         , luke
-                        , selectOption 0 john
+                        , selectOption 3 john
                         ]
             ]
         ]
