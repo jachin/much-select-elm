@@ -852,6 +852,10 @@ selectOptionsInList optionsToSelect options =
         |> Tuple.first
 
 
+
+{- This is kind of a strange one it takes a list of options to leave selected and deselects all the rest. -}
+
+
 deselectEveryOptionExceptOptionsInList : List Option -> List Option -> List Option
 deselectEveryOptionExceptOptionsInList optionsNotToDeselect options =
     List.map
