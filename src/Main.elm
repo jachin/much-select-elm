@@ -1157,6 +1157,7 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
 optionsToValuesHtml : List Option -> List (Html Msg)
 optionsToValuesHtml options =
     options
+        |> Option.selectedOptions
         |> List.map
             (\option ->
                 case option of

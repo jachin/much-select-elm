@@ -51,6 +51,7 @@ module Option exposing
     , selectOptionsInList
     , selectOptionsInOptionsListByString
     , selectSingleOptionInList
+    , selectedOptions
     , selectedOptionsToTuple
     , setDescriptionWithString
     , setGroupWithString
@@ -1531,69 +1532,8 @@ selectedOptions : List Option -> List Option
 selectedOptions options =
     -- TODO sort the results by the selected index
     options
-        |> List.filter
-            (\option_ ->
-                case option_ of
-                    Option display _ _ _ _ _ ->
-                        case display of
-                            OptionShown ->
-                                False
-
-                            OptionHidden ->
-                                False
-
-                            OptionSelected _ ->
-                                True
-
-                            OptionSelectedHighlighted _ ->
-                                True
-
-                            OptionHighlighted ->
-                                False
-
-                            OptionDisabled ->
-                                False
-
-                    CustomOption display _ _ _ ->
-                        case display of
-                            OptionShown ->
-                                False
-
-                            OptionHidden ->
-                                False
-
-                            OptionSelected _ ->
-                                True
-
-                            OptionSelectedHighlighted _ ->
-                                True
-
-                            OptionHighlighted ->
-                                False
-
-                            OptionDisabled ->
-                                False
-
-                    EmptyOption display _ ->
-                        case display of
-                            OptionShown ->
-                                False
-
-                            OptionHidden ->
-                                False
-
-                            OptionSelected _ ->
-                                True
-
-                            OptionSelectedHighlighted _ ->
-                                True
-
-                            OptionHighlighted ->
-                                False
-
-                            OptionDisabled ->
-                                False
-            )
+        |> List.filter isOptionSelected
+        |> List.sortBy getOptionSelectedIndex
 
 
 toggleSelectedHighlightByOptionValue : List Option -> OptionValue -> List Option
