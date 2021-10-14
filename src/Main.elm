@@ -220,12 +220,22 @@ update msg model =
                         SingleSelect _ _ ->
                             selectSingleOptionInList optionValue model.options
             in
-            ( updateModelWithSearchStringChanges model.maxDropdownItems "" options model
-            , Cmd.batch
-                [ makeCommandMessagesWhenValuesChanges options (Just optionValue)
-                , blurInput ()
-                ]
-            )
+            case model.selectionMode of
+                SingleSelect _ _ ->
+                    ( updateModelWithSearchStringChanges model.maxDropdownItems "" options model
+                    , Cmd.batch
+                        [ makeCommandMessagesWhenValuesChanges options (Just optionValue)
+                        , blurInput ()
+                        ]
+                    )
+
+                MultiSelect _ ->
+                    ( updateModelWithSearchStringChanges model.maxDropdownItems "" options model
+                    , Cmd.batch
+                        [ makeCommandMessagesWhenValuesChanges options (Just optionValue)
+                        , focusInput ()
+                        ]
+                    )
 
         SearchInputOnInput searchString ->
             ( updateModelWithSearchStringChanges model.maxDropdownItems searchString model.options model
@@ -424,7 +434,10 @@ update msg model =
                 MultiSelect _ ->
                     ( { model | options = options, searchString = "" }
                       -- TODO Figure out what the highlighted option in here
-                    , makeCommandMessagesWhenValuesChanges options Nothing
+                    , Cmd.batch
+                        [ makeCommandMessagesWhenValuesChanges options Nothing
+                        , focusInput ()
+                        ]
                     )
 
         DeleteInputForSingleSelect ->
