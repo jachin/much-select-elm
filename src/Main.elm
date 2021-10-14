@@ -432,7 +432,7 @@ update msg model =
                     )
 
                 MultiSelect _ ->
-                    ( { model | options = options, searchString = "" }
+                    ( updateModelWithSearchStringChanges model.maxDropdownItems "" options model
                       -- TODO Figure out what the highlighted option in here
                     , Cmd.batch
                         [ makeCommandMessagesWhenValuesChanges options Nothing
@@ -499,23 +499,27 @@ update msg model =
             )
 
         DeleteKeydownForMultiSelect ->
-            let
-                newOptions =
-                    if Option.hasSelectedHighlightedOptions model.options then
-                        Option.deselectAllSelectedHighlightedOptions model.options
+            if String.length model.searchString > 0 then
+                ( model, Cmd.none )
 
-                    else
-                        Option.deselectLastSelectedOption model.options
-            in
-            ( { model
-                | options = newOptions
-                , optionsForTheDropdown = figureOutWhichOptionsToShow model.maxDropdownItems newOptions
-              }
-            , Cmd.batch
-                [ valueChanged (selectedOptionsToTuple newOptions)
-                , focusInput ()
-                ]
-            )
+            else
+                let
+                    newOptions =
+                        if Option.hasSelectedHighlightedOptions model.options then
+                            Option.deselectAllSelectedHighlightedOptions model.options
+
+                        else
+                            Option.deselectLastSelectedOption model.options
+                in
+                ( { model
+                    | options = newOptions
+                    , optionsForTheDropdown = figureOutWhichOptionsToShow model.maxDropdownItems newOptions
+                  }
+                , Cmd.batch
+                    [ valueChanged (selectedOptionsToTuple newOptions)
+                    , focusInput ()
+                    ]
+                )
 
 
 clearAllSelectedOption : Model -> ( Model, Cmd Msg )
