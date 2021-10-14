@@ -10,6 +10,8 @@ module Option exposing
     , decoder
     , deselectAllOptionsInOptionsList
     , deselectAllSelectedHighlightedOptions
+    , deselectEveryOptionExceptOptionsInList
+    , deselectLastSelectedOption
     , deselectOptionInListByOptionValue
     , emptyOptionGroup
     , filterOptionsToShowInDropdown
@@ -22,6 +24,7 @@ module Option exposing
     , getOptionLabel
     , getOptionValue
     , getOptionValueAsString
+    , hasSelectedHighlightedOptions
     , hasSelectedOption
     , highlightOption
     , highlightOptionInList
@@ -47,8 +50,10 @@ module Option exposing
     , selectOption
     , selectOptionInList
     , selectOptionInListByOptionValue
+    , selectOptionsInList
     , selectOptionsInOptionsListByString
     , selectSingleOptionInList
+    , selectedOptions
     , selectedOptionsToTuple
     , setDescriptionWithString
     , setGroupWithString
@@ -92,8 +97,8 @@ getOptionLabel option =
 type OptionDisplay
     = OptionShown
     | OptionHidden
-    | OptionSelected
-    | OptionSelectedHighlighted
+    | OptionSelected Int
+    | OptionSelectedHighlighted Int
     | OptionHighlighted
     | OptionDisabled
 
@@ -379,7 +384,7 @@ setOptionSearchFilter maybeOptionSearchFilter option =
 
 newSelectedOption : String -> Maybe String -> Option
 newSelectedOption string maybeCleanLabel =
-    Option OptionSelected
+    Option (OptionSelected 0)
         (OptionLabel string maybeCleanLabel NoSortRank)
         (OptionValue string)
         NoDescription
@@ -408,10 +413,10 @@ isOptionSelected option =
                 OptionHidden ->
                     False
 
-                OptionSelected ->
+                OptionSelected _ ->
                     True
 
-                OptionSelectedHighlighted ->
+                OptionSelectedHighlighted _ ->
                     True
 
                 OptionHighlighted ->
@@ -442,6 +447,41 @@ getOptionDisplay option =
 
         EmptyOption display _ ->
             display
+
+
+getOptionSelectedIndex : Option -> Int
+getOptionSelectedIndex option =
+    case option of
+        Option optionDisplay _ _ _ _ _ ->
+            optionDisplayToSelectedIndex optionDisplay
+
+        CustomOption optionDisplay _ _ _ ->
+            optionDisplayToSelectedIndex optionDisplay
+
+        EmptyOption optionDisplay _ ->
+            optionDisplayToSelectedIndex optionDisplay
+
+
+optionDisplayToSelectedIndex : OptionDisplay -> Int
+optionDisplayToSelectedIndex optionDisplay =
+    case optionDisplay of
+        OptionShown ->
+            -1
+
+        OptionHidden ->
+            -1
+
+        OptionSelected int ->
+            int
+
+        OptionSelectedHighlighted int ->
+            int
+
+        OptionHighlighted ->
+            -1
+
+        OptionDisabled ->
+            -1
 
 
 getOptionValue : Option -> OptionValue
@@ -513,17 +553,22 @@ optionsValues options =
     List.map getOptionValueAsString options
 
 
+
+{- This takes a list of string and a list of options.
+   Then it selects any matching options (looking at values of the options).
+
+   It also deselects any options that are NOT in the the list of string.
+-}
+
+
 selectOptionsInOptionsListByString : List String -> List Option -> List Option
 selectOptionsInOptionsListByString strings options =
-    List.map
-        (\option ->
-            if isOptionValueInListOfStrings strings option then
-                selectOption option
-
-            else
-                deselectOption option
-        )
-        options
+    let
+        optionsToSelect =
+            List.filter (isOptionValueInListOfStrings strings) options
+    in
+    selectOptionsInList optionsToSelect options
+        |> deselectEveryOptionExceptOptionsInList optionsToSelect
 
 
 addAndSelectOptionsInOptionsListByString : SelectedItemPlacementMode -> List String -> List Option -> List Option
@@ -538,18 +583,15 @@ addAndSelectOptionsInOptionsListByString selectedItemPlacementMode strings optio
 setSelectedOptionInNewOptions : List Option -> List Option -> List Option
 setSelectedOptionInNewOptions oldOptions newOptions =
     let
+        oldSelectedOption : List Option
         oldSelectedOption =
             oldOptions |> selectedOptions
-    in
-    List.map
-        (\newOption_ ->
-            if optionListContainsOptionWithValue newOption_ oldSelectedOption then
-                selectOption newOption_
 
-            else
-                newOption_
-        )
-        newOptions
+        newSelectedOptions : List Option
+        newSelectedOptions =
+            List.filter (\newOption_ -> optionListContainsOptionWithValue newOption_ oldSelectedOption) newOptions
+    in
+    selectOptionsInList newSelectedOptions newOptions
 
 
 {-| This function is a little strange but here's what it does. It takes 2 lists of option.
@@ -714,10 +756,10 @@ filterOptionsToShowInDropdown =
                 OptionHidden ->
                     False
 
-                OptionSelected ->
+                OptionSelected _ ->
                     True
 
-                OptionSelectedHighlighted ->
+                OptionSelectedHighlighted _ ->
                     True
 
                 OptionHighlighted ->
@@ -829,25 +871,88 @@ selectOptionInList option options =
     selectOptionInListByOptionValue (getOptionValue option) options
 
 
+
+{- Take a list of option to select and select them all.
+
+   If there are other options that are also selected, leave them as selected.
+-}
+
+
+selectOptionsInList : List Option -> List Option -> List Option
+selectOptionsInList optionsToSelect options =
+    let
+        helper : List Option -> Option -> ( List Option, List Option )
+        helper newOptions optionToSelect =
+            ( selectOptionInList optionToSelect newOptions, [] )
+    in
+    List.Extra.mapAccuml helper options optionsToSelect
+        |> Tuple.first
+
+
+
+{- This is kind of a strange one it takes a list of options to leave selected and deselects all the rest. -}
+
+
+deselectEveryOptionExceptOptionsInList : List Option -> List Option -> List Option
+deselectEveryOptionExceptOptionsInList optionsNotToDeselect options =
+    List.map
+        (\option ->
+            let
+                test : Option -> Bool
+                test optionNotToDeselect =
+                    optionValuesEqual optionNotToDeselect (getOptionValue option)
+            in
+            if List.any test optionsNotToDeselect then
+                option
+
+            else
+                deselectOption option
+        )
+        options
+
+
+
+{- Look through the list of options, if we find one that matches the given option value
+   then select it and return a new list of options with the found option selected.
+
+   If we do not find the option value return the same list of options.
+-}
+
+
 selectOptionInListByOptionValue : OptionValue -> List Option -> List Option
 selectOptionInListByOptionValue value options =
+    let
+        nextSelectedIndex =
+            List.foldl
+                (\selectedOption highestIndex ->
+                    if getOptionSelectedIndex selectedOption > highestIndex then
+                        getOptionSelectedIndex selectedOption
+
+                    else
+                        highestIndex
+                )
+                -1
+                options
+                + 1
+    in
     List.map
         (\option_ ->
             if optionValuesEqual option_ value then
                 case option_ of
                     Option _ _ _ _ _ _ ->
-                        selectOption option_
+                        selectOption nextSelectedIndex option_
 
                     CustomOption _ _ _ _ ->
                         case value of
                             OptionValue valueStr ->
-                                selectOption option_ |> setLabelWithString valueStr Nothing
+                                selectOption nextSelectedIndex option_
+                                    |> setLabelWithString valueStr Nothing
 
                             EmptyOptionValue ->
-                                selectOption option_
+                                selectOption nextSelectedIndex option_
 
                     EmptyOption _ _ ->
-                        selectOption option_
+                        selectOption nextSelectedIndex option_
 
             else
                 option_
@@ -917,18 +1022,18 @@ selectSingleOptionInList value options =
                 if optionValuesEqual option_ value then
                     case option_ of
                         Option _ _ _ _ _ _ ->
-                            selectOption option_
+                            selectOption 0 option_
 
                         CustomOption _ _ optionValue _ ->
                             case optionValue of
                                 OptionValue valueStr ->
-                                    selectOption option_ |> setLabelWithString valueStr Nothing
+                                    selectOption 0 option_ |> setLabelWithString valueStr Nothing
 
                                 EmptyOptionValue ->
-                                    selectOption option_
+                                    selectOption 0 option_
 
                         EmptyOption _ _ ->
-                            selectOption option_
+                            selectOption 0 option_
 
                 else
                     deselectOption option_
@@ -948,7 +1053,7 @@ selectEmptyOption options =
                         deselectOption option_
 
                     EmptyOption _ _ ->
-                        selectOption option_
+                        selectOption 0 option_
             )
 
 
@@ -1023,11 +1128,11 @@ highlightOption option =
                 OptionHidden ->
                     Option OptionHidden label value description group search
 
-                OptionSelected ->
-                    Option OptionSelectedHighlighted label value description group search
+                OptionSelected selectedIndex ->
+                    Option (OptionSelectedHighlighted selectedIndex) label value description group search
 
-                OptionSelectedHighlighted ->
-                    Option OptionSelectedHighlighted label value description group search
+                OptionSelectedHighlighted selectedIndex ->
+                    Option (OptionSelectedHighlighted selectedIndex) label value description group search
 
                 OptionHighlighted ->
                     Option OptionHighlighted label value description group search
@@ -1043,11 +1148,11 @@ highlightOption option =
                 OptionHidden ->
                     CustomOption OptionHidden label value search
 
-                OptionSelected ->
-                    CustomOption OptionSelectedHighlighted label value search
+                OptionSelected selectedIndex ->
+                    CustomOption (OptionSelectedHighlighted selectedIndex) label value search
 
-                OptionSelectedHighlighted ->
-                    CustomOption OptionSelectedHighlighted label value search
+                OptionSelectedHighlighted selectedIndex ->
+                    CustomOption (OptionSelectedHighlighted selectedIndex) label value search
 
                 OptionHighlighted ->
                     CustomOption OptionHighlighted label value search
@@ -1063,11 +1168,11 @@ highlightOption option =
                 OptionHidden ->
                     EmptyOption OptionHidden label
 
-                OptionSelected ->
-                    EmptyOption OptionSelectedHighlighted label
+                OptionSelected selectedIndex ->
+                    EmptyOption (OptionSelectedHighlighted selectedIndex) label
 
-                OptionSelectedHighlighted ->
-                    EmptyOption OptionSelectedHighlighted label
+                OptionSelectedHighlighted selectedIndex ->
+                    EmptyOption (OptionSelectedHighlighted selectedIndex) label
 
                 OptionHighlighted ->
                     EmptyOption OptionHighlighted label
@@ -1097,16 +1202,16 @@ removeHighlightOption option =
                         group
                         search
 
-                OptionSelected ->
-                    Option OptionSelected
+                OptionSelected selectedIndex ->
+                    Option (OptionSelected selectedIndex)
                         label
                         value
                         description
                         group
                         search
 
-                OptionSelectedHighlighted ->
-                    Option OptionSelected
+                OptionSelectedHighlighted selectedIndex ->
+                    Option (OptionSelected selectedIndex)
                         label
                         value
                         description
@@ -1127,12 +1232,12 @@ removeHighlightOption option =
                 OptionHidden ->
                     CustomOption OptionHidden label value search
 
-                OptionSelected ->
-                    CustomOption OptionSelected label value search
+                OptionSelected selectedIndex ->
+                    CustomOption (OptionSelected selectedIndex) label value search
 
-                OptionSelectedHighlighted ->
+                OptionSelectedHighlighted selectedIndex ->
                     CustomOption
-                        OptionSelected
+                        (OptionSelected selectedIndex)
                         label
                         value
                         search
@@ -1151,8 +1256,8 @@ removeHighlightOption option =
                 OptionHidden ->
                     EmptyOption OptionHidden label
 
-                OptionSelected ->
-                    EmptyOption OptionSelected label
+                OptionSelected selectedIndex ->
+                    EmptyOption (OptionSelected selectedIndex) label
 
                 OptionHighlighted ->
                     EmptyOption OptionShown label
@@ -1160,8 +1265,8 @@ removeHighlightOption option =
                 OptionDisabled ->
                     EmptyOption OptionDisabled label
 
-                OptionSelectedHighlighted ->
-                    EmptyOption OptionSelectedHighlighted label
+                OptionSelectedHighlighted selectedIndex ->
+                    EmptyOption (OptionSelectedHighlighted selectedIndex) label
 
 
 isOptionHighlighted : Option -> Bool
@@ -1175,10 +1280,10 @@ isOptionHighlighted option =
                 OptionHidden ->
                     False
 
-                OptionSelected ->
+                OptionSelected _ ->
                     False
 
-                OptionSelectedHighlighted ->
+                OptionSelectedHighlighted _ ->
                     False
 
                 OptionHighlighted ->
@@ -1195,10 +1300,10 @@ isOptionHighlighted option =
                 OptionHidden ->
                     False
 
-                OptionSelected ->
+                OptionSelected _ ->
                     False
 
-                OptionSelectedHighlighted ->
+                OptionSelectedHighlighted _ ->
                     False
 
                 OptionHighlighted ->
@@ -1215,10 +1320,10 @@ isOptionHighlighted option =
                 OptionHidden ->
                     False
 
-                OptionSelected ->
+                OptionSelected _ ->
                     False
 
-                OptionSelectedHighlighted ->
+                OptionSelectedHighlighted _ ->
                     False
 
                 OptionHighlighted ->
@@ -1239,10 +1344,10 @@ optionIsHighlightable option =
                 OptionHidden ->
                     False
 
-                OptionSelected ->
+                OptionSelected _ ->
                     False
 
-                OptionSelectedHighlighted ->
+                OptionSelectedHighlighted _ ->
                     False
 
                 OptionHighlighted ->
@@ -1259,10 +1364,10 @@ optionIsHighlightable option =
                 OptionHidden ->
                     False
 
-                OptionSelected ->
+                OptionSelected _ ->
                     False
 
-                OptionSelectedHighlighted ->
+                OptionSelectedHighlighted _ ->
                     False
 
                 OptionHighlighted ->
@@ -1279,10 +1384,10 @@ optionIsHighlightable option =
                 OptionHidden ->
                     False
 
-                OptionSelected ->
+                OptionSelected _ ->
                     False
 
-                OptionSelectedHighlighted ->
+                OptionSelectedHighlighted _ ->
                     False
 
                 OptionHighlighted ->
@@ -1292,25 +1397,25 @@ optionIsHighlightable option =
                     False
 
 
-selectOption : Option -> Option
-selectOption option =
+selectOption : Int -> Option -> Option
+selectOption selectionIndex option =
     case option of
         Option display label value description group search ->
             case display of
                 OptionShown ->
-                    Option OptionSelected label value description group search
+                    Option (OptionSelected selectionIndex) label value description group search
 
                 OptionHidden ->
-                    Option OptionSelected label value description group search
+                    Option (OptionSelected selectionIndex) label value description group search
 
-                OptionSelected ->
-                    Option OptionSelected label value description group search
+                OptionSelected selectedIndex ->
+                    Option (OptionSelected selectedIndex) label value description group search
 
-                OptionSelectedHighlighted ->
-                    Option OptionSelected label value description group search
+                OptionSelectedHighlighted selectedIndex ->
+                    Option (OptionSelected selectedIndex) label value description group search
 
                 OptionHighlighted ->
-                    Option OptionSelected label value description group search
+                    Option (OptionSelected selectionIndex) label value description group search
 
                 OptionDisabled ->
                     Option OptionDisabled label value description group search
@@ -1318,19 +1423,19 @@ selectOption option =
         CustomOption display label value search ->
             case display of
                 OptionShown ->
-                    CustomOption OptionSelected label value search
+                    CustomOption (OptionSelected selectionIndex) label value search
 
                 OptionHidden ->
                     CustomOption OptionHidden label value search
 
-                OptionSelected ->
-                    CustomOption OptionSelected label value search
+                OptionSelected selectedIndex ->
+                    CustomOption (OptionSelected selectedIndex) label value search
 
-                OptionSelectedHighlighted ->
-                    CustomOption OptionSelectedHighlighted label value search
+                OptionSelectedHighlighted selectedIndex ->
+                    CustomOption (OptionSelectedHighlighted selectedIndex) label value search
 
                 OptionHighlighted ->
-                    CustomOption OptionSelected label value search
+                    CustomOption (OptionSelected selectionIndex) label value search
 
                 OptionDisabled ->
                     CustomOption OptionDisabled label value search
@@ -1338,19 +1443,19 @@ selectOption option =
         EmptyOption display label ->
             case display of
                 OptionShown ->
-                    EmptyOption OptionSelected label
+                    EmptyOption (OptionSelected selectionIndex) label
 
                 OptionHidden ->
-                    EmptyOption OptionSelected label
+                    EmptyOption (OptionSelected selectionIndex) label
 
-                OptionSelected ->
-                    EmptyOption OptionSelected label
+                OptionSelected selectedIndex ->
+                    EmptyOption (OptionSelected selectedIndex) label
 
-                OptionSelectedHighlighted ->
-                    EmptyOption OptionSelected label
+                OptionSelectedHighlighted selectedIndex ->
+                    EmptyOption (OptionSelected selectedIndex) label
 
                 OptionHighlighted ->
-                    EmptyOption OptionSelected label
+                    EmptyOption (OptionSelected selectionIndex) label
 
                 OptionDisabled ->
                     EmptyOption OptionDisabled label
@@ -1367,10 +1472,10 @@ deselectOption option =
                 OptionHidden ->
                     Option OptionHidden label value description group search
 
-                OptionSelected ->
+                OptionSelected _ ->
                     Option OptionShown label value description group search
 
-                OptionSelectedHighlighted ->
+                OptionSelectedHighlighted _ ->
                     Option OptionShown label value description group search
 
                 OptionHighlighted ->
@@ -1392,11 +1497,11 @@ deselectOption option =
                 OptionHidden ->
                     CustomOption OptionHidden label value search
 
-                OptionSelected ->
+                OptionSelected _ ->
                     CustomOption OptionShown label value search
 
-                OptionSelectedHighlighted ->
-                    CustomOption OptionSelectedHighlighted label value search
+                OptionSelectedHighlighted _ ->
+                    CustomOption OptionShown label value search
 
                 OptionHighlighted ->
                     CustomOption OptionHighlighted label value search
@@ -1412,10 +1517,10 @@ deselectOption option =
                 OptionHidden ->
                     EmptyOption OptionHidden label
 
-                OptionSelected ->
+                OptionSelected _ ->
                     EmptyOption OptionShown label
 
-                OptionSelectedHighlighted ->
+                OptionSelectedHighlighted _ ->
                     EmptyOption OptionShown label
 
                 OptionHighlighted ->
@@ -1428,69 +1533,8 @@ deselectOption option =
 selectedOptions : List Option -> List Option
 selectedOptions options =
     options
-        |> List.filter
-            (\option_ ->
-                case option_ of
-                    Option display _ _ _ _ _ ->
-                        case display of
-                            OptionShown ->
-                                False
-
-                            OptionHidden ->
-                                False
-
-                            OptionSelected ->
-                                True
-
-                            OptionSelectedHighlighted ->
-                                True
-
-                            OptionHighlighted ->
-                                False
-
-                            OptionDisabled ->
-                                False
-
-                    CustomOption display _ _ _ ->
-                        case display of
-                            OptionShown ->
-                                False
-
-                            OptionHidden ->
-                                False
-
-                            OptionSelected ->
-                                True
-
-                            OptionSelectedHighlighted ->
-                                True
-
-                            OptionHighlighted ->
-                                False
-
-                            OptionDisabled ->
-                                False
-
-                    EmptyOption display _ ->
-                        case display of
-                            OptionShown ->
-                                False
-
-                            OptionHidden ->
-                                False
-
-                            OptionSelected ->
-                                True
-
-                            OptionSelectedHighlighted ->
-                                True
-
-                            OptionHighlighted ->
-                                False
-
-                            OptionDisabled ->
-                                False
-            )
+        |> List.filter isOptionSelected
+        |> List.sortBy getOptionSelectedIndex
 
 
 toggleSelectedHighlightByOptionValue : List Option -> OptionValue -> List Option
@@ -1508,11 +1552,11 @@ toggleSelectedHighlightByOptionValue options optionValue =
                                 OptionHidden ->
                                     option_
 
-                                OptionSelected ->
-                                    option_ |> setOptionDisplay OptionSelectedHighlighted
+                                OptionSelected selectedIndex ->
+                                    option_ |> setOptionDisplay (OptionSelectedHighlighted selectedIndex)
 
-                                OptionSelectedHighlighted ->
-                                    option_ |> setOptionDisplay OptionSelected
+                                OptionSelectedHighlighted selectedIndex ->
+                                    option_ |> setOptionDisplay (OptionSelected selectedIndex)
 
                                 OptionHighlighted ->
                                     option_
@@ -1532,11 +1576,11 @@ toggleSelectedHighlightByOptionValue options optionValue =
                                 OptionHidden ->
                                     option_
 
-                                OptionSelected ->
-                                    option_ |> setOptionDisplay OptionSelectedHighlighted
+                                OptionSelected selectedIndex ->
+                                    option_ |> setOptionDisplay (OptionSelectedHighlighted selectedIndex)
 
-                                OptionSelectedHighlighted ->
-                                    option_ |> setOptionDisplay OptionSelected
+                                OptionSelectedHighlighted selectedIndex ->
+                                    option_ |> setOptionDisplay (OptionSelected selectedIndex)
 
                                 OptionHighlighted ->
                                     option_
@@ -1566,10 +1610,10 @@ deselectAllSelectedHighlightedOptions options =
                             OptionHidden ->
                                 option_
 
-                            OptionSelected ->
+                            OptionSelected _ ->
                                 option_
 
-                            OptionSelectedHighlighted ->
+                            OptionSelectedHighlighted _ ->
                                 option_ |> setOptionDisplay OptionShown
 
                             OptionHighlighted ->
@@ -1586,10 +1630,10 @@ deselectAllSelectedHighlightedOptions options =
                             OptionHidden ->
                                 option_
 
-                            OptionSelected ->
+                            OptionSelected _ ->
                                 option_
 
-                            OptionSelectedHighlighted ->
+                            OptionSelectedHighlighted _ ->
                                 option_ |> setOptionDisplay OptionShown
 
                             OptionHighlighted ->
@@ -1601,6 +1645,80 @@ deselectAllSelectedHighlightedOptions options =
                     EmptyOption _ _ ->
                         option_
             )
+
+
+deselectLastSelectedOption : List Option -> List Option
+deselectLastSelectedOption options =
+    let
+        maybeLastSelectedOptionValue =
+            options
+                |> selectedOptions
+                |> List.Extra.last
+                |> Maybe.map getOptionValue
+    in
+    case maybeLastSelectedOptionValue of
+        Just optionValueToDeselect ->
+            deselectOptionInListByOptionValue optionValueToDeselect options
+
+        Nothing ->
+            options
+
+
+hasSelectedHighlightedOptions : List Option -> Bool
+hasSelectedHighlightedOptions options =
+    List.any isOptionSelectedHighlighted options
+
+
+selectedHighlightedOptions : List Option -> List Option
+selectedHighlightedOptions options =
+    List.filter
+        (\option_ ->
+            case option_ of
+                Option optionDisplay _ _ _ _ _ ->
+                    isOptionDisplaySelectedHighlighted optionDisplay
+
+                CustomOption optionDisplay _ _ _ ->
+                    isOptionDisplaySelectedHighlighted optionDisplay
+
+                EmptyOption optionDisplay _ ->
+                    isOptionDisplaySelectedHighlighted optionDisplay
+        )
+        options
+
+
+isOptionSelectedHighlighted : Option -> Bool
+isOptionSelectedHighlighted option =
+    case option of
+        Option optionDisplay _ _ _ _ _ ->
+            isOptionDisplaySelectedHighlighted optionDisplay
+
+        CustomOption optionDisplay _ _ _ ->
+            isOptionDisplaySelectedHighlighted optionDisplay
+
+        EmptyOption optionDisplay _ ->
+            isOptionDisplaySelectedHighlighted optionDisplay
+
+
+isOptionDisplaySelectedHighlighted : OptionDisplay -> Bool
+isOptionDisplaySelectedHighlighted optionDisplay =
+    case optionDisplay of
+        OptionShown ->
+            False
+
+        OptionHidden ->
+            False
+
+        OptionSelected _ ->
+            False
+
+        OptionSelectedHighlighted _ ->
+            True
+
+        OptionHighlighted ->
+            False
+
+        OptionDisabled ->
+            False
 
 
 hasSelectedOption : List Option -> Bool
@@ -1716,7 +1834,7 @@ displayDecoder =
                 (\str ->
                     case str of
                         "true" ->
-                            Json.Decode.succeed OptionSelected
+                            Json.Decode.succeed (OptionSelected 0)
 
                         _ ->
                             Json.Decode.fail "Option is not selected"
@@ -1727,7 +1845,7 @@ displayDecoder =
             |> Json.Decode.andThen
                 (\isSelected ->
                     if isSelected then
-                        Json.Decode.succeed OptionSelected
+                        Json.Decode.succeed (OptionSelected 0)
 
                     else
                         Json.Decode.succeed OptionShown
