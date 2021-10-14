@@ -1086,7 +1086,9 @@ class MuchSelect extends HTMLElement {
       }
 
       .option.disabled {
-        display: none;
+        background-color: LightGray;
+        color: silver;
+        cursor: default;
       }
 
       .description {
