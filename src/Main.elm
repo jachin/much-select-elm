@@ -501,13 +501,20 @@ update msg model =
         DeleteKeydownForMultiSelect ->
             let
                 newOptions =
-                    Option.deselectAllSelectedHighlightedOptions model.options
+                    if Option.hasSelectedHighlightedOptions model.options then
+                        Option.deselectAllSelectedHighlightedOptions model.options
+
+                    else
+                        Option.deselectLastSelectedOption model.options
             in
             ( { model
                 | options = newOptions
                 , optionsForTheDropdown = figureOutWhichOptionsToShow model.maxDropdownItems newOptions
               }
-            , valueChanged (selectedOptionsToTuple newOptions)
+            , Cmd.batch
+                [ valueChanged (selectedOptionsToTuple newOptions)
+                , focusInput ()
+                ]
             )
 
 

@@ -11,6 +11,7 @@ module Option exposing
     , deselectAllOptionsInOptionsList
     , deselectAllSelectedHighlightedOptions
     , deselectEveryOptionExceptOptionsInList
+    , deselectLastSelectedOption
     , deselectOptionInListByOptionValue
     , emptyOptionGroup
     , filterOptionsToShowInDropdown
@@ -23,6 +24,7 @@ module Option exposing
     , getOptionLabel
     , getOptionValue
     , getOptionValueAsString
+    , hasSelectedHighlightedOptions
     , hasSelectedOption
     , highlightOption
     , highlightOptionInList
@@ -1530,7 +1532,6 @@ deselectOption option =
 
 selectedOptions : List Option -> List Option
 selectedOptions options =
-    -- TODO sort the results by the selected index
     options
         |> List.filter isOptionSelected
         |> List.sortBy getOptionSelectedIndex
@@ -1644,6 +1645,80 @@ deselectAllSelectedHighlightedOptions options =
                     EmptyOption _ _ ->
                         option_
             )
+
+
+deselectLastSelectedOption : List Option -> List Option
+deselectLastSelectedOption options =
+    let
+        maybeLastSelectedOptionValue =
+            options
+                |> selectedOptions
+                |> List.Extra.last
+                |> Maybe.map getOptionValue
+    in
+    case maybeLastSelectedOptionValue of
+        Just optionValueToDeselect ->
+            deselectOptionInListByOptionValue optionValueToDeselect options
+
+        Nothing ->
+            options
+
+
+hasSelectedHighlightedOptions : List Option -> Bool
+hasSelectedHighlightedOptions options =
+    List.any isOptionSelectedHighlighted options
+
+
+selectedHighlightedOptions : List Option -> List Option
+selectedHighlightedOptions options =
+    List.filter
+        (\option_ ->
+            case option_ of
+                Option optionDisplay _ _ _ _ _ ->
+                    isOptionDisplaySelectedHighlighted optionDisplay
+
+                CustomOption optionDisplay _ _ _ ->
+                    isOptionDisplaySelectedHighlighted optionDisplay
+
+                EmptyOption optionDisplay _ ->
+                    isOptionDisplaySelectedHighlighted optionDisplay
+        )
+        options
+
+
+isOptionSelectedHighlighted : Option -> Bool
+isOptionSelectedHighlighted option =
+    case option of
+        Option optionDisplay _ _ _ _ _ ->
+            isOptionDisplaySelectedHighlighted optionDisplay
+
+        CustomOption optionDisplay _ _ _ ->
+            isOptionDisplaySelectedHighlighted optionDisplay
+
+        EmptyOption optionDisplay _ ->
+            isOptionDisplaySelectedHighlighted optionDisplay
+
+
+isOptionDisplaySelectedHighlighted : OptionDisplay -> Bool
+isOptionDisplaySelectedHighlighted optionDisplay =
+    case optionDisplay of
+        OptionShown ->
+            False
+
+        OptionHidden ->
+            False
+
+        OptionSelected _ ->
+            False
+
+        OptionSelectedHighlighted _ ->
+            True
+
+        OptionHighlighted ->
+            False
+
+        OptionDisabled ->
+            False
 
 
 hasSelectedOption : List Option -> Bool
