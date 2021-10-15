@@ -82,6 +82,10 @@ The `selected-value` attribute is used to set the value of the `<much-select>`.
 
 The `placeholder` attribute is used to set the placeholder in the text input of the `<much-select>`. Just like in the `<input type="text">` it should only show up if the input is empty. 
 
+##### `allow-custom-options`
+
+The `allow-custom-options` attribute will allow the user to add new options to the `<much-select>`, not just one of given ones. Of course, you will want to know when that's happened. You might be able to _just_ look at the value, but you might want to know when a custom option has been added too. For that there's the `customValueSelected` event. 
+
 #### Options
 
 ### Events
