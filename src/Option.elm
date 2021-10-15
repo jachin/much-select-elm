@@ -6,6 +6,7 @@ module Option exposing
     , OptionValue
     , addAdditionalOptionsToOptionList
     , addAndSelectOptionsInOptionsListByString
+    , clearAnyUnselectedCustomOptions
     , customSelectedOptions
     , decoder
     , deselectAllOptionsInOptionsList
@@ -872,7 +873,7 @@ selectOptionInList option options =
 
 
 
-{- Take a list of option to select and select them all.
+{- Take a list of options to select and select them all.
 
    If there are other options that are also selected, leave them as selected.
 -}
@@ -989,6 +990,7 @@ selectHighlightedOption selectionMode options =
                                 case selectionMode of
                                     MultiSelect _ ->
                                         selectOptionInListByOptionValue value options
+                                            |> clearAnyUnselectedCustomOptions
 
                                     SingleSelect _ _ ->
                                         selectSingleOptionInList value options
@@ -1055,6 +1057,11 @@ selectEmptyOption options =
                     EmptyOption _ _ ->
                         selectOption 0 option_
             )
+
+
+clearAnyUnselectedCustomOptions : List Option -> List Option
+clearAnyUnselectedCustomOptions options =
+    List.filter (\option -> not (isCustomOption option && not (isOptionSelected option))) options
 
 
 addAdditionalOptionsToOptionList : List Option -> List Option -> List Option
