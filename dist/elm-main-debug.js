@@ -12751,6 +12751,14 @@ var $author$project$Option$removeOptionsFromOptionList = F2(
 			options);
 	});
 var $author$project$Ports$scrollDropdownToElement = _Platform_outgoingPort('scrollDropdownToElement', $elm$json$Json$Encode$string);
+var $author$project$Option$clearAnyUnselectedCustomOptions = function (options) {
+	return A2(
+		$elm$core$List$filter,
+		function (option) {
+			return !($author$project$Option$isCustomOption(option) && (!$author$project$Option$isOptionSelected(option)));
+		},
+		options);
+};
 var $author$project$Option$selectEmptyOption = function (options) {
 	return A2(
 		$elm$core$List$map,
@@ -12805,7 +12813,8 @@ var $author$project$Option$selectHighlightedOption = F2(
 					case 'Option':
 						var value = option.c;
 						if (selectionMode.$ === 'MultiSelect') {
-							return A2($author$project$Option$selectOptionInListByOptionValue, value, options);
+							return $author$project$Option$clearAnyUnselectedCustomOptions(
+								A2($author$project$Option$selectOptionInListByOptionValue, value, options));
 						} else {
 							return A2($author$project$Option$selectSingleOptionInList, value, options);
 						}
@@ -14992,9 +15001,7 @@ var $author$project$Main$update = F2(
 								])));
 				} else {
 					return _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{options: options, searchString: ''}),
+						A4($author$project$Main$updateModelWithSearchStringChanges, model.maxDropdownItems, '', options, model),
 						$elm$core$Platform$Cmd$batch(
 							_List_fromArray(
 								[
@@ -15053,21 +15060,25 @@ var $author$project$Main$update = F2(
 						}),
 					$elm$core$Platform$Cmd$none);
 			default:
-				var newOptions = $author$project$Option$hasSelectedHighlightedOptions(model.options) ? $author$project$Option$deselectAllSelectedHighlightedOptions(model.options) : $author$project$Option$deselectLastSelectedOption(model.options);
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							options: newOptions,
-							optionsForTheDropdown: A2($author$project$Main$figureOutWhichOptionsToShow, model.maxDropdownItems, newOptions)
-						}),
-					$elm$core$Platform$Cmd$batch(
-						_List_fromArray(
-							[
-								$author$project$Ports$valueChanged(
-								$author$project$Option$selectedOptionsToTuple(newOptions)),
-								$author$project$Ports$focusInput(_Utils_Tuple0)
-							])));
+				if ($elm$core$String$length(model.searchString) > 0) {
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				} else {
+					var newOptions = $author$project$Option$hasSelectedHighlightedOptions(model.options) ? $author$project$Option$deselectAllSelectedHighlightedOptions(model.options) : $author$project$Option$deselectLastSelectedOption(model.options);
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								options: newOptions,
+								optionsForTheDropdown: A2($author$project$Main$figureOutWhichOptionsToShow, model.maxDropdownItems, newOptions)
+							}),
+						$elm$core$Platform$Cmd$batch(
+							_List_fromArray(
+								[
+									$author$project$Ports$valueChanged(
+									$author$project$Option$selectedOptionsToTuple(newOptions)),
+									$author$project$Ports$focusInput(_Utils_Tuple0)
+								])));
+				}
 		}
 	});
 var $ohanhi$keyboard$Keyboard$ArrowDown = {$: 'ArrowDown'};

@@ -722,6 +722,8 @@ class MuchSelect extends HTMLElement {
   set disabled(value) {
     if (value === "false") {
       this._disabled = false;
+    } else if (value === "") {
+      this._disabled = true;
     } else {
       this._disabled = !!value;
     }
@@ -769,6 +771,8 @@ class MuchSelect extends HTMLElement {
   set loading(value) {
     if (value === "false") {
       this._loading = false;
+    } else if (value === "") {
+      this._loading = true;
     } else {
       this._loading = !!value;
     }
@@ -790,6 +794,8 @@ class MuchSelect extends HTMLElement {
   set allowCustomOptions(value) {
     if (value === "false") {
       this._allowCustomOptions = false;
+    } else if (value === "") {
+      this._allowCustomOptions = true;
     } else {
       this._allowCustomOptions = !!value;
     }
