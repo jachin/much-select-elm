@@ -750,7 +750,7 @@ view model =
                         , ( "single", True )
                         , ( "disabled", model.disabled )
                         , ( "focused", model.focused )
-                        , ( "not-focused", model.focused )
+                        , ( "not-focused", not model.focused )
                         ]
                     ]
                     [ span
@@ -816,8 +816,12 @@ view model =
                     , tabIndexAttribute
                     , classList
                         [ ( "placeholder", showPlaceholder )
+                        , ( "has-option-selected", hasOptionSelected )
+                        , ( "no-option-selected", not hasOptionSelected )
                         , ( "multi", True )
                         , ( "disabled", model.disabled )
+                        , ( "focused", model.focused )
+                        , ( "not-focused", not model.focused )
                         ]
                     ]
                     ([ span

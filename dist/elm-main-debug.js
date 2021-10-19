@@ -16278,7 +16278,7 @@ var $author$project$Main$view = function (model) {
 									_Utils_Tuple2('single', true),
 									_Utils_Tuple2('disabled', model.disabled),
 									_Utils_Tuple2('focused', model.focused),
-									_Utils_Tuple2('not-focused', model.focused)
+									_Utils_Tuple2('not-focused', !model.focused)
 								]))
 						]),
 					_List_fromArray(
@@ -16384,8 +16384,12 @@ var $author$project$Main$view = function (model) {
 							_List_fromArray(
 								[
 									_Utils_Tuple2('placeholder', showPlaceholder),
+									_Utils_Tuple2('has-option-selected', hasOptionSelected),
+									_Utils_Tuple2('no-option-selected', !hasOptionSelected),
 									_Utils_Tuple2('multi', true),
-									_Utils_Tuple2('disabled', model.disabled)
+									_Utils_Tuple2('disabled', model.disabled),
+									_Utils_Tuple2('focused', model.focused),
+									_Utils_Tuple2('not-focused', !model.focused)
 								]))
 						]),
 					_Utils_ap(

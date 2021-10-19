@@ -6754,8 +6754,8 @@ var $author$project$Main$init = function (flags) {
 	return _Utils_Tuple2(
 		{
 			a3: false,
-			m: flags.m,
-			q: false,
+			n: flags.n,
+			m: false,
 			bd: initialValues,
 			e: maxDropdownItems,
 			a: optionsWithInitialValueSelected,
@@ -9178,9 +9178,9 @@ var $author$project$OptionPresentor$tokenizeHelper = F3(
 					return _Utils_update(
 						highlightResult,
 						{
-							p: A2(
+							q: A2(
 								$elm$core$List$append,
-								highlightResult.p,
+								highlightResult.q,
 								_List_fromArray(
 									[
 										prevText,
@@ -9200,9 +9200,9 @@ var $author$project$OptionPresentor$tokenizeHelper = F3(
 						{
 							s: A2($mhoare$elm_stack$Stack$push, _char, highlightResult.s),
 							x: $mhoare$elm_stack$Stack$initialise,
-							p: A2(
+							q: A2(
 								$elm$core$List$append,
-								highlightResult.p,
+								highlightResult.q,
 								_List_fromArray(
 									[prevText]))
 						});
@@ -9222,9 +9222,9 @@ var $author$project$OptionPresentor$tokenizeHelper = F3(
 						highlightResult,
 						{
 							s: $mhoare$elm_stack$Stack$initialise,
-							p: A2(
+							q: A2(
 								$elm$core$List$append,
-								highlightResult.p,
+								highlightResult.q,
 								_List_fromArray(
 									[currentHighlight]))
 						});
@@ -9248,9 +9248,9 @@ var $author$project$OptionPresentor$tokenizeHelper = F3(
 					return _Utils_update(
 						highlightResult,
 						{
-							p: A2(
+							q: A2(
 								$elm$core$List$append,
-								highlightResult.p,
+								highlightResult.q,
 								_List_fromArray(
 									[
 										prevHighlight,
@@ -9270,9 +9270,9 @@ var $author$project$OptionPresentor$tokenizeHelper = F3(
 						{
 							s: $mhoare$elm_stack$Stack$initialise,
 							x: A2($mhoare$elm_stack$Stack$push, _char, highlightResult.x),
-							p: A2(
+							q: A2(
 								$elm$core$List$append,
-								highlightResult.p,
+								highlightResult.q,
 								_List_fromArray(
 									[prevHighlight]))
 						});
@@ -9292,9 +9292,9 @@ var $author$project$OptionPresentor$tokenizeHelper = F3(
 						highlightResult,
 						{
 							x: $mhoare$elm_stack$Stack$initialise,
-							p: A2(
+							q: A2(
 								$elm$core$List$append,
-								highlightResult.p,
+								highlightResult.q,
 								_List_fromArray(
 									[prevText]))
 						});
@@ -9314,8 +9314,8 @@ var $author$project$OptionPresentor$tokenize = F2(
 		return A3(
 			$elm_community$list_extra$List$Extra$indexedFoldl,
 			$author$project$OptionPresentor$tokenizeHelper,
-			{aF: hay, s: $mhoare$elm_stack$Stack$initialise, x: $mhoare$elm_stack$Stack$initialise, aO: result, p: _List_Nil},
-			$elm$core$String$toList(hay)).p;
+			{aF: hay, s: $mhoare$elm_stack$Stack$initialise, x: $mhoare$elm_stack$Stack$initialise, aO: result, q: _List_Nil},
+			$elm$core$String$toList(hay)).q;
 	});
 var $author$project$OptionSearcher$updateOptionsWithSearchString = F2(
 	function (searchString, options) {
@@ -9505,22 +9505,22 @@ var $author$project$Main$update = F2(
 			case 0:
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 			case 1:
-				return model.q ? _Utils_Tuple2(model, $elm$core$Platform$Cmd$none) : _Utils_Tuple2(
+				return model.m ? _Utils_Tuple2(model, $elm$core$Platform$Cmd$none) : _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{q: true}),
+						{m: true}),
 					$author$project$Ports$focusInput(0));
 			case 2:
-				return model.q ? _Utils_Tuple2(
+				return model.m ? _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{q: false}),
+						{m: false}),
 					$author$project$Ports$blurInput(0)) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 			case 3:
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{q: false, B: '', af: false}),
+						{m: false, B: '', af: false}),
 					$elm$core$Platform$Cmd$none);
 			case 4:
 				return _Utils_Tuple2(
@@ -9789,7 +9789,7 @@ var $author$project$Main$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{m: bool}),
+						{n: bool}),
 					$elm$core$Platform$Cmd$none);
 			case 20:
 				var selectedItemStaysInPlace = msg.a;
@@ -10326,7 +10326,7 @@ var $author$project$Main$dropdown = function (model) {
 			'width',
 			$elm$core$String$fromFloat(model.az) + 'px')
 		]);
-	return model.m ? $elm$html$Html$text('') : ((model.af && ((!$elm$core$List$isEmpty(model.f)) && (!$elm$core$List$isEmpty(optionsHtml)))) ? A2(
+	return model.n ? $elm$html$Html$text('') : ((model.af && ((!$elm$core$List$isEmpty(model.f)) && (!$elm$core$List$isEmpty(optionsHtml)))) ? A2(
 		$elm$html$Html$div,
 		_Utils_ap(
 			_List_fromArray(
@@ -11136,12 +11136,12 @@ var $elm$html$Html$Attributes$tabindex = function (n) {
 		$elm$core$String$fromInt(n));
 };
 var $author$project$Main$view = function (model) {
-	var tabIndexAttribute = model.m ? A2($elm$html$Html$Attributes$style, '', '') : $elm$html$Html$Attributes$tabindex(0);
+	var tabIndexAttribute = model.n ? A2($elm$html$Html$Attributes$style, '', '') : $elm$html$Html$Attributes$tabindex(0);
 	var _v0 = model.h;
 	if (!_v0.$) {
 		var hasOptions = (!$elm$core$List$isEmpty(model.a)) && $elm$core$String$isEmpty(model.B);
 		var hasOptionSelected = $author$project$Option$hasSelectedOption(model.a);
-		var showPlaceholder = (!hasOptionSelected) && (!model.q);
+		var showPlaceholder = (!hasOptionSelected) && (!model.m);
 		var valueStr = hasOptionSelected ? A2(
 			$elm$core$Maybe$withDefault,
 			'',
@@ -11173,9 +11173,9 @@ var $author$project$Main$view = function (model) {
 									_Utils_Tuple2('has-option-selected', hasOptionSelected),
 									_Utils_Tuple2('no-option-selected', !hasOptionSelected),
 									_Utils_Tuple2('single', true),
-									_Utils_Tuple2('disabled', model.m),
-									_Utils_Tuple2('focused', model.q),
-									_Utils_Tuple2('not-focused', model.q)
+									_Utils_Tuple2('disabled', model.n),
+									_Utils_Tuple2('focused', model.m),
+									_Utils_Tuple2('not-focused', !model.m)
 								]))
 						]),
 					_List_fromArray(
@@ -11190,7 +11190,7 @@ var $author$project$Main$view = function (model) {
 								[
 									$elm$html$Html$text(valueStr)
 								])),
-							A5($author$project$Main$singleSelectInputField, model.B, model.m, model.q, model.G, hasOptionSelected),
+							A5($author$project$Main$singleSelectInputField, model.B, model.n, model.m, model.G, hasOptionSelected),
 							function () {
 							var _v1 = model.I;
 							switch (_v1) {
@@ -11207,7 +11207,7 @@ var $author$project$Main$view = function (model) {
 										_List_fromArray(
 											[$author$project$Main$defaultLoadingIndicator]));
 								case 2:
-									return A3($author$project$Main$dropdownIndicator, model.q, model.m, hasOptions);
+									return A3($author$project$Main$dropdownIndicator, model.m, model.n, hasOptions);
 								default:
 									return A3(
 										$elm$html$Html$node,
@@ -11233,7 +11233,7 @@ var $author$project$Main$view = function (model) {
 					$elm$html$Html$Events$onInput($author$project$Main$SearchInputOnInput),
 					$elm$html$Html$Attributes$value(model.B),
 					$elm$html$Html$Attributes$id('input-filter'),
-					$elm$html$Html$Attributes$disabled(model.m),
+					$elm$html$Html$Attributes$disabled(model.n),
 					A2(
 					$robinheghan$keyboard_events$Keyboard$Events$on,
 					0,
@@ -11247,7 +11247,7 @@ var $author$project$Main$view = function (model) {
 				]),
 			_List_Nil);
 		var hasOptionSelected = $author$project$Option$hasSelectedOption(model.a);
-		var showPlaceholder = (!hasOptionSelected) && (!model.q);
+		var showPlaceholder = (!hasOptionSelected) && (!model.m);
 		return A2(
 			$elm$html$Html$div,
 			_List_fromArray(
@@ -11256,7 +11256,7 @@ var $author$project$Main$view = function (model) {
 					$elm$html$Html$Attributes$classList(
 					_List_fromArray(
 						[
-							_Utils_Tuple2('disabled', model.m)
+							_Utils_Tuple2('disabled', model.n)
 						]))
 				]),
 			_List_fromArray(
@@ -11281,8 +11281,12 @@ var $author$project$Main$view = function (model) {
 							_List_fromArray(
 								[
 									_Utils_Tuple2('placeholder', showPlaceholder),
+									_Utils_Tuple2('has-option-selected', hasOptionSelected),
+									_Utils_Tuple2('no-option-selected', !hasOptionSelected),
 									_Utils_Tuple2('multi', true),
-									_Utils_Tuple2('disabled', model.m)
+									_Utils_Tuple2('disabled', model.n),
+									_Utils_Tuple2('focused', model.m),
+									_Utils_Tuple2('not-focused', !model.m)
 								]))
 						]),
 					_Utils_ap(
@@ -11304,7 +11308,7 @@ var $author$project$Main$view = function (model) {
 							_List_fromArray(
 								[
 									inputFilter,
-									A4($author$project$Main$rightSlotHtml, model.I, model.q, model.m, hasOptionSelected)
+									A4($author$project$Main$rightSlotHtml, model.I, model.m, model.n, hasOptionSelected)
 								])))),
 					$author$project$Main$dropdown(model)
 				]));
@@ -11345,7 +11349,7 @@ _Platform_export({'Main':{'init':$author$project$Main$main(
 																				$elm$json$Json$Decode$andThen,
 																				function (allowCustomOptions) {
 																					return $elm$json$Json$Decode$succeed(
-																						{aA: allowCustomOptions, aB: allowMultiSelect, m: disabled, aH: loading, e: maxDropdownItems, aN: optionsJson, G: placeholder, aP: selectedItemStaysInPlace, ag: size, aU: value});
+																						{aA: allowCustomOptions, aB: allowMultiSelect, n: disabled, aH: loading, e: maxDropdownItems, aN: optionsJson, G: placeholder, aP: selectedItemStaysInPlace, ag: size, aU: value});
 																				},
 																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
 																		},
@@ -11399,7 +11403,7 @@ export const Elm = {'Main':{'init':$author$project$Main$main(
 																				$elm$json$Json$Decode$andThen,
 																				function (allowCustomOptions) {
 																					return $elm$json$Json$Decode$succeed(
-																						{aA: allowCustomOptions, aB: allowMultiSelect, m: disabled, aH: loading, e: maxDropdownItems, aN: optionsJson, G: placeholder, aP: selectedItemStaysInPlace, ag: size, aU: value});
+																						{aA: allowCustomOptions, aB: allowMultiSelect, n: disabled, aH: loading, e: maxDropdownItems, aN: optionsJson, G: placeholder, aP: selectedItemStaysInPlace, ag: size, aU: value});
 																				},
 																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
 																		},
