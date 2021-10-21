@@ -786,6 +786,13 @@ view model =
                 showPlaceholder =
                     not hasOptionSelected && not model.focused
 
+                placeholderAttribute =
+                    if showPlaceholder then
+                        placeholder model.placeholder
+
+                    else
+                        Html.Attributes.classList []
+
                 inputFilter =
                     input
                         [ type_ "text"
@@ -793,6 +800,7 @@ view model =
                         , onFocus InputFocus
                         , onInput SearchInputOnInput
                         , value model.searchString
+                        , placeholderAttribute
                         , id "input-filter"
                         , disabled model.disabled
                         , Keyboard.on Keyboard.Keydown
@@ -815,7 +823,7 @@ view model =
                         ]
                     , tabIndexAttribute
                     , classList
-                        [ ( "placeholder", showPlaceholder )
+                        [ ( "show-placeholder", showPlaceholder )
                         , ( "has-option-selected", hasOptionSelected )
                         , ( "no-option-selected", not hasOptionSelected )
                         , ( "multi", True )
@@ -824,12 +832,7 @@ view model =
                         , ( "not-focused", not model.focused )
                         ]
                     ]
-                    ([ span
-                        [ class "placeholder"
-                        ]
-                        [ text model.placeholder ]
-                     ]
-                        ++ optionsToValuesHtml model.options
+                    (optionsToValuesHtml model.options
                         ++ [ inputFilter
                            , rightSlotHtml model.rightSlot model.focused model.disabled hasOptionSelected
                            ]

@@ -16107,6 +16107,7 @@ var $author$project$Main$optionsToValuesHtml = function (options) {
 		},
 		$author$project$Option$selectedOptions(options));
 };
+var $elm$html$Html$Attributes$placeholder = $elm$html$Html$Attributes$stringProperty('placeholder');
 var $author$project$Main$ClearAllSelectedOptions = {$: 'ClearAllSelectedOptions'};
 var $author$project$Main$rightSlotHtml = F4(
 	function (rightSlot, focused, disabled, hasOptionSelected) {
@@ -16163,7 +16164,6 @@ var $elm$html$Html$Attributes$maxlength = function (n) {
 		'maxlength',
 		$elm$core$String$fromInt(n));
 };
-var $elm$html$Html$Attributes$placeholder = $elm$html$Html$Attributes$stringProperty('placeholder');
 var $author$project$Main$singleSelectInputField = F5(
 	function (searchString, isDisabled, focused, placeholder_, hasSelectedOptions) {
 		var typeAttr = $elm$html$Html$Attributes$type_('text');
@@ -16326,6 +16326,9 @@ var $author$project$Main$view = function (model) {
 						]))
 				]));
 	} else {
+		var hasOptionSelected = $author$project$Option$hasSelectedOption(model.options);
+		var showPlaceholder = (!hasOptionSelected) && (!model.focused);
+		var placeholderAttribute = showPlaceholder ? $elm$html$Html$Attributes$placeholder(model.placeholder) : $elm$html$Html$Attributes$classList(_List_Nil);
 		var inputFilter = A2(
 			$elm$html$Html$input,
 			_List_fromArray(
@@ -16335,6 +16338,7 @@ var $author$project$Main$view = function (model) {
 					$elm$html$Html$Events$onFocus($author$project$Main$InputFocus),
 					$elm$html$Html$Events$onInput($author$project$Main$SearchInputOnInput),
 					$elm$html$Html$Attributes$value(model.searchString),
+					placeholderAttribute,
 					$elm$html$Html$Attributes$id('input-filter'),
 					$elm$html$Html$Attributes$disabled(model.disabled),
 					A2(
@@ -16349,8 +16353,6 @@ var $author$project$Main$view = function (model) {
 						]))
 				]),
 			_List_Nil);
-		var hasOptionSelected = $author$project$Option$hasSelectedOption(model.options);
-		var showPlaceholder = (!hasOptionSelected) && (!model.focused);
 		return A2(
 			$elm$html$Html$div,
 			_List_fromArray(
@@ -16383,7 +16385,7 @@ var $author$project$Main$view = function (model) {
 							$elm$html$Html$Attributes$classList(
 							_List_fromArray(
 								[
-									_Utils_Tuple2('placeholder', showPlaceholder),
+									_Utils_Tuple2('show-placeholder', showPlaceholder),
 									_Utils_Tuple2('has-option-selected', hasOptionSelected),
 									_Utils_Tuple2('no-option-selected', !hasOptionSelected),
 									_Utils_Tuple2('multi', true),
@@ -16393,26 +16395,12 @@ var $author$project$Main$view = function (model) {
 								]))
 						]),
 					_Utils_ap(
+						$author$project$Main$optionsToValuesHtml(model.options),
 						_List_fromArray(
 							[
-								A2(
-								$elm$html$Html$span,
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$class('placeholder')
-									]),
-								_List_fromArray(
-									[
-										$elm$html$Html$text(model.placeholder)
-									]))
-							]),
-						_Utils_ap(
-							$author$project$Main$optionsToValuesHtml(model.options),
-							_List_fromArray(
-								[
-									inputFilter,
-									A4($author$project$Main$rightSlotHtml, model.rightSlot, model.focused, model.disabled, hasOptionSelected)
-								])))),
+								inputFilter,
+								A4($author$project$Main$rightSlotHtml, model.rightSlot, model.focused, model.disabled, hasOptionSelected)
+							]))),
 					$author$project$Main$dropdown(model)
 				]));
 	}
