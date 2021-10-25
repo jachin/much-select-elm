@@ -1003,7 +1003,7 @@ class MuchSelect extends HTMLElement {
         flex-basis: auto;
       }
 
-      #value-casing.multi .value.selected-value {
+      #value-casing.multi .value.highlighted-value {
         background-image: linear-gradient(to bottom, #d99477, #efb680);
         background-repeat: repeat-x;
       }
