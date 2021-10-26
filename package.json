@@ -13,7 +13,8 @@
   "scripts": {
     "start": "./scripts/serve.sh",
     "test": "elm-test",
-    "web-test-runner": "web-test-runner tests/**/*.test.html --coverage --node-resolve",
+    "web-test-runner": "web-test-runner tests/**/*.test.html --node-resolve",
+    "web-test-runner-with-coverage": "web-test-runner tests/**/*.test.html --coverage --node-resolve",
     "build": "./scripts/build.sh",
     "watch": "chokidar \"src/**/*.js\" \"src/**/*.elm\" -c \"npm run build\" --initial",
     "serve": "scripts/serve.sh",
