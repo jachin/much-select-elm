@@ -26,7 +26,9 @@
   "license": "MIT",
   "devDependencies": {
     "@esm-bundle/chai": "^4.3.4",
+    "@open-wc/testing": "^3.0.1",
     "@web/test-runner": "^0.13.20",
+    "@web/test-runner-mocha": "^0.7.5",
     "chokidar-cli": "^3.0.0",
     "elm-esm": "^1.1.2",
     "elm-format": "^0.8.5",
