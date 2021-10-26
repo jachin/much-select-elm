@@ -684,6 +684,16 @@ class MuchSelect extends HTMLElement {
   }
 
   set selectedValue(value) {
+    if (value === null) {
+      this._selectedValue = null;
+    } else if (value === undefined) {
+      this._selectedValue = null;
+    } else if (value === "") {
+      this._selectedValue = "";
+    } else {
+      this._selectedValue = value;
+    }
+
     this.setAttribute("selected-value", value);
 
     if (value) {
@@ -1003,7 +1013,7 @@ class MuchSelect extends HTMLElement {
         flex-basis: auto;
       }
 
-      #value-casing.multi .value.selected-value {
+      #value-casing.multi .value.highlighted-value {
         background-image: linear-gradient(to bottom, #d99477, #efb680);
         background-repeat: repeat-x;
       }

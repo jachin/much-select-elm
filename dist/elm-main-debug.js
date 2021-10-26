@@ -12862,6 +12862,76 @@ var $author$project$SelectionMode$setSelectedItemStaysInPlace = F2(
 			return selectionMode;
 		}
 	});
+var $author$project$Option$toggleSelectedHighlightByOptionValue = F2(
+	function (options, optionValue) {
+		return A2(
+			$elm$core$List$map,
+			function (option_) {
+				switch (option_.$) {
+					case 'Option':
+						var optionDisplay = option_.a;
+						var optionValue_ = option_.c;
+						if (_Utils_eq(optionValue, optionValue_)) {
+							switch (optionDisplay.$) {
+								case 'OptionShown':
+									return option_;
+								case 'OptionHidden':
+									return option_;
+								case 'OptionSelected':
+									var selectedIndex = optionDisplay.a;
+									return A2(
+										$author$project$Option$setOptionDisplay,
+										$author$project$Option$OptionSelectedHighlighted(selectedIndex),
+										option_);
+								case 'OptionSelectedHighlighted':
+									var selectedIndex = optionDisplay.a;
+									return A2(
+										$author$project$Option$setOptionDisplay,
+										$author$project$Option$OptionSelected(selectedIndex),
+										option_);
+								case 'OptionHighlighted':
+									return option_;
+								default:
+									return option_;
+							}
+						} else {
+							return option_;
+						}
+					case 'CustomOption':
+						var optionDisplay = option_.a;
+						var optionValue_ = option_.c;
+						if (_Utils_eq(optionValue, optionValue_)) {
+							switch (optionDisplay.$) {
+								case 'OptionShown':
+									return option_;
+								case 'OptionHidden':
+									return option_;
+								case 'OptionSelected':
+									var selectedIndex = optionDisplay.a;
+									return A2(
+										$author$project$Option$setOptionDisplay,
+										$author$project$Option$OptionSelectedHighlighted(selectedIndex),
+										option_);
+								case 'OptionSelectedHighlighted':
+									var selectedIndex = optionDisplay.a;
+									return A2(
+										$author$project$Option$setOptionDisplay,
+										$author$project$Option$OptionSelected(selectedIndex),
+										option_);
+								case 'OptionHighlighted':
+									return option_;
+								default:
+									return option_;
+							}
+						} else {
+							return option_;
+						}
+					default:
+						return option_;
+				}
+			},
+			options);
+	});
 var $elm$core$List$partition = F2(
 	function (pred, list) {
 		var step = F2(
@@ -15050,7 +15120,8 @@ var $author$project$Main$update = F2(
 			case 'ClearAllSelectedOptions':
 				return $author$project$Main$clearAllSelectedOption(model);
 			case 'ToggleSelectedValueHighlight':
-				var updatedOptions = $author$project$Option$moveHighlightedOptionDown(model.options);
+				var optionValue = msg.a;
+				var updatedOptions = A2($author$project$Option$toggleSelectedHighlightByOptionValue, model.options, optionValue);
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
@@ -16016,7 +16087,7 @@ var $author$project$Main$optionsToValuesHtml = function (options) {
 										_List_fromArray(
 											[
 												_Utils_Tuple2('value', true),
-												_Utils_Tuple2('selected-value', true)
+												_Utils_Tuple2('highlighted-value', true)
 											])),
 										$author$project$Main$mousedownPreventDefaultAndStopPropagation(
 										$author$project$Main$ToggleSelectedValueHighlight(optionValue))

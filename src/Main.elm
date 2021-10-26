@@ -486,10 +486,10 @@ update msg model =
         ClearAllSelectedOptions ->
             clearAllSelectedOption model
 
-        ToggleSelectedValueHighlight _ ->
+        ToggleSelectedValueHighlight optionValue ->
             let
                 updatedOptions =
-                    Option.moveHighlightedOptionDown model.options
+                    Option.toggleSelectedHighlightByOptionValue model.options optionValue
             in
             ( { model
                 | options = updatedOptions
@@ -1212,7 +1212,7 @@ optionsToValuesHtml options =
                                 div
                                     [ classList
                                         [ ( "value", True )
-                                        , ( "selected-value", True )
+                                        , ( "highlighted-value", True )
                                         ]
                                     , mousedownPreventDefaultAndStopPropagation
                                         (ToggleSelectedValueHighlight optionValue)

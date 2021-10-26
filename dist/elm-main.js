@@ -7667,6 +7667,76 @@ var $author$project$SelectionMode$setSelectedItemStaysInPlace = F2(
 			return selectionMode;
 		}
 	});
+var $author$project$Option$toggleSelectedHighlightByOptionValue = F2(
+	function (options, optionValue) {
+		return A2(
+			$elm$core$List$map,
+			function (option_) {
+				switch (option_.$) {
+					case 0:
+						var optionDisplay = option_.a;
+						var optionValue_ = option_.c;
+						if (_Utils_eq(optionValue, optionValue_)) {
+							switch (optionDisplay.$) {
+								case 0:
+									return option_;
+								case 1:
+									return option_;
+								case 2:
+									var selectedIndex = optionDisplay.a;
+									return A2(
+										$author$project$Option$setOptionDisplay,
+										$author$project$Option$OptionSelectedHighlighted(selectedIndex),
+										option_);
+								case 3:
+									var selectedIndex = optionDisplay.a;
+									return A2(
+										$author$project$Option$setOptionDisplay,
+										$author$project$Option$OptionSelected(selectedIndex),
+										option_);
+								case 4:
+									return option_;
+								default:
+									return option_;
+							}
+						} else {
+							return option_;
+						}
+					case 1:
+						var optionDisplay = option_.a;
+						var optionValue_ = option_.c;
+						if (_Utils_eq(optionValue, optionValue_)) {
+							switch (optionDisplay.$) {
+								case 0:
+									return option_;
+								case 1:
+									return option_;
+								case 2:
+									var selectedIndex = optionDisplay.a;
+									return A2(
+										$author$project$Option$setOptionDisplay,
+										$author$project$Option$OptionSelectedHighlighted(selectedIndex),
+										option_);
+								case 3:
+									var selectedIndex = optionDisplay.a;
+									return A2(
+										$author$project$Option$setOptionDisplay,
+										$author$project$Option$OptionSelected(selectedIndex),
+										option_);
+								case 4:
+									return option_;
+								default:
+									return option_;
+							}
+						} else {
+							return option_;
+						}
+					default:
+						return option_;
+				}
+			},
+			options);
+	});
 var $elm$core$List$append = F2(
 	function (xs, ys) {
 		if (!ys.b) {
@@ -9863,7 +9933,8 @@ var $author$project$Main$update = F2(
 			case 27:
 				return $author$project$Main$clearAllSelectedOption(model);
 			case 28:
-				var updatedOptions = $author$project$Option$moveHighlightedOptionDown(model.a);
+				var optionValue = msg.a;
+				var updatedOptions = A2($author$project$Option$toggleSelectedHighlightByOptionValue, model.a, optionValue);
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
@@ -10911,7 +10982,7 @@ var $author$project$Main$optionsToValuesHtml = function (options) {
 										_List_fromArray(
 											[
 												_Utils_Tuple2('value', true),
-												_Utils_Tuple2('selected-value', true)
+												_Utils_Tuple2('highlighted-value', true)
 											])),
 										$author$project$Main$mousedownPreventDefaultAndStopPropagation(
 										$author$project$Main$ToggleSelectedValueHighlight(optionValue))
