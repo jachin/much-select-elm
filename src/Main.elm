@@ -125,7 +125,7 @@ type Msg
       --  on them and then delete them (with the delete key).
       --  If you can think of a better name we're all ears.
     | ToggleSelectedValueHighlight OptionValue
-    | DeleteSelectedAndHighlightedValues
+    | DeleteKeydownForMultiSelect
 
 
 type alias Model =
@@ -220,12 +220,22 @@ update msg model =
                         SingleSelect _ _ ->
                             selectSingleOptionInList optionValue model.options
             in
-            ( updateModelWithSearchStringChanges model.maxDropdownItems "" options model
-            , Cmd.batch
-                [ makeCommandMessagesWhenValuesChanges options (Just optionValue)
-                , blurInput ()
-                ]
-            )
+            case model.selectionMode of
+                SingleSelect _ _ ->
+                    ( updateModelWithSearchStringChanges model.maxDropdownItems "" options model
+                    , Cmd.batch
+                        [ makeCommandMessagesWhenValuesChanges options (Just optionValue)
+                        , blurInput ()
+                        ]
+                    )
+
+                MultiSelect _ ->
+                    ( updateModelWithSearchStringChanges model.maxDropdownItems "" options model
+                    , Cmd.batch
+                        [ makeCommandMessagesWhenValuesChanges options (Just optionValue)
+                        , focusInput ()
+                        ]
+                    )
 
         SearchInputOnInput searchString ->
             ( updateModelWithSearchStringChanges model.maxDropdownItems searchString model.options model
@@ -422,9 +432,12 @@ update msg model =
                     )
 
                 MultiSelect _ ->
-                    ( { model | options = options, searchString = "" }
+                    ( updateModelWithSearchStringChanges model.maxDropdownItems "" options model
                       -- TODO Figure out what the highlighted option in here
-                    , makeCommandMessagesWhenValuesChanges options Nothing
+                    , Cmd.batch
+                        [ makeCommandMessagesWhenValuesChanges options Nothing
+                        , focusInput ()
+                        ]
                     )
 
         DeleteInputForSingleSelect ->
@@ -473,10 +486,10 @@ update msg model =
         ClearAllSelectedOptions ->
             clearAllSelectedOption model
 
-        ToggleSelectedValueHighlight _ ->
+        ToggleSelectedValueHighlight optionValue ->
             let
                 updatedOptions =
-                    Option.moveHighlightedOptionDown model.options
+                    Option.toggleSelectedHighlightByOptionValue model.options optionValue
             in
             ( { model
                 | options = updatedOptions
@@ -485,17 +498,28 @@ update msg model =
             , Cmd.none
             )
 
-        DeleteSelectedAndHighlightedValues ->
-            let
-                newOptions =
-                    Option.deselectAllSelectedHighlightedOptions model.options
-            in
-            ( { model
-                | options = newOptions
-                , optionsForTheDropdown = figureOutWhichOptionsToShow model.maxDropdownItems newOptions
-              }
-            , valueChanged (selectedOptionsToTuple newOptions)
-            )
+        DeleteKeydownForMultiSelect ->
+            if String.length model.searchString > 0 then
+                ( model, Cmd.none )
+
+            else
+                let
+                    newOptions =
+                        if Option.hasSelectedHighlightedOptions model.options then
+                            Option.deselectAllSelectedHighlightedOptions model.options
+
+                        else
+                            Option.deselectLastSelectedOption model.options
+                in
+                ( { model
+                    | options = newOptions
+                    , optionsForTheDropdown = figureOutWhichOptionsToShow model.maxDropdownItems newOptions
+                  }
+                , Cmd.batch
+                    [ valueChanged (selectedOptionsToTuple newOptions)
+                    , focusInput ()
+                    ]
+                )
 
 
 clearAllSelectedOption : Model -> ( Model, Cmd Msg )
@@ -726,7 +750,7 @@ view model =
                         , ( "single", True )
                         , ( "disabled", model.disabled )
                         , ( "focused", model.focused )
-                        , ( "not-focused", model.focused )
+                        , ( "not-focused", not model.focused )
                         ]
                     ]
                     [ span
@@ -762,6 +786,13 @@ view model =
                 showPlaceholder =
                     not hasOptionSelected && not model.focused
 
+                placeholderAttribute =
+                    if showPlaceholder then
+                        placeholder model.placeholder
+
+                    else
+                        Html.Attributes.classList []
+
                 inputFilter =
                     input
                         [ type_ "text"
@@ -769,6 +800,7 @@ view model =
                         , onFocus InputFocus
                         , onInput SearchInputOnInput
                         , value model.searchString
+                        , placeholderAttribute
                         , id "input-filter"
                         , disabled model.disabled
                         , Keyboard.on Keyboard.Keydown
@@ -786,22 +818,21 @@ view model =
                     , onClick BringInputInFocus
                     , onFocus BringInputInFocus
                     , Keyboard.on Keyboard.Keydown
-                        [ ( Delete, DeleteSelectedAndHighlightedValues )
-                        , ( Backspace, DeleteSelectedAndHighlightedValues )
+                        [ ( Delete, DeleteKeydownForMultiSelect )
+                        , ( Backspace, DeleteKeydownForMultiSelect )
                         ]
                     , tabIndexAttribute
                     , classList
-                        [ ( "placeholder", showPlaceholder )
+                        [ ( "show-placeholder", showPlaceholder )
+                        , ( "has-option-selected", hasOptionSelected )
+                        , ( "no-option-selected", not hasOptionSelected )
                         , ( "multi", True )
                         , ( "disabled", model.disabled )
+                        , ( "focused", model.focused )
+                        , ( "not-focused", not model.focused )
                         ]
                     ]
-                    ([ span
-                        [ class "placeholder"
-                        ]
-                        [ text model.placeholder ]
-                     ]
-                        ++ optionsToValuesHtml model.options
+                    (optionsToValuesHtml model.options
                         ++ [ inputFilter
                            , rightSlotHtml model.rightSlot model.focused model.disabled hasOptionSelected
                            ]
@@ -1093,7 +1124,7 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
         OptionHidden ->
             [ optionGroupHtml, text "" ]
 
-        OptionSelected ->
+        OptionSelected _ ->
             case selectionMode of
                 SingleSelect _ _ ->
                     [ optionGroupHtml
@@ -1111,7 +1142,7 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
                 MultiSelect _ ->
                     [ optionGroupHtml, text "" ]
 
-        OptionSelectedHighlighted ->
+        OptionSelectedHighlighted _ ->
             case selectionMode of
                 SingleSelect _ _ ->
                     [ optionGroupHtml
@@ -1157,6 +1188,7 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
 optionsToValuesHtml : List Option -> List (Html Msg)
 optionsToValuesHtml options =
     options
+        |> Option.selectedOptions
         |> List.map
             (\option ->
                 case option of
@@ -1168,7 +1200,7 @@ optionsToValuesHtml options =
                             OptionHidden ->
                                 text ""
 
-                            OptionSelected ->
+                            OptionSelected _ ->
                                 div
                                     [ class "value"
                                     , mousedownPreventDefaultAndStopPropagation
@@ -1176,11 +1208,11 @@ optionsToValuesHtml options =
                                     ]
                                     [ text labelStr ]
 
-                            OptionSelectedHighlighted ->
+                            OptionSelectedHighlighted _ ->
                                 div
                                     [ classList
                                         [ ( "value", True )
-                                        , ( "selected-value", True )
+                                        , ( "highlighted-value", True )
                                         ]
                                     , mousedownPreventDefaultAndStopPropagation
                                         (ToggleSelectedValueHighlight optionValue)
@@ -1201,7 +1233,7 @@ optionsToValuesHtml options =
                             OptionHidden ->
                                 text ""
 
-                            OptionSelected ->
+                            OptionSelected _ ->
                                 div
                                     [ class "value"
                                     , mousedownPreventDefaultAndStopPropagation
@@ -1209,7 +1241,7 @@ optionsToValuesHtml options =
                                     ]
                                     [ text labelStr ]
 
-                            OptionSelectedHighlighted ->
+                            OptionSelectedHighlighted _ ->
                                 div
                                     [ classList
                                         [ ( "value", True )
@@ -1234,10 +1266,10 @@ optionsToValuesHtml options =
                             OptionHidden ->
                                 text ""
 
-                            OptionSelected ->
+                            OptionSelected _ ->
                                 div [ class "value" ] [ text labelStr ]
 
-                            OptionSelectedHighlighted ->
+                            OptionSelectedHighlighted _ ->
                                 text ""
 
                             OptionHighlighted ->
@@ -1399,7 +1431,8 @@ init flags =
                                         )
 
                                     else
-                                        ( (Option.newOption initialValueStr_ Nothing |> Option.selectOption) :: options, Cmd.none )
+                                        -- TODO Perhaps we should call a helper function instead of calling selectOption here
+                                        ( (Option.newOption initialValueStr_ Nothing |> Option.selectOption 0) :: options, Cmd.none )
 
                                 Nothing ->
                                     let

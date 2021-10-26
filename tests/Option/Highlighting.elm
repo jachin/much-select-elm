@@ -26,13 +26,13 @@ suite =
                 \_ ->
                     Expect.equal
                         ([ Option.newOption "one" Nothing |> Option.highlightOption
-                         , Option.newOption "two" Nothing |> Option.selectOption
+                         , Option.newOption "two" Nothing |> Option.selectOption 0
                          , Option.newOption "three" Nothing
                          ]
                             |> Option.moveHighlightedOptionDown
                         )
                         [ Option.newOption "one" Nothing
-                        , Option.newOption "two" Nothing |> Option.selectOption
+                        , Option.newOption "two" Nothing |> Option.selectOption 0
                         , Option.newOption "three" Nothing |> Option.highlightOption
                         ]
             , test "highlight the next highlightable option, skipping over disabled options" <|
@@ -69,13 +69,13 @@ suite =
                 \_ ->
                     Expect.equal
                         ([ Option.newOption "one" Nothing
-                         , Option.newOption "two" Nothing |> Option.selectOption
+                         , Option.newOption "two" Nothing |> Option.selectOption 0
                          , Option.newOption "three" Nothing |> Option.highlightOption
                          ]
                             |> Option.moveHighlightedOptionUp
                         )
                         [ Option.newOption "one" Nothing |> Option.highlightOption
-                        , Option.newOption "two" Nothing |> Option.selectOption
+                        , Option.newOption "two" Nothing |> Option.selectOption 0
                         , Option.newOption "three" Nothing
                         ]
             , test "highlight the previous highlightable option, skipping over disabled options" <|

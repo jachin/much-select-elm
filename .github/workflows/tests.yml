@@ -26,3 +26,5 @@
           run: npm run lint
         - name: elm unit tests
           run: npm run test
+        - name: web tests
+          run: npm run web-test-runner
