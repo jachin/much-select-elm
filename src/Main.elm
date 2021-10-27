@@ -1253,7 +1253,7 @@ optionsToValuesHtml options =
                                 div
                                     [ classList
                                         [ ( "value", True )
-                                        , ( "selected-value", True )
+                                        , ( "highlighted-value", True )
                                         ]
                                     , mousedownPreventDefaultAndStopPropagation
                                         (ToggleSelectedValueHighlight optionValue)
