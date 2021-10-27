@@ -1218,7 +1218,7 @@ removeHighlightOption option =
                         search
 
                 OptionSelectedHighlighted selectedIndex ->
-                    Option (OptionSelected selectedIndex)
+                    Option (OptionSelectedHighlighted selectedIndex)
                         label
                         value
                         description
@@ -1244,7 +1244,7 @@ removeHighlightOption option =
 
                 OptionSelectedHighlighted selectedIndex ->
                     CustomOption
-                        (OptionSelected selectedIndex)
+                        (OptionSelectedHighlighted selectedIndex)
                         label
                         value
                         search
@@ -1419,7 +1419,7 @@ selectOption selectionIndex option =
                     Option (OptionSelected selectedIndex) label value description group search
 
                 OptionSelectedHighlighted selectedIndex ->
-                    Option (OptionSelected selectedIndex) label value description group search
+                    Option (OptionSelectedHighlighted selectedIndex) label value description group search
 
                 OptionHighlighted ->
                     Option (OptionSelected selectionIndex) label value description group search
