@@ -834,7 +834,11 @@ view model =
                     ]
                     (optionsToValuesHtml model.options
                         ++ [ inputFilter
-                           , rightSlotHtml model.rightSlot model.focused model.disabled hasOptionSelected
+                           , rightSlotHtml
+                                model.rightSlot
+                                model.focused
+                                model.disabled
+                                hasOptionSelected
                            ]
                     )
                 , dropdown model
@@ -962,12 +966,16 @@ dropdown : Model -> Html Msg
 dropdown model =
     let
         optionsHtml =
-            optionsToDropdownOptions
-                DropdownMouseOverOption
-                DropdownMouseOutOption
-                DropdownMouseClickOption
-                model.selectionMode
-                model.optionsForTheDropdown
+            if List.isEmpty model.optionsForTheDropdown then
+                [ div [ class "option disabled" ] [ node "slot" [ name "no-options" ] [ text "No available options" ] ] ]
+
+            else
+                optionsToDropdownOptions
+                    DropdownMouseOverOption
+                    DropdownMouseOutOption
+                    DropdownMouseClickOption
+                    model.selectionMode
+                    model.optionsForTheDropdown
 
         dropdownFooterHtml =
             if List.length model.optionsForTheDropdown < List.length model.options then
@@ -995,7 +1003,7 @@ dropdown model =
     if model.disabled then
         text ""
 
-    else if model.showDropdown && not (List.isEmpty model.optionsForTheDropdown) && not (List.isEmpty optionsHtml) then
+    else if model.showDropdown && not (List.isEmpty optionsHtml) then
         div
             ([ id "dropdown"
              , class "showing"
