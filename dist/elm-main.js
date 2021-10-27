@@ -5489,7 +5489,7 @@ var $author$project$Option$selectOption = F2(
 						var selectedIndex = display.a;
 						return A6(
 							$author$project$Option$Option,
-							$author$project$Option$OptionSelected(selectedIndex),
+							$author$project$Option$OptionSelectedHighlighted(selectedIndex),
 							label,
 							value,
 							description,
@@ -7323,7 +7323,7 @@ var $author$project$Option$removeHighlightOption = function (option) {
 					var selectedIndex = display.a;
 					return A6(
 						$author$project$Option$Option,
-						$author$project$Option$OptionSelected(selectedIndex),
+						$author$project$Option$OptionSelectedHighlighted(selectedIndex),
 						label,
 						value,
 						description,
@@ -7356,7 +7356,7 @@ var $author$project$Option$removeHighlightOption = function (option) {
 					var selectedIndex = display.a;
 					return A4(
 						$author$project$Option$CustomOption,
-						$author$project$Option$OptionSelected(selectedIndex),
+						$author$project$Option$OptionSelectedHighlighted(selectedIndex),
 						label,
 						value,
 						search);
@@ -8331,893 +8331,30 @@ var $author$project$OptionPresentor$indexInsideMatch = F2(
 				},
 				result.cp));
 	});
-var $BrianHicks$elm_string_graphemes$String$Graphemes$Data$CR = 0;
-var $BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$Empty = {$: 1};
-var $BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$empty = $BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$Empty;
-var $BrianHicks$elm_string_graphemes$String$Graphemes$Data$Empty = {$: 1};
-var $BrianHicks$elm_string_graphemes$String$Graphemes$Data$Error = function (a) {
-	return {$: 0, a: a};
-};
-var $BrianHicks$elm_string_graphemes$String$Graphemes$Data$One = {$: 2};
-var $BrianHicks$elm_string_graphemes$String$Graphemes$Data$Two = function (a) {
-	return {$: 3, a: a};
-};
-var $BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$Branch = F5(
-	function (a, b, c, d, e) {
-		return {$: 0, a: a, b: b, c: c, d: d, e: e};
-	});
-var $BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$height = function (rangeDict) {
-	if (rangeDict.$ === 1) {
-		return 0;
-	} else {
-		var height_ = rangeDict.a;
-		return height_;
-	}
-};
-var $BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$branch = F4(
-	function (range, value, lt, gt) {
-		return A5(
-			$BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$Branch,
-			A2(
-				$elm$core$Basics$max,
-				$BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$height(lt),
-				$BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$height(gt)) + 1,
-			range,
-			value,
-			lt,
-			gt);
-	});
-var $BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$heightDiff = function (rangeDict) {
-	if (rangeDict.$ === 1) {
-		return 0;
-	} else {
-		var lt = rangeDict.d;
-		var gt = rangeDict.e;
-		return $BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$height(gt) - $BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$height(lt);
-	}
-};
-var $BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$rotateLeft = function (rangeDict) {
-	if ((!rangeDict.$) && (!rangeDict.e.$)) {
-		var head = rangeDict.b;
-		var value = rangeDict.c;
-		var lessThans = rangeDict.d;
-		var _v1 = rangeDict.e;
-		var subHead = _v1.b;
-		var subValue = _v1.c;
-		var betweens = _v1.d;
-		var greaterThans = _v1.e;
-		return A4(
-			$BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$branch,
-			subHead,
-			subValue,
-			A4($BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$branch, head, value, lessThans, betweens),
-			greaterThans);
-	} else {
-		return rangeDict;
-	}
-};
-var $BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$rotateRight = function (rangeDict) {
-	if ((!rangeDict.$) && (!rangeDict.d.$)) {
-		var head = rangeDict.b;
-		var value = rangeDict.c;
-		var _v1 = rangeDict.d;
-		var subHead = _v1.b;
-		var subValue = _v1.c;
-		var lessThans = _v1.d;
-		var betweens = _v1.e;
-		var greaterThans = rangeDict.e;
-		return A4(
-			$BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$branch,
-			subHead,
-			subValue,
-			lessThans,
-			A4($BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$branch, head, value, betweens, greaterThans));
-	} else {
-		return rangeDict;
-	}
-};
-var $BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$balance = function (rangeDict) {
-	if (rangeDict.$ === 1) {
-		return rangeDict;
-	} else {
-		var here = rangeDict.b;
-		var value = rangeDict.c;
-		var lt = rangeDict.d;
-		var gt = rangeDict.e;
-		return (_Utils_eq(
-			$BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$heightDiff(rangeDict),
-			-2) && ($BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$heightDiff(lt) === 1)) ? $BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$rotateRight(
-			A4(
-				$BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$branch,
-				here,
-				value,
-				$BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$rotateLeft(lt),
-				gt)) : ((_Utils_cmp(
-			$BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$heightDiff(rangeDict),
-			-1) < 0) ? $BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$rotateRight(rangeDict) : ((($BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$heightDiff(rangeDict) === 2) && _Utils_eq(
-			$BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$heightDiff(gt),
-			-1)) ? $BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$rotateLeft(
-			A4(
-				$BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$branch,
-				here,
-				value,
-				lt,
-				$BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$rotateRight(gt))) : (($BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$heightDiff(rangeDict) > 1) ? $BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$rotateLeft(rangeDict) : rangeDict)));
-	}
-};
-var $BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$Range$Range = F2(
-	function (a, b) {
-		return {$: 1, a: a, b: b};
-	});
-var $elm$core$Basics$min = F2(
-	function (x, y) {
-		return (_Utils_cmp(x, y) < 0) ? x : y;
-	});
-var $BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$Range$Point = function (a) {
-	return {$: 0, a: a};
-};
-var $BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$Range$range = F2(
-	function (a, b) {
-		return _Utils_eq(a, b) ? $BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$Range$Point(a) : A2(
-			$BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$Range$Range,
-			A2($elm$core$Basics$min, a, b),
-			A2($elm$core$Basics$max, a, b));
-	});
-var $BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$Range$combine = F2(
-	function (a, b) {
-		var _v0 = _Utils_Tuple2(a, b);
-		if (!_v0.a.$) {
-			if (!_v0.b.$) {
-				var x = _v0.a.a;
-				var y = _v0.b.a;
-				return A2($BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$Range$range, x, y);
-			} else {
-				var x = _v0.a.a;
-				var _v1 = _v0.b;
-				var low = _v1.a;
-				var high = _v1.b;
-				return A2(
-					$BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$Range$Range,
-					A2($elm$core$Basics$min, x, low),
-					A2($elm$core$Basics$max, x, high));
-			}
-		} else {
-			if (!_v0.b.$) {
-				var _v2 = _v0.a;
-				var low = _v2.a;
-				var high = _v2.b;
-				var x = _v0.b.a;
-				return A2(
-					$BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$Range$Range,
-					A2($elm$core$Basics$min, x, low),
-					A2($elm$core$Basics$max, x, high));
-			} else {
-				var _v3 = _v0.a;
-				var low1 = _v3.a;
-				var high1 = _v3.b;
-				var _v4 = _v0.b;
-				var low2 = _v4.a;
-				var high2 = _v4.b;
-				return A2(
-					$BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$Range$Range,
-					A2($elm$core$Basics$min, low1, low2),
-					A2($elm$core$Basics$max, high1, high2));
-			}
-		}
-	});
-var $BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$Range$EQ = 0;
-var $BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$Range$GT = 1;
-var $BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$Range$LT = 2;
-var $BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$Range$Overlapping = 3;
-var $BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$Range$compare = F2(
-	function (a, b) {
-		var _v0 = _Utils_Tuple2(a, b);
-		if (!_v0.a.$) {
-			if (!_v0.b.$) {
-				var x = _v0.a.a;
-				var y = _v0.b.a;
-				return (_Utils_cmp(x, y) > 0) ? 1 : ((_Utils_cmp(x, y) < 0) ? 2 : 0);
-			} else {
-				var x = _v0.a.a;
-				var _v1 = _v0.b;
-				var low = _v1.a;
-				var high = _v1.b;
-				return (_Utils_cmp(x, low) < 0) ? 2 : ((_Utils_cmp(x, high) > 0) ? 1 : 3);
-			}
-		} else {
-			if (!_v0.b.$) {
-				var _v2 = _v0.a;
-				var low = _v2.a;
-				var high = _v2.b;
-				var x = _v0.b.a;
-				return (_Utils_cmp(x, low) < 0) ? 1 : ((_Utils_cmp(x, high) > 0) ? 2 : 3);
-			} else {
-				var _v3 = _v0.a;
-				var low1 = _v3.a;
-				var high1 = _v3.b;
-				var _v4 = _v0.b;
-				var low2 = _v4.a;
-				var high2 = _v4.b;
-				return (_Utils_cmp(high1, low2) < 0) ? 2 : ((_Utils_cmp(low1, high2) > 0) ? 1 : ((_Utils_eq(low1, low2) && _Utils_eq(high1, high2)) ? 0 : 3));
-			}
-		}
-	});
-var $BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$insert = F3(
-	function (range, value, set) {
-		if (set.$ === 1) {
-			return A4($BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$branch, range, value, $BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$Empty, $BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$Empty);
-		} else {
-			var height_ = set.a;
-			var here = set.b;
-			var hereValue = set.c;
-			var lt = set.d;
-			var gt = set.e;
-			var _v1 = A2($BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$Range$compare, here, range);
-			switch (_v1) {
-				case 2:
-					return $BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$balance(
-						A4(
-							$BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$branch,
-							here,
-							hereValue,
-							A3($BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$insert, range, value, lt),
-							gt));
-				case 1:
-					return $BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$balance(
-						A4(
-							$BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$branch,
-							here,
-							hereValue,
-							lt,
-							A3($BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$insert, range, value, gt)));
-				case 0:
-					return set;
-				default:
-					var combined = A2($BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$Range$combine, range, here);
-					return A4($BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$branch, combined, value, lt, gt);
-			}
-		}
-	});
-var $BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$Range$point = $BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$Range$Point;
-var $BrianHicks$elm_string_graphemes$String$Graphemes$Data$handleChar = F3(
-	function (value, _char, _v0) {
-		var parserState = _v0.a;
-		var rangeDict = _v0.b;
-		var _v1 = _Utils_Tuple2(parserState, _char);
-		switch (_v1.a.$) {
-			case 0:
-				return _Utils_Tuple2(parserState, rangeDict);
-			case 1:
-				switch (_v1.b) {
-					case '1':
-						var _v2 = _v1.a;
-						return _Utils_Tuple2($BrianHicks$elm_string_graphemes$String$Graphemes$Data$One, rangeDict);
-					case '2':
-						var _v3 = _v1.a;
-						return _Utils_Tuple2(
-							$BrianHicks$elm_string_graphemes$String$Graphemes$Data$Two($elm$core$Maybe$Nothing),
-							rangeDict);
-					default:
-						var _v4 = _v1.a;
-						return _Utils_Tuple2(
-							$BrianHicks$elm_string_graphemes$String$Graphemes$Data$Error('expected to see a parsing directive like \'1\' or \'2\''),
-							rangeDict);
-				}
-			case 2:
-				var _v5 = _v1.a;
-				return _Utils_Tuple2(
-					$BrianHicks$elm_string_graphemes$String$Graphemes$Data$Empty,
-					A3(
-						$BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$insert,
-						$BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$Range$point(_char),
-						value,
-						rangeDict));
-			default:
-				if (_v1.a.a.$ === 1) {
-					var _v6 = _v1.a.a;
-					return _Utils_Tuple2(
-						$BrianHicks$elm_string_graphemes$String$Graphemes$Data$Two(
-							$elm$core$Maybe$Just(_char)),
-						rangeDict);
-				} else {
-					var low = _v1.a.a.a;
-					return _Utils_Tuple2(
-						$BrianHicks$elm_string_graphemes$String$Graphemes$Data$Empty,
-						A3(
-							$BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$insert,
-							A2($BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$Range$range, low, _char),
-							value,
-							rangeDict));
-				}
-		}
-	});
-var $BrianHicks$elm_string_graphemes$String$Graphemes$Data$parser = F2(
-	function (value, source) {
-		var _v0 = A3(
-			$elm$core$String$foldl,
-			$BrianHicks$elm_string_graphemes$String$Graphemes$Data$handleChar(value),
-			_Utils_Tuple2($BrianHicks$elm_string_graphemes$String$Graphemes$Data$Empty, $BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$empty),
-			source);
-		switch (_v0.a.$) {
-			case 1:
-				var _v1 = _v0.a;
-				var out = _v0.b;
-				return $elm$core$Result$Ok(out);
-			case 0:
-				var err = _v0.a.a;
-				return $elm$core$Result$Err(err);
-			case 2:
-				var _v2 = _v0.a;
-				return $elm$core$Result$Err('ended with an empty One');
-			default:
-				return $elm$core$Result$Err('ended with an empty Two');
-		}
-	});
-var $elm$core$Result$withDefault = F2(
-	function (def, result) {
-		if (!result.$) {
-			var a = result.a;
-			return a;
-		} else {
-			return def;
-		}
-	});
-var $BrianHicks$elm_string_graphemes$String$Graphemes$Data$CR$chars = A2(
-	$elm$core$Basics$composeL,
-	$elm$core$Result$withDefault($BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$empty),
-	$BrianHicks$elm_string_graphemes$String$Graphemes$Data$parser(0))('1\r');
-var $BrianHicks$elm_string_graphemes$String$Graphemes$Data$Control = 2;
-var $BrianHicks$elm_string_graphemes$String$Graphemes$Data$Control$chars = A2(
-	$elm$core$Basics$composeL,
-	$elm$core$Result$withDefault($BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$empty),
-	$BrianHicks$elm_string_graphemes$String$Graphemes$Data$parser(2))('2\u0000\u00092\u000B\u000C2\u000E\u001F2\u007F\u009F1\u00AD1\u061C1\u180E1\u200B2\u200E\u200F1\u20281\u20292\u202A\u202E2\u2060\u20641\u20652\u2066\u206F1\uFEFF2\uFFF0\uFFF82\uFFF9\uFFFB2\uD80D\uDC30\uD80D\uDC382\uD82F\uDCA0\uD82F\uDCA32\uD834\uDD73\uD834\uDD7A1\uDB40\uDC001\uDB40\uDC012\uDB40\uDC02\uDB40\uDC1F2\uDB40\uDC80\uDB40\uDCFF2\uDB40\uDDF0\uDB43\uDFFF');
-var $BrianHicks$elm_string_graphemes$String$Graphemes$Data$Extend = 11;
-var $BrianHicks$elm_string_graphemes$String$Graphemes$Data$Extend$chars = A2(
-	$elm$core$Basics$composeL,
-	$elm$core$Result$withDefault($BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$empty),
-	$BrianHicks$elm_string_graphemes$String$Graphemes$Data$parser(11))('2̀ͯ2҃҇2҈҉2ֽ֑1ֿ2ׁׂ2ׅׄ1ׇ2ؚؐ2ًٟ1ٰ2ۖۜ2۟ۤ2ۧۨ2۪ۭ1ܑ2ܰ݊2ަް2߫߳1߽2ࠖ࠙2ࠛࠣ2ࠥࠧ2ࠩ࠭2࡙࡛2࣓࣡2ࣣं1ऺ1़2ुै1्2॑ॗ2ॢॣ1ঁ1়1া2ুৄ1্1ৗ2ৢৣ1৾2ਁਂ1਼2ੁੂ2ੇੈ2ੋ੍1ੑ2ੰੱ1ੵ2ઁં1઼2ુૅ2ેૈ1્2ૢૣ2ૺ૿1ଁ1଼1ା1ି2ୁୄ1୍1ୖ1ୗ2ୢୣ1ஂ1ா1ீ1்1ௗ1ఀ1ఄ2ాీ2ెై2ొ్2ౕౖ2ౢౣ1ಁ1಼1ಿ1ೂ1ೆ2ೌ್2ೕೖ2ೢೣ2ഀഁ2഻഼1ാ2ുൄ1്1ൗ2ൢൣ1්1ා2ිු1ූ1ෟ1ั2ิฺ2็๎1ັ2ິຼ2່ໍ2༘༙1༵1༷1༹2ཱཾ2྄ྀ2྆྇2ྍྗ2ྙྼ1࿆2ိူ2ဲ့2္်2ွှ2ၘၙ2ၞၠ2ၱၴ1ႂ2ႅႆ1ႍ1ႝ2፝፟2ᜒ᜔2ᜲ᜴2ᝒᝓ2ᝲᝳ2឴឵2ិួ1ំ2៉៓1៝2᠋᠍2ᢅᢆ1ᢩ2ᤠᤢ2ᤧᤨ1ᤲ2᤻᤹2ᨘᨗ1ᨛ1ᩖ2ᩘᩞ1᩠1ᩢ2ᩥᩬ2ᩳ᩼1᩿2᪽᪰1᪾2ᬀᬃ1᬴1ᬵ2ᬶᬺ1ᬼ1ᭂ2᭫᭳2ᮀᮁ2ᮢᮥ2ᮨᮩ2᮫ᮭ1᯦2ᯨᯩ1ᯭ2ᯯᯱ2ᰬᰳ2ᰶ᰷2᳐᳒2᳔᳠2᳢᳨1᳭1᳴2᳸᳹2᷹᷀2᷿᷻1‌2⃐⃜2⃝⃠1⃡2⃢⃤2⃥⃰2⳯⳱1⵿2ⷠⷿ2〪〭2〮〯2゙゚1꙯2꙰꙲2ꙴ꙽2ꚞꚟ2꛰꛱1ꠂ1꠆1ꠋ2ꠥꠦ2꣄ꣅ2꣠꣱1ꣿ2ꤦ꤭2ꥇꥑ2ꦀꦂ1꦳2ꦶꦹ2ꦼꦽ1ꧥ2ꨩꨮ2ꨱꨲ2ꨵꨶ1ꩃ1ꩌ1ꩼ1ꪰ2ꪴꪲ2ꪷꪸ2ꪾ꪿1꫁2ꫬꫭ1꫶1ꯥ1ꯨ1꯭1ﬞ2︀️2︠︯2ﾞﾟ1𐇽1𐋠2𐍶𐍺2𐨁𐨃2𐨅𐨆2𐨌𐨏2𐨺𐨸1𐨿2𐫦𐫥2𐴤𐴧2𐽆𐽐1𑀁2𑀸𑁆2𑁿𑂁2𑂳𑂶2𑂺𑂹2𑄀𑄂2𑄧𑄫2𑄭𑄴1𑅳2𑆀𑆁2𑆶𑆾2𑇉𑇌2𑈯𑈱1𑈴2𑈶𑈷1𑈾1𑋟2𑋣𑋪2𑌀𑌁2𑌻𑌼1𑌾1𑍀1𑍗2𑍦𑍬2𑍰𑍴2𑐸𑐿2𑑂𑑄1𑑆1𑑞1𑒰2𑒳𑒸1𑒺1𑒽2𑒿𑓀2𑓃𑓂1𑖯2𑖲𑖵2𑖼𑖽2𑗀𑖿2𑗜𑗝2𑘳𑘺1𑘽2𑘿𑙀1𑚫1𑚭2𑚰𑚵1𑚷2𑜝𑜟2𑜢𑜥2𑜧𑜫2𑠯𑠷2𑠺𑠹2𑧔𑧗2𑧚𑧛1𑧠2𑨁𑨊2𑨳𑨸2𑨻𑨾1𑩇2𑩑𑩖2𑩙𑩛2𑪊𑪖2𑪘𑪙2𑰰𑰶2𑰸𑰽1𑰿2𑲒𑲧2𑲪𑲰2𑲲𑲳2𑲵𑲶2𑴱𑴶1𑴺2𑴼𑴽2𑴿𑵅1𑵇2𑶐𑶑1𑶕1𑶗2𑻳𑻴2𖫰𖫴2𖬰𖬶1𖽏2𖾏𖾒2𛲝𛲞1𝅥2𝅧𝅩2𝅮𝅲2𝅻𝆂2𝆋𝆅2𝆪𝆭2𝉂𝉄2𝨀𝨶2𝨻𝩬1𝩵1𝪄2𝪛𝪟2𝪡𝪯2𞀀𞀆2𞀈𞀘2𞀛𞀡2𞀣𞀤2𞀦𞀪2𞄰𞄶2𞋬𞋯2𞣐𞣖2𞥊𞥄2🏻🏿2󠀠󠁿2󠄀󠇯');
-var $BrianHicks$elm_string_graphemes$String$Graphemes$Data$ExtendedPictographic = 10;
-var $BrianHicks$elm_string_graphemes$String$Graphemes$Data$Extended_Pictographic$chars = A2(
-	$elm$core$Basics$composeL,
-	$elm$core$Result$withDefault($BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$empty),
-	$BrianHicks$elm_string_graphemes$String$Graphemes$Data$parser(10))('1©1®1‼1⁉1™1ℹ2↔↙2↩↪2⌚⌛1⌨1⎈1⏏2⏩⏳2⏸⏺1Ⓜ2▪▫1▶1◀2◻◾2☀☄1★2☇☍1☎2☏☐1☑1☒2☔☕2☖☗1☘2☙☜1☝2☞☟1☠1☡2☢☣2☤☥1☦2☧☩1☪2☫☭2☮☯2☰☷2☸☺2☻☿1♀1♁1♂2♃♇2♈♓2♔♞1♟1♠2♡♢1♣1♤2♥♦1♧1♨2♩♺1♻2♼♽1♾1♿2⚀⚅2⚐⚑2⚒⚔1⚕2⚖⚗1⚘1⚙1⚚2⚛⚜2⚝⚟2⚠⚡2⚢⚩2⚪⚫2⚬⚯2⚰⚱2⚲⚼2⚽⚾2⚿⛃2⛄⛅2⛆⛇1⛈2⛉⛍2⛎⛏1⛐1⛑1⛒2⛓⛔2⛕⛨2⛩⛪2⛫⛯2⛰⛵1⛶2⛷⛺2⛻⛼1⛽2⛾✁1✂2✃✄1✅2✈✍1✎1✏2✐✑1✒1✔1✖1✝1✡1✨2✳✴1❄1❇1❌1❎2❓❕1❗2❣❤2❥❧2➕➗1➡1➰1➿2⤴⤵2⬅⬇2⬛⬜1⭐1⭕1〰1〽1㊗1㊙2🀀🀃1🀄2🀅🃎1🃏2🃐🃿2🄍🄏1🄯2🅬🅯2🅰🅱2🅾🅿1🆎2🆑🆚2🆭🇥2🈁🈂2🈃🈏1🈚1🈯2🈲🈺2🈼🈿2🉉🉏2🉐🉑2🉒🋿2🌀🌡2🌢🌣2🌤🎓2🎔🎕2🎖🎗1🎘2🎙🎛2🎜🎝2🎞🏰2🏱🏲2🏳🏵1🏶2🏷🏺2🐀📽1📾2📿🔽2🕆🕈2🕉🕎1🕏2🕐🕧2🕨🕮2🕯🕰2🕱🕲2🕳🕹1🕺2🕻🖆1🖇2🖈🖉2🖊🖍2🖎🖏1🖐2🖑🖔2🖕🖖2🖗🖣1🖤1🖥2🖦🖧1🖨2🖩🖰2🖱🖲2🖳🖻1🖼2🖽🗁2🗂🗄2🗅🗐2🗑🗓2🗔🗛2🗜🗞2🗟🗠1🗡1🗢1🗣2🗤🗧1🗨2🗩🗮1🗯2🗰🗲1🗳2🗴🗹2🗺🙏2🚀🛅2🛆🛊2🛋🛐2🛑🛒2🛓🛔1🛕2🛖🛟2🛠🛥2🛦🛨1🛩1🛪2🛫🛬2🛭🛯1🛰2🛱🛲1🛳2🛴🛶2🛷🛸1🛹1🛺2🛻🛿2🝴🝿2🟕🟟2🟠🟫2🟬🟿2🠌🠏2🡈🡏2🡚🡟2🢈🢏2🢮🣿1🤌2🤍🤏2🤐🤘2🤙🤞1🤟2🤠🤧2🤨🤯1🤰2🤱🤲2🤳🤺2🤼🤾1🤿2🥀🥅2🥇🥋1🥌2🥍🥏2🥐🥞2🥟🥫2🥬🥰1🥱1🥲2🥳🥶2🥷🥹1🥺1🥻2🥼🥿2🦀🦄2🦅🦑2🦒🦗2🦘🦢2🦣🦤2🦥🦪2🦫🦭2🦮🦯2🦰🦹2🦺🦿1🧀2🧁🧂2🧃🧊2🧋🧌2🧍🧏2🧐🧦2🧧🧿2🨀🩯2🩰🩳2🩴🩷2🩸🩺2🩻🩿2🪀🪂2🪃🪏2🪐🪕2🪖🿽');
-var $BrianHicks$elm_string_graphemes$String$Graphemes$Data$L = 5;
-var $BrianHicks$elm_string_graphemes$String$Graphemes$Data$L$chars = A2(
-	$elm$core$Basics$composeL,
-	$elm$core$Result$withDefault($BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$empty),
-	$BrianHicks$elm_string_graphemes$String$Graphemes$Data$parser(5))('2ᄀᅟ2ꥠꥼ');
-var $BrianHicks$elm_string_graphemes$String$Graphemes$Data$LF = 1;
-var $BrianHicks$elm_string_graphemes$String$Graphemes$Data$LF$chars = A2(
-	$elm$core$Basics$composeL,
-	$elm$core$Result$withDefault($BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$empty),
-	$BrianHicks$elm_string_graphemes$String$Graphemes$Data$parser(1))('1\n');
-var $BrianHicks$elm_string_graphemes$String$Graphemes$Data$LV = 8;
-var $BrianHicks$elm_string_graphemes$String$Graphemes$Data$LV$chars = A2(
-	$elm$core$Basics$composeL,
-	$elm$core$Result$withDefault($BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$empty),
-	$BrianHicks$elm_string_graphemes$String$Graphemes$Data$parser(8))('1가1개1갸1걔1거1게1겨1계1고1과1괘1괴1교1구1궈1궤1귀1규1그1긔1기1까1깨1꺄1꺠1꺼1께1껴1꼐1꼬1꽈1꽤1꾀1꾜1꾸1꿔1꿰1뀌1뀨1끄1끠1끼1나1내1냐1냬1너1네1녀1녜1노1놔1놰1뇌1뇨1누1눠1눼1뉘1뉴1느1늬1니1다1대1댜1댸1더1데1뎌1뎨1도1돠1돼1되1됴1두1둬1뒈1뒤1듀1드1듸1디1따1때1땨1떄1떠1떼1뗘1뗴1또1똬1뙈1뙤1뚀1뚜1뚸1뛔1뛰1뜌1뜨1띄1띠1라1래1랴1럐1러1레1려1례1로1롸1뢔1뢰1료1루1뤄1뤠1뤼1류1르1릐1리1마1매1먀1먜1머1메1며1몌1모1뫄1뫠1뫼1묘1무1뭐1뭬1뮈1뮤1므1믜1미1바1배1뱌1뱨1버1베1벼1볘1보1봐1봬1뵈1뵤1부1붜1붸1뷔1뷰1브1븨1비1빠1빼1뺘1뺴1뻐1뻬1뼈1뼤1뽀1뽜1뽸1뾔1뾰1뿌1뿨1쀄1쀠1쀼1쁘1쁴1삐1사1새1샤1섀1서1세1셔1셰1소1솨1쇄1쇠1쇼1수1숴1쉐1쉬1슈1스1싀1시1싸1쌔1쌰1썌1써1쎄1쎠1쎼1쏘1쏴1쐐1쐬1쑈1쑤1쒀1쒜1쒸1쓔1쓰1씌1씨1아1애1야1얘1어1에1여1예1오1와1왜1외1요1우1워1웨1위1유1으1의1이1자1재1쟈1쟤1저1제1져1졔1조1좌1좨1죄1죠1주1줘1줴1쥐1쥬1즈1즤1지1짜1째1쨔1쨰1쩌1쩨1쪄1쪠1쪼1쫘1쫴1쬐1쬬1쭈1쭤1쮀1쮜1쮸1쯔1쯰1찌1차1채1챠1챼1처1체1쳐1쳬1초1촤1쵀1최1쵸1추1춰1췌1취1츄1츠1츼1치1카1캐1캬1컈1커1케1켜1켸1코1콰1쾌1쾨1쿄1쿠1쿼1퀘1퀴1큐1크1킈1키1타1태1탸1턔1터1테1텨1톄1토1톼1퇘1퇴1툐1투1퉈1퉤1튀1튜1트1틔1티1파1패1퍄1퍠1퍼1페1펴1폐1포1퐈1퐤1푀1표1푸1풔1풰1퓌1퓨1프1픠1피1하1해1햐1햬1허1헤1혀1혜1호1화1홰1회1효1후1훠1훼1휘1휴1흐1희1히');
-var $BrianHicks$elm_string_graphemes$String$Graphemes$Data$LVT = 9;
-var $BrianHicks$elm_string_graphemes$String$Graphemes$Data$LVT$chars = A2(
-	$elm$core$Basics$composeL,
-	$elm$core$Result$withDefault($BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$empty),
-	$BrianHicks$elm_string_graphemes$String$Graphemes$Data$parser(9))('2각갛2객갷2갹걓2걕걯2걱겋2겍겧2격곃2곅곟2곡곻2곽괗2괙괳2괵굏2굑굫2국궇2궉궣2궥궿2귁귛2귝귷2극긓2긕긯2긱깋2깍깧2깩꺃2꺅꺟2꺡꺻2꺽껗2껙껳2껵꼏2꼑꼫2꼭꽇2꽉꽣2꽥꽿2꾁꾛2꾝꾷2꾹꿓2꿕꿯2꿱뀋2뀍뀧2뀩끃2끅끟2끡끻2끽낗2낙낳2낵냏2냑냫2냭넇2넉넣2넥넿2녁녛2녝녷2녹놓2놕놯2놱뇋2뇍뇧2뇩눃2눅눟2눡눻2눽뉗2뉙뉳2뉵늏2늑늫2늭닇2닉닣2닥닿2댁댛2댝댷2댹덓2덕덯2덱뎋2뎍뎧2뎩돃2독돟2돡돻2돽됗2됙됳2됵둏2둑둫2둭뒇2뒉뒣2뒥뒿2듁듛2득듷2듹딓2딕딯2딱땋2땍땧2땩떃2떅떟2떡떻2떽뗗2뗙뗳2뗵똏2똑똫2똭뙇2뙉뙣2뙥뙿2뚁뚛2뚝뚷2뚹뛓2뛕뛯2뛱뜋2뜍뜧2뜩띃2띅띟2띡띻2락랗2랙랳2략럏2럑럫2럭렇2렉렣2력렿2롁롛2록롷2롹뢓2뢕뢯2뢱룋2룍룧2룩뤃2뤅뤟2뤡뤻2뤽륗2륙륳2륵릏2릑릫2릭맇2막맣2맥맿2먁먛2먝먷2먹멓2멕멯2멱몋2몍몧2목뫃2뫅뫟2뫡뫻2뫽묗2묙묳2묵뭏2뭑뭫2뭭뮇2뮉뮣2뮥뮿2믁믛2믝믷2믹밓2박밯2백뱋2뱍뱧2뱩벃2벅벟2벡벻2벽볗2볙볳2복봏2봑봫2봭뵇2뵉뵣2뵥뵿2북붛2붝붷2붹뷓2뷕뷯2뷱븋2븍븧2븩빃2빅빟2빡빻2빽뺗2뺙뺳2뺵뻏2뻑뻫2뻭뼇2뼉뼣2뼥뼿2뽁뽛2뽝뽷2뽹뾓2뾕뾯2뾱뿋2뿍뿧2뿩쀃2쀅쀟2쀡쀻2쀽쁗2쁙쁳2쁵삏2삑삫2삭샇2색샣2샥샿2섁섛2석섷2섹셓2셕셯2셱솋2속솧2솩쇃2쇅쇟2쇡쇻2쇽숗2숙숳2숵쉏2쉑쉫2쉭슇2슉슣2슥슿2싁싛2식싷2싹쌓2쌕쌯2쌱썋2썍썧2썩쎃2쎅쎟2쎡쎻2쎽쏗2쏙쏳2쏵쐏2쐑쐫2쐭쑇2쑉쑣2쑥쑿2쒁쒛2쒝쒷2쒹쓓2쓕쓯2쓱씋2씍씧2씩앃2악앟2액앻2약얗2얙얳2억엏2엑엫2역옇2옉옣2옥옿2왁왛2왝왷2왹욓2욕욯2욱웋2웍웧2웩윃2윅윟2육윻2윽읗2읙읳2익잏2작잫2잭쟇2쟉쟣2쟥쟿2적젛2젝젷2젹졓2졕졯2족좋2좍좧2좩죃2죅죟2죡죻2죽줗2줙줳2줵쥏2쥑쥫2쥭즇2즉즣2즥즿2직짛2짝짷2짹쨓2쨕쨯2쨱쩋2쩍쩧2쩩쪃2쪅쪟2쪡쪻2쪽쫗2쫙쫳2쫵쬏2쬑쬫2쬭쭇2쭉쭣2쭥쭿2쮁쮛2쮝쮷2쮹쯓2쯕쯯2쯱찋2찍찧2착챃2책챟2챡챻2챽첗2척첳2첵쳏2쳑쳫2쳭촇2촉촣2촥촿2쵁쵛2쵝쵷2쵹춓2축춯2춱췋2췍췧2췩츃2츅츟2측츻2츽칗2칙칳2칵캏2캑캫2캭컇2컉컣2컥컿2켁켛2켝켷2켹콓2콕콯2콱쾋2쾍쾧2쾩쿃2쿅쿟2쿡쿻2쿽퀗2퀙퀳2퀵큏2큑큫2큭킇2킉킣2킥킿2탁탛2택탷2탹턓2턕턯2턱텋2텍텧2텩톃2톅톟2톡톻2톽퇗2퇙퇳2퇵툏2툑툫2툭퉇2퉉퉣2퉥퉿2튁튛2튝튷2특틓2틕틯2틱팋2팍팧2팩퍃2퍅퍟2퍡퍻2퍽펗2펙펳2펵폏2폑폫2폭퐇2퐉퐣2퐥퐿2푁푛2푝푷2푹풓2풕풯2풱퓋2퓍퓧2퓩픃2픅픟2픡픻2픽핗2학핳2핵햏2햑햫2햭헇2헉헣2헥헿2혁혛2혝혷2혹홓2확홯2홱횋2획횧2횩훃2훅훟2훡훻2훽휗2휙휳2휵흏2흑흫2흭힇2힉힣');
-var $BrianHicks$elm_string_graphemes$String$Graphemes$Data$Prepend = 3;
-var $BrianHicks$elm_string_graphemes$String$Graphemes$Data$Prepend$chars = A2(
-	$elm$core$Basics$composeL,
-	$elm$core$Result$withDefault($BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$empty),
-	$BrianHicks$elm_string_graphemes$String$Graphemes$Data$parser(3))('2؀؅1۝1܏1࣢1ൎ1𑂽1𑃍2𑇂𑇃1𑨺2𑪄𑪉1𑵆');
-var $BrianHicks$elm_string_graphemes$String$Graphemes$Data$RegionalIndicator = 4;
-var $BrianHicks$elm_string_graphemes$String$Graphemes$Data$Regional_Indicator$chars = A2(
-	$elm$core$Basics$composeL,
-	$elm$core$Result$withDefault($BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$empty),
-	$BrianHicks$elm_string_graphemes$String$Graphemes$Data$parser(4))('2🇦🇿');
-var $BrianHicks$elm_string_graphemes$String$Graphemes$Data$SpacingMark = 12;
-var $BrianHicks$elm_string_graphemes$String$Graphemes$Data$SpacingMark$chars = A2(
-	$elm$core$Basics$composeL,
-	$elm$core$Result$withDefault($BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$empty),
-	$BrianHicks$elm_string_graphemes$String$Graphemes$Data$parser(12))('1ः1ऻ2ाी2ॉौ2ॎॏ2ংঃ2িী2েৈ2োৌ1ਃ2ਾੀ1ઃ2ાી1ૉ2ોૌ2ଂଃ1ୀ2େୈ2ୋୌ1ி2ுூ2ெை2ொௌ2ఁః2ుౄ2ಂಃ1ಾ2ೀು2ೃೄ2ೇೈ2ೊೋ2ംഃ2ിീ2െൈ2ൊൌ2ංඃ2ැෑ2ෘෞ2ෲෳ1ำ1ຳ2༾༿1ཿ1ေ2ျြ2ၖၗ1ႄ1ា2ើៅ2ះៈ2ᤣᤦ2ᤩᤫ2ᤰᤱ2ᤳᤸ2ᨙᨚ1ᩕ1ᩗ2ᩭᩲ1ᬄ1ᬻ2ᬽᭁ2ᭃ᭄1ᮂ1ᮡ2ᮦᮧ1᮪1ᯧ2ᯪᯬ1ᯮ2᯲᯳2ᰤᰫ2ᰴᰵ1᳡1᳷2ꠣꠤ1ꠧ2ꢀꢁ2ꢴꣃ2ꥒ꥓1ꦃ2ꦴꦵ2ꦺꦻ2ꦾ꧀2ꨯꨰ2ꨳꨴ1ꩍ1ꫫ2ꫮꫯ1ꫵ2ꯣꯤ2ꯦꯧ2ꯩꯪ1꯬1𑀀1𑀂1𑂂2𑂰𑂲2𑂷𑂸1𑄬2𑅅𑅆1𑆂2𑆳𑆵2𑆿𑇀2𑈬𑈮2𑈲𑈳1𑈵2𑋠𑋢2𑌂𑌃1𑌿2𑍁𑍄2𑍇𑍈2𑍋𑍍2𑍢𑍣2𑐵𑐷2𑑀𑑁1𑑅2𑒱𑒲1𑒹2𑒻𑒼1𑒾1𑓁2𑖰𑖱2𑖸𑖻1𑖾2𑘰𑘲2𑘻𑘼1𑘾1𑚬2𑚮𑚯1𑚶2𑜠𑜡1𑜦2𑠬𑠮1𑠸2𑧑𑧓2𑧜𑧟1𑧤1𑨹2𑩗𑩘1𑪗1𑰯1𑰾1𑲩1𑲱1𑲴2𑶊𑶎2𑶓𑶔1𑶖2𑻵𑻶2𖽑𖾇1𝅦1𝅭');
-var $BrianHicks$elm_string_graphemes$String$Graphemes$Data$T = 7;
-var $BrianHicks$elm_string_graphemes$String$Graphemes$Data$T$chars = A2(
-	$elm$core$Basics$composeL,
-	$elm$core$Result$withDefault($BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$empty),
-	$BrianHicks$elm_string_graphemes$String$Graphemes$Data$parser(7))('2ᆨᇿ2ퟋퟻ');
-var $BrianHicks$elm_string_graphemes$String$Graphemes$Data$V = 6;
-var $BrianHicks$elm_string_graphemes$String$Graphemes$Data$V$chars = A2(
-	$elm$core$Basics$composeL,
-	$elm$core$Result$withDefault($BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$empty),
-	$BrianHicks$elm_string_graphemes$String$Graphemes$Data$parser(6))('2ᅠᆧ2ힰퟆ');
-var $BrianHicks$elm_string_graphemes$String$Graphemes$Data$ZWJ = 13;
-var $BrianHicks$elm_string_graphemes$String$Graphemes$Data$ZWJ$chars = A2(
-	$elm$core$Basics$composeL,
-	$elm$core$Result$withDefault($BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$empty),
-	$BrianHicks$elm_string_graphemes$String$Graphemes$Data$parser(13))('1‍');
-var $BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$toList = function (rangeDict) {
-	if (rangeDict.$ === 1) {
-		return _List_Nil;
-	} else {
-		var here = rangeDict.b;
-		var value = rangeDict.c;
-		var lt = rangeDict.d;
-		var gt = rangeDict.e;
-		return _Utils_ap(
-			$BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$toList(lt),
-			A2(
-				$elm$core$List$cons,
-				_Utils_Tuple2(here, value),
-				$BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$toList(gt)));
-	}
-};
-var $BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$union = F2(
-	function (a, b) {
+var $zwilias$elm_utf_tools$String$UTF32$foldl = F3(
+	function (op, initial, input) {
 		return A3(
-			$elm$core$List$foldl,
-			function (_v0) {
-				var range_ = _v0.a;
-				var value = _v0.b;
-				return A2($BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$insert, range_, value);
-			},
-			b,
-			$BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$toList(a));
+			$elm$core$String$foldl,
+			F2(
+				function (c, acc) {
+					return A2(
+						op,
+						$elm$core$Char$toCode(c),
+						acc);
+				}),
+			initial,
+			input);
 	});
-var $BrianHicks$elm_string_graphemes$String$Graphemes$Parser$classes = A3(
-	$elm$core$List$foldl,
-	$BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$union,
-	$BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$empty,
-	_List_fromArray(
-		[$BrianHicks$elm_string_graphemes$String$Graphemes$Data$CR$chars, $BrianHicks$elm_string_graphemes$String$Graphemes$Data$LF$chars, $BrianHicks$elm_string_graphemes$String$Graphemes$Data$Control$chars, $BrianHicks$elm_string_graphemes$String$Graphemes$Data$Extend$chars, $BrianHicks$elm_string_graphemes$String$Graphemes$Data$Regional_Indicator$chars, $BrianHicks$elm_string_graphemes$String$Graphemes$Data$Prepend$chars, $BrianHicks$elm_string_graphemes$String$Graphemes$Data$SpacingMark$chars, $BrianHicks$elm_string_graphemes$String$Graphemes$Data$L$chars, $BrianHicks$elm_string_graphemes$String$Graphemes$Data$V$chars, $BrianHicks$elm_string_graphemes$String$Graphemes$Data$T$chars, $BrianHicks$elm_string_graphemes$String$Graphemes$Data$LV$chars, $BrianHicks$elm_string_graphemes$String$Graphemes$Data$LVT$chars, $BrianHicks$elm_string_graphemes$String$Graphemes$Data$Extended_Pictographic$chars, $BrianHicks$elm_string_graphemes$String$Graphemes$Data$ZWJ$chars]));
-var $BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$getHelp = F2(
-	function (range, rangeDict) {
-		getHelp:
-		while (true) {
-			if (rangeDict.$ === 1) {
-				return $elm$core$Maybe$Nothing;
-			} else {
-				var height_ = rangeDict.a;
-				var here = rangeDict.b;
-				var value = rangeDict.c;
-				var lt = rangeDict.d;
-				var gt = rangeDict.e;
-				var _v1 = A2($BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$Range$compare, range, here);
-				switch (_v1) {
-					case 2:
-						var $temp$range = range,
-							$temp$rangeDict = gt;
-						range = $temp$range;
-						rangeDict = $temp$rangeDict;
-						continue getHelp;
-					case 1:
-						var $temp$range = range,
-							$temp$rangeDict = lt;
-						range = $temp$range;
-						rangeDict = $temp$rangeDict;
-						continue getHelp;
-					case 0:
-						return $elm$core$Maybe$Just(value);
-					default:
-						return $elm$core$Maybe$Just(value);
-				}
-			}
-		}
-	});
-var $BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$get = F2(
-	function (what, rangeDict) {
-		return A2(
-			$BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$getHelp,
-			$BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$Range$point(what),
-			rangeDict);
-	});
-var $BrianHicks$elm_string_graphemes$String$Graphemes$Parser$shouldBreakForRule11 = function (classes_) {
-	shouldBreakForRule11:
-	while (true) {
-		_v0$2:
-		while (true) {
-			if (classes_.b && (!classes_.a.$)) {
-				switch (classes_.a.a) {
-					case 11:
-						var _v1 = classes_.a.a;
-						var rest = classes_.b;
-						var $temp$classes_ = rest;
-						classes_ = $temp$classes_;
-						continue shouldBreakForRule11;
-					case 10:
-						if (!classes_.b.b) {
-							var _v2 = classes_.a.a;
-							return false;
-						} else {
-							break _v0$2;
-						}
-					default:
-						break _v0$2;
-				}
-			} else {
-				break _v0$2;
-			}
-		}
-		return true;
-	}
+var $zwilias$elm_utf_tools$String$UTF32$length = function (input) {
+	return A3(
+		$zwilias$elm_utf_tools$String$UTF32$foldl,
+		F2(
+			function (_v0, acc) {
+				return acc + 1;
+			}),
+		0,
+		input);
 };
-var $BrianHicks$elm_string_graphemes$String$Graphemes$Parser$shouldBreakBefore = F3(
-	function (lastChar, restChars, nextChar) {
-		var _v0 = _Utils_Tuple2(
-			A2($BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$get, lastChar, $BrianHicks$elm_string_graphemes$String$Graphemes$Parser$classes),
-			A2($BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$get, nextChar, $BrianHicks$elm_string_graphemes$String$Graphemes$Parser$classes));
-		_v0$1:
-		while (true) {
-			_v0$8:
-			while (true) {
-				_v0$20:
-				while (true) {
-					_v0$21:
-					while (true) {
-						_v0$22:
-						while (true) {
-							_v0$23:
-							while (true) {
-								if (!_v0.a.$) {
-									switch (_v0.a.a) {
-										case 0:
-											if (!_v0.b.$) {
-												switch (_v0.b.a) {
-													case 1:
-														var _v1 = _v0.a.a;
-														var _v2 = _v0.b.a;
-														return false;
-													case 13:
-														break _v0$1;
-													case 12:
-														break _v0$1;
-													case 11:
-														break _v0$1;
-													default:
-														break _v0$1;
-												}
-											} else {
-												break _v0$1;
-											}
-										case 1:
-											var _v4 = _v0.a.a;
-											return true;
-										case 2:
-											var _v5 = _v0.a.a;
-											return true;
-										case 4:
-											if (!_v0.b.$) {
-												switch (_v0.b.a) {
-													case 4:
-														var _v6 = _v0.a.a;
-														var _v7 = _v0.b.a;
-														return !$elm$core$List$isEmpty(restChars);
-													case 13:
-														break _v0$20;
-													case 12:
-														break _v0$21;
-													case 11:
-														break _v0$22;
-													default:
-														break _v0$23;
-												}
-											} else {
-												break _v0$23;
-											}
-										case 3:
-											if (!_v0.b.$) {
-												switch (_v0.b.a) {
-													case 0:
-														var _v8 = _v0.a.a;
-														var _v9 = _v0.b.a;
-														return true;
-													case 1:
-														var _v10 = _v0.a.a;
-														var _v11 = _v0.b.a;
-														return true;
-													case 2:
-														var _v12 = _v0.a.a;
-														var _v13 = _v0.b.a;
-														return true;
-													case 13:
-														break _v0$8;
-													case 12:
-														break _v0$8;
-													case 11:
-														break _v0$8;
-													default:
-														break _v0$8;
-												}
-											} else {
-												break _v0$8;
-											}
-										case 5:
-											if (!_v0.b.$) {
-												switch (_v0.b.a) {
-													case 5:
-														var _v15 = _v0.a.a;
-														var _v16 = _v0.b.a;
-														return false;
-													case 6:
-														var _v17 = _v0.a.a;
-														var _v18 = _v0.b.a;
-														return false;
-													case 8:
-														var _v19 = _v0.a.a;
-														var _v20 = _v0.b.a;
-														return false;
-													case 9:
-														var _v21 = _v0.a.a;
-														var _v22 = _v0.b.a;
-														return false;
-													case 13:
-														break _v0$20;
-													case 12:
-														break _v0$21;
-													case 11:
-														break _v0$22;
-													default:
-														break _v0$23;
-												}
-											} else {
-												break _v0$23;
-											}
-										case 6:
-											if (!_v0.b.$) {
-												switch (_v0.b.a) {
-													case 6:
-														var _v23 = _v0.a.a;
-														var _v24 = _v0.b.a;
-														return false;
-													case 7:
-														var _v25 = _v0.a.a;
-														var _v26 = _v0.b.a;
-														return false;
-													case 13:
-														break _v0$20;
-													case 12:
-														break _v0$21;
-													case 11:
-														break _v0$22;
-													default:
-														break _v0$23;
-												}
-											} else {
-												break _v0$23;
-											}
-										case 7:
-											if (!_v0.b.$) {
-												switch (_v0.b.a) {
-													case 7:
-														var _v27 = _v0.a.a;
-														var _v28 = _v0.b.a;
-														return false;
-													case 13:
-														break _v0$20;
-													case 12:
-														break _v0$21;
-													case 11:
-														break _v0$22;
-													default:
-														break _v0$23;
-												}
-											} else {
-												break _v0$23;
-											}
-										case 8:
-											if (!_v0.b.$) {
-												switch (_v0.b.a) {
-													case 6:
-														var _v29 = _v0.a.a;
-														var _v30 = _v0.b.a;
-														return false;
-													case 7:
-														var _v31 = _v0.a.a;
-														var _v32 = _v0.b.a;
-														return false;
-													case 13:
-														break _v0$20;
-													case 12:
-														break _v0$21;
-													case 11:
-														break _v0$22;
-													default:
-														break _v0$23;
-												}
-											} else {
-												break _v0$23;
-											}
-										case 9:
-											if (!_v0.b.$) {
-												switch (_v0.b.a) {
-													case 7:
-														var _v33 = _v0.a.a;
-														var _v34 = _v0.b.a;
-														return false;
-													case 13:
-														break _v0$20;
-													case 12:
-														break _v0$21;
-													case 11:
-														break _v0$22;
-													default:
-														break _v0$23;
-												}
-											} else {
-												break _v0$23;
-											}
-										case 13:
-											if (!_v0.b.$) {
-												switch (_v0.b.a) {
-													case 10:
-														var _v35 = _v0.a.a;
-														var _v36 = _v0.b.a;
-														return $BrianHicks$elm_string_graphemes$String$Graphemes$Parser$shouldBreakForRule11(
-															A2(
-																$elm$core$List$map,
-																function (c) {
-																	return A2($BrianHicks$elm_string_graphemes$String$Graphemes$RangeDict$get, c, $BrianHicks$elm_string_graphemes$String$Graphemes$Parser$classes);
-																},
-																restChars));
-													case 13:
-														break _v0$20;
-													case 12:
-														break _v0$21;
-													case 11:
-														break _v0$22;
-													default:
-														break _v0$23;
-												}
-											} else {
-												break _v0$23;
-											}
-										default:
-											if (!_v0.b.$) {
-												switch (_v0.b.a) {
-													case 13:
-														break _v0$20;
-													case 12:
-														break _v0$21;
-													case 11:
-														break _v0$22;
-													default:
-														break _v0$23;
-												}
-											} else {
-												break _v0$23;
-											}
-									}
-								} else {
-									if (!_v0.b.$) {
-										switch (_v0.b.a) {
-											case 13:
-												break _v0$20;
-											case 12:
-												break _v0$21;
-											case 11:
-												break _v0$22;
-											default:
-												break _v0$23;
-										}
-									} else {
-										break _v0$23;
-									}
-								}
-							}
-							return true;
-						}
-						var _v39 = _v0.b.a;
-						return false;
-					}
-					var _v38 = _v0.b.a;
-					return false;
-				}
-				var _v37 = _v0.b.a;
-				return false;
-			}
-			var _v14 = _v0.a.a;
-			return false;
-		}
-		var _v3 = _v0.a.a;
-		return true;
-	});
-var $BrianHicks$elm_string_graphemes$String$Graphemes$Parser$unconsHelp = F2(
-	function (str, chars) {
-		unconsHelp:
-		while (true) {
-			var _v0 = _Utils_Tuple2(
-				$elm$core$String$uncons(str),
-				chars);
-			if (_v0.a.$ === 1) {
-				if (!_v0.b.b) {
-					var _v1 = _v0.a;
-					if (A2($elm$core$String$left, 1, str) === '\u0000') {
-						var $temp$str = A2($elm$core$String$dropLeft, 1, str),
-							$temp$chars = _List_fromArray(
-							['\u0000']);
-						str = $temp$str;
-						chars = $temp$chars;
-						continue unconsHelp;
-					} else {
-						return _Utils_Tuple2(chars, '');
-					}
-				} else {
-					var _v2 = _v0.a;
-					var _v3 = _v0.b;
-					var last = _v3.a;
-					var rest = _v3.b;
-					if (A2($elm$core$String$left, 1, str) === '\u0000') {
-						if (A3($BrianHicks$elm_string_graphemes$String$Graphemes$Parser$shouldBreakBefore, last, rest, '\u0000')) {
-							return _Utils_Tuple2(chars, str);
-						} else {
-							var $temp$str = A2($elm$core$String$dropLeft, 1, str),
-								$temp$chars = A2($elm$core$List$cons, '\u0000', chars);
-							str = $temp$str;
-							chars = $temp$chars;
-							continue unconsHelp;
-						}
-					} else {
-						return _Utils_Tuple2(chars, '');
-					}
-				}
-			} else {
-				if (!_v0.b.b) {
-					var _v4 = _v0.a.a;
-					var _char = _v4.a;
-					var strTail = _v4.b;
-					var $temp$str = strTail,
-						$temp$chars = _List_fromArray(
-						[_char]);
-					str = $temp$str;
-					chars = $temp$chars;
-					continue unconsHelp;
-				} else {
-					var _v5 = _v0.a.a;
-					var _char = _v5.a;
-					var strTail = _v5.b;
-					var _v6 = _v0.b;
-					var last = _v6.a;
-					var rest = _v6.b;
-					if (A3($BrianHicks$elm_string_graphemes$String$Graphemes$Parser$shouldBreakBefore, last, rest, _char)) {
-						return _Utils_Tuple2(chars, str);
-					} else {
-						var $temp$str = strTail,
-							$temp$chars = A2($elm$core$List$cons, _char, chars);
-						str = $temp$str;
-						chars = $temp$chars;
-						continue unconsHelp;
-					}
-				}
-			}
-		}
-	});
-var $BrianHicks$elm_string_graphemes$String$Graphemes$Parser$foldl = F3(
-	function (fn, initial, string) {
-		foldl:
-		while (true) {
-			if (string === '') {
-				return initial;
-			} else {
-				var _v1 = A2($BrianHicks$elm_string_graphemes$String$Graphemes$Parser$unconsHelp, string, _List_Nil);
-				var chars = _v1.a;
-				var remaining = _v1.b;
-				var $temp$fn = fn,
-					$temp$initial = A2(
-					fn,
-					$elm$core$String$fromList(
-						$elm$core$List$reverse(chars)),
-					initial),
-					$temp$string = remaining;
-				fn = $temp$fn;
-				initial = $temp$initial;
-				string = $temp$string;
-				continue foldl;
-			}
-		}
-	});
-var $BrianHicks$elm_string_graphemes$String$Graphemes$foldl = $BrianHicks$elm_string_graphemes$String$Graphemes$Parser$foldl;
-var $BrianHicks$elm_string_graphemes$String$Graphemes$length = A2(
-	$BrianHicks$elm_string_graphemes$String$Graphemes$foldl,
-	F2(
-		function (_v0, len) {
-			return len + 1;
-		}),
-	0);
 var $mhoare$elm_stack$Stack$push = F2(
 	function (item, _v0) {
 		var stack = _v0;
@@ -9235,7 +8372,7 @@ var $author$project$OptionPresentor$tokenizeHelper = F3(
 	function (index, _char, highlightResult) {
 		var theEnd = _Utils_eq(
 			index,
-			$BrianHicks$elm_string_graphemes$String$Graphemes$length(highlightResult.aF) - 1);
+			$zwilias$elm_utf_tools$String$UTF32$length(highlightResult.aF) - 1);
 		if (A2($author$project$OptionPresentor$indexInsideMatch, highlightResult.aO, index)) {
 			var _v0 = $mhoare$elm_stack$Stack$top(highlightResult.x);
 			if (!_v0.$) {
@@ -10029,6 +9166,12 @@ var $author$project$Main$DropdownMouseOverOption = function (a) {
 };
 var $elm$core$String$fromFloat = _String_fromNumber;
 var $elm$html$Html$Attributes$id = $elm$html$Html$Attributes$stringProperty('id');
+var $elm$html$Html$Attributes$name = $elm$html$Html$Attributes$stringProperty('name');
+var $elm$virtual_dom$VirtualDom$node = function (tag) {
+	return _VirtualDom_node(
+		_VirtualDom_noScript(tag));
+};
+var $elm$html$Html$node = $elm$virtual_dom$VirtualDom$node;
 var $author$project$Option$emptyOptionGroup = $author$project$Option$NoOptionGroup;
 var $elm$core$Basics$neq = _Utils_notEqual;
 var $elm$virtual_dom$VirtualDom$attribute = F2(
@@ -10370,7 +9513,29 @@ var $author$project$Main$optionsToDropdownOptions = F5(
 var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
 var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
 var $author$project$Main$dropdown = function (model) {
-	var optionsHtml = A5($author$project$Main$optionsToDropdownOptions, $author$project$Main$DropdownMouseOverOption, $author$project$Main$DropdownMouseOutOption, $author$project$Main$DropdownMouseClickOption, model.h, model.f);
+	var optionsHtml = $elm$core$List$isEmpty(model.f) ? _List_fromArray(
+		[
+			A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('option disabled')
+				]),
+			_List_fromArray(
+				[
+					A3(
+					$elm$html$Html$node,
+					'slot',
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$name('no-options')
+						]),
+					_List_fromArray(
+						[
+							$elm$html$Html$text('No available options')
+						]))
+				]))
+		]) : A5($author$project$Main$optionsToDropdownOptions, $author$project$Main$DropdownMouseOverOption, $author$project$Main$DropdownMouseOutOption, $author$project$Main$DropdownMouseClickOption, model.h, model.f);
 	var dropdownFooterHtml = (_Utils_cmp(
 		$elm$core$List$length(model.f),
 		$elm$core$List$length(model.a)) < 0) ? A2(
@@ -10397,7 +9562,7 @@ var $author$project$Main$dropdown = function (model) {
 			'width',
 			$elm$core$String$fromFloat(model.az) + 'px')
 		]);
-	return model.n ? $elm$html$Html$text('') : ((model.af && ((!$elm$core$List$isEmpty(model.f)) && (!$elm$core$List$isEmpty(optionsHtml)))) ? A2(
+	return model.n ? $elm$html$Html$text('') : ((model.af && (!$elm$core$List$isEmpty(optionsHtml))) ? A2(
 		$elm$html$Html$div,
 		_Utils_ap(
 			_List_fromArray(
@@ -10443,12 +9608,6 @@ var $author$project$Main$dropdownIndicator = F3(
 				]));
 	});
 var $elm$html$Html$input = _VirtualDom_node('input');
-var $elm$html$Html$Attributes$name = $elm$html$Html$Attributes$stringProperty('name');
-var $elm$virtual_dom$VirtualDom$node = function (tag) {
-	return _VirtualDom_node(
-		_VirtualDom_noScript(tag));
-};
-var $elm$html$Html$node = $elm$virtual_dom$VirtualDom$node;
 var $robinheghan$keyboard_events$Keyboard$Events$eventToString = function (event) {
 	switch (event) {
 		case 0:
@@ -11028,7 +10187,7 @@ var $author$project$Main$optionsToValuesHtml = function (options) {
 										_List_fromArray(
 											[
 												_Utils_Tuple2('value', true),
-												_Utils_Tuple2('selected-value', true)
+												_Utils_Tuple2('highlighted-value', true)
 											])),
 										$author$project$Main$mousedownPreventDefaultAndStopPropagation(
 										$author$project$Main$ToggleSelectedValueHighlight(optionValue))

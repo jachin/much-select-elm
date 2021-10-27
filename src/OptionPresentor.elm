@@ -10,7 +10,7 @@ import Html exposing (Html, span, text)
 import Html.Attributes exposing (class)
 import List.Extra
 import Stack
-import String.Graphemes
+import String.UTF32
 
 
 type alias HighlightResult =
@@ -41,7 +41,7 @@ tokenizeHelper : Int -> Char -> HighlightResult -> HighlightResult
 tokenizeHelper index char highlightResult =
     let
         theEnd =
-            index == String.Graphemes.length highlightResult.hay - 1
+            index == String.UTF32.length highlightResult.hay - 1
     in
     if indexInsideMatch highlightResult.result index then
         case Stack.top highlightResult.plainStack of
