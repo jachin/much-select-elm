@@ -12945,6 +12945,71 @@ var $author$project$Option$toggleSelectedHighlightByOptionValue = F2(
 			},
 			options);
 	});
+var $author$project$Option$unhighlightSelectedOptions = $elm$core$List$map(
+	function (option) {
+		switch (option.$) {
+			case 'Option':
+				var optionDisplay = option.a;
+				switch (optionDisplay.$) {
+					case 'OptionShown':
+						return option;
+					case 'OptionHidden':
+						return option;
+					case 'OptionSelected':
+						return option;
+					case 'OptionSelectedHighlighted':
+						var selectedIndex = optionDisplay.a;
+						return A2(
+							$author$project$Option$setOptionDisplay,
+							$author$project$Option$OptionSelected(selectedIndex),
+							option);
+					case 'OptionHighlighted':
+						return option;
+					default:
+						return option;
+				}
+			case 'CustomOption':
+				var optionDisplay = option.a;
+				switch (optionDisplay.$) {
+					case 'OptionShown':
+						return option;
+					case 'OptionHidden':
+						return option;
+					case 'OptionSelected':
+						return option;
+					case 'OptionSelectedHighlighted':
+						var selectedIndex = optionDisplay.a;
+						return A2(
+							$author$project$Option$setOptionDisplay,
+							$author$project$Option$OptionSelected(selectedIndex),
+							option);
+					case 'OptionHighlighted':
+						return option;
+					default:
+						return option;
+				}
+			default:
+				var optionDisplay = option.a;
+				switch (optionDisplay.$) {
+					case 'OptionShown':
+						return option;
+					case 'OptionHidden':
+						return option;
+					case 'OptionSelected':
+						return option;
+					case 'OptionSelectedHighlighted':
+						var selectedIndex = optionDisplay.a;
+						return A2(
+							$author$project$Option$setOptionDisplay,
+							$author$project$Option$OptionSelected(selectedIndex),
+							option);
+					case 'OptionHighlighted':
+						return option;
+					default:
+						return option;
+				}
+		}
+	});
 var $elm$core$List$partition = F2(
 	function (pred, list) {
 		var step = F2(
@@ -13935,8 +14000,10 @@ var $author$project$Main$update = F2(
 					model,
 					$author$project$Ports$blurInput(_Utils_Tuple0));
 			case 'InputBlur':
-				var optionsForTheDropdown = $author$project$Option$removeUnselectedCustomOptions(model.optionsForTheDropdown);
-				var options = $author$project$Option$removeUnselectedCustomOptions(model.options);
+				var optionsForTheDropdown = $author$project$Option$unhighlightSelectedOptions(
+					$author$project$Option$removeUnselectedCustomOptions(model.optionsForTheDropdown));
+				var options = $author$project$Option$unhighlightSelectedOptions(
+					$author$project$Option$removeUnselectedCustomOptions(model.options));
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,

@@ -7750,6 +7750,71 @@ var $author$project$Option$toggleSelectedHighlightByOptionValue = F2(
 			},
 			options);
 	});
+var $author$project$Option$unhighlightSelectedOptions = $elm$core$List$map(
+	function (option) {
+		switch (option.$) {
+			case 0:
+				var optionDisplay = option.a;
+				switch (optionDisplay.$) {
+					case 0:
+						return option;
+					case 1:
+						return option;
+					case 2:
+						return option;
+					case 3:
+						var selectedIndex = optionDisplay.a;
+						return A2(
+							$author$project$Option$setOptionDisplay,
+							$author$project$Option$OptionSelected(selectedIndex),
+							option);
+					case 4:
+						return option;
+					default:
+						return option;
+				}
+			case 1:
+				var optionDisplay = option.a;
+				switch (optionDisplay.$) {
+					case 0:
+						return option;
+					case 1:
+						return option;
+					case 2:
+						return option;
+					case 3:
+						var selectedIndex = optionDisplay.a;
+						return A2(
+							$author$project$Option$setOptionDisplay,
+							$author$project$Option$OptionSelected(selectedIndex),
+							option);
+					case 4:
+						return option;
+					default:
+						return option;
+				}
+			default:
+				var optionDisplay = option.a;
+				switch (optionDisplay.$) {
+					case 0:
+						return option;
+					case 1:
+						return option;
+					case 2:
+						return option;
+					case 3:
+						var selectedIndex = optionDisplay.a;
+						return A2(
+							$author$project$Option$setOptionDisplay,
+							$author$project$Option$OptionSelected(selectedIndex),
+							option);
+					case 4:
+						return option;
+					default:
+						return option;
+				}
+		}
+	});
 var $elm$core$List$append = F2(
 	function (xs, ys) {
 		if (!ys.b) {
@@ -8757,8 +8822,10 @@ var $author$project$Main$update = F2(
 					model,
 					$author$project$Ports$blurInput(0));
 			case 3:
-				var optionsForTheDropdown = $author$project$Option$removeUnselectedCustomOptions(model.e);
-				var options = $author$project$Option$removeUnselectedCustomOptions(model.a);
+				var optionsForTheDropdown = $author$project$Option$unhighlightSelectedOptions(
+					$author$project$Option$removeUnselectedCustomOptions(model.e));
+				var options = $author$project$Option$unhighlightSelectedOptions(
+					$author$project$Option$removeUnselectedCustomOptions(model.a));
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,

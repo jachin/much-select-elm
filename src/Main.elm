@@ -178,9 +178,11 @@ update msg model =
             let
                 options =
                     Option.removeUnselectedCustomOptions model.options
+                        |> Option.unhighlightSelectedOptions
 
                 optionsForTheDropdown =
                     Option.removeUnselectedCustomOptions model.optionsForTheDropdown
+                        |> Option.unhighlightSelectedOptions
             in
             ( { model
                 | showDropdown = False

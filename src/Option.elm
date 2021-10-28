@@ -69,6 +69,7 @@ module Option exposing
     , sortOptionsByTotalScore
     , stringToOptionValue
     , toggleSelectedHighlightByOptionValue
+    , unhighlightSelectedOptions
     , updateOrAddCustomOption
     )
 
@@ -1371,6 +1372,73 @@ isOptionHighlighted option =
 
                 OptionDisabled ->
                     False
+
+
+unhighlightSelectedOptions : List Option -> List Option
+unhighlightSelectedOptions =
+    List.map
+        (\option ->
+            case option of
+                Option optionDisplay _ _ _ _ _ ->
+                    case optionDisplay of
+                        OptionShown ->
+                            option
+
+                        OptionHidden ->
+                            option
+
+                        OptionSelected _ ->
+                            option
+
+                        OptionSelectedHighlighted selectedIndex ->
+                            setOptionDisplay (OptionSelected selectedIndex) option
+
+                        OptionHighlighted ->
+                            option
+
+                        OptionDisabled ->
+                            option
+
+                CustomOption optionDisplay _ _ _ ->
+                    case optionDisplay of
+                        OptionShown ->
+                            option
+
+                        OptionHidden ->
+                            option
+
+                        OptionSelected _ ->
+                            option
+
+                        OptionSelectedHighlighted selectedIndex ->
+                            setOptionDisplay (OptionSelected selectedIndex) option
+
+                        OptionHighlighted ->
+                            option
+
+                        OptionDisabled ->
+                            option
+
+                EmptyOption optionDisplay _ ->
+                    case optionDisplay of
+                        OptionShown ->
+                            option
+
+                        OptionHidden ->
+                            option
+
+                        OptionSelected _ ->
+                            option
+
+                        OptionSelectedHighlighted selectedIndex ->
+                            setOptionDisplay (OptionSelected selectedIndex) option
+
+                        OptionHighlighted ->
+                            option
+
+                        OptionDisabled ->
+                            option
+        )
 
 
 optionIsHighlightable : Option -> Bool
