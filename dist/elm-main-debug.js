@@ -12750,6 +12750,19 @@ var $author$project$Option$removeOptionsFromOptionList = F2(
 			},
 			options);
 	});
+var $author$project$Option$unselectedOptions = function (options) {
+	return A2(
+		$elm$core$List$filter,
+		function (option) {
+			return !$author$project$Option$isOptionSelected(option);
+		},
+		options);
+};
+var $author$project$Option$removeUnselectedCustomOptions = function (options) {
+	var unselectedCustomOptions = $author$project$Option$unselectedOptions(
+		$author$project$Option$customOptions(options));
+	return A2($author$project$Option$removeOptionsFromOptionList, options, unselectedCustomOptions);
+};
 var $author$project$Ports$scrollDropdownToElement = _Platform_outgoingPort('scrollDropdownToElement', $elm$json$Json$Encode$string);
 var $author$project$Option$clearAnyUnselectedCustomOptions = function (options) {
 	return A2(
@@ -13890,7 +13903,9 @@ var $author$project$Main$update = F2(
 			case 'NoOp':
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 			case 'BringInputInFocus':
-				return model.focused ? _Utils_Tuple2(model, $elm$core$Platform$Cmd$none) : _Utils_Tuple2(
+				return model.focused ? _Utils_Tuple2(
+					model,
+					$author$project$Ports$focusInput(_Utils_Tuple0)) : _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{focused: true}),
@@ -13900,12 +13915,16 @@ var $author$project$Main$update = F2(
 					_Utils_update(
 						model,
 						{focused: false}),
-					$author$project$Ports$blurInput(_Utils_Tuple0)) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+					$author$project$Ports$blurInput(_Utils_Tuple0)) : _Utils_Tuple2(
+					model,
+					$author$project$Ports$blurInput(_Utils_Tuple0));
 			case 'InputBlur':
+				var optionsForTheDropdown = $author$project$Option$removeUnselectedCustomOptions(model.optionsForTheDropdown);
+				var options = $author$project$Option$removeUnselectedCustomOptions(model.options);
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{focused: false, searchString: '', showDropdown: false}),
+						{focused: false, options: options, optionsForTheDropdown: optionsForTheDropdown, searchString: '', showDropdown: false}),
 					$elm$core$Platform$Cmd$none);
 			case 'InputFocus':
 				return _Utils_Tuple2(

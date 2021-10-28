@@ -13,7 +13,9 @@ module Option exposing
     , deselectAllSelectedHighlightedOptions
     , deselectEveryOptionExceptOptionsInList
     , deselectLastSelectedOption
+    , deselectOption
     , deselectOptionInListByOptionValue
+    , deselectOptions
     , emptyOptionGroup
     , filterOptionsToShowInDropdown
     , findHighlightedOrSelectedOptionIndex
@@ -35,6 +37,7 @@ module Option exposing
     , mergeTwoListsOfOptionsPreservingSelectedOptions
     , moveHighlightedOptionDown
     , moveHighlightedOptionUp
+    , newCustomOption
     , newDisabledOption
     , newOption
     , newSelectedOption
@@ -47,6 +50,7 @@ module Option exposing
     , optionsValues
     , removeHighlightOptionInList
     , removeOptionsFromOptionList
+    , removeUnselectedCustomOptions
     , selectHighlightedOption
     , selectOption
     , selectOptionInList
@@ -201,6 +205,15 @@ newOption value maybeCleanLabel =
                 NoDescription
                 NoOptionGroup
                 Nothing
+
+
+newCustomOption : String -> Maybe String -> Option
+newCustomOption value maybeCleanLabel =
+    CustomOption
+        OptionShown
+        (OptionLabel value maybeCleanLabel NoSortRank)
+        (OptionValue value)
+        Nothing
 
 
 setLabelWithString : String -> Maybe String -> Option -> Option
@@ -1537,11 +1550,37 @@ deselectOption option =
                     EmptyOption OptionDisabled label
 
 
+deselectOptions : List Option -> List Option -> List Option
+deselectOptions optionsToDeselect allOptions =
+    let
+        shouldDeselectOption option =
+            -- figure out if options match my looking at their value's
+            List.any
+                (\optionToDeselect -> getOptionValue optionToDeselect == getOptionValue option)
+                optionsToDeselect
+    in
+    List.map
+        (\option ->
+            if shouldDeselectOption option then
+                deselectOption option
+
+            else
+                option
+        )
+        allOptions
+
+
 selectedOptions : List Option -> List Option
 selectedOptions options =
     options
         |> List.filter isOptionSelected
         |> List.sortBy getOptionSelectedIndex
+
+
+unselectedOptions : List Option -> List Option
+unselectedOptions options =
+    options
+        |> List.filter (\option -> isOptionSelected option |> not)
 
 
 toggleSelectedHighlightByOptionValue : List Option -> OptionValue -> List Option
@@ -1676,23 +1715,6 @@ hasSelectedHighlightedOptions options =
     List.any isOptionSelectedHighlighted options
 
 
-selectedHighlightedOptions : List Option -> List Option
-selectedHighlightedOptions options =
-    List.filter
-        (\option_ ->
-            case option_ of
-                Option optionDisplay _ _ _ _ _ ->
-                    isOptionDisplaySelectedHighlighted optionDisplay
-
-                CustomOption optionDisplay _ _ _ ->
-                    isOptionDisplaySelectedHighlighted optionDisplay
-
-                EmptyOption optionDisplay _ ->
-                    isOptionDisplaySelectedHighlighted optionDisplay
-        )
-        options
-
-
 isOptionSelectedHighlighted : Option -> Bool
 isOptionSelectedHighlighted option =
     case option of
@@ -1760,6 +1782,21 @@ optionListContainsOptionWithValue option options =
 optionToValueLabelTuple : Option -> ( String, String )
 optionToValueLabelTuple option =
     ( getOptionValueAsString option, getOptionLabel option |> optionLabelToString )
+
+
+
+{--Clean up custom options, remove all the custom options that are not selected --}
+
+
+removeUnselectedCustomOptions : List Option -> List Option
+removeUnselectedCustomOptions options =
+    let
+        unselectedCustomOptions =
+            options
+                |> customOptions
+                |> unselectedOptions
+    in
+    removeOptionsFromOptionList options unselectedCustomOptions
 
 
 customSelectedOptions : List Option -> List Option
