@@ -162,7 +162,7 @@ update msg model =
 
         BringInputInFocus ->
             if model.focused then
-                ( model, Cmd.none )
+                ( model, focusInput () )
 
             else
                 ( { model | focused = True }, focusInput () )
@@ -172,10 +172,27 @@ update msg model =
                 ( { model | focused = False }, blurInput () )
 
             else
-                ( model, Cmd.none )
+                ( model, blurInput () )
 
         InputBlur ->
-            ( { model | showDropdown = False, focused = False, searchString = "" }, Cmd.none )
+            let
+                options =
+                    Option.removeUnselectedCustomOptions model.options
+                        |> Option.unhighlightSelectedOptions
+
+                optionsForTheDropdown =
+                    Option.removeUnselectedCustomOptions model.optionsForTheDropdown
+                        |> Option.unhighlightSelectedOptions
+            in
+            ( { model
+                | showDropdown = False
+                , focused = False
+                , searchString = ""
+                , options = options
+                , optionsForTheDropdown = optionsForTheDropdown
+              }
+            , Cmd.none
+            )
 
         InputFocus ->
             ( { model | showDropdown = True }, Cmd.none )
