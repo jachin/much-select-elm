@@ -13794,7 +13794,23 @@ var $author$project$Option$updateOrAddCustomOption = F2(
 			function (option_) {
 				switch (option_.$) {
 					case 'CustomOption':
-						return true;
+						var optionDisplay = option_.a;
+						switch (optionDisplay.$) {
+							case 'OptionShown':
+								return true;
+							case 'OptionHidden':
+								return true;
+							case 'OptionSelected':
+								var _int = optionDisplay.a;
+								return false;
+							case 'OptionSelectedHighlighted':
+								var _int = optionDisplay.a;
+								return false;
+							case 'OptionHighlighted':
+								return true;
+							default:
+								return true;
+						}
 					case 'Option':
 						return false;
 					default:

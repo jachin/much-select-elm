@@ -8616,7 +8616,23 @@ var $author$project$Option$updateOrAddCustomOption = F2(
 			function (option_) {
 				switch (option_.$) {
 					case 1:
-						return true;
+						var optionDisplay = option_.a;
+						switch (optionDisplay.$) {
+							case 0:
+								return true;
+							case 1:
+								return true;
+							case 2:
+								var _int = optionDisplay.a;
+								return false;
+							case 3:
+								var _int = optionDisplay.a;
+								return false;
+							case 4:
+								return true;
+							default:
+								return true;
+						}
 					case 0:
 						return false;
 					default:

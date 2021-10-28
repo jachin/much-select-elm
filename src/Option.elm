@@ -699,6 +699,8 @@ optionValuesEqual option optionValue =
 updateOrAddCustomOption : String -> List Option -> List Option
 updateOrAddCustomOption searchString options =
     let
+        -- If we have an exact match with an existing option don't show the custom
+        --  option.
         showAddOption =
             options
                 |> List.any
@@ -715,8 +717,26 @@ updateOrAddCustomOption searchString options =
             List.Extra.dropWhile
                 (\option_ ->
                     case option_ of
-                        CustomOption _ _ _ _ ->
-                            True
+                        CustomOption optionDisplay _ _ _ ->
+                            -- If a custom option is selected we want to make sure it stays in the list of options.
+                            case optionDisplay of
+                                OptionShown ->
+                                    True
+
+                                OptionHidden ->
+                                    True
+
+                                OptionSelected int ->
+                                    False
+
+                                OptionSelectedHighlighted int ->
+                                    False
+
+                                OptionHighlighted ->
+                                    True
+
+                                OptionDisabled ->
+                                    True
 
                         Option _ _ _ _ _ _ ->
                             False
