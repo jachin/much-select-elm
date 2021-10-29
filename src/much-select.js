@@ -142,7 +142,7 @@ class MuchSelect extends HTMLElement {
      * @type {number}
      * @private
      */
-    this._minimunWidth = 200;
+    this._minimumWidth = 200;
 
     /**
      * @type {string|null}
@@ -473,8 +473,8 @@ class MuchSelect extends HTMLElement {
         let height = valueCasingElement.offsetHeight;
 
         // Prevent the width from falling below some threshold.
-        if (width < this._minimunWidth) {
-          width = this._minimunWidth;
+        if (width < this._minimumWidth) {
+          width = this._minimumWidth;
         }
 
         // Clamp the width between some min and max.
@@ -868,7 +868,7 @@ class MuchSelect extends HTMLElement {
         */
 
         min-height: 40px;
-        min-width: ${this._minimunWidth}px;
+        min-width: ${this._minimumWidth}px;
       }
 
       /*
@@ -883,7 +883,7 @@ class MuchSelect extends HTMLElement {
         margin-top: auto;
         margin-bottom: auto;
         position: relative;
-        min-width: ${this._minimunWidth}px;
+        min-width: ${this._minimumWidth}px;
       }
 
       /*
