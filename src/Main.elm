@@ -1322,7 +1322,7 @@ rightSlotHtml rightSlot focused disabled hasOptionSelected =
         ShowClearButton ->
             div
                 [ id "clear-button-wrapper"
-                , onClick ClearAllSelectedOptions
+                , onClickPreventDefaultAndStopPropagation ClearAllSelectedOptions
                 ]
                 [ node "slot"
                     [ name "clear-button"
@@ -1550,6 +1550,20 @@ subscriptions _ =
 mousedownPreventDefaultAndStopPropagation : a -> Html.Attribute a
 mousedownPreventDefaultAndStopPropagation message =
     Html.Events.custom "mousedown"
+        (Json.Decode.succeed
+            { message = message
+            , stopPropagation = True
+            , preventDefault = True
+            }
+        )
+
+
+{-| Performs the event onClick, but also stops that click from propagating and
+prevents defaults to ensure the msg specified is the only action.
+-}
+onClickPreventDefaultAndStopPropagation : msg -> Html.Attribute msg
+onClickPreventDefaultAndStopPropagation message =
+    Html.Events.custom "click"
         (Json.Decode.succeed
             { message = message
             , stopPropagation = True
