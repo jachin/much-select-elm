@@ -11,6 +11,7 @@ port module Ports exposing
     , loadingChangedReceiver
     , maxDropdownItemsChangedReceiver
     , muchSelectIsReady
+    , multiSelectChangedReceiver
     , optionDeselected
     , optionSelected
     , optionsChangedReceiver
@@ -92,6 +93,9 @@ port loadingChangedReceiver : (Bool -> msg) -> Sub msg
 
 
 port disableChangedReceiver : (Bool -> msg) -> Sub msg
+
+
+port multiSelectChangedReceiver : (Bool -> msg) -> Sub msg
 
 
 port selectedItemStaysInPlaceChangedReceiver : (Bool -> msg) -> Sub msg

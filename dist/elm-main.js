@@ -6804,6 +6804,9 @@ var $author$project$Main$LoadingAttributeChanged = function (a) {
 var $author$project$Main$MaxDropdownItemsChanged = function (a) {
 	return {$: 17, a: a};
 };
+var $author$project$Main$MulitSelectAttributeChanged = function (a) {
+	return {$: 20, a: a};
+};
 var $author$project$Main$OptionsChanged = function (a) {
 	return {$: 10, a: a};
 };
@@ -6817,10 +6820,10 @@ var $author$project$Main$SelectOption = function (a) {
 	return {$: 13, a: a};
 };
 var $author$project$Main$SelectedItemStaysInPlaceChanged = function (a) {
-	return {$: 20, a: a};
+	return {$: 21, a: a};
 };
 var $author$project$Main$ValueCasingWidthUpdate = function (a) {
-	return {$: 26, a: a};
+	return {$: 27, a: a};
 };
 var $author$project$Main$ValueChanged = function (a) {
 	return {$: 9, a: a};
@@ -6833,6 +6836,7 @@ var $author$project$Ports$deselectOptionReceiver = _Platform_incomingPort('desel
 var $author$project$Ports$disableChangedReceiver = _Platform_incomingPort('disableChangedReceiver', $elm$json$Json$Decode$bool);
 var $author$project$Ports$loadingChangedReceiver = _Platform_incomingPort('loadingChangedReceiver', $elm$json$Json$Decode$bool);
 var $author$project$Ports$maxDropdownItemsChangedReceiver = _Platform_incomingPort('maxDropdownItemsChangedReceiver', $elm$json$Json$Decode$int);
+var $author$project$Ports$multiSelectChangedReceiver = _Platform_incomingPort('multiSelectChangedReceiver', $elm$json$Json$Decode$bool);
 var $author$project$Ports$optionsChangedReceiver = _Platform_incomingPort('optionsChangedReceiver', $elm$json$Json$Decode$value);
 var $author$project$Ports$placeholderChangedReceiver = _Platform_incomingPort('placeholderChangedReceiver', $elm$json$Json$Decode$string);
 var $author$project$Ports$removeOptionsReceiver = _Platform_incomingPort('removeOptionsReceiver', $elm$json$Json$Decode$value);
@@ -6870,7 +6874,8 @@ var $author$project$Main$subscriptions = function (_v0) {
 				$author$project$Ports$allowCustomOptionsReceiver($author$project$Main$AllowCustomOptionsChanged),
 				$author$project$Ports$valueCasingDimensionsChangedReceiver($author$project$Main$ValueCasingWidthUpdate),
 				$author$project$Ports$selectOptionReceiver($author$project$Main$SelectOption),
-				$author$project$Ports$deselectOptionReceiver($author$project$Main$DeselectOption)
+				$author$project$Ports$deselectOptionReceiver($author$project$Main$DeselectOption),
+				$author$project$Ports$multiSelectChangedReceiver($author$project$Main$MulitSelectAttributeChanged)
 			]));
 };
 var $author$project$Option$addAdditionalOptionsToOptionList = F2(
@@ -7669,6 +7674,16 @@ var $author$project$SelectionMode$setAllowCustomOptionsWithBool = F2(
 			return bool ? A2($author$project$SelectionMode$SingleSelect, 0, selectedItemPlacementMode) : A2($author$project$SelectionMode$SingleSelect, 1, selectedItemPlacementMode);
 		} else {
 			return bool ? $author$project$SelectionMode$MultiSelect(0) : $author$project$SelectionMode$MultiSelect(1);
+		}
+	});
+var $author$project$SelectionMode$setMulitSelectModeWithBool = F2(
+	function (isInMulitSelectMode, selectionMode) {
+		if (!selectionMode.$) {
+			var customOptions = selectionMode.a;
+			return isInMulitSelectMode ? $author$project$SelectionMode$MultiSelect(customOptions) : selectionMode;
+		} else {
+			var customOptions = selectionMode.a;
+			return isInMulitSelectMode ? selectionMode : A2($author$project$SelectionMode$SingleSelect, customOptions, 0);
 		}
 	});
 var $author$project$SelectionMode$setSelectedItemStaysInPlace = F2(
@@ -9100,7 +9115,7 @@ var $author$project$Main$update = F2(
 						model,
 						{n: bool}),
 					$elm$core$Platform$Cmd$none);
-			case 20:
+			case 21:
 				var selectedItemStaysInPlace = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
@@ -9109,7 +9124,16 @@ var $author$project$Main$update = F2(
 							h: A2($author$project$SelectionMode$setSelectedItemStaysInPlace, selectedItemStaysInPlace, model.h)
 						}),
 					$elm$core$Platform$Cmd$none);
-			case 21:
+			case 20:
+				var isInMulitSelectMode = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							h: A2($author$project$SelectionMode$setMulitSelectModeWithBool, isInMulitSelectMode, model.h)
+						}),
+					$elm$core$Platform$Cmd$none);
+			case 22:
 				var options = A2($author$project$Option$selectHighlightedOption, model.h, model.a);
 				var _v11 = model.h;
 				if (!_v11.$) {
@@ -9131,18 +9155,18 @@ var $author$project$Main$update = F2(
 									$author$project$Ports$focusInput(0)
 								])));
 				}
-			case 22:
+			case 23:
 				var _v12 = model.h;
 				if (!_v12.$) {
 					return $author$project$Option$hasSelectedOption(model.a) ? $author$project$Main$clearAllSelectedOption(model) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				} else {
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				}
-			case 23:
+			case 24:
 				return _Utils_Tuple2(
 					A4($author$project$Main$updateModelWithSearchStringChanges, model.f, '', model.a, model),
 					$author$project$Ports$blurInput(0));
-			case 24:
+			case 25:
 				var updatedOptions = $author$project$Option$moveHighlightedOptionUp(model.a);
 				return _Utils_Tuple2(
 					_Utils_update(
@@ -9152,7 +9176,7 @@ var $author$project$Main$update = F2(
 							e: A2($author$project$Main$figureOutWhichOptionsToShow, model.f, updatedOptions)
 						}),
 					$author$project$Ports$scrollDropdownToElement('something'));
-			case 25:
+			case 26:
 				var updatedOptions = $author$project$Option$moveHighlightedOptionDown(model.a);
 				return _Utils_Tuple2(
 					_Utils_update(
@@ -9162,16 +9186,16 @@ var $author$project$Main$update = F2(
 							e: A2($author$project$Main$figureOutWhichOptionsToShow, model.f, updatedOptions)
 						}),
 					$author$project$Ports$scrollDropdownToElement('something'));
-			case 26:
+			case 27:
 				var dims = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{ay: dims.cd, az: dims.cX}),
 					$elm$core$Platform$Cmd$none);
-			case 27:
-				return $author$project$Main$clearAllSelectedOption(model);
 			case 28:
+				return $author$project$Main$clearAllSelectedOption(model);
+			case 29:
 				var optionValue = msg.a;
 				var updatedOptions = A2($author$project$Option$toggleSelectedHighlightByOptionValue, model.a, optionValue);
 				return _Utils_Tuple2(
@@ -9209,19 +9233,19 @@ var $ohanhi$keyboard$Keyboard$ArrowUp = {$: 21};
 var $ohanhi$keyboard$Keyboard$Backspace = {$: 26};
 var $author$project$Main$BringInputInFocus = {$: 1};
 var $ohanhi$keyboard$Keyboard$Delete = {$: 31};
-var $author$project$Main$DeleteKeydownForMultiSelect = {$: 29};
+var $author$project$Main$DeleteKeydownForMultiSelect = {$: 30};
 var $ohanhi$keyboard$Keyboard$Enter = {$: 15};
 var $ohanhi$keyboard$Keyboard$Escape = {$: 62};
-var $author$project$Main$EscapeKeyInInputFilter = {$: 23};
+var $author$project$Main$EscapeKeyInInputFilter = {$: 24};
 var $author$project$Main$InputBlur = {$: 3};
 var $author$project$Main$InputFocus = {$: 4};
 var $robinheghan$keyboard_events$Keyboard$Events$Keydown = 0;
-var $author$project$Main$MoveHighlightedOptionDown = {$: 25};
-var $author$project$Main$MoveHighlightedOptionUp = {$: 24};
+var $author$project$Main$MoveHighlightedOptionDown = {$: 26};
+var $author$project$Main$MoveHighlightedOptionUp = {$: 25};
 var $author$project$Main$SearchInputOnInput = function (a) {
 	return {$: 8, a: a};
 };
-var $author$project$Main$SelectHighlightedOption = {$: 21};
+var $author$project$Main$SelectHighlightedOption = {$: 22};
 var $elm$html$Html$Attributes$stringProperty = F2(
 	function (key, string) {
 		return A2(
@@ -10204,7 +10228,7 @@ var $elm$html$Html$Events$onMouseDown = function (msg) {
 		$elm$json$Json$Decode$succeed(msg));
 };
 var $author$project$Main$ToggleSelectedValueHighlight = function (a) {
-	return {$: 28, a: a};
+	return {$: 29, a: a};
 };
 var $author$project$Main$optionsToValuesHtml = function (options) {
 	return A2(
@@ -10335,7 +10359,7 @@ var $author$project$Main$optionsToValuesHtml = function (options) {
 		$author$project$Option$selectedOptions(options));
 };
 var $elm$html$Html$Attributes$placeholder = $elm$html$Html$Attributes$stringProperty('placeholder');
-var $author$project$Main$ClearAllSelectedOptions = {$: 27};
+var $author$project$Main$ClearAllSelectedOptions = {$: 28};
 var $author$project$Main$onClickPreventDefaultAndStopPropagation = function (message) {
 	return A2(
 		$elm$html$Html$Events$custom,
@@ -10384,7 +10408,7 @@ var $author$project$Main$rightSlotHtml = F4(
 						]));
 		}
 	});
-var $author$project$Main$DeleteInputForSingleSelect = {$: 22};
+var $author$project$Main$DeleteInputForSingleSelect = {$: 23};
 var $robinheghan$keyboard_events$Keyboard$Events$customPerKey = F2(
 	function (event, decisionMap) {
 		return A2(

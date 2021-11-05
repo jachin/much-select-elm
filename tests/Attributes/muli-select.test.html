@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+<script type="module">
+  import { runTests } from '@web/test-runner-mocha';
+  import { expect } from '@esm-bundle/chai';
+  import { html, fixture, nextFrame } from "@open-wc/testing";
+
+  import MuchSelect from "../../dist/much-select.js";
+
+  if (!customElements.get("much-select")) {
+    // Putting guard rails around this because browsers do not like
+    //  having the same custom element defined more than once.
+    window.customElements.define("much-select", MuchSelect);
+  }
+
+  runTests(() => {
+    describe("Attributes", () => {
+      describe("multi-select", () => {
+        it("adding the attribute should put the much select into mulit select mode", async () =>  {
+          const el = /** @type {MuchSelect} */ await fixture(html`<much-select multi-select=""></much-select>`);
+          expect(el.shadowRoot.querySelectorAll("#value-casing.multi").length).to.equal(1);
+        });
+
+        it("adding the attribute should put the much select into mulit select mode even if it's not the first attribute", async () =>  {
+          const el = /** @type {MuchSelect} */ await fixture(html`<much-select size="small" class="" id="" selected-value="milton" multi-select></much-select>`);
+          expect(el.shadowRoot.querySelectorAll("#value-casing.multi").length).to.equal(1);
+        });
+
+        it("when adding the attribute after the fact", async () =>  {
+          const el = /** @type {MuchSelect} */ await fixture(html`<much-select></much-select>`);
+          expect(el.shadowRoot.querySelectorAll("#value-casing.single").length).to.equal(1);
+
+          el.setAttribute("mulit-select", "")
+          await nextFrame();
+          expect(el.shadowRoot.querySelectorAll("#value-casing.multi").length).to.equal(1);
+
+          el.removeAttribute("mulit-select")
+          await nextFrame();
+          expect(el.shadowRoot.querySelectorAll("#value-casing.single").length).to.equal(1);
+        });
+      });
+    });
+  });
+</script>
+</body>
+</html>

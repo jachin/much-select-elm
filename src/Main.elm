@@ -68,6 +68,7 @@ import Ports
         , loadingChangedReceiver
         , maxDropdownItemsChangedReceiver
         , muchSelectIsReady
+        , multiSelectChangedReceiver
         , optionDeselected
         , optionSelected
         , optionsChangedReceiver
@@ -112,6 +113,7 @@ type Msg
     | MaxDropdownItemsChanged Int
     | AllowCustomOptionsChanged Bool
     | DisabledAttributeChanged Bool
+    | MulitSelectAttributeChanged Bool
     | SelectedItemStaysInPlaceChanged Bool
     | SelectHighlightedOption
     | DeleteInputForSingleSelect
@@ -429,6 +431,13 @@ update msg model =
                     SelectionMode.setSelectedItemStaysInPlace
                         selectedItemStaysInPlace
                         model.selectionMode
+              }
+            , Cmd.none
+            )
+
+        MulitSelectAttributeChanged isInMulitSelectMode ->
+            ( { model
+                | selectionMode = SelectionMode.setMulitSelectModeWithBool isInMulitSelectMode model.selectionMode
               }
             , Cmd.none
             )
@@ -1544,6 +1553,7 @@ subscriptions _ =
         , valueCasingDimensionsChangedReceiver ValueCasingWidthUpdate
         , selectOptionReceiver SelectOption
         , deselectOptionReceiver DeselectOption
+        , multiSelectChangedReceiver MulitSelectAttributeChanged
         ]
 
 
