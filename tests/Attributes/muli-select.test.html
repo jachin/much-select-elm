@@ -31,11 +31,11 @@
           const el = /** @type {MuchSelect} */ await fixture(html`<much-select></much-select>`);
           expect(el.shadowRoot.querySelectorAll("#value-casing.single").length).to.equal(1);
 
-          el.setAttribute("mulit-select", "")
+          el.setAttribute("multi-select", "")
           await nextFrame();
           expect(el.shadowRoot.querySelectorAll("#value-casing.multi").length).to.equal(1);
 
-          el.removeAttribute("mulit-select")
+          el.removeAttribute("multi-select")
           await nextFrame();
           expect(el.shadowRoot.querySelectorAll("#value-casing.single").length).to.equal(1);
         });
