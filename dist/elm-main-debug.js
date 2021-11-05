@@ -15432,6 +15432,13 @@ var $author$project$Main$optionsToValuesHtml = function (options) {
 };
 var $elm$html$Html$Attributes$placeholder = $elm$html$Html$Attributes$stringProperty('placeholder');
 var $author$project$Main$ClearAllSelectedOptions = {$: 'ClearAllSelectedOptions'};
+var $author$project$Main$onClickPreventDefaultAndStopPropagation = function (message) {
+	return A2(
+		$elm$html$Html$Events$custom,
+		'click',
+		$elm$json$Json$Decode$succeed(
+			{message: message, preventDefault: true, stopPropagation: true}));
+};
 var $author$project$Main$rightSlotHtml = F4(
 	function (rightSlot, focused, disabled, hasOptionSelected) {
 		switch (rightSlot.$) {
@@ -15455,7 +15462,7 @@ var $author$project$Main$rightSlotHtml = F4(
 					_List_fromArray(
 						[
 							$elm$html$Html$Attributes$id('clear-button-wrapper'),
-							$elm$html$Html$Events$onClick($author$project$Main$ClearAllSelectedOptions)
+							$author$project$Main$onClickPreventDefaultAndStopPropagation($author$project$Main$ClearAllSelectedOptions)
 						]),
 					_List_fromArray(
 						[
