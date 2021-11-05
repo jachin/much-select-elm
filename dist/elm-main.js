@@ -2712,9 +2712,9 @@ var _VirtualDom_mapEventTuple = F2(function(func, tuple)
 var _VirtualDom_mapEventRecord = F2(function(func, record)
 {
 	return {
-		M: func(record.M),
-		R: record.R,
-		P: record.P
+		G: func(record.G),
+		L: record.L,
+		J: record.J
 	}
 });
 
@@ -2982,11 +2982,11 @@ function _VirtualDom_makeCallback(eventNode, initialHandler)
 		// 3 = Custom
 
 		var value = result.a;
-		var message = !tag ? value : tag < 3 ? value.a : value.M;
-		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.R;
+		var message = !tag ? value : tag < 3 ? value.a : value.G;
+		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.L;
 		var currentEventNode = (
 			stopPropagation && event.stopPropagation(),
-			(tag == 2 ? value.b : tag == 3 && value.P) && event.preventDefault(),
+			(tag == 2 ? value.b : tag == 3 && value.J) && event.preventDefault(),
 			eventNode
 		);
 		var tagger;
@@ -6760,8 +6760,8 @@ var $author$project$Main$init = function (flags) {
 			f: maxDropdownItems,
 			a: optionsWithInitialValueSelected,
 			e: A2($author$project$Main$figureOutWhichOptionsToShow, maxDropdownItems, optionsWithInitialValueSelected),
-			G: flags.G,
-			I: function () {
+			H: flags.H,
+			K: function () {
 				if (flags.aH) {
 					return 1;
 				} else {
@@ -7029,7 +7029,7 @@ var $author$project$Main$clearAllSelectedOption = function (model) {
 			{
 				a: $author$project$Option$deselectAllOptionsInOptionsList(newOptions),
 				e: A2($author$project$Main$figureOutWhichOptionsToShow, model.f, newOptions),
-				I: 0,
+				K: 0,
 				B: ''
 			}),
 		$elm$core$Platform$Cmd$batch(
@@ -8912,9 +8912,9 @@ var $author$project$Main$update = F2(
 							{
 								a: newOptions,
 								e: A2($author$project$Main$figureOutWhichOptionsToShow, model.f, newOptions),
-								I: A3(
+								K: A3(
 									$author$project$Main$updateRightSlot,
-									model.I,
+									model.K,
 									model.h,
 									$author$project$Option$hasSelectedOption(model.a))
 							}),
@@ -9058,7 +9058,7 @@ var $author$project$Main$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{G: newPlaceholder}),
+						{H: newPlaceholder}),
 					$elm$core$Platform$Cmd$none);
 			case 16:
 				var bool = msg.a;
@@ -9066,7 +9066,7 @@ var $author$project$Main$update = F2(
 					_Utils_update(
 						model,
 						{
-							I: A3(
+							K: A3(
 								$author$project$Main$updateRightSlotLoading,
 								bool,
 								model.h,
@@ -9300,7 +9300,7 @@ var $author$project$Main$mousedownPreventDefaultAndStopPropagation = function (m
 		$elm$html$Html$Events$custom,
 		'mousedown',
 		$elm$json$Json$Decode$succeed(
-			{M: message, P: true, R: true}));
+			{G: message, J: true, L: true}));
 };
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
 	return {$: 0, a: a};
@@ -10336,6 +10336,13 @@ var $author$project$Main$optionsToValuesHtml = function (options) {
 };
 var $elm$html$Html$Attributes$placeholder = $elm$html$Html$Attributes$stringProperty('placeholder');
 var $author$project$Main$ClearAllSelectedOptions = {$: 27};
+var $author$project$Main$onClickPreventDefaultAndStopPropagation = function (message) {
+	return A2(
+		$elm$html$Html$Events$custom,
+		'click',
+		$elm$json$Json$Decode$succeed(
+			{G: message, J: true, L: true}));
+};
 var $author$project$Main$rightSlotHtml = F4(
 	function (rightSlot, focused, disabled, hasOptionSelected) {
 		switch (rightSlot) {
@@ -10359,7 +10366,7 @@ var $author$project$Main$rightSlotHtml = F4(
 					_List_fromArray(
 						[
 							$elm$html$Html$Attributes$id('clear-button-wrapper'),
-							$elm$html$Html$Events$onClick($author$project$Main$ClearAllSelectedOptions)
+							$author$project$Main$onClickPreventDefaultAndStopPropagation($author$project$Main$ClearAllSelectedOptions)
 						]),
 					_List_fromArray(
 						[
@@ -10407,22 +10414,22 @@ var $author$project$Main$singleSelectInputField = F5(
 				[
 					_Utils_Tuple2(
 					$ohanhi$keyboard$Keyboard$Enter,
-					{M: $author$project$Main$SelectHighlightedOption, P: false, R: false}),
+					{G: $author$project$Main$SelectHighlightedOption, J: false, L: false}),
 					_Utils_Tuple2(
 					$ohanhi$keyboard$Keyboard$Backspace,
-					{M: $author$project$Main$DeleteInputForSingleSelect, P: false, R: false}),
+					{G: $author$project$Main$DeleteInputForSingleSelect, J: false, L: false}),
 					_Utils_Tuple2(
 					$ohanhi$keyboard$Keyboard$Delete,
-					{M: $author$project$Main$DeleteInputForSingleSelect, P: false, R: false}),
+					{G: $author$project$Main$DeleteInputForSingleSelect, J: false, L: false}),
 					_Utils_Tuple2(
 					$ohanhi$keyboard$Keyboard$Escape,
-					{M: $author$project$Main$EscapeKeyInInputFilter, P: false, R: false}),
+					{G: $author$project$Main$EscapeKeyInInputFilter, J: false, L: false}),
 					_Utils_Tuple2(
 					$ohanhi$keyboard$Keyboard$ArrowUp,
-					{M: $author$project$Main$MoveHighlightedOptionUp, P: true, R: false}),
+					{G: $author$project$Main$MoveHighlightedOptionUp, J: true, L: false}),
 					_Utils_Tuple2(
 					$ohanhi$keyboard$Keyboard$ArrowDown,
-					{M: $author$project$Main$MoveHighlightedOptionDown, P: true, R: false})
+					{G: $author$project$Main$MoveHighlightedOptionDown, J: true, L: false})
 				]));
 		var idAttr = $elm$html$Html$Attributes$id('input-filter');
 		return isDisabled ? A2(
@@ -10522,9 +10529,9 @@ var $author$project$Main$view = function (model) {
 								[
 									$elm$html$Html$text(valueStr)
 								])),
-							A5($author$project$Main$singleSelectInputField, model.B, model.n, model.m, model.G, hasOptionSelected),
+							A5($author$project$Main$singleSelectInputField, model.B, model.n, model.m, model.H, hasOptionSelected),
 							function () {
-							var _v1 = model.I;
+							var _v1 = model.K;
 							switch (_v1) {
 								case 0:
 									return $elm$html$Html$text('');
@@ -10557,7 +10564,7 @@ var $author$project$Main$view = function (model) {
 	} else {
 		var hasOptionSelected = $author$project$Option$hasSelectedOption(model.a);
 		var showPlaceholder = (!hasOptionSelected) && (!model.m);
-		var placeholderAttribute = showPlaceholder ? $elm$html$Html$Attributes$placeholder(model.G) : $elm$html$Html$Attributes$classList(_List_Nil);
+		var placeholderAttribute = showPlaceholder ? $elm$html$Html$Attributes$placeholder(model.H) : $elm$html$Html$Attributes$classList(_List_Nil);
 		var inputFilter = A2(
 			$elm$html$Html$input,
 			_List_fromArray(
@@ -10628,7 +10635,7 @@ var $author$project$Main$view = function (model) {
 						_List_fromArray(
 							[
 								inputFilter,
-								A4($author$project$Main$rightSlotHtml, model.I, model.m, model.n, hasOptionSelected)
+								A4($author$project$Main$rightSlotHtml, model.K, model.m, model.n, hasOptionSelected)
 							]))),
 					$author$project$Main$dropdown(model)
 				]));
@@ -10669,7 +10676,7 @@ _Platform_export({'Main':{'init':$author$project$Main$main(
 																				$elm$json$Json$Decode$andThen,
 																				function (allowCustomOptions) {
 																					return $elm$json$Json$Decode$succeed(
-																						{aA: allowCustomOptions, aB: allowMultiSelect, n: disabled, aH: loading, f: maxDropdownItems, aN: optionsJson, G: placeholder, aP: selectedItemStaysInPlace, ag: size, aU: value});
+																						{aA: allowCustomOptions, aB: allowMultiSelect, n: disabled, aH: loading, f: maxDropdownItems, aN: optionsJson, H: placeholder, aP: selectedItemStaysInPlace, ag: size, aU: value});
 																				},
 																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
 																		},
@@ -10723,7 +10730,7 @@ export const Elm = {'Main':{'init':$author$project$Main$main(
 																				$elm$json$Json$Decode$andThen,
 																				function (allowCustomOptions) {
 																					return $elm$json$Json$Decode$succeed(
-																						{aA: allowCustomOptions, aB: allowMultiSelect, n: disabled, aH: loading, f: maxDropdownItems, aN: optionsJson, G: placeholder, aP: selectedItemStaysInPlace, ag: size, aU: value});
+																						{aA: allowCustomOptions, aB: allowMultiSelect, n: disabled, aH: loading, f: maxDropdownItems, aN: optionsJson, H: placeholder, aP: selectedItemStaysInPlace, ag: size, aU: value});
 																				},
 																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
 																		},
