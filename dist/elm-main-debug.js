@@ -14310,7 +14310,7 @@ var $author$project$Main$update = F2(
 						{
 							selectionMode: A2($author$project$SelectionMode$setMulitSelectModeWithBool, isInMulitSelectMode, model.selectionMode)
 						}),
-					$elm$core$Platform$Cmd$none);
+					$author$project$Ports$muchSelectIsReady(_Utils_Tuple0));
 			case 'SelectHighlightedOption':
 				var options = A2($author$project$Option$selectHighlightedOption, model.selectionMode, model.options);
 				var _v11 = model.selectionMode;

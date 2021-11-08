@@ -439,7 +439,7 @@ update msg model =
             ( { model
                 | selectionMode = SelectionMode.setMulitSelectModeWithBool isInMulitSelectMode model.selectionMode
               }
-            , Cmd.none
+            , muchSelectIsReady ()
             )
 
         SelectHighlightedOption ->

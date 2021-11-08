@@ -9132,7 +9132,7 @@ var $author$project$Main$update = F2(
 						{
 							h: A2($author$project$SelectionMode$setMulitSelectModeWithBool, isInMulitSelectMode, model.h)
 						}),
-					$elm$core$Platform$Cmd$none);
+					$author$project$Ports$muchSelectIsReady(0));
 			case 22:
 				var options = A2($author$project$Option$selectHighlightedOption, model.h, model.a);
 				var _v11 = model.h;
