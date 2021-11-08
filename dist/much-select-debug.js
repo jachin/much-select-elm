@@ -178,6 +178,12 @@ class MuchSelect extends HTMLElement {
      * @type {boolean}
      * @private
      */
+    this._isInMulitSelectMode = false;
+
+    /**
+     * @type {boolean}
+     * @private
+     */
     this._allowCustomOptions = false;
 
     /**
@@ -213,13 +219,14 @@ class MuchSelect extends HTMLElement {
 
   static get observedAttributes() {
     return [
-      "selected-value",
+      "allow-custom-options",
       "disabled",
-      "placeholder",
       "loading",
       "max-dropdown-items",
-      "allow-custom-options",
+      "multi-select",
+      "placeholder",
       "selected-option-goes-to-top",
+      "selected-value",
     ];
   }
 
@@ -242,6 +249,10 @@ class MuchSelect extends HTMLElement {
     } else if (name === "max-dropdown-items") {
       if (oldValue !== newValue) {
         this.maxDropdownItems = newValue;
+      }
+    } else if (name === "multi-select") {
+      if (oldValue !== newValue) {
+        this.multiSelect = newValue;
       }
     } else if (name === "allow-custom-options") {
       if (oldValue !== newValue) {
@@ -514,14 +525,9 @@ class MuchSelect extends HTMLElement {
       flags.size = "";
     }
 
-    if (this.hasAttribute("multi-select")) {
-      flags.allowMultiSelect = this.getAttribute("multi-select") !== "false";
-    } else {
-      flags.allowMultiSelect = false;
-    }
-
     flags.disabled = this.disabled;
     flags.loading = this.loading;
+    flags.allowMultiSelect = this.mulitSelect;
     flags.selectedItemStaysInPlace = this.selectedItemStaysInPlace;
     flags.maxDropdownItems = this.maxDropdownItems;
     flags.allowCustomOptions = this.allowCustomOptions;
@@ -771,6 +777,31 @@ class MuchSelect extends HTMLElement {
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
       app.ports.maxDropdownItemsChangedReceiver.send(this._maxDropdownItems)
+    );
+  }
+
+  get mulitSelect() {
+    return this._isInMulitSelectMode;
+  }
+
+  set multiSelect(value) {
+    if (value === "false") {
+      this._isInMulitSelectMode = false;
+    } else if (value === "") {
+      this._isInMulitSelectMode = true;
+    } else {
+      this._isInMulitSelectMode = !!value;
+    }
+
+    if (this._isInMulitSelectMode) {
+      this.setAttribute("multi-select", value);
+    } else {
+      this.removeAttribute("multi-select");
+    }
+
+    // noinspection JSUnresolvedVariable
+    this.appPromise.then((app) =>
+      app.ports.multiSelectChangedReceiver.send(this._isInMulitSelectMode)
     );
   }
 

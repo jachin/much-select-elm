@@ -1,4 +1,4 @@
-module SelectionMode exposing (CustomOptions(..), SelectedItemPlacementMode(..), SelectionMode(..), getCustomOptions, getSelectedItemPlacementMode, setAllowCustomOptionsWithBool, setSelectedItemStaysInPlace)
+module SelectionMode exposing (CustomOptions(..), SelectedItemPlacementMode(..), SelectionMode(..), getCustomOptions, getSelectedItemPlacementMode, setAllowCustomOptionsWithBool, setMulitSelectModeWithBool, setSelectedItemStaysInPlace)
 
 
 type CustomOptions
@@ -66,3 +66,21 @@ setSelectedItemStaysInPlace selectedItemStaysInPlace selectionMode =
 
         MultiSelect _ ->
             selectionMode
+
+
+setMulitSelectModeWithBool : Bool -> SelectionMode -> SelectionMode
+setMulitSelectModeWithBool isInMulitSelectMode selectionMode =
+    case selectionMode of
+        SingleSelect customOptions _ ->
+            if isInMulitSelectMode then
+                MultiSelect customOptions
+
+            else
+                selectionMode
+
+        MultiSelect customOptions ->
+            if isInMulitSelectMode then
+                selectionMode
+
+            else
+                SingleSelect customOptions SelectedItemStaysInPlace
