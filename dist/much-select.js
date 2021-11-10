@@ -723,7 +723,10 @@ class MuchSelect extends HTMLElement {
 
   get parsedSelectedValue() {
     if (this.selectedValueEncoding === "comma") {
-      return this.selectedValue.split(",");
+      if (this.selectedValue) {
+        return this.selectedValue.split(",");
+      }
+      return [];
     }
     if (this.selectedValueEncoding === "json") {
       return JSON.parse(decodeURIComponent(this.selectedValue));
@@ -972,11 +975,23 @@ class MuchSelect extends HTMLElement {
     return this._selectedValueEncoding;
   }
 
+  /**
+   * Do not allow this value to be anything but:
+   *  - json
+   *  - comma (default)
+   *
+   * In addition to actually changing the private property, it also (re)encodes
+   *  the current selected value.
+   * */
   set selectedValueEncoding(value) {
     if (value === "json") {
+      const currentValue = this.parsedSelectedValue;
       this._selectedValueEncoding = "json";
+      this.parsedSelectedValue = currentValue;
     } else if (value === "comma") {
+      const currentValue = this.parsedSelectedValue;
       this._selectedValueEncoding = "comma";
+      this.parsedSelectedValue = currentValue;
     } else {
       throw new Error(`Invalid selected value encoding: ${value}`);
     }

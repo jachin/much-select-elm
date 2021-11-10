@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+<script type="module">
+  import { runTests } from '@web/test-runner-mocha';
+  import { expect } from '@esm-bundle/chai';
+  import { html, fixture } from "@open-wc/testing";
+
+  import MuchSelect from "../../dist/much-select.js";
+
+  if (!customElements.get("much-select")) {
+    // Putting guard rails around this because browsers do not like
+    //  having the same custom element defined more than once.
+    window.customElements.define("much-select", MuchSelect);
+  }
+
+  runTests(() => {
+    describe("Attributes", () => {
+      describe("selected-value-encoding", () => {
+        it("the default value should be comma", async () =>  {
+          const el = /** @type {MuchSelect} */ await fixture(html`<much-select></much-select>`);
+          expect(el.selectedValueEncoding).to.equal("comma");
+        });
+
+        it("should be able to change it to json", async () =>  {
+          const el = /** @type {MuchSelect} */ await fixture(html`<much-select></much-select>`);
+          el.setAttribute("selected-value-encoding", "json");
+          expect(el.selectedValueEncoding).to.equal("json");
+        });
+
+        it("changing the selected value encoding should change the selected value", async () =>  {
+          const el = /** @type {MuchSelect} */ await fixture(html`<much-select selected-value="ho,hum"></much-select>`);
+          el.setAttribute("selected-value-encoding", "json");
+          expect(el.selectedValue).to.equal("%5B%22ho%22%2C%22hum%22%5D");
+          expect(el.parsedSelectedValue).to.eql(["ho", "hum"])
+
+          el.setAttribute("selected-value-encoding", "comma");
+          expect(el.selectedValue).to.equal("ho,hum");
+          expect(el.parsedSelectedValue).to.eql(["ho", "hum"])
+        });
+      });
+    });
+  });
+</script>
+</body>
+</html>
