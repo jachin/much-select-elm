@@ -151,6 +151,16 @@ class MuchSelect extends HTMLElement {
     this._selectedValue = null;
 
     /**
+     * This is controlled by the events-only attribute.
+     * If this is true, no changes to the light DOM should
+     * happen automatically.
+     *
+     * @type {boolean}
+     * @private
+     */
+    this._eventsOnlyMode = false;
+
+    /**
      * @type {string|null}
      * @private
      */
@@ -221,6 +231,7 @@ class MuchSelect extends HTMLElement {
     return [
       "allow-custom-options",
       "disabled",
+      "events-only",
       "loading",
       "max-dropdown-items",
       "multi-select",
@@ -232,19 +243,21 @@ class MuchSelect extends HTMLElement {
 
   // noinspection JSUnusedGlobalSymbols
   attributeChangedCallback(name, oldValue, newValue) {
-    if (name === "selected-value") {
+    if (name === "allow-custom-options") {
       if (oldValue !== newValue) {
-        this.updateDimensions();
-        this.selectedValue = newValue;
-      }
-    } else if (name === "placeholder") {
-      if (oldValue !== newValue) {
-        this.updateDimensions();
-        this.placeholder = newValue;
+        this.allowCustomOptions = newValue;
       }
     } else if (name === "disabled") {
       if (oldValue !== newValue) {
         this.disabled = newValue;
+      }
+    } else if (name === "events-only") {
+      if (oldValue !== newValue) {
+        this.eventsOnlyMode = newValue;
+      }
+    } else if (name === "loading") {
+      if (oldValue !== newValue) {
+        this.loading = newValue;
       }
     } else if (name === "max-dropdown-items") {
       if (oldValue !== newValue) {
@@ -254,17 +267,19 @@ class MuchSelect extends HTMLElement {
       if (oldValue !== newValue) {
         this.multiSelect = newValue;
       }
-    } else if (name === "allow-custom-options") {
+    } else if (name === "placeholder") {
       if (oldValue !== newValue) {
-        this.allowCustomOptions = newValue;
-      }
-    } else if (name === "loading") {
-      if (oldValue !== newValue) {
-        this.loading = newValue;
+        this.updateDimensions();
+        this.placeholder = newValue;
       }
     } else if (name === "selected-option-goes-to-top") {
       if (oldValue !== newValue) {
         this.selectedItemGOesToTop = newValue;
+      }
+    } else if (name === "selected-value") {
+      if (oldValue !== newValue) {
+        this.updateDimensions();
+        this.selectedValue = newValue;
       }
     }
   }
@@ -700,7 +715,9 @@ class MuchSelect extends HTMLElement {
       this._selectedValue = value;
     }
 
-    this.setAttribute("selected-value", value);
+    if (!this.eventsOnlyMode) {
+      this.setAttribute("selected-value", value);
+    }
 
     if (value) {
       // TODO perhaps this delimiter should be configurable
@@ -721,7 +738,9 @@ class MuchSelect extends HTMLElement {
   }
 
   set placeholder(placeholder) {
-    this.setAttribute("placeholder", placeholder);
+    if (!this.eventsOnlyMode) {
+      this.setAttribute("placeholder", placeholder);
+    }
 
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
@@ -744,15 +763,32 @@ class MuchSelect extends HTMLElement {
       this._disabled = !!value;
     }
 
-    if (this._disabled) {
-      this.setAttribute("disabled", "disabled");
-    } else {
-      this.removeAttribute("disabled");
+    if (!this.eventsOnlyMode) {
+      if (this._disabled) {
+        this.setAttribute("disabled", "disabled");
+      } else {
+        this.removeAttribute("disabled");
+      }
     }
+
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
       app.ports.disableChangedReceiver.send(this._disabled)
     );
+  }
+
+  get eventsOnlyMode() {
+    return this._eventsOnlyMode;
+  }
+
+  set eventsOnlyMode(value) {
+    if (value === "false") {
+      this._eventsOnlyMode = false;
+    } else if (value === "") {
+      this._eventsOnlyMode = true;
+    } else {
+      this._eventsOnlyMode = !!value;
+    }
   }
 
   get maxDropdownItems() {
@@ -772,7 +808,10 @@ class MuchSelect extends HTMLElement {
       this._maxDropdownItems = 3;
     } else {
       this._maxDropdownItems = newValue;
-      this.setAttribute("max-dropdown-items", newValue);
+
+      if (!this.eventsOnlyMode) {
+        this.setAttribute("max-dropdown-items", newValue);
+      }
     }
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
@@ -793,10 +832,12 @@ class MuchSelect extends HTMLElement {
       this._isInMulitSelectMode = !!value;
     }
 
-    if (this._isInMulitSelectMode) {
-      this.setAttribute("multi-select", value);
-    } else {
-      this.removeAttribute("multi-select");
+    if (!this.eventsOnlyMode) {
+      if (this._isInMulitSelectMode) {
+        this.setAttribute("multi-select", value);
+      } else {
+        this.removeAttribute("multi-select");
+      }
     }
 
     // noinspection JSUnresolvedVariable
@@ -817,15 +858,17 @@ class MuchSelect extends HTMLElement {
     } else {
       this._loading = !!value;
     }
-    if (this._loading) {
-      this.setAttribute("loading", "loading");
-    } else {
-      this.removeAttribute("loading");
+    if (!this.eventsOnlyMode) {
+      if (this._loading) {
+        this.setAttribute("loading", "loading");
+      } else {
+        this.removeAttribute("loading");
+      }
+      // noinspection JSUnresolvedVariable
+      this.appPromise.then((app) =>
+        app.ports.loadingChangedReceiver.send(this._loading)
+      );
     }
-    // noinspection JSUnresolvedVariable
-    this.appPromise.then((app) =>
-      app.ports.loadingChangedReceiver.send(this._loading)
-    );
   }
 
   get allowCustomOptions() {
@@ -840,11 +883,14 @@ class MuchSelect extends HTMLElement {
     } else {
       this._allowCustomOptions = !!value;
     }
-    if (this._allowCustomOptions) {
-      this.setAttribute("allow-custom-options", "true");
-    } else {
-      this.removeAttribute("allow-custom-options");
+    if (!this.eventsOnlyMode) {
+      if (this._allowCustomOptions) {
+        this.setAttribute("allow-custom-options", "true");
+      } else {
+        this.removeAttribute("allow-custom-options");
+      }
     }
+
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
       app.ports.allowCustomOptionsReceiver.send(this._allowCustomOptions)
@@ -872,11 +918,14 @@ class MuchSelect extends HTMLElement {
       this._selectedItemStaysInPlace = !!value;
     }
 
-    if (!this._selectedItemStaysInPlace) {
-      this.setAttribute("selected-option-goes-to-top", "");
-    } else {
-      this.removeAttribute("selected-option-goes-to-top");
+    if (!this.eventsOnlyMode) {
+      if (!this._selectedItemStaysInPlace) {
+        this.setAttribute("selected-option-goes-to-top", "");
+      } else {
+        this.removeAttribute("selected-option-goes-to-top");
+      }
     }
+
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
       app.ports.selectedItemStaysInPlaceChangedReceiver.send(
