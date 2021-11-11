@@ -1,7 +1,7 @@
 module Option.Deselecting exposing (suite)
 
 import Expect
-import Option exposing (deselectAllOptionsInOptionsList, deselectOption, deselectOptions, newCustomOption, newOption, selectOption, selectOptionInListByOptionValue, stringToOptionValue)
+import Option exposing (deselectAllButTheFirstSelectedOptionInList, deselectAllOptionsInOptionsList, deselectOption, deselectOptions, newCustomOption, newOption, selectOption, selectOptionInListByOptionValue, stringToOptionValue)
 import Test exposing (Test, describe, test)
 
 
@@ -53,6 +53,20 @@ suite =
                     [ buzzCola
                     , krustyBurger
                     , selectOption 2 lardLad
+                    , squishee
+                    ]
+        , test "all but the first selected option" <|
+            \_ ->
+                Expect.equalLists
+                    (brands
+                        |> selectOptionInListByOptionValue (stringToOptionValue "Lard Lad")
+                        |> selectOptionInListByOptionValue (stringToOptionValue "Buzz Cola")
+                        |> selectOptionInListByOptionValue (stringToOptionValue "Krusty Burger")
+                        |> deselectAllButTheFirstSelectedOptionInList
+                    )
+                    [ buzzCola
+                    , krustyBurger
+                    , selectOption 0 lardLad
                     , squishee
                     ]
         ]

@@ -435,10 +435,27 @@ update msg model =
             )
 
         MulitSelectAttributeChanged isInMulitSelectMode ->
+            let
+                options =
+                    if isInMulitSelectMode then
+                        model.options
+
+                    else
+                        Option.deselectAllButTheFirstSelectedOptionInList model.options
+
+                cmd =
+                    if isInMulitSelectMode then
+                        Cmd.none
+
+                    else
+                        makeCommandMessagesWhenValuesChanges (Option.selectedOptions options) Nothing
+            in
             ( { model
                 | selectionMode = SelectionMode.setMulitSelectModeWithBool isInMulitSelectMode model.selectionMode
+                , options = options
+                , optionsForTheDropdown = figureOutWhichOptionsToShow model.maxDropdownItems options
               }
-            , muchSelectIsReady ()
+            , Cmd.batch [ muchSelectIsReady (), cmd ]
             )
 
         SelectHighlightedOption ->

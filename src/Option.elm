@@ -9,6 +9,7 @@ module Option exposing
     , clearAnyUnselectedCustomOptions
     , customSelectedOptions
     , decoder
+    , deselectAllButTheFirstSelectedOptionInList
     , deselectAllOptionsInOptionsList
     , deselectAllSelectedHighlightedOptions
     , deselectEveryOptionExceptOptionsInList
@@ -944,6 +945,16 @@ deselectEveryOptionExceptOptionsInList optionsNotToDeselect options =
                 deselectOption option
         )
         options
+
+
+deselectAllButTheFirstSelectedOptionInList : List Option -> List Option
+deselectAllButTheFirstSelectedOptionInList options =
+    case List.head (selectedOptions options) of
+        Just oneOptionToLeaveSelected ->
+            selectSingleOptionInList (getOptionValue oneOptionToLeaveSelected) options
+
+        Nothing ->
+            options
 
 
 
