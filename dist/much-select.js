@@ -218,6 +218,12 @@ class MuchSelect extends HTMLElement {
      */
     this._app = null;
 
+    /**
+     * @type {boolean}
+     * @private
+     */
+    this._connected = false;
+
     this._onSlotChange = this._onSlotChange.bind(this);
 
     this._inputKeypressDebounceHandler = makeDebouncedFunc((searchString) => {
@@ -473,11 +479,14 @@ class MuchSelect extends HTMLElement {
     if (slot) {
       slot.addEventListener("slotchange", this._onSlotChange);
     }
+
+    this._connected = true;
   }
 
   // noinspection JSUnusedGlobalSymbols
   disconnectedCallback() {
     this._resizeObserver.disconnect();
+    this._connected = false;
   }
 
   _onSlotChange() {
@@ -981,19 +990,21 @@ class MuchSelect extends HTMLElement {
    *  - comma (default)
    *
    * In addition to actually changing the private property, it also (re)encodes
-   *  the current selected value.
+   *  the current selected value, but ONLY IF the web component is connected,
+   *  meaning the connected callback has been called, if that has not been called
+   *  we are still initializing.
    * */
   set selectedValueEncoding(value) {
+    const currentValue = this.parsedSelectedValue;
     if (value === "json") {
-      const currentValue = this.parsedSelectedValue;
       this._selectedValueEncoding = "json";
-      this.parsedSelectedValue = currentValue;
     } else if (value === "comma") {
-      const currentValue = this.parsedSelectedValue;
       this._selectedValueEncoding = "comma";
-      this.parsedSelectedValue = currentValue;
     } else {
       throw new Error(`Invalid selected value encoding: ${value}`);
+    }
+    if (this._connected) {
+      this.parsedSelectedValue = currentValue;
     }
   }
 
