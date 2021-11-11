@@ -480,6 +480,8 @@ class MuchSelect extends HTMLElement {
       slot.addEventListener("slotchange", this._onSlotChange);
     }
 
+    this.updateHiddenInputValueSlot();
+
     this._connected = true;
   }
 
@@ -499,6 +501,17 @@ class MuchSelect extends HTMLElement {
         app.ports.optionsChangedReceiver.send(optionsJson);
         this.updateDimensions();
       });
+    }
+  }
+
+  updateHiddenInputValueSlot() {
+    if (!this.eventsOnlyMode) {
+      const hiddenValueInput = this.querySelector(
+        "[slot='hidden-value-input']"
+      );
+      if (hiddenValueInput) {
+        hiddenValueInput.setAttribute("value", this.parsedSelectedValue);
+      }
     }
   }
 
@@ -655,14 +668,7 @@ class MuchSelect extends HTMLElement {
       );
     }
 
-    if (!this.eventsOnlyMode) {
-      const hiddenValueInput = this.querySelector(
-        "[slot='hidden-value-input']"
-      );
-      if (hiddenValueInput) {
-        hiddenValueInput.setAttribute("value", this.parsedSelectedValue);
-      }
-    }
+    this.updateHiddenInputValueSlot();
   }
 
   customOptionSelected(values) {
@@ -778,6 +784,8 @@ class MuchSelect extends HTMLElement {
       // noinspection JSUnresolvedVariable
       this.appPromise.then((app) => app.ports.valueChangedReceiver.send([]));
     }
+
+    this.updateHiddenInputValueSlot();
   }
 
   set parsedSelectedValue(values) {
