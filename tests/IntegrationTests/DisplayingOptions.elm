@@ -16,9 +16,8 @@ import Test.Html.Selector exposing (classes, text)
 
 flagsEmptyOptionsWithOrangeSelected : Flags
 flagsEmptyOptionsWithOrangeSelected =
-    { value = "Orange"
+    { value = "[\"Orange\"]"
     , placeholder = "What is your favorite color"
-    , size = ""
     , allowMultiSelect = False
     , optionsJson = "[]"
     , loading = False
@@ -86,9 +85,8 @@ booksJsonWithSelected =
 
 flagsBookOptions : Flags
 flagsBookOptions =
-    { value = ""
+    { value = "[]"
     , placeholder = "A book"
-    , size = ""
     , allowMultiSelect = False
     , optionsJson = booksJson
     , loading = False
@@ -101,9 +99,8 @@ flagsBookOptions =
 
 flagsBookOptionsWithValue : Flags
 flagsBookOptionsWithValue =
-    { value = "Matilda"
+    { value = "[\"Matilda\"]"
     , placeholder = "A book"
-    , size = ""
     , allowMultiSelect = False
     , optionsJson = booksJson
     , loading = False
@@ -118,7 +115,6 @@ flagsBookOptionsWithSelected : Flags
 flagsBookOptionsWithSelected =
     { value = ""
     , placeholder = "A book"
-    , size = ""
     , allowMultiSelect = False
     , optionsJson = booksJsonWithSelected
     , loading = False

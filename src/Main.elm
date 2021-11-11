@@ -133,7 +133,6 @@ type Msg
 type alias Model =
     { initialValue : List String
     , placeholder : String
-    , size : String
     , selectionMode : SelectionMode
     , options : List Option
     , optionsForTheDropdown : List Option
@@ -1391,7 +1390,6 @@ makeCommandMessagesWhenValuesChanges selectedOptions maybeSelectedValue =
 type alias Flags =
     { value : String
     , placeholder : String
-    , size : String
     , allowMultiSelect : Bool
     , optionsJson : String
     , loading : Bool
@@ -1429,22 +1427,13 @@ init flags =
             else
                 SingleSelect allowCustomOptions selectedItemPlacementMode
 
-        initialValueStr =
-            String.trim flags.value
+        ( initialValues, initialValueErrCmd ) =
+            case Json.Decode.decodeString (Json.Decode.list Json.Decode.string) flags.value of
+                Ok value ->
+                    ( value, Cmd.none )
 
-        initialValues : List String
-        initialValues =
-            case initialValueStr of
-                "" ->
-                    []
-
-                _ ->
-                    case selectionMode of
-                        SingleSelect _ _ ->
-                            [ initialValueStr ]
-
-                        MultiSelect _ ->
-                            String.split "," initialValueStr
+                Err error ->
+                    ( [], errorMessage (Json.Decode.errorToString error) )
 
         ( optionsWithInitialValueSelected, errorCmd ) =
             case Json.Decode.decodeString Option.optionsDecoder flags.optionsJson of
@@ -1491,7 +1480,6 @@ init flags =
     ( { initialValue = initialValues
       , deleteKeyPressed = False
       , placeholder = flags.placeholder
-      , size = flags.size
       , selectionMode = selectionMode
       , options = optionsWithInitialValueSelected
       , optionsForTheDropdown =
@@ -1523,7 +1511,7 @@ init flags =
       , valueCasingWidth = 100
       , valueCasingHeight = 45
       }
-    , Cmd.batch [ errorCmd, muchSelectIsReady () ]
+    , Cmd.batch [ errorCmd, initialValueErrCmd, muchSelectIsReady () ]
     )
 
 

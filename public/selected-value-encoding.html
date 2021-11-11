@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!--suppress HtmlUnknownTarget -->
+  <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+  <title>Much Select</title>
+  <link href="demo-styles.css" rel="stylesheet">
+</head>
+
+<body>
+
+<h1>Much-Select - Selected Value Encoding</h1>
+
+<h2>Demo and Development Playground</h2>
+
+<nav>
+  <ol class="main-nav">
+    <li class="main-nav-item"><a href="index.html">Home</a></li>
+  </ol>
+</nav>
+
+<div class="container">
+
+  <div id="multi-select-comma-seperated-values">
+    <h3>Comma Seperated Selected Values</h3>
+    <much-select multi-select="true" selected-value="Dory,Betta" selected-value-encoding="comma" allow-custom-options>
+      <select slot="select-input">
+        <option>Angelfish</option>
+        <option>Betta</option>
+        <option>Cod</option>
+        <option>Dory</option>
+        <option>Eulachon</option>
+        <option>Fangtooth</option>
+      </select>
+    </much-select>
+  </div>
+
+  <div id="multi-select-json-seperated-values">
+    <h3>JSON Encoded Selected Values</h3>
+    <p>
+      In this example we've added the <code>selected-value-encoding="json"</code> attribute. This means that the <code>selected-value=</code> attribute is expected to be in JSON that has <em>also</em> been URI encoded with <code>encodeURIComponent()</code> (or something else that does the same job).
+    </p>
+    <p>In this case the selected value looks like <code>selected-value="%5B%22Hoki%22%2C%22Gibberfish%22%5D"</code></p>
+    <much-select multi-select="true" selected-value="%5B%22oh%2Cwhere%22%2C%22can%20my%20be%22%5D" selected-value-encoding="json" allow-custom-options>
+      <select slot="select-input">
+        <option>Gibberfish</option>
+        <option>Hoki</option>
+        <option>Ide</option>
+        <option>Jawfish</option>
+      </select>
+    </much-select>
+  </div>
+
+</div>
+
+<script src="./index.js" type="module"></script>
+</body>
+</html>

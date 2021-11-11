@@ -203,10 +203,26 @@ class MuchSelect extends HTMLElement {
     this._selectedItemStaysInPlace = true;
 
     /**
+     * Depending on what you've got going on, you may want different
+     * schemes for encoding the selected values. There are some choices.
+     *  - comma (default) - just make the values comma separated (problematic if you have commas in your values)
+     *  - json
+     * @type {string}
+     * @private
+     */
+    this._selectedValueEncoding = "comma";
+
+    /**
      * @type {null|object}
      * @private
      */
     this._app = null;
+
+    /**
+     * @type {boolean}
+     * @private
+     */
+    this._connected = false;
 
     this._onSlotChange = this._onSlotChange.bind(this);
 
@@ -238,6 +254,7 @@ class MuchSelect extends HTMLElement {
       "placeholder",
       "selected-option-goes-to-top",
       "selected-value",
+      "selected-value-encoding",
     ];
   }
 
@@ -280,6 +297,11 @@ class MuchSelect extends HTMLElement {
       if (oldValue !== newValue) {
         this.updateDimensions();
         this.selectedValue = newValue;
+      }
+    } else if (name === "selected-value-encoding") {
+      if (oldValue !== newValue) {
+        this.updateDimensions();
+        this.selectedValueEncoding = newValue;
       }
     }
   }
@@ -457,11 +479,14 @@ class MuchSelect extends HTMLElement {
     if (slot) {
       slot.addEventListener("slotchange", this._onSlotChange);
     }
+
+    this._connected = true;
   }
 
   // noinspection JSUnusedGlobalSymbols
   disconnectedCallback() {
     this._resizeObserver.disconnect();
+    this._connected = false;
   }
 
   _onSlotChange() {
@@ -523,9 +548,9 @@ class MuchSelect extends HTMLElement {
   buildFlags() {
     const flags = {};
     if (this.selectedValue) {
-      flags.value = this.selectedValue;
+      flags.value = JSON.stringify(this.parsedSelectedValue);
     } else {
-      flags.value = "";
+      flags.value = "[]";
     }
 
     if (this.hasAttribute("placeholder")) {
@@ -556,18 +581,19 @@ class MuchSelect extends HTMLElement {
       flags.optionsJson = JSON.stringify([]);
     }
 
-    if (this.hasAttribute("selected")) {
-      flags.value = this.getAttribute("selected");
-    }
-
     return flags;
   }
 
+  /**
+   * This method gets called any time the Elm app changes the value of this much select.
+   * An "outgoing port" if you will.
+   *
+   * The selected values always come in an array of tuples, the first part of the tuple
+   * being the value, and the second part being the label.
+   */
   valueChangedHandler(valuesTuple) {
-    // TODO perhaps this delimiter should be configurable
-    this.selectedValue = valuesTuple
-      .map((valueTuple) => valueTuple[0])
-      .join(",");
+    this.parsedSelectedValue = valuesTuple.map((valueTuple) => valueTuple[0]);
+
     this.updateDimensions();
     if (
       this.hasAttribute("multi-select") &&
@@ -704,6 +730,21 @@ class MuchSelect extends HTMLElement {
     return this._selectedValue;
   }
 
+  get parsedSelectedValue() {
+    if (this.selectedValueEncoding === "comma") {
+      if (this.selectedValue) {
+        return this.selectedValue.split(",");
+      }
+      return [];
+    }
+    if (this.selectedValueEncoding === "json") {
+      return JSON.parse(decodeURIComponent(this.selectedValue));
+    }
+    throw new Error(
+      `Unknown selected value encoding, something is very wrong: ${this.selectedValueEncoding}`
+    );
+  }
+
   set selectedValue(value) {
     if (value === null) {
       this._selectedValue = null;
@@ -720,16 +761,21 @@ class MuchSelect extends HTMLElement {
     }
 
     if (value) {
-      // TODO perhaps this delimiter should be configurable
-      const values = value.split(",");
-
       // noinspection JSUnresolvedVariable
       this.appPromise.then((app) =>
-        app.ports.valueChangedReceiver.send(values)
+        app.ports.valueChangedReceiver.send(this.parsedSelectedValue)
       );
     } else {
       // noinspection JSUnresolvedVariable
       this.appPromise.then((app) => app.ports.valueChangedReceiver.send([]));
+    }
+  }
+
+  set parsedSelectedValue(values) {
+    if (this.selectedValueEncoding === "comma") {
+      this.selectedValue = values.join(",");
+    } else if (this.selectedValueEncoding === "json") {
+      this.selectedValue = encodeURIComponent(JSON.stringify(values));
     }
   }
 
@@ -932,6 +978,34 @@ class MuchSelect extends HTMLElement {
         this._selectedItemStaysInPlace
       )
     );
+  }
+
+  get selectedValueEncoding() {
+    return this._selectedValueEncoding;
+  }
+
+  /**
+   * Do not allow this value to be anything but:
+   *  - json
+   *  - comma (default)
+   *
+   * In addition to actually changing the private property, it also (re)encodes
+   *  the current selected value, but ONLY IF the web component is connected,
+   *  meaning the connected callback has been called, if that has not been called
+   *  we are still initializing.
+   * */
+  set selectedValueEncoding(value) {
+    const currentValue = this.parsedSelectedValue;
+    if (value === "json") {
+      this._selectedValueEncoding = "json";
+    } else if (value === "comma") {
+      this._selectedValueEncoding = "comma";
+    } else {
+      throw new Error(`Invalid selected value encoding: ${value}`);
+    }
+    if (this._connected) {
+      this.parsedSelectedValue = currentValue;
+    }
   }
 
   // eslint-disable-next-line class-methods-use-this
