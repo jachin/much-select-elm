@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+<script type="module">
+  import { runTests } from '@web/test-runner-mocha';
+  import { expect } from '@esm-bundle/chai';
+  import { html, fixture, nextFrame } from "@open-wc/testing";
+
+  import MuchSelect from "../../dist/much-select.js";
+
+  if (!customElements.get("much-select")) {
+    // Putting guard rails around this because browsers do not like
+    //  having the same custom element defined more than once.
+    window.customElements.define("much-select", MuchSelect);
+  }
+
+  runTests(() => {
+    describe("Slots", () => {
+      describe("hidden-value-input", () => {
+        it("should be populated with the current value on initialization", async () =>  {
+          const el = /** @type {MuchSelect} */ await fixture(html`<much-select selected-value="Tocharians"><input slot="hidden-value-input" type="hidden" name="my-special-value"></much-select>`);
+          expect(el.querySelector("[slot='hidden-value-input']").getAttribute("value")).to.equal("Tocharians");
+        });
+
+        it("should update when the selected value changes", async () =>  {
+          const el = /** @type {MuchSelect} */ await fixture(html`<much-select selected-value="Jangil"><input slot="hidden-value-input" type="hidden" name="my-special-value"></much-select>`);
+          el.setAttribute("selected-value", "Chaouacha");
+          expect(el.querySelector("[slot='hidden-value-input']").getAttribute("value")).to.equal("Chaouacha");
+        });
+      });
+    });
+  });
+</script>
+</body>
+</html>
