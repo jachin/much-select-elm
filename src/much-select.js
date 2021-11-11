@@ -654,6 +654,15 @@ class MuchSelect extends HTMLElement {
         `In single select mode we are expecting a single value, instead we got ${valuesTuple.length}`
       );
     }
+
+    if (!this.eventsOnlyMode) {
+      const hiddenValueInput = this.querySelector(
+        "[slot='hidden-value-input']"
+      );
+      if (hiddenValueInput) {
+        hiddenValueInput.setAttribute("value", this.parsedSelectedValue);
+      }
+    }
   }
 
   customOptionSelected(values) {
