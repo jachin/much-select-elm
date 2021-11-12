@@ -10556,7 +10556,6 @@ var $author$project$SelectionMode$SelectedItemStaysInPlace = {$: 'SelectedItemSt
 var $author$project$Main$ShowClearButton = {$: 'ShowClearButton'};
 var $author$project$Main$ShowDropdownIndicator = {$: 'ShowDropdownIndicator'};
 var $author$project$Main$ShowLoadingIndicator = {$: 'ShowLoadingIndicator'};
-var $author$project$Main$ShowNothing = {$: 'ShowNothing'};
 var $author$project$SelectionMode$SingleSelect = F2(
 	function (a, b) {
 		return {$: 'SingleSelect', a: a, b: b};
@@ -11989,7 +11988,7 @@ var $author$project$Main$init = function (flags) {
 					if (selectionMode.$ === 'SingleSelect') {
 						return $author$project$Main$ShowDropdownIndicator;
 					} else {
-						return $author$project$Option$hasSelectedOption(optionsWithInitialValueSelected) ? $author$project$Main$ShowClearButton : $author$project$Main$ShowNothing;
+						return $author$project$Option$hasSelectedOption(optionsWithInitialValueSelected) ? $author$project$Main$ShowClearButton : $author$project$Main$ShowDropdownIndicator;
 					}
 				}
 			}(),
@@ -12228,6 +12227,23 @@ var $author$project$Ports$optionDeselected = _Platform_outgoingPort(
 						$elm$json$Json$Encode$string(b)
 					]));
 		}));
+var $author$project$Main$updateRightSlot = F3(
+	function (current, selectionMode, hasSelectedOption) {
+		switch (current.$) {
+			case 'ShowNothing':
+				if (selectionMode.$ === 'SingleSelect') {
+					return $author$project$Main$ShowDropdownIndicator;
+				} else {
+					return hasSelectedOption ? $author$project$Main$ShowClearButton : $author$project$Main$ShowDropdownIndicator;
+				}
+			case 'ShowLoadingIndicator':
+				return $author$project$Main$ShowLoadingIndicator;
+			case 'ShowDropdownIndicator':
+				return $author$project$Main$ShowDropdownIndicator;
+			default:
+				return hasSelectedOption ? $author$project$Main$ShowClearButton : $author$project$Main$ShowDropdownIndicator;
+		}
+	});
 var $author$project$Main$clearAllSelectedOption = function (model) {
 	var newOptions = $author$project$Option$deselectAllOptionsInOptionsList(model.options);
 	var deselectedItems = $elm$core$List$isEmpty(
@@ -12239,7 +12255,7 @@ var $author$project$Main$clearAllSelectedOption = function (model) {
 			{
 				options: $author$project$Option$deselectAllOptionsInOptionsList(newOptions),
 				optionsForTheDropdown: A2($author$project$Main$figureOutWhichOptionsToShow, model.maxDropdownItems, newOptions),
-				rightSlot: $author$project$Main$ShowNothing,
+				rightSlot: A3($author$project$Main$updateRightSlot, model.rightSlot, model.selectionMode, false),
 				searchString: ''
 			}),
 		$elm$core$Platform$Cmd$batch(
@@ -12248,6 +12264,49 @@ var $author$project$Main$clearAllSelectedOption = function (model) {
 					A2($author$project$Main$makeCommandMessagesWhenValuesChanges, _List_Nil, $elm$core$Maybe$Nothing),
 					deselectEventMsg
 				])));
+};
+var $author$project$Option$selectSingleOptionInList = F2(
+	function (value, options) {
+		return A2(
+			$elm$core$List$map,
+			function (option_) {
+				if (A2($author$project$Option$optionValuesEqual, option_, value)) {
+					switch (option_.$) {
+						case 'Option':
+							return A2($author$project$Option$selectOption, 0, option_);
+						case 'CustomOption':
+							var optionValue = option_.c;
+							if (optionValue.$ === 'OptionValue') {
+								var valueStr = optionValue.a;
+								return A3(
+									$author$project$Option$setLabelWithString,
+									valueStr,
+									$elm$core$Maybe$Nothing,
+									A2($author$project$Option$selectOption, 0, option_));
+							} else {
+								return A2($author$project$Option$selectOption, 0, option_);
+							}
+						default:
+							return A2($author$project$Option$selectOption, 0, option_);
+					}
+				} else {
+					return $author$project$Option$deselectOption(option_);
+				}
+			},
+			options);
+	});
+var $author$project$Option$deselectAllButTheFirstSelectedOptionInList = function (options) {
+	var _v0 = $elm$core$List$head(
+		$author$project$Option$selectedOptions(options));
+	if (_v0.$ === 'Just') {
+		var oneOptionToLeaveSelected = _v0.a;
+		return A2(
+			$author$project$Option$selectSingleOptionInList,
+			$author$project$Option$getOptionValue(oneOptionToLeaveSelected),
+			options);
+	} else {
+		return options;
+	}
 };
 var $author$project$Option$setOptionDisplay = F2(
 	function (optionDisplay, option) {
@@ -12797,36 +12856,6 @@ var $author$project$Option$selectEmptyOption = function (options) {
 		},
 		options);
 };
-var $author$project$Option$selectSingleOptionInList = F2(
-	function (value, options) {
-		return A2(
-			$elm$core$List$map,
-			function (option_) {
-				if (A2($author$project$Option$optionValuesEqual, option_, value)) {
-					switch (option_.$) {
-						case 'Option':
-							return A2($author$project$Option$selectOption, 0, option_);
-						case 'CustomOption':
-							var optionValue = option_.c;
-							if (optionValue.$ === 'OptionValue') {
-								var valueStr = optionValue.a;
-								return A3(
-									$author$project$Option$setLabelWithString,
-									valueStr,
-									$elm$core$Maybe$Nothing,
-									A2($author$project$Option$selectOption, 0, option_));
-							} else {
-								return A2($author$project$Option$selectOption, 0, option_);
-							}
-						default:
-							return A2($author$project$Option$selectOption, 0, option_);
-					}
-				} else {
-					return $author$project$Option$deselectOption(option_);
-				}
-			},
-			options);
-	});
 var $author$project$Option$selectHighlightedOption = F2(
 	function (selectionMode, options) {
 		return function (maybeOption) {
@@ -13968,23 +13997,6 @@ var $author$project$Main$updateModelWithSearchStringChanges = F4(
 				});
 		}
 	});
-var $author$project$Main$updateRightSlot = F3(
-	function (current, selectionMode, hasSelectedOption) {
-		switch (current.$) {
-			case 'ShowNothing':
-				if (selectionMode.$ === 'SingleSelect') {
-					return $author$project$Main$ShowDropdownIndicator;
-				} else {
-					return hasSelectedOption ? $author$project$Main$ShowClearButton : $author$project$Main$ShowNothing;
-				}
-			case 'ShowLoadingIndicator':
-				return $author$project$Main$ShowLoadingIndicator;
-			case 'ShowDropdownIndicator':
-				return $author$project$Main$ShowDropdownIndicator;
-			default:
-				return hasSelectedOption ? $author$project$Main$ShowClearButton : $author$project$Main$ShowNothing;
-		}
-	});
 var $author$project$Main$updateRightSlotLoading = F3(
 	function (isLoading, selectionMode, hasSelectedOption) {
 		if (isLoading) {
@@ -13993,7 +14005,7 @@ var $author$project$Main$updateRightSlotLoading = F3(
 			if (selectionMode.$ === 'SingleSelect') {
 				return $author$project$Main$ShowDropdownIndicator;
 			} else {
-				return hasSelectedOption ? $author$project$Main$ShowClearButton : $author$project$Main$ShowNothing;
+				return hasSelectedOption ? $author$project$Main$ShowClearButton : $author$project$Main$ShowDropdownIndicator;
 			}
 		}
 	});
@@ -14309,13 +14321,25 @@ var $author$project$Main$update = F2(
 					$elm$core$Platform$Cmd$none);
 			case 'MulitSelectAttributeChanged':
 				var isInMulitSelectMode = msg.a;
+				var options = isInMulitSelectMode ? model.options : $author$project$Option$deselectAllButTheFirstSelectedOptionInList(model.options);
+				var cmd = isInMulitSelectMode ? $elm$core$Platform$Cmd$none : A2(
+					$author$project$Main$makeCommandMessagesWhenValuesChanges,
+					$author$project$Option$selectedOptions(options),
+					$elm$core$Maybe$Nothing);
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{
+							options: options,
+							optionsForTheDropdown: A2($author$project$Main$figureOutWhichOptionsToShow, model.maxDropdownItems, options),
 							selectionMode: A2($author$project$SelectionMode$setMulitSelectModeWithBool, isInMulitSelectMode, model.selectionMode)
 						}),
-					$author$project$Ports$muchSelectIsReady(_Utils_Tuple0));
+					$elm$core$Platform$Cmd$batch(
+						_List_fromArray(
+							[
+								$author$project$Ports$muchSelectIsReady(_Utils_Tuple0),
+								cmd
+							])));
 			case 'SelectHighlightedOption':
 				var options = A2($author$project$Option$selectHighlightedOption, model.selectionMode, model.options);
 				var _v11 = model.selectionMode;
@@ -14857,9 +14881,9 @@ var $author$project$Main$dropdown = function (model) {
 			_List_fromArray(
 				[dropdownFooterHtml]))));
 };
-var $author$project$Main$dropdownIndicator = F3(
-	function (focused, disabled, hasOptions) {
-		return (disabled || (!hasOptions)) ? $elm$html$Html$text('') : A2(
+var $author$project$Main$dropdownIndicator = F2(
+	function (focused, disabled) {
+		return disabled ? $elm$html$Html$text('') : A2(
 			$elm$html$Html$div,
 			_List_fromArray(
 				[
@@ -15468,8 +15492,8 @@ var $author$project$Main$onClickPreventDefaultAndStopPropagation = function (mes
 		$elm$json$Json$Decode$succeed(
 			{message: message, preventDefault: true, stopPropagation: true}));
 };
-var $author$project$Main$rightSlotHtml = F4(
-	function (rightSlot, focused, disabled, hasOptionSelected) {
+var $author$project$Main$rightSlotHtml = F3(
+	function (rightSlot, focused, disabled) {
 		switch (rightSlot.$) {
 			case 'ShowNothing':
 				return $elm$html$Html$text('');
@@ -15484,7 +15508,7 @@ var $author$project$Main$rightSlotHtml = F4(
 					_List_fromArray(
 						[$author$project$Main$defaultLoadingIndicator]));
 			case 'ShowDropdownIndicator':
-				return A3($author$project$Main$dropdownIndicator, focused, disabled, hasOptionSelected);
+				return A2($author$project$Main$dropdownIndicator, focused, disabled);
 			default:
 				return A2(
 					$elm$html$Html$div,
@@ -15601,7 +15625,6 @@ var $author$project$Main$view = function (model) {
 	var tabIndexAttribute = model.disabled ? A2($elm$html$Html$Attributes$style, '', '') : $elm$html$Html$Attributes$tabindex(0);
 	var _v0 = model.selectionMode;
 	if (_v0.$ === 'SingleSelect') {
-		var hasOptions = (!$elm$core$List$isEmpty(model.options)) && $elm$core$String$isEmpty(model.searchString);
 		var hasOptionSelected = $author$project$Option$hasSelectedOption(model.options);
 		var showPlaceholder = (!hasOptionSelected) && (!model.focused);
 		var valueStr = hasOptionSelected ? A2(
@@ -15669,7 +15692,7 @@ var $author$project$Main$view = function (model) {
 										_List_fromArray(
 											[$author$project$Main$defaultLoadingIndicator]));
 								case 'ShowDropdownIndicator':
-									return A3($author$project$Main$dropdownIndicator, model.focused, model.disabled, hasOptions);
+									return A2($author$project$Main$dropdownIndicator, model.focused, model.disabled);
 								default:
 									return A3(
 										$elm$html$Html$node,
@@ -15758,7 +15781,7 @@ var $author$project$Main$view = function (model) {
 						_List_fromArray(
 							[
 								inputFilter,
-								A4($author$project$Main$rightSlotHtml, model.rightSlot, model.focused, model.disabled, hasOptionSelected)
+								A3($author$project$Main$rightSlotHtml, model.rightSlot, model.focused, model.disabled)
 							]))),
 					$author$project$Main$dropdown(model)
 				]));

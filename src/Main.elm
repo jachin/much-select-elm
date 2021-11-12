@@ -589,7 +589,7 @@ clearAllSelectedOption model =
     ( { model
         | options = Option.deselectAllOptionsInOptionsList newOptions
         , optionsForTheDropdown = figureOutWhichOptionsToShow model.maxDropdownItems newOptions
-        , rightSlot = ShowNothing
+        , rightSlot = updateRightSlot model.rightSlot model.selectionMode False
         , searchString = ""
       }
     , Cmd.batch
@@ -712,20 +712,29 @@ updateRightSlot current selectionMode hasSelectedOption =
                         ShowClearButton
 
                     else
-                        ShowNothing
+                        ShowDropdownIndicator
 
         ShowLoadingIndicator ->
             ShowLoadingIndicator
 
         ShowDropdownIndicator ->
-            ShowDropdownIndicator
+            case selectionMode of
+                SingleSelect _ _ ->
+                    ShowDropdownIndicator
+
+                MultiSelect _ ->
+                    if hasSelectedOption then
+                        ShowClearButton
+
+                    else
+                        ShowDropdownIndicator
 
         ShowClearButton ->
             if hasSelectedOption then
                 ShowClearButton
 
             else
-                ShowNothing
+                ShowDropdownIndicator
 
 
 updateRightSlotLoading : Bool -> SelectionMode -> Bool -> RightSlot
@@ -743,7 +752,7 @@ updateRightSlotLoading isLoading selectionMode hasSelectedOption =
                     ShowClearButton
 
                 else
-                    ShowNothing
+                    ShowDropdownIndicator
 
 
 view : Model -> Html Msg
@@ -764,9 +773,6 @@ view model =
 
                 showPlaceholder =
                     not hasOptionSelected && not model.focused
-
-                hasOptions =
-                    (List.isEmpty model.options |> not) && String.isEmpty model.searchString
 
                 valueStr =
                     if hasOptionSelected then
@@ -812,7 +818,7 @@ view model =
                             node "slot" [ name "loading-indicator" ] [ defaultLoadingIndicator ]
 
                         ShowDropdownIndicator ->
-                            dropdownIndicator model.focused model.disabled hasOptions
+                            dropdownIndicator model.focused model.disabled
 
                         ShowClearButton ->
                             node "slot" [ name "clear-button" ] []
@@ -880,7 +886,6 @@ view model =
                                 model.rightSlot
                                 model.focused
                                 model.disabled
-                                hasOptionSelected
                            ]
                     )
                 , dropdown model
@@ -991,9 +996,9 @@ singleSelectInputField searchString isDisabled focused placeholder_ hasSelectedO
             []
 
 
-dropdownIndicator : Bool -> Bool -> Bool -> Html Msg
-dropdownIndicator focused disabled hasOptions =
-    if disabled || not hasOptions then
+dropdownIndicator : Bool -> Bool -> Html Msg
+dropdownIndicator focused disabled =
+    if disabled then
         text ""
 
     else
@@ -1330,8 +1335,8 @@ optionsToValuesHtml options =
             )
 
 
-rightSlotHtml : RightSlot -> Bool -> Bool -> Bool -> Html Msg
-rightSlotHtml rightSlot focused disabled hasOptionSelected =
+rightSlotHtml : RightSlot -> Bool -> Bool -> Html Msg
+rightSlotHtml rightSlot focused disabled =
     case rightSlot of
         ShowNothing ->
             text ""
@@ -1342,7 +1347,7 @@ rightSlotHtml rightSlot focused disabled hasOptionSelected =
                 [ defaultLoadingIndicator ]
 
         ShowDropdownIndicator ->
-            dropdownIndicator focused disabled hasOptionSelected
+            dropdownIndicator focused disabled
 
         ShowClearButton ->
             div
@@ -1519,7 +1524,7 @@ init flags =
                             ShowClearButton
 
                         else
-                            ShowNothing
+                            ShowDropdownIndicator
       , maxDropdownItems = maxDropdownItems
       , disabled = flags.disabled
       , focused = False
