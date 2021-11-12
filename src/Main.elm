@@ -585,6 +585,13 @@ clearAllSelectedOption model =
 
         newOptions =
             Option.deselectAllOptionsInOptionsList model.options
+
+        focusCmd =
+            if model.focused then
+                focusInput ()
+
+            else
+                Cmd.none
     in
     ( { model
         | options = Option.deselectAllOptionsInOptionsList newOptions
@@ -595,6 +602,7 @@ clearAllSelectedOption model =
     , Cmd.batch
         [ makeCommandMessagesWhenValuesChanges [] Nothing
         , deselectEventMsg
+        , focusCmd
         ]
     )
 
