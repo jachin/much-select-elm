@@ -17,6 +17,12 @@
   runTests(() => {
     describe("Slots", () => {
       describe("hidden-value-input", () => {
+
+        it("should be an empty string if there is no selected value", async () =>  {
+          const el = /** @type {MuchSelect} */ await fixture(html`<much-select><input slot="hidden-value-input" type="hidden" name="my-special-value"></much-select>`);
+          expect(el.querySelector("[slot='hidden-value-input']").getAttribute("value")).to.equal("");
+        });
+
         it("should be populated with the current value on initialization", async () =>  {
           const el = /** @type {MuchSelect} */ await fixture(html`<much-select selected-value="Tocharians"><input slot="hidden-value-input" type="hidden" name="my-special-value"></much-select>`);
           expect(el.querySelector("[slot='hidden-value-input']").getAttribute("value")).to.equal("Tocharians");
