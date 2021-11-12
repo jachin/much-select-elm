@@ -510,7 +510,7 @@ class MuchSelect extends HTMLElement {
         "[slot='hidden-value-input']"
       );
       if (hiddenValueInput) {
-        hiddenValueInput.setAttribute("value", this.parsedSelectedValue);
+        hiddenValueInput.setAttribute("value", this.selectedValue);
       }
     }
   }
