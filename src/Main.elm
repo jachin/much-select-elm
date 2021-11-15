@@ -59,6 +59,7 @@ import Ports
         ( addOptionsReceiver
         , allowCustomOptionsReceiver
         , blurInput
+        , customOptionHintReceiver
         , customOptionSelected
         , deselectOptionReceiver
         , disableChangedReceiver
@@ -112,6 +113,7 @@ type Msg
     | LoadingAttributeChanged Bool
     | MaxDropdownItemsChanged Int
     | AllowCustomOptionsChanged Bool
+    | CustomOptionHintChanged (Maybe String)
     | DisabledAttributeChanged Bool
     | MulitSelectAttributeChanged Bool
     | SelectedItemStaysInPlaceChanged Bool
@@ -133,6 +135,7 @@ type Msg
 type alias Model =
     { initialValue : List String
     , placeholder : String
+    , customOptionHint : Maybe String
     , selectionMode : SelectionMode
     , options : List Option
     , optionsForTheDropdown : List Option
@@ -421,6 +424,9 @@ update msg model =
             , Cmd.none
             )
 
+        CustomOptionHintChanged maybeString ->
+            ( { model | customOptionHint = maybeString }, Cmd.none )
+
         DisabledAttributeChanged bool ->
             ( { model | disabled = bool }, Cmd.none )
 
@@ -611,13 +617,13 @@ updateModelWithSearchStringChanges : PositiveInt -> String -> List Option -> Mod
 updateModelWithSearchStringChanges maxNumberOfDropdownItems searchString options model =
     let
         optionsUpdatedWithSearchString =
-            OptionSearcher.updateOptions model.selectionMode searchString options
+            OptionSearcher.updateOptions model.selectionMode model.customOptionHint searchString options
     in
     case searchString of
         "" ->
             let
                 updatedOptions =
-                    OptionSearcher.updateOptions model.selectionMode searchString options
+                    OptionSearcher.updateOptions model.selectionMode model.customOptionHint searchString options
                         |> Option.sortOptionsByGroupAndLabel
             in
             { model
@@ -1420,6 +1426,7 @@ makeCommandMessagesWhenValuesChanges selectedOptions maybeSelectedValue =
 type alias Flags =
     { value : String
     , placeholder : String
+    , customOptionHint : Maybe String
     , allowMultiSelect : Bool
     , optionsJson : String
     , loading : Bool
@@ -1510,6 +1517,7 @@ init flags =
     ( { initialValue = initialValues
       , deleteKeyPressed = False
       , placeholder = flags.placeholder
+      , customOptionHint = flags.customOptionHint
       , selectionMode = selectionMode
       , options = optionsWithInitialValueSelected
       , optionsForTheDropdown =
@@ -1568,6 +1576,7 @@ subscriptions _ =
         , optionsChangedReceiver OptionsChanged
         , maxDropdownItemsChangedReceiver MaxDropdownItemsChanged
         , allowCustomOptionsReceiver AllowCustomOptionsChanged
+        , customOptionHintReceiver CustomOptionHintChanged
         , valueCasingDimensionsChangedReceiver ValueCasingWidthUpdate
         , selectOptionReceiver SelectOption
         , deselectOptionReceiver DeselectOption

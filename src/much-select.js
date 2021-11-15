@@ -197,6 +197,12 @@ class MuchSelect extends HTMLElement {
     this._allowCustomOptions = false;
 
     /**
+     * @type {string|null}
+     * @private
+     */
+    this._customOptionHint = null;
+
+    /**
      * @type {boolean}
      * @private
      */
@@ -263,6 +269,7 @@ class MuchSelect extends HTMLElement {
     if (name === "allow-custom-options") {
       if (oldValue !== newValue) {
         this.allowCustomOptions = newValue;
+        this.customOptionHint = newValue;
       }
     } else if (name === "disabled") {
       if (oldValue !== newValue) {
@@ -590,6 +597,7 @@ class MuchSelect extends HTMLElement {
     flags.selectedItemStaysInPlace = this.selectedItemStaysInPlace;
     flags.maxDropdownItems = this.maxDropdownItems;
     flags.allowCustomOptions = this.allowCustomOptions;
+    flags.customOptionHint = this.customOptionHint;
 
     const selectElement = this.querySelector("select");
     if (selectElement) {
@@ -963,6 +971,33 @@ class MuchSelect extends HTMLElement {
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
       app.ports.allowCustomOptionsReceiver.send(this._allowCustomOptions)
+    );
+  }
+
+  get customOptionHint() {
+    return this._customOptionHint;
+  }
+
+  set customOptionHint(value) {
+    if (value === "false") {
+      this._customOptionHint = null;
+    } else if (value === "true") {
+      this._customOptionHint = null;
+    } else if (value === null) {
+      this._customOptionHint = null;
+    } else if (value === "") {
+      this._customOptionHint = "";
+    } else if (typeof value === "string") {
+      this._customOptionHint = value;
+    } else {
+      throw new TypeError(
+        `Unexpected type for the customOptionHint, it should be a string but instead it is a: ${typeof value}`
+      );
+    }
+
+    // noinspection JSUnresolvedVariable
+    this.appPromise.then((app) =>
+      app.ports.customOptionHintReceiver.send(this._customOptionHint)
     );
   }
 
