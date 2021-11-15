@@ -18,6 +18,7 @@ flagsEmptyOptionsWithOrangeSelected : Flags
 flagsEmptyOptionsWithOrangeSelected =
     { value = "[\"Orange\"]"
     , placeholder = "What is your favorite color"
+    , customOptionHint = Nothing
     , allowMultiSelect = False
     , optionsJson = "[]"
     , loading = False
@@ -87,6 +88,7 @@ flagsBookOptions : Flags
 flagsBookOptions =
     { value = "[]"
     , placeholder = "A book"
+    , customOptionHint = Nothing
     , allowMultiSelect = False
     , optionsJson = booksJson
     , loading = False
@@ -101,6 +103,7 @@ flagsBookOptionsWithValue : Flags
 flagsBookOptionsWithValue =
     { value = "[\"Matilda\"]"
     , placeholder = "A book"
+    , customOptionHint = Nothing
     , allowMultiSelect = False
     , optionsJson = booksJson
     , loading = False
@@ -115,6 +118,7 @@ flagsBookOptionsWithSelected : Flags
 flagsBookOptionsWithSelected =
     { value = ""
     , placeholder = "A book"
+    , customOptionHint = Nothing
     , allowMultiSelect = False
     , optionsJson = booksJsonWithSelected
     , loading = False
