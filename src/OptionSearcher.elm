@@ -32,15 +32,15 @@ search string option =
     }
 
 
-updateOptions : SelectionMode -> String -> List Option -> List Option
-updateOptions selectionMode searchString options =
+updateOptions : SelectionMode -> Maybe String -> String -> List Option -> List Option
+updateOptions selectionMode maybeCustomOptionHint searchString options =
     options
-        |> updateOrAddCustomOption searchString selectionMode
+        |> updateOrAddCustomOption maybeCustomOptionHint searchString selectionMode
         |> updateOptionsWithSearchString searchString
 
 
-updateOrAddCustomOption : String -> SelectionMode -> List Option -> List Option
-updateOrAddCustomOption searchString selectionMode options =
+updateOrAddCustomOption : Maybe String -> String -> SelectionMode -> List Option -> List Option
+updateOrAddCustomOption maybeCustomOptionHint searchString selectionMode options =
     case searchString of
         "" ->
             options
@@ -48,7 +48,7 @@ updateOrAddCustomOption searchString selectionMode options =
         _ ->
             case SelectionMode.getCustomOptions selectionMode of
                 AllowCustomOptions ->
-                    Option.updateOrAddCustomOption searchString options
+                    Option.updateOrAddCustomOption maybeCustomOptionHint searchString options
 
                 NoCustomOptions ->
                     options

@@ -781,8 +781,8 @@ optionValuesEqual option optionValue =
     getOptionValue option == optionValue
 
 
-updateOrAddCustomOption : String -> List Option -> List Option
-updateOrAddCustomOption searchString options =
+updateOrAddCustomOption : Maybe String -> String -> List Option -> List Option
+updateOrAddCustomOption maybeCustomOptionHint searchString options =
     let
         -- If we have an exact match with an existing option don't show the custom
         --  option.
@@ -830,11 +830,31 @@ updateOrAddCustomOption searchString options =
                             False
                 )
                 options
+
+        label =
+            case maybeCustomOptionHint of
+                Just customOptionHint ->
+                    let
+                        parts =
+                            String.split "{{}}" customOptionHint
+                    in
+                    case parts of
+                        [] ->
+                            "Add " ++ searchString ++ "…"
+
+                        [ _ ] ->
+                            customOptionHint ++ searchString
+
+                        first :: second :: _ ->
+                            first ++ searchString ++ second
+
+                Nothing ->
+                    "Add " ++ searchString ++ "…"
     in
     if showAddOption then
         [ CustomOption
             OptionShown
-            (OptionLabel ("Add " ++ searchString ++ "…") Nothing NoSortRank)
+            (OptionLabel label Nothing NoSortRank)
             (OptionValue searchString)
             Nothing
         ]

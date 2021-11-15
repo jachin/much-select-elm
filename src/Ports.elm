@@ -2,6 +2,7 @@ port module Ports exposing
     ( addOptionsReceiver
     , allowCustomOptionsReceiver
     , blurInput
+    , customOptionHintReceiver
     , customOptionSelected
     , deselectOptionReceiver
     , disableChangedReceiver
@@ -105,6 +106,9 @@ port maxDropdownItemsChangedReceiver : (Int -> msg) -> Sub msg
 
 
 port allowCustomOptionsReceiver : (Bool -> msg) -> Sub msg
+
+
+port customOptionHintReceiver : (Maybe String -> msg) -> Sub msg
 
 
 port valueCasingDimensionsChangedReceiver : ({ width : Float, height : Float } -> msg) -> Sub msg
