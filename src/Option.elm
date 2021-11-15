@@ -398,9 +398,9 @@ setOptionSearchFilter maybeOptionSearchFilter option =
                 optionLabel
 
 
-newSelectedOption : String -> Maybe String -> Option
-newSelectedOption string maybeCleanLabel =
-    Option (OptionSelected 0)
+newSelectedOption : Int -> String -> Maybe String -> Option
+newSelectedOption index string maybeCleanLabel =
+    Option (OptionSelected index)
         (OptionLabel string maybeCleanLabel NoSortRank)
         (OptionValue string)
         NoDescription
@@ -591,7 +591,7 @@ addAndSelectOptionsInOptionsListByString : SelectedItemPlacementMode -> List Str
 addAndSelectOptionsInOptionsListByString selectedItemPlacementMode strings options =
     let
         newOptions =
-            List.map (\str -> newSelectedOption str Nothing) strings
+            List.indexedMap (\i str -> newSelectedOption i str Nothing) strings
     in
     mergeTwoListsOfOptionsPreservingSelectedOptions selectedItemPlacementMode newOptions options
 
@@ -607,7 +607,7 @@ setSelectedOptionInNewOptions oldOptions newOptions =
         newSelectedOptions =
             List.filter (\newOption_ -> optionListContainsOptionWithValue newOption_ oldSelectedOption) newOptions
     in
-    selectOptionsInList newSelectedOptions newOptions
+    selectOptionsInListWithIndex newSelectedOptions newOptions
 
 
 {-| This function is a little strange but here's what it does. It takes 2 lists of option.
@@ -631,19 +631,19 @@ mergeTwoListsOfOptionsPreservingSelectedOptions selectedItemPlacementMode option
     let
         combineOptions optionA optionB =
             let
-                optionBLabel =
-                    getOptionLabel optionB
+                optionLabel =
+                    orOptionLabel optionA optionB
 
-                optionBDescription =
-                    getOptionDescription optionB
+                optionDescription =
+                    orOptionDescriptions optionA optionB
 
-                optionBGroup =
-                    getOptionGroup optionB
+                optionGroup =
+                    orOptionGroup optionA optionB
             in
             optionA
-                |> setDescription optionBDescription
-                |> setLabel optionBLabel
-                |> setGroup optionBGroup
+                |> setDescription optionDescription
+                |> setLabel optionLabel
+                |> setGroup optionGroup
 
         updatedOptionsA =
             List.map
@@ -663,12 +663,95 @@ mergeTwoListsOfOptionsPreservingSelectedOptions selectedItemPlacementMode option
                     optionsB ++ updatedOptionsA
 
                 SelectedItemMovesToTheTop ->
-                    updatedOptionsA ++ optionsB
+                    updatedOptionsA
+                        ++ optionsB
 
         newOptions =
-            List.Extra.uniqueBy getOptionValueAsString superList
+            case selectedItemPlacementMode of
+                SelectedItemStaysInPlace ->
+                    superList
+                        |> List.reverse
+                        |> List.Extra.uniqueBy getOptionValueAsString
+                        |> List.reverse
+
+                SelectedItemMovesToTheTop ->
+                    superList
+                        |> List.Extra.uniqueBy getOptionValueAsString
     in
     setSelectedOptionInNewOptions superList newOptions
+
+
+isOptionValueEqualToOptionLabel : Option -> Bool
+isOptionValueEqualToOptionLabel option =
+    let
+        optionValueString =
+            option
+                |> getOptionValueAsString
+
+        optionLabelString =
+            option
+                |> getOptionLabel
+                |> optionLabelToString
+    in
+    optionValueString == optionLabelString
+
+
+{-| A utility helper, the idea is that an option's label is going to match it's value by default.
+
+If a label does not match the value then it's probably a label that's been set and it something we should
+preserver (all else being equal).
+
+TODO: Perhaps this could be addresses with types. Maybe there should be an option label variation that specifies it's a default label.
+
+-}
+orOptionLabel : Option -> Option -> OptionLabel
+orOptionLabel optionA optionB =
+    if isOptionValueEqualToOptionLabel optionA then
+        if isOptionValueEqualToOptionLabel optionB then
+            getOptionLabel optionA
+
+        else
+            getOptionLabel optionB
+
+    else
+        getOptionLabel optionA
+
+
+orOptionDescriptions : Option -> Option -> OptionDescription
+orOptionDescriptions optionA optionB =
+    let
+        optionDescriptionA =
+            getOptionDescription optionA
+
+        optionDescriptionB =
+            getOptionDescription optionB
+    in
+    case optionDescriptionA of
+        OptionDescription _ _ ->
+            optionDescriptionA
+
+        NoDescription ->
+            case optionDescriptionB of
+                OptionDescription _ _ ->
+                    optionDescriptionB
+
+                NoDescription ->
+                    optionDescriptionB
+
+
+orOptionGroup : Option -> Option -> OptionGroup
+orOptionGroup optionA optionB =
+    case getOptionGroup optionA of
+        OptionGroup _ ->
+            getOptionGroup optionA
+
+        NoOptionGroup ->
+            case getOptionGroup optionB of
+                OptionGroup _ ->
+                    getOptionGroup optionB
+
+                NoOptionGroup ->
+                    getOptionGroup optionA
 
 
 deselectAllOptionsInOptionsList : List Option -> List Option
@@ -728,10 +811,10 @@ updateOrAddCustomOption searchString options =
                                 OptionHidden ->
                                     True
 
-                                OptionSelected int ->
+                                OptionSelected _ ->
                                     False
 
-                                OptionSelectedHighlighted int ->
+                                OptionSelectedHighlighted _ ->
                                     False
 
                                 OptionHighlighted ->
@@ -907,6 +990,26 @@ selectOptionInList option options =
     selectOptionInListByOptionValue (getOptionValue option) options
 
 
+selectOptionInListWithIndex : Option -> List Option -> List Option
+selectOptionInListWithIndex optionToSelect options =
+    let
+        notLessThanZero i =
+            if i < 0 then
+                0
+
+            else
+                0
+
+        selectionIndex =
+            getOptionSelectedIndex optionToSelect
+                |> notLessThanZero
+
+        optionValue =
+            getOptionValue optionToSelect
+    in
+    selectOptionInListByOptionValueWithIndex selectionIndex optionValue options
+
+
 
 {- Take a list of options to select and select them all.
 
@@ -920,6 +1023,17 @@ selectOptionsInList optionsToSelect options =
         helper : List Option -> Option -> ( List Option, List Option )
         helper newOptions optionToSelect =
             ( selectOptionInList optionToSelect newOptions, [] )
+    in
+    List.Extra.mapAccuml helper options optionsToSelect
+        |> Tuple.first
+
+
+selectOptionsInListWithIndex : List Option -> List Option -> List Option
+selectOptionsInListWithIndex optionsToSelect options =
+    let
+        helper : List Option -> Option -> ( List Option, List Option )
+        helper newOptions optionToSelect =
+            ( selectOptionInListWithIndex optionToSelect newOptions, [] )
     in
     List.Extra.mapAccuml helper options optionsToSelect
         |> Tuple.first
@@ -999,6 +1113,33 @@ selectOptionInListByOptionValue value options =
 
                     EmptyOption _ _ ->
                         selectOption nextSelectedIndex option_
+
+            else
+                option_
+        )
+        options
+
+
+selectOptionInListByOptionValueWithIndex : Int -> OptionValue -> List Option -> List Option
+selectOptionInListByOptionValueWithIndex index value options =
+    List.map
+        (\option_ ->
+            if optionValuesEqual option_ value then
+                case option_ of
+                    Option _ _ _ _ _ _ ->
+                        selectOption index option_
+
+                    CustomOption _ _ _ _ ->
+                        case value of
+                            OptionValue valueStr ->
+                                selectOption index option_
+                                    |> setLabelWithString valueStr Nothing
+
+                            EmptyOptionValue ->
+                                selectOption index option_
+
+                    EmptyOption _ _ ->
+                        selectOption index option_
 
             else
                 option_

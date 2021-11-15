@@ -4780,7 +4780,7 @@ var $elm$core$Array$builderToArray = F2(
 			var treeLen = builder.i * $elm$core$Array$branchFactor;
 			var depth = $elm$core$Basics$floor(
 				A2($elm$core$Basics$logBase, $elm$core$Array$branchFactor, treeLen - 1));
-			var correctNodeList = reverseNodeList ? $elm$core$List$reverse(builder.k) : builder.k;
+			var correctNodeList = reverseNodeList ? $elm$core$List$reverse(builder.l) : builder.l;
 			var tree = A2($elm$core$Array$treeFromBuilder, correctNodeList, builder.i);
 			return A4(
 				$elm$core$Array$Array_elm_builtin,
@@ -4800,7 +4800,7 @@ var $elm$core$Array$initializeHelp = F5(
 				return A2(
 					$elm$core$Array$builderToArray,
 					false,
-					{k: nodeList, i: (len / $elm$core$Array$branchFactor) | 0, j: tail});
+					{l: nodeList, i: (len / $elm$core$Array$branchFactor) | 0, j: tail});
 			} else {
 				var leaf = $elm$core$Array$Leaf(
 					A3($elm$core$Elm$JsArray$initialize, $elm$core$Array$branchFactor, fromIndex, fn));
@@ -5208,6 +5208,15 @@ var $author$project$Option$findOptionByOptionValue = F2(
 			},
 			options);
 	});
+var $author$project$Option$getOptionValueAsString = function (option) {
+	var _v0 = $author$project$Option$getOptionValue(option);
+	if (!_v0.$) {
+		var string = _v0.a;
+		return string;
+	} else {
+		return '';
+	}
+};
 var $author$project$Option$NoDescription = {$: 1};
 var $author$project$Option$getOptionDescription = function (option) {
 	switch (option.$) {
@@ -5220,6 +5229,20 @@ var $author$project$Option$getOptionDescription = function (option) {
 			return $author$project$Option$NoDescription;
 	}
 };
+var $author$project$Option$orOptionDescriptions = F2(
+	function (optionA, optionB) {
+		var optionDescriptionB = $author$project$Option$getOptionDescription(optionB);
+		var optionDescriptionA = $author$project$Option$getOptionDescription(optionA);
+		if (!optionDescriptionA.$) {
+			return optionDescriptionA;
+		} else {
+			if (!optionDescriptionB.$) {
+				return optionDescriptionB;
+			} else {
+				return optionDescriptionB;
+			}
+		}
+	});
 var $author$project$Option$NoOptionGroup = {$: 1};
 var $author$project$Option$getOptionGroup = function (option) {
 	switch (option.$) {
@@ -5232,6 +5255,20 @@ var $author$project$Option$getOptionGroup = function (option) {
 			return $author$project$Option$NoOptionGroup;
 	}
 };
+var $author$project$Option$orOptionGroup = F2(
+	function (optionA, optionB) {
+		var _v0 = $author$project$Option$getOptionGroup(optionA);
+		if (!_v0.$) {
+			return $author$project$Option$getOptionGroup(optionA);
+		} else {
+			var _v1 = $author$project$Option$getOptionGroup(optionB);
+			if (!_v1.$) {
+				return $author$project$Option$getOptionGroup(optionB);
+			} else {
+				return $author$project$Option$getOptionGroup(optionA);
+			}
+		}
+	});
 var $author$project$Option$getOptionLabel = function (option) {
 	switch (option.$) {
 		case 0:
@@ -5245,15 +5282,20 @@ var $author$project$Option$getOptionLabel = function (option) {
 			return label;
 	}
 };
-var $author$project$Option$getOptionValueAsString = function (option) {
-	var _v0 = $author$project$Option$getOptionValue(option);
-	if (!_v0.$) {
-		var string = _v0.a;
-		return string;
-	} else {
-		return '';
-	}
+var $author$project$OptionLabel$optionLabelToString = function (optionLabel) {
+	var label = optionLabel.a;
+	return label;
 };
+var $author$project$Option$isOptionValueEqualToOptionLabel = function (option) {
+	var optionValueString = $author$project$Option$getOptionValueAsString(option);
+	var optionLabelString = $author$project$OptionLabel$optionLabelToString(
+		$author$project$Option$getOptionLabel(option));
+	return _Utils_eq(optionValueString, optionLabelString);
+};
+var $author$project$Option$orOptionLabel = F2(
+	function (optionA, optionB) {
+		return $author$project$Option$isOptionValueEqualToOptionLabel(optionA) ? ($author$project$Option$isOptionValueEqualToOptionLabel(optionB) ? $author$project$Option$getOptionLabel(optionA) : $author$project$Option$getOptionLabel(optionB)) : $author$project$Option$getOptionLabel(optionA);
+	});
 var $author$project$Option$CustomOption = F4(
 	function (a, b, c, d) {
 		return {$: 1, a: a, b: b, c: c, d: d};
@@ -5312,10 +5354,6 @@ var $author$project$Option$setGroup = F2(
 	});
 var $author$project$Option$OptionValue = function (a) {
 	return {$: 0, a: a};
-};
-var $author$project$OptionLabel$optionLabelToString = function (optionLabel) {
-	var label = optionLabel.a;
-	return label;
 };
 var $author$project$Option$setLabel = F2(
 	function (label, option) {
@@ -5622,25 +5660,15 @@ var $author$project$Option$setLabelWithString = F3(
 					A3($author$project$OptionLabel$OptionLabel, string, maybeCleanString, $author$project$SortRank$NoSortRank));
 		}
 	});
-var $author$project$Option$selectOptionInListByOptionValue = F2(
-	function (value, options) {
-		var nextSelectedIndex = A3(
-			$elm$core$List$foldl,
-			F2(
-				function (selectedOption, highestIndex) {
-					return (_Utils_cmp(
-						$author$project$Option$getOptionSelectedIndex(selectedOption),
-						highestIndex) > 0) ? $author$project$Option$getOptionSelectedIndex(selectedOption) : highestIndex;
-				}),
-			-1,
-			options) + 1;
+var $author$project$Option$selectOptionInListByOptionValueWithIndex = F3(
+	function (index, value, options) {
 		return A2(
 			$elm$core$List$map,
 			function (option_) {
 				if (A2($author$project$Option$optionValuesEqual, option_, value)) {
 					switch (option_.$) {
 						case 0:
-							return A2($author$project$Option$selectOption, nextSelectedIndex, option_);
+							return A2($author$project$Option$selectOption, index, option_);
 						case 1:
 							if (!value.$) {
 								var valueStr = value.a;
@@ -5648,12 +5676,12 @@ var $author$project$Option$selectOptionInListByOptionValue = F2(
 									$author$project$Option$setLabelWithString,
 									valueStr,
 									$elm$core$Maybe$Nothing,
-									A2($author$project$Option$selectOption, nextSelectedIndex, option_));
+									A2($author$project$Option$selectOption, index, option_));
 							} else {
-								return A2($author$project$Option$selectOption, nextSelectedIndex, option_);
+								return A2($author$project$Option$selectOption, index, option_);
 							}
 						default:
-							return A2($author$project$Option$selectOption, nextSelectedIndex, option_);
+							return A2($author$project$Option$selectOption, index, option_);
 					}
 				} else {
 					return option_;
@@ -5661,19 +5689,22 @@ var $author$project$Option$selectOptionInListByOptionValue = F2(
 			},
 			options);
 	});
-var $author$project$Option$selectOptionInList = F2(
-	function (option, options) {
-		return A2(
-			$author$project$Option$selectOptionInListByOptionValue,
-			$author$project$Option$getOptionValue(option),
-			options);
+var $author$project$Option$selectOptionInListWithIndex = F2(
+	function (optionToSelect, options) {
+		var optionValue = $author$project$Option$getOptionValue(optionToSelect);
+		var notLessThanZero = function (i) {
+			return (i < 0) ? 0 : 0;
+		};
+		var selectionIndex = notLessThanZero(
+			$author$project$Option$getOptionSelectedIndex(optionToSelect));
+		return A3($author$project$Option$selectOptionInListByOptionValueWithIndex, selectionIndex, optionValue, options);
 	});
-var $author$project$Option$selectOptionsInList = F2(
+var $author$project$Option$selectOptionsInListWithIndex = F2(
 	function (optionsToSelect, options) {
 		var helper = F2(
 			function (newOptions, optionToSelect) {
 				return _Utils_Tuple2(
-					A2($author$project$Option$selectOptionInList, optionToSelect, newOptions),
+					A2($author$project$Option$selectOptionInListWithIndex, optionToSelect, newOptions),
 					_List_Nil);
 			});
 		return A3($elm_community$list_extra$List$Extra$mapAccuml, helper, options, optionsToSelect).a;
@@ -5723,7 +5754,7 @@ var $author$project$Option$setSelectedOptionInNewOptions = F2(
 				return A2($author$project$Option$optionListContainsOptionWithValue, newOption_, oldSelectedOption);
 			},
 			newOptions);
-		return A2($author$project$Option$selectOptionsInList, newSelectedOptions, newOptions);
+		return A2($author$project$Option$selectOptionsInListWithIndex, newSelectedOptions, newOptions);
 	});
 var $elm$core$Set$Set_elm_builtin = $elm$core$Basics$identity;
 var $elm$core$Dict$RBEmpty_elm_builtin = {$: -2};
@@ -5930,26 +5961,26 @@ var $author$project$Option$mergeTwoListsOfOptionsPreservingSelectedOptions = F3(
 	function (selectedItemPlacementMode, optionsA, optionsB) {
 		var combineOptions = F2(
 			function (optionA, optionB) {
-				var optionBLabel = $author$project$Option$getOptionLabel(optionB);
-				var optionBGroup = $author$project$Option$getOptionGroup(optionB);
-				var optionBDescription = $author$project$Option$getOptionDescription(optionB);
+				var optionLabel = A2($author$project$Option$orOptionLabel, optionA, optionB);
+				var optionGroup = A2($author$project$Option$orOptionGroup, optionA, optionB);
+				var optionDescription = A2($author$project$Option$orOptionDescriptions, optionA, optionB);
 				return A2(
 					$author$project$Option$setGroup,
-					optionBGroup,
+					optionGroup,
 					A2(
 						$author$project$Option$setLabel,
-						optionBLabel,
-						A2($author$project$Option$setDescription, optionBDescription, optionA)));
+						optionLabel,
+						A2($author$project$Option$setDescription, optionDescription, optionA)));
 			});
 		var updatedOptionsA = A2(
 			$elm$core$List$map,
 			function (optionA) {
-				var _v1 = A2(
+				var _v2 = A2(
 					$author$project$Option$findOptionByOptionValue,
 					$author$project$Option$getOptionValue(optionA),
 					optionsB);
-				if (!_v1.$) {
-					var optionB = _v1.a;
+				if (!_v2.$) {
+					var optionB = _v2.a;
 					return A2(combineOptions, optionA, optionB);
 				} else {
 					return optionA;
@@ -5963,14 +5994,24 @@ var $author$project$Option$mergeTwoListsOfOptionsPreservingSelectedOptions = F3(
 				return _Utils_ap(updatedOptionsA, optionsB);
 			}
 		}();
-		var newOptions = A2($elm_community$list_extra$List$Extra$uniqueBy, $author$project$Option$getOptionValueAsString, superList);
+		var newOptions = function () {
+			if (!selectedItemPlacementMode) {
+				return $elm$core$List$reverse(
+					A2(
+						$elm_community$list_extra$List$Extra$uniqueBy,
+						$author$project$Option$getOptionValueAsString,
+						$elm$core$List$reverse(superList)));
+			} else {
+				return A2($elm_community$list_extra$List$Extra$uniqueBy, $author$project$Option$getOptionValueAsString, superList);
+			}
+		}();
 		return A2($author$project$Option$setSelectedOptionInNewOptions, superList, newOptions);
 	});
-var $author$project$Option$newSelectedOption = F2(
-	function (string, maybeCleanLabel) {
+var $author$project$Option$newSelectedOption = F3(
+	function (index, string, maybeCleanLabel) {
 		return A6(
 			$author$project$Option$Option,
-			$author$project$Option$OptionSelected(0),
+			$author$project$Option$OptionSelected(index),
 			A3($author$project$OptionLabel$OptionLabel, string, maybeCleanLabel, $author$project$SortRank$NoSortRank),
 			$author$project$Option$OptionValue(string),
 			$author$project$Option$NoDescription,
@@ -5980,10 +6021,11 @@ var $author$project$Option$newSelectedOption = F2(
 var $author$project$Option$addAndSelectOptionsInOptionsListByString = F3(
 	function (selectedItemPlacementMode, strings, options) {
 		var newOptions = A2(
-			$elm$core$List$map,
-			function (str) {
-				return A2($author$project$Option$newSelectedOption, str, $elm$core$Maybe$Nothing);
-			},
+			$elm$core$List$indexedMap,
+			F2(
+				function (i, str) {
+					return A3($author$project$Option$newSelectedOption, i, str, $elm$core$Maybe$Nothing);
+				}),
 			strings);
 		return A3($author$project$Option$mergeTwoListsOfOptionsPreservingSelectedOptions, selectedItemPlacementMode, newOptions, options);
 	});
@@ -6666,6 +6708,62 @@ var $author$project$Option$isOptionValueInListOfStrings = F2(
 			},
 			possibleValues);
 	});
+var $author$project$Option$selectOptionInListByOptionValue = F2(
+	function (value, options) {
+		var nextSelectedIndex = A3(
+			$elm$core$List$foldl,
+			F2(
+				function (selectedOption, highestIndex) {
+					return (_Utils_cmp(
+						$author$project$Option$getOptionSelectedIndex(selectedOption),
+						highestIndex) > 0) ? $author$project$Option$getOptionSelectedIndex(selectedOption) : highestIndex;
+				}),
+			-1,
+			options) + 1;
+		return A2(
+			$elm$core$List$map,
+			function (option_) {
+				if (A2($author$project$Option$optionValuesEqual, option_, value)) {
+					switch (option_.$) {
+						case 0:
+							return A2($author$project$Option$selectOption, nextSelectedIndex, option_);
+						case 1:
+							if (!value.$) {
+								var valueStr = value.a;
+								return A3(
+									$author$project$Option$setLabelWithString,
+									valueStr,
+									$elm$core$Maybe$Nothing,
+									A2($author$project$Option$selectOption, nextSelectedIndex, option_));
+							} else {
+								return A2($author$project$Option$selectOption, nextSelectedIndex, option_);
+							}
+						default:
+							return A2($author$project$Option$selectOption, nextSelectedIndex, option_);
+					}
+				} else {
+					return option_;
+				}
+			},
+			options);
+	});
+var $author$project$Option$selectOptionInList = F2(
+	function (option, options) {
+		return A2(
+			$author$project$Option$selectOptionInListByOptionValue,
+			$author$project$Option$getOptionValue(option),
+			options);
+	});
+var $author$project$Option$selectOptionsInList = F2(
+	function (optionsToSelect, options) {
+		var helper = F2(
+			function (newOptions, optionToSelect) {
+				return _Utils_Tuple2(
+					A2($author$project$Option$selectOptionInList, optionToSelect, newOptions),
+					_List_Nil);
+			});
+		return A3($elm_community$list_extra$List$Extra$mapAccuml, helper, options, optionsToSelect).a;
+	});
 var $author$project$Option$selectOptionsInOptionsListByString = F2(
 	function (strings, options) {
 		var optionsToSelect = A2(
@@ -6759,7 +6857,7 @@ var $author$project$Main$init = function (flags) {
 		{
 			a2: false,
 			n: flags.n,
-			m: false,
+			k: false,
 			bc: initialValues,
 			f: maxDropdownItems,
 			a: optionsWithInitialValueSelected,
@@ -6901,6 +6999,11 @@ var $author$project$Ports$blurInput = _Platform_outgoingPort(
 var $author$project$Option$deselectAllOptionsInOptionsList = function (options) {
 	return A2($elm$core$List$map, $author$project$Option$deselectOption, options);
 };
+var $author$project$Ports$focusInput = _Platform_outgoingPort(
+	'focusInput',
+	function ($) {
+		return $elm$json$Json$Encode$null;
+	});
 var $elm$json$Json$Encode$list = F2(
 	function (func, entries) {
 		return _Json_wrap(
@@ -7039,13 +7142,18 @@ var $author$project$Main$updateRightSlot = F3(
 			case 1:
 				return 1;
 			case 2:
-				return 2;
+				if (!selectionMode.$) {
+					return 2;
+				} else {
+					return hasSelectedOption ? 3 : 2;
+				}
 			default:
 				return hasSelectedOption ? 3 : 2;
 		}
 	});
 var $author$project$Main$clearAllSelectedOption = function (model) {
 	var newOptions = $author$project$Option$deselectAllOptionsInOptionsList(model.a);
+	var focusCmd = model.k ? $author$project$Ports$focusInput(0) : $elm$core$Platform$Cmd$none;
 	var deselectedItems = $elm$core$List$isEmpty(
 		$author$project$Option$selectedOptionsToTuple(model.a)) ? _List_Nil : $author$project$Option$selectedOptionsToTuple(model.a);
 	var deselectEventMsg = $elm$core$List$isEmpty(deselectedItems) ? $elm$core$Platform$Cmd$none : $author$project$Ports$optionDeselected(deselectedItems);
@@ -7062,7 +7170,8 @@ var $author$project$Main$clearAllSelectedOption = function (model) {
 			_List_fromArray(
 				[
 					A2($author$project$Main$makeCommandMessagesWhenValuesChanges, _List_Nil, $elm$core$Maybe$Nothing),
-					deselectEventMsg
+					deselectEventMsg,
+					focusCmd
 				])));
 };
 var $elm$json$Json$Decode$decodeValue = _Json_run;
@@ -7222,11 +7331,6 @@ var $author$project$Option$deselectLastSelectedOption = function (options) {
 		return options;
 	}
 };
-var $author$project$Ports$focusInput = _Platform_outgoingPort(
-	'focusInput',
-	function ($) {
-		return $elm$json$Json$Encode$null;
-	});
 var $author$project$SelectionMode$getSelectedItemPlacementMode = function (selectionMode) {
 	if (!selectionMode.$) {
 		var selectedItemPlacementMode = selectionMode.b;
@@ -8737,10 +8841,8 @@ var $author$project$Option$updateOrAddCustomOption = F2(
 							case 1:
 								return true;
 							case 2:
-								var _int = optionDisplay.a;
 								return false;
 							case 3:
-								var _int = optionDisplay.a;
 								return false;
 							case 4:
 								return true;
@@ -8838,18 +8940,18 @@ var $author$project$Main$update = F2(
 			case 0:
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 			case 1:
-				return model.m ? _Utils_Tuple2(
+				return model.k ? _Utils_Tuple2(
 					model,
 					$author$project$Ports$focusInput(0)) : _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{m: true}),
+						{k: true}),
 					$author$project$Ports$focusInput(0));
 			case 2:
-				return model.m ? _Utils_Tuple2(
+				return model.k ? _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{m: false}),
+						{k: false}),
 					$author$project$Ports$blurInput(0)) : _Utils_Tuple2(
 					model,
 					$author$project$Ports$blurInput(0));
@@ -8861,7 +8963,7 @@ var $author$project$Main$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{m: false, a: options, e: optionsForTheDropdown, F: '', af: false}),
+						{k: false, a: options, e: optionsForTheDropdown, F: '', af: false}),
 					$elm$core$Platform$Cmd$none);
 			case 4:
 				return _Utils_Tuple2(
@@ -10532,7 +10634,7 @@ var $author$project$Main$view = function (model) {
 	var _v0 = model.g;
 	if (!_v0.$) {
 		var hasOptionSelected = $author$project$Option$hasSelectedOption(model.a);
-		var showPlaceholder = (!hasOptionSelected) && (!model.m);
+		var showPlaceholder = (!hasOptionSelected) && (!model.k);
 		var valueStr = hasOptionSelected ? A2(
 			$elm$core$Maybe$withDefault,
 			'',
@@ -10565,8 +10667,8 @@ var $author$project$Main$view = function (model) {
 									_Utils_Tuple2('no-option-selected', !hasOptionSelected),
 									_Utils_Tuple2('single', true),
 									_Utils_Tuple2('disabled', model.n),
-									_Utils_Tuple2('focused', model.m),
-									_Utils_Tuple2('not-focused', !model.m)
+									_Utils_Tuple2('focused', model.k),
+									_Utils_Tuple2('not-focused', !model.k)
 								]))
 						]),
 					_List_fromArray(
@@ -10581,7 +10683,7 @@ var $author$project$Main$view = function (model) {
 								[
 									$elm$html$Html$text(valueStr)
 								])),
-							A5($author$project$Main$singleSelectInputField, model.F, model.n, model.m, model.I, hasOptionSelected),
+							A5($author$project$Main$singleSelectInputField, model.F, model.n, model.k, model.I, hasOptionSelected),
 							function () {
 							var _v1 = model.E;
 							switch (_v1) {
@@ -10598,7 +10700,7 @@ var $author$project$Main$view = function (model) {
 										_List_fromArray(
 											[$author$project$Main$defaultLoadingIndicator]));
 								case 2:
-									return A2($author$project$Main$dropdownIndicator, model.m, model.n);
+									return A2($author$project$Main$dropdownIndicator, model.k, model.n);
 								default:
 									return A3(
 										$elm$html$Html$node,
@@ -10615,7 +10717,7 @@ var $author$project$Main$view = function (model) {
 				]));
 	} else {
 		var hasOptionSelected = $author$project$Option$hasSelectedOption(model.a);
-		var showPlaceholder = (!hasOptionSelected) && (!model.m);
+		var showPlaceholder = (!hasOptionSelected) && (!model.k);
 		var placeholderAttribute = showPlaceholder ? $elm$html$Html$Attributes$placeholder(model.I) : $elm$html$Html$Attributes$classList(_List_Nil);
 		var inputFilter = A2(
 			$elm$html$Html$input,
@@ -10678,8 +10780,8 @@ var $author$project$Main$view = function (model) {
 									_Utils_Tuple2('no-option-selected', !hasOptionSelected),
 									_Utils_Tuple2('multi', true),
 									_Utils_Tuple2('disabled', model.n),
-									_Utils_Tuple2('focused', model.m),
-									_Utils_Tuple2('not-focused', !model.m)
+									_Utils_Tuple2('focused', model.k),
+									_Utils_Tuple2('not-focused', !model.k)
 								]))
 						]),
 					_Utils_ap(
@@ -10687,7 +10789,7 @@ var $author$project$Main$view = function (model) {
 						_List_fromArray(
 							[
 								inputFilter,
-								A3($author$project$Main$rightSlotHtml, model.E, model.m, model.n)
+								A3($author$project$Main$rightSlotHtml, model.E, model.k, model.n)
 							]))),
 					$author$project$Main$dropdown(model)
 				]));
