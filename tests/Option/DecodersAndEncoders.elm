@@ -87,12 +87,12 @@ suite =
             , test "an option that's selected" <|
                 \_ ->
                     Expect.equal
-                        (Ok (newSelectedOption "Sup" (Just "sup")))
+                        (Ok (newSelectedOption 0 "Sup" (Just "sup")))
                         (Json.Decode.decodeString decoder simpleSelectedOption)
             , test "an option that's selected (using the 'true' string)" <|
                 \_ ->
                     Expect.equal
-                        (Ok (newSelectedOption "Sup" (Just "sup")))
+                        (Ok (newSelectedOption 0 "Sup" (Just "sup")))
                         (Json.Decode.decodeString decoder simpleSelectedOptionSelectedIsAString)
             , test "an option that's not selected" <|
                 \_ ->
@@ -110,7 +110,7 @@ suite =
                         (Ok
                             [ newOption "1" Nothing |> Option.setLabelWithString "one" (Just "one")
                             , newOption "2" Nothing |> Option.setLabelWithString "two" (Just "two")
-                            , newSelectedOption "3" Nothing |> Option.setLabelWithString "three" (Just "three")
+                            , newSelectedOption 0 "3" Nothing |> Option.setLabelWithString "three" (Just "three")
                             ]
                         )
                         (Json.Decode.decodeString optionsDecoder listOfOptions)
@@ -124,7 +124,7 @@ suite =
                             , newOption "2" Nothing
                                 |> Option.setLabelWithString "sticks" (Just "sticks")
                                 |> Option.setDescriptionWithString "🌳"
-                            , newSelectedOption "3" Nothing
+                            , newSelectedOption 0 "3" Nothing
                                 |> Option.setLabelWithString "bricks" (Just "bricks")
                                 |> Option.setDescriptionWithString "🧱"
                             ]
@@ -143,7 +143,7 @@ suite =
                             , newOption "2" Nothing
                                 |> Option.setLabelWithString "sticks" (Just "sticks")
                                 |> Option.setGroupWithString "Building Material"
-                            , newSelectedOption "3" Nothing
+                            , newSelectedOption 0 "3" Nothing
                                 |> Option.setLabelWithString "bricks" (Just "bricks")
                                 |> Option.setGroupWithString "Building Material"
                             ]
