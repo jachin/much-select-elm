@@ -10605,6 +10605,15 @@ var $author$project$Option$findOptionByOptionValue = F2(
 			},
 			options);
 	});
+var $author$project$Option$getOptionValueAsString = function (option) {
+	var _v0 = $author$project$Option$getOptionValue(option);
+	if (_v0.$ === 'OptionValue') {
+		var string = _v0.a;
+		return string;
+	} else {
+		return '';
+	}
+};
 var $author$project$Option$NoDescription = {$: 'NoDescription'};
 var $author$project$Option$getOptionDescription = function (option) {
 	switch (option.$) {
@@ -10617,6 +10626,20 @@ var $author$project$Option$getOptionDescription = function (option) {
 			return $author$project$Option$NoDescription;
 	}
 };
+var $author$project$Option$orOptionDescriptions = F2(
+	function (optionA, optionB) {
+		var optionDescriptionB = $author$project$Option$getOptionDescription(optionB);
+		var optionDescriptionA = $author$project$Option$getOptionDescription(optionA);
+		if (optionDescriptionA.$ === 'OptionDescription') {
+			return optionDescriptionA;
+		} else {
+			if (optionDescriptionB.$ === 'OptionDescription') {
+				return optionDescriptionB;
+			} else {
+				return optionDescriptionB;
+			}
+		}
+	});
 var $author$project$Option$NoOptionGroup = {$: 'NoOptionGroup'};
 var $author$project$Option$getOptionGroup = function (option) {
 	switch (option.$) {
@@ -10629,6 +10652,20 @@ var $author$project$Option$getOptionGroup = function (option) {
 			return $author$project$Option$NoOptionGroup;
 	}
 };
+var $author$project$Option$orOptionGroup = F2(
+	function (optionA, optionB) {
+		var _v0 = $author$project$Option$getOptionGroup(optionA);
+		if (_v0.$ === 'OptionGroup') {
+			return $author$project$Option$getOptionGroup(optionA);
+		} else {
+			var _v1 = $author$project$Option$getOptionGroup(optionB);
+			if (_v1.$ === 'OptionGroup') {
+				return $author$project$Option$getOptionGroup(optionB);
+			} else {
+				return $author$project$Option$getOptionGroup(optionA);
+			}
+		}
+	});
 var $author$project$Option$getOptionLabel = function (option) {
 	switch (option.$) {
 		case 'Option':
@@ -10642,15 +10679,20 @@ var $author$project$Option$getOptionLabel = function (option) {
 			return label;
 	}
 };
-var $author$project$Option$getOptionValueAsString = function (option) {
-	var _v0 = $author$project$Option$getOptionValue(option);
-	if (_v0.$ === 'OptionValue') {
-		var string = _v0.a;
-		return string;
-	} else {
-		return '';
-	}
+var $author$project$OptionLabel$optionLabelToString = function (optionLabel) {
+	var label = optionLabel.a;
+	return label;
 };
+var $author$project$Option$isOptionValueEqualToOptionLabel = function (option) {
+	var optionValueString = $author$project$Option$getOptionValueAsString(option);
+	var optionLabelString = $author$project$OptionLabel$optionLabelToString(
+		$author$project$Option$getOptionLabel(option));
+	return _Utils_eq(optionValueString, optionLabelString);
+};
+var $author$project$Option$orOptionLabel = F2(
+	function (optionA, optionB) {
+		return $author$project$Option$isOptionValueEqualToOptionLabel(optionA) ? ($author$project$Option$isOptionValueEqualToOptionLabel(optionB) ? $author$project$Option$getOptionLabel(optionA) : $author$project$Option$getOptionLabel(optionB)) : $author$project$Option$getOptionLabel(optionA);
+	});
 var $author$project$Option$CustomOption = F4(
 	function (a, b, c, d) {
 		return {$: 'CustomOption', a: a, b: b, c: c, d: d};
@@ -10709,10 +10751,6 @@ var $author$project$Option$setGroup = F2(
 	});
 var $author$project$Option$OptionValue = function (a) {
 	return {$: 'OptionValue', a: a};
-};
-var $author$project$OptionLabel$optionLabelToString = function (optionLabel) {
-	var label = optionLabel.a;
-	return label;
 };
 var $author$project$Option$setLabel = F2(
 	function (label, option) {
@@ -11008,25 +11046,15 @@ var $author$project$Option$setLabelWithString = F3(
 					A3($author$project$OptionLabel$OptionLabel, string, maybeCleanString, $author$project$SortRank$NoSortRank));
 		}
 	});
-var $author$project$Option$selectOptionInListByOptionValue = F2(
-	function (value, options) {
-		var nextSelectedIndex = A3(
-			$elm$core$List$foldl,
-			F2(
-				function (selectedOption, highestIndex) {
-					return (_Utils_cmp(
-						$author$project$Option$getOptionSelectedIndex(selectedOption),
-						highestIndex) > 0) ? $author$project$Option$getOptionSelectedIndex(selectedOption) : highestIndex;
-				}),
-			-1,
-			options) + 1;
+var $author$project$Option$selectOptionInListByOptionValueWithIndex = F3(
+	function (index, value, options) {
 		return A2(
 			$elm$core$List$map,
 			function (option_) {
 				if (A2($author$project$Option$optionValuesEqual, option_, value)) {
 					switch (option_.$) {
 						case 'Option':
-							return A2($author$project$Option$selectOption, nextSelectedIndex, option_);
+							return A2($author$project$Option$selectOption, index, option_);
 						case 'CustomOption':
 							if (value.$ === 'OptionValue') {
 								var valueStr = value.a;
@@ -11034,12 +11062,12 @@ var $author$project$Option$selectOptionInListByOptionValue = F2(
 									$author$project$Option$setLabelWithString,
 									valueStr,
 									$elm$core$Maybe$Nothing,
-									A2($author$project$Option$selectOption, nextSelectedIndex, option_));
+									A2($author$project$Option$selectOption, index, option_));
 							} else {
-								return A2($author$project$Option$selectOption, nextSelectedIndex, option_);
+								return A2($author$project$Option$selectOption, index, option_);
 							}
 						default:
-							return A2($author$project$Option$selectOption, nextSelectedIndex, option_);
+							return A2($author$project$Option$selectOption, index, option_);
 					}
 				} else {
 					return option_;
@@ -11047,19 +11075,22 @@ var $author$project$Option$selectOptionInListByOptionValue = F2(
 			},
 			options);
 	});
-var $author$project$Option$selectOptionInList = F2(
-	function (option, options) {
-		return A2(
-			$author$project$Option$selectOptionInListByOptionValue,
-			$author$project$Option$getOptionValue(option),
-			options);
+var $author$project$Option$selectOptionInListWithIndex = F2(
+	function (optionToSelect, options) {
+		var optionValue = $author$project$Option$getOptionValue(optionToSelect);
+		var notLessThanZero = function (i) {
+			return (i < 0) ? 0 : 0;
+		};
+		var selectionIndex = notLessThanZero(
+			$author$project$Option$getOptionSelectedIndex(optionToSelect));
+		return A3($author$project$Option$selectOptionInListByOptionValueWithIndex, selectionIndex, optionValue, options);
 	});
-var $author$project$Option$selectOptionsInList = F2(
+var $author$project$Option$selectOptionsInListWithIndex = F2(
 	function (optionsToSelect, options) {
 		var helper = F2(
 			function (newOptions, optionToSelect) {
 				return _Utils_Tuple2(
-					A2($author$project$Option$selectOptionInList, optionToSelect, newOptions),
+					A2($author$project$Option$selectOptionInListWithIndex, optionToSelect, newOptions),
 					_List_Nil);
 			});
 		return A3($elm_community$list_extra$List$Extra$mapAccuml, helper, options, optionsToSelect).a;
@@ -11109,7 +11140,7 @@ var $author$project$Option$setSelectedOptionInNewOptions = F2(
 				return A2($author$project$Option$optionListContainsOptionWithValue, newOption_, oldSelectedOption);
 			},
 			newOptions);
-		return A2($author$project$Option$selectOptionsInList, newSelectedOptions, newOptions);
+		return A2($author$project$Option$selectOptionsInListWithIndex, newSelectedOptions, newOptions);
 	});
 var $elm$core$Set$Set_elm_builtin = function (a) {
 	return {$: 'Set_elm_builtin', a: a};
@@ -11177,26 +11208,26 @@ var $author$project$Option$mergeTwoListsOfOptionsPreservingSelectedOptions = F3(
 	function (selectedItemPlacementMode, optionsA, optionsB) {
 		var combineOptions = F2(
 			function (optionA, optionB) {
-				var optionBLabel = $author$project$Option$getOptionLabel(optionB);
-				var optionBGroup = $author$project$Option$getOptionGroup(optionB);
-				var optionBDescription = $author$project$Option$getOptionDescription(optionB);
+				var optionLabel = A2($author$project$Option$orOptionLabel, optionA, optionB);
+				var optionGroup = A2($author$project$Option$orOptionGroup, optionA, optionB);
+				var optionDescription = A2($author$project$Option$orOptionDescriptions, optionA, optionB);
 				return A2(
 					$author$project$Option$setGroup,
-					optionBGroup,
+					optionGroup,
 					A2(
 						$author$project$Option$setLabel,
-						optionBLabel,
-						A2($author$project$Option$setDescription, optionBDescription, optionA)));
+						optionLabel,
+						A2($author$project$Option$setDescription, optionDescription, optionA)));
 			});
 		var updatedOptionsA = A2(
 			$elm$core$List$map,
 			function (optionA) {
-				var _v1 = A2(
+				var _v2 = A2(
 					$author$project$Option$findOptionByOptionValue,
 					$author$project$Option$getOptionValue(optionA),
 					optionsB);
-				if (_v1.$ === 'Just') {
-					var optionB = _v1.a;
+				if (_v2.$ === 'Just') {
+					var optionB = _v2.a;
 					return A2(combineOptions, optionA, optionB);
 				} else {
 					return optionA;
@@ -11210,14 +11241,24 @@ var $author$project$Option$mergeTwoListsOfOptionsPreservingSelectedOptions = F3(
 				return _Utils_ap(updatedOptionsA, optionsB);
 			}
 		}();
-		var newOptions = A2($elm_community$list_extra$List$Extra$uniqueBy, $author$project$Option$getOptionValueAsString, superList);
+		var newOptions = function () {
+			if (selectedItemPlacementMode.$ === 'SelectedItemStaysInPlace') {
+				return $elm$core$List$reverse(
+					A2(
+						$elm_community$list_extra$List$Extra$uniqueBy,
+						$author$project$Option$getOptionValueAsString,
+						$elm$core$List$reverse(superList)));
+			} else {
+				return A2($elm_community$list_extra$List$Extra$uniqueBy, $author$project$Option$getOptionValueAsString, superList);
+			}
+		}();
 		return A2($author$project$Option$setSelectedOptionInNewOptions, superList, newOptions);
 	});
-var $author$project$Option$newSelectedOption = F2(
-	function (string, maybeCleanLabel) {
+var $author$project$Option$newSelectedOption = F3(
+	function (index, string, maybeCleanLabel) {
 		return A6(
 			$author$project$Option$Option,
-			$author$project$Option$OptionSelected(0),
+			$author$project$Option$OptionSelected(index),
 			A3($author$project$OptionLabel$OptionLabel, string, maybeCleanLabel, $author$project$SortRank$NoSortRank),
 			$author$project$Option$OptionValue(string),
 			$author$project$Option$NoDescription,
@@ -11227,10 +11268,11 @@ var $author$project$Option$newSelectedOption = F2(
 var $author$project$Option$addAndSelectOptionsInOptionsListByString = F3(
 	function (selectedItemPlacementMode, strings, options) {
 		var newOptions = A2(
-			$elm$core$List$map,
-			function (str) {
-				return A2($author$project$Option$newSelectedOption, str, $elm$core$Maybe$Nothing);
-			},
+			$elm$core$List$indexedMap,
+			F2(
+				function (i, str) {
+					return A3($author$project$Option$newSelectedOption, i, str, $elm$core$Maybe$Nothing);
+				}),
 			strings);
 		return A3($author$project$Option$mergeTwoListsOfOptionsPreservingSelectedOptions, selectedItemPlacementMode, newOptions, options);
 	});
@@ -11882,6 +11924,62 @@ var $author$project$Option$isOptionValueInListOfStrings = F2(
 			},
 			possibleValues);
 	});
+var $author$project$Option$selectOptionInListByOptionValue = F2(
+	function (value, options) {
+		var nextSelectedIndex = A3(
+			$elm$core$List$foldl,
+			F2(
+				function (selectedOption, highestIndex) {
+					return (_Utils_cmp(
+						$author$project$Option$getOptionSelectedIndex(selectedOption),
+						highestIndex) > 0) ? $author$project$Option$getOptionSelectedIndex(selectedOption) : highestIndex;
+				}),
+			-1,
+			options) + 1;
+		return A2(
+			$elm$core$List$map,
+			function (option_) {
+				if (A2($author$project$Option$optionValuesEqual, option_, value)) {
+					switch (option_.$) {
+						case 'Option':
+							return A2($author$project$Option$selectOption, nextSelectedIndex, option_);
+						case 'CustomOption':
+							if (value.$ === 'OptionValue') {
+								var valueStr = value.a;
+								return A3(
+									$author$project$Option$setLabelWithString,
+									valueStr,
+									$elm$core$Maybe$Nothing,
+									A2($author$project$Option$selectOption, nextSelectedIndex, option_));
+							} else {
+								return A2($author$project$Option$selectOption, nextSelectedIndex, option_);
+							}
+						default:
+							return A2($author$project$Option$selectOption, nextSelectedIndex, option_);
+					}
+				} else {
+					return option_;
+				}
+			},
+			options);
+	});
+var $author$project$Option$selectOptionInList = F2(
+	function (option, options) {
+		return A2(
+			$author$project$Option$selectOptionInListByOptionValue,
+			$author$project$Option$getOptionValue(option),
+			options);
+	});
+var $author$project$Option$selectOptionsInList = F2(
+	function (optionsToSelect, options) {
+		var helper = F2(
+			function (newOptions, optionToSelect) {
+				return _Utils_Tuple2(
+					A2($author$project$Option$selectOptionInList, optionToSelect, newOptions),
+					_List_Nil);
+			});
+		return A3($elm_community$list_extra$List$Extra$mapAccuml, helper, options, optionsToSelect).a;
+	});
 var $author$project$Option$selectOptionsInOptionsListByString = F2(
 	function (strings, options) {
 		var optionsToSelect = A2(
@@ -12115,6 +12213,11 @@ var $author$project$Ports$blurInput = _Platform_outgoingPort(
 var $author$project$Option$deselectAllOptionsInOptionsList = function (options) {
 	return A2($elm$core$List$map, $author$project$Option$deselectOption, options);
 };
+var $author$project$Ports$focusInput = _Platform_outgoingPort(
+	'focusInput',
+	function ($) {
+		return $elm$json$Json$Encode$null;
+	});
 var $author$project$Ports$customOptionSelected = _Platform_outgoingPort(
 	'customOptionSelected',
 	$elm$json$Json$Encode$list($elm$json$Json$Encode$string));
@@ -12239,13 +12342,18 @@ var $author$project$Main$updateRightSlot = F3(
 			case 'ShowLoadingIndicator':
 				return $author$project$Main$ShowLoadingIndicator;
 			case 'ShowDropdownIndicator':
-				return $author$project$Main$ShowDropdownIndicator;
+				if (selectionMode.$ === 'SingleSelect') {
+					return $author$project$Main$ShowDropdownIndicator;
+				} else {
+					return hasSelectedOption ? $author$project$Main$ShowClearButton : $author$project$Main$ShowDropdownIndicator;
+				}
 			default:
 				return hasSelectedOption ? $author$project$Main$ShowClearButton : $author$project$Main$ShowDropdownIndicator;
 		}
 	});
 var $author$project$Main$clearAllSelectedOption = function (model) {
 	var newOptions = $author$project$Option$deselectAllOptionsInOptionsList(model.options);
+	var focusCmd = model.focused ? $author$project$Ports$focusInput(_Utils_Tuple0) : $elm$core$Platform$Cmd$none;
 	var deselectedItems = $elm$core$List$isEmpty(
 		$author$project$Option$selectedOptionsToTuple(model.options)) ? _List_Nil : $author$project$Option$selectedOptionsToTuple(model.options);
 	var deselectEventMsg = $elm$core$List$isEmpty(deselectedItems) ? $elm$core$Platform$Cmd$none : $author$project$Ports$optionDeselected(deselectedItems);
@@ -12262,7 +12370,8 @@ var $author$project$Main$clearAllSelectedOption = function (model) {
 			_List_fromArray(
 				[
 					A2($author$project$Main$makeCommandMessagesWhenValuesChanges, _List_Nil, $elm$core$Maybe$Nothing),
-					deselectEventMsg
+					deselectEventMsg,
+					focusCmd
 				])));
 };
 var $author$project$Option$selectSingleOptionInList = F2(
@@ -12421,11 +12530,6 @@ var $author$project$Option$deselectLastSelectedOption = function (options) {
 		return options;
 	}
 };
-var $author$project$Ports$focusInput = _Platform_outgoingPort(
-	'focusInput',
-	function ($) {
-		return $elm$json$Json$Encode$null;
-	});
 var $author$project$SelectionMode$getSelectedItemPlacementMode = function (selectionMode) {
 	if (selectionMode.$ === 'SingleSelect') {
 		var selectedItemPlacementMode = selectionMode.b;
@@ -13915,10 +14019,8 @@ var $author$project$Option$updateOrAddCustomOption = F2(
 							case 'OptionHidden':
 								return true;
 							case 'OptionSelected':
-								var _int = optionDisplay.a;
 								return false;
 							case 'OptionSelectedHighlighted':
-								var _int = optionDisplay.a;
 								return false;
 							case 'OptionHighlighted':
 								return true;
