@@ -986,7 +986,7 @@ class MuchSelect extends HTMLElement {
     } else if (value === null) {
       this._customOptionHint = null;
     } else if (value === "") {
-      this._customOptionHint = "";
+      this._customOptionHint = null;
     } else if (typeof value === "string") {
       this._customOptionHint = value;
     } else {

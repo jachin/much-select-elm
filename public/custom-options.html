@@ -27,7 +27,7 @@
     <p>
       Using the <code>allow-custom-options</code> attribute to allow the user to choose a their own value (one that is not in the list of options).
     </p>
-    <much-select allow-custom-options="true"></much-select>
+    <much-select allow-custom-options></much-select>
     <p>Events:</p>
     <table id="single-select-custom-option-event-log">
       <thead>
@@ -115,6 +115,21 @@
         <option>Itchy and Scrachy Money</option>
         <option>Merits</option>
         <option>Diamonds</option>
+      </select>
+    </much-select>
+  </div>
+
+  <div id="empty-custom-option-label-text">
+    <h3>Empty Custom Options Label</h3>
+    <p>
+      If you <em>just</em> want the value that's being typed in, with no other hints use just <code>allow-custom-options="{{}}"</code>
+    </p>
+    <much-select allow-custom-options="{{}}">
+      <!--suppress HtmlFormInputWithoutLabel -->
+      <select>
+        <option>Back Rubs</option>
+        <option>Baby Sitting</option>
+        <option>Pies</option>
       </select>
     </much-select>
   </div>
