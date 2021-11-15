@@ -4946,6 +4946,10 @@ function _Browser_load(url)
 		}
 	}));
 }
+var $elm$core$Maybe$Just = function (a) {
+	return {$: 'Just', a: a};
+};
+var $elm$core$Maybe$Nothing = {$: 'Nothing'};
 var $elm$core$List$cons = _List_cons;
 var $elm$core$Elm$JsArray$foldr = _JsArray_foldr;
 var $elm$core$Array$foldr = F3(
@@ -5049,10 +5053,6 @@ var $elm$json$Json$Decode$OneOf = function (a) {
 };
 var $elm$core$Basics$False = {$: 'False'};
 var $elm$core$Basics$add = _Basics_add;
-var $elm$core$Maybe$Just = function (a) {
-	return {$: 'Just', a: a};
-};
-var $elm$core$Maybe$Nothing = {$: 'Nothing'};
 var $elm$core$String$all = _String_all;
 var $elm$core$Basics$and = _Basics_and;
 var $elm$core$Basics$append = _Utils_append;
@@ -12071,6 +12071,7 @@ var $author$project$Main$init = function (flags) {
 	var errorCmd = _v2.b;
 	return _Utils_Tuple2(
 		{
+			customOptionHint: flags.customOptionHint,
 			deleteKeyPressed: false,
 			disabled: flags.disabled,
 			focused: false,
@@ -12109,6 +12110,9 @@ var $author$project$Main$AddOptions = function (a) {
 };
 var $author$project$Main$AllowCustomOptionsChanged = function (a) {
 	return {$: 'AllowCustomOptionsChanged', a: a};
+};
+var $author$project$Main$CustomOptionHintChanged = function (a) {
+	return {$: 'CustomOptionHintChanged', a: a};
 };
 var $author$project$Main$DeselectOption = function (a) {
 	return {$: 'DeselectOption', a: a};
@@ -12149,6 +12153,14 @@ var $author$project$Main$ValueChanged = function (a) {
 var $author$project$Ports$addOptionsReceiver = _Platform_incomingPort('addOptionsReceiver', $elm$json$Json$Decode$value);
 var $author$project$Ports$allowCustomOptionsReceiver = _Platform_incomingPort('allowCustomOptionsReceiver', $elm$json$Json$Decode$bool);
 var $elm$core$Platform$Sub$batch = _Platform_batch;
+var $author$project$Ports$customOptionHintReceiver = _Platform_incomingPort(
+	'customOptionHintReceiver',
+	$elm$json$Json$Decode$oneOf(
+		_List_fromArray(
+			[
+				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+			])));
 var $author$project$Ports$deselectOptionReceiver = _Platform_incomingPort('deselectOptionReceiver', $elm$json$Json$Decode$value);
 var $author$project$Ports$disableChangedReceiver = _Platform_incomingPort('disableChangedReceiver', $elm$json$Json$Decode$bool);
 var $author$project$Ports$loadingChangedReceiver = _Platform_incomingPort('loadingChangedReceiver', $elm$json$Json$Decode$bool);
@@ -12188,6 +12200,7 @@ var $author$project$Main$subscriptions = function (_v0) {
 				$author$project$Ports$optionsChangedReceiver($author$project$Main$OptionsChanged),
 				$author$project$Ports$maxDropdownItemsChangedReceiver($author$project$Main$MaxDropdownItemsChanged),
 				$author$project$Ports$allowCustomOptionsReceiver($author$project$Main$AllowCustomOptionsChanged),
+				$author$project$Ports$customOptionHintReceiver($author$project$Main$CustomOptionHintChanged),
 				$author$project$Ports$valueCasingDimensionsChangedReceiver($author$project$Main$ValueCasingWidthUpdate),
 				$author$project$Ports$selectOptionReceiver($author$project$Main$SelectOption),
 				$author$project$Ports$deselectOptionReceiver($author$project$Main$DeselectOption),
@@ -13996,8 +14009,8 @@ var $elm_community$list_extra$List$Extra$dropWhile = F2(
 			}
 		}
 	});
-var $author$project$Option$updateOrAddCustomOption = F2(
-	function (searchString, options) {
+var $author$project$Option$updateOrAddCustomOption = F3(
+	function (maybeCustomOptionHint, searchString, options) {
 		var showAddOption = !A2(
 			$elm$core$List$any,
 			function (option_) {
@@ -14034,44 +14047,66 @@ var $author$project$Option$updateOrAddCustomOption = F2(
 				}
 			},
 			options);
+		var label = function () {
+			if (maybeCustomOptionHint.$ === 'Just') {
+				var customOptionHint = maybeCustomOptionHint.a;
+				var parts = A2($elm$core$String$split, '{{}}', customOptionHint);
+				if (!parts.b) {
+					return 'Add ' + (searchString + '…');
+				} else {
+					if (!parts.b.b) {
+						return _Utils_ap(customOptionHint, searchString);
+					} else {
+						var first = parts.a;
+						var _v2 = parts.b;
+						var second = _v2.a;
+						return _Utils_ap(
+							first,
+							_Utils_ap(searchString, second));
+					}
+				}
+			} else {
+				return 'Add ' + (searchString + '…');
+			}
+		}();
 		return showAddOption ? _Utils_ap(
 			_List_fromArray(
 				[
 					A4(
 					$author$project$Option$CustomOption,
 					$author$project$Option$OptionShown,
-					A3($author$project$OptionLabel$OptionLabel, 'Add ' + (searchString + '…'), $elm$core$Maybe$Nothing, $author$project$SortRank$NoSortRank),
+					A3($author$project$OptionLabel$OptionLabel, label, $elm$core$Maybe$Nothing, $author$project$SortRank$NoSortRank),
 					$author$project$Option$OptionValue(searchString),
 					$elm$core$Maybe$Nothing)
 				]),
 			options_) : options_;
 	});
-var $author$project$OptionSearcher$updateOrAddCustomOption = F3(
-	function (searchString, selectionMode, options) {
+var $author$project$OptionSearcher$updateOrAddCustomOption = F4(
+	function (maybeCustomOptionHint, searchString, selectionMode, options) {
 		if (searchString === '') {
 			return options;
 		} else {
 			var _v1 = $author$project$SelectionMode$getCustomOptions(selectionMode);
 			if (_v1.$ === 'AllowCustomOptions') {
-				return A2($author$project$Option$updateOrAddCustomOption, searchString, options);
+				return A3($author$project$Option$updateOrAddCustomOption, maybeCustomOptionHint, searchString, options);
 			} else {
 				return options;
 			}
 		}
 	});
-var $author$project$OptionSearcher$updateOptions = F3(
-	function (selectionMode, searchString, options) {
+var $author$project$OptionSearcher$updateOptions = F4(
+	function (selectionMode, maybeCustomOptionHint, searchString, options) {
 		return A2(
 			$author$project$OptionSearcher$updateOptionsWithSearchString,
 			searchString,
-			A3($author$project$OptionSearcher$updateOrAddCustomOption, searchString, selectionMode, options));
+			A4($author$project$OptionSearcher$updateOrAddCustomOption, maybeCustomOptionHint, searchString, selectionMode, options));
 	});
 var $author$project$Main$updateModelWithSearchStringChanges = F4(
 	function (maxNumberOfDropdownItems, searchString, options, model) {
-		var optionsUpdatedWithSearchString = A3($author$project$OptionSearcher$updateOptions, model.selectionMode, searchString, options);
+		var optionsUpdatedWithSearchString = A4($author$project$OptionSearcher$updateOptions, model.selectionMode, model.customOptionHint, searchString, options);
 		if (searchString === '') {
 			var updatedOptions = $author$project$Option$sortOptionsByGroupAndLabel(
-				A3($author$project$OptionSearcher$updateOptions, model.selectionMode, searchString, options));
+				A4($author$project$OptionSearcher$updateOptions, model.selectionMode, model.customOptionHint, searchString, options));
 			return _Utils_update(
 				model,
 				{
@@ -14404,6 +14439,13 @@ var $author$project$Main$update = F2(
 						{
 							selectionMode: A2($author$project$SelectionMode$setAllowCustomOptionsWithBool, canAddCustomOptions, model.selectionMode)
 						}),
+					$elm$core$Platform$Cmd$none);
+			case 'CustomOptionHintChanged':
+				var maybeString = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{customOptionHint: maybeString}),
 					$elm$core$Platform$Cmd$none);
 			case 'DisabledAttributeChanged':
 				var bool = msg.a;
@@ -15916,16 +15958,29 @@ _Platform_export({'Main':{'init':$author$project$Main$main(
 														function (disabled) {
 															return A2(
 																$elm$json$Json$Decode$andThen,
-																function (allowMultiSelect) {
+																function (customOptionHint) {
 																	return A2(
 																		$elm$json$Json$Decode$andThen,
-																		function (allowCustomOptions) {
-																			return $elm$json$Json$Decode$succeed(
-																				{allowCustomOptions: allowCustomOptions, allowMultiSelect: allowMultiSelect, disabled: disabled, loading: loading, maxDropdownItems: maxDropdownItems, optionsJson: optionsJson, placeholder: placeholder, selectedItemStaysInPlace: selectedItemStaysInPlace, value: value});
+																		function (allowMultiSelect) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (allowCustomOptions) {
+																					return $elm$json$Json$Decode$succeed(
+																						{allowCustomOptions: allowCustomOptions, allowMultiSelect: allowMultiSelect, customOptionHint: customOptionHint, disabled: disabled, loading: loading, maxDropdownItems: maxDropdownItems, optionsJson: optionsJson, placeholder: placeholder, selectedItemStaysInPlace: selectedItemStaysInPlace, value: value});
+																				},
+																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
 																		},
-																		A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
 																},
-																A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																A2(
+																	$elm$json$Json$Decode$field,
+																	'customOptionHint',
+																	$elm$json$Json$Decode$oneOf(
+																		_List_fromArray(
+																			[
+																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																			]))));
 														},
 														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
 												},
@@ -15939,7 +15994,7 @@ _Platform_export({'Main':{'init':$author$project$Main$main(
 				},
 				A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
 		},
-		A2($elm$json$Json$Decode$field, 'value', $elm$json$Json$Decode$string)))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"}},"unions":{"Main.Msg":{"args":[],"tags":{"NoOp":[],"BringInputInFocus":[],"BringInputOutOfFocus":[],"InputBlur":[],"InputFocus":[],"DropdownMouseOverOption":["Option.OptionValue"],"DropdownMouseOutOption":["Option.OptionValue"],"DropdownMouseClickOption":["Option.OptionValue"],"SearchInputOnInput":["String.String"],"ValueChanged":["Json.Decode.Value"],"OptionsChanged":["Json.Decode.Value"],"AddOptions":["Json.Decode.Value"],"RemoveOptions":["Json.Decode.Value"],"SelectOption":["Json.Decode.Value"],"DeselectOption":["Json.Decode.Value"],"PlaceholderAttributeChanged":["String.String"],"LoadingAttributeChanged":["Basics.Bool"],"MaxDropdownItemsChanged":["Basics.Int"],"AllowCustomOptionsChanged":["Basics.Bool"],"DisabledAttributeChanged":["Basics.Bool"],"MulitSelectAttributeChanged":["Basics.Bool"],"SelectedItemStaysInPlaceChanged":["Basics.Bool"],"SelectHighlightedOption":[],"DeleteInputForSingleSelect":[],"EscapeKeyInInputFilter":[],"MoveHighlightedOptionUp":[],"MoveHighlightedOptionDown":[],"ValueCasingWidthUpdate":["{ width : Basics.Float, height : Basics.Float }"],"ClearAllSelectedOptions":[],"ToggleSelectedValueHighlight":["Option.OptionValue"],"DeleteKeydownForMultiSelect":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Option.OptionValue":{"args":[],"tags":{"OptionValue":["String.String"],"EmptyOptionValue":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}}}}})}});}(this));
+		A2($elm$json$Json$Decode$field, 'value', $elm$json$Json$Decode$string)))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"}},"unions":{"Main.Msg":{"args":[],"tags":{"NoOp":[],"BringInputInFocus":[],"BringInputOutOfFocus":[],"InputBlur":[],"InputFocus":[],"DropdownMouseOverOption":["Option.OptionValue"],"DropdownMouseOutOption":["Option.OptionValue"],"DropdownMouseClickOption":["Option.OptionValue"],"SearchInputOnInput":["String.String"],"ValueChanged":["Json.Decode.Value"],"OptionsChanged":["Json.Decode.Value"],"AddOptions":["Json.Decode.Value"],"RemoveOptions":["Json.Decode.Value"],"SelectOption":["Json.Decode.Value"],"DeselectOption":["Json.Decode.Value"],"PlaceholderAttributeChanged":["String.String"],"LoadingAttributeChanged":["Basics.Bool"],"MaxDropdownItemsChanged":["Basics.Int"],"AllowCustomOptionsChanged":["Basics.Bool"],"CustomOptionHintChanged":["Maybe.Maybe String.String"],"DisabledAttributeChanged":["Basics.Bool"],"MulitSelectAttributeChanged":["Basics.Bool"],"SelectedItemStaysInPlaceChanged":["Basics.Bool"],"SelectHighlightedOption":[],"DeleteInputForSingleSelect":[],"EscapeKeyInInputFilter":[],"MoveHighlightedOptionUp":[],"MoveHighlightedOptionDown":[],"ValueCasingWidthUpdate":["{ width : Basics.Float, height : Basics.Float }"],"ClearAllSelectedOptions":[],"ToggleSelectedValueHighlight":["Option.OptionValue"],"DeleteKeydownForMultiSelect":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Option.OptionValue":{"args":[],"tags":{"OptionValue":["String.String"],"EmptyOptionValue":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}}}}})}});}(this));
 */
 export const Elm = {'Main':{'init':$author$project$Main$main(
 	A2(
@@ -15965,16 +16020,29 @@ export const Elm = {'Main':{'init':$author$project$Main$main(
 														function (disabled) {
 															return A2(
 																$elm$json$Json$Decode$andThen,
-																function (allowMultiSelect) {
+																function (customOptionHint) {
 																	return A2(
 																		$elm$json$Json$Decode$andThen,
-																		function (allowCustomOptions) {
-																			return $elm$json$Json$Decode$succeed(
-																				{allowCustomOptions: allowCustomOptions, allowMultiSelect: allowMultiSelect, disabled: disabled, loading: loading, maxDropdownItems: maxDropdownItems, optionsJson: optionsJson, placeholder: placeholder, selectedItemStaysInPlace: selectedItemStaysInPlace, value: value});
+																		function (allowMultiSelect) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (allowCustomOptions) {
+																					return $elm$json$Json$Decode$succeed(
+																						{allowCustomOptions: allowCustomOptions, allowMultiSelect: allowMultiSelect, customOptionHint: customOptionHint, disabled: disabled, loading: loading, maxDropdownItems: maxDropdownItems, optionsJson: optionsJson, placeholder: placeholder, selectedItemStaysInPlace: selectedItemStaysInPlace, value: value});
+																				},
+																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
 																		},
-																		A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
 																},
-																A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																A2(
+																	$elm$json$Json$Decode$field,
+																	'customOptionHint',
+																	$elm$json$Json$Decode$oneOf(
+																		_List_fromArray(
+																			[
+																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																			]))));
 														},
 														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
 												},
@@ -15988,4 +16056,4 @@ export const Elm = {'Main':{'init':$author$project$Main$main(
 				},
 				A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
 		},
-		A2($elm$json$Json$Decode$field, 'value', $elm$json$Json$Decode$string)))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"}},"unions":{"Main.Msg":{"args":[],"tags":{"NoOp":[],"BringInputInFocus":[],"BringInputOutOfFocus":[],"InputBlur":[],"InputFocus":[],"DropdownMouseOverOption":["Option.OptionValue"],"DropdownMouseOutOption":["Option.OptionValue"],"DropdownMouseClickOption":["Option.OptionValue"],"SearchInputOnInput":["String.String"],"ValueChanged":["Json.Decode.Value"],"OptionsChanged":["Json.Decode.Value"],"AddOptions":["Json.Decode.Value"],"RemoveOptions":["Json.Decode.Value"],"SelectOption":["Json.Decode.Value"],"DeselectOption":["Json.Decode.Value"],"PlaceholderAttributeChanged":["String.String"],"LoadingAttributeChanged":["Basics.Bool"],"MaxDropdownItemsChanged":["Basics.Int"],"AllowCustomOptionsChanged":["Basics.Bool"],"DisabledAttributeChanged":["Basics.Bool"],"MulitSelectAttributeChanged":["Basics.Bool"],"SelectedItemStaysInPlaceChanged":["Basics.Bool"],"SelectHighlightedOption":[],"DeleteInputForSingleSelect":[],"EscapeKeyInInputFilter":[],"MoveHighlightedOptionUp":[],"MoveHighlightedOptionDown":[],"ValueCasingWidthUpdate":["{ width : Basics.Float, height : Basics.Float }"],"ClearAllSelectedOptions":[],"ToggleSelectedValueHighlight":["Option.OptionValue"],"DeleteKeydownForMultiSelect":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Option.OptionValue":{"args":[],"tags":{"OptionValue":["String.String"],"EmptyOptionValue":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}}}}})}};
+		A2($elm$json$Json$Decode$field, 'value', $elm$json$Json$Decode$string)))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"}},"unions":{"Main.Msg":{"args":[],"tags":{"NoOp":[],"BringInputInFocus":[],"BringInputOutOfFocus":[],"InputBlur":[],"InputFocus":[],"DropdownMouseOverOption":["Option.OptionValue"],"DropdownMouseOutOption":["Option.OptionValue"],"DropdownMouseClickOption":["Option.OptionValue"],"SearchInputOnInput":["String.String"],"ValueChanged":["Json.Decode.Value"],"OptionsChanged":["Json.Decode.Value"],"AddOptions":["Json.Decode.Value"],"RemoveOptions":["Json.Decode.Value"],"SelectOption":["Json.Decode.Value"],"DeselectOption":["Json.Decode.Value"],"PlaceholderAttributeChanged":["String.String"],"LoadingAttributeChanged":["Basics.Bool"],"MaxDropdownItemsChanged":["Basics.Int"],"AllowCustomOptionsChanged":["Basics.Bool"],"CustomOptionHintChanged":["Maybe.Maybe String.String"],"DisabledAttributeChanged":["Basics.Bool"],"MulitSelectAttributeChanged":["Basics.Bool"],"SelectedItemStaysInPlaceChanged":["Basics.Bool"],"SelectHighlightedOption":[],"DeleteInputForSingleSelect":[],"EscapeKeyInInputFilter":[],"MoveHighlightedOptionUp":[],"MoveHighlightedOptionDown":[],"ValueCasingWidthUpdate":["{ width : Basics.Float, height : Basics.Float }"],"ClearAllSelectedOptions":[],"ToggleSelectedValueHighlight":["Option.OptionValue"],"DeleteKeydownForMultiSelect":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Option.OptionValue":{"args":[],"tags":{"OptionValue":["String.String"],"EmptyOptionValue":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}}}}})}};
