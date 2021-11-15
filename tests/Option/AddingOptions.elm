@@ -12,7 +12,7 @@ import Option
         , setLabelWithString
         )
 import SelectionMode exposing (SelectedItemPlacementMode(..))
-import Test exposing (Test, describe, only, test)
+import Test exposing (Test, describe, test)
 
 
 heartBones =
