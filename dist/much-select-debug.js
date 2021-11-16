@@ -144,6 +144,8 @@ class MuchSelect extends HTMLElement {
      */
     this._minimumWidth = 200;
 
+    this._minimumHeight = 20;
+
     /**
      * @type {string|null}
      * @private
@@ -549,15 +551,14 @@ class MuchSelect extends HTMLElement {
         let width = valueCasingElement.offsetWidth;
         let height = valueCasingElement.offsetHeight;
 
-        // Prevent the width from falling below some threshold.
+        // Prevent the width from falling below this threshold.
         if (width < this._minimumWidth) {
           width = this._minimumWidth;
         }
 
-        // Clamp the width between some min and max.
-        // TODO this min and max should probably not be hard coded here.
-        if (height < 20) {
-          height = 20;
+        // Prevent the height from falling below this threshold.
+        if (height < this._minimumHeight) {
+          height = this._minimumHeight;
         }
 
         this.appPromise.then((app) => {
