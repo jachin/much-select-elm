@@ -6707,6 +6707,7 @@ var $author$project$Main$PlaceholderAttributeChanged = function (a) {
 var $author$project$Main$RemoveOptions = function (a) {
 	return {$: 12, a: a};
 };
+var $author$project$Main$RequestAllOptions = {$: 32};
 var $author$project$Main$SelectOption = function (a) {
 	return {$: 13, a: a};
 };
@@ -6739,6 +6740,9 @@ var $author$project$Ports$multiSelectChangedReceiver = _Platform_incomingPort('m
 var $author$project$Ports$optionsChangedReceiver = _Platform_incomingPort('optionsChangedReceiver', $elm$json$Json$Decode$value);
 var $author$project$Ports$placeholderChangedReceiver = _Platform_incomingPort('placeholderChangedReceiver', $elm$json$Json$Decode$string);
 var $author$project$Ports$removeOptionsReceiver = _Platform_incomingPort('removeOptionsReceiver', $elm$json$Json$Decode$value);
+var $author$project$Ports$requestAllOptionsReceiver = _Platform_incomingPort(
+	'requestAllOptionsReceiver',
+	$elm$json$Json$Decode$null(0));
 var $author$project$Ports$selectOptionReceiver = _Platform_incomingPort('selectOptionReceiver', $elm$json$Json$Decode$value);
 var $author$project$Ports$selectedItemStaysInPlaceChangedReceiver = _Platform_incomingPort('selectedItemStaysInPlaceChangedReceiver', $elm$json$Json$Decode$bool);
 var $elm$json$Json$Decode$float = _Json_decodeFloat;
@@ -6775,7 +6779,11 @@ var $author$project$Main$subscriptions = function (_v0) {
 				$author$project$Ports$valueCasingDimensionsChangedReceiver($author$project$Main$ValueCasingWidthUpdate),
 				$author$project$Ports$selectOptionReceiver($author$project$Main$SelectOption),
 				$author$project$Ports$deselectOptionReceiver($author$project$Main$DeselectOption),
-				$author$project$Ports$multiSelectChangedReceiver($author$project$Main$MulitSelectAttributeChanged)
+				$author$project$Ports$multiSelectChangedReceiver($author$project$Main$MulitSelectAttributeChanged),
+				$author$project$Ports$requestAllOptionsReceiver(
+				function (_v1) {
+					return $author$project$Main$RequestAllOptions;
+				})
 			]));
 };
 var $author$project$Option$optionListContainsOptionWithValue = F2(
@@ -6802,6 +6810,7 @@ var $author$project$Option$addAdditionalOptionsToOptionList = F2(
 				newOptions),
 			currentOptions);
 	});
+var $author$project$Ports$allOptions = _Platform_outgoingPort('allOptions', $elm$core$Basics$identity);
 var $author$project$Ports$blurInput = _Platform_outgoingPort(
 	'blurInput',
 	function ($) {
@@ -7191,6 +7200,63 @@ var $author$project$Option$deselectLastSelectedOption = function (options) {
 		return options;
 	}
 };
+var $elm$json$Json$Encode$bool = _Json_wrap;
+var $author$project$Option$getOptionDescription = function (option) {
+	switch (option.$) {
+		case 0:
+			var optionDescription = option.d;
+			return optionDescription;
+		case 1:
+			return $author$project$Option$NoDescription;
+		default:
+			return $author$project$Option$NoDescription;
+	}
+};
+var $elm$json$Json$Encode$object = function (pairs) {
+	return _Json_wrap(
+		A3(
+			$elm$core$List$foldl,
+			F2(
+				function (_v0, obj) {
+					var k = _v0.a;
+					var v = _v0.b;
+					return A3(_Json_addField, k, v, obj);
+				}),
+			_Json_emptyObject(0),
+			pairs));
+};
+var $author$project$Option$optionDescriptionToString = function (optionDescription) {
+	if (!optionDescription.$) {
+		var string = optionDescription.a;
+		return string;
+	} else {
+		return '';
+	}
+};
+var $author$project$Option$encode = function (option) {
+	return $elm$json$Json$Encode$object(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'value',
+				$elm$json$Json$Encode$string(
+					$author$project$Option$getOptionValueAsString(option))),
+				_Utils_Tuple2(
+				'label',
+				$elm$json$Json$Encode$string(
+					$author$project$OptionLabel$optionLabelToString(
+						$author$project$Option$getOptionLabel(option)))),
+				_Utils_Tuple2(
+				'description',
+				$elm$json$Json$Encode$string(
+					$author$project$Option$optionDescriptionToString(
+						$author$project$Option$getOptionDescription(option)))),
+				_Utils_Tuple2(
+				'isSelected',
+				$elm$json$Json$Encode$bool(
+					$author$project$Option$isOptionSelected(option)))
+			]));
+};
 var $author$project$Option$isOptionDisplaySelectedHighlighted = function (optionDisplay) {
 	switch (optionDisplay.$) {
 		case 0:
@@ -7427,17 +7493,6 @@ var $author$project$Option$highlightOptionInListByValue = F2(
 			options);
 	});
 var $author$project$Ports$inputKeyUp = _Platform_outgoingPort('inputKeyUp', $elm$json$Json$Encode$string);
-var $author$project$Option$getOptionDescription = function (option) {
-	switch (option.$) {
-		case 0:
-			var optionDescription = option.d;
-			return optionDescription;
-		case 1:
-			return $author$project$Option$NoDescription;
-		default:
-			return $author$project$Option$NoDescription;
-	}
-};
 var $author$project$Option$orOptionDescriptions = F2(
 	function (optionA, optionB) {
 		var optionDescriptionB = $author$project$Option$getOptionDescription(optionB);
@@ -7574,7 +7629,6 @@ var $author$project$Option$setOptionDisplaySelectedIndex = F2(
 			case 2:
 				return $author$project$Option$OptionSelected(selectedIndex);
 			case 3:
-				var _int = optionDisplay.a;
 				return $author$project$Option$OptionSelectedHighlighted(selectedIndex);
 			case 4:
 				return optionDisplay;
@@ -8228,14 +8282,6 @@ var $author$project$OptionSearchFilter$new = F4(
 	function (totalScore, searchResult, labelTokens, descriptionTokens) {
 		return {b5: descriptionTokens, cn: labelTokens, bG: searchResult, cV: totalScore};
 	});
-var $author$project$Option$optionDescriptionToString = function (optionDescription) {
-	if (!optionDescription.$) {
-		var string = optionDescription.a;
-		return string;
-	} else {
-		return '';
-	}
-};
 var $elm$core$String$toLower = _String_toLower;
 var $author$project$Option$optionDescriptionToSearchString = function (optionDescription) {
 	if (!optionDescription.$) {
@@ -9467,7 +9513,7 @@ var $author$project$Main$update = F2(
 							e: A2($author$project$Main$figureOutWhichOptionsToShow, model.f, updatedOptions)
 						}),
 					$elm$core$Platform$Cmd$none);
-			default:
+			case 31:
 				if ($elm$core$String$length(model.F) > 0) {
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				} else {
@@ -9487,6 +9533,11 @@ var $author$project$Main$update = F2(
 									$author$project$Ports$focusInput(0)
 								])));
 				}
+			default:
+				return _Utils_Tuple2(
+					model,
+					$author$project$Ports$allOptions(
+						A2($elm$json$Json$Encode$list, $author$project$Option$encode, model.a)));
 		}
 	});
 var $ohanhi$keyboard$Keyboard$ArrowDown = {$: 18};
@@ -9533,7 +9584,6 @@ var $author$project$Main$defaultLoadingIndicator = A2(
 			$elm$html$Html$Attributes$class('default-loading-indicator')
 		]),
 	_List_Nil);
-var $elm$json$Json$Encode$bool = _Json_wrap;
 var $elm$html$Html$Attributes$boolProperty = F2(
 	function (key, bool) {
 		return A2(

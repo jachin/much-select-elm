@@ -11923,6 +11923,7 @@ var $author$project$Main$PlaceholderAttributeChanged = function (a) {
 var $author$project$Main$RemoveOptions = function (a) {
 	return {$: 'RemoveOptions', a: a};
 };
+var $author$project$Main$RequestAllOptions = {$: 'RequestAllOptions'};
 var $author$project$Main$SelectOption = function (a) {
 	return {$: 'SelectOption', a: a};
 };
@@ -11954,6 +11955,9 @@ var $author$project$Ports$multiSelectChangedReceiver = _Platform_incomingPort('m
 var $author$project$Ports$optionsChangedReceiver = _Platform_incomingPort('optionsChangedReceiver', $elm$json$Json$Decode$value);
 var $author$project$Ports$placeholderChangedReceiver = _Platform_incomingPort('placeholderChangedReceiver', $elm$json$Json$Decode$string);
 var $author$project$Ports$removeOptionsReceiver = _Platform_incomingPort('removeOptionsReceiver', $elm$json$Json$Decode$value);
+var $author$project$Ports$requestAllOptionsReceiver = _Platform_incomingPort(
+	'requestAllOptionsReceiver',
+	$elm$json$Json$Decode$null(_Utils_Tuple0));
 var $author$project$Ports$selectOptionReceiver = _Platform_incomingPort('selectOptionReceiver', $elm$json$Json$Decode$value);
 var $author$project$Ports$selectedItemStaysInPlaceChangedReceiver = _Platform_incomingPort('selectedItemStaysInPlaceChangedReceiver', $elm$json$Json$Decode$bool);
 var $author$project$Ports$valueCasingDimensionsChangedReceiver = _Platform_incomingPort(
@@ -11989,7 +11993,11 @@ var $author$project$Main$subscriptions = function (_v0) {
 				$author$project$Ports$valueCasingDimensionsChangedReceiver($author$project$Main$ValueCasingWidthUpdate),
 				$author$project$Ports$selectOptionReceiver($author$project$Main$SelectOption),
 				$author$project$Ports$deselectOptionReceiver($author$project$Main$DeselectOption),
-				$author$project$Ports$multiSelectChangedReceiver($author$project$Main$MulitSelectAttributeChanged)
+				$author$project$Ports$multiSelectChangedReceiver($author$project$Main$MulitSelectAttributeChanged),
+				$author$project$Ports$requestAllOptionsReceiver(
+				function (_v1) {
+					return $author$project$Main$RequestAllOptions;
+				})
 			]));
 };
 var $author$project$Option$optionListContainsOptionWithValue = F2(
@@ -12016,6 +12024,7 @@ var $author$project$Option$addAdditionalOptionsToOptionList = F2(
 				newOptions),
 			currentOptions);
 	});
+var $author$project$Ports$allOptions = _Platform_outgoingPort('allOptions', $elm$core$Basics$identity);
 var $author$project$Ports$blurInput = _Platform_outgoingPort(
 	'blurInput',
 	function ($) {
@@ -12390,6 +12399,50 @@ var $author$project$Option$deselectLastSelectedOption = function (options) {
 		return options;
 	}
 };
+var $elm$json$Json$Encode$bool = _Json_wrap;
+var $author$project$Option$getOptionDescription = function (option) {
+	switch (option.$) {
+		case 'Option':
+			var optionDescription = option.d;
+			return optionDescription;
+		case 'CustomOption':
+			return $author$project$Option$NoDescription;
+		default:
+			return $author$project$Option$NoDescription;
+	}
+};
+var $author$project$Option$optionDescriptionToString = function (optionDescription) {
+	if (optionDescription.$ === 'OptionDescription') {
+		var string = optionDescription.a;
+		return string;
+	} else {
+		return '';
+	}
+};
+var $author$project$Option$encode = function (option) {
+	return $elm$json$Json$Encode$object(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'value',
+				$elm$json$Json$Encode$string(
+					$author$project$Option$getOptionValueAsString(option))),
+				_Utils_Tuple2(
+				'label',
+				$elm$json$Json$Encode$string(
+					$author$project$OptionLabel$optionLabelToString(
+						$author$project$Option$getOptionLabel(option)))),
+				_Utils_Tuple2(
+				'description',
+				$elm$json$Json$Encode$string(
+					$author$project$Option$optionDescriptionToString(
+						$author$project$Option$getOptionDescription(option)))),
+				_Utils_Tuple2(
+				'isSelected',
+				$elm$json$Json$Encode$bool(
+					$author$project$Option$isOptionSelected(option)))
+			]));
+};
 var $author$project$Option$isOptionDisplaySelectedHighlighted = function (optionDisplay) {
 	switch (optionDisplay.$) {
 		case 'OptionShown':
@@ -12626,17 +12679,6 @@ var $author$project$Option$highlightOptionInListByValue = F2(
 			options);
 	});
 var $author$project$Ports$inputKeyUp = _Platform_outgoingPort('inputKeyUp', $elm$json$Json$Encode$string);
-var $author$project$Option$getOptionDescription = function (option) {
-	switch (option.$) {
-		case 'Option':
-			var optionDescription = option.d;
-			return optionDescription;
-		case 'CustomOption':
-			return $author$project$Option$NoDescription;
-		default:
-			return $author$project$Option$NoDescription;
-	}
-};
 var $author$project$Option$orOptionDescriptions = F2(
 	function (optionA, optionB) {
 		var optionDescriptionB = $author$project$Option$getOptionDescription(optionB);
@@ -12773,7 +12815,6 @@ var $author$project$Option$setOptionDisplaySelectedIndex = F2(
 			case 'OptionSelected':
 				return $author$project$Option$OptionSelected(selectedIndex);
 			case 'OptionSelectedHighlighted':
-				var _int = optionDisplay.a;
 				return $author$project$Option$OptionSelectedHighlighted(selectedIndex);
 			case 'OptionHighlighted':
 				return optionDisplay;
@@ -13403,14 +13444,6 @@ var $author$project$OptionSearchFilter$new = F4(
 	function (totalScore, searchResult, labelTokens, descriptionTokens) {
 		return {descriptionTokens: descriptionTokens, labelTokens: labelTokens, searchResult: searchResult, totalScore: totalScore};
 	});
-var $author$project$Option$optionDescriptionToString = function (optionDescription) {
-	if (optionDescription.$ === 'OptionDescription') {
-		var string = optionDescription.a;
-		return string;
-	} else {
-		return '';
-	}
-};
 var $elm$core$String$toLower = _String_toLower;
 var $author$project$Option$optionDescriptionToSearchString = function (optionDescription) {
 	if (optionDescription.$ === 'OptionDescription') {
@@ -14645,7 +14678,7 @@ var $author$project$Main$update = F2(
 							optionsForTheDropdown: A2($author$project$Main$figureOutWhichOptionsToShow, model.maxDropdownItems, updatedOptions)
 						}),
 					$elm$core$Platform$Cmd$none);
-			default:
+			case 'DeleteKeydownForMultiSelect':
 				if ($elm$core$String$length(model.searchString) > 0) {
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				} else {
@@ -14665,6 +14698,11 @@ var $author$project$Main$update = F2(
 									$author$project$Ports$focusInput(_Utils_Tuple0)
 								])));
 				}
+			default:
+				return _Utils_Tuple2(
+					model,
+					$author$project$Ports$allOptions(
+						A2($elm$json$Json$Encode$list, $author$project$Option$encode, model.options)));
 		}
 	});
 var $ohanhi$keyboard$Keyboard$ArrowDown = {$: 'ArrowDown'};
@@ -14702,7 +14740,6 @@ var $author$project$Main$defaultLoadingIndicator = A2(
 			$elm$html$Html$Attributes$class('default-loading-indicator')
 		]),
 	_List_Nil);
-var $elm$json$Json$Encode$bool = _Json_wrap;
 var $elm$html$Html$Attributes$boolProperty = F2(
 	function (key, bool) {
 		return A2(
@@ -16082,7 +16119,7 @@ _Platform_export({'Main':{'init':$author$project$Main$main(
 				},
 				A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
 		},
-		A2($elm$json$Json$Decode$field, 'value', $elm$json$Json$Decode$string)))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"}},"unions":{"Main.Msg":{"args":[],"tags":{"NoOp":[],"BringInputInFocus":[],"BringInputOutOfFocus":[],"InputBlur":[],"InputFocus":[],"DropdownMouseOverOption":["Option.OptionValue"],"DropdownMouseOutOption":["Option.OptionValue"],"DropdownMouseClickOption":["Option.OptionValue"],"SearchInputOnInput":["String.String"],"ValueChanged":["Json.Decode.Value"],"OptionsChanged":["Json.Decode.Value"],"AddOptions":["Json.Decode.Value"],"RemoveOptions":["Json.Decode.Value"],"SelectOption":["Json.Decode.Value"],"DeselectOption":["Json.Decode.Value"],"PlaceholderAttributeChanged":["String.String"],"LoadingAttributeChanged":["Basics.Bool"],"MaxDropdownItemsChanged":["Basics.Int"],"AllowCustomOptionsChanged":["Basics.Bool"],"CustomOptionHintChanged":["Maybe.Maybe String.String"],"DisabledAttributeChanged":["Basics.Bool"],"MulitSelectAttributeChanged":["Basics.Bool"],"SelectedItemStaysInPlaceChanged":["Basics.Bool"],"SelectHighlightedOption":[],"DeleteInputForSingleSelect":[],"EscapeKeyInInputFilter":[],"MoveHighlightedOptionUp":[],"MoveHighlightedOptionDown":[],"ValueCasingWidthUpdate":["{ width : Basics.Float, height : Basics.Float }"],"ClearAllSelectedOptions":[],"ToggleSelectedValueHighlight":["Option.OptionValue"],"DeleteKeydownForMultiSelect":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Option.OptionValue":{"args":[],"tags":{"OptionValue":["String.String"],"EmptyOptionValue":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}}}}})}});}(this));
+		A2($elm$json$Json$Decode$field, 'value', $elm$json$Json$Decode$string)))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"}},"unions":{"Main.Msg":{"args":[],"tags":{"NoOp":[],"BringInputInFocus":[],"BringInputOutOfFocus":[],"InputBlur":[],"InputFocus":[],"DropdownMouseOverOption":["Option.OptionValue"],"DropdownMouseOutOption":["Option.OptionValue"],"DropdownMouseClickOption":["Option.OptionValue"],"SearchInputOnInput":["String.String"],"ValueChanged":["Json.Decode.Value"],"OptionsChanged":["Json.Decode.Value"],"AddOptions":["Json.Decode.Value"],"RemoveOptions":["Json.Decode.Value"],"SelectOption":["Json.Decode.Value"],"DeselectOption":["Json.Decode.Value"],"PlaceholderAttributeChanged":["String.String"],"LoadingAttributeChanged":["Basics.Bool"],"MaxDropdownItemsChanged":["Basics.Int"],"AllowCustomOptionsChanged":["Basics.Bool"],"CustomOptionHintChanged":["Maybe.Maybe String.String"],"DisabledAttributeChanged":["Basics.Bool"],"MulitSelectAttributeChanged":["Basics.Bool"],"SelectedItemStaysInPlaceChanged":["Basics.Bool"],"SelectHighlightedOption":[],"DeleteInputForSingleSelect":[],"EscapeKeyInInputFilter":[],"MoveHighlightedOptionUp":[],"MoveHighlightedOptionDown":[],"ValueCasingWidthUpdate":["{ width : Basics.Float, height : Basics.Float }"],"ClearAllSelectedOptions":[],"ToggleSelectedValueHighlight":["Option.OptionValue"],"DeleteKeydownForMultiSelect":[],"RequestAllOptions":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Option.OptionValue":{"args":[],"tags":{"OptionValue":["String.String"],"EmptyOptionValue":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}}}}})}});}(this));
 */
 export const Elm = {'Main':{'init':$author$project$Main$main(
 	A2(
@@ -16144,4 +16181,4 @@ export const Elm = {'Main':{'init':$author$project$Main$main(
 				},
 				A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
 		},
-		A2($elm$json$Json$Decode$field, 'value', $elm$json$Json$Decode$string)))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"}},"unions":{"Main.Msg":{"args":[],"tags":{"NoOp":[],"BringInputInFocus":[],"BringInputOutOfFocus":[],"InputBlur":[],"InputFocus":[],"DropdownMouseOverOption":["Option.OptionValue"],"DropdownMouseOutOption":["Option.OptionValue"],"DropdownMouseClickOption":["Option.OptionValue"],"SearchInputOnInput":["String.String"],"ValueChanged":["Json.Decode.Value"],"OptionsChanged":["Json.Decode.Value"],"AddOptions":["Json.Decode.Value"],"RemoveOptions":["Json.Decode.Value"],"SelectOption":["Json.Decode.Value"],"DeselectOption":["Json.Decode.Value"],"PlaceholderAttributeChanged":["String.String"],"LoadingAttributeChanged":["Basics.Bool"],"MaxDropdownItemsChanged":["Basics.Int"],"AllowCustomOptionsChanged":["Basics.Bool"],"CustomOptionHintChanged":["Maybe.Maybe String.String"],"DisabledAttributeChanged":["Basics.Bool"],"MulitSelectAttributeChanged":["Basics.Bool"],"SelectedItemStaysInPlaceChanged":["Basics.Bool"],"SelectHighlightedOption":[],"DeleteInputForSingleSelect":[],"EscapeKeyInInputFilter":[],"MoveHighlightedOptionUp":[],"MoveHighlightedOptionDown":[],"ValueCasingWidthUpdate":["{ width : Basics.Float, height : Basics.Float }"],"ClearAllSelectedOptions":[],"ToggleSelectedValueHighlight":["Option.OptionValue"],"DeleteKeydownForMultiSelect":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Option.OptionValue":{"args":[],"tags":{"OptionValue":["String.String"],"EmptyOptionValue":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}}}}})}};
+		A2($elm$json$Json$Decode$field, 'value', $elm$json$Json$Decode$string)))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"}},"unions":{"Main.Msg":{"args":[],"tags":{"NoOp":[],"BringInputInFocus":[],"BringInputOutOfFocus":[],"InputBlur":[],"InputFocus":[],"DropdownMouseOverOption":["Option.OptionValue"],"DropdownMouseOutOption":["Option.OptionValue"],"DropdownMouseClickOption":["Option.OptionValue"],"SearchInputOnInput":["String.String"],"ValueChanged":["Json.Decode.Value"],"OptionsChanged":["Json.Decode.Value"],"AddOptions":["Json.Decode.Value"],"RemoveOptions":["Json.Decode.Value"],"SelectOption":["Json.Decode.Value"],"DeselectOption":["Json.Decode.Value"],"PlaceholderAttributeChanged":["String.String"],"LoadingAttributeChanged":["Basics.Bool"],"MaxDropdownItemsChanged":["Basics.Int"],"AllowCustomOptionsChanged":["Basics.Bool"],"CustomOptionHintChanged":["Maybe.Maybe String.String"],"DisabledAttributeChanged":["Basics.Bool"],"MulitSelectAttributeChanged":["Basics.Bool"],"SelectedItemStaysInPlaceChanged":["Basics.Bool"],"SelectHighlightedOption":[],"DeleteInputForSingleSelect":[],"EscapeKeyInInputFilter":[],"MoveHighlightedOptionUp":[],"MoveHighlightedOptionDown":[],"ValueCasingWidthUpdate":["{ width : Basics.Float, height : Basics.Float }"],"ClearAllSelectedOptions":[],"ToggleSelectedValueHighlight":["Option.OptionValue"],"DeleteKeydownForMultiSelect":[],"RequestAllOptions":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Option.OptionValue":{"args":[],"tags":{"OptionValue":["String.String"],"EmptyOptionValue":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}}}}})}};

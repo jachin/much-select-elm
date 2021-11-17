@@ -18,6 +18,7 @@ module Option exposing
     , deselectOptionInListByOptionValue
     , deselectOptions
     , emptyOptionGroup
+    , encode
     , filterOptionsToShowInDropdown
     , findHighlightedOrSelectedOptionIndex
     , findOptionByOptionValue
@@ -75,6 +76,7 @@ module Option exposing
     )
 
 import Json.Decode
+import Json.Encode
 import List.Extra
 import OptionLabel exposing (OptionLabel(..), getSortRank, labelDecoder, optionLabelToSearchString, optionLabelToString)
 import OptionSearchFilter exposing (OptionSearchFilter)
@@ -503,7 +505,7 @@ setOptionDisplaySelectedIndex selectedIndex optionDisplay =
         OptionSelected _ ->
             OptionSelected selectedIndex
 
-        OptionSelectedHighlighted int ->
+        OptionSelectedHighlighted _ ->
             OptionSelectedHighlighted selectedIndex
 
         OptionHighlighted ->
@@ -2274,4 +2276,14 @@ optionGroupDecoder =
         [ Json.Decode.field "group" Json.Decode.string
             |> Json.Decode.map OptionGroup
         , Json.Decode.succeed NoOptionGroup
+        ]
+
+
+encode : Option -> Json.Decode.Value
+encode option =
+    Json.Encode.object
+        [ ( "value", Json.Encode.string (getOptionValueAsString option) )
+        , ( "label", Json.Encode.string (getOptionLabel option |> optionLabelToString) )
+        , ( "description", Json.Encode.string (getOptionDescription option |> optionDescriptionToString) )
+        , ( "isSelected", Json.Encode.bool (isOptionSelected option) )
         ]

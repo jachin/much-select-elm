@@ -1408,6 +1408,25 @@ class MuchSelect extends HTMLElement {
       app.ports.deselectOptionReceiver.send(cleanUpOption(option))
     );
   }
+
+  async getAllOptions() {
+    return new Promise((resolve) => {
+      const callback = (allOptions) => {
+        this.appPromise.then((app) => {
+          // noinspection JSUnresolvedVariable
+          app.ports.allOptions.unsubscribe(callback);
+        });
+        resolve(allOptions);
+      };
+
+      this.appPromise.then((app) => {
+        // noinspection JSUnresolvedVariable
+        app.ports.allOptions.subscribe(callback);
+        // noinspection JSUnresolvedVariable
+        app.ports.requestAllOptionsReceiver.send(null);
+      });
+    });
+  }
 }
 
 // noinspection JSUnusedGlobalSymbols
