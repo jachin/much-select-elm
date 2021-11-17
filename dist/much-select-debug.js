@@ -501,6 +501,9 @@ class MuchSelect extends HTMLElement {
   }
 
   _onSlotChange() {
+    if (!this._connected) {
+      return;
+    }
     const selectElement = this.querySelector("select");
     if (selectElement) {
       const optionsJson = buildOptionsFromSelectElement(selectElement);
@@ -760,21 +763,6 @@ class MuchSelect extends HTMLElement {
     return this._selectedValue;
   }
 
-  get parsedSelectedValue() {
-    if (this.selectedValueEncoding === "comma") {
-      if (this.selectedValue) {
-        return this.selectedValue.split(",");
-      }
-      return [];
-    }
-    if (this.selectedValueEncoding === "json") {
-      return JSON.parse(decodeURIComponent(this.selectedValue));
-    }
-    throw new Error(
-      `Unknown selected value encoding, something is very wrong: ${this.selectedValueEncoding}`
-    );
-  }
-
   set selectedValue(value) {
     if (value === null) {
       this._selectedValue = null;
@@ -801,6 +789,21 @@ class MuchSelect extends HTMLElement {
     }
 
     this.updateHiddenInputValueSlot();
+  }
+
+  get parsedSelectedValue() {
+    if (this.selectedValueEncoding === "comma") {
+      if (this.selectedValue) {
+        return this.selectedValue.split(",");
+      }
+      return [];
+    }
+    if (this.selectedValueEncoding === "json") {
+      return JSON.parse(decodeURIComponent(this.selectedValue));
+    }
+    throw new Error(
+      `Unknown selected value encoding, something is very wrong: ${this.selectedValueEncoding}`
+    );
   }
 
   set parsedSelectedValue(values) {
@@ -1006,16 +1009,6 @@ class MuchSelect extends HTMLElement {
     return this._selectedItemStaysInPlace;
   }
 
-  set selectedItemGOesToTop(value) {
-    if (value === "") {
-      this.selectedItemStaysInPlace = false;
-    } else if (value === null) {
-      this.selectedItemStaysInPlace = true;
-    } else {
-      this.selectedItemStaysInPlace = !value;
-    }
-  }
-
   set selectedItemStaysInPlace(value) {
     if (value === "false") {
       this._selectedItemStaysInPlace = false;
@@ -1037,6 +1030,16 @@ class MuchSelect extends HTMLElement {
         this._selectedItemStaysInPlace
       )
     );
+  }
+
+  set selectedItemGOesToTop(value) {
+    if (value === "") {
+      this.selectedItemStaysInPlace = false;
+    } else if (value === null) {
+      this.selectedItemStaysInPlace = true;
+    } else {
+      this.selectedItemStaysInPlace = !value;
+    }
   }
 
   get selectedValueEncoding() {
