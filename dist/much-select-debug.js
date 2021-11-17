@@ -144,6 +144,8 @@ class MuchSelect extends HTMLElement {
      */
     this._minimumWidth = 200;
 
+    this._minimumHeight = 20;
+
     /**
      * @type {string|null}
      * @private
@@ -195,6 +197,12 @@ class MuchSelect extends HTMLElement {
      * @private
      */
     this._allowCustomOptions = false;
+
+    /**
+     * @type {string|null}
+     * @private
+     */
+    this._customOptionHint = null;
 
     /**
      * @type {boolean}
@@ -263,6 +271,7 @@ class MuchSelect extends HTMLElement {
     if (name === "allow-custom-options") {
       if (oldValue !== newValue) {
         this.allowCustomOptions = newValue;
+        this.customOptionHint = newValue;
       }
     } else if (name === "disabled") {
       if (oldValue !== newValue) {
@@ -492,6 +501,9 @@ class MuchSelect extends HTMLElement {
   }
 
   _onSlotChange() {
+    if (!this._connected) {
+      return;
+    }
     const selectElement = this.querySelector("select");
     if (selectElement) {
       const optionsJson = buildOptionsFromSelectElement(selectElement);
@@ -542,15 +554,14 @@ class MuchSelect extends HTMLElement {
         let width = valueCasingElement.offsetWidth;
         let height = valueCasingElement.offsetHeight;
 
-        // Prevent the width from falling below some threshold.
+        // Prevent the width from falling below this threshold.
         if (width < this._minimumWidth) {
           width = this._minimumWidth;
         }
 
-        // Clamp the width between some min and max.
-        // TODO this min and max should probably not be hard coded here.
-        if (height < 20) {
-          height = 20;
+        // Prevent the height from falling below this threshold.
+        if (height < this._minimumHeight) {
+          height = this._minimumHeight;
         }
 
         this.appPromise.then((app) => {
@@ -590,6 +601,7 @@ class MuchSelect extends HTMLElement {
     flags.selectedItemStaysInPlace = this.selectedItemStaysInPlace;
     flags.maxDropdownItems = this.maxDropdownItems;
     flags.allowCustomOptions = this.allowCustomOptions;
+    flags.customOptionHint = this.customOptionHint;
 
     const selectElement = this.querySelector("select");
     if (selectElement) {
@@ -751,21 +763,6 @@ class MuchSelect extends HTMLElement {
     return this._selectedValue;
   }
 
-  get parsedSelectedValue() {
-    if (this.selectedValueEncoding === "comma") {
-      if (this.selectedValue) {
-        return this.selectedValue.split(",");
-      }
-      return [];
-    }
-    if (this.selectedValueEncoding === "json") {
-      return JSON.parse(decodeURIComponent(this.selectedValue));
-    }
-    throw new Error(
-      `Unknown selected value encoding, something is very wrong: ${this.selectedValueEncoding}`
-    );
-  }
-
   set selectedValue(value) {
     if (value === null) {
       this._selectedValue = null;
@@ -792,6 +789,21 @@ class MuchSelect extends HTMLElement {
     }
 
     this.updateHiddenInputValueSlot();
+  }
+
+  get parsedSelectedValue() {
+    if (this.selectedValueEncoding === "comma") {
+      if (this.selectedValue) {
+        return this.selectedValue.split(",");
+      }
+      return [];
+    }
+    if (this.selectedValueEncoding === "json") {
+      return JSON.parse(decodeURIComponent(this.selectedValue));
+    }
+    throw new Error(
+      `Unknown selected value encoding, something is very wrong: ${this.selectedValueEncoding}`
+    );
   }
 
   set parsedSelectedValue(values) {
@@ -966,18 +978,35 @@ class MuchSelect extends HTMLElement {
     );
   }
 
-  get selectedItemStaysInPlace() {
-    return this._selectedItemStaysInPlace;
+  get customOptionHint() {
+    return this._customOptionHint;
   }
 
-  set selectedItemGOesToTop(value) {
-    if (value === "") {
-      this.selectedItemStaysInPlace = false;
+  set customOptionHint(value) {
+    if (value === "false") {
+      this._customOptionHint = null;
+    } else if (value === "true") {
+      this._customOptionHint = null;
     } else if (value === null) {
-      this.selectedItemStaysInPlace = true;
+      this._customOptionHint = null;
+    } else if (value === "") {
+      this._customOptionHint = null;
+    } else if (typeof value === "string") {
+      this._customOptionHint = value;
     } else {
-      this.selectedItemStaysInPlace = !value;
+      throw new TypeError(
+        `Unexpected type for the customOptionHint, it should be a string but instead it is a: ${typeof value}`
+      );
     }
+
+    // noinspection JSUnresolvedVariable
+    this.appPromise.then((app) =>
+      app.ports.customOptionHintReceiver.send(this._customOptionHint)
+    );
+  }
+
+  get selectedItemStaysInPlace() {
+    return this._selectedItemStaysInPlace;
   }
 
   set selectedItemStaysInPlace(value) {
@@ -1001,6 +1030,16 @@ class MuchSelect extends HTMLElement {
         this._selectedItemStaysInPlace
       )
     );
+  }
+
+  set selectedItemGOesToTop(value) {
+    if (value === "") {
+      this.selectedItemStaysInPlace = false;
+    } else if (value === null) {
+      this.selectedItemStaysInPlace = true;
+    } else {
+      this.selectedItemStaysInPlace = !value;
+    }
   }
 
   get selectedValueEncoding() {
@@ -1368,6 +1407,25 @@ class MuchSelect extends HTMLElement {
     this.appPromise.then((app) =>
       app.ports.deselectOptionReceiver.send(cleanUpOption(option))
     );
+  }
+
+  async getAllOptions() {
+    return new Promise((resolve) => {
+      const callback = (allOptions) => {
+        this.appPromise.then((app) => {
+          // noinspection JSUnresolvedVariable
+          app.ports.allOptions.unsubscribe(callback);
+        });
+        resolve(allOptions);
+      };
+
+      this.appPromise.then((app) => {
+        // noinspection JSUnresolvedVariable
+        app.ports.allOptions.subscribe(callback);
+        // noinspection JSUnresolvedVariable
+        app.ports.requestAllOptionsReceiver.send(null);
+      });
+    });
   }
 }
 
