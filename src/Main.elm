@@ -35,6 +35,7 @@ import Html.Events
         , onMouseLeave
         )
 import Json.Decode
+import Json.Encode
 import Keyboard exposing (Key(..))
 import Keyboard.Events as Keyboard
 import List.Extra exposing (mapAccuml)
@@ -57,6 +58,7 @@ import OptionSearcher
 import Ports
     exposing
         ( addOptionsReceiver
+        , allOptions
         , allowCustomOptionsReceiver
         , blurInput
         , customOptionHintReceiver
@@ -75,6 +77,7 @@ import Ports
         , optionsChangedReceiver
         , placeholderChangedReceiver
         , removeOptionsReceiver
+        , requestAllOptionsReceiver
         , scrollDropdownToElement
         , selectOptionReceiver
         , selectedItemStaysInPlaceChangedReceiver
@@ -130,6 +133,7 @@ type Msg
       --  If you can think of a better name we're all ears.
     | ToggleSelectedValueHighlight OptionValue
     | DeleteKeydownForMultiSelect
+    | RequestAllOptions
 
 
 type alias Model =
@@ -273,7 +277,6 @@ update msg model =
                     let
                         newOptions =
                             Option.addAndSelectOptionsInOptionsListByString
-                                (SelectionMode.getSelectedItemPlacementMode model.selectionMode)
                                 values
                                 model.options
                     in
@@ -303,9 +306,11 @@ update msg model =
 
                                 MultiSelect _ ->
                                     -- Also filter out any empty options.
-                                    newOptions
-                                        |> List.filter (not << Option.isEmptyOption)
-                                        |> Option.mergeTwoListsOfOptionsPreservingSelectedOptions SelectedItemStaysInPlace model.options
+                                    Option.mergeTwoListsOfOptionsPreservingSelectedOptions SelectedItemStaysInPlace
+                                        (newOptions
+                                            |> List.filter (not << Option.isEmptyOption)
+                                        )
+                                        model.options
                     in
                     ( { model
                         | options = newOptionWithOldSelectedOption
@@ -568,6 +573,9 @@ update msg model =
                     , focusInput ()
                     ]
                 )
+
+        RequestAllOptions ->
+            ( model, allOptions (Json.Encode.list Option.encode model.options) )
 
 
 clearAllSelectedOption : Model -> ( Model, Cmd Msg )
@@ -1507,7 +1515,7 @@ init flags =
                                 optionsWithInitialValues =
                                     options
                                         |> List.filter (not << Option.isEmptyOption)
-                                        |> Option.addAndSelectOptionsInOptionsListByString SelectedItemStaysInPlace initialValues
+                                        |> Option.addAndSelectOptionsInOptionsListByString initialValues
                             in
                             ( optionsWithInitialValues, Cmd.none )
 
@@ -1581,6 +1589,7 @@ subscriptions _ =
         , selectOptionReceiver SelectOption
         , deselectOptionReceiver DeselectOption
         , multiSelectChangedReceiver MulitSelectAttributeChanged
+        , requestAllOptionsReceiver (\() -> RequestAllOptions)
         ]
 
 

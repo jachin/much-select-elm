@@ -1,5 +1,6 @@
 port module Ports exposing
     ( addOptionsReceiver
+    , allOptions
     , allowCustomOptionsReceiver
     , blurInput
     , customOptionHintReceiver
@@ -18,6 +19,7 @@ port module Ports exposing
     , optionsChangedReceiver
     , placeholderChangedReceiver
     , removeOptionsReceiver
+    , requestAllOptionsReceiver
     , scrollDropdownToElement
     , selectOptionReceiver
     , selectedItemStaysInPlaceChangedReceiver
@@ -59,6 +61,12 @@ port blurInput : () -> Cmd msg
 
 
 port focusInput : () -> Cmd msg
+
+
+port allOptions : Json.Decode.Value -> Cmd msg
+
+
+port requestAllOptionsReceiver : (() -> msg) -> Sub msg
 
 
 port scrollDropdownToElement : String -> Cmd msg
