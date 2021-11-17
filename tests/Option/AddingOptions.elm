@@ -56,12 +56,12 @@ suite =
                 \_ ->
                     Expect.equalLists
                         [ selectOption 0 wolfClub ]
-                        (addAndSelectOptionsInOptionsListByString SelectedItemStaysInPlace [ "Wolf Club" ] [ wolfClub ])
+                        (addAndSelectOptionsInOptionsListByString [ "Wolf Club" ] [ wolfClub ])
             , test "with the same value of a selected option already in the list preserver the label" <|
                 \_ ->
                     Expect.equalLists
                         [ selectOption 0 wolfClub ]
-                        (addAndSelectOptionsInOptionsListByString SelectedItemStaysInPlace [ "Wolf Club" ] [ selectOption 0 wolfClub ])
+                        (addAndSelectOptionsInOptionsListByString [ "Wolf Club" ] [ selectOption 0 wolfClub ])
             ]
         , describe "and merging them with a selected value"
             [ test "if a new option matches the selected option update the label and description" <|
@@ -79,8 +79,8 @@ suite =
                         [ wolfClub |> selectOption 0, timecop1983, heartBones ]
                         (mergeTwoListsOfOptionsPreservingSelectedOptions
                             SelectedItemStaysInPlace
-                            [ wolfClub, timecop1983, heartBones ]
                             [ newOption "Wolf Club" Nothing |> selectOption 0 ]
+                            [ wolfClub, timecop1983, heartBones ]
                         )
             , test "a selection option should stay in the same spot in the list" <|
                 \_ ->

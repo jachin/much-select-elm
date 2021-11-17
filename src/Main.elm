@@ -273,7 +273,6 @@ update msg model =
                     let
                         newOptions =
                             Option.addAndSelectOptionsInOptionsListByString
-                                (SelectionMode.getSelectedItemPlacementMode model.selectionMode)
                                 values
                                 model.options
                     in
@@ -303,9 +302,11 @@ update msg model =
 
                                 MultiSelect _ ->
                                     -- Also filter out any empty options.
-                                    newOptions
-                                        |> List.filter (not << Option.isEmptyOption)
-                                        |> Option.mergeTwoListsOfOptionsPreservingSelectedOptions SelectedItemStaysInPlace model.options
+                                    Option.mergeTwoListsOfOptionsPreservingSelectedOptions SelectedItemStaysInPlace
+                                        (newOptions
+                                            |> List.filter (not << Option.isEmptyOption)
+                                        )
+                                        model.options
                     in
                     ( { model
                         | options = newOptionWithOldSelectedOption
@@ -1507,7 +1508,7 @@ init flags =
                                 optionsWithInitialValues =
                                     options
                                         |> List.filter (not << Option.isEmptyOption)
-                                        |> Option.addAndSelectOptionsInOptionsListByString SelectedItemStaysInPlace initialValues
+                                        |> Option.addAndSelectOptionsInOptionsListByString initialValues
                             in
                             ( optionsWithInitialValues, Cmd.none )
 

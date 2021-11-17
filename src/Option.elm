@@ -478,6 +478,41 @@ getOptionSelectedIndex option =
             optionDisplayToSelectedIndex optionDisplay
 
 
+setOptionSelectedIndex : Int -> Option -> Option
+setOptionSelectedIndex selectedIndex option =
+    case option of
+        Option optionDisplay _ _ _ _ _ ->
+            setOptionDisplay (setOptionDisplaySelectedIndex selectedIndex optionDisplay) option
+
+        CustomOption optionDisplay _ _ _ ->
+            setOptionDisplay (setOptionDisplaySelectedIndex selectedIndex optionDisplay) option
+
+        EmptyOption optionDisplay _ ->
+            setOptionDisplay (setOptionDisplaySelectedIndex selectedIndex optionDisplay) option
+
+
+setOptionDisplaySelectedIndex : Int -> OptionDisplay -> OptionDisplay
+setOptionDisplaySelectedIndex selectedIndex optionDisplay =
+    case optionDisplay of
+        OptionShown ->
+            optionDisplay
+
+        OptionHidden ->
+            optionDisplay
+
+        OptionSelected _ ->
+            OptionSelected selectedIndex
+
+        OptionSelectedHighlighted int ->
+            OptionSelectedHighlighted selectedIndex
+
+        OptionHighlighted ->
+            optionDisplay
+
+        OptionDisabled ->
+            optionDisplay
+
+
 optionDisplayToSelectedIndex : OptionDisplay -> Int
 optionDisplayToSelectedIndex optionDisplay =
     case optionDisplay of
@@ -587,13 +622,30 @@ selectOptionsInOptionsListByString strings options =
         |> deselectEveryOptionExceptOptionsInList optionsToSelect
 
 
-addAndSelectOptionsInOptionsListByString : SelectedItemPlacementMode -> List String -> List Option -> List Option
-addAndSelectOptionsInOptionsListByString selectedItemPlacementMode strings options =
+addAndSelectOptionsInOptionsListByString : List String -> List Option -> List Option
+addAndSelectOptionsInOptionsListByString strings options =
     let
-        newOptions =
-            List.indexedMap (\i str -> newSelectedOption i str Nothing) strings
+        helper : Int -> List String -> List Option -> List Option
+        helper index valueStrings options_ =
+            case valueStrings of
+                [] ->
+                    options_
+
+                [ valueString ] ->
+                    if optionListContainsOptionWithValueString valueString options_ then
+                        selectOptionInListByValueStringWithIndex index valueString options_
+
+                    else
+                        options_ ++ [ newSelectedOption index valueString Nothing ]
+
+                valueString :: restOfValueStrings ->
+                    if optionListContainsOptionWithValueString valueString options_ then
+                        helper (index + 1) restOfValueStrings (selectOptionInListByValueStringWithIndex index valueString options_)
+
+                    else
+                        helper (index + 1) restOfValueStrings (options_ ++ [ newSelectedOption index valueString Nothing ])
     in
-    mergeTwoListsOfOptionsPreservingSelectedOptions selectedItemPlacementMode newOptions options
+    helper 0 strings options
 
 
 setSelectedOptionInNewOptions : List Option -> List Option -> List Option
@@ -639,11 +691,15 @@ mergeTwoListsOfOptionsPreservingSelectedOptions selectedItemPlacementMode option
 
                 optionGroup =
                     orOptionGroup optionA optionB
+
+                selectedIndex =
+                    orSelectedIndex optionA optionB
             in
             optionA
                 |> setDescription optionDescription
                 |> setLabel optionLabel
                 |> setGroup optionGroup
+                |> setOptionSelectedIndex selectedIndex
 
         updatedOptionsA =
             List.map
@@ -667,16 +723,7 @@ mergeTwoListsOfOptionsPreservingSelectedOptions selectedItemPlacementMode option
                         ++ optionsB
 
         newOptions =
-            case selectedItemPlacementMode of
-                SelectedItemStaysInPlace ->
-                    superList
-                        |> List.reverse
-                        |> List.Extra.uniqueBy getOptionValueAsString
-                        |> List.reverse
-
-                SelectedItemMovesToTheTop ->
-                    superList
-                        |> List.Extra.uniqueBy getOptionValueAsString
+            List.Extra.uniqueBy getOptionValueAsString superList
     in
     setSelectedOptionInNewOptions superList newOptions
 
@@ -752,6 +799,18 @@ orOptionGroup optionA optionB =
 
                 NoOptionGroup ->
                     getOptionGroup optionA
+
+
+orSelectedIndex : Option -> Option -> Int
+orSelectedIndex optionA optionB =
+    if getOptionSelectedIndex optionA == getOptionSelectedIndex optionB then
+        getOptionSelectedIndex optionA
+
+    else if getOptionSelectedIndex optionA > getOptionSelectedIndex optionB then
+        getOptionSelectedIndex optionA
+
+    else
+        getOptionSelectedIndex optionB
 
 
 deselectAllOptionsInOptionsList : List Option -> List Option
@@ -1165,6 +1224,11 @@ selectOptionInListByOptionValueWithIndex index value options =
                 option_
         )
         options
+
+
+selectOptionInListByValueStringWithIndex : Int -> String -> List Option -> List Option
+selectOptionInListByValueStringWithIndex index valueString options =
+    selectOptionInListByOptionValueWithIndex index (OptionValue valueString) options
 
 
 deselectOptionInListByOptionValue : OptionValue -> List Option -> List Option
@@ -2033,6 +2097,17 @@ optionListContainsOptionWithValue option options =
     let
         optionValue =
             getOptionValue option
+    in
+    List.filter (\option_ -> getOptionValue option_ == optionValue) options
+        |> List.isEmpty
+        |> not
+
+
+optionListContainsOptionWithValueString : String -> List Option -> Bool
+optionListContainsOptionWithValueString valueString options =
+    let
+        optionValue =
+            OptionValue valueString
     in
     List.filter (\option_ -> getOptionValue option_ == optionValue) options
         |> List.isEmpty
