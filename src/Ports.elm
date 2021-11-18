@@ -27,6 +27,7 @@ port module Ports exposing
     , valueChanged
     , valueChangedReceiver
     , valueCleared
+    , valueDecoder
     , valuesDecoder
     )
 
@@ -75,6 +76,13 @@ port scrollDropdownToElement : String -> Cmd msg
 valuesDecoder : Json.Decode.Decoder (List String)
 valuesDecoder =
     Json.Decode.list Json.Decode.string
+
+
+valueDecoder : Json.Decode.Decoder (List String)
+valueDecoder =
+    Json.Decode.string
+        |> Json.Decode.map
+            List.singleton
 
 
 port valueChangedReceiver : (Json.Decode.Value -> msg) -> Sub msg

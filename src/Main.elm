@@ -85,6 +85,7 @@ import Ports
         , valueChanged
         , valueChangedReceiver
         , valueCleared
+        , valueDecoder
         , valuesDecoder
         )
 import PositiveInt exposing (PositiveInt)
@@ -270,7 +271,12 @@ update msg model =
         ValueChanged valuesJson ->
             let
                 valuesResult =
-                    Json.Decode.decodeValue valuesDecoder valuesJson
+                    case model.selectionMode of
+                        SingleSelect _ _ ->
+                            Json.Decode.decodeValue valueDecoder valuesJson
+
+                        MultiSelect _ ->
+                            Json.Decode.decodeValue valuesDecoder valuesJson
             in
             case valuesResult of
                 Ok values ->
