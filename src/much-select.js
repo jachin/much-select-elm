@@ -3,6 +3,9 @@ import { Elm } from "./Main.elm";
 
 import asciiFold from "./ascii-fold.js";
 
+// Because of https://dev.to/hulyakarakaya/how-to-fix-regeneratorruntime-is-not-defined-doj
+import "regenerator-runtime/runtime.js";
+
 const buildOptionsFromSelectElement = (selectElement) => {
   const options = [];
   const optionElements = selectElement.querySelectorAll("option");
