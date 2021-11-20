@@ -75,14 +75,35 @@ port scrollDropdownToElement : String -> Cmd msg
 
 valuesDecoder : Json.Decode.Decoder (List String)
 valuesDecoder =
-    Json.Decode.list Json.Decode.string
+    Json.Decode.oneOf
+        [ Json.Decode.list Json.Decode.string
+        , Json.Decode.string
+            |> Json.Decode.map
+                List.singleton
+
+        --, Json.Decode.null
+        --    |> Json.Decode.andThen (\_ -> Json.Decode.succeed [] )
+        ]
 
 
 valueDecoder : Json.Decode.Decoder (List String)
 valueDecoder =
-    Json.Decode.string
-        |> Json.Decode.map
-            List.singleton
+    Json.Decode.oneOf
+        [ Json.Decode.string
+            |> Json.Decode.map
+                List.singleton
+        , Json.Decode.list Json.Decode.string
+            |> Json.Decode.andThen
+                (\listOfString ->
+                    case listOfString of
+                        [ _ ] ->
+                            Json.Decode.succeed listOfString
+
+                        _ ->
+                            Json.Decode.fail "Only 1 value is allowed when in single select mode."
+                )
+        , Json.Decode.null []
+        ]
 
 
 port valueChangedReceiver : (Json.Decode.Value -> msg) -> Sub msg
