@@ -85,6 +85,7 @@ import Ports
         , valueChanged
         , valueChangedReceiver
         , valueCleared
+        , valueDecoder
         , valuesDecoder
         )
 import PositiveInt exposing (PositiveInt)
@@ -270,7 +271,12 @@ update msg model =
         ValueChanged valuesJson ->
             let
                 valuesResult =
-                    Json.Decode.decodeValue valuesDecoder valuesJson
+                    case model.selectionMode of
+                        SingleSelect _ _ ->
+                            Json.Decode.decodeValue valueDecoder valuesJson
+
+                        MultiSelect _ ->
+                            Json.Decode.decodeValue valuesDecoder valuesJson
             in
             case valuesResult of
                 Ok values ->
@@ -1432,7 +1438,7 @@ makeCommandMessagesWhenValuesChanges selectedOptions maybeSelectedValue =
 
 
 type alias Flags =
-    { value : String
+    { value : Json.Decode.Value
     , placeholder : String
     , customOptionHint : Maybe String
     , allowMultiSelect : Bool
@@ -1473,9 +1479,14 @@ init flags =
                 SingleSelect allowCustomOptions selectedItemPlacementMode
 
         ( initialValues, initialValueErrCmd ) =
-            case Json.Decode.decodeString (Json.Decode.list Json.Decode.string) flags.value of
+            case Json.Decode.decodeValue (Json.Decode.oneOf [ valuesDecoder, valueDecoder ]) flags.value of
                 Ok value ->
-                    ( value, Cmd.none )
+                    case selectionMode of
+                        SingleSelect _ _ ->
+                            ( value, Cmd.none )
+
+                        MultiSelect _ ->
+                            ( value, Cmd.none )
 
                 Err error ->
                     ( [], errorMessage (Json.Decode.errorToString error) )

@@ -16,25 +16,47 @@
 
   runTests(() => {
     describe("Attributes", () => {
-      describe("selected-value", () => {
+      describe("comma seperated selected-value", () => {
         it("preserver the order of the selected values if the order of the options are the same", async () =>  {
           const el = /** @type {MuchSelect} */ await fixture(html`
-<much-select multi-select selected-value="red,green">
-  <select>
-    <option>red</option>
-    <option>green</option>
-</select>
-</much-select>`);
+            <much-select multi-select selected-value="red,green">
+              <select>
+                <option>red</option>
+                <option>green</option>
+            </select>
+            </much-select>`);
           expect(el.parsedSelectedValue).to.eql(["red", "green"]);
         });
         it("preserver the order of the selected values even if the order of the options are different", async () =>  {
           const el = /** @type {MuchSelect} */ await fixture(html`
-<much-select multi-select selected-value="red,green">
-  <select>
-    <option>green</option>
-    <option>red</option>
-</select>
-</much-select>`);
+            <much-select multi-select selected-value="red,green">
+              <select>
+                <option>green</option>
+                <option>red</option>
+            </select>
+            </much-select>`);
+          expect(el.parsedSelectedValue).to.eql(["red", "green"]);
+        });
+      });
+      describe("json encoded selected-value", () => {
+        it("preserver the order of the selected values if the order of the options are the same", async () =>  {
+          const el = /** @type {MuchSelect} */ await fixture(html`
+              <much-select multi-select selected-value-encoding="json" selected-value="%5B%22red%22%2C%22green%22%5D">
+                <select slot="select-input">
+                  <option>red</option>
+                  <option>green</option>
+              </select>
+              </much-select>`);
+          expect(el.parsedSelectedValue).to.eql(["red", "green"]);
+        });
+        it("preserver the order of the selected values even if the order of the options are different", async () =>  {
+          const el = /** @type {MuchSelect} */ await fixture(html`
+              <much-select multi-select selected-value-encoding="json" selected-value="%5B%22red%22%2C%22green%22%5D">
+                <select slot="select-input">
+                  <option>green</option>
+                  <option>red</option>
+              </select>
+              </much-select>`);
           expect(el.parsedSelectedValue).to.eql(["red", "green"]);
         });
       });

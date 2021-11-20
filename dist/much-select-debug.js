@@ -3,6 +3,9 @@ import { Elm } from "./elm-main-debug.js";
 
 import asciiFold from "./ascii-fold.js";
 
+// Because of https://dev.to/hulyakarakaya/how-to-fix-regeneratorruntime-is-not-defined-doj
+import "regenerator-runtime/runtime.js";
+
 const buildOptionsFromSelectElement = (selectElement) => {
   const options = [];
   const optionElements = selectElement.querySelectorAll("option");
@@ -291,7 +294,7 @@ class MuchSelect extends HTMLElement {
       }
     } else if (name === "multi-select") {
       if (oldValue !== newValue) {
-        this.multiSelect = newValue;
+        this.isInMultiSelectMode = newValue;
       }
     } else if (name === "placeholder") {
       if (oldValue !== newValue) {
@@ -484,10 +487,15 @@ class MuchSelect extends HTMLElement {
       })
     );
 
-    const slot = this.shadowRoot.querySelector("slot[name=select-input]");
-    if (slot) {
-      slot.addEventListener("slotchange", this._onSlotChange);
-    }
+    // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
+    this.appPromise.then(() => {
+      // We run this code in here because the shadow root won't be available until the
+      //  elm app is ready.
+      const slot = this.shadowRoot.querySelector("slot[name=select-input]");
+      if (slot) {
+        slot.addEventListener("slotchange", this._onSlotChange);
+      }
+    });
 
     this.updateHiddenInputValueSlot();
 
@@ -549,39 +557,44 @@ class MuchSelect extends HTMLElement {
    */
   updateDimensions() {
     window.requestAnimationFrame(() => {
-      const valueCasingElement = this.shadowRoot.getElementById("value-casing");
-      if (valueCasingElement) {
-        let width = valueCasingElement.offsetWidth;
-        let height = valueCasingElement.offsetHeight;
+      // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
+      this.appPromise.then(() => {
+        // We run this code in here because the shadow root won't be available until the
+        //  elm app is ready.
+        const valueCasingElement =
+          this.shadowRoot.getElementById("value-casing");
+        if (valueCasingElement) {
+          let width = valueCasingElement.offsetWidth;
+          let height = valueCasingElement.offsetHeight;
 
-        // Prevent the width from falling below this threshold.
-        if (width < this._minimumWidth) {
-          width = this._minimumWidth;
-        }
+          // Prevent the width from falling below this threshold.
+          if (width < this._minimumWidth) {
+            width = this._minimumWidth;
+          }
 
-        // Prevent the height from falling below this threshold.
-        if (height < this._minimumHeight) {
-          height = this._minimumHeight;
-        }
+          // Prevent the height from falling below this threshold.
+          if (height < this._minimumHeight) {
+            height = this._minimumHeight;
+          }
 
-        this.appPromise.then((app) => {
-          // noinspection JSUnresolvedVariable
-          app.ports.valueCasingDimensionsChangedReceiver.send({
-            width,
-            height,
+          this.appPromise.then((app) => {
+            // noinspection JSUnresolvedVariable
+            app.ports.valueCasingDimensionsChangedReceiver.send({
+              width,
+              height,
+            });
           });
-        });
-      }
+        }
+      });
     });
   }
 
   buildFlags() {
     const flags = {};
-    if (this.selectedValue) {
-      flags.value = JSON.stringify(this.parsedSelectedValue);
-    } else {
-      flags.value = "[]";
-    }
+
+    flags.allowMultiSelect = this.isInMultiSelectMode;
+
+    flags.value = this.parsedSelectedValue;
 
     if (this.hasAttribute("placeholder")) {
       flags.placeholder = this.getAttribute("placeholder").trim();
@@ -597,7 +610,6 @@ class MuchSelect extends HTMLElement {
 
     flags.disabled = this.disabled;
     flags.loading = this.loading;
-    flags.allowMultiSelect = this.mulitSelect;
     flags.selectedItemStaysInPlace = this.selectedItemStaysInPlace;
     flags.maxDropdownItems = this.maxDropdownItems;
     flags.allowCustomOptions = this.allowCustomOptions;
@@ -623,7 +635,16 @@ class MuchSelect extends HTMLElement {
    * being the value, and the second part being the label.
    */
   valueChangedHandler(valuesTuple) {
-    this.parsedSelectedValue = valuesTuple.map((valueTuple) => valueTuple[0]);
+    if (this.isInMultiSelectMode) {
+      this.parsedSelectedValue = valuesTuple.map((valueTuple) => valueTuple[0]);
+    } else {
+      const valueAsArray = valuesTuple.map((valueTuple) => valueTuple[0]);
+      if (valueAsArray.length === 0) {
+        this.parsedSelectedValue = "";
+      } else if (valueAsArray.length > 0) {
+        [this.parsedSelectedValue] = valueAsArray;
+      }
+    }
 
     this.updateDimensions();
     if (
@@ -775,17 +796,30 @@ class MuchSelect extends HTMLElement {
     }
 
     if (!this.eventsOnlyMode) {
-      this.setAttribute("selected-value", value);
+      this.setAttribute("selected-value", this._selectedValue);
     }
 
-    if (value) {
-      // noinspection JSUnresolvedVariable
-      this.appPromise.then((app) =>
-        app.ports.valueChangedReceiver.send(this.parsedSelectedValue)
-      );
-    } else {
+    if (this._selectedValue && !this.isInMultiSelectMode) {
+      if (this.parsedSelectedValue === undefined) {
+        // TODO - This case here seems heavy handed, why would parsedSelectedValue
+        //  ever be undefined? I haven't been able to figure that out, so here,
+        //  my "fix".
+        // noinspection JSUnresolvedVariable
+        this.appPromise.then((app) =>
+          app.ports.valueChangedReceiver.send(null)
+        );
+      } else {
+        // noinspection JSUnresolvedVariable
+        this.appPromise.then((app) =>
+          app.ports.valueChangedReceiver.send(this.parsedSelectedValue)
+        );
+      }
+    } else if (this.isInMultiSelectMode) {
       // noinspection JSUnresolvedVariable
       this.appPromise.then((app) => app.ports.valueChangedReceiver.send([]));
+    } else {
+      // noinspection JSUnresolvedVariable
+      this.appPromise.then((app) => app.ports.valueChangedReceiver.send(null));
     }
 
     this.updateHiddenInputValueSlot();
@@ -799,7 +833,17 @@ class MuchSelect extends HTMLElement {
       return [];
     }
     if (this.selectedValueEncoding === "json") {
-      return JSON.parse(decodeURIComponent(this.selectedValue));
+      if (this.isInMultiSelectMode) {
+        return JSON.parse(decodeURIComponent(this.selectedValue));
+      }
+      const val = JSON.parse(decodeURIComponent(this.selectedValue));
+      if (Array.isArray(val)) {
+        return val.shift();
+      }
+      if (val === undefined) {
+        return null;
+      }
+      return val;
     }
     throw new Error(
       `Unknown selected value encoding, something is very wrong: ${this.selectedValueEncoding}`
@@ -808,7 +852,12 @@ class MuchSelect extends HTMLElement {
 
   set parsedSelectedValue(values) {
     if (this.selectedValueEncoding === "comma") {
-      this.selectedValue = values.join(",");
+      if (Array.isArray(values)) {
+        this.selectedValue = values.join(",");
+      } else {
+        // This should be a string or possibly a null.
+        this.selectedValue = values;
+      }
     } else if (this.selectedValueEncoding === "json") {
       this.selectedValue = encodeURIComponent(JSON.stringify(values));
     }
@@ -900,11 +949,11 @@ class MuchSelect extends HTMLElement {
     );
   }
 
-  get mulitSelect() {
+  get isInMultiSelectMode() {
     return this._isInMulitSelectMode;
   }
 
-  set multiSelect(value) {
+  set isInMultiSelectMode(value) {
     if (value === "false") {
       this._isInMulitSelectMode = false;
     } else if (value === "") {
@@ -923,7 +972,7 @@ class MuchSelect extends HTMLElement {
 
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
-      app.ports.multiSelectChangedReceiver.send(this._isInMulitSelectMode)
+      app.ports.multiSelectChangedReceiver.send(this.isInMultiSelectMode)
     );
   }
 

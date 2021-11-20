@@ -11380,12 +11380,12 @@ var $author$project$Option$newOption = F2(
 				$elm$core$Maybe$Nothing);
 		}
 	});
+var $elm$json$Json$Decode$oneOf = _Json_oneOf;
 var $author$project$Option$OptionDescription = F2(
 	function (a, b) {
 		return {$: 'OptionDescription', a: a, b: b};
 	});
 var $elm$json$Json$Decode$null = _Json_decodeNull;
-var $elm$json$Json$Decode$oneOf = _Json_oneOf;
 var $elm$json$Json$Decode$nullable = function (decoder) {
 	return $elm$json$Json$Decode$oneOf(
 		_List_fromArray(
@@ -11780,6 +11780,32 @@ var $elm_community$list_extra$List$Extra$uniqueBy = F2(
 	function (f, list) {
 		return A4($elm_community$list_extra$List$Extra$uniqueHelp, f, $elm$core$Set$empty, list, _List_Nil);
 	});
+var $elm$core$List$singleton = function (value) {
+	return _List_fromArray(
+		[value]);
+};
+var $author$project$Ports$valueDecoder = $elm$json$Json$Decode$oneOf(
+	_List_fromArray(
+		[
+			A2($elm$json$Json$Decode$map, $elm$core$List$singleton, $elm$json$Json$Decode$string),
+			A2(
+			$elm$json$Json$Decode$andThen,
+			function (listOfString) {
+				if (listOfString.b && (!listOfString.b.b)) {
+					return $elm$json$Json$Decode$succeed(listOfString);
+				} else {
+					return $elm$json$Json$Decode$fail('Only 1 value is allowed when in single select mode.');
+				}
+			},
+			$elm$json$Json$Decode$list($elm$json$Json$Decode$string)),
+			$elm$json$Json$Decode$null(_List_Nil)
+		]));
+var $author$project$Ports$valuesDecoder = $elm$json$Json$Decode$oneOf(
+	_List_fromArray(
+		[
+			$elm$json$Json$Decode$list($elm$json$Json$Decode$string),
+			A2($elm$json$Json$Decode$map, $elm$core$List$singleton, $elm$json$Json$Decode$string)
+		]));
 var $author$project$Main$init = function (flags) {
 	var selectedItemPlacementMode = flags.selectedItemStaysInPlace ? $author$project$SelectionMode$SelectedItemStaysInPlace : $author$project$SelectionMode$SelectedItemMovesToTheTop;
 	var maxDropdownItems = $author$project$PositiveInt$new(flags.maxDropdownItems);
@@ -11787,12 +11813,18 @@ var $author$project$Main$init = function (flags) {
 	var selectionMode = flags.allowMultiSelect ? $author$project$SelectionMode$MultiSelect(allowCustomOptions) : A2($author$project$SelectionMode$SingleSelect, allowCustomOptions, selectedItemPlacementMode);
 	var _v0 = function () {
 		var _v1 = A2(
-			$elm$json$Json$Decode$decodeString,
-			$elm$json$Json$Decode$list($elm$json$Json$Decode$string),
+			$elm$json$Json$Decode$decodeValue,
+			$elm$json$Json$Decode$oneOf(
+				_List_fromArray(
+					[$author$project$Ports$valuesDecoder, $author$project$Ports$valueDecoder])),
 			flags.value);
 		if (_v1.$ === 'Ok') {
 			var value = _v1.a;
-			return _Utils_Tuple2(value, $elm$core$Platform$Cmd$none);
+			if (selectionMode.$ === 'SingleSelect') {
+				return _Utils_Tuple2(value, $elm$core$Platform$Cmd$none);
+			} else {
+				return _Utils_Tuple2(value, $elm$core$Platform$Cmd$none);
+			}
 		} else {
 			var error = _v1.a;
 			return _Utils_Tuple2(
@@ -11803,14 +11835,14 @@ var $author$project$Main$init = function (flags) {
 	}();
 	var initialValues = _v0.a;
 	var initialValueErrCmd = _v0.b;
-	var _v2 = function () {
-		var _v3 = A2($elm$json$Json$Decode$decodeString, $author$project$Option$optionsDecoder, flags.optionsJson);
-		if (_v3.$ === 'Ok') {
-			var options = _v3.a;
+	var _v3 = function () {
+		var _v4 = A2($elm$json$Json$Decode$decodeString, $author$project$Option$optionsDecoder, flags.optionsJson);
+		if (_v4.$ === 'Ok') {
+			var options = _v4.a;
 			if (selectionMode.$ === 'SingleSelect') {
-				var _v5 = $elm$core$List$head(initialValues);
-				if (_v5.$ === 'Just') {
-					var initialValueStr_ = _v5.a;
+				var _v6 = $elm$core$List$head(initialValues);
+				if (_v6.$ === 'Just') {
+					var initialValueStr_ = _v6.a;
 					if (A2(
 						$author$project$Option$isOptionInListOfOptionsByValue,
 						$author$project$Option$stringToOptionValue(initialValueStr_),
@@ -11845,15 +11877,15 @@ var $author$project$Main$init = function (flags) {
 				return _Utils_Tuple2(optionsWithInitialValues, $elm$core$Platform$Cmd$none);
 			}
 		} else {
-			var error = _v3.a;
+			var error = _v4.a;
 			return _Utils_Tuple2(
 				_List_Nil,
 				$author$project$Ports$errorMessage(
 					$elm$json$Json$Decode$errorToString(error)));
 		}
 	}();
-	var optionsWithInitialValueSelected = _v2.a;
-	var errorCmd = _v2.b;
+	var optionsWithInitialValueSelected = _v3.a;
+	var errorCmd = _v3.b;
 	return _Utils_Tuple2(
 		{
 			customOptionHint: flags.customOptionHint,
@@ -14271,7 +14303,6 @@ var $author$project$Main$updateRightSlotLoading = F3(
 			}
 		}
 	});
-var $author$project$Ports$valuesDecoder = $elm$json$Json$Decode$list($elm$json$Json$Decode$string);
 var $author$project$Main$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
@@ -14370,7 +14401,14 @@ var $author$project$Main$update = F2(
 					$author$project$Ports$inputKeyUp(searchString));
 			case 'ValueChanged':
 				var valuesJson = msg.a;
-				var valuesResult = A2($elm$json$Json$Decode$decodeValue, $author$project$Ports$valuesDecoder, valuesJson);
+				var valuesResult = function () {
+					var _v4 = model.selectionMode;
+					if (_v4.$ === 'SingleSelect') {
+						return A2($elm$json$Json$Decode$decodeValue, $author$project$Ports$valueDecoder, valuesJson);
+					} else {
+						return A2($elm$json$Json$Decode$decodeValue, $author$project$Ports$valuesDecoder, valuesJson);
+					}
+				}();
 				if (valuesResult.$ === 'Ok') {
 					var values = valuesResult.a;
 					var newOptions = A2($author$project$Option$addAndSelectOptionsInOptionsListByString, values, model.options);
@@ -14396,13 +14434,13 @@ var $author$project$Main$update = F2(
 				}
 			case 'OptionsChanged':
 				var optionsJson = msg.a;
-				var _v4 = A2($elm$json$Json$Decode$decodeValue, $author$project$Option$optionsDecoder, optionsJson);
-				if (_v4.$ === 'Ok') {
-					var newOptions = _v4.a;
+				var _v5 = A2($elm$json$Json$Decode$decodeValue, $author$project$Option$optionsDecoder, optionsJson);
+				if (_v5.$ === 'Ok') {
+					var newOptions = _v5.a;
 					var newOptionWithOldSelectedOption = function () {
-						var _v5 = model.selectionMode;
-						if (_v5.$ === 'SingleSelect') {
-							var selectedItemPlacementMode = _v5.b;
+						var _v6 = model.selectionMode;
+						if (_v6.$ === 'SingleSelect') {
+							var selectedItemPlacementMode = _v6.b;
 							return A3($author$project$Option$mergeTwoListsOfOptionsPreservingSelectedOptions, selectedItemPlacementMode, model.options, newOptions);
 						} else {
 							return A3(
@@ -14424,7 +14462,7 @@ var $author$project$Main$update = F2(
 							}),
 						$elm$core$Platform$Cmd$none);
 				} else {
-					var error = _v4.a;
+					var error = _v5.a;
 					return _Utils_Tuple2(
 						model,
 						$author$project$Ports$errorMessage(
@@ -14432,31 +14470,10 @@ var $author$project$Main$update = F2(
 				}
 			case 'AddOptions':
 				var optionsJson = msg.a;
-				var _v6 = A2($elm$json$Json$Decode$decodeValue, $author$project$Option$optionsDecoder, optionsJson);
-				if (_v6.$ === 'Ok') {
-					var newOptions = _v6.a;
-					var updatedOptions = A2($author$project$Option$addAdditionalOptionsToOptionList, model.options, newOptions);
-					return _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								options: updatedOptions,
-								optionsForTheDropdown: A2($author$project$Main$figureOutWhichOptionsToShow, model.maxDropdownItems, updatedOptions)
-							}),
-						$elm$core$Platform$Cmd$none);
-				} else {
-					var error = _v6.a;
-					return _Utils_Tuple2(
-						model,
-						$author$project$Ports$errorMessage(
-							$elm$json$Json$Decode$errorToString(error)));
-				}
-			case 'RemoveOptions':
-				var optionsJson = msg.a;
 				var _v7 = A2($elm$json$Json$Decode$decodeValue, $author$project$Option$optionsDecoder, optionsJson);
 				if (_v7.$ === 'Ok') {
-					var optionsToRemove = _v7.a;
-					var updatedOptions = A2($author$project$Option$removeOptionsFromOptionList, model.options, optionsToRemove);
+					var newOptions = _v7.a;
+					var updatedOptions = A2($author$project$Option$addAdditionalOptionsToOptionList, model.options, newOptions);
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
@@ -14472,15 +14489,36 @@ var $author$project$Main$update = F2(
 						$author$project$Ports$errorMessage(
 							$elm$json$Json$Decode$errorToString(error)));
 				}
+			case 'RemoveOptions':
+				var optionsJson = msg.a;
+				var _v8 = A2($elm$json$Json$Decode$decodeValue, $author$project$Option$optionsDecoder, optionsJson);
+				if (_v8.$ === 'Ok') {
+					var optionsToRemove = _v8.a;
+					var updatedOptions = A2($author$project$Option$removeOptionsFromOptionList, model.options, optionsToRemove);
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								options: updatedOptions,
+								optionsForTheDropdown: A2($author$project$Main$figureOutWhichOptionsToShow, model.maxDropdownItems, updatedOptions)
+							}),
+						$elm$core$Platform$Cmd$none);
+				} else {
+					var error = _v8.a;
+					return _Utils_Tuple2(
+						model,
+						$author$project$Ports$errorMessage(
+							$elm$json$Json$Decode$errorToString(error)));
+				}
 			case 'SelectOption':
 				var optionJson = msg.a;
-				var _v8 = A2($elm$json$Json$Decode$decodeValue, $author$project$Option$decoder, optionJson);
-				if (_v8.$ === 'Ok') {
-					var option = _v8.a;
+				var _v9 = A2($elm$json$Json$Decode$decodeValue, $author$project$Option$decoder, optionJson);
+				if (_v9.$ === 'Ok') {
+					var option = _v9.a;
 					var optionValue = $author$project$Option$getOptionValue(option);
 					var options = function () {
-						var _v9 = model.selectionMode;
-						if (_v9.$ === 'MultiSelect') {
+						var _v10 = model.selectionMode;
+						if (_v10.$ === 'MultiSelect') {
 							return A2($author$project$Option$selectOptionInListByOptionValue, optionValue, model.options);
 						} else {
 							return A2($author$project$Option$selectSingleOptionInList, optionValue, model.options);
@@ -14493,7 +14531,7 @@ var $author$project$Main$update = F2(
 							options,
 							$elm$core$Maybe$Just(optionValue)));
 				} else {
-					var error = _v8.a;
+					var error = _v9.a;
 					return _Utils_Tuple2(
 						model,
 						$author$project$Ports$errorMessage(
@@ -14501,9 +14539,9 @@ var $author$project$Main$update = F2(
 				}
 			case 'DeselectOption':
 				var optionJson = msg.a;
-				var _v10 = A2($elm$json$Json$Decode$decodeValue, $author$project$Option$decoder, optionJson);
-				if (_v10.$ === 'Ok') {
-					var option = _v10.a;
+				var _v11 = A2($elm$json$Json$Decode$decodeValue, $author$project$Option$decoder, optionJson);
+				if (_v11.$ === 'Ok') {
+					var option = _v11.a;
 					var optionValue = $author$project$Option$getOptionValue(option);
 					var options = A2($author$project$Option$deselectOptionInListByOptionValue, optionValue, model.options);
 					return _Utils_Tuple2(
@@ -14515,7 +14553,7 @@ var $author$project$Main$update = F2(
 							}),
 						A2($author$project$Main$makeCommandMessagesWhenValuesChanges, options, $elm$core$Maybe$Nothing));
 				} else {
-					var error = _v10.a;
+					var error = _v11.a;
 					return _Utils_Tuple2(
 						model,
 						$author$project$Ports$errorMessage(
@@ -14607,8 +14645,8 @@ var $author$project$Main$update = F2(
 							])));
 			case 'SelectHighlightedOption':
 				var options = A2($author$project$Option$selectHighlightedOption, model.selectionMode, model.options);
-				var _v11 = model.selectionMode;
-				if (_v11.$ === 'SingleSelect') {
+				var _v12 = model.selectionMode;
+				if (_v12.$ === 'SingleSelect') {
 					return _Utils_Tuple2(
 						A4($author$project$Main$updateModelWithSearchStringChanges, model.maxDropdownItems, '', options, model),
 						$elm$core$Platform$Cmd$batch(
@@ -14628,8 +14666,8 @@ var $author$project$Main$update = F2(
 								])));
 				}
 			case 'DeleteInputForSingleSelect':
-				var _v12 = model.selectionMode;
-				if (_v12.$ === 'SingleSelect') {
+				var _v13 = model.selectionMode;
+				if (_v13.$ === 'SingleSelect') {
 					return $author$project$Option$hasSelectedOption(model.options) ? $author$project$Main$clearAllSelectedOption(model) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				} else {
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -16119,7 +16157,7 @@ _Platform_export({'Main':{'init':$author$project$Main$main(
 				},
 				A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
 		},
-		A2($elm$json$Json$Decode$field, 'value', $elm$json$Json$Decode$string)))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"}},"unions":{"Main.Msg":{"args":[],"tags":{"NoOp":[],"BringInputInFocus":[],"BringInputOutOfFocus":[],"InputBlur":[],"InputFocus":[],"DropdownMouseOverOption":["Option.OptionValue"],"DropdownMouseOutOption":["Option.OptionValue"],"DropdownMouseClickOption":["Option.OptionValue"],"SearchInputOnInput":["String.String"],"ValueChanged":["Json.Decode.Value"],"OptionsChanged":["Json.Decode.Value"],"AddOptions":["Json.Decode.Value"],"RemoveOptions":["Json.Decode.Value"],"SelectOption":["Json.Decode.Value"],"DeselectOption":["Json.Decode.Value"],"PlaceholderAttributeChanged":["String.String"],"LoadingAttributeChanged":["Basics.Bool"],"MaxDropdownItemsChanged":["Basics.Int"],"AllowCustomOptionsChanged":["Basics.Bool"],"CustomOptionHintChanged":["Maybe.Maybe String.String"],"DisabledAttributeChanged":["Basics.Bool"],"MulitSelectAttributeChanged":["Basics.Bool"],"SelectedItemStaysInPlaceChanged":["Basics.Bool"],"SelectHighlightedOption":[],"DeleteInputForSingleSelect":[],"EscapeKeyInInputFilter":[],"MoveHighlightedOptionUp":[],"MoveHighlightedOptionDown":[],"ValueCasingWidthUpdate":["{ width : Basics.Float, height : Basics.Float }"],"ClearAllSelectedOptions":[],"ToggleSelectedValueHighlight":["Option.OptionValue"],"DeleteKeydownForMultiSelect":[],"RequestAllOptions":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Option.OptionValue":{"args":[],"tags":{"OptionValue":["String.String"],"EmptyOptionValue":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}}}}})}});}(this));
+		A2($elm$json$Json$Decode$field, 'value', $elm$json$Json$Decode$value)))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"}},"unions":{"Main.Msg":{"args":[],"tags":{"NoOp":[],"BringInputInFocus":[],"BringInputOutOfFocus":[],"InputBlur":[],"InputFocus":[],"DropdownMouseOverOption":["Option.OptionValue"],"DropdownMouseOutOption":["Option.OptionValue"],"DropdownMouseClickOption":["Option.OptionValue"],"SearchInputOnInput":["String.String"],"ValueChanged":["Json.Decode.Value"],"OptionsChanged":["Json.Decode.Value"],"AddOptions":["Json.Decode.Value"],"RemoveOptions":["Json.Decode.Value"],"SelectOption":["Json.Decode.Value"],"DeselectOption":["Json.Decode.Value"],"PlaceholderAttributeChanged":["String.String"],"LoadingAttributeChanged":["Basics.Bool"],"MaxDropdownItemsChanged":["Basics.Int"],"AllowCustomOptionsChanged":["Basics.Bool"],"CustomOptionHintChanged":["Maybe.Maybe String.String"],"DisabledAttributeChanged":["Basics.Bool"],"MulitSelectAttributeChanged":["Basics.Bool"],"SelectedItemStaysInPlaceChanged":["Basics.Bool"],"SelectHighlightedOption":[],"DeleteInputForSingleSelect":[],"EscapeKeyInInputFilter":[],"MoveHighlightedOptionUp":[],"MoveHighlightedOptionDown":[],"ValueCasingWidthUpdate":["{ width : Basics.Float, height : Basics.Float }"],"ClearAllSelectedOptions":[],"ToggleSelectedValueHighlight":["Option.OptionValue"],"DeleteKeydownForMultiSelect":[],"RequestAllOptions":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Option.OptionValue":{"args":[],"tags":{"OptionValue":["String.String"],"EmptyOptionValue":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}}}}})}});}(this));
 */
 export const Elm = {'Main':{'init':$author$project$Main$main(
 	A2(
@@ -16181,4 +16219,4 @@ export const Elm = {'Main':{'init':$author$project$Main$main(
 				},
 				A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
 		},
-		A2($elm$json$Json$Decode$field, 'value', $elm$json$Json$Decode$string)))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"}},"unions":{"Main.Msg":{"args":[],"tags":{"NoOp":[],"BringInputInFocus":[],"BringInputOutOfFocus":[],"InputBlur":[],"InputFocus":[],"DropdownMouseOverOption":["Option.OptionValue"],"DropdownMouseOutOption":["Option.OptionValue"],"DropdownMouseClickOption":["Option.OptionValue"],"SearchInputOnInput":["String.String"],"ValueChanged":["Json.Decode.Value"],"OptionsChanged":["Json.Decode.Value"],"AddOptions":["Json.Decode.Value"],"RemoveOptions":["Json.Decode.Value"],"SelectOption":["Json.Decode.Value"],"DeselectOption":["Json.Decode.Value"],"PlaceholderAttributeChanged":["String.String"],"LoadingAttributeChanged":["Basics.Bool"],"MaxDropdownItemsChanged":["Basics.Int"],"AllowCustomOptionsChanged":["Basics.Bool"],"CustomOptionHintChanged":["Maybe.Maybe String.String"],"DisabledAttributeChanged":["Basics.Bool"],"MulitSelectAttributeChanged":["Basics.Bool"],"SelectedItemStaysInPlaceChanged":["Basics.Bool"],"SelectHighlightedOption":[],"DeleteInputForSingleSelect":[],"EscapeKeyInInputFilter":[],"MoveHighlightedOptionUp":[],"MoveHighlightedOptionDown":[],"ValueCasingWidthUpdate":["{ width : Basics.Float, height : Basics.Float }"],"ClearAllSelectedOptions":[],"ToggleSelectedValueHighlight":["Option.OptionValue"],"DeleteKeydownForMultiSelect":[],"RequestAllOptions":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Option.OptionValue":{"args":[],"tags":{"OptionValue":["String.String"],"EmptyOptionValue":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}}}}})}};
+		A2($elm$json$Json$Decode$field, 'value', $elm$json$Json$Decode$value)))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"}},"unions":{"Main.Msg":{"args":[],"tags":{"NoOp":[],"BringInputInFocus":[],"BringInputOutOfFocus":[],"InputBlur":[],"InputFocus":[],"DropdownMouseOverOption":["Option.OptionValue"],"DropdownMouseOutOption":["Option.OptionValue"],"DropdownMouseClickOption":["Option.OptionValue"],"SearchInputOnInput":["String.String"],"ValueChanged":["Json.Decode.Value"],"OptionsChanged":["Json.Decode.Value"],"AddOptions":["Json.Decode.Value"],"RemoveOptions":["Json.Decode.Value"],"SelectOption":["Json.Decode.Value"],"DeselectOption":["Json.Decode.Value"],"PlaceholderAttributeChanged":["String.String"],"LoadingAttributeChanged":["Basics.Bool"],"MaxDropdownItemsChanged":["Basics.Int"],"AllowCustomOptionsChanged":["Basics.Bool"],"CustomOptionHintChanged":["Maybe.Maybe String.String"],"DisabledAttributeChanged":["Basics.Bool"],"MulitSelectAttributeChanged":["Basics.Bool"],"SelectedItemStaysInPlaceChanged":["Basics.Bool"],"SelectHighlightedOption":[],"DeleteInputForSingleSelect":[],"EscapeKeyInInputFilter":[],"MoveHighlightedOptionUp":[],"MoveHighlightedOptionDown":[],"ValueCasingWidthUpdate":["{ width : Basics.Float, height : Basics.Float }"],"ClearAllSelectedOptions":[],"ToggleSelectedValueHighlight":["Option.OptionValue"],"DeleteKeydownForMultiSelect":[],"RequestAllOptions":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Option.OptionValue":{"args":[],"tags":{"OptionValue":["String.String"],"EmptyOptionValue":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}}}}})}};

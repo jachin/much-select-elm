@@ -5519,6 +5519,7 @@ var $elm$core$Basics$composeL = F3(
 			f(x));
 	});
 var $elm$json$Json$Decode$decodeString = _Json_runOnString;
+var $elm$json$Json$Decode$decodeValue = _Json_run;
 var $elm$json$Json$Encode$string = _Json_wrap;
 var $author$project$Ports$errorMessage = _Platform_outgoingPort('errorMessage', $elm$json$Json$Encode$string);
 var $elm$core$List$drop = F2(
@@ -5988,7 +5989,6 @@ var $author$project$Option$isOptionInListOfOptionsByValue = F2(
 			},
 			options);
 	});
-var $elm$json$Json$Decode$list = _Json_decodeList;
 var $elm$json$Json$Encode$null = _Json_encodeNull;
 var $author$project$Ports$muchSelectIsReady = _Platform_outgoingPort(
 	'muchSelectIsReady',
@@ -6022,12 +6022,12 @@ var $author$project$Option$newOption = F2(
 		}
 	});
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
+var $elm$json$Json$Decode$oneOf = _Json_oneOf;
 var $author$project$Option$OptionDescription = F2(
 	function (a, b) {
 		return {$: 0, a: a, b: b};
 	});
 var $elm$json$Json$Decode$null = _Json_decodeNull;
-var $elm$json$Json$Decode$oneOf = _Json_oneOf;
 var $elm$json$Json$Decode$nullable = function (decoder) {
 	return $elm$json$Json$Decode$oneOf(
 		_List_fromArray(
@@ -6181,6 +6181,7 @@ var $author$project$Option$decodeOptionWithoutAValue = A2(
 var $author$project$Option$decoder = $elm$json$Json$Decode$oneOf(
 	_List_fromArray(
 		[$author$project$Option$decodeOptionWithoutAValue, $author$project$Option$decodeOptionWithAValue]));
+var $elm$json$Json$Decode$list = _Json_decodeList;
 var $author$project$Option$optionsDecoder = $elm$json$Json$Decode$list($author$project$Option$decoder);
 var $author$project$Option$OptionHighlighted = {$: 4};
 var $author$project$Option$deselectOption = function (option) {
@@ -6564,6 +6565,32 @@ var $elm_community$list_extra$List$Extra$uniqueBy = F2(
 	function (f, list) {
 		return A4($elm_community$list_extra$List$Extra$uniqueHelp, f, $elm$core$Set$empty, list, _List_Nil);
 	});
+var $elm$core$List$singleton = function (value) {
+	return _List_fromArray(
+		[value]);
+};
+var $author$project$Ports$valueDecoder = $elm$json$Json$Decode$oneOf(
+	_List_fromArray(
+		[
+			A2($elm$json$Json$Decode$map, $elm$core$List$singleton, $elm$json$Json$Decode$string),
+			A2(
+			$elm$json$Json$Decode$andThen,
+			function (listOfString) {
+				if (listOfString.b && (!listOfString.b.b)) {
+					return $elm$json$Json$Decode$succeed(listOfString);
+				} else {
+					return $elm$json$Json$Decode$fail('Only 1 value is allowed when in single select mode.');
+				}
+			},
+			$elm$json$Json$Decode$list($elm$json$Json$Decode$string)),
+			$elm$json$Json$Decode$null(_List_Nil)
+		]));
+var $author$project$Ports$valuesDecoder = $elm$json$Json$Decode$oneOf(
+	_List_fromArray(
+		[
+			$elm$json$Json$Decode$list($elm$json$Json$Decode$string),
+			A2($elm$json$Json$Decode$map, $elm$core$List$singleton, $elm$json$Json$Decode$string)
+		]));
 var $author$project$Main$init = function (flags) {
 	var selectedItemPlacementMode = flags.aP ? 0 : 1;
 	var maxDropdownItems = $author$project$PositiveInt$new(flags.f);
@@ -6571,12 +6598,18 @@ var $author$project$Main$init = function (flags) {
 	var selectionMode = flags.aB ? $author$project$SelectionMode$MultiSelect(allowCustomOptions) : A2($author$project$SelectionMode$SingleSelect, allowCustomOptions, selectedItemPlacementMode);
 	var _v0 = function () {
 		var _v1 = A2(
-			$elm$json$Json$Decode$decodeString,
-			$elm$json$Json$Decode$list($elm$json$Json$Decode$string),
+			$elm$json$Json$Decode$decodeValue,
+			$elm$json$Json$Decode$oneOf(
+				_List_fromArray(
+					[$author$project$Ports$valuesDecoder, $author$project$Ports$valueDecoder])),
 			flags.aU);
 		if (!_v1.$) {
 			var value = _v1.a;
-			return _Utils_Tuple2(value, $elm$core$Platform$Cmd$none);
+			if (!selectionMode.$) {
+				return _Utils_Tuple2(value, $elm$core$Platform$Cmd$none);
+			} else {
+				return _Utils_Tuple2(value, $elm$core$Platform$Cmd$none);
+			}
 		} else {
 			var error = _v1.a;
 			return _Utils_Tuple2(
@@ -6587,14 +6620,14 @@ var $author$project$Main$init = function (flags) {
 	}();
 	var initialValues = _v0.a;
 	var initialValueErrCmd = _v0.b;
-	var _v2 = function () {
-		var _v3 = A2($elm$json$Json$Decode$decodeString, $author$project$Option$optionsDecoder, flags.aN);
-		if (!_v3.$) {
-			var options = _v3.a;
+	var _v3 = function () {
+		var _v4 = A2($elm$json$Json$Decode$decodeString, $author$project$Option$optionsDecoder, flags.aN);
+		if (!_v4.$) {
+			var options = _v4.a;
 			if (!selectionMode.$) {
-				var _v5 = $elm$core$List$head(initialValues);
-				if (!_v5.$) {
-					var initialValueStr_ = _v5.a;
+				var _v6 = $elm$core$List$head(initialValues);
+				if (!_v6.$) {
+					var initialValueStr_ = _v6.a;
 					if (A2(
 						$author$project$Option$isOptionInListOfOptionsByValue,
 						$author$project$Option$stringToOptionValue(initialValueStr_),
@@ -6629,15 +6662,15 @@ var $author$project$Main$init = function (flags) {
 				return _Utils_Tuple2(optionsWithInitialValues, $elm$core$Platform$Cmd$none);
 			}
 		} else {
-			var error = _v3.a;
+			var error = _v4.a;
 			return _Utils_Tuple2(
 				_List_Nil,
 				$author$project$Ports$errorMessage(
 					$elm$json$Json$Decode$errorToString(error)));
 		}
 	}();
-	var optionsWithInitialValueSelected = _v2.a;
-	var errorCmd = _v2.b;
+	var optionsWithInitialValueSelected = _v3.a;
+	var errorCmd = _v3.b;
 	return _Utils_Tuple2(
 		{
 			H: flags.H,
@@ -6661,7 +6694,7 @@ var $author$project$Main$init = function (flags) {
 				}
 			}(),
 			F: '',
-			h: selectionMode,
+			g: selectionMode,
 			ag: false,
 			ay: 45,
 			az: 100
@@ -7032,7 +7065,7 @@ var $author$project$Main$clearAllSelectedOption = function (model) {
 			{
 				a: $author$project$Option$deselectAllOptionsInOptionsList(newOptions),
 				e: A2($author$project$Main$figureOutWhichOptionsToShow, model.f, newOptions),
-				E: A3($author$project$Main$updateRightSlot, model.E, model.h, false),
+				E: A3($author$project$Main$updateRightSlot, model.E, model.g, false),
 				F: ''
 			}),
 		$elm$core$Platform$Cmd$batch(
@@ -7043,7 +7076,6 @@ var $author$project$Main$clearAllSelectedOption = function (model) {
 					focusCmd
 				])));
 };
-var $elm$json$Json$Decode$decodeValue = _Json_run;
 var $author$project$Option$selectSingleOptionInList = F2(
 	function (value, options) {
 		return A2(
@@ -9063,10 +9095,10 @@ var $author$project$OptionSearcher$updateOptions = F4(
 	});
 var $author$project$Main$updateModelWithSearchStringChanges = F4(
 	function (maxNumberOfDropdownItems, searchString, options, model) {
-		var optionsUpdatedWithSearchString = A4($author$project$OptionSearcher$updateOptions, model.h, model.H, searchString, options);
+		var optionsUpdatedWithSearchString = A4($author$project$OptionSearcher$updateOptions, model.g, model.H, searchString, options);
 		if (searchString === '') {
 			var updatedOptions = $author$project$Option$sortOptionsByGroupAndLabel(
-				A4($author$project$OptionSearcher$updateOptions, model.h, model.H, searchString, options));
+				A4($author$project$OptionSearcher$updateOptions, model.g, model.H, searchString, options));
 			return _Utils_update(
 				model,
 				{
@@ -9106,7 +9138,6 @@ var $author$project$Main$updateRightSlotLoading = F3(
 			}
 		}
 	});
-var $author$project$Ports$valuesDecoder = $elm$json$Json$Decode$list($elm$json$Json$Decode$string);
 var $author$project$Main$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
@@ -9165,14 +9196,14 @@ var $author$project$Main$update = F2(
 			case 7:
 				var optionValue = msg.a;
 				var options = function () {
-					var _v2 = model.h;
+					var _v2 = model.g;
 					if (_v2.$ === 1) {
 						return A2($author$project$Option$selectOptionInListByOptionValue, optionValue, model.a);
 					} else {
 						return A2($author$project$Option$selectSingleOptionInList, optionValue, model.a);
 					}
 				}();
-				var _v1 = model.h;
+				var _v1 = model.g;
 				if (!_v1.$) {
 					return _Utils_Tuple2(
 						A4($author$project$Main$updateModelWithSearchStringChanges, model.f, '', options, model),
@@ -9205,7 +9236,14 @@ var $author$project$Main$update = F2(
 					$author$project$Ports$inputKeyUp(searchString));
 			case 9:
 				var valuesJson = msg.a;
-				var valuesResult = A2($elm$json$Json$Decode$decodeValue, $author$project$Ports$valuesDecoder, valuesJson);
+				var valuesResult = function () {
+					var _v4 = model.g;
+					if (!_v4.$) {
+						return A2($elm$json$Json$Decode$decodeValue, $author$project$Ports$valueDecoder, valuesJson);
+					} else {
+						return A2($elm$json$Json$Decode$decodeValue, $author$project$Ports$valuesDecoder, valuesJson);
+					}
+				}();
 				if (!valuesResult.$) {
 					var values = valuesResult.a;
 					var newOptions = A2($author$project$Option$addAndSelectOptionsInOptionsListByString, values, model.a);
@@ -9218,7 +9256,7 @@ var $author$project$Main$update = F2(
 								E: A3(
 									$author$project$Main$updateRightSlot,
 									model.E,
-									model.h,
+									model.g,
 									$author$project$Option$hasSelectedOption(model.a))
 							}),
 						$elm$core$Platform$Cmd$none);
@@ -9231,13 +9269,13 @@ var $author$project$Main$update = F2(
 				}
 			case 10:
 				var optionsJson = msg.a;
-				var _v4 = A2($elm$json$Json$Decode$decodeValue, $author$project$Option$optionsDecoder, optionsJson);
-				if (!_v4.$) {
-					var newOptions = _v4.a;
+				var _v5 = A2($elm$json$Json$Decode$decodeValue, $author$project$Option$optionsDecoder, optionsJson);
+				if (!_v5.$) {
+					var newOptions = _v5.a;
 					var newOptionWithOldSelectedOption = function () {
-						var _v5 = model.h;
-						if (!_v5.$) {
-							var selectedItemPlacementMode = _v5.b;
+						var _v6 = model.g;
+						if (!_v6.$) {
+							var selectedItemPlacementMode = _v6.b;
 							return A3($author$project$Option$mergeTwoListsOfOptionsPreservingSelectedOptions, selectedItemPlacementMode, model.a, newOptions);
 						} else {
 							return A3(
@@ -9259,7 +9297,7 @@ var $author$project$Main$update = F2(
 							}),
 						$elm$core$Platform$Cmd$none);
 				} else {
-					var error = _v4.a;
+					var error = _v5.a;
 					return _Utils_Tuple2(
 						model,
 						$author$project$Ports$errorMessage(
@@ -9267,31 +9305,10 @@ var $author$project$Main$update = F2(
 				}
 			case 11:
 				var optionsJson = msg.a;
-				var _v6 = A2($elm$json$Json$Decode$decodeValue, $author$project$Option$optionsDecoder, optionsJson);
-				if (!_v6.$) {
-					var newOptions = _v6.a;
-					var updatedOptions = A2($author$project$Option$addAdditionalOptionsToOptionList, model.a, newOptions);
-					return _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								a: updatedOptions,
-								e: A2($author$project$Main$figureOutWhichOptionsToShow, model.f, updatedOptions)
-							}),
-						$elm$core$Platform$Cmd$none);
-				} else {
-					var error = _v6.a;
-					return _Utils_Tuple2(
-						model,
-						$author$project$Ports$errorMessage(
-							$elm$json$Json$Decode$errorToString(error)));
-				}
-			case 12:
-				var optionsJson = msg.a;
 				var _v7 = A2($elm$json$Json$Decode$decodeValue, $author$project$Option$optionsDecoder, optionsJson);
 				if (!_v7.$) {
-					var optionsToRemove = _v7.a;
-					var updatedOptions = A2($author$project$Option$removeOptionsFromOptionList, model.a, optionsToRemove);
+					var newOptions = _v7.a;
+					var updatedOptions = A2($author$project$Option$addAdditionalOptionsToOptionList, model.a, newOptions);
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
@@ -9307,15 +9324,36 @@ var $author$project$Main$update = F2(
 						$author$project$Ports$errorMessage(
 							$elm$json$Json$Decode$errorToString(error)));
 				}
+			case 12:
+				var optionsJson = msg.a;
+				var _v8 = A2($elm$json$Json$Decode$decodeValue, $author$project$Option$optionsDecoder, optionsJson);
+				if (!_v8.$) {
+					var optionsToRemove = _v8.a;
+					var updatedOptions = A2($author$project$Option$removeOptionsFromOptionList, model.a, optionsToRemove);
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								a: updatedOptions,
+								e: A2($author$project$Main$figureOutWhichOptionsToShow, model.f, updatedOptions)
+							}),
+						$elm$core$Platform$Cmd$none);
+				} else {
+					var error = _v8.a;
+					return _Utils_Tuple2(
+						model,
+						$author$project$Ports$errorMessage(
+							$elm$json$Json$Decode$errorToString(error)));
+				}
 			case 13:
 				var optionJson = msg.a;
-				var _v8 = A2($elm$json$Json$Decode$decodeValue, $author$project$Option$decoder, optionJson);
-				if (!_v8.$) {
-					var option = _v8.a;
+				var _v9 = A2($elm$json$Json$Decode$decodeValue, $author$project$Option$decoder, optionJson);
+				if (!_v9.$) {
+					var option = _v9.a;
 					var optionValue = $author$project$Option$getOptionValue(option);
 					var options = function () {
-						var _v9 = model.h;
-						if (_v9.$ === 1) {
+						var _v10 = model.g;
+						if (_v10.$ === 1) {
 							return A2($author$project$Option$selectOptionInListByOptionValue, optionValue, model.a);
 						} else {
 							return A2($author$project$Option$selectSingleOptionInList, optionValue, model.a);
@@ -9328,7 +9366,7 @@ var $author$project$Main$update = F2(
 							options,
 							$elm$core$Maybe$Just(optionValue)));
 				} else {
-					var error = _v8.a;
+					var error = _v9.a;
 					return _Utils_Tuple2(
 						model,
 						$author$project$Ports$errorMessage(
@@ -9336,9 +9374,9 @@ var $author$project$Main$update = F2(
 				}
 			case 14:
 				var optionJson = msg.a;
-				var _v10 = A2($elm$json$Json$Decode$decodeValue, $author$project$Option$decoder, optionJson);
-				if (!_v10.$) {
-					var option = _v10.a;
+				var _v11 = A2($elm$json$Json$Decode$decodeValue, $author$project$Option$decoder, optionJson);
+				if (!_v11.$) {
+					var option = _v11.a;
 					var optionValue = $author$project$Option$getOptionValue(option);
 					var options = A2($author$project$Option$deselectOptionInListByOptionValue, optionValue, model.a);
 					return _Utils_Tuple2(
@@ -9350,7 +9388,7 @@ var $author$project$Main$update = F2(
 							}),
 						A2($author$project$Main$makeCommandMessagesWhenValuesChanges, options, $elm$core$Maybe$Nothing));
 				} else {
-					var error = _v10.a;
+					var error = _v11.a;
 					return _Utils_Tuple2(
 						model,
 						$author$project$Ports$errorMessage(
@@ -9372,7 +9410,7 @@ var $author$project$Main$update = F2(
 							E: A3(
 								$author$project$Main$updateRightSlotLoading,
 								bool,
-								model.h,
+								model.g,
 								$author$project$Option$hasSelectedOption(model.a))
 						}),
 					$elm$core$Platform$Cmd$none);
@@ -9393,7 +9431,7 @@ var $author$project$Main$update = F2(
 					_Utils_update(
 						model,
 						{
-							h: A2($author$project$SelectionMode$setAllowCustomOptionsWithBool, canAddCustomOptions, model.h)
+							g: A2($author$project$SelectionMode$setAllowCustomOptionsWithBool, canAddCustomOptions, model.g)
 						}),
 					$elm$core$Platform$Cmd$none);
 			case 19:
@@ -9416,7 +9454,7 @@ var $author$project$Main$update = F2(
 					_Utils_update(
 						model,
 						{
-							h: A2($author$project$SelectionMode$setSelectedItemStaysInPlace, selectedItemStaysInPlace, model.h)
+							g: A2($author$project$SelectionMode$setSelectedItemStaysInPlace, selectedItemStaysInPlace, model.g)
 						}),
 					$elm$core$Platform$Cmd$none);
 			case 21:
@@ -9432,7 +9470,7 @@ var $author$project$Main$update = F2(
 						{
 							a: options,
 							e: A2($author$project$Main$figureOutWhichOptionsToShow, model.f, options),
-							h: A2($author$project$SelectionMode$setMulitSelectModeWithBool, isInMulitSelectMode, model.h)
+							g: A2($author$project$SelectionMode$setMulitSelectModeWithBool, isInMulitSelectMode, model.g)
 						}),
 					$elm$core$Platform$Cmd$batch(
 						_List_fromArray(
@@ -9441,9 +9479,9 @@ var $author$project$Main$update = F2(
 								cmd
 							])));
 			case 23:
-				var options = A2($author$project$Option$selectHighlightedOption, model.h, model.a);
-				var _v11 = model.h;
-				if (!_v11.$) {
+				var options = A2($author$project$Option$selectHighlightedOption, model.g, model.a);
+				var _v12 = model.g;
+				if (!_v12.$) {
 					return _Utils_Tuple2(
 						A4($author$project$Main$updateModelWithSearchStringChanges, model.f, '', options, model),
 						$elm$core$Platform$Cmd$batch(
@@ -9463,8 +9501,8 @@ var $author$project$Main$update = F2(
 								])));
 				}
 			case 24:
-				var _v12 = model.h;
-				if (!_v12.$) {
+				var _v13 = model.g;
+				if (!_v13.$) {
 					return $author$project$Option$hasSelectedOption(model.a) ? $author$project$Main$clearAllSelectedOption(model) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				} else {
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -9972,7 +10010,7 @@ var $author$project$Main$dropdown = function (model) {
 							$elm$html$Html$text('No available options')
 						]))
 				]))
-		]) : A5($author$project$Main$optionsToDropdownOptions, $author$project$Main$DropdownMouseOverOption, $author$project$Main$DropdownMouseOutOption, $author$project$Main$DropdownMouseClickOption, model.h, model.e);
+		]) : A5($author$project$Main$optionsToDropdownOptions, $author$project$Main$DropdownMouseOverOption, $author$project$Main$DropdownMouseOutOption, $author$project$Main$DropdownMouseClickOption, model.g, model.e);
 	var dropdownFooterHtml = (_Utils_cmp(
 		$elm$core$List$length(model.e),
 		$elm$core$List$length(model.a)) < 0) ? A2(
@@ -10811,7 +10849,7 @@ var $elm$html$Html$Attributes$tabindex = function (n) {
 };
 var $author$project$Main$view = function (model) {
 	var tabIndexAttribute = model.n ? A2($elm$html$Html$Attributes$style, '', '') : $elm$html$Html$Attributes$tabindex(0);
-	var _v0 = model.h;
+	var _v0 = model.g;
 	if (!_v0.$) {
 		var hasOptionSelected = $author$project$Option$hasSelectedOption(model.a);
 		var showPlaceholder = (!hasOptionSelected) && (!model.k);
@@ -11038,7 +11076,7 @@ _Platform_export({'Main':{'init':$author$project$Main$main(
 				},
 				A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
 		},
-		A2($elm$json$Json$Decode$field, 'value', $elm$json$Json$Decode$string)))(0)}});}(this));
+		A2($elm$json$Json$Decode$field, 'value', $elm$json$Json$Decode$value)))(0)}});}(this));
 */
 export const Elm = {'Main':{'init':$author$project$Main$main(
 	A2(
@@ -11100,4 +11138,4 @@ export const Elm = {'Main':{'init':$author$project$Main$main(
 				},
 				A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
 		},
-		A2($elm$json$Json$Decode$field, 'value', $elm$json$Json$Decode$string)))(0)}};
+		A2($elm$json$Json$Decode$field, 'value', $elm$json$Json$Decode$value)))(0)}};

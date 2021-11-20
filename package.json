@@ -1,6 +1,6 @@
 {
   "name": "@getdrip/much-select-elm",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "A fancy selector web component written (mostly) in elm.",
   "main": "dist/much-select.js",
   "type": "module",
@@ -46,5 +46,8 @@
     "node-elm-compiler": "^5.0.6",
     "parcel-bundler": "^1.12.4",
     "prettier": "^2.4.1"
+  },
+  "dependencies": {
+    "regenerator-runtime": "^0.13.9"
   }
 }
