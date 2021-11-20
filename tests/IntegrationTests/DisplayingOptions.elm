@@ -1,6 +1,7 @@
 module IntegrationTests.DisplayingOptions exposing (suite)
 
 import Html.Attributes
+import Json.Encode
 import Main exposing (Flags)
 import ProgramTest
     exposing
@@ -16,7 +17,7 @@ import Test.Html.Selector exposing (classes, text)
 
 flagsEmptyOptionsWithOrangeSelected : Flags
 flagsEmptyOptionsWithOrangeSelected =
-    { value = "[\"Orange\"]"
+    { value = Json.Encode.list Json.Encode.string [ "Orange" ]
     , placeholder = "What is your favorite color"
     , customOptionHint = Nothing
     , allowMultiSelect = False
@@ -86,7 +87,7 @@ booksJsonWithSelected =
 
 flagsBookOptions : Flags
 flagsBookOptions =
-    { value = "[]"
+    { value = Json.Encode.object []
     , placeholder = "A book"
     , customOptionHint = Nothing
     , allowMultiSelect = False
@@ -101,7 +102,7 @@ flagsBookOptions =
 
 flagsBookOptionsWithValue : Flags
 flagsBookOptionsWithValue =
-    { value = "[\"Matilda\"]"
+    { value = Json.Encode.list Json.Encode.string [ "Matilda" ]
     , placeholder = "A book"
     , customOptionHint = Nothing
     , allowMultiSelect = False
@@ -116,7 +117,7 @@ flagsBookOptionsWithValue =
 
 flagsBookOptionsWithSelected : Flags
 flagsBookOptionsWithSelected =
-    { value = ""
+    { value = Json.Encode.object []
     , placeholder = "A book"
     , customOptionHint = Nothing
     , allowMultiSelect = False
