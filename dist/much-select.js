@@ -487,10 +487,15 @@ class MuchSelect extends HTMLElement {
       })
     );
 
-    const slot = this.shadowRoot.querySelector("slot[name=select-input]");
-    if (slot) {
-      slot.addEventListener("slotchange", this._onSlotChange);
-    }
+    // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
+    this.appPromise.then(() => {
+      // We run this code in here because the shadow root won't be available until the
+      //  elm app is ready.
+      const slot = this.shadowRoot.querySelector("slot[name=select-input]");
+      if (slot) {
+        slot.addEventListener("slotchange", this._onSlotChange);
+      }
+    });
 
     this.updateHiddenInputValueSlot();
 
@@ -552,29 +557,35 @@ class MuchSelect extends HTMLElement {
    */
   updateDimensions() {
     window.requestAnimationFrame(() => {
-      const valueCasingElement = this.shadowRoot.getElementById("value-casing");
-      if (valueCasingElement) {
-        let width = valueCasingElement.offsetWidth;
-        let height = valueCasingElement.offsetHeight;
+      // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
+      this.appPromise.then(() => {
+        // We run this code in here because the shadow root won't be available until the
+        //  elm app is ready.
+        const valueCasingElement =
+          this.shadowRoot.getElementById("value-casing");
+        if (valueCasingElement) {
+          let width = valueCasingElement.offsetWidth;
+          let height = valueCasingElement.offsetHeight;
 
-        // Prevent the width from falling below this threshold.
-        if (width < this._minimumWidth) {
-          width = this._minimumWidth;
-        }
+          // Prevent the width from falling below this threshold.
+          if (width < this._minimumWidth) {
+            width = this._minimumWidth;
+          }
 
-        // Prevent the height from falling below this threshold.
-        if (height < this._minimumHeight) {
-          height = this._minimumHeight;
-        }
+          // Prevent the height from falling below this threshold.
+          if (height < this._minimumHeight) {
+            height = this._minimumHeight;
+          }
 
-        this.appPromise.then((app) => {
-          // noinspection JSUnresolvedVariable
-          app.ports.valueCasingDimensionsChangedReceiver.send({
-            width,
-            height,
+          this.appPromise.then((app) => {
+            // noinspection JSUnresolvedVariable
+            app.ports.valueCasingDimensionsChangedReceiver.send({
+              width,
+              height,
+            });
           });
-        });
-      }
+        }
+      });
     });
   }
 
