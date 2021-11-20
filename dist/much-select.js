@@ -852,7 +852,12 @@ class MuchSelect extends HTMLElement {
 
   set parsedSelectedValue(values) {
     if (this.selectedValueEncoding === "comma") {
-      this.selectedValue = values.join(",");
+      if (Array.isArray(values)) {
+        this.selectedValue = values.join(",");
+      } else {
+        // This should be a string or possibly a null.
+        this.selectedValue = values;
+      }
     } else if (this.selectedValueEncoding === "json") {
       this.selectedValue = encodeURIComponent(JSON.stringify(values));
     }
