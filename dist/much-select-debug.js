@@ -635,7 +635,16 @@ class MuchSelect extends HTMLElement {
    * being the value, and the second part being the label.
    */
   valueChangedHandler(valuesTuple) {
-    this.parsedSelectedValue = valuesTuple.map((valueTuple) => valueTuple[0]);
+    if (this.isInMultiSelectMode) {
+      this.parsedSelectedValue = valuesTuple.map((valueTuple) => valueTuple[0]);
+    } else {
+      const valueAsArray = valuesTuple.map((valueTuple) => valueTuple[0]);
+      if (valueAsArray.length === 0) {
+        this.parsedSelectedValue = "";
+      } else if (valueAsArray.length > 0) {
+        [this.parsedSelectedValue] = valueAsArray;
+      }
+    }
 
     this.updateDimensions();
     if (
