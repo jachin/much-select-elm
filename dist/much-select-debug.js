@@ -489,6 +489,9 @@ class MuchSelect extends HTMLElement {
 
     // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
     this.appPromise.then(() => {
+      // Call this once, if there's any initial options here, we need to know.
+      this._onSlotChange();
+
       // We run this code in here because the shadow root won't be available until the
       //  elm app is ready.
       const slot = this.shadowRoot.querySelector("slot[name=select-input]");
