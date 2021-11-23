@@ -67,6 +67,7 @@ import Ports
         , disableChangedReceiver
         , errorMessage
         , focusInput
+        , inputBlurred
         , inputKeyUp
         , loadingChangedReceiver
         , maxDropdownItemsChangedReceiver
@@ -200,7 +201,7 @@ update msg model =
                 , options = options
                 , optionsForTheDropdown = optionsForTheDropdown
               }
-            , Cmd.none
+            , inputBlurred ()
             )
 
         InputFocus ->

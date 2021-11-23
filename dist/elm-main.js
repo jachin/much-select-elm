@@ -7524,6 +7524,11 @@ var $author$project$Option$highlightOptionInListByValue = F2(
 			},
 			options);
 	});
+var $author$project$Ports$inputBlurred = _Platform_outgoingPort(
+	'inputBlurred',
+	function ($) {
+		return $elm$json$Json$Encode$null;
+	});
 var $author$project$Ports$inputKeyUp = _Platform_outgoingPort('inputKeyUp', $elm$json$Json$Encode$string);
 var $author$project$Option$orOptionDescriptions = F2(
 	function (optionA, optionB) {
@@ -9168,7 +9173,7 @@ var $author$project$Main$update = F2(
 					_Utils_update(
 						model,
 						{k: false, a: options, e: optionsForTheDropdown, F: '', ag: false}),
-					$elm$core$Platform$Cmd$none);
+					$author$project$Ports$inputBlurred(0));
 			case 4:
 				return _Utils_Tuple2(
 					_Utils_update(
