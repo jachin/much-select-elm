@@ -277,6 +277,7 @@
 
     <p>
       Events:
+    </p>
     <table id="single-select-option-deselected-event-log">
       <thead>
       <tr>
@@ -287,7 +288,7 @@
       <tbody>
       </tbody>
     </table>
-    </p>
+
 
     <script>
       window.addEventListener("load", () => {
@@ -296,6 +297,44 @@
           .addEventListener(
             "optionDeselected",
             makeLogEventHandler("single-select-option-deselected-event-log")
+          );
+      });
+    </script>
+
+  </div>
+
+  <div id="multi-select-blur-or-unfocused-value-change">
+    <h3>Multi Select - <code>blurOrUnfocusedValueChanged</code> Event</h3>
+    <much-select multi-select>
+      <select>
+        <option value="4_99">String Beans</option>
+        <option value="5_99">Lima Beans</option>
+        <option value="1_08">White Beans</option>
+        <option value="3_92">Red Beans</option>
+      </select>
+    </much-select>
+
+    <p>
+      Events:
+    </p>
+    <table id="multi-select-blur-or-unfocused-value-change-event-log">
+      <thead>
+      <tr>
+        <th>Event</th>
+        <th>Details</th>
+      </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+
+    <script>
+      window.addEventListener("load", () => {
+        document
+          .querySelector("#multi-select-blur-or-unfocused-value-change much-select")
+          .addEventListener(
+            "blurOrUnfocusedValueChanged",
+            makeLogEventHandler("multi-select-blur-or-unfocused-value-change-event-log")
           );
       });
     </script>

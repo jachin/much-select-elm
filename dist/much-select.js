@@ -235,6 +235,14 @@ class MuchSelect extends HTMLElement {
      */
     this._connected = false;
 
+    /**
+     * Once we see a value change come through, set this to true. Then
+     * when the much-select blurs, emmit the event and set it to false.
+     * @type {boolean}
+     * @private
+     */
+    this._emitBlurOrUnfocusedValueChanged = false;
+
     this._onSlotChange = this._onSlotChange.bind(this);
 
     this._inputKeypressDebounceHandler = makeDebouncedFunc((searchString) => {
@@ -405,6 +413,15 @@ class MuchSelect extends HTMLElement {
             bubbles: true,
           })
         );
+
+        this.dispatchEvent(
+          new CustomEvent("blurOrUnfocusedValueChanged", {
+            bubbles: true,
+            detail: {
+              value: this.selectedValue,
+            },
+          })
+        );
       })
     );
 
@@ -418,10 +435,30 @@ class MuchSelect extends HTMLElement {
     // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
     this.appPromise.then((app) =>
       app.ports.blurInput.subscribe(() => {
+        // This port is called to "force" a blur.
         const inputFilterElement =
           this.shadowRoot.getElementById("input-filter");
         if (inputFilterElement) {
           inputFilterElement.blur();
+        }
+      })
+    );
+
+    // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
+    this.appPromise.then((app) =>
+      app.ports.inputBlurred.subscribe(() => {
+        // This port is called AFTER the input has been blurred.
+        if (this._emitBlurOrUnfocusedValueChanged) {
+          this._emitBlurOrUnfocusedValueChanged = false;
+
+          this.dispatchEvent(
+            new CustomEvent("blurOrUnfocusedValueChanged", {
+              bubbles: true,
+              detail: {
+                value: this.selectedValue,
+              },
+            })
+          );
         }
       })
     );
@@ -648,6 +685,8 @@ class MuchSelect extends HTMLElement {
         [this.parsedSelectedValue] = valueAsArray;
       }
     }
+
+    this._emitBlurOrUnfocusedValueChanged = true;
 
     this.updateDimensions();
     if (

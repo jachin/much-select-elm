@@ -9,6 +9,7 @@ port module Ports exposing
     , disableChangedReceiver
     , errorMessage
     , focusInput
+    , inputBlurred
     , inputKeyUp
     , loadingChangedReceiver
     , maxDropdownItemsChangedReceiver
@@ -59,6 +60,9 @@ port inputKeyUp : String -> Cmd msg
 
 
 port blurInput : () -> Cmd msg
+
+
+port inputBlurred : () -> Cmd msg
 
 
 port focusInput : () -> Cmd msg
