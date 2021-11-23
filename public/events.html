@@ -307,10 +307,10 @@
     <h3>Multi Select - <code>blurOrUnfocusedValueChanged</code> Event</h3>
     <much-select multi-select>
       <select>
-        <option value="4_99">String Beans</option>
-        <option value="5_99">Lima Beans</option>
-        <option value="1_08">White Beans</option>
-        <option value="3_92">Red Beans</option>
+        <option value="Garbanzo">Garbanzo Beans</option>
+        <option value="Runner">Runner Beans</option>
+        <option value="Guar">Guar Beans</option>
+        <option value="Jack">Jack Beans</option>
       </select>
     </much-select>
 
@@ -338,7 +338,43 @@
           );
       });
     </script>
+  </div>
 
+  <div id="single-select-blur-or-unfocused-value-change">
+    <h3>Single Select - <code>blurOrUnfocusedValueChanged</code> Event</h3>
+    <much-select>
+      <select>
+        <option value="111">Grass Pea</option>
+        <option value="222">Velvet Bean</option>
+        <option value="333">Sword Bean</option>
+        <option value="444">Soybean</option>
+      </select>
+    </much-select>
+
+    <p>
+      Events:
+    </p>
+    <table id="single-select-blur-or-unfocused-value-change-event-log">
+      <thead>
+      <tr>
+        <th>Event</th>
+        <th>Details</th>
+      </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+
+    <script>
+      window.addEventListener("load", () => {
+        document
+          .querySelector("#single-select-blur-or-unfocused-value-change much-select")
+          .addEventListener(
+            "blurOrUnfocusedValueChanged",
+            makeLogEventHandler("single-select-blur-or-unfocused-value-change-event-log")
+          );
+      });
+    </script>
   </div>
 </div>
 
