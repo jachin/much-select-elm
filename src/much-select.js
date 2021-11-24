@@ -539,7 +539,54 @@ class MuchSelect extends HTMLElement {
 
     this.updateHiddenInputValueSlot();
 
+    console.log("setting up mutation observer");
+
+    // Options for the observer (which mutations to observe)
+    const config = {
+      attributes: true,
+      childList: true,
+      subtree: true,
+      characterData: true,
+    };
+
+    // const callback = function (mutationsList, observer) {
+    //   console.log("mutationsList", mutationsList);
+    //   for (const mutation of mutationsList) {
+    //     if (mutation.type === "childList") {
+    //       console.log("A child node has been added or removed.");
+    //     } else if (mutation.type === "attributes") {
+    //       console.log(
+    //         `The ${mutation.attributeName} attribute was modified.`
+    //       );
+    //     }
+    //   }
+    // };
+
+    const observer = new MutationObserver((mutationsList) => {
+      mutationsList.forEach((mutation) => {
+        console.log("mutation.type", mutation.type);
+        if (mutation.type === "childList") {
+          this.updateOptionsFromDom();
+        } else if (mutation.type === "attributes") {
+          this.updateOptionsFromDom();
+        }
+      });
+    });
+    observer.observe(this, config);
+
     this._connected = true;
+  }
+
+  updateOptionsFromDom() {
+    const selectElement = this.querySelector("select");
+    if (selectElement) {
+      const optionsJson = buildOptionsFromSelectElement(selectElement);
+      this.appPromise.then((app) => {
+        // noinspection JSUnresolvedVariable
+        app.ports.optionsChangedReceiver.send(optionsJson);
+        this.updateDimensions();
+      });
+    }
   }
 
   // noinspection JSUnusedGlobalSymbols
@@ -549,12 +596,17 @@ class MuchSelect extends HTMLElement {
   }
 
   _onSlotChange() {
+    console.log("_onSlotChange");
     if (!this._connected) {
       return;
     }
     const selectElement = this.querySelector("select");
     if (selectElement) {
+      console.log("_onSlotChange selectElement", selectElement);
+
       const optionsJson = buildOptionsFromSelectElement(selectElement);
+
+      console.log("_onSlotChange optionsJson", optionsJson);
 
       this.appPromise.then((app) => {
         // noinspection JSUnresolvedVariable
