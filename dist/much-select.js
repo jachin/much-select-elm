@@ -243,7 +243,11 @@ class MuchSelect extends HTMLElement {
      */
     this._emitBlurOrUnfocusedValueChanged = false;
 
-    this._onSlotChange = this._onSlotChange.bind(this);
+    /**
+     * @type {null|MutationObserver}
+     * @private
+     */
+    this._observer = null;
 
     this._inputKeypressDebounceHandler = makeDebouncedFunc((searchString) => {
       this.dispatchEvent(
@@ -524,23 +528,6 @@ class MuchSelect extends HTMLElement {
       })
     );
 
-    // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
-    this.appPromise.then(() => {
-      // Call this once, if there's any initial options here, we need to know.
-      this._onSlotChange();
-
-      // We run this code in here because the shadow root won't be available until the
-      //  elm app is ready.
-      const slot = this.shadowRoot.querySelector("slot[name=select-input]");
-      if (slot) {
-        slot.addEventListener("slotchange", this._onSlotChange);
-      }
-    });
-
-    this.updateHiddenInputValueSlot();
-
-    console.log("setting up mutation observer");
-
     // Options for the observer (which mutations to observe)
     const config = {
       attributes: true,
@@ -549,22 +536,10 @@ class MuchSelect extends HTMLElement {
       characterData: true,
     };
 
-    // const callback = function (mutationsList, observer) {
-    //   console.log("mutationsList", mutationsList);
-    //   for (const mutation of mutationsList) {
-    //     if (mutation.type === "childList") {
-    //       console.log("A child node has been added or removed.");
-    //     } else if (mutation.type === "attributes") {
-    //       console.log(
-    //         `The ${mutation.attributeName} attribute was modified.`
-    //       );
-    //     }
-    //   }
-    // };
-
-    const observer = new MutationObserver((mutationsList) => {
+    this._observer = new MutationObserver((mutationsList) => {
+      // TODO I think we are calling this.updateOptionsFromDom() more often than
+      //  we need to. Seems like we should make an effort to filter this some.
       mutationsList.forEach((mutation) => {
-        console.log("mutation.type", mutation.type);
         if (mutation.type === "childList") {
           this.updateOptionsFromDom();
         } else if (mutation.type === "attributes") {
@@ -572,7 +547,9 @@ class MuchSelect extends HTMLElement {
         }
       });
     });
-    observer.observe(this, config);
+    this._observer.observe(this, config);
+
+    this.updateHiddenInputValueSlot();
 
     this._connected = true;
   }
@@ -592,28 +569,11 @@ class MuchSelect extends HTMLElement {
   // noinspection JSUnusedGlobalSymbols
   disconnectedCallback() {
     this._resizeObserver.disconnect();
+    if (this._observer) {
+      this._observer.disconnect();
+    }
+
     this._connected = false;
-  }
-
-  _onSlotChange() {
-    console.log("_onSlotChange");
-    if (!this._connected) {
-      return;
-    }
-    const selectElement = this.querySelector("select");
-    if (selectElement) {
-      console.log("_onSlotChange selectElement", selectElement);
-
-      const optionsJson = buildOptionsFromSelectElement(selectElement);
-
-      console.log("_onSlotChange optionsJson", optionsJson);
-
-      this.appPromise.then((app) => {
-        // noinspection JSUnresolvedVariable
-        app.ports.optionsChangedReceiver.send(optionsJson);
-        this.updateDimensions();
-      });
-    }
   }
 
   updateHiddenInputValueSlot() {
@@ -908,6 +868,11 @@ class MuchSelect extends HTMLElement {
           app.ports.valueChangedReceiver.send(this.parsedSelectedValue)
         );
       }
+    } else if (this._selectedValue && this.isInMultiSelectMode) {
+      // noinspection JSUnresolvedVariable
+      this.appPromise.then((app) =>
+        app.ports.valueChangedReceiver.send(this.parsedSelectedValue)
+      );
     } else if (this.isInMultiSelectMode) {
       // noinspection JSUnresolvedVariable
       this.appPromise.then((app) => app.ports.valueChangedReceiver.send([]));
