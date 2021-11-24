@@ -78,9 +78,11 @@
           >
             <select slot="select-input"></select>
           </much-select>`);
-          // const valueChangedEvtOne = await oneEvent(el, "muchSelectReady");
+
+          // The selected value should be set.
           expect(el.parsedSelectedValue).to.eql(["211107950"]);
 
+          // There should be 1 option, the selected value.
           expect(await el.getAllOptions()).to.eql([
             {
               value: "211107950",
@@ -97,6 +99,7 @@
 
           await nextFrame();
 
+          // Now there should be 2 options including the selected value, and the selected value should have a label now.
           expect(await el.getAllOptions()).to.eql([
             {
               value: "211107950",
