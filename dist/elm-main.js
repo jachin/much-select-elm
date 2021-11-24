@@ -6604,11 +6604,11 @@ var $author$project$Main$init = function (flags) {
 					[$author$project$Ports$valuesDecoder, $author$project$Ports$valueDecoder])),
 			flags.aU);
 		if (!_v1.$) {
-			var value = _v1.a;
+			var values = _v1.a;
 			if (!selectionMode.$) {
-				return _Utils_Tuple2(value, $elm$core$Platform$Cmd$none);
+				return _Utils_Tuple2(values, $elm$core$Platform$Cmd$none);
 			} else {
-				return _Utils_Tuple2(value, $elm$core$Platform$Cmd$none);
+				return _Utils_Tuple2(values, $elm$core$Platform$Cmd$none);
 			}
 		} else {
 			var error = _v1.a;
@@ -9286,11 +9286,11 @@ var $author$project$Main$update = F2(
 							return A3(
 								$author$project$Option$mergeTwoListsOfOptionsPreservingSelectedOptions,
 								0,
+								model.a,
 								A2(
 									$elm$core$List$filter,
 									A2($elm$core$Basics$composeL, $elm$core$Basics$not, $author$project$Option$isEmptyOption),
-									newOptions),
-								model.a);
+									newOptions));
 						}
 					}();
 					return _Utils_Tuple2(

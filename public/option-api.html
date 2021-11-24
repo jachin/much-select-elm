@@ -28,14 +28,20 @@
     <button>Update the Options</button>
     <much-select></much-select>
     <script>
-      document.querySelector("#update-options-add-options-to-an-empty-much-select button").addEventListener("click", () => {
-        document.querySelector("#update-options-add-options-to-an-empty-much-select much-select").updateOptions([
-          {value: "Bears", label: "Bears", description: "Chicago"},
-          {value: "Lions", label: "Lions", description: "Detroit"},
-          {value: "Packers", label: "Packers", description: "Green Bay"},
-          {value: "Vikings", label: "Vikings", description: "Minnesota"}
-        ]);
-      });
+      document
+        .querySelector("#update-options-add-options-to-an-empty-much-select button")
+        .addEventListener("click", () => {
+          document
+            .querySelector(
+              "#update-options-add-options-to-an-empty-much-select much-select"
+            )
+            .updateOptions([
+              { value: "Bears", label: "Bears", description: "Chicago" },
+              { value: "Lions", label: "Lions", description: "Detroit" },
+              { value: "Packers", label: "Packers", description: "Green Bay" },
+              { value: "Vikings", label: "Vikings", description: "Minnesota" },
+            ]);
+        });
     </script>
   </div>
 
@@ -46,20 +52,25 @@
     <much-select></much-select>
     <script>
       function getRandomInt(min, max) {
-        min = Math.ceil(min);
-        max = Math.floor(max);
-        return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
+        const minCiel = Math.ceil(min);
+        const maxFloor = Math.floor(max);
+        return Math.floor(Math.random() * (maxFloor - minCiel) + minCiel); // The maximum is exclusive and the minimum is inclusive
       }
-      document.querySelector("#update-options-add-options-to-a-much-select button").addEventListener("click", () => {
-        const randomOptions = [];
-        for(let i=0; i<5; i++) {
-          const num = getRandomInt(1000, 5000)
-          randomOptions.push({
-            value: num
-          })
-        }
-        document.querySelector("#update-options-add-options-to-a-much-select much-select").updateOptions(randomOptions);
-      });
+      document
+        .querySelector("#update-options-add-options-to-a-much-select button")
+        .addEventListener("click", () => {
+          const randomOptions = [];
+          // eslint-disable-next-line no-plusplus
+          for (let i = 0; i < 5; i++) {
+            const num = getRandomInt(1000, 5000);
+            randomOptions.push({
+              value: num,
+            });
+          }
+          document
+            .querySelector("#update-options-add-options-to-a-much-select much-select")
+            .updateOptions(randomOptions);
+        });
     </script>
   </div>
 
@@ -70,13 +81,17 @@
     <much-select></much-select>
     <script>
       function getRandomInt(min, max) {
-        min = Math.ceil(min);
-        max = Math.floor(max);
-        return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
+        const minCeil = Math.ceil(min);
+        const maxFloor = Math.floor(max);
+        return Math.floor(Math.random() * (maxFloor - minCeil) + maxFloor); // The maximum is exclusive and the minimum is inclusive
       }
-      document.querySelector("#add-option-to-a-much-select button").addEventListener("click", () => {
-        document.querySelector("#add-option-to-a-much-select much-select").addOption({value: getRandomInt(1000, 5000)});
-      });
+      document
+        .querySelector("#add-option-to-a-much-select button")
+        .addEventListener("click", () => {
+          document
+            .querySelector("#add-option-to-a-much-select much-select")
+            .addOption({ value: getRandomInt(1000, 5000) });
+        });
     </script>
   </div>
 
@@ -87,10 +102,16 @@
     <much-select></much-select>
     <script>
       const options = ["ranch", "farm", "orchard", "vineyard"];
-      document.querySelector("#add-possible-duplicate-option-to-a-much-select button").addEventListener("click", () => {
-        const randomOption = options[Math.floor(Math.random() * options.length)];
-        document.querySelector("#add-possible-duplicate-option-to-a-much-select much-select").addOption({value: randomOption});
-      });
+      document
+        .querySelector("#add-possible-duplicate-option-to-a-much-select button")
+        .addEventListener("click", () => {
+          const randomOption = options[Math.floor(Math.random() * options.length)];
+          document
+            .querySelector(
+              "#add-possible-duplicate-option-to-a-much-select much-select"
+            )
+            .addOption({ value: randomOption });
+        });
     </script>
   </div>
 
@@ -111,15 +132,21 @@
     </much-select>
     <script>
       document.querySelector("#remove-cake").addEventListener("click", () => {
-        document.querySelector("#remove-an-option-from-a-much-select much-select").removeOption({value: "Cake"});
+        document
+    .querySelector("#remove-an-option-from-a-much-select much-select")
+    .removeOption({ value: "Cake" });
       });
 
       document.querySelector("#remove-pie").addEventListener("click", () => {
-        document.querySelector("#remove-an-option-from-a-much-select much-select").removeOption({value: "Pie"});
+        document
+    .querySelector("#remove-an-option-from-a-much-select much-select")
+    .removeOption({ value: "Pie" });
       });
 
       document.querySelector("#remove-pudding").addEventListener("click", () => {
-        document.querySelector("#remove-an-option-from-a-much-select much-select").removeOption({value: "Pudding"});
+        document
+    .querySelector("#remove-an-option-from-a-much-select much-select")
+    .removeOption({ value: "Pudding" });
       });
     </script>
   </div>
@@ -142,16 +169,24 @@
     </much-select>
     <script>
       document.querySelector("#select-rock").addEventListener("click", () => {
-        document.querySelector("#select-and-deselect-option-from-a-much-select much-select").selectOption("Rock");
+        document
+    .querySelector("#select-and-deselect-option-from-a-much-select much-select")
+    .selectOption("Rock");
       });
       document.querySelector("#deselect-rock").addEventListener("click", () => {
-        document.querySelector("#select-and-deselect-option-from-a-much-select much-select").deselectOption("Rock");
+        document
+    .querySelector("#select-and-deselect-option-from-a-much-select much-select")
+    .deselectOption("Rock");
       });
       document.querySelector("#select-folk").addEventListener("click", () => {
-        document.querySelector("#select-and-deselect-option-from-a-much-select much-select").selectOption("Folk");
+        document
+    .querySelector("#select-and-deselect-option-from-a-much-select much-select")
+    .selectOption("Folk");
       });
       document.querySelector("#deselect-folk").addEventListener("click", () => {
-        document.querySelector("#select-and-deselect-option-from-a-much-select much-select").deselectOption("Folk");
+        document
+    .querySelector("#select-and-deselect-option-from-a-much-select much-select")
+    .deselectOption("Folk");
       });
     </script>
   </div>
@@ -173,38 +208,44 @@
     </much-select>
     <script>
       document.querySelector("#select-basketball").addEventListener("click", () => {
-        document.querySelector("#select-and-multiple-options-in-a-multi-much-select much-select").selectOption("Basketball");
+        document
+          .querySelector(
+            "#select-and-multiple-options-in-a-multi-much-select much-select"
+          )
+          .selectOption("Basketball");
       });
 
       document.querySelector("#select-baseball").addEventListener("click", () => {
-        document.querySelector("#select-and-multiple-options-in-a-multi-much-select much-select").selectOption("Baseball");
+        document
+          .querySelector(
+            "#select-and-multiple-options-in-a-multi-much-select much-select"
+          )
+          .selectOption("Baseball");
       });
 
       document.querySelector("#select-football").addEventListener("click", () => {
-        document.querySelector("#select-and-multiple-options-in-a-multi-much-select much-select").selectOption("Football");
+        document
+          .querySelector(
+            "#select-and-multiple-options-in-a-multi-much-select much-select"
+          )
+          .selectOption("Football");
       });
     </script>
   </div>
 
   <div id="change-select-attribute-changes-selected-value-in-much-select">
-    <h3>Use <code>selectOption</code> to select multiple values to mulit select.</h3>
-    <p>Clicking on a button should add them to the selected options.</p>
-    <button id="select-moe">Select Moe</button>
-    <button id="remove-select-attribute">Remove the select attribute</button>
+    <h3>Changing the DOM to add a <code>selected</code> attribute to one of the options</h3>
+    <button id="select-moe">Select Moe with the selected attribute.</button>
     <much-select>
       <select slot="select-input">
         <option>Larry</option>
-        <option>Moe</option>
+        <option id="moe">Moe</option>
         <option>Curly Joe</option>
       </select>
     </much-select>
     <script>
       document.querySelector("#select-moe").addEventListener("click", () => {
-        document.querySelector("#change-select-attribute-changes-selected-value-in-much-select much-select").setAttribute("selected", "Moe");
-      });
-
-      document.querySelector("#remove-select-attribute").addEventListener("click", () => {
-        document.querySelector("#change-select-attribute-changes-selected-value-in-much-select much-select").removeAttribute("selected");
+        document.querySelector("#moe").setAttribute("selected", "");
       });
     </script>
   </div>

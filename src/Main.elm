@@ -314,10 +314,10 @@ update msg model =
                                 MultiSelect _ ->
                                     -- Also filter out any empty options.
                                     Option.mergeTwoListsOfOptionsPreservingSelectedOptions SelectedItemStaysInPlace
+                                        model.options
                                         (newOptions
                                             |> List.filter (not << Option.isEmptyOption)
                                         )
-                                        model.options
                     in
                     ( { model
                         | options = newOptionWithOldSelectedOption
@@ -1481,13 +1481,13 @@ init flags =
 
         ( initialValues, initialValueErrCmd ) =
             case Json.Decode.decodeValue (Json.Decode.oneOf [ valuesDecoder, valueDecoder ]) flags.value of
-                Ok value ->
+                Ok values ->
                     case selectionMode of
                         SingleSelect _ _ ->
-                            ( value, Cmd.none )
+                            ( values, Cmd.none )
 
                         MultiSelect _ ->
-                            ( value, Cmd.none )
+                            ( values, Cmd.none )
 
                 Err error ->
                     ( [], errorMessage (Json.Decode.errorToString error) )

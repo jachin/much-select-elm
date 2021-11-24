@@ -2,9 +2,9 @@
 <html lang="en">
 <body>
 <script type="module">
-  import { runTests } from '@web/test-runner-mocha';
-  import { expect } from '@esm-bundle/chai';
-  import { html, fixture } from "@open-wc/testing";
+  import { runTests } from "@web/test-runner-mocha";
+  import { expect } from "@esm-bundle/chai";
+  import { html, fixture, nextFrame } from "@open-wc/testing";
 
   import MuchSelect from "../../dist/much-select-debug.js";
 
@@ -17,47 +17,98 @@
   runTests(() => {
     describe("Attributes", () => {
       describe("comma seperated selected-value", () => {
-        it("preserver the order of the selected values if the order of the options are the same", async () =>  {
-          const el = /** @type {MuchSelect} */ await fixture(html`
-            <much-select multi-select selected-value="red,green">
-              <select>
-                <option>red</option>
-                <option>green</option>
+        it("preserver the order of the selected values if the order of the options are the same", async () => {
+          const el = /** @type {MuchSelect} */ await fixture(html` <much-select
+            multi-select
+            selected-value="red,green"
+          >
+            <select>
+              <option>red</option>
+              <option>green</option>
             </select>
-            </much-select>`);
+          </much-select>`);
           expect(el.parsedSelectedValue).to.eql(["red", "green"]);
         });
-        it("preserver the order of the selected values even if the order of the options are different", async () =>  {
-          const el = /** @type {MuchSelect} */ await fixture(html`
-            <much-select multi-select selected-value="red,green">
-              <select>
-                <option>green</option>
-                <option>red</option>
+        it("preserver the order of the selected values even if the order of the options are different", async () => {
+          const el = /** @type {MuchSelect} */ await fixture(html` <much-select
+            multi-select
+            selected-value="red,green"
+          >
+            <select>
+              <option>green</option>
+              <option>red</option>
             </select>
-            </much-select>`);
+          </much-select>`);
           expect(el.parsedSelectedValue).to.eql(["red", "green"]);
         });
       });
       describe("json encoded selected-value", () => {
-        it("preserver the order of the selected values if the order of the options are the same", async () =>  {
-          const el = /** @type {MuchSelect} */ await fixture(html`
-              <much-select multi-select selected-value-encoding="json" selected-value="%5B%22red%22%2C%22green%22%5D">
-                <select slot="select-input">
-                  <option>red</option>
-                  <option>green</option>
-              </select>
-              </much-select>`);
+        it("preserver the order of the selected values if the order of the options are the same", async () => {
+          const el = /** @type {MuchSelect} */ await fixture(html` <much-select
+            multi-select
+            selected-value-encoding="json"
+            selected-value="%5B%22red%22%2C%22green%22%5D"
+          >
+            <select slot="select-input">
+              <option>red</option>
+              <option>green</option>
+            </select>
+          </much-select>`);
           expect(el.parsedSelectedValue).to.eql(["red", "green"]);
         });
-        it("preserver the order of the selected values even if the order of the options are different", async () =>  {
-          const el = /** @type {MuchSelect} */ await fixture(html`
-              <much-select multi-select selected-value-encoding="json" selected-value="%5B%22red%22%2C%22green%22%5D">
-                <select slot="select-input">
-                  <option>green</option>
-                  <option>red</option>
-              </select>
-              </much-select>`);
+        it("preserver the order of the selected values even if the order of the options are different", async () => {
+          const el = /** @type {MuchSelect} */ await fixture(html` <much-select
+            multi-select
+            selected-value-encoding="json"
+            selected-value="%5B%22red%22%2C%22green%22%5D"
+          >
+            <select slot="select-input">
+              <option>green</option>
+              <option>red</option>
+            </select>
+          </much-select>`);
           expect(el.parsedSelectedValue).to.eql(["red", "green"]);
+        });
+
+        it("can decode a selected value that's a string of IDs", async () => {
+          const el = /** @type {MuchSelect} */ await fixture(html` <much-select
+            multi-select
+            selected-value-encoding="json"
+            selected-value="%5B%22211107950%22%5D"
+          >
+            <select slot="select-input"></select>
+          </much-select>`);
+
+          // The selected value should be set.
+          expect(el.parsedSelectedValue).to.eql(["211107950"]);
+
+          // There should be 1 option, the selected value.
+          expect(await el.getAllOptions()).to.eql([
+            {
+              value: "211107950",
+              description: "",
+              label: "211107950",
+              isSelected: true,
+            },
+          ]);
+
+          const selectEl = el.querySelector("select");
+
+          selectEl.innerHTML =
+            "<option value='211107950'>Hello</option><option value='5'>You</option>";
+
+          await nextFrame();
+
+          // Now there should be 2 options including the selected value, and the selected value should have a label now.
+          expect(await el.getAllOptions()).to.eql([
+            {
+              value: "211107950",
+              description: "",
+              label: "Hello",
+              isSelected: true,
+            },
+            { value: "5", description: "", label: "You", isSelected: false },
+          ]);
         });
       });
     });
@@ -65,3 +116,5 @@
 </script>
 </body>
 </html>
+
+
