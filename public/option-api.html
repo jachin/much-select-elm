@@ -234,35 +234,19 @@
   </div>
 
   <div id="change-select-attribute-changes-selected-value-in-much-select">
-    <h3>Use <code>selectOption</code> to select multiple values to mulit select.</h3>
-    <p>Clicking on a button should add them to the selected options.</p>
-    <button id="select-moe">Select Moe</button>
-    <button id="remove-select-attribute">Remove the select attribute</button>
-    <much-select multi-select>
+    <h3>Changing the DOM to add a <code>selected</code> attribute to one of the options</h3>
+    <button id="select-moe">Select Moe with the selected attribute.</button>
+    <much-select>
       <select slot="select-input">
         <option>Larry</option>
-        <option>Moe</option>
+        <option id="moe">Moe</option>
         <option>Curly Joe</option>
       </select>
     </much-select>
     <script>
       document.querySelector("#select-moe").addEventListener("click", () => {
-        document
-          .querySelector(
-            "#change-select-attribute-changes-selected-value-in-much-select much-select"
-          )
-          .selectOption("Moe");
+        document.querySelector("#moe").setAttribute("selected", "");
       });
-
-      document
-        .querySelector("#remove-select-attribute")
-        .addEventListener("click", () => {
-          document
-            .querySelector(
-              "#change-select-attribute-changes-selected-value-in-much-select much-select"
-            )
-            .removeAttribute("selected");
-        });
     </script>
   </div>
 </div>
