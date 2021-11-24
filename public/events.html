@@ -34,7 +34,7 @@
       </select>
     </much-select>
 
-    <button>Remove this much select a new one</button>
+    <button>Replace this &lt;much-select&gt; with a new one</button>
 
     <p>
       Events:
@@ -55,25 +55,30 @@
           .querySelector("#much-select-ready-event much-select")
           .addEventListener(
             "muchSelectReady",
+            // eslint-disable-next-line no-undef
             makeLogEventHandler("much-select-ready-event-log")
           );
       });
 
-      document.querySelector("#much-select-ready-event button").addEventListener("click", () => {
-        const oldMuchSelect = document
-          .querySelector("#much-select-ready-event much-select");
+      document
+        .querySelector("#much-select-ready-event button")
+        .addEventListener("click", () => {
+          const oldMuchSelect = document.querySelector(
+            "#much-select-ready-event much-select"
+          );
 
-        const newMuchSelect = document.createElement("much-select");
+          const newMuchSelect = document.createElement("much-select");
 
-        newMuchSelect.addEventListener(
-          "muchSelectReady",
-          makeLogEventHandler("much-select-ready-event-log")
-        );
+          newMuchSelect.addEventListener(
+            "muchSelectReady",
+            // eslint-disable-next-line no-undef
+            makeLogEventHandler("much-select-ready-event-log")
+          );
 
-        document
-          .querySelector("#much-select-ready-event")
-          .replaceChild(newMuchSelect, oldMuchSelect);
-      });
+          document
+            .querySelector("#much-select-ready-event")
+            .replaceChild(newMuchSelect, oldMuchSelect);
+        });
     </script>
   </div>
 
@@ -107,6 +112,7 @@
           .querySelector("#single-select-value-changed-event much-select")
           .addEventListener(
             "valueChanged",
+            // eslint-disable-next-line no-undef
             makeLogEventHandler("single-select-value-changed-event-log")
           );
       });
@@ -143,6 +149,7 @@
           .querySelector("#single-select-option-selected-event much-select")
           .addEventListener(
             "optionSelected",
+            // eslint-disable-next-line no-undef
             makeLogEventHandler("single-select-option-selected-event-log")
           );
       });
@@ -179,6 +186,7 @@
           .querySelector("#multi-select-value-changed-event much-select")
           .addEventListener(
             "valueChanged",
+            // eslint-disable-next-line no-undef
             makeLogEventHandler("multi-select-value-changed-event-log")
           );
       });
@@ -216,6 +224,7 @@
           .querySelector("#search-keyboard-events much-select")
           .addEventListener(
             "inputKeyUp",
+            // eslint-disable-next-line no-undef
             makeLogEventHandler("search-keyboard-events-log")
           );
       });
@@ -224,6 +233,7 @@
           .querySelector("#search-keyboard-events much-select")
           .addEventListener(
             "inputKeyUpDebounced",
+            // eslint-disable-next-line no-undef
             makeLogEventHandler("search-keyboard-events-log")
           );
       });
@@ -234,13 +244,14 @@
     <h3>Multi Select - <code>valueCleared</code> Event</h3>
     <much-select multi-select="true">
       <select>
-        <option selected-value="selected">Pineapple</option>
-        <option selected-value="selected">Pine cone</option>
+        <option selected="selected">Pineapple</option>
+        <option selected="selected">Pine cone</option>
         <option>Pine nut</option>
       </select>
     </much-select>
     <p>
       Events:
+    </p>
     <table id="multi-select-value-cleared-event-log">
       <thead>
       <tr>
@@ -251,13 +262,13 @@
       <tbody>
       </tbody>
     </table>
-    </p>
     <script>
       window.addEventListener("load", () => {
         document
           .querySelector("#multi-select-value-cleared much-select")
           .addEventListener(
             "valueCleared",
+            // eslint-disable-next-line no-undef
             makeLogEventHandler("multi-select-value-cleared-event-log")
           );
       });
@@ -296,6 +307,7 @@
           .querySelector("#single-select-option-deselected-event much-select")
           .addEventListener(
             "optionDeselected",
+            // eslint-disable-next-line no-undef
             makeLogEventHandler("single-select-option-deselected-event-log")
           );
       });
@@ -334,7 +346,10 @@
           .querySelector("#multi-select-blur-or-unfocused-value-change much-select")
           .addEventListener(
             "blurOrUnfocusedValueChanged",
-            makeLogEventHandler("multi-select-blur-or-unfocused-value-change-event-log")
+            // eslint-disable-next-line no-undef
+            makeLogEventHandler(
+              "multi-select-blur-or-unfocused-value-change-event-log"
+            )
           );
       });
     </script>
@@ -371,7 +386,10 @@
           .querySelector("#single-select-blur-or-unfocused-value-change much-select")
           .addEventListener(
             "blurOrUnfocusedValueChanged",
-            makeLogEventHandler("single-select-blur-or-unfocused-value-change-event-log")
+            // eslint-disable-next-line no-undef
+            makeLogEventHandler(
+              "single-select-blur-or-unfocused-value-change-event-log"
+            )
           );
       });
     </script>

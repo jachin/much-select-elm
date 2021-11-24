@@ -84,9 +84,6 @@ valuesDecoder =
         , Json.Decode.string
             |> Json.Decode.map
                 List.singleton
-
-        --, Json.Decode.null
-        --    |> Json.Decode.andThen (\_ -> Json.Decode.succeed [] )
         ]
 
 

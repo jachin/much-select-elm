@@ -2,9 +2,10 @@
   "root": true,
   "env": {
     "browser": true,
-    "es6": true
+    "es6": true,
+    "mocha": true
   },
-  "plugins": ["prettier"],
+  "plugins": ["prettier", "html"],
   "extends": [
     "airbnb-base",
     "prettier"
