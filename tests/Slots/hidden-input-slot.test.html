@@ -2,9 +2,9 @@
 <html lang="en">
 <body>
 <script type="module">
-  import { runTests } from '@web/test-runner-mocha';
-  import { expect } from '@esm-bundle/chai';
-  import { html, fixture, nextFrame } from "@open-wc/testing";
+  import { runTests } from "@web/test-runner-mocha";
+  import { expect } from "@esm-bundle/chai";
+  import { html, fixture } from "@open-wc/testing";
 
   import MuchSelect from "../../dist/much-select-debug.js";
 
@@ -17,21 +17,47 @@
   runTests(() => {
     describe("Slots", () => {
       describe("hidden-value-input", () => {
-
-        it("should be an empty string if there is no selected value", async () =>  {
-          const el = /** @type {MuchSelect} */ await fixture(html`<much-select><input slot="hidden-value-input" type="hidden" name="my-special-value"></much-select>`);
-          expect(el.querySelector("[slot='hidden-value-input']").getAttribute("value")).to.equal("");
+        it("should be an empty string if there is no selected value", async () => {
+          const el = /** @type {MuchSelect} */ await fixture(
+            html`<much-select
+              ><input
+                slot="hidden-value-input"
+                type="hidden"
+                name="my-special-value"
+            /></much-select>`
+          );
+          expect(
+            el.querySelector("[slot='hidden-value-input']").getAttribute("value")
+          ).to.equal("");
         });
 
-        it("should be populated with the current value on initialization", async () =>  {
-          const el = /** @type {MuchSelect} */ await fixture(html`<much-select selected-value="Tocharians"><input slot="hidden-value-input" type="hidden" name="my-special-value"></much-select>`);
-          expect(el.querySelector("[slot='hidden-value-input']").getAttribute("value")).to.equal("Tocharians");
+        it("should be populated with the current value on initialization", async () => {
+          const el = /** @type {MuchSelect} */ await fixture(
+            html`<much-select selected-value="Tocharians"
+              ><input
+                slot="hidden-value-input"
+                type="hidden"
+                name="my-special-value"
+            /></much-select>`
+          );
+          expect(
+            el.querySelector("[slot='hidden-value-input']").getAttribute("value")
+          ).to.equal("Tocharians");
         });
 
-        it("should update when the selected value changes", async () =>  {
-          const el = /** @type {MuchSelect} */ await fixture(html`<much-select selected-value="Jangil"><input slot="hidden-value-input" type="hidden" name="my-special-value"></much-select>`);
+        it("should update when the selected value changes", async () => {
+          const el = /** @type {MuchSelect} */ await fixture(
+            html`<much-select selected-value="Jangil"
+              ><input
+                slot="hidden-value-input"
+                type="hidden"
+                name="my-special-value"
+            /></much-select>`
+          );
           el.setAttribute("selected-value", "Chaouacha");
-          expect(el.querySelector("[slot='hidden-value-input']").getAttribute("value")).to.equal("Chaouacha");
+          expect(
+            el.querySelector("[slot='hidden-value-input']").getAttribute("value")
+          ).to.equal("Chaouacha");
         });
       });
     });

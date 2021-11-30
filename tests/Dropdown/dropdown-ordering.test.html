@@ -2,8 +2,8 @@
 <html lang="en">
 <body>
 <script type="module">
-  import { runTests } from '@web/test-runner-mocha';
-  import { expect } from '@esm-bundle/chai';
+  import { runTests } from "@web/test-runner-mocha";
+  import { expect } from "@esm-bundle/chai";
   import { html, fixture, nextFrame, oneEvent } from "@open-wc/testing";
 
   import MuchSelect from "../../dist/much-select-debug.js";
@@ -18,7 +18,9 @@
     describe("Dropdown", () => {
       describe("open", () => {
         it("when the input filter is focused on", async () => {
-          const el = /** @type {MuchSelect} */ await fixture(html`<much-select></much-select>`);
+          const el = /** @type {MuchSelect} */ await fixture(
+            html`<much-select></much-select>`
+          );
 
           // Add some options
           el.addOption("one");
@@ -31,15 +33,21 @@
           await nextFrame();
 
           // Three options in the dropdown
-          expect(el.shadowRoot.querySelectorAll("#dropdown .option").length).to.equal(3);
+          expect(
+            el.shadowRoot.querySelectorAll("#dropdown .option").length
+          ).to.equal(3);
 
           // No options selected.
-          expect(el.shadowRoot.querySelectorAll("#dropdown .option.selected").length).to.equal(0);
+          expect(
+            el.shadowRoot.querySelectorAll("#dropdown .option.selected").length
+          ).to.equal(0);
         });
-      })
+      });
       describe("ordering", () => {
         it("selecting an option should give it a selected class", async () => {
-          const el = /** @type {MuchSelect} */ await fixture(html`<much-select></much-select>`);
+          const el = /** @type {MuchSelect} */ await fixture(
+            html`<much-select></much-select>`
+          );
 
           // Add some options
           el.addOption("one");
@@ -57,8 +65,10 @@
           await nextFrame();
 
           // Now 1 option should be selected
-          expect(el.shadowRoot.querySelectorAll("#dropdown .option.selected").length).to.equal(1);
-        })
+          expect(
+            el.shadowRoot.querySelectorAll("#dropdown .option.selected").length
+          ).to.equal(1);
+        });
         // TODO - This unit test should work, going to try to get it to work in a follow up.
         // it("in single select mode the selected item should stay in place", async () =>  {
         //   const el = /** @type {MuchSelect} */ await fixture(html`<much-select></much-select>`);
