@@ -2,9 +2,9 @@
 <html lang="en">
 <body>
 <script type="module">
-  import { runTests } from '@web/test-runner-mocha';
-  import { expect } from '@esm-bundle/chai';
-  import { html, fixture, nextFrame, oneEvent } from "@open-wc/testing";
+  import { runTests } from "@web/test-runner-mocha";
+  import { expect } from "@esm-bundle/chai";
+  import { html, fixture } from "@open-wc/testing";
 
   import MuchSelect from "../../dist/much-select-debug.js";
 
@@ -18,7 +18,9 @@
     describe("Option", () => {
       describe("api", () => {
         it("adding options one at a time", async () => {
-          const el = /** @type {MuchSelect} */ await fixture(html`<much-select></much-select>`);
+          const el = /** @type {MuchSelect} */ await fixture(
+            html`<much-select></much-select>`
+          );
 
           // Add some options
           el.addOption("one");
@@ -29,7 +31,7 @@
 
           expect(options).to.have.lengthOf(3);
         });
-      })
+      });
     });
   });
 </script>

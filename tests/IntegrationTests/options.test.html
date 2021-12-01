@@ -2,8 +2,8 @@
 <body>
 
 <script type="module">
-  import { runTests } from '@web/test-runner-mocha';
-  import { expect } from '@esm-bundle/chai';
+  import { runTests } from "@web/test-runner-mocha";
+  import { expect } from "@esm-bundle/chai";
   import { html, fixture } from "@open-wc/testing";
 
   import MuchSelect from "../../dist/much-select-debug.js";
@@ -15,29 +15,44 @@
   }
 
   runTests(() => {
-    describe('Options', () => {
+    describe("Options", () => {
       describe("single selection mode", () => {
-        it('creates an option if a value is set', async () =>  {
-          const el = /** @type {MuchSelect} */ await fixture(html`<much-select selected-value="table"></much-select>`);
+        it("creates an option if a value is set", async () => {
+          const el = /** @type {MuchSelect} */ await fixture(
+            html`<much-select selected-value="table"></much-select>`
+          );
           expect(el.selectedValue).to.equal("table");
-          expect(el.shadowRoot.querySelector("#selected-value").innerHTML).to.equal("table");
+          expect(
+            el.shadowRoot.querySelector("#selected-value").innerHTML
+          ).to.equal("table");
         });
 
-        it('creates an option if a value is set', async () =>  {
-          const el = /** @type {MuchSelect} */ await fixture(html`<much-select selected-value=""></much-select>`);
+        it("creates an option if a value is set", async () => {
+          const el = /** @type {MuchSelect} */ await fixture(
+            html`<much-select selected-value=""></much-select>`
+          );
           expect(el.selectedValue).to.equal("");
         });
 
-        it('the selected value should be null of no attribute for selected-value is present', async () =>  {
-          const el = /** @type {MuchSelect} */ await fixture(html`<much-select></much-select>`);
+        it("the selected value should be null of no attribute for selected-value is present", async () => {
+          const el = /** @type {MuchSelect} */ await fixture(
+            html`<much-select></much-select>`
+          );
           expect(el.selectedValue).to.equal(null);
         });
       });
       describe("multi selection mode", () => {
-        it('creates an option if a value is set', async () =>  {
-          const el = /** @type {MuchSelect} */ await fixture(html`<much-select multi-select="" selected-value="table"></much-select>`);
+        it("creates an option if a value is set", async () => {
+          const el = /** @type {MuchSelect} */ await fixture(
+            html`<much-select
+              multi-select=""
+              selected-value="table"
+            ></much-select>`
+          );
           expect(el.selectedValue).to.equal("table");
-          expect(el.shadowRoot.querySelectorAll(".value")[0].innerHTML).to.equal("table");
+          expect(el.shadowRoot.querySelectorAll(".value")[0].innerHTML).to.equal(
+            "table"
+          );
           expect(el.shadowRoot.querySelectorAll(".value").length).to.equal(1);
         });
       });

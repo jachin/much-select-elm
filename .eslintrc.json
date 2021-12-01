@@ -19,5 +19,13 @@
     "import/extensions": ["error", {"js": "always", "json": "always",
       "elm": "always"
     } ]
-  }
+  },
+  "overrides": [
+    {
+      "files": ["*.test.html"],
+      "rules": {
+        "no-unused-expressions": "off"
+      }
+    }
+  ]
 }

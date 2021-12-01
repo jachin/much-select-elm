@@ -2,8 +2,8 @@
 <html lang="en">
 <body>
 <script type="module">
-  import { runTests } from '@web/test-runner-mocha';
-  import { expect } from '@esm-bundle/chai';
+  import { runTests } from "@web/test-runner-mocha";
+  import { expect } from "@esm-bundle/chai";
   import { html, fixture } from "@open-wc/testing";
 
   import MuchSelect from "../../dist/much-select-debug.js";
@@ -17,30 +17,34 @@
   runTests(() => {
     describe("Attributes", () => {
       describe("events-only", () => {
-        it("adding the attribute should put the much-select events only mode", async () =>  {
-          const el = /** @type {MuchSelect} */ await fixture(html`<much-select></much-select>`);
+        it("adding the attribute should put the much-select events only mode", async () => {
+          const el = /** @type {MuchSelect} */ await fixture(
+            html`<much-select></much-select>`
+          );
           expect(el.eventsOnlyMode).to.be.false;
 
-          el.setAttribute("events-only", "")
+          el.setAttribute("events-only", "");
           expect(el.eventsOnlyMode).to.be.true;
 
           el.removeAttribute("events-only");
           expect(el.eventsOnlyMode).to.be.false;
         });
 
-        it("should prevent the select-value attribute from automatically updating", async () =>  {
-          const el = /** @type {MuchSelect} */ await fixture(html`
-              <much-select events-only="" selected-value="air">
-                <select slot="select-menu-input">
-                  <option>air</option>
-                  <option>fire</option>
-                  <option>water</option>
-                </select>
-              </much-select>`);
+        it("should prevent the select-value attribute from automatically updating", async () => {
+          const el = /** @type {MuchSelect} */ await fixture(html` <much-select
+            events-only=""
+            selected-value="air"
+          >
+            <select slot="select-menu-input">
+              <option>air</option>
+              <option>fire</option>
+              <option>water</option>
+            </select>
+          </much-select>`);
 
           expect(el.selectedValue).to.equal("air");
 
-          el.selectedValue = "water"
+          el.selectedValue = "water";
           expect(el.selectedValue).to.equal("water");
           expect(el.getAttribute("selected-value")).to.equal("air");
         });

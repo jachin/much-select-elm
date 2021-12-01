@@ -5,7 +5,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <!--suppress HtmlUnknownTarget -->
-  <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+  <link rel="icon" href="./favicon.ico" type="image/x-icon" />
   <title>Much Select - Initial Value</title>
   <link href="demo-styles.css" rel="stylesheet">
 </head>
@@ -50,8 +50,12 @@
       <button>Click me to add options via the DOM</button>
       <much-select selected-value="Coffee"></much-select>
       <script>
-        document.querySelector("#add-options-including-the-selected-value button").addEventListener("click", () => {
-          document.querySelector("#add-options-including-the-selected-value much-select").innerHTML = `
+        document
+  .querySelector("#add-options-including-the-selected-value button")
+  .addEventListener("click", () => {
+            document.querySelector(
+      "#add-options-including-the-selected-value much-select"
+    ).innerHTML = `
           <select slot="select-input">
             <option value="Coffee">Coffee</option>
             <option value="Tea">Tea</option>
@@ -70,8 +74,12 @@
       <button>Click me to add options via the DOM</button>
       <much-select selected-value="Butter"></much-select>
       <script>
-        document.querySelector("#add-options-not-including-the-selected-value button").addEventListener("click", () => {
-          document.querySelector("#add-options-not-including-the-selected-value much-select").innerHTML = `
+        document
+  .querySelector("#add-options-not-including-the-selected-value button")
+  .addEventListener("click", () => {
+            document.querySelector(
+      "#add-options-not-including-the-selected-value much-select"
+    ).innerHTML = `
           <select slot="select-input">
             <option value="Jam">Jam</option>
             <option value="Marmalade">Marmalade</option>
@@ -90,8 +98,14 @@
       <button>Click me to add options via the DOM</button>
       <much-select multi-select selected-value="Carrots,Peas"></much-select>
       <script>
-        document.querySelector("#add-options-to-a-multi-select-not-including-the-selected-value button").addEventListener("click", () => {
-          document.querySelector("#add-options-to-a-multi-select-not-including-the-selected-value much-select").innerHTML = `
+        document
+  .querySelector(
+    "#add-options-to-a-multi-select-not-including-the-selected-value button"
+  )
+  .addEventListener("click", () => {
+            document.querySelector(
+      "#add-options-to-a-multi-select-not-including-the-selected-value much-select"
+    ).innerHTML = `
           <select slot="select-input">
             <option>Zucchini</option>
             <option>Lettuce</option>
@@ -116,13 +130,19 @@
 
       <button>Click me to toggle between single and multi select</button>
       <script>
-        document.querySelector("#much-select-switch-between-multi-select-and-single-select button").addEventListener("click", () => {
-          const muchSelect = document.querySelector("#much-select-switch-between-multi-select-and-single-select much-select");
-          if (muchSelect.hasAttribute("multi-select")) {
-            muchSelect.removeAttribute("multi-select");
-          } else {
-            muchSelect.setAttribute("multi-select", "");
-          }
+        document
+  .querySelector(
+    "#much-select-switch-between-multi-select-and-single-select button"
+  )
+  .addEventListener("click", () => {
+            const muchSelect = document.querySelector(
+      "#much-select-switch-between-multi-select-and-single-select much-select"
+    );
+            if (muchSelect.hasAttribute("multi-select")) {
+              muchSelect.removeAttribute("multi-select");
+            } else {
+              muchSelect.setAttribute("multi-select", "");
+            }
         });
       </script>
     </div>
