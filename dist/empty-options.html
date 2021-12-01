@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<!--suppress HtmlFormInputWithoutLabel -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!--suppress HtmlUnknownTarget -->
+  <link rel="icon" href="/favicon.359215c2.ico" type="image/x-icon">
+  <title>Much Select - Option API</title>
+  <link href="/index.2e2096ec.css" rel="stylesheet">
+</head>
+<body>
+<h1>Much-Select - Option API</h1>
+
+<h2>Demo and Development Playground</h2>
+
+<nav>
+  <ol class="main-nav">
+    <li class="main-nav-item"><a href="/index.html">Home</a></li>
+  </ol>
+</nav>
+
+<div class="container">
+  <div id="just-a-much-select-with-no-options">
+    <h3>No Options</h3>
+    <h4>Just an empty selector</h4>
+    <much-select></much-select>
+  </div>
+
+  <div id="empty-value-with-no-options">
+    <h3>Empty Value with No Options</h3>
+    <much-select selected-value=""></much-select>
+  </div>
+
+  <div id="one-empty-option">
+    <h3>One Empty Option</h3>
+    <much-select>
+      <select>
+        <option></option>
+      </select>
+    </much-select>
+  </div>
+
+  <div id="one-empty-selected-option">
+    <h3>No Empty Selected Option</h3>
+    <much-select>
+      <select>
+        <option selected=""></option>
+      </select>
+    </much-select>
+  </div>
+
+  <div id="one-empty-option-with-a-label">
+    <h3>One Empty Option</h3>
+    <h4>With a label</h4>
+    <much-select>
+      <select>
+        <option value="">NOTHING</option>
+      </select>
+    </much-select>
+  </div>
+
+  <div id="an-empty-option-with-a-label-and-some-other-stuff">
+    <h3>An Empty Option with a Label and other options</h3>
+    <much-select>
+      <select>
+        <option value="">[SELECT SPICE LEVEL]</option>
+        <option value="1">🌶</option>
+        <option value="2">🌶🌶</option>
+        <option value="3">🌶🌶🌶</option>
+        <option value="4">🌶🌶🌶🌶</option>
+        <option value="5">🌶🌶🌶🌶🌶</option>
+      </select>
+    </much-select>
+  </div>
+
+  <div id="an-empty-option-with-no-label-and-some-other-options">
+    <h3>An Empty Option with a Label and other options</h3>
+    <much-select>
+      <select>
+        <option value="">None</option>,
+        <option value="car">Car</option>,
+        <option value="truck">Truck</option>,
+        <option value="van" disabled="true">Van</option>,
+        <option value="plane">Plane</option>,
+        <option value="boat">boat</option>,
+        <option value="train">Train</option>,
+        <option value="tank">Tank</option>,
+        <option value="teleporter">Teleporter</option>,
+        <option value="back_of_a_gorilla">Back of a Gorilla</option>,
+      </select>
+    </much-select>
+  </div>
+</div>
+
+<script src="/initial-value.11e881b9.js" defer=""></script>
+
+</body>
+</html>
