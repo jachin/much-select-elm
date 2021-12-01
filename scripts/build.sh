@@ -5,6 +5,8 @@
 
 npx elm-esm make src/Main.elm --output=dist/elm-main.js --optimize
 cp ./src/*.js ./dist/
+
+# This condition is because we need format sed differently if we're on macOS for in the Github actions environment.
 if [[ -v GITHUB_RUN_ID ]]; then
   sed -i -e 's/Main\.elm/elm-main\.js/g' ./dist/much-select.js
 else
@@ -12,6 +14,7 @@ else
 fi
 npx elm-esm make src/Main.elm --output=dist/elm-main-debug.js --debug
 cp ./src/much-select.js ./dist/much-select-debug.js
+# This condition is because we need format sed differently if we're on macOS for in the Github actions environment.
 if [[ -v GITHUB_RUN_ID ]]; then
   sed -i -e 's/Main\.elm/elm-main-debug\.js/g' ./dist/much-select-debug.js
 else
