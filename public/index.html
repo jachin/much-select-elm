@@ -6,10 +6,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <!--suppress HtmlUnknownTarget -->
-  <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+  <link rel="icon" href="./favicon.ico" type="image/x-icon" />
   <title>Much Select</title>
   <link href="demo-styles.css" rel="stylesheet">
-  <script src="/options.js"></script>
+  <script src="./options.js"></script>
 </head>
 
 <body>
@@ -166,15 +166,18 @@
     </much-select>
     <button>Toggle loading attribute</button>
     <script>
-      document.querySelector("#loading-indicator button").addEventListener("click", () => {
-        const muchSelectElement = document.querySelector("#loading-indicator much-select");
-        if (muchSelectElement.hasAttribute("loading")) {
-          muchSelectElement.removeAttribute("loading");
-        } else {
+      document
+  .querySelector("#loading-indicator button")
+  .addEventListener("click", () => {
+          const muchSelectElement = document.querySelector(
+      "#loading-indicator much-select"
+    );
+          if (muchSelectElement.hasAttribute("loading")) {
+            muchSelectElement.removeAttribute("loading");
+          } else {
           muchSelectElement.setAttribute("loading", "loading");
-        }
-
-      });
+          }
+        });
     </script>
   </div>
 
@@ -243,8 +246,8 @@
       (() => {
         const muchSelect = document.querySelector("#remote-api-example much-select");
 
-        muchSelect.addEventListener("inputKeyUpDebounced", evt => {
-          const searchString = evt.detail.searchString;
+        muchSelect.addEventListener("inputKeyUpDebounced", (evt) => {
+          const { searchString } = evt.detail;
           if (searchString.length < 3) {
             // Lets not search unless we have at least 3 characters in the search string.
             return;
@@ -259,24 +262,24 @@
 
           const searchRickAndMortyCharactersByName = () => {
             fetch(searchRequest)
-              .then(response => {
+              .then((response) => {
                 if (!response.ok) {
-                  throw new Error(`HTTP error! status: ${response.status}`)
+                  throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                return response.json()
+                return response.json();
               })
-              .then(data => {
-                data.results.forEach(result => {
-                  muchSelect.addOption({value: result.name});
+              .then((data) => {
+                data.results.forEach((result) => {
+                  muchSelect.addOption({ value: result.name });
                 });
                 muchSelect.loading = false;
-              })
-          }
+              });
+          };
 
           // The API is just too fast, slow it down a bit so we can watch
           //  it work.
           window.setTimeout(searchRickAndMortyCharactersByName, 2000);
-        })
+        });
       })();
     </script>
   </div>
@@ -296,21 +299,19 @@
         const muchSelect = document.querySelector(
           "#selected-option-with-async-options much-select"
         );
-        let possibleOptions = window.much_select_options;
+        const possibleOptions = window.much_select_options;
 
-        const searchForOptions = (searchString) => {
-          return () => {
-            // only searching against label. description should be searchable at some point.
-            possibleOptions
-              .filter((opt) => opt.label.includes(searchString))
-              .forEach((opt) => {
-                muchSelect.addOption(opt);
-              });
-            setTimeout(function() {
-              muchSelect.loading = false;
-            }, 500);
-          };
-        };
+        const searchForOptions = (searchString) => () => {
+      // only searching against label. description should be searchable at some point.
+      possibleOptions
+            .filter((opt) => opt.label.includes(searchString))
+            .forEach((opt) => {
+              muchSelect.addOption(opt);
+            });
+          setTimeout(() => {
+            muchSelect.loading = false;
+      }, 500);
+  };
 
         muchSelect.addEventListener("ready", (evt) => {
           if (
@@ -329,7 +330,7 @@
         });
 
         muchSelect.addEventListener("inputKeyUpDebounced", (evt) => {
-          const searchString = evt.detail.searchString;
+          const { searchString } = evt.detail;
           if (searchString.length < 3) {
             // Lets not search unless we have at least 3 characters in the search string.
             return;
@@ -373,7 +374,7 @@
             //  for future custom options.
             const emptySetOfOptions = [];
             const emptySetOfOptionString = JSON.stringify(emptySetOfOptions);
-            window.localStorage.setItem(localStorageKey, emptySetOfOptionString)
+            window.localStorage.setItem(localStorageKey, emptySetOfOptionString);
           } else {
             // The table is set. We may have some custom options.
             const customOptions = JSON.parse(customOptionsAsString);
@@ -388,8 +389,7 @@
             customOptionsAsString = JSON.stringify(customOptions);
             window.localStorage.setItem(localStorageKey, customOptionsAsString);
           });
-        })
-
+        });
       })();
     </script>
   </div>

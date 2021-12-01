@@ -1,4 +1,6 @@
+# Generated files
 /build
+/dist
 
 # npm
 /node_modules/
@@ -36,6 +38,7 @@ elm-stuff
 
 # Parcel Cache
 .cache/
+.parcel-cache/
 
 # Firebase Hosting
 **/.firebase
