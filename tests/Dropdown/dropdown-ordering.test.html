@@ -70,34 +70,34 @@
           ).to.equal(1);
         });
         // TODO - This unit test should work, going to try to get it to work in a follow up.
-        // it("in single select mode the selected item should stay in place", async () =>  {
-        //   const el = /** @type {MuchSelect} */ await fixture(html`<much-select></much-select>`);
-        //
-        //   // Add some options
-        //   el.addOption("one");
-        //   el.addOption("two");
-        //   el.addOption("three");
-        //
-        //   // Focus on the input filter so the dropdown opens.
-        //   el.shadowRoot.querySelector("#input-filter").focus();
-        //
-        //   // Focus on the input filter so the dropdown opens.
-        //   el.shadowRoot.querySelector("#input-filter").focus();
-        //   await nextFrame();
-        //
-        //   el.selectOption("two");
-        //   // This also helps make sure we wait long enough for the update to finish.
-        //   await oneEvent(el, "valueChanged");
-        //
-        //   // Focus on the input filter so the dropdown opens.
-        //   el.shadowRoot.querySelector("#input-filter").focus();
-        //   await nextFrame();
-        //
-        //   // Ensure the selected option is in the right spot.
-        //   const secondOption = el.shadowRoot.querySelector("#dropdown .option:nth-child(2)");
-        //
-        //   expect(secondOption.classList.contains("selected")).to.be.true;
-        // });
+        it("in single select mode the selected item should stay in place", async () => {
+          const el = /** @type {MuchSelect} */ await fixture(
+            html`<much-select></much-select>`
+          );
+
+          // Add some options
+          el.addOption("one");
+          el.addOption("two");
+          el.addOption("three");
+
+          el.selectOption("two");
+          // This also helps make sure we wait long enough for the update to finish.
+          await oneEvent(el, "valueChanged");
+
+          // Focus on the input filter so the dropdown opens.
+          el.shadowRoot.querySelector("#input-filter").focus();
+
+          await nextFrame();
+
+          console.log("options", await el.getAllOptions());
+
+          // Ensure the selected option is in the right spot.
+          const secondOption = el.shadowRoot.querySelector(
+            "#dropdown .option:nth-child(2)"
+          );
+
+          expect(secondOption.classList.contains("selected")).to.be.true;
+        });
       });
     });
   });
