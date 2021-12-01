@@ -1,4 +1,6 @@
+# Generated files
 /build
+/dist
 
 # npm
 /node_modules/
