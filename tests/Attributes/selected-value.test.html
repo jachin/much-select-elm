@@ -110,11 +110,38 @@
             { value: "5", description: "", label: "You", isSelected: false },
           ]);
         });
+
+        it("works in mulit select mode with an empty selected value", async () => {
+          const el = /** @type {MuchSelect} */ await fixture(html` <much-select
+            multi-select
+            selected-value-encoding="json"
+            selected-value=""
+          >
+          </much-select>`);
+
+          // The parsed selected value should be an empty array.
+          expect(el.parsedSelectedValue).to.eql([]);
+
+          // The selected value should be an empty string.
+          expect(el.selectedValue).to.equal("");
+        });
+
+        it("works in select mode with an empty selected value", async () => {
+          const el = /** @type {MuchSelect} */ await fixture(html` <much-select
+            selected-value-encoding="json"
+            selected-value=""
+          >
+          </much-select>`);
+
+          // The parsed selected value should be an empty array.
+          expect(el.parsedSelectedValue).to.eql("");
+
+          // The selected value should be an empty string.
+          expect(el.selectedValue).to.equal("");
+        });
       });
     });
   });
 </script>
 </body>
 </html>
-
-
