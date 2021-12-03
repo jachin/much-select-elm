@@ -311,7 +311,7 @@
           setTimeout(() => {
             muchSelect.loading = false;
           }, 500);
-  };
+        };
 
         muchSelect.addEventListener("ready", () => {
           if (
@@ -332,7 +332,7 @@
         muchSelect.addEventListener("inputKeyUpDebounced", (evt) => {
           const { searchString } = evt.detail;
           if (searchString.length < 3) {
-            // Lets not search unless we have at least 3 characters in the search string.
+            // Let's not search unless we have at least 3 characters in the search string.
             return;
           }
 
