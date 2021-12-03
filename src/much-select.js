@@ -821,6 +821,7 @@ class MuchSelect extends HTMLElement {
           resolve(this._app);
         } catch (error) {
           reject(error);
+          this.errorHandler(error);
         }
       }
     });
@@ -890,7 +891,15 @@ class MuchSelect extends HTMLElement {
     }
     if (this.selectedValueEncoding === "json") {
       if (this.isInMultiSelectMode) {
+        if (this.selectedValue === "") {
+          // a special case because an empty string is not valid JSON.
+          return [];
+        }
         return JSON.parse(decodeURIComponent(this.selectedValue));
+      }
+      if (this.selectedValue === "") {
+        // a special case because an empty string is not valid JSON.
+        return "";
       }
       const val = JSON.parse(decodeURIComponent(this.selectedValue));
       if (Array.isArray(val)) {
