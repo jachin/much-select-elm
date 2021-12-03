@@ -167,15 +167,15 @@
     <button>Toggle loading attribute</button>
     <script>
       document
-  .querySelector("#loading-indicator button")
-  .addEventListener("click", () => {
+        .querySelector("#loading-indicator button")
+        .addEventListener("click", () => {
           const muchSelectElement = document.querySelector(
-      "#loading-indicator much-select"
-    );
+            "#loading-indicator much-select"
+          );
           if (muchSelectElement.hasAttribute("loading")) {
             muchSelectElement.removeAttribute("loading");
           } else {
-          muchSelectElement.setAttribute("loading", "loading");
+            muchSelectElement.setAttribute("loading", "loading");
           }
         });
     </script>
@@ -290,7 +290,7 @@
     <p>The description for the selected gets loaded in with all async options.</p>
     <much-select max-dropdown-items="30">
       <select slot="select-menu-input">
-        <option selected="true" value="les Escaldes">les Escaldes</option>
+        <option selected value="les Escaldes">les Escaldes</option>
       </select>
     </much-select>
 
@@ -302,18 +302,18 @@
         const possibleOptions = window.much_select_options;
 
         const searchForOptions = (searchString) => () => {
-      // only searching against label. description should be searchable at some point.
-      possibleOptions
+          // only searching against label. description should be searchable at some point.
+          possibleOptions
             .filter((opt) => opt.label.includes(searchString))
             .forEach((opt) => {
               muchSelect.addOption(opt);
             });
           setTimeout(() => {
             muchSelect.loading = false;
-      }, 500);
+          }, 500);
   };
 
-        muchSelect.addEventListener("ready", (evt) => {
+        muchSelect.addEventListener("ready", () => {
           if (
             muchSelect.getAttribute("selected") &&
             muchSelect.getAttribute("selected").length > 0
@@ -383,11 +383,12 @@
 
           muchSelect.addEventListener("customValueSelected", (evt) => {
             const newValue = evt.detail.value;
-            let customOptionsAsString = window.localStorage.getItem(localStorageKey);
-            const customOptions = JSON.parse(customOptionsAsString);
+            const currentCustomOptionsAsString =
+              window.localStorage.getItem(localStorageKey);
+            const customOptions = JSON.parse(currentCustomOptionsAsString);
             customOptions.push(newValue);
-            customOptionsAsString = JSON.stringify(customOptions);
-            window.localStorage.setItem(localStorageKey, customOptionsAsString);
+            const newCustomOptionsAsString = JSON.stringify(customOptions);
+            window.localStorage.setItem(localStorageKey, newCustomOptionsAsString);
           });
         });
       })();
