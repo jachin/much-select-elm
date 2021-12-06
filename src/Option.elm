@@ -5,6 +5,7 @@ module Option exposing
     , OptionGroup
     , OptionValue
     , addAdditionalOptionsToOptionList
+    , addAdditionalOptionsToOptionListWithAutoSortRank
     , addAndSelectOptionsInOptionsListByString
     , clearAnyUnselectedCustomOptions
     , customSelectedOptions
@@ -1354,7 +1355,7 @@ addAdditionalOptionsToOptionListWithAutoSortRank currentOptions newOptions =
     let
         nextHighestAutoSortRank : Int
         nextHighestAutoSortRank =
-            findHighestAutoSortRank currentOptions
+            findHighestAutoSortRank currentOptions + 1
     in
     List.indexedMap
         (\index option ->

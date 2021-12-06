@@ -4,6 +4,7 @@ import Expect
 import Option
     exposing
         ( addAdditionalOptionsToOptionList
+        , addAdditionalOptionsToOptionListWithAutoSortRank
         , addAndSelectOptionsInOptionsListByString
         , mergeTwoListsOfOptionsPreservingSelectedOptions
         , newOption
@@ -12,6 +13,7 @@ import Option
         , setLabelWithString
         )
 import SelectionMode exposing (SelectedItemPlacementMode(..))
+import SortRank exposing (newMaybeAutoSortRank)
 import Test exposing (Test, describe, test)
 
 
@@ -100,5 +102,20 @@ suite =
                             [ newOption "Wolf Club" Nothing |> selectOption 0 ]
                             [ timecop1983, heartBones, wolfClub ]
                         )
+            , describe "with auto sort order rank"
+                [ test "new options should get added to the end of the list of options" <|
+                    \_ ->
+                        Expect.equalLists
+                            [ heartBones |> Option.setMaybeSortRank (newMaybeAutoSortRank 3)
+                            , wolfClub |> Option.setMaybeSortRank (newMaybeAutoSortRank 1)
+                            , timecop1983 |> Option.setMaybeSortRank (newMaybeAutoSortRank 2)
+                            ]
+                            (addAdditionalOptionsToOptionListWithAutoSortRank
+                                [ wolfClub |> Option.setMaybeSortRank (newMaybeAutoSortRank 1)
+                                , timecop1983 |> Option.setMaybeSortRank (newMaybeAutoSortRank 2)
+                                ]
+                                [ heartBones ]
+                            )
+                ]
             ]
         ]
