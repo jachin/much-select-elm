@@ -116,6 +116,18 @@ suite =
                                 ]
                                 [ heartBones ]
                             )
+                , test "multiple new options should get added to the end of the list of options" <|
+                    \_ ->
+                        Expect.equalLists
+                            [ heartBones |> Option.setMaybeSortRank (newMaybeAutoSortRank 6)
+                            , timecop1983 |> Option.setMaybeSortRank (newMaybeAutoSortRank 7)
+                            , wolfClub |> Option.setMaybeSortRank (newMaybeAutoSortRank 5)
+                            ]
+                            (addAdditionalOptionsToOptionListWithAutoSortRank
+                                [ wolfClub |> Option.setMaybeSortRank (newMaybeAutoSortRank 5)
+                                ]
+                                [ heartBones, timecop1983 ]
+                            )
                 ]
             ]
         ]
