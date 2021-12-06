@@ -144,10 +144,20 @@ suite =
                         )
             ]
         , describe "getting the highest sorted "
-            [ test "when there some" <|
+            [ test "when there is just 1" <|
                 \_ ->
                     Expect.equal
                         ([ screwDriver |> Option.setMaybeSortRank (newMaybeAutoSortRank 1) ] |> findHighestAutoSortRank)
                         1
+            , test "when there is more than 1" <|
+                \_ ->
+                    Expect.equal
+                        ([ hammer |> Option.setMaybeSortRank (newMaybeAutoSortRank 1)
+                         , drill |> Option.setMaybeSortRank (newMaybeAutoSortRank 2)
+                         , screwDriver |> Option.setMaybeSortRank (newMaybeAutoSortRank 3)
+                         ]
+                            |> findHighestAutoSortRank
+                        )
+                        3
             ]
         ]
