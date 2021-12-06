@@ -1276,7 +1276,7 @@ optionsToValuesHtml options =
         |> List.map
             (\option ->
                 case option of
-                    Option display (OptionLabel labelStr _ _) optionValue _ _ _ ->
+                    Option display optionLabel optionValue _ _ _ ->
                         case display of
                             OptionShown ->
                                 text ""
@@ -1290,7 +1290,7 @@ optionsToValuesHtml options =
                                     , mousedownPreventDefaultAndStopPropagation
                                         (ToggleSelectedValueHighlight optionValue)
                                     ]
-                                    [ text labelStr ]
+                                    [ text (OptionLabel.getLabelString optionLabel) ]
 
                             OptionSelectedHighlighted _ ->
                                 div
@@ -1301,7 +1301,7 @@ optionsToValuesHtml options =
                                     , mousedownPreventDefaultAndStopPropagation
                                         (ToggleSelectedValueHighlight optionValue)
                                     ]
-                                    [ text labelStr ]
+                                    [ text (OptionLabel.getLabelString optionLabel) ]
 
                             OptionHighlighted ->
                                 text ""
@@ -1309,7 +1309,7 @@ optionsToValuesHtml options =
                             OptionDisabled ->
                                 text ""
 
-                    CustomOption display (OptionLabel labelStr _ _) optionValue _ ->
+                    CustomOption display optionLabel optionValue _ ->
                         case display of
                             OptionShown ->
                                 text ""
@@ -1323,7 +1323,7 @@ optionsToValuesHtml options =
                                     , mousedownPreventDefaultAndStopPropagation
                                         (ToggleSelectedValueHighlight optionValue)
                                     ]
-                                    [ text labelStr ]
+                                    [ text (OptionLabel.getLabelString optionLabel) ]
 
                             OptionSelectedHighlighted _ ->
                                 div
@@ -1334,7 +1334,7 @@ optionsToValuesHtml options =
                                     , mousedownPreventDefaultAndStopPropagation
                                         (ToggleSelectedValueHighlight optionValue)
                                     ]
-                                    [ text labelStr ]
+                                    [ text (OptionLabel.getLabelString optionLabel) ]
 
                             OptionHighlighted ->
                                 text ""
@@ -1342,7 +1342,7 @@ optionsToValuesHtml options =
                             OptionDisabled ->
                                 text ""
 
-                    EmptyOption display (OptionLabel labelStr _ _) ->
+                    EmptyOption display optionLabel ->
                         case display of
                             OptionShown ->
                                 text ""
@@ -1351,7 +1351,7 @@ optionsToValuesHtml options =
                                 text ""
 
                             OptionSelected _ ->
-                                div [ class "value" ] [ text labelStr ]
+                                div [ class "value" ] [ text (OptionLabel.getLabelString optionLabel) ]
 
                             OptionSelectedHighlighted _ ->
                                 text ""

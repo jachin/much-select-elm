@@ -4,12 +4,14 @@ import Expect
 import Option
     exposing
         ( Option(..)
+        , findHighestAutoSortRank
         , newOption
         , optionGroupToString
         , setGroupWithString
         , sortOptionsByGroupAndLabel
         )
 import OptionLabel exposing (optionLabelToString)
+import SortRank exposing (newMaybeAutoSortRank)
 import Test exposing (Test, describe, test)
 
 
@@ -140,5 +142,12 @@ suite =
                          ]
                             |> List.map optionToDebuggingString
                         )
+            ]
+        , describe "getting the highest sorted "
+            [ test "when there some" <|
+                \_ ->
+                    Expect.equal
+                        ([ screwDriver |> Option.setMaybeSortRank (newMaybeAutoSortRank 1) ] |> findHighestAutoSortRank)
+                        1
             ]
         ]

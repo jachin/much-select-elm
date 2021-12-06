@@ -20,6 +20,7 @@ module Option exposing
     , emptyOptionGroup
     , encode
     , filterOptionsToShowInDropdown
+    , findHighestAutoSortRank
     , findHighlightedOrSelectedOptionIndex
     , findOptionByOptionValue
     , getMaybeOptionSearchFilter
@@ -65,6 +66,7 @@ module Option exposing
     , setDescriptionWithString
     , setGroupWithString
     , setLabelWithString
+    , setMaybeSortRank
     , setOptionSearchFilter
     , setSelectedOptionInNewOptions
     , sortOptionsByGroupAndLabel
@@ -199,12 +201,12 @@ newOption : String -> Maybe String -> Option
 newOption value maybeCleanLabel =
     case value of
         "" ->
-            EmptyOption OptionShown (OptionLabel "" maybeCleanLabel NoSortRank)
+            EmptyOption OptionShown (OptionLabel.newWithCleanLabel "" maybeCleanLabel)
 
         _ ->
             Option
                 OptionShown
-                (OptionLabel value maybeCleanLabel NoSortRank)
+                (OptionLabel.newWithCleanLabel value maybeCleanLabel)
                 (OptionValue value)
                 NoDescription
                 NoOptionGroup
@@ -215,7 +217,7 @@ newCustomOption : String -> Maybe String -> Option
 newCustomOption value maybeCleanLabel =
     CustomOption
         OptionShown
-        (OptionLabel value maybeCleanLabel NoSortRank)
+        (OptionLabel.newWithCleanLabel value maybeCleanLabel)
         (OptionValue value)
         Nothing
 
@@ -226,7 +228,7 @@ setLabelWithString string maybeCleanString option =
         Option optionDisplay _ optionValue description group search ->
             Option
                 optionDisplay
-                (OptionLabel string maybeCleanString NoSortRank)
+                (OptionLabel.newWithCleanLabel string maybeCleanString)
                 optionValue
                 description
                 group
@@ -235,12 +237,12 @@ setLabelWithString string maybeCleanString option =
         CustomOption optionDisplay _ _ search ->
             CustomOption
                 optionDisplay
-                (OptionLabel string maybeCleanString NoSortRank)
+                (OptionLabel.newWithCleanLabel string maybeCleanString)
                 (OptionValue string)
                 search
 
         EmptyOption optionDisplay _ ->
-            EmptyOption optionDisplay (OptionLabel string maybeCleanString NoSortRank)
+            EmptyOption optionDisplay (OptionLabel.newWithCleanLabel string maybeCleanString)
 
 
 setLabel : OptionLabel -> Option -> Option
@@ -400,10 +402,15 @@ setOptionSearchFilter maybeOptionSearchFilter option =
                 optionLabel
 
 
+setMaybeSortRank : Maybe SortRank -> Option -> Option
+setMaybeSortRank maybeSortRank option =
+    setLabel (option |> getOptionLabel |> OptionLabel.setMaybeSortRank maybeSortRank) option
+
+
 newSelectedOption : Int -> String -> Maybe String -> Option
 newSelectedOption index string maybeCleanLabel =
     Option (OptionSelected index)
-        (OptionLabel string maybeCleanLabel NoSortRank)
+        (OptionLabel.newWithCleanLabel string maybeCleanLabel)
         (OptionValue string)
         NoDescription
         NoOptionGroup
@@ -413,7 +420,7 @@ newSelectedOption index string maybeCleanLabel =
 newDisabledOption : String -> Maybe String -> Option
 newDisabledOption string maybeCleanLabel =
     Option OptionDisabled
-        (OptionLabel string maybeCleanLabel NoSortRank)
+        (OptionLabel.newWithCleanLabel string maybeCleanLabel)
         (OptionValue string)
         NoDescription
         NoOptionGroup
@@ -915,7 +922,7 @@ updateOrAddCustomOption maybeCustomOptionHint searchString options =
     if showAddOption then
         [ CustomOption
             OptionShown
-            (OptionLabel label Nothing NoSortRank)
+            (OptionLabel.newWithCleanLabel label Nothing)
             (OptionValue searchString)
             Nothing
         ]
@@ -1340,6 +1347,55 @@ addAdditionalOptionsToOptionList : List Option -> List Option -> List Option
 addAdditionalOptionsToOptionList currentOptions newOptions =
     List.filter (\new -> not (optionListContainsOptionWithValue new currentOptions)) newOptions
         ++ currentOptions
+
+
+addAdditionalOptionsToOptionListWithAutoSortRank : List Option -> List Option -> List Option
+addAdditionalOptionsToOptionListWithAutoSortRank currentOptions newOptions =
+    let
+        nextHighestAutoSortRank : Int
+        nextHighestAutoSortRank =
+            findHighestAutoSortRank currentOptions
+    in
+    List.indexedMap
+        (\index option ->
+            let
+                maybeNewSortRank : Maybe SortRank
+                maybeNewSortRank =
+                    SortRank.newMaybeAutoSortRank (nextHighestAutoSortRank + index)
+
+                optionLabel : OptionLabel
+                optionLabel =
+                    getOptionLabel option
+
+                updatedOptionLabel : OptionLabel
+                updatedOptionLabel =
+                    case maybeNewSortRank of
+                        Just newSortRank ->
+                            OptionLabel.setSortRank newSortRank optionLabel
+
+                        Nothing ->
+                            optionLabel
+            in
+            setLabel updatedOptionLabel option
+        )
+        newOptions
+        |> addAdditionalOptionsToOptionList currentOptions
+
+
+findHighestAutoSortRank : List Option -> Int
+findHighestAutoSortRank options =
+    List.foldr
+        (\option currentMax ->
+            max
+                (option
+                    |> getOptionLabel
+                    |> OptionLabel.getSortRank
+                    |> SortRank.getAutoIndexForSorting
+                )
+                currentMax
+        )
+        0
+        options
 
 
 removeOptionsFromOptionList : List Option -> List Option -> List Option
@@ -2094,13 +2150,15 @@ isEmptyOption option =
             True
 
 
+{-| Return true if the option's (needle's) value matches one of the option's value in the haystack.
+-}
 optionListContainsOptionWithValue : Option -> List Option -> Bool
-optionListContainsOptionWithValue option options =
+optionListContainsOptionWithValue needle haystack =
     let
         optionValue =
-            getOptionValue option
+            getOptionValue needle
     in
-    List.filter (\option_ -> getOptionValue option_ == optionValue) options
+    List.filter (\option_ -> getOptionValue option_ == optionValue) haystack
         |> List.isEmpty
         |> not
 
