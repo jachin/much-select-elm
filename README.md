@@ -50,7 +50,7 @@ brew install gpg
 brew install asdf
 asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git
 ```
-t
+
 To work on this project, clone the repo to your machine then:
 
 ```bash
