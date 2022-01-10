@@ -8,6 +8,8 @@
   <link rel="icon" href="./favicon.ico" type="image/x-icon" />
   <title>Much Select - Initial Value</title>
   <link href="demo-styles.css" rel="stylesheet">
+
+  <script src="example-options-cities.js"></script>
 </head>
 
 <body>
@@ -146,6 +148,71 @@
         });
       </script>
     </div>
+
+    <div id="selected-option-with-async-options">
+      <h3>Async Loading Options</h3>
+      <p>In this example we start with a single selected value, then asynchronously load in a bunch more options.</p>
+      <p>The description for the selected gets loaded in with all async options.</p>
+      <much-select max-dropdown-items="30">
+        <select slot="select-menu-input">
+          <option selected value="les Escaldes">les Escaldes</option>
+        </select>
+      </much-select>
+
+      <script>
+        (() => {
+          const muchSelect = document.querySelector(
+            "#selected-option-with-async-options much-select"
+          );
+          const possibleOptions = window.much_select_options;
+
+          const searchForOptions = (searchString) => () => {
+            // only searching against label. description should be searchable at some point.
+            possibleOptions
+              .filter((opt) => opt.label.includes(searchString))
+              .forEach((opt) => {
+                muchSelect.addOption(opt);
+              });
+            setTimeout(() => {
+              muchSelect.loading = false;
+            }, 500);
+          };
+
+          muchSelect.addEventListener("ready", () => {
+            if (
+              muchSelect.getAttribute("selected") &&
+              muchSelect.getAttribute("selected").length > 0
+            ) {
+              // search
+              const query = muchSelect.getAttribute("selected");
+
+              window.setTimeout(searchForOptions(query), 2000);
+            } else {
+              possibleOptions.forEach((option) => {
+                muchSelect.addOption(option);
+              });
+            }
+          });
+
+          muchSelect.addEventListener("inputKeyUpDebounced", (evt) => {
+            const { searchString } = evt.detail;
+            if (searchString.length < 3) {
+              // Let's not search unless we have at least 3 characters in the search string.
+              return;
+            }
+
+            // This could take a while, so the user knows something is going on
+            //  lets throw up the loading indicator.
+            muchSelect.loading = true;
+
+            // The API is just too fast, slow it down a bit so we can watch
+            //  it work.
+            window.setTimeout(searchForOptions(searchString), 2000);
+          });
+        })();
+      </script>
+    </div>
+
   </div>
 
   <script src="./index.js" type="module"></script>
