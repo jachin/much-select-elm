@@ -1438,6 +1438,16 @@ makeCommandMessagesWhenValuesChanges selectedOptions maybeSelectedValue =
         ]
 
 
+makeCommandMessageForInitialValue : List Option -> Cmd Msg
+makeCommandMessageForInitialValue selectedOptions =
+    case selectedOptions of
+        [] ->
+            Cmd.none
+
+        selectionOptions_ ->
+            valueChanged (selectedOptionsToTuple selectionOptions_)
+
+
 type alias Flags =
     { value : Json.Decode.Value
     , placeholder : String
@@ -1569,7 +1579,12 @@ init flags =
       , valueCasingWidth = 100
       , valueCasingHeight = 45
       }
-    , Cmd.batch [ errorCmd, initialValueErrCmd, muchSelectIsReady () ]
+    , Cmd.batch
+        [ errorCmd
+        , initialValueErrCmd
+        , muchSelectIsReady ()
+        , makeCommandMessageForInitialValue (Option.selectedOptions optionsWithInitialValueSelected)
+        ]
     )
 
 

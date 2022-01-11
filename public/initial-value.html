@@ -81,14 +81,12 @@
   .addEventListener("click", () => {
             document.querySelector(
       "#add-options-not-including-the-selected-value much-select"
-    ).innerHTML = `
-          <select slot="select-input">
-            <option value="Jam">Jam</option>
-            <option value="Marmalade">Marmalade</option>
-            <option value="Preserves">Preserves</option>
-            <option value="Apple Butter">Apple Butter</option>
-          </select>
-        `;
+    ).innerHTML = `<select slot="select-input">
+                <option value="Jam">Jam</option>
+                <option value="Marmalade">Marmalade</option>
+                <option value="Preserves">Preserves</option>
+                <option value="Apple Butter">Apple Butter</option>
+              </select>`;
         });
       </script>
     </div>
@@ -164,12 +162,13 @@
           const muchSelect = document.querySelector(
             "#selected-option-with-async-options much-select"
           );
-          const possibleOptions = window.much_select_options;
+          const possibleOptions = window.exampleOptionsCities;
 
           const searchForOptions = (searchString) => () => {
             // only searching against label. description should be searchable at some point.
             possibleOptions
               .filter((opt) => opt.label.includes(searchString))
+              .slice(0, 30)
               .forEach((opt) => {
                 muchSelect.addOption(opt);
               });

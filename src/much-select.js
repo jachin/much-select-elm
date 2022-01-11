@@ -213,7 +213,7 @@ class MuchSelect extends HTMLElement {
     /**
      * Depending on what you've got going on, you may want different
      * schemes for encoding the selected values. There are some choices.
-     *  - comma (default) - just make the values comma separated (problematic if you have commas in your values)
+     *  - comma (default) - just making the values comma separated (problematic if you have commas in your values)
      *  - json
      * @type {string}
      * @private
@@ -257,7 +257,7 @@ class MuchSelect extends HTMLElement {
 
     // noinspection JSUnresolvedFunction
     this._resizeObserver = new ResizeObserver(() => {
-      // When the size changes we need to tell Elm so it can
+      // When the size changes we need to tell Elm, so it can
       //  adjust things like the width of the dropdown.
       this.updateDimensions();
     });
@@ -335,7 +335,7 @@ class MuchSelect extends HTMLElement {
 
       parentDiv.addEventListener("mousedown", (evt) => {
         // This stops the dropdown from flashes when the user clicks
-        //  on a optgroup. And it kinda makes sense. we don't want
+        //  on an optgroup. And it kinda makes sense. we don't want
         //  mousedown events escaping and effecting the DOM.
         evt.stopImmediatePropagation();
         evt.preventDefault();
@@ -599,7 +599,7 @@ class MuchSelect extends HTMLElement {
   /**
    * This method updates the width this widget when it's not selected, so when
    *  it is selected it matches the input element.
-   * This needs to be called very time the options or the values change (or
+   * This needs to be called very time the options or the values change or
    *  anything else that might change the height or width of the much-select.
    * It waits for 1 frame before doing calculating what the height and width
    *  should be.
@@ -664,7 +664,9 @@ class MuchSelect extends HTMLElement {
     flags.allowCustomOptions = this.allowCustomOptions;
     flags.customOptionHint = this.customOptionHint;
 
-    const selectElement = this.querySelector("select");
+    const selectElement = this.querySelector(
+      "select[slot='select-menu-input']"
+    );
     if (selectElement) {
       flags.optionsJson = JSON.stringify(
         buildOptionsFromSelectElement(selectElement)
@@ -924,7 +926,12 @@ class MuchSelect extends HTMLElement {
         this.selectedValue = values;
       }
     } else if (this.selectedValueEncoding === "json") {
-      this.selectedValue = encodeURIComponent(JSON.stringify(values));
+      if (values === "") {
+        // The empty string here is a special case because we don't want to encode an empty string.
+        this.selectedValue = "";
+      } else {
+        this.selectedValue = encodeURIComponent(JSON.stringify(values));
+      }
     }
   }
 
