@@ -120,7 +120,7 @@ type Msg
     | AllowCustomOptionsChanged Bool
     | CustomOptionHintChanged (Maybe String)
     | DisabledAttributeChanged Bool
-    | MulitSelectAttributeChanged Bool
+    | MultiSelectAttributeChanged Bool
     | SelectedItemStaysInPlaceChanged Bool
     | SelectHighlightedOption
     | DeleteInputForSingleSelect
@@ -452,7 +452,7 @@ update msg model =
             , Cmd.none
             )
 
-        MulitSelectAttributeChanged isInMulitSelectMode ->
+        MultiSelectAttributeChanged isInMulitSelectMode ->
             let
                 options =
                     if isInMulitSelectMode then
@@ -1600,7 +1600,7 @@ subscriptions _ =
         , valueCasingDimensionsChangedReceiver ValueCasingWidthUpdate
         , selectOptionReceiver SelectOption
         , deselectOptionReceiver DeselectOption
-        , multiSelectChangedReceiver MulitSelectAttributeChanged
+        , multiSelectChangedReceiver MultiSelectAttributeChanged
         , requestAllOptionsReceiver (\() -> RequestAllOptions)
         ]
 
