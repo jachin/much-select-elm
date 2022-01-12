@@ -190,7 +190,7 @@ class MuchSelect extends HTMLElement {
      * @type {boolean}
      * @private
      */
-    this._isInMulitSelectMode = false;
+    this._isInMultiSelectMode = false;
 
     /**
      * @type {boolean}
@@ -1015,20 +1015,20 @@ class MuchSelect extends HTMLElement {
   }
 
   get isInMultiSelectMode() {
-    return this._isInMulitSelectMode;
+    return this._isInMultiSelectMode;
   }
 
   set isInMultiSelectMode(value) {
     if (value === "false") {
-      this._isInMulitSelectMode = false;
+      this._isInMultiSelectMode = false;
     } else if (value === "") {
-      this._isInMulitSelectMode = true;
+      this._isInMultiSelectMode = true;
     } else {
-      this._isInMulitSelectMode = !!value;
+      this._isInMultiSelectMode = !!value;
     }
 
     if (!this.eventsOnlyMode) {
-      if (this._isInMulitSelectMode) {
+      if (this._isInMultiSelectMode) {
         this.setAttribute("multi-select", value);
       } else {
         this.removeAttribute("multi-select");
