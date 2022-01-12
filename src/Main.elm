@@ -469,7 +469,7 @@ update msg model =
                         makeCommandMessagesWhenValuesChanges (Option.selectedOptions options) Nothing
             in
             ( { model
-                | selectionMode = SelectionMode.setMulitSelectModeWithBool isInMulitSelectMode model.selectionMode
+                | selectionMode = SelectionMode.setMultiSelectModeWithBool isInMulitSelectMode model.selectionMode
                 , options = options
                 , optionsForTheDropdown = figureOutWhichOptionsToShow model.maxDropdownItems options
               }
