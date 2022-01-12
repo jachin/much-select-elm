@@ -196,6 +196,12 @@ class MuchSelect extends HTMLElement {
      * @type {boolean}
      * @private
      */
+    this._isInMultiSelectModeWithSingleItemRemoval = false;
+
+    /**
+     * @type {boolean}
+     * @private
+     */
     this._allowCustomOptions = false;
 
     /**
@@ -1039,6 +1045,22 @@ class MuchSelect extends HTMLElement {
     this.appPromise.then((app) =>
       app.ports.multiSelectChangedReceiver.send(this.isInMultiSelectMode)
     );
+  }
+
+  get isInMultiSelectModeWithSingleItemRemoval() {
+    return this._isInMultiSelectModeWithSingleItemRemoval;
+  }
+
+  set isInMultiSelectModeWithSingleItemRemoval(value) {
+    if (!this._isInMultiSelectMode) {
+      this._isInMultiSelectModeWithSingleItemRemoval = false;
+    } else if (value === "false") {
+      this._isInMultiSelectModeWithSingleItemRemoval = false;
+    } else if (value === "") {
+      this._isInMultiSelectModeWithSingleItemRemoval = true;
+    } else {
+      this._isInMultiSelectModeWithSingleItemRemoval = !!value;
+    }
   }
 
   get loading() {

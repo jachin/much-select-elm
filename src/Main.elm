@@ -55,47 +55,9 @@ import Option
 import OptionLabel exposing (OptionLabel(..), optionLabelToString)
 import OptionPresentor exposing (tokensToHtml)
 import OptionSearcher
-import Ports
-    exposing
-        ( addOptionsReceiver
-        , allOptions
-        , allowCustomOptionsReceiver
-        , blurInput
-        , customOptionHintReceiver
-        , customOptionSelected
-        , deselectOptionReceiver
-        , disableChangedReceiver
-        , errorMessage
-        , focusInput
-        , inputBlurred
-        , inputKeyUp
-        , loadingChangedReceiver
-        , maxDropdownItemsChangedReceiver
-        , muchSelectIsReady
-        , multiSelectChangedReceiver
-        , optionDeselected
-        , optionSelected
-        , optionsChangedReceiver
-        , placeholderChangedReceiver
-        , removeOptionsReceiver
-        , requestAllOptionsReceiver
-        , scrollDropdownToElement
-        , selectOptionReceiver
-        , selectedItemStaysInPlaceChangedReceiver
-        , valueCasingDimensionsChangedReceiver
-        , valueChanged
-        , valueChangedReceiver
-        , valueCleared
-        , valueDecoder
-        , valuesDecoder
-        )
+import Ports exposing (addOptionsReceiver, allOptions, allowCustomOptionsReceiver, blurInput, customOptionHintReceiver, customOptionSelected, deselectOptionReceiver, disableChangedReceiver, errorMessage, focusInput, inputBlurred, inputKeyUp, loadingChangedReceiver, maxDropdownItemsChangedReceiver, muchSelectIsReady, multiSelectChangedReceiver, multiSelectSingleItemRemovalChangedReceiver, optionDeselected, optionSelected, optionsChangedReceiver, placeholderChangedReceiver, removeOptionsReceiver, requestAllOptionsReceiver, scrollDropdownToElement, selectOptionReceiver, selectedItemStaysInPlaceChangedReceiver, valueCasingDimensionsChangedReceiver, valueChanged, valueChangedReceiver, valueCleared, valueDecoder, valuesDecoder)
 import PositiveInt exposing (PositiveInt)
-import SelectionMode
-    exposing
-        ( CustomOptions(..)
-        , SelectedItemPlacementMode(..)
-        , SelectionMode(..)
-        )
+import SelectionMode exposing (CustomOptions(..), SelectedItemPlacementMode(..), SelectionMode(..), SingleItemRemoval(..))
 
 
 type Msg
@@ -121,6 +83,7 @@ type Msg
     | CustomOptionHintChanged (Maybe String)
     | DisabledAttributeChanged Bool
     | MultiSelectAttributeChanged Bool
+    | MultiSelectSingleItemRemovalAttributeChanged Bool
     | SelectedItemStaysInPlaceChanged Bool
     | SelectHighlightedOption
     | DeleteInputForSingleSelect
@@ -241,7 +204,7 @@ update msg model =
             let
                 options =
                     case model.selectionMode of
-                        MultiSelect _ ->
+                        MultiSelect _ _ ->
                             selectOptionInListByOptionValue optionValue model.options
 
                         SingleSelect _ _ ->
@@ -256,7 +219,7 @@ update msg model =
                         ]
                     )
 
-                MultiSelect _ ->
+                MultiSelect _ _ ->
                     ( updateModelWithSearchStringChanges model.maxDropdownItems "" options model
                     , Cmd.batch
                         [ makeCommandMessagesWhenValuesChanges options (Just optionValue)
@@ -276,7 +239,7 @@ update msg model =
                         SingleSelect _ _ ->
                             Json.Decode.decodeValue valueDecoder valuesJson
 
-                        MultiSelect _ ->
+                        MultiSelect _ _ ->
                             Json.Decode.decodeValue valuesDecoder valuesJson
             in
             case valuesResult of
@@ -311,7 +274,7 @@ update msg model =
                                 SingleSelect _ selectedItemPlacementMode ->
                                     Option.mergeTwoListsOfOptionsPreservingSelectedOptions selectedItemPlacementMode model.options newOptions
 
-                                MultiSelect _ ->
+                                MultiSelect _ _ ->
                                     -- Also filter out any empty options.
                                     Option.mergeTwoListsOfOptionsPreservingSelectedOptions SelectedItemStaysInPlace
                                         model.options
@@ -372,7 +335,7 @@ update msg model =
 
                         options =
                             case model.selectionMode of
-                                MultiSelect _ ->
+                                MultiSelect _ _ ->
                                     selectOptionInListByOptionValue optionValue model.options
 
                                 SingleSelect _ _ ->
@@ -452,24 +415,47 @@ update msg model =
             , Cmd.none
             )
 
-        MultiSelectAttributeChanged isInMulitSelectMode ->
+        MultiSelectSingleItemRemovalAttributeChanged shouldEnableMultiSelectSingleItemRemoval ->
+            let
+                multiSelectSingleItemRemoval =
+                    if shouldEnableMultiSelectSingleItemRemoval then
+                        EnableSingleItemRemoval
+
+                    else
+                        DisableSingleItemRemoval
+
+                newMode =
+                    case model.selectionMode of
+                        SingleSelect _ _ ->
+                            model.selectionMode
+
+                        MultiSelect customOptions _ ->
+                            MultiSelect customOptions multiSelectSingleItemRemoval
+            in
+            ( { model
+                | selectionMode = newMode
+              }
+            , Cmd.batch [ muchSelectIsReady (), Cmd.none ]
+            )
+
+        MultiSelectAttributeChanged isInMultiSelectMode ->
             let
                 options =
-                    if isInMulitSelectMode then
+                    if isInMultiSelectMode then
                         model.options
 
                     else
                         Option.deselectAllButTheFirstSelectedOptionInList model.options
 
                 cmd =
-                    if isInMulitSelectMode then
+                    if isInMultiSelectMode then
                         Cmd.none
 
                     else
                         makeCommandMessagesWhenValuesChanges (Option.selectedOptions options) Nothing
             in
             ( { model
-                | selectionMode = SelectionMode.setMultiSelectModeWithBool isInMulitSelectMode model.selectionMode
+                | selectionMode = SelectionMode.setMultiSelectModeWithBool isInMultiSelectMode model.selectionMode
                 , options = options
                 , optionsForTheDropdown = figureOutWhichOptionsToShow model.maxDropdownItems options
               }
@@ -491,7 +477,7 @@ update msg model =
                         ]
                     )
 
-                MultiSelect _ ->
+                MultiSelect _ _ ->
                     ( updateModelWithSearchStringChanges model.maxDropdownItems "" options model
                       -- TODO Figure out what the highlighted option in here
                     , Cmd.batch
@@ -510,7 +496,7 @@ update msg model =
                     else
                         ( model, Cmd.none )
 
-                MultiSelect _ ->
+                MultiSelect _ _ ->
                     ( model, Cmd.none )
 
         EscapeKeyInInputFilter ->
@@ -736,7 +722,7 @@ updateRightSlot current selectionMode hasSelectedOption =
                 SingleSelect _ _ ->
                     ShowDropdownIndicator
 
-                MultiSelect _ ->
+                MultiSelect _ _ ->
                     if hasSelectedOption then
                         ShowClearButton
 
@@ -751,7 +737,7 @@ updateRightSlot current selectionMode hasSelectedOption =
                 SingleSelect _ _ ->
                     ShowDropdownIndicator
 
-                MultiSelect _ ->
+                MultiSelect _ _ ->
                     if hasSelectedOption then
                         ShowClearButton
 
@@ -776,7 +762,7 @@ updateRightSlotLoading isLoading selectionMode hasSelectedOption =
             SingleSelect _ _ ->
                 ShowDropdownIndicator
 
-            MultiSelect _ ->
+            MultiSelect _ _ ->
                 if hasSelectedOption then
                     ShowClearButton
 
@@ -855,7 +841,7 @@ view model =
                     ]
                 ]
 
-        MultiSelect _ ->
+        MultiSelect _ _ ->
             let
                 hasOptionSelected =
                     Option.hasSelectedOption model.options
@@ -1223,7 +1209,7 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
                         [ labelHtml, descriptionHtml ]
                     ]
 
-                MultiSelect _ ->
+                MultiSelect _ _ ->
                     [ optionGroupHtml, text "" ]
 
         OptionSelectedHighlighted _ ->
@@ -1242,7 +1228,7 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
                         [ labelHtml, descriptionHtml ]
                     ]
 
-                MultiSelect _ ->
+                MultiSelect _ _ ->
                     [ optionGroupHtml, text "" ]
 
         OptionHighlighted ->
@@ -1474,7 +1460,7 @@ init flags =
 
         selectionMode =
             if flags.allowMultiSelect then
-                MultiSelect allowCustomOptions
+                MultiSelect allowCustomOptions DisableSingleItemRemoval
 
             else
                 SingleSelect allowCustomOptions selectedItemPlacementMode
@@ -1486,7 +1472,7 @@ init flags =
                         SingleSelect _ _ ->
                             ( values, Cmd.none )
 
-                        MultiSelect _ ->
+                        MultiSelect _ _ ->
                             ( values, Cmd.none )
 
                 Err error ->
@@ -1521,7 +1507,7 @@ init flags =
                                     in
                                     ( optionsWithUniqueValues, Cmd.none )
 
-                        MultiSelect _ ->
+                        MultiSelect _ _ ->
                             let
                                 -- Don't include any empty options, that doesn't make sense.
                                 optionsWithInitialValues =
@@ -1555,7 +1541,7 @@ init flags =
                     SingleSelect _ _ ->
                         ShowDropdownIndicator
 
-                    MultiSelect _ ->
+                    MultiSelect _ _ ->
                         if Option.hasSelectedOption optionsWithInitialValueSelected then
                             ShowClearButton
 
@@ -1601,6 +1587,7 @@ subscriptions _ =
         , selectOptionReceiver SelectOption
         , deselectOptionReceiver DeselectOption
         , multiSelectChangedReceiver MultiSelectAttributeChanged
+        , multiSelectSingleItemRemovalChangedReceiver MultiSelectSingleItemRemovalAttributeChanged
         , requestAllOptionsReceiver (\() -> RequestAllOptions)
         ]
 

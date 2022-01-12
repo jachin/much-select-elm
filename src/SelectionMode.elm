@@ -1,4 +1,4 @@
-module SelectionMode exposing (CustomOptions(..), SelectedItemPlacementMode(..), SelectionMode(..), getCustomOptions, getSelectedItemPlacementMode, setAllowCustomOptionsWithBool, setMultiSelectModeWithBool, setSelectedItemStaysInPlace)
+module SelectionMode exposing (CustomOptions(..), SelectedItemPlacementMode(..), SelectionMode(..), SingleItemRemoval(..), getCustomOptions, getSelectedItemPlacementMode, setAllowCustomOptionsWithBool, setMultiSelectModeWithBool, setSelectedItemStaysInPlace)
 
 
 type CustomOptions
@@ -6,9 +6,14 @@ type CustomOptions
     | NoCustomOptions
 
 
+type SingleItemRemoval
+    = EnableSingleItemRemoval
+    | DisableSingleItemRemoval
+
+
 type SelectionMode
     = SingleSelect CustomOptions SelectedItemPlacementMode
-    | MultiSelect CustomOptions
+    | MultiSelect CustomOptions SingleItemRemoval
 
 
 type SelectedItemPlacementMode
@@ -22,7 +27,7 @@ getCustomOptions selectionMode =
         SingleSelect customOptions _ ->
             customOptions
 
-        MultiSelect customOptions ->
+        MultiSelect customOptions _ ->
             customOptions
 
 
@@ -36,12 +41,12 @@ setAllowCustomOptionsWithBool bool mode =
             else
                 SingleSelect NoCustomOptions selectedItemPlacementMode
 
-        MultiSelect _ ->
+        MultiSelect _ singleItemRemoval ->
             if bool then
-                MultiSelect AllowCustomOptions
+                MultiSelect AllowCustomOptions singleItemRemoval
 
             else
-                MultiSelect NoCustomOptions
+                MultiSelect NoCustomOptions singleItemRemoval
 
 
 getSelectedItemPlacementMode : SelectionMode -> SelectedItemPlacementMode
@@ -50,7 +55,7 @@ getSelectedItemPlacementMode selectionMode =
         SingleSelect _ selectedItemPlacementMode ->
             selectedItemPlacementMode
 
-        MultiSelect _ ->
+        MultiSelect _ _ ->
             SelectedItemStaysInPlace
 
 
@@ -64,7 +69,7 @@ setSelectedItemStaysInPlace selectedItemStaysInPlace selectionMode =
             else
                 SingleSelect customOptions SelectedItemMovesToTheTop
 
-        MultiSelect _ ->
+        MultiSelect _ _ ->
             selectionMode
 
 
@@ -73,12 +78,12 @@ setMultiSelectModeWithBool isInMultiSelectMode selectionMode =
     case selectionMode of
         SingleSelect customOptions _ ->
             if isInMultiSelectMode then
-                MultiSelect customOptions
+                MultiSelect customOptions DisableSingleItemRemoval
 
             else
                 selectionMode
 
-        MultiSelect customOptions ->
+        MultiSelect customOptions _ ->
             if isInMultiSelectMode then
                 selectionMode
 
