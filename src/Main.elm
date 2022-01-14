@@ -350,36 +350,12 @@ update msg model =
                     ( model, errorMessage (Json.Decode.errorToString error) )
 
         DeselectOptionInternal optionToDeselect ->
-            let
-                optionValue =
-                    Option.getOptionValue optionToDeselect
-
-                options =
-                    Option.deselectOptionInListByOptionValue optionValue model.options
-            in
-            ( { model
-                | options = options
-                , optionsForTheDropdown = figureOutWhichOptionsToShow model.maxDropdownItems options
-              }
-            , makeCommandMessagesWhenValuesChanges options Nothing
-            )
+            deselectOption model optionToDeselect
 
         DeselectOption optionJson ->
             case Json.Decode.decodeValue Option.decoder optionJson of
                 Ok option ->
-                    let
-                        optionValue =
-                            Option.getOptionValue option
-
-                        options =
-                            Option.deselectOptionInListByOptionValue optionValue model.options
-                    in
-                    ( { model
-                        | options = options
-                        , optionsForTheDropdown = figureOutWhichOptionsToShow model.maxDropdownItems options
-                      }
-                    , makeCommandMessagesWhenValuesChanges options Nothing
-                    )
+                    deselectOption model option
 
                 Err error ->
                     ( model, errorMessage (Json.Decode.errorToString error) )
@@ -585,6 +561,23 @@ update msg model =
 
         RequestAllOptions ->
             ( model, allOptions (Json.Encode.list Option.encode model.options) )
+
+
+deselectOption : Model -> Option -> ( Model, Cmd Msg )
+deselectOption model option =
+    let
+        optionValue =
+            Option.getOptionValue option
+
+        options =
+            Option.deselectOptionInListByOptionValue optionValue model.options
+    in
+    ( { model
+        | options = options
+        , optionsForTheDropdown = figureOutWhichOptionsToShow model.maxDropdownItems options
+      }
+    , makeCommandMessagesWhenValuesChanges options Nothing
+    )
 
 
 clearAllSelectedOption : Model -> ( Model, Cmd Msg )
