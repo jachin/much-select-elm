@@ -4,7 +4,7 @@
 <script type="module">
   import { runTests } from "@web/test-runner-mocha";
   import { expect } from "@esm-bundle/chai";
-  import { html, fixture } from "@open-wc/testing";
+  import { html, fixture, oneEvent } from "@open-wc/testing";
 
   import MuchSelect from "../../dist/much-select-debug.js";
 
@@ -20,7 +20,7 @@
         it("should be in the list of options", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
             html`<much-select>
-              <select slot="select-menu-input">
+              <select slot="select-input">
                 <option value="rino">Rhinoceros</option>
               </select>
             </much-select>`
@@ -35,13 +35,29 @@
         it("should respect the selected attribute", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
             html`<much-select>
-              <select slot="select-menu-input">
+              <select slot="select-input">
                 <option selected value="rino">Rhinoceros</option>
               </select>
             </much-select>`
           );
           const options = await el.getAllOptions();
 
+          expect(options[0].isSelected).to.be.true;
+
+          expect(el.getAttribute("selected-value")).to.equal("rino");
+        });
+
+        it("should respect the selected attribute in multi select mode", async () => {
+          const el = /** @type {MuchSelect} */ await fixture(
+            html`<much-select multi-select>
+              <select slot="select-input">
+                <option selected value="rino">Rhinoceros</option>
+              </select>
+            </much-select>`
+          );
+
+          // We do not really need to do this test, but it makes sure all the much-select is setup up all the way.
+          const options = await el.getAllOptions();
           expect(options[0].isSelected).to.be.true;
 
           expect(el.getAttribute("selected-value")).to.equal("rino");

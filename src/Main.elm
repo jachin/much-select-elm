@@ -597,7 +597,7 @@ clearAllSelectedOption model =
                 -- an option has been deselected. return the deselected value as a tuple.
                 Option.selectedOptionsToTuple model.options
 
-        deselectEventMsg =
+        deselectEventCmdMsg =
             if List.isEmpty deselectedItems then
                 Cmd.none
 
@@ -607,7 +607,7 @@ clearAllSelectedOption model =
         newOptions =
             Option.deselectAllOptionsInOptionsList model.options
 
-        focusCmd =
+        focusCmdMsg =
             if model.focused then
                 focusInput ()
 
@@ -622,8 +622,8 @@ clearAllSelectedOption model =
       }
     , Cmd.batch
         [ makeCommandMessagesWhenValuesChanges [] Nothing
-        , deselectEventMsg
-        , focusCmd
+        , deselectEventCmdMsg
+        , focusCmdMsg
         ]
     )
 

@@ -224,7 +224,7 @@
   <div>
     <h3>Max Number of Items</h3>
     <much-select max-dropdown-items="3">
-      <select slot="select-menu-input">
+      <select slot="select-input">
         <option value="1">These</option>
         <option value="2">are</option>
         <option value="3" data-description="initial options">the</option>
@@ -238,7 +238,7 @@
     <p>As you type we'll query the remote API for additional options.</p>
     <p>This dropdown searches the <a href="https://rickandmortyapi.com/">Rick and Morty</a> API for characters from the show by name.</p>
     <much-select max-dropdown-items="3">
-      <select slot="select-menu-input"></select>
+      <select slot="select-input"></select>
     </much-select>
 
     <script>
@@ -286,7 +286,7 @@
   <div id="custom-options-that-persist">
     <h3>Custom Options That Persist</h3>
     <much-select allow-custom-options="allow-custom-options">
-      <select slot="select-menu-input">
+      <select slot="select-input">
         <option value="Bánh mì">Bánh mì</option>
         <option value="Cheesesteak">Cheesesteak</option>
         <option value="Cheesesteak">Po' boy</option>
@@ -341,7 +341,7 @@
       and leave it up to "something else" to managed its attributes.
     </p>
     <much-select events-only="" selected-value="central">
-      <select slot="select-menu-input">
+      <select slot="select-input">
         <option value="Eastern">Eastern</option>
         <option value="central">Central</option>
         <option value="mountain">Mountain</option>

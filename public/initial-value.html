@@ -152,7 +152,7 @@
       <p>In this example we start with a single selected value, then asynchronously load in a bunch more options.</p>
       <p>The description for the selected gets loaded in with all async options.</p>
       <much-select max-dropdown-items="30">
-        <select slot="select-menu-input">
+        <select slot="select-input">
           <option selected value="les Escaldes">les Escaldes</option>
         </select>
       </much-select>
@@ -168,7 +168,7 @@
             // only searching against label. description should be searchable at some point.
             possibleOptions
               .filter((opt) => opt.label.includes(searchString))
-              .slice(0, 30)
+              .slice(0, 5)
               .forEach((opt) => {
                 muchSelect.addOption(opt);
               });
@@ -187,7 +187,7 @@
 
               window.setTimeout(searchForOptions(query), 2000);
             } else {
-              possibleOptions.forEach((option) => {
+              possibleOptions.slice(0, 5).forEach((option) => {
                 muchSelect.addOption(option);
               });
             }

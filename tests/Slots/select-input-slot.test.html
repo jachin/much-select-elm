@@ -30,7 +30,7 @@
               selected-value-encoding="json"
               style=""
             >
-              <select>
+              <select slot="select-input">
                 <option value="a tag for david">a tag for david</option>
                 <option value="a tag for mike">a tag for mike</option>
                 <option value="an unsanitized, tag to break things">
@@ -57,6 +57,20 @@
 
           expect(allOptions).to.have.length(7);
         });
+      });
+
+      it("should no pick up options if the slot is not specified.", async () => {
+        const el = /** @type {MuchSelect} */ await fixture(
+          html`<much-select>
+            <select>
+              <option value="hipster">dispster</option>
+            </select>
+          </much-select>`
+        );
+
+        const allOptions = await el.getAllOptions();
+
+        expect(allOptions).to.have.length(0);
       });
     });
   });

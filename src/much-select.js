@@ -525,6 +525,8 @@ class MuchSelect extends HTMLElement {
       })
     );
 
+    // Setup the select-input slot mutation observer.
+
     // Options for the observer (which mutations to observe)
     const config = {
       attributes: true,
@@ -534,8 +536,6 @@ class MuchSelect extends HTMLElement {
     };
 
     this._observer = new MutationObserver((mutationsList) => {
-      // TODO I think we are calling this.updateOptionsFromDom() more often than
-      //  we need to. Seems like we should make an effort to filter this some.
       mutationsList.forEach((mutation) => {
         if (mutation.type === "childList") {
           this.updateOptionsFromDom();
@@ -544,7 +544,14 @@ class MuchSelect extends HTMLElement {
         }
       });
     });
-    this._observer.observe(this, config);
+
+    const selectElement = this.querySelector("select[slot='select-input']");
+    if (selectElement) {
+      this._observer.observe(
+        this.querySelector("select[slot='select-input']"),
+        config
+      );
+    }
 
     this.updateHiddenInputValueSlot();
 
@@ -552,7 +559,7 @@ class MuchSelect extends HTMLElement {
   }
 
   updateOptionsFromDom() {
-    const selectElement = this.querySelector("select");
+    const selectElement = this.querySelector("select[slot='select-input']");
     if (selectElement) {
       const optionsJson = buildOptionsFromSelectElement(selectElement);
       this.appPromise.then((app) => {
@@ -664,9 +671,7 @@ class MuchSelect extends HTMLElement {
     flags.allowCustomOptions = this.allowCustomOptions;
     flags.customOptionHint = this.customOptionHint;
 
-    const selectElement = this.querySelector(
-      "select[slot='select-menu-input']"
-    );
+    const selectElement = this.querySelector("select[slot='select-input']");
     if (selectElement) {
       flags.optionsJson = JSON.stringify(
         buildOptionsFromSelectElement(selectElement)
