@@ -62,7 +62,7 @@
       it("should no pick up options if the slot is not specified.", async () => {
         const el = /** @type {MuchSelect} */ await fixture(
           html`<much-select>
-            <select slot="select-input">
+            <select>
               <option value="hipster">dispster</option>
             </select>
           </much-select>`
