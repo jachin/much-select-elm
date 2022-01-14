@@ -76,6 +76,7 @@ type Msg
     | RemoveOptions Json.Decode.Value
     | SelectOption Json.Decode.Value
     | DeselectOption Json.Decode.Value
+    | DeselectOptionInternal Option
     | PlaceholderAttributeChanged String
     | LoadingAttributeChanged Bool
     | MaxDropdownItemsChanged Int
@@ -347,6 +348,21 @@ update msg model =
 
                 Err error ->
                     ( model, errorMessage (Json.Decode.errorToString error) )
+
+        DeselectOptionInternal optionToDeselect ->
+            let
+                optionValue =
+                    Option.getOptionValue optionToDeselect
+
+                options =
+                    Option.deselectOptionInListByOptionValue optionValue model.options
+            in
+            ( { model
+                | options = options
+                , optionsForTheDropdown = figureOutWhichOptionsToShow model.maxDropdownItems options
+              }
+            , makeCommandMessagesWhenValuesChanges options Nothing
+            )
 
         DeselectOption optionJson ->
             case Json.Decode.decodeValue Option.decoder optionJson of
@@ -1267,7 +1283,7 @@ optionsToValuesHtml options enableSingleItemRemoval =
                             removalHtml =
                                 case enableSingleItemRemoval of
                                     EnableSingleItemRemoval ->
-                                        span [] [ text "remove" ]
+                                        span [ onClick <| DeselectOptionInternal option ] [ text "remove" ]
 
                                     DisableSingleItemRemoval ->
                                         text ""
