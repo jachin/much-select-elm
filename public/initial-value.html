@@ -120,7 +120,7 @@
     <div id="much-select-switch-between-multi-select-and-single-select">
       <h3>Switch between multi select and single select</h3>
       <much-select multi-select="" selected-value="Safari,Firefox">
-        <select>
+        <select slot="select-input">
           <option>Firefox</option>
           <option>Chrome</option>
           <option>Safari</option>
@@ -170,6 +170,7 @@
               .filter((opt) => opt.label.includes(searchString))
               .slice(0, 5)
               .forEach((opt) => {
+                console.log("opt", opt);
                 muchSelect.addOption(opt);
               });
             setTimeout(() => {
@@ -179,12 +180,11 @@
 
           muchSelect.addEventListener("ready", () => {
             if (
-              muchSelect.getAttribute("selected") &&
-              muchSelect.getAttribute("selected").length > 0
+              muchSelect.getAttribute("selected-value") &&
+              muchSelect.getAttribute("selected-value").length > 0
             ) {
               // search
-              const query = muchSelect.getAttribute("selected");
-
+              const query = muchSelect.getAttribute("selected-value");
               window.setTimeout(searchForOptions(query), 2000);
             } else {
               possibleOptions.slice(0, 5).forEach((option) => {
