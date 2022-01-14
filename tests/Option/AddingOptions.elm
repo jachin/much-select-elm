@@ -25,6 +25,10 @@ timecop1983 =
     newOption "Timecop1983" Nothing
 
 
+wolfCubJustValue =
+    newOption "Wolf Club" Nothing
+
+
 wolfClub =
     newOption "Wolf Club" Nothing
         |> setLabelWithString "W O L F C L U B" Nothing
@@ -53,6 +57,11 @@ suite =
                 Expect.equalLists
                     [ timecop1983, heartBones ]
                     (addAdditionalOptionsToOptionList [ timecop1983, heartBones ] [ heartBones ])
+        , test "with the same value of an option already in the list but with a description" <|
+            \_ ->
+                Expect.equalLists
+                    [ wolfClub ]
+                    (addAdditionalOptionsToOptionList [ wolfCubJustValue ] [ wolfClub ])
         , describe "and selecting them"
             [ test "with the same value of an option already in the list, preserver the label" <|
                 \_ ->
