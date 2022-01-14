@@ -311,6 +311,10 @@ class MuchSelect extends HTMLElement {
       if (oldValue !== newValue) {
         this.isInMultiSelectMode = newValue;
       }
+    } else if (name === "multi-select-single-removable-options") {
+      if (oldValue !== newValue) {
+        this.isInMultiSelectModeWithSingleItemRemoval = newValue;
+      }
     } else if (name === "placeholder") {
       if (oldValue !== newValue) {
         this.updateDimensions();
@@ -648,6 +652,13 @@ class MuchSelect extends HTMLElement {
     const flags = {};
 
     flags.allowMultiSelect = this.isInMultiSelectMode;
+
+    if (this.hasAttribute("single-item-removal")) {
+      flags.enableMultiSelectSingleItemRemoval =
+        this.getAttribute("single-item-removal").trim() === "true";
+    } else {
+      flags.enableMultiSelectSingleItemRemoval = false;
+    }
 
     flags.value = this.parsedSelectedValue;
 

@@ -841,7 +841,7 @@ view model =
                     ]
                 ]
 
-        MultiSelect _ _ ->
+        MultiSelect _ enableSingleItemRemoval ->
             let
                 hasOptionSelected =
                     Option.hasSelectedOption model.options
@@ -895,15 +895,15 @@ view model =
                         , ( "not-focused", not model.focused )
                         ]
                     ]
-                    (optionsToValuesHtml model.options
+                    (optionsToValuesHtml model.options enableSingleItemRemoval
                         ++ [ inputFilter
                            , rightSlotHtml
                                 model.rightSlot
                                 model.focused
                                 model.disabled
                            ]
+                        ++ [ dropdown model ]
                     )
-                , dropdown model
                 ]
 
 
@@ -1255,14 +1255,23 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
             ]
 
 
-optionsToValuesHtml : List Option -> List (Html Msg)
-optionsToValuesHtml options =
+optionsToValuesHtml : List Option -> SingleItemRemoval -> List (Html Msg)
+optionsToValuesHtml options enableSingleItemRemoval =
     options
         |> Option.selectedOptions
         |> List.map
             (\option ->
                 case option of
                     Option display (OptionLabel labelStr _ _) optionValue _ _ _ ->
+                        let
+                            removalHtml =
+                                case enableSingleItemRemoval of
+                                    EnableSingleItemRemoval ->
+                                        span [] [ text "remove" ]
+
+                                    DisableSingleItemRemoval ->
+                                        text ""
+                        in
                         case display of
                             OptionShown ->
                                 text ""
@@ -1276,7 +1285,7 @@ optionsToValuesHtml options =
                                     , mousedownPreventDefaultAndStopPropagation
                                         (ToggleSelectedValueHighlight optionValue)
                                     ]
-                                    [ text labelStr ]
+                                    [ text labelStr, removalHtml ]
 
                             OptionSelectedHighlighted _ ->
                                 div
@@ -1287,7 +1296,7 @@ optionsToValuesHtml options =
                                     , mousedownPreventDefaultAndStopPropagation
                                         (ToggleSelectedValueHighlight optionValue)
                                     ]
-                                    [ text labelStr ]
+                                    [ text labelStr, removalHtml ]
 
                             OptionHighlighted ->
                                 text ""
@@ -1429,6 +1438,7 @@ type alias Flags =
     , placeholder : String
     , customOptionHint : Maybe String
     , allowMultiSelect : Bool
+    , enableMultiSelectSingleItemRemoval : Bool
     , optionsJson : String
     , loading : Bool
     , maxDropdownItems : Int
@@ -1460,7 +1470,15 @@ init flags =
 
         selectionMode =
             if flags.allowMultiSelect then
-                MultiSelect allowCustomOptions DisableSingleItemRemoval
+                let
+                    singleItemRemoval =
+                        if flags.enableMultiSelectSingleItemRemoval then
+                            EnableSingleItemRemoval
+
+                        else
+                            DisableSingleItemRemoval
+                in
+                MultiSelect allowCustomOptions singleItemRemoval
 
             else
                 SingleSelect allowCustomOptions selectedItemPlacementMode
