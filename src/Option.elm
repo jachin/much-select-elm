@@ -38,6 +38,7 @@ module Option exposing
     , highlightOptionInListByValue
     , isEmptyOption
     , isOptionInListOfOptionsByValue
+    , isOptionValueInListOfOptionsByValue
     , mergeTwoListsOfOptionsPreservingSelectedOptions
     , moveHighlightedOptionDown
     , moveHighlightedOptionUp
@@ -672,6 +673,28 @@ setSelectedOptionInNewOptions oldOptions newOptions =
     selectOptionsInListWithIndex newSelectedOptions newOptions
 
 
+merge2Options : Option -> Option -> Option
+merge2Options optionA optionB =
+    let
+        optionLabel =
+            orOptionLabel optionA optionB
+
+        optionDescription =
+            orOptionDescriptions optionA optionB
+
+        optionGroup =
+            orOptionGroup optionA optionB
+
+        selectedIndex =
+            orSelectedIndex optionA optionB
+    in
+    optionA
+        |> setDescription optionDescription
+        |> setLabel optionLabel
+        |> setGroup optionGroup
+        |> setOptionSelectedIndex selectedIndex
+
+
 {-| This function is a little strange but here's what it does. It takes 2 lists of option.
 First it looks to see if any option values the second list match any option values in the first list
 If they do it takes the label, description, and group from the option in second list and uses it to update
@@ -691,32 +714,12 @@ comes in, including the extra stuff (like label, description, and group).
 mergeTwoListsOfOptionsPreservingSelectedOptions : SelectedItemPlacementMode -> List Option -> List Option -> List Option
 mergeTwoListsOfOptionsPreservingSelectedOptions selectedItemPlacementMode optionsA optionsB =
     let
-        combineOptions optionA optionB =
-            let
-                optionLabel =
-                    orOptionLabel optionA optionB
-
-                optionDescription =
-                    orOptionDescriptions optionA optionB
-
-                optionGroup =
-                    orOptionGroup optionA optionB
-
-                selectedIndex =
-                    orSelectedIndex optionA optionB
-            in
-            optionA
-                |> setDescription optionDescription
-                |> setLabel optionLabel
-                |> setGroup optionGroup
-                |> setOptionSelectedIndex selectedIndex
-
         updatedOptionsA =
             List.map
                 (\optionA ->
                     case findOptionByOptionValue (getOptionValue optionA) optionsB of
                         Just optionB ->
-                            combineOptions optionA optionB
+                            merge2Options optionA optionB
 
                         Nothing ->
                             optionA
@@ -835,14 +838,24 @@ isOptionValueInListOfStrings possibleValues option =
     List.any (\possibleValue -> getOptionValueAsString option == possibleValue) possibleValues
 
 
-isOptionInListOfOptionsByValue : OptionValue -> List Option -> Bool
-isOptionInListOfOptionsByValue optionValue options =
+isOptionValueInListOfOptionsByValue : OptionValue -> List Option -> Bool
+isOptionValueInListOfOptionsByValue optionValue options =
     List.any (\option -> (option |> getOptionValue |> optionValueToString) == (optionValue |> optionValueToString)) options
+
+
+isOptionInListOfOptionsByValue : Option -> List Option -> Bool
+isOptionInListOfOptionsByValue option options =
+    isOptionValueInListOfOptionsByValue (getOptionValue option) options
 
 
 findOptionByOptionValue : OptionValue -> List Option -> Maybe Option
 findOptionByOptionValue optionValue options =
     List.Extra.find (\option -> (option |> getOptionValue) == optionValue) options
+
+
+findOptionByOptionUsingOptionValue : Option -> List Option -> Maybe Option
+findOptionByOptionUsingOptionValue option options =
+    findOptionByOptionValue (getOptionValue option) options
 
 
 optionValuesEqual : Option -> OptionValue -> Bool
@@ -1346,8 +1359,24 @@ clearAnyUnselectedCustomOptions options =
 
 addAdditionalOptionsToOptionList : List Option -> List Option -> List Option
 addAdditionalOptionsToOptionList currentOptions newOptions =
-    List.filter (\new -> not (optionListContainsOptionWithValue new currentOptions)) newOptions
-        ++ currentOptions
+    let
+        currentOptionsWithUpdates =
+            List.map
+                (\currentOption ->
+                    case findOptionByOptionUsingOptionValue currentOption newOptions of
+                        Just newOption_ ->
+                            merge2Options currentOption newOption_
+
+                        Nothing ->
+                            currentOption
+                )
+                currentOptions
+
+        reallyNewOptions : List Option
+        reallyNewOptions =
+            List.filter (\newOption_ -> not (isOptionInListOfOptionsByValue newOption_ currentOptions)) newOptions
+    in
+    reallyNewOptions ++ currentOptionsWithUpdates
 
 
 addAdditionalOptionsToOptionListWithAutoSortRank : List Option -> List Option -> List Option

@@ -62,6 +62,11 @@ suite =
                 Expect.equalLists
                     [ wolfClub ]
                     (addAdditionalOptionsToOptionList [ wolfCubJustValue ] [ wolfClub ])
+        , test "with the same value of an option already in the list but with less meta data" <|
+            \_ ->
+                Expect.equalLists
+                    [ wolfClub ]
+                    (addAdditionalOptionsToOptionList [ wolfClub ] [ wolfCubJustValue ])
         , describe "and selecting them"
             [ test "with the same value of an option already in the list, preserver the label" <|
                 \_ ->

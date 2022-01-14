@@ -1509,7 +1509,7 @@ init flags =
                         SingleSelect _ _ ->
                             case List.head initialValues of
                                 Just initialValueStr_ ->
-                                    if Option.isOptionInListOfOptionsByValue (Option.stringToOptionValue initialValueStr_) options then
+                                    if Option.isOptionValueInListOfOptionsByValue (Option.stringToOptionValue initialValueStr_) options then
                                         let
                                             optionsWithUniqueValues =
                                                 options |> List.Extra.uniqueBy Option.getOptionValueAsString
