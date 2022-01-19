@@ -277,6 +277,7 @@ class MuchSelect extends HTMLElement {
       "loading",
       "max-dropdown-items",
       "multi-select",
+      "multi-select-single-item-removal",
       "placeholder",
       "selected-option-goes-to-top",
       "selected-value",
@@ -311,7 +312,7 @@ class MuchSelect extends HTMLElement {
       if (oldValue !== newValue) {
         this.isInMultiSelectMode = newValue;
       }
-    } else if (name === "multi-select-single-removable-options") {
+    } else if (name === "multi-select-single-item-removal") {
       if (oldValue !== newValue) {
         this.isInMultiSelectModeWithSingleItemRemoval = newValue;
       }
@@ -653,9 +654,9 @@ class MuchSelect extends HTMLElement {
 
     flags.allowMultiSelect = this.isInMultiSelectMode;
 
-    if (this.hasAttribute("single-item-removal")) {
+    if (this.hasAttribute("multi-select-single-item-removal")) {
       flags.enableMultiSelectSingleItemRemoval =
-        this.getAttribute("single-item-removal").trim() === "true";
+        this.getAttribute("multi-select-single-item-removal").trim() === "true";
     } else {
       flags.enableMultiSelectSingleItemRemoval = false;
     }
