@@ -55,7 +55,41 @@ import Option
 import OptionLabel exposing (OptionLabel(..), optionLabelToString)
 import OptionPresentor exposing (tokensToHtml)
 import OptionSearcher
-import Ports exposing (addOptionsReceiver, allOptions, allowCustomOptionsReceiver, blurInput, customOptionHintReceiver, customOptionSelected, deselectOptionReceiver, disableChangedReceiver, errorMessage, focusInput, inputBlurred, inputKeyUp, loadingChangedReceiver, maxDropdownItemsChangedReceiver, muchSelectIsReady, multiSelectChangedReceiver, multiSelectSingleItemRemovalChangedReceiver, optionDeselected, optionSelected, optionsChangedReceiver, placeholderChangedReceiver, removeOptionsReceiver, requestAllOptionsReceiver, scrollDropdownToElement, selectOptionReceiver, selectedItemStaysInPlaceChangedReceiver, valueCasingDimensionsChangedReceiver, valueChanged, valueChangedReceiver, valueCleared, valueDecoder, valuesDecoder)
+import Ports
+    exposing
+        ( addOptionsReceiver
+        , allOptions
+        , allowCustomOptionsReceiver
+        , blurInput
+        , customOptionHintReceiver
+        , customOptionSelected
+        , deselectOptionReceiver
+        , disableChangedReceiver
+        , errorMessage
+        , focusInput
+        , inputBlurred
+        , inputKeyUp
+        , loadingChangedReceiver
+        , maxDropdownItemsChangedReceiver
+        , muchSelectIsReady
+        , multiSelectChangedReceiver
+        , multiSelectSingleItemRemovalChangedReceiver
+        , optionDeselected
+        , optionSelected
+        , optionsChangedReceiver
+        , placeholderChangedReceiver
+        , removeOptionsReceiver
+        , requestAllOptionsReceiver
+        , scrollDropdownToElement
+        , selectOptionReceiver
+        , selectedItemStaysInPlaceChangedReceiver
+        , valueCasingDimensionsChangedReceiver
+        , valueChanged
+        , valueChangedReceiver
+        , valueCleared
+        , valueDecoder
+        , valuesDecoder
+        )
 import PositiveInt exposing (PositiveInt)
 import SelectionMode exposing (CustomOptions(..), SelectedItemPlacementMode(..), SelectionMode(..), SingleItemRemoval(..))
 
