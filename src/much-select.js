@@ -244,7 +244,13 @@ class MuchSelect extends HTMLElement {
      * @type {null|MutationObserver}
      * @private
      */
-    this._observer = null;
+    this._muchSelectObserver = null;
+
+    /**
+     * @type {null|MutationObserver}
+     * @private
+     */
+    this._selectSlotObserver = null;
 
     this._inputKeypressDebounceHandler = makeDebouncedFunc((searchString) => {
       this.dispatchEvent(
@@ -525,17 +531,38 @@ class MuchSelect extends HTMLElement {
       })
     );
 
-    // Setup the select-input slot mutation observer.
+    /// ///
+    // Setup the much-select mutation observer.
+    /// ///
 
     // Options for the observer (which mutations to observe)
-    const config = {
+    const muchSelectMutationObserverConfig = {
+      attributes: true,
+      childList: true,
+      subtree: false,
+      characterData: false,
+    };
+
+    this._muchSelectObserver = new MutationObserver((mutationsList) => {
+      mutationsList.forEach(() => {
+        this.updateOptionsFromDom();
+      });
+    });
+    this._muchSelectObserver.observe(this, muchSelectMutationObserverConfig);
+
+    /// ///
+    // Setup the select-input slot mutation observer.
+    /// ///
+
+    // Options for the observer (which mutations to observe)
+    const selectSlotConfig = {
       attributes: true,
       childList: true,
       subtree: true,
       characterData: true,
     };
 
-    this._observer = new MutationObserver((mutationsList) => {
+    this._selectSlotObserver = new MutationObserver((mutationsList) => {
       mutationsList.forEach((mutation) => {
         if (mutation.type === "childList") {
           this.updateOptionsFromDom();
@@ -547,12 +574,13 @@ class MuchSelect extends HTMLElement {
 
     const selectElement = this.querySelector("select[slot='select-input']");
     if (selectElement) {
-      this._observer.observe(
+      this._selectSlotObserver.observe(
         this.querySelector("select[slot='select-input']"),
-        config
+        selectSlotConfig
       );
     }
 
+    // setup the hidden input slot (if it exists) with any initial values
     this.updateHiddenInputValueSlot();
 
     this._connected = true;
@@ -573,8 +601,8 @@ class MuchSelect extends HTMLElement {
   // noinspection JSUnusedGlobalSymbols
   disconnectedCallback() {
     this._resizeObserver.disconnect();
-    if (this._observer) {
-      this._observer.disconnect();
+    if (this._selectSlotObserver) {
+      this._selectSlotObserver.disconnect();
     }
 
     this._connected = false;
