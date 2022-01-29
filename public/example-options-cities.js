@@ -1,4 +1,4 @@
-window.much_select_options = [
+window.exampleOptionsCities = [
   {
     label: "les Escaldes",
     description: "Andorra, Escaldes-Engordany, 3040051",

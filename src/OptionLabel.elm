@@ -1,11 +1,33 @@
-module OptionLabel exposing (..)
+module OptionLabel exposing (OptionLabel, getLabelString, getSortRank, labelDecoder, new, newWithCleanLabel, newWithSortRank, optionLabelToSearchString, optionLabelToString, setMaybeSortRank, setSortRank)
 
 import Json.Decode
-import SortRank exposing (SortRank, sortRankDecoder)
+import SortRank exposing (SortRank(..), sortRankDecoder)
 
 
 type OptionLabel
     = OptionLabel String (Maybe String) SortRank
+
+
+new : String -> OptionLabel
+new string =
+    OptionLabel string Nothing NoSortRank
+
+
+newWithCleanLabel : String -> Maybe String -> OptionLabel
+newWithCleanLabel string maybeString =
+    OptionLabel string maybeString NoSortRank
+
+
+newWithSortRank : String -> Maybe String -> SortRank -> OptionLabel
+newWithSortRank string maybeString sortRank =
+    OptionLabel string maybeString sortRank
+
+
+getLabelString : OptionLabel -> String
+getLabelString optionLabel =
+    case optionLabel of
+        OptionLabel string _ _ ->
+            string
 
 
 optionLabelToString : OptionLabel -> String
@@ -32,6 +54,23 @@ getSortRank optionLabel =
     case optionLabel of
         OptionLabel _ _ sortRank ->
             sortRank
+
+
+setSortRank : SortRank -> OptionLabel -> OptionLabel
+setSortRank sortRank optionLabel =
+    case optionLabel of
+        OptionLabel string maybeString _ ->
+            OptionLabel string maybeString sortRank
+
+
+setMaybeSortRank : Maybe SortRank -> OptionLabel -> OptionLabel
+setMaybeSortRank maybeSortRank optionLabel =
+    case maybeSortRank of
+        Just sortRank ->
+            setSortRank sortRank optionLabel
+
+        Nothing ->
+            optionLabel
 
 
 labelDecoder : Json.Decode.Decoder OptionLabel
