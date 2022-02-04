@@ -1300,6 +1300,15 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
 
 optionsToValuesHtml : List Option -> SingleItemRemoval -> List (Html Msg)
 optionsToValuesHtml options enableSingleItemRemoval =
+    let
+        labelHtml labelText optionValue =
+            span
+                [ class "value-label"
+                , mousedownPreventDefaultAndStopPropagation
+                    (ToggleSelectedValueHighlight optionValue)
+                ]
+                [ text labelText ]
+    in
     options
         |> Option.selectedOptions
         |> List.map
@@ -1310,7 +1319,7 @@ optionsToValuesHtml options enableSingleItemRemoval =
                             removalHtml =
                                 case enableSingleItemRemoval of
                                     EnableSingleItemRemoval ->
-                                        span [ onClick <| DeselectOptionInternal option ] [ text "remove" ]
+                                        span [ mousedownPreventDefaultAndStopPropagation <| DeselectOptionInternal option, class "remove-option" ] [ text "" ]
 
                                     DisableSingleItemRemoval ->
                                         text ""
@@ -1325,10 +1334,8 @@ optionsToValuesHtml options enableSingleItemRemoval =
                             OptionSelected _ ->
                                 div
                                     [ class "value"
-                                    , mousedownPreventDefaultAndStopPropagation
-                                        (ToggleSelectedValueHighlight optionValue)
                                     ]
-                                    [ text (OptionLabel.getLabelString optionLabel), removalHtml ]
+                                    [ labelHtml (OptionLabel.getLabelString optionLabel) optionValue, removalHtml ]
 
                             OptionSelectedHighlighted _ ->
                                 div
@@ -1336,10 +1343,8 @@ optionsToValuesHtml options enableSingleItemRemoval =
                                         [ ( "value", True )
                                         , ( "highlighted-value", True )
                                         ]
-                                    , mousedownPreventDefaultAndStopPropagation
-                                        (ToggleSelectedValueHighlight optionValue)
                                     ]
-                                    [ text (OptionLabel.getLabelString optionLabel), removalHtml ]
+                                    [ labelHtml (OptionLabel.getLabelString optionLabel) optionValue, removalHtml ]
 
                             OptionHighlighted ->
                                 text ""
@@ -1361,7 +1366,7 @@ optionsToValuesHtml options enableSingleItemRemoval =
                                     , mousedownPreventDefaultAndStopPropagation
                                         (ToggleSelectedValueHighlight optionValue)
                                     ]
-                                    [ text (OptionLabel.getLabelString optionLabel) ]
+                                    [ labelHtml (OptionLabel.getLabelString optionLabel) optionValue ]
 
                             OptionSelectedHighlighted _ ->
                                 div
@@ -1369,10 +1374,8 @@ optionsToValuesHtml options enableSingleItemRemoval =
                                         [ ( "value", True )
                                         , ( "highlighted-value", True )
                                         ]
-                                    , mousedownPreventDefaultAndStopPropagation
-                                        (ToggleSelectedValueHighlight optionValue)
                                     ]
-                                    [ text (OptionLabel.getLabelString optionLabel) ]
+                                    [ labelHtml (OptionLabel.getLabelString optionLabel) optionValue ]
 
                             OptionHighlighted ->
                                 text ""

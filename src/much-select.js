@@ -1104,14 +1104,29 @@ class MuchSelect extends HTMLElement {
   }
 
   set isInMultiSelectModeWithSingleItemRemoval(value) {
-    if (!this._isInMultiSelectMode) {
-      this._isInMultiSelectModeWithSingleItemRemoval = false;
-    } else if (value === "false") {
+    if (value === "false") {
       this._isInMultiSelectModeWithSingleItemRemoval = false;
     } else if (value === "") {
       this._isInMultiSelectModeWithSingleItemRemoval = true;
     } else {
       this._isInMultiSelectModeWithSingleItemRemoval = !!value;
+    }
+
+    if (!this.eventsOnlyMode) {
+      if (this._isInMultiSelectModeWithSingleItemRemoval) {
+        this.setAttribute(
+          "multi-select-single-item-removal",
+          "multi-select-single-item-removal"
+        );
+      } else {
+        this.removeAttribute("multi-select-single-item-removal");
+      }
+      // noinspection JSUnresolvedVariable
+      this.appPromise.then((app) =>
+        app.ports.multiSelectSingleItemRemovalChangedReceiver.send(
+          this._isInMultiSelectModeWithSingleItemRemoval
+        )
+      );
     }
   }
 
@@ -1420,6 +1435,11 @@ class MuchSelect extends HTMLElement {
       #value-casing.multi .value.highlighted-value {
         background-image: linear-gradient(to bottom, #d99477, #efb680);
         background-repeat: repeat-x;
+      }
+
+      .value .remove-option::after {
+        content: "x";
+        padding-left: 5px;
       }
 
       #dropdown-indicator {
