@@ -626,7 +626,7 @@ clearAllSelectedOption model =
                 -- an option has been deselected. return the deselected value as a tuple.
                 Option.selectedOptionsToTuple model.options
 
-        deselectEventMsg =
+        deselectEventCmdMsg =
             if List.isEmpty deselectedItems then
                 Cmd.none
 
@@ -636,7 +636,7 @@ clearAllSelectedOption model =
         newOptions =
             Option.deselectAllOptionsInOptionsList model.options
 
-        focusCmd =
+        focusCmdMsg =
             if model.focused then
                 focusInput ()
 
@@ -651,8 +651,8 @@ clearAllSelectedOption model =
       }
     , Cmd.batch
         [ makeCommandMessagesWhenValuesChanges [] Nothing
-        , deselectEventMsg
-        , focusCmd
+        , deselectEventCmdMsg
+        , focusCmdMsg
         ]
     )
 
@@ -1305,7 +1305,7 @@ optionsToValuesHtml options enableSingleItemRemoval =
         |> List.map
             (\option ->
                 case option of
-                    Option display (OptionLabel labelStr _ _) optionValue _ _ _ ->
+                    Option display optionLabel optionValue _ _ _ ->
                         let
                             removalHtml =
                                 case enableSingleItemRemoval of
@@ -1328,7 +1328,7 @@ optionsToValuesHtml options enableSingleItemRemoval =
                                     , mousedownPreventDefaultAndStopPropagation
                                         (ToggleSelectedValueHighlight optionValue)
                                     ]
-                                    [ text labelStr, removalHtml ]
+                                    [ text (OptionLabel.getLabelString optionLabel), removalHtml ]
 
                             OptionSelectedHighlighted _ ->
                                 div
@@ -1339,7 +1339,7 @@ optionsToValuesHtml options enableSingleItemRemoval =
                                     , mousedownPreventDefaultAndStopPropagation
                                         (ToggleSelectedValueHighlight optionValue)
                                     ]
-                                    [ text labelStr, removalHtml ]
+                                    [ text (OptionLabel.getLabelString optionLabel), removalHtml ]
 
                             OptionHighlighted ->
                                 text ""
@@ -1347,7 +1347,7 @@ optionsToValuesHtml options enableSingleItemRemoval =
                             OptionDisabled ->
                                 text ""
 
-                    CustomOption display (OptionLabel labelStr _ _) optionValue _ ->
+                    CustomOption display optionLabel optionValue _ ->
                         case display of
                             OptionShown ->
                                 text ""
@@ -1361,7 +1361,7 @@ optionsToValuesHtml options enableSingleItemRemoval =
                                     , mousedownPreventDefaultAndStopPropagation
                                         (ToggleSelectedValueHighlight optionValue)
                                     ]
-                                    [ text labelStr ]
+                                    [ text (OptionLabel.getLabelString optionLabel) ]
 
                             OptionSelectedHighlighted _ ->
                                 div
@@ -1372,7 +1372,7 @@ optionsToValuesHtml options enableSingleItemRemoval =
                                     , mousedownPreventDefaultAndStopPropagation
                                         (ToggleSelectedValueHighlight optionValue)
                                     ]
-                                    [ text labelStr ]
+                                    [ text (OptionLabel.getLabelString optionLabel) ]
 
                             OptionHighlighted ->
                                 text ""
@@ -1380,7 +1380,7 @@ optionsToValuesHtml options enableSingleItemRemoval =
                             OptionDisabled ->
                                 text ""
 
-                    EmptyOption display (OptionLabel labelStr _ _) ->
+                    EmptyOption display optionLabel ->
                         case display of
                             OptionShown ->
                                 text ""
@@ -1389,7 +1389,7 @@ optionsToValuesHtml options enableSingleItemRemoval =
                                 text ""
 
                             OptionSelected _ ->
-                                div [ class "value" ] [ text labelStr ]
+                                div [ class "value" ] [ text (OptionLabel.getLabelString optionLabel) ]
 
                             OptionSelectedHighlighted _ ->
                                 text ""
@@ -1476,6 +1476,16 @@ makeCommandMessagesWhenValuesChanges selectedOptions maybeSelectedValue =
         ]
 
 
+makeCommandMessageForInitialValue : List Option -> Cmd Msg
+makeCommandMessageForInitialValue selectedOptions =
+    case selectedOptions of
+        [] ->
+            Cmd.none
+
+        selectionOptions_ ->
+            valueChanged (selectedOptionsToTuple selectionOptions_)
+
+
 type alias Flags =
     { value : Json.Decode.Value
     , placeholder : String
@@ -1546,7 +1556,7 @@ init flags =
                         SingleSelect _ _ ->
                             case List.head initialValues of
                                 Just initialValueStr_ ->
-                                    if Option.isOptionInListOfOptionsByValue (Option.stringToOptionValue initialValueStr_) options then
+                                    if Option.isOptionValueInListOfOptionsByValue (Option.stringToOptionValue initialValueStr_) options then
                                         let
                                             optionsWithUniqueValues =
                                                 options |> List.Extra.uniqueBy Option.getOptionValueAsString
@@ -1616,7 +1626,12 @@ init flags =
       , valueCasingWidth = 100
       , valueCasingHeight = 45
       }
-    , Cmd.batch [ errorCmd, initialValueErrCmd, muchSelectIsReady () ]
+    , Cmd.batch
+        [ errorCmd
+        , initialValueErrCmd
+        , muchSelectIsReady ()
+        , makeCommandMessageForInitialValue (Option.selectedOptions optionsWithInitialValueSelected)
+        ]
     )
 
 
