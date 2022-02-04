@@ -190,7 +190,13 @@ class MuchSelect extends HTMLElement {
      * @type {boolean}
      * @private
      */
-    this._isInMulitSelectMode = false;
+    this._isInMultiSelectMode = false;
+
+    /**
+     * @type {boolean}
+     * @private
+     */
+    this._isInMultiSelectModeWithSingleItemRemoval = false;
 
     /**
      * @type {boolean}
@@ -277,6 +283,7 @@ class MuchSelect extends HTMLElement {
       "loading",
       "max-dropdown-items",
       "multi-select",
+      "multi-select-single-item-removal",
       "placeholder",
       "selected-option-goes-to-top",
       "selected-value",
@@ -310,6 +317,10 @@ class MuchSelect extends HTMLElement {
     } else if (name === "multi-select") {
       if (oldValue !== newValue) {
         this.isInMultiSelectMode = newValue;
+      }
+    } else if (name === "multi-select-single-item-removal") {
+      if (oldValue !== newValue) {
+        this.isInMultiSelectModeWithSingleItemRemoval = newValue;
       }
     } else if (name === "placeholder") {
       if (oldValue !== newValue) {
@@ -677,6 +688,13 @@ class MuchSelect extends HTMLElement {
     const flags = {};
 
     flags.allowMultiSelect = this.isInMultiSelectMode;
+
+    if (this.hasAttribute("multi-select-single-item-removal")) {
+      flags.enableMultiSelectSingleItemRemoval =
+        this.getAttribute("multi-select-single-item-removal").trim() === "true";
+    } else {
+      flags.enableMultiSelectSingleItemRemoval = false;
+    }
 
     flags.value = this.parsedSelectedValue;
 
@@ -1055,20 +1073,20 @@ class MuchSelect extends HTMLElement {
   }
 
   get isInMultiSelectMode() {
-    return this._isInMulitSelectMode;
+    return this._isInMultiSelectMode;
   }
 
   set isInMultiSelectMode(value) {
     if (value === "false") {
-      this._isInMulitSelectMode = false;
+      this._isInMultiSelectMode = false;
     } else if (value === "") {
-      this._isInMulitSelectMode = true;
+      this._isInMultiSelectMode = true;
     } else {
-      this._isInMulitSelectMode = !!value;
+      this._isInMultiSelectMode = !!value;
     }
 
     if (!this.eventsOnlyMode) {
-      if (this._isInMulitSelectMode) {
+      if (this._isInMultiSelectMode) {
         this.setAttribute("multi-select", value);
       } else {
         this.removeAttribute("multi-select");
@@ -1079,6 +1097,22 @@ class MuchSelect extends HTMLElement {
     this.appPromise.then((app) =>
       app.ports.multiSelectChangedReceiver.send(this.isInMultiSelectMode)
     );
+  }
+
+  get isInMultiSelectModeWithSingleItemRemoval() {
+    return this._isInMultiSelectModeWithSingleItemRemoval;
+  }
+
+  set isInMultiSelectModeWithSingleItemRemoval(value) {
+    if (!this._isInMultiSelectMode) {
+      this._isInMultiSelectModeWithSingleItemRemoval = false;
+    } else if (value === "false") {
+      this._isInMultiSelectModeWithSingleItemRemoval = false;
+    } else if (value === "") {
+      this._isInMultiSelectModeWithSingleItemRemoval = true;
+    } else {
+      this._isInMultiSelectModeWithSingleItemRemoval = !!value;
+    }
   }
 
   get loading() {

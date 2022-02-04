@@ -42,7 +42,7 @@
 
   <div id="much-select-with-custom-options">
     <h3>Custom Options</h3>
-    <p>With mulit select you can also add your own "custom" options with the <code>allow-custom-options=""</code> attribute.</p>
+    <p>With multi select you can also add your own "custom" options with the <code>allow-custom-options=""</code> attribute.</p>
     <much-select multi-select="" allow-custom-options="">
       <select slot="select-input">
         <option>Arugula</option>
@@ -58,6 +58,23 @@
 
   </div>
 
+  <div id="much-select-with-removable-options">
+    <h3>Removable Options</h3>
+    <p>With multi select you can make each selected value individually removable.</p>
+    <much-select multi-select="" allow-custom-options="" multi-select-single-item-removal="true">
+      <select>
+        <option>Arugula</option>
+        <option>Butterhead</option>
+        <option>Coral</option>
+        <option>Cress</option>
+        <option>Endive</option>
+        <option>Escarole</option>
+        <option>Frisée</option>
+        <option>Mâche</option>
+      </select>
+    </much-select>
+
+  </div>
   <div id="much-select-with-no-options">
     <h3>No Options</h3>
     <p>What does the drop down look like if you have no options</p>
