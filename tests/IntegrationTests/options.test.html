@@ -51,7 +51,7 @@
           );
           expect(el.selectedValue).to.equal("table");
           expect(el.shadowRoot.querySelectorAll(".value")[0].innerHTML).to.equal(
-            "table"
+            '<span class="value-label">table</span>'
           );
           expect(el.shadowRoot.querySelectorAll(".value").length).to.equal(1);
         });
