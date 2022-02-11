@@ -26,7 +26,7 @@
   <div id="much-select-multi-select">
     <h3>Multi Select</h3>
     <much-select multi-select="">
-      <select>
+      <select slot="select-input">
         <option>Ada</option>
         <option>ALGOL 68</option>
         <option>C</option>
@@ -42,9 +42,9 @@
 
   <div id="much-select-with-custom-options">
     <h3>Custom Options</h3>
-    <p>With mulit select you can also add your own "custom" options with the <code>allow-custom-options=""</code> attribute.</p>
+    <p>With multi select you can also add your own "custom" options with the <code>allow-custom-options=""</code> attribute.</p>
     <much-select multi-select="" allow-custom-options="">
-      <select>
+      <select slot="select-input">
         <option>Arugula</option>
         <option>Butterhead</option>
         <option>Coral</option>
@@ -58,6 +58,33 @@
 
   </div>
 
+  <div id="much-select-with-removable-options">
+    <h3>Removable Options</h3>
+    <p>With multi select you can make each selected value individually removable.</p>
+    <button>Toggle the remove selected item buttons</button>
+    <much-select multi-select allow-custom-options multi-select-single-item-removal selected-value="Butterhead,Escarole">
+      <select slot="select-input">
+        <option>Arugula</option>
+        <option>Butterhead</option>
+        <option>Coral</option>
+        <option>Cress</option>
+        <option>Endive</option>
+        <option>Escarole</option>
+        <option>Frisée</option>
+        <option>Mâche</option>
+      </select>
+    </much-select>
+    <script>
+      document
+        .querySelector("#much-select-with-removable-options button")
+        .addEventListener("click", () => {
+          document
+            .querySelector("#much-select-with-removable-options much-select")
+            .toggleAttribute("multi-select-single-item-removal");
+        });
+    </script>
+
+  </div>
   <div id="much-select-with-no-options">
     <h3>No Options</h3>
     <p>What does the drop down look like if you have no options</p>

@@ -9,7 +9,6 @@
   <link rel="icon" href="./favicon.ico" type="image/x-icon" />
   <title>Much Select</title>
   <link href="demo-styles.css" rel="stylesheet">
-  <script src="./options.js"></script>
 </head>
 
 <body>
@@ -167,15 +166,15 @@
     <button>Toggle loading attribute</button>
     <script>
       document
-  .querySelector("#loading-indicator button")
-  .addEventListener("click", () => {
+        .querySelector("#loading-indicator button")
+        .addEventListener("click", () => {
           const muchSelectElement = document.querySelector(
-      "#loading-indicator much-select"
-    );
+            "#loading-indicator much-select"
+          );
           if (muchSelectElement.hasAttribute("loading")) {
             muchSelectElement.removeAttribute("loading");
           } else {
-          muchSelectElement.setAttribute("loading", "loading");
+            muchSelectElement.setAttribute("loading", "loading");
           }
         });
     </script>
@@ -225,7 +224,7 @@
   <div>
     <h3>Max Number of Items</h3>
     <much-select max-dropdown-items="3">
-      <select slot="select-menu-input">
+      <select slot="select-input">
         <option value="1">These</option>
         <option value="2">are</option>
         <option value="3" data-description="initial options">the</option>
@@ -239,7 +238,7 @@
     <p>As you type we'll query the remote API for additional options.</p>
     <p>This dropdown searches the <a href="https://rickandmortyapi.com/">Rick and Morty</a> API for characters from the show by name.</p>
     <much-select max-dropdown-items="3">
-      <select slot="select-menu-input"></select>
+      <select slot="select-input"></select>
     </much-select>
 
     <script>
@@ -284,74 +283,10 @@
     </script>
   </div>
 
-  <div id="selected-option-with-async-options">
-    <h3>Async Loading Options</h3>
-    <p>In this example we start with a single selected value, then asynchronously load in a bunch more options.</p>
-    <p>The description for the selected gets loaded in with all async options.</p>
-    <much-select max-dropdown-items="30">
-      <select slot="select-menu-input">
-        <option selected="true" value="les Escaldes">les Escaldes</option>
-      </select>
-    </much-select>
-
-    <script>
-      (() => {
-        const muchSelect = document.querySelector(
-          "#selected-option-with-async-options much-select"
-        );
-        const possibleOptions = window.much_select_options;
-
-        const searchForOptions = (searchString) => () => {
-      // only searching against label. description should be searchable at some point.
-      possibleOptions
-            .filter((opt) => opt.label.includes(searchString))
-            .forEach((opt) => {
-              muchSelect.addOption(opt);
-            });
-          setTimeout(() => {
-            muchSelect.loading = false;
-      }, 500);
-  };
-
-        muchSelect.addEventListener("ready", (evt) => {
-          if (
-            muchSelect.getAttribute("selected") &&
-            muchSelect.getAttribute("selected").length > 0
-          ) {
-            // search
-            const query = muchSelect.getAttribute("selected");
-
-            window.setTimeout(searchForOptions(query), 2000);
-          } else {
-            possibleOptions.forEach((option) => {
-              muchSelect.addOption(option);
-            });
-          }
-        });
-
-        muchSelect.addEventListener("inputKeyUpDebounced", (evt) => {
-          const { searchString } = evt.detail;
-          if (searchString.length < 3) {
-            // Lets not search unless we have at least 3 characters in the search string.
-            return;
-          }
-
-          // This could take a while, so the user knows something is going on
-          //  lets throw up the loading indicator.
-          muchSelect.loading = true;
-
-          // The API is just too fast, slow it down a bit so we can watch
-          //  it work.
-          window.setTimeout(searchForOptions(searchString), 2000);
-        });
-      })();
-    </script>
-  </div>
-
   <div id="custom-options-that-persist">
     <h3>Custom Options That Persist</h3>
     <much-select allow-custom-options="allow-custom-options">
-      <select slot="select-menu-input">
+      <select slot="select-input">
         <option value="Bánh mì">Bánh mì</option>
         <option value="Cheesesteak">Cheesesteak</option>
         <option value="Cheesesteak">Po' boy</option>
@@ -383,11 +318,12 @@
 
           muchSelect.addEventListener("customValueSelected", (evt) => {
             const newValue = evt.detail.value;
-            let customOptionsAsString = window.localStorage.getItem(localStorageKey);
-            const customOptions = JSON.parse(customOptionsAsString);
+            const currentCustomOptionsAsString =
+              window.localStorage.getItem(localStorageKey);
+            const customOptions = JSON.parse(currentCustomOptionsAsString);
             customOptions.push(newValue);
-            customOptionsAsString = JSON.stringify(customOptions);
-            window.localStorage.setItem(localStorageKey, customOptionsAsString);
+            const newCustomOptionsAsString = JSON.stringify(customOptions);
+            window.localStorage.setItem(localStorageKey, newCustomOptionsAsString);
           });
         });
       })();
@@ -405,7 +341,7 @@
       and leave it up to "something else" to managed its attributes.
     </p>
     <much-select events-only="" selected-value="central">
-      <select slot="select-menu-input">
+      <select slot="select-input">
         <option value="Eastern">Eastern</option>
         <option value="central">Central</option>
         <option value="mountain">Mountain</option>

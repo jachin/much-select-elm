@@ -39,7 +39,26 @@ if (!customElements.get("much-select")) {
 
 ## Development
 
-To work on this project, clone the repo to your machine, then.
+### Pre-requisites
+This project manages its Node version with [asdf](https://github.com/asdf-vm/asdf)
+
+You'll need asdf installed as well as the [asdf nodejs plugin](https://github.com/asdf-vm/asdf-nodejs)
+(`gpg` is a dependency used by asdf to verify plugin asset validity)
+
+```bash
+brew install gpg
+brew install asdf
+asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git
+```
+
+To work on this project, clone the repo to your machine then:
+
+```bash
+asdf install
+npm install
+npm start
+```
+
 
 ### Initial Setup
 
@@ -100,11 +119,11 @@ This event fires if the `<much-select>` is cleared.
 
 ##### `optionSelected`
 
-This event fires if the `<much-select>` is in single or multi select mode but it's _mostly_ for mulit select mode. It will just have the newly selected option in it (not all the selected options like the `valueChanged` event).
+This event fires if the `<much-select>` is in single or multi select mode but it's _mostly_ for multi select mode. It will just have the newly selected option in it (not all the selected options like the `valueChanged` event).
 
 ##### `optionDeselected`
 
-This event fires if the `<much-select>` is in single or multi select mode but it's _mostly_ for mulit select mode. It will just have the newly deselected option in it. This is kinda of the inverse of the `optionSelected` event.
+This event fires if the `<much-select>` is in single or multi select mode but it's _mostly_ for multi select mode. It will just have the newly deselected option in it. This is kinda of the inverse of the `optionSelected` event.
 
 ##### `inputKeyUp`
 

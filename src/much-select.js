@@ -190,7 +190,13 @@ class MuchSelect extends HTMLElement {
      * @type {boolean}
      * @private
      */
-    this._isInMulitSelectMode = false;
+    this._isInMultiSelectMode = false;
+
+    /**
+     * @type {boolean}
+     * @private
+     */
+    this._isInMultiSelectModeWithSingleItemRemoval = false;
 
     /**
      * @type {boolean}
@@ -213,7 +219,7 @@ class MuchSelect extends HTMLElement {
     /**
      * Depending on what you've got going on, you may want different
      * schemes for encoding the selected values. There are some choices.
-     *  - comma (default) - just make the values comma separated (problematic if you have commas in your values)
+     *  - comma (default) - just making the values comma separated (problematic if you have commas in your values)
      *  - json
      * @type {string}
      * @private
@@ -244,7 +250,13 @@ class MuchSelect extends HTMLElement {
      * @type {null|MutationObserver}
      * @private
      */
-    this._observer = null;
+    this._muchSelectObserver = null;
+
+    /**
+     * @type {null|MutationObserver}
+     * @private
+     */
+    this._selectSlotObserver = null;
 
     this._inputKeypressDebounceHandler = makeDebouncedFunc((searchString) => {
       this.dispatchEvent(
@@ -257,7 +269,7 @@ class MuchSelect extends HTMLElement {
 
     // noinspection JSUnresolvedFunction
     this._resizeObserver = new ResizeObserver(() => {
-      // When the size changes we need to tell Elm so it can
+      // When the size changes we need to tell Elm, so it can
       //  adjust things like the width of the dropdown.
       this.updateDimensions();
     });
@@ -271,6 +283,7 @@ class MuchSelect extends HTMLElement {
       "loading",
       "max-dropdown-items",
       "multi-select",
+      "multi-select-single-item-removal",
       "placeholder",
       "selected-option-goes-to-top",
       "selected-value",
@@ -305,6 +318,10 @@ class MuchSelect extends HTMLElement {
       if (oldValue !== newValue) {
         this.isInMultiSelectMode = newValue;
       }
+    } else if (name === "multi-select-single-item-removal") {
+      if (oldValue !== newValue) {
+        this.isInMultiSelectModeWithSingleItemRemoval = newValue;
+      }
     } else if (name === "placeholder") {
       if (oldValue !== newValue) {
         this.updateDimensions();
@@ -335,7 +352,7 @@ class MuchSelect extends HTMLElement {
 
       parentDiv.addEventListener("mousedown", (evt) => {
         // This stops the dropdown from flashes when the user clicks
-        //  on a optgroup. And it kinda makes sense. we don't want
+        //  on an optgroup. And it kinda makes sense. we don't want
         //  mousedown events escaping and effecting the DOM.
         evt.stopImmediatePropagation();
         evt.preventDefault();
@@ -525,17 +542,38 @@ class MuchSelect extends HTMLElement {
       })
     );
 
+    /// ///
+    // Setup the much-select mutation observer.
+    /// ///
+
     // Options for the observer (which mutations to observe)
-    const config = {
+    const muchSelectMutationObserverConfig = {
+      attributes: true,
+      childList: true,
+      subtree: false,
+      characterData: false,
+    };
+
+    this._muchSelectObserver = new MutationObserver((mutationsList) => {
+      mutationsList.forEach(() => {
+        this.updateOptionsFromDom();
+      });
+    });
+    this._muchSelectObserver.observe(this, muchSelectMutationObserverConfig);
+
+    /// ///
+    // Setup the select-input slot mutation observer.
+    /// ///
+
+    // Options for the observer (which mutations to observe)
+    const selectSlotConfig = {
       attributes: true,
       childList: true,
       subtree: true,
       characterData: true,
     };
 
-    this._observer = new MutationObserver((mutationsList) => {
-      // TODO I think we are calling this.updateOptionsFromDom() more often than
-      //  we need to. Seems like we should make an effort to filter this some.
+    this._selectSlotObserver = new MutationObserver((mutationsList) => {
       mutationsList.forEach((mutation) => {
         if (mutation.type === "childList") {
           this.updateOptionsFromDom();
@@ -544,15 +582,23 @@ class MuchSelect extends HTMLElement {
         }
       });
     });
-    this._observer.observe(this, config);
 
+    const selectElement = this.querySelector("select[slot='select-input']");
+    if (selectElement) {
+      this._selectSlotObserver.observe(
+        this.querySelector("select[slot='select-input']"),
+        selectSlotConfig
+      );
+    }
+
+    // setup the hidden input slot (if it exists) with any initial values
     this.updateHiddenInputValueSlot();
 
     this._connected = true;
   }
 
   updateOptionsFromDom() {
-    const selectElement = this.querySelector("select");
+    const selectElement = this.querySelector("select[slot='select-input']");
     if (selectElement) {
       const optionsJson = buildOptionsFromSelectElement(selectElement);
       this.appPromise.then((app) => {
@@ -566,8 +612,8 @@ class MuchSelect extends HTMLElement {
   // noinspection JSUnusedGlobalSymbols
   disconnectedCallback() {
     this._resizeObserver.disconnect();
-    if (this._observer) {
-      this._observer.disconnect();
+    if (this._selectSlotObserver) {
+      this._selectSlotObserver.disconnect();
     }
 
     this._connected = false;
@@ -590,6 +636,28 @@ class MuchSelect extends HTMLElement {
     }
   }
 
+  /**
+   * The idea with this method is that we need the selected input slot to mirror the internal state of the
+   * much select, unless something else wants full control over the DOM (eventsOnlyMode is true), then we leave that
+   * responsibility to them.
+   */
+  updateSelectInputSlot() {
+    if (!this.eventsOnlyMode) {
+      const selectInputSlot = this.querySelector("[slot='select-input']");
+      if (selectInputSlot) {
+        selectInputSlot.querySelectorAll("option").forEach((optionEl) => {
+          if (optionEl.selected) {
+            if (!this.isValueSelected(optionEl.value)) {
+              optionEl.removeAttribute("selected");
+            }
+          } else if (this.isValueSelected(optionEl.value)) {
+            optionEl.setAttribute("selected", "");
+          }
+        });
+      }
+    }
+  }
+
   // eslint-disable-next-line class-methods-use-this
   errorHandler(error) {
     // eslint-disable-next-line no-console
@@ -599,7 +667,7 @@ class MuchSelect extends HTMLElement {
   /**
    * This method updates the width this widget when it's not selected, so when
    *  it is selected it matches the input element.
-   * This needs to be called very time the options or the values change (or
+   * This needs to be called very time the options or the values change or
    *  anything else that might change the height or width of the much-select.
    * It waits for 1 frame before doing calculating what the height and width
    *  should be.
@@ -643,6 +711,13 @@ class MuchSelect extends HTMLElement {
 
     flags.allowMultiSelect = this.isInMultiSelectMode;
 
+    if (this.hasAttribute("multi-select-single-item-removal")) {
+      flags.enableMultiSelectSingleItemRemoval =
+        this.getAttribute("multi-select-single-item-removal").trim() === "true";
+    } else {
+      flags.enableMultiSelectSingleItemRemoval = false;
+    }
+
     flags.value = this.parsedSelectedValue;
 
     if (this.hasAttribute("placeholder")) {
@@ -664,7 +739,7 @@ class MuchSelect extends HTMLElement {
     flags.allowCustomOptions = this.allowCustomOptions;
     flags.customOptionHint = this.customOptionHint;
 
-    const selectElement = this.querySelector("select");
+    const selectElement = this.querySelector("select[slot='select-input']");
     if (selectElement) {
       flags.optionsJson = JSON.stringify(
         buildOptionsFromSelectElement(selectElement)
@@ -759,6 +834,8 @@ class MuchSelect extends HTMLElement {
     }
 
     this.updateHiddenInputValueSlot();
+
+    this.updateSelectInputSlot();
   }
 
   customOptionSelected(values) {
@@ -821,6 +898,7 @@ class MuchSelect extends HTMLElement {
           resolve(this._app);
         } catch (error) {
           reject(error);
+          this.errorHandler(error);
         }
       }
     });
@@ -890,7 +968,15 @@ class MuchSelect extends HTMLElement {
     }
     if (this.selectedValueEncoding === "json") {
       if (this.isInMultiSelectMode) {
+        if (this.selectedValue === "") {
+          // a special case because an empty string is not valid JSON.
+          return [];
+        }
         return JSON.parse(decodeURIComponent(this.selectedValue));
+      }
+      if (this.selectedValue === "") {
+        // a special case because an empty string is not valid JSON.
+        return "";
       }
       const val = JSON.parse(decodeURIComponent(this.selectedValue));
       if (Array.isArray(val)) {
@@ -915,7 +1001,12 @@ class MuchSelect extends HTMLElement {
         this.selectedValue = values;
       }
     } else if (this.selectedValueEncoding === "json") {
-      this.selectedValue = encodeURIComponent(JSON.stringify(values));
+      if (values === "") {
+        // The empty string here is a special case because we don't want to encode an empty string.
+        this.selectedValue = "";
+      } else {
+        this.selectedValue = encodeURIComponent(JSON.stringify(values));
+      }
     }
   }
 
@@ -1006,20 +1097,20 @@ class MuchSelect extends HTMLElement {
   }
 
   get isInMultiSelectMode() {
-    return this._isInMulitSelectMode;
+    return this._isInMultiSelectMode;
   }
 
   set isInMultiSelectMode(value) {
     if (value === "false") {
-      this._isInMulitSelectMode = false;
+      this._isInMultiSelectMode = false;
     } else if (value === "") {
-      this._isInMulitSelectMode = true;
+      this._isInMultiSelectMode = true;
     } else {
-      this._isInMulitSelectMode = !!value;
+      this._isInMultiSelectMode = !!value;
     }
 
     if (!this.eventsOnlyMode) {
-      if (this._isInMulitSelectMode) {
+      if (this._isInMultiSelectMode) {
         this.setAttribute("multi-select", value);
       } else {
         this.removeAttribute("multi-select");
@@ -1030,6 +1121,37 @@ class MuchSelect extends HTMLElement {
     this.appPromise.then((app) =>
       app.ports.multiSelectChangedReceiver.send(this.isInMultiSelectMode)
     );
+  }
+
+  get isInMultiSelectModeWithSingleItemRemoval() {
+    return this._isInMultiSelectModeWithSingleItemRemoval;
+  }
+
+  set isInMultiSelectModeWithSingleItemRemoval(value) {
+    if (value === "false") {
+      this._isInMultiSelectModeWithSingleItemRemoval = false;
+    } else if (value === "") {
+      this._isInMultiSelectModeWithSingleItemRemoval = true;
+    } else {
+      this._isInMultiSelectModeWithSingleItemRemoval = !!value;
+    }
+
+    if (!this.eventsOnlyMode) {
+      if (this._isInMultiSelectModeWithSingleItemRemoval) {
+        this.setAttribute(
+          "multi-select-single-item-removal",
+          "multi-select-single-item-removal"
+        );
+      } else {
+        this.removeAttribute("multi-select-single-item-removal");
+      }
+      // noinspection JSUnresolvedVariable
+      this.appPromise.then((app) =>
+        app.ports.multiSelectSingleItemRemovalChangedReceiver.send(
+          this._isInMultiSelectModeWithSingleItemRemoval
+        )
+      );
+    }
   }
 
   get loading() {
@@ -1339,6 +1461,11 @@ class MuchSelect extends HTMLElement {
         background-repeat: repeat-x;
       }
 
+      .value .remove-option::after {
+        content: "x";
+        padding-left: 5px;
+      }
+
       #dropdown-indicator {
         position: absolute;
         right: 5px;
@@ -1466,6 +1593,16 @@ class MuchSelect extends HTMLElement {
       </div>
     `;
     return templateTag;
+  }
+
+  /**
+   * This should tell you if a value is selected or not, whehter the much-select is in single or multi select mode.
+   *
+   * @param testValue
+   * @returns {boolean}
+   */
+  isValueSelected(testValue) {
+    return this.parsedSelectedValue.includes(testValue);
   }
 
   updateOptions(options) {
