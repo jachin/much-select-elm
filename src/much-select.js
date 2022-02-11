@@ -601,9 +601,6 @@ class MuchSelect extends HTMLElement {
     const selectElement = this.querySelector("select[slot='select-input']");
     if (selectElement) {
       const optionsJson = buildOptionsFromSelectElement(selectElement);
-
-      console.log("updateOptionsFromDom", optionsJson);
-
       this.appPromise.then((app) => {
         // noinspection JSUnresolvedVariable
         app.ports.optionsChangedReceiver.send(optionsJson);
@@ -648,19 +645,15 @@ class MuchSelect extends HTMLElement {
     if (!this.eventsOnlyMode) {
       const selectInputSlot = this.querySelector("[slot='select-input']");
       if (selectInputSlot) {
-        if (this.isInMultiSelectMode) {
-          // TODO
-        } else {
-          selectInputSlot.querySelectorAll("option").forEach((optionEl) => {
-            if (optionEl.selected) {
-              if (optionEl.value !== this.selectedValue) {
-                optionEl.removeAttribute("selected");
-              }
-            } else if (optionEl.value === this.selectedValue) {
-              optionEl.setAttribute("selected", "");
+        selectInputSlot.querySelectorAll("option").forEach((optionEl) => {
+          if (optionEl.selected) {
+            if (!this.isValueSelected(optionEl.value)) {
+              optionEl.removeAttribute("selected");
             }
-          });
-        }
+          } else if (this.isValueSelected(optionEl.value)) {
+            optionEl.setAttribute("selected", "");
+          }
+        });
       }
     }
   }
@@ -1600,6 +1593,10 @@ class MuchSelect extends HTMLElement {
       </div>
     `;
     return templateTag;
+  }
+
+  isValueSelected(testValue) {
+    return this.parsedSelectedValue.includes(testValue);
   }
 
   updateOptions(options) {
