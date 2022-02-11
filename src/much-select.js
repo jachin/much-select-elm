@@ -636,6 +636,28 @@ class MuchSelect extends HTMLElement {
     }
   }
 
+  /**
+   * The idea with this method is that we need the selected input slot to mirror the internal state of the
+   * much select, unless something else wants full control over the DOM (eventsOnlyMode is true), then we leave that
+   * responsibility to them.
+   */
+  updateSelectInputSlot() {
+    if (!this.eventsOnlyMode) {
+      const selectInputSlot = this.querySelector("[slot='select-input']");
+      if (selectInputSlot) {
+        selectInputSlot.querySelectorAll("option").forEach((optionEl) => {
+          if (optionEl.selected) {
+            if (!this.isValueSelected(optionEl.value)) {
+              optionEl.removeAttribute("selected");
+            }
+          } else if (this.isValueSelected(optionEl.value)) {
+            optionEl.setAttribute("selected", "");
+          }
+        });
+      }
+    }
+  }
+
   // eslint-disable-next-line class-methods-use-this
   errorHandler(error) {
     // eslint-disable-next-line no-console
@@ -812,6 +834,8 @@ class MuchSelect extends HTMLElement {
     }
 
     this.updateHiddenInputValueSlot();
+
+    this.updateSelectInputSlot();
   }
 
   customOptionSelected(values) {
@@ -1569,6 +1593,16 @@ class MuchSelect extends HTMLElement {
       </div>
     `;
     return templateTag;
+  }
+
+  /**
+   * This should tell you if a value is selected or not, whehter the much-select is in single or multi select mode.
+   *
+   * @param testValue
+   * @returns {boolean}
+   */
+  isValueSelected(testValue) {
+    return this.parsedSelectedValue.includes(testValue);
   }
 
   updateOptions(options) {

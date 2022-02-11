@@ -6,6 +6,7 @@ import Option
         ( addAdditionalOptionsToOptionList
         , addAdditionalOptionsToOptionListWithAutoSortRank
         , addAndSelectOptionsInOptionsListByString
+        , merge2Options
         , mergeTwoListsOfOptionsPreservingSelectedOptions
         , newOption
         , selectOption
@@ -143,5 +144,30 @@ suite =
                                 [ heartBones, timecop1983 ]
                             )
                 ]
+            ]
+        , describe "and merging them with existing options"
+            [ test "we should keep label and descriptions" <|
+                \_ ->
+                    Expect.equalLists
+                        [ wolfClub
+                        ]
+                        (mergeTwoListsOfOptionsPreservingSelectedOptions
+                            SelectedItemStaysInPlace
+                            [ wolfClub
+                            ]
+                            [ newOption "Wolf Club" Nothing ]
+                        )
+            ]
+        , describe "mering two options"
+            [ test "should preserve label and description when the option with the label and description is first" <|
+                \_ ->
+                    Expect.equal
+                        wolfClub
+                        (merge2Options wolfClub (newOption "Wolf Club" Nothing))
+            , test "should preserve label and description when the option with the label and description is second" <|
+                \_ ->
+                    Expect.equal
+                        wolfClub
+                        (merge2Options (newOption "Wolf Club" Nothing) wolfClub)
             ]
         ]
