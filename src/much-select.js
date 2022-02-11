@@ -601,6 +601,9 @@ class MuchSelect extends HTMLElement {
     const selectElement = this.querySelector("select[slot='select-input']");
     if (selectElement) {
       const optionsJson = buildOptionsFromSelectElement(selectElement);
+
+      console.log("updateOptionsFromDom", optionsJson);
+
       this.appPromise.then((app) => {
         // noinspection JSUnresolvedVariable
         app.ports.optionsChangedReceiver.send(optionsJson);
@@ -631,6 +634,32 @@ class MuchSelect extends HTMLElement {
           hiddenValueInput.setAttribute("value", "");
         } else {
           hiddenValueInput.setAttribute("value", this.selectedValue);
+        }
+      }
+    }
+  }
+
+  /**
+   * The idea with this method is that we need the selected input slot to mirror the internal state of the
+   * much select, unless something else wants full control over the DOM (eventsOnlyMode is true), then we leave that
+   * responsibility to them.
+   */
+  updateSelectInputSlot() {
+    if (!this.eventsOnlyMode) {
+      const selectInputSlot = this.querySelector("[slot='select-input']");
+      if (selectInputSlot) {
+        if (this.isInMultiSelectMode) {
+          // TODO
+        } else {
+          selectInputSlot.querySelectorAll("option").forEach((optionEl) => {
+            if (optionEl.selected) {
+              if (optionEl.value !== this.selectedValue) {
+                optionEl.removeAttribute("selected");
+              }
+            } else if (optionEl.value === this.selectedValue) {
+              optionEl.setAttribute("selected", "");
+            }
+          });
         }
       }
     }
@@ -812,6 +841,8 @@ class MuchSelect extends HTMLElement {
     }
 
     this.updateHiddenInputValueSlot();
+
+    this.updateSelectInputSlot();
   }
 
   customOptionSelected(values) {

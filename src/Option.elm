@@ -39,6 +39,7 @@ module Option exposing
     , isEmptyOption
     , isOptionInListOfOptionsByValue
     , isOptionValueInListOfOptionsByValue
+    , merge2Options
     , mergeTwoListsOfOptionsPreservingSelectedOptions
     , moveHighlightedOptionDown
     , moveHighlightedOptionUp
@@ -726,14 +727,26 @@ mergeTwoListsOfOptionsPreservingSelectedOptions selectedItemPlacementMode option
                 )
                 optionsA
 
+        updatedOptionsB =
+            List.map
+                (\optionB ->
+                    case findOptionByOptionValue (getOptionValue optionB) optionsA of
+                        Just optionA ->
+                            merge2Options optionA optionB
+
+                        Nothing ->
+                            optionB
+                )
+                optionsB
+
         superList =
             case selectedItemPlacementMode of
                 SelectedItemStaysInPlace ->
-                    optionsB ++ updatedOptionsA
+                    updatedOptionsB ++ updatedOptionsA
 
                 SelectedItemMovesToTheTop ->
                     updatedOptionsA
-                        ++ optionsB
+                        ++ updatedOptionsB
 
         newOptions =
             List.Extra.uniqueBy getOptionValueAsString superList
