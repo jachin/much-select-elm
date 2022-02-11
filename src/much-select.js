@@ -1595,6 +1595,12 @@ class MuchSelect extends HTMLElement {
     return templateTag;
   }
 
+  /**
+   * This should tell you if a value is selected or not, whehter the much-select is in single or multi select mode.
+   *
+   * @param testValue
+   * @returns {boolean}
+   */
   isValueSelected(testValue) {
     return this.parsedSelectedValue.includes(testValue);
   }
