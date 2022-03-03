@@ -67,6 +67,7 @@ import Ports
         , disableChangedReceiver
         , errorMessage
         , focusInput
+        , initialValueSet
         , inputBlurred
         , inputKeyUp
         , loadingChangedReceiver
@@ -1486,7 +1487,7 @@ makeCommandMessageForInitialValue selectedOptions =
             Cmd.none
 
         selectionOptions_ ->
-            valueChanged (selectedOptionsToTuple selectionOptions_)
+            initialValueSet (selectedOptionsToTuple selectionOptions_)
 
 
 type alias Flags =
