@@ -219,7 +219,7 @@ class MuchSelect extends HTMLElement {
     /**
      * Depending on what you've got going on, you may want different
      * schemes for encoding the selected values. There are some choices.
-     *  - comma (default) - just making the values comma separated (problematic if you have commas in your values)
+     *  - comma (default) - just making the values' comma separated (problematic if you have commas in your values)
      *  - json
      * @type {string}
      * @private
@@ -239,7 +239,7 @@ class MuchSelect extends HTMLElement {
     this._connected = false;
 
     /**
-     * Once we see a value change come through, set this to true. Then
+     * Once we see a value change come through, set this to true, then
      * when the much-select blurs, emmit the event and set it to false.
      * @type {boolean}
      * @private
@@ -371,6 +371,13 @@ class MuchSelect extends HTMLElement {
     // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
     this.appPromise.then((app) =>
       app.ports.errorMessage.subscribe(this.errorHandler.bind(this))
+    );
+
+    // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
+    this.appPromise.then((app) =>
+      app.ports.initialValueSet.subscribe((initialValues) => {
+        this.valueChangedHandler(initialValues, true);
+      })
     );
 
     // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
@@ -591,7 +598,7 @@ class MuchSelect extends HTMLElement {
       );
     }
 
-    // setup the hidden input slot (if it exists) with any initial values
+    // Set up the hidden input slot (if it exists) with any initial values
     this.updateHiddenInputValueSlot();
 
     this._connected = true;
@@ -757,8 +764,11 @@ class MuchSelect extends HTMLElement {
    *
    * The selected values always come in an array of tuples, the first part of the tuple
    * being the value, and the second part being the label.
+   *
+   * @param {array} valuesTuple
+   * @param {boolean} isInitialValueChange - This prevents events from being emitted while things are getting setup.
    */
-  valueChangedHandler(valuesTuple) {
+  valueChangedHandler(valuesTuple, isInitialValueChange = false) {
     if (this.isInMultiSelectMode) {
       this.parsedSelectedValue = valuesTuple.map((valueTuple) => valueTuple[0]);
     } else {
@@ -782,50 +792,56 @@ class MuchSelect extends HTMLElement {
         value: valueTuple[0],
         label: valueTuple[1],
       }));
-      this.dispatchEvent(
-        new CustomEvent("valueChanged", {
-          bubbles: true,
-          detail: { values: valuesObj },
-        })
-      );
-      // The change event is for backwards compatibility.
-      this.dispatchEvent(
-        new CustomEvent("change", {
-          bubbles: true,
-          detail: { values: valuesObj },
-        })
-      );
+      if (!isInitialValueChange) {
+        this.dispatchEvent(
+          new CustomEvent("valueChanged", {
+            bubbles: true,
+            detail: { values: valuesObj },
+          })
+        );
+        // The change event is for backwards compatibility.
+        this.dispatchEvent(
+          new CustomEvent("change", {
+            bubbles: true,
+            detail: { values: valuesObj },
+          })
+        );
+      }
     } else if (valuesTuple.length === 0) {
-      // If we are in single select mode and the value is empty.
-      this.dispatchEvent(
-        new CustomEvent("valueChanged", {
-          bubbles: true,
-          detail: { value: null },
-        })
-      );
-      // The change event is for backwards compatibility.
-      this.dispatchEvent(
-        new CustomEvent("change", {
-          bubbles: true,
-          detail: { value: null },
-        })
-      );
+      if (!isInitialValueChange) {
+        // If we are in single select mode and the value is empty.
+        this.dispatchEvent(
+          new CustomEvent("valueChanged", {
+            bubbles: true,
+            detail: { value: null },
+          })
+        );
+        // The change event is for backwards compatibility.
+        this.dispatchEvent(
+          new CustomEvent("change", {
+            bubbles: true,
+            detail: { value: null },
+          })
+        );
+      }
     } else if (valuesTuple.length === 1) {
-      // If we are in single select mode put the list of values in the event.
-      const valueObj = { value: valuesTuple[0][0], label: valuesTuple[0][1] };
-      this.dispatchEvent(
-        new CustomEvent("valueChanged", {
-          bubbles: true,
-          detail: { value: valueObj },
-        })
-      );
-      // The change event is for backwards compatibility.
-      this.dispatchEvent(
-        new CustomEvent("changed", {
-          bubbles: true,
-          detail: { value: valueObj },
-        })
-      );
+      if (!isInitialValueChange) {
+        // If we are in single select mode put the list of values in the event.
+        const valueObj = { value: valuesTuple[0][0], label: valuesTuple[0][1] };
+        this.dispatchEvent(
+          new CustomEvent("valueChanged", {
+            bubbles: true,
+            detail: { value: valueObj },
+          })
+        );
+        // The change event is for backwards compatibility.
+        this.dispatchEvent(
+          new CustomEvent("changed", {
+            bubbles: true,
+            detail: { value: valueObj },
+          })
+        );
+      }
     } else {
       // If we are in single select mode and there is more than one value then something is wrong.
       throw new TypeError(
@@ -1123,6 +1139,7 @@ class MuchSelect extends HTMLElement {
     );
   }
 
+  // noinspection JSUnusedGlobalSymbols
   get isInMultiSelectModeWithSingleItemRemoval() {
     return this._isInMultiSelectModeWithSingleItemRemoval;
   }
@@ -1596,7 +1613,7 @@ class MuchSelect extends HTMLElement {
   }
 
   /**
-   * This should tell you if a value is selected or not, whehter the much-select is in single or multi select mode.
+   * This should tell you if a value is selected or not, whether the much-select is in single or multi select mode.
    *
    * @param testValue
    * @returns {boolean}

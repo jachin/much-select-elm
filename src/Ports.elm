@@ -9,6 +9,7 @@ port module Ports exposing
     , disableChangedReceiver
     , errorMessage
     , focusInput
+    , initialValueSet
     , inputBlurred
     , inputKeyUp
     , loadingChangedReceiver
@@ -43,6 +44,9 @@ port errorMessage : String -> Cmd msg
 
 
 port valueChanged : List ( String, String ) -> Cmd msg
+
+
+port initialValueSet : List ( String, String ) -> Cmd msg
 
 
 port customOptionSelected : List String -> Cmd msg
