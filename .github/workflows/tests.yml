@@ -24,6 +24,8 @@
           run: npx elm-format --validate
         - name: eslint
           run: npm run lint
+        - name: elm-review
+          run: npx elm-review
         - name: elm unit tests
           run: npm run test
         - name: build library
