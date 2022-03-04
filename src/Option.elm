@@ -1041,7 +1041,7 @@ findLowestSearchScore options =
         Nothing
 
     else
-        Just (Debug.log "low score" lowSore)
+        lowSore
 
 
 optionSearchResults : List Option -> List OptionSearchResult
