@@ -9,6 +9,12 @@ body {
     font-family: "Comic Sans MS", "Comic Sans", cursive;
 }
 
+#header {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: end;
+}
+
 .container {
     display: grid;
     grid-template-columns: 50% 50%;
@@ -24,6 +30,11 @@ body {
     border-radius: 12px;
     display: flex;
     flex-direction: column;
+}
+
+nav {
+    margin: 0.25em;
+    border-radius: 12px;
 }
 
 nav.site-nav {
@@ -68,4 +79,8 @@ much-select:not(:defined) {
 much-select {
     display: inline-block;
     margin: 10px 0;
+}
+
+button {
+    font-family: "Comic Sans MS", "Comic Sans", cursive;
 }
