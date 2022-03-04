@@ -3,7 +3,9 @@ module FilteringOptions.MaxNumberOfDropdownItems exposing (suite)
 import Expect
 import Main exposing (figureOutWhichOptionsToShow)
 import Option exposing (highlightOptionInList, newOption, selectOptionInList, setGroupWithString)
+import OptionSearcher
 import PositiveInt
+import SelectionMode exposing (CustomOptions(..), SelectedItemPlacementMode(..), SelectionMode(..), SingleItemRemoval(..))
 import Test exposing (Test, describe, test)
 
 
@@ -83,6 +85,13 @@ six =
 
 three =
     PositiveInt.new 3
+
+
+equalOptionListValues : List Option.Option -> List Option.Option -> Expect.Expectation
+equalOptionListValues optionsA optionsB =
+    Expect.equalLists
+        (List.map Option.getOptionValue optionsA)
+        (List.map Option.getOptionValue optionsB)
 
 
 suite : Test
@@ -273,6 +282,21 @@ suite =
                             (tools
                                 |> highlightOptionInList wrench
                                 |> selectOptionInList xActoKnife
+                            )
+                        )
+            ]
+        , describe "if there are strong matches"
+            [ test "we should hide everything else" <|
+                \_ ->
+                    equalOptionListValues
+                        (highlightOptionInList wrench
+                            [ wrench
+                            ]
+                        )
+                        (figureOutWhichOptionsToShow three
+                            (tools
+                                |> OptionSearcher.updateOptions (MultiSelect NoCustomOptions DisableSingleItemRemoval) Nothing "wrench"
+                                |> highlightOptionInList wrench
                             )
                         )
             ]
