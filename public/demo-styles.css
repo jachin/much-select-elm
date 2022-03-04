@@ -1,4 +1,11 @@
 body {
+    --primary: #0275d8;
+    --success: #5cb85c;
+    --info: #5bc0de;
+    --warning: #f0ad4e;
+    --danger: #d9534f;
+    --inverse: #292b2c;
+    --faded: #f7f7f7;
     font-family: "Comic Sans MS", "Comic Sans", cursive;
 }
 
@@ -12,34 +19,45 @@ body {
 .container > div {
     margin: 1rem;
     padding: 1rem;
-    border: 1px solid black;
+    border: 3px solid var(--primary);
+    box-shadow: 2px 2px 5px 0px var(--inverse);
+    border-radius: 12px;
     display: flex;
     flex-direction: column;
 }
 
-nav {
-    padding: 0.5em;
-    background-color: aliceblue;
+nav.site-nav {
+    padding: 0.25em;
+    background-color: var(--info);
 }
 
-ol.main-nav {
-    margin: 0.5em;
+nav.offsite-nav {
+    padding: 0.25em;
+    background-color: var(--success);
+}
+
+nav ol {
+    margin: 0.25em;
     display: flex;
     flex-wrap: wrap;
 }
 
-ol.main-nav > li {
+nav.offsite-nav ol {
+    place-content: end;
+}
+
+nav ol > li {
     margin: 0.5em;
     list-style-type: none;
     white-space: nowrap;
 }
 
-ol.main-nav > li > a {
+nav ol > li > a {
     padding: 1em;
 }
 
-ol.main-nav > li > a:hover {
-    background-color: powderblue;
+nav ol > li > a:hover {
+    background-color: var(--faded);
 }
 
 
