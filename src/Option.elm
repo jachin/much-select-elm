@@ -1041,7 +1041,7 @@ findLowestSearchScore options =
         Nothing
 
     else
-        lowSore
+        Just lowSore
 
 
 optionSearchResults : List Option -> List OptionSearchResult
