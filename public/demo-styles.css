@@ -6,13 +6,83 @@ body {
     --danger: #d9534f;
     --inverse: #292b2c;
     --faded: #f7f7f7;
-    font-family: "Comic Sans MS", "Comic Sans", cursive;
+}
+
+@media (prefers-color-scheme: dark) {
+    body.fun {
+        --background-color: #2c3e50;
+        --text-color: #ecf0f1;
+        --link-text-color: #95a5a6;
+        --nav-link-text-color: #e74c3c;
+        --header-font: "Comic Sans MS";
+        --body-font: "Times New Roman";
+        --site-nav-background-color: #8e44ad;
+        --offsite-nav-background-color: #2980b9;
+    }
+
+    body.boring {
+        --background-color: #2c3e50;
+        --text-color: #ecf0f1;
+        --link-text-color: #95a5a6;
+        --nav-link-text-color: #e74c3c;
+        --header-font: "Andale Mono";
+        --body-font: "Times New Roman";
+        --site-nav-background-color: #8e44ad;
+        --offsite-nav-background-color: #2980b9;
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    body.fun {
+        --background-color: #ecf0f1;
+        --text-color: #34495e;
+        --link-text-color: #2980b9;
+        --nav-link-text-color: #e74c3c;
+        --header-font: "Comic Sans MS";
+        --body-font: "Times New Roman";
+        --site-nav-background-color: #2ecc71;
+        --offsite-nav-background-color: #1abc9c;
+    }
+
+    body.boring {
+        --background-color: #ecf0f1;
+        --text-color: #34495e;
+        --link-text-color: #2980b9;
+        --nav-link-text-color: #e74c3c;
+        --header-font: "Andale Mono";
+        --body-font: "Times New Roman";
+        --site-nav-background-color: #2ecc71;
+        --offsite-nav-background-color: #1abc9c;
+    }
+}
+
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-family: var(--body-font);
+}
+
+:any-link {
+    color: var(--link-text-color);
 }
 
 #header {
     display: flex;
     justify-content: space-evenly;
     align-items: end;
+}
+
+h1 {
+    font-family: var(--header-font);
+}
+
+h2 {
+    font-family: var(--header-font);
+}
+
+h3 {
+    font-family: var(--header-font);
 }
 
 .container {
@@ -26,7 +96,7 @@ body {
     margin: 1rem;
     padding: 1rem;
     border: 3px solid var(--primary);
-    box-shadow: 2px 2px 5px 0px var(--inverse);
+    box-shadow: 2px 2px 5px 0 var(--inverse);
     border-radius: 12px;
     display: flex;
     flex-direction: column;
@@ -35,16 +105,21 @@ body {
 nav {
     margin: 0.25em;
     border-radius: 12px;
+    font-family: var(--header-font);
+}
+
+nav a:any-link {
+    color: var(--nav-link-text-color);
 }
 
 nav.site-nav {
     padding: 0.25em;
-    background-color: var(--info);
+    background-color: var(--site-nav-background-color);
 }
 
 nav.offsite-nav {
     padding: 0.25em;
-    background-color: var(--success);
+    background-color: var(--offsite-nav-background-color);
 }
 
 nav ol {
