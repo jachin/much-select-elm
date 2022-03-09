@@ -1,4 +1,4 @@
-module OptionSearcher exposing (search, simpleMatch, updateOptions)
+module OptionSearcher exposing (simpleMatch, updateOptions)
 
 import Fuzzy exposing (Result, match)
 import Option exposing (Option)
@@ -6,6 +6,13 @@ import OptionLabel exposing (optionLabelToSearchString, optionLabelToString)
 import OptionPresentor exposing (tokenize)
 import OptionSearchFilter exposing (OptionSearchResult)
 import SelectionMode exposing (CustomOptions(..), SelectionMode)
+
+
+updateOptions : SelectionMode -> Maybe String -> String -> List Option -> List Option
+updateOptions selectionMode maybeCustomOptionHint searchString options =
+    options
+        |> updateOrAddCustomOption maybeCustomOptionHint searchString selectionMode
+        |> updateOptionsWithSearchString searchString
 
 
 simpleMatch : String -> String -> Result
@@ -30,13 +37,6 @@ search string option =
                 |> Option.optionDescriptionToSearchString
             )
     }
-
-
-updateOptions : SelectionMode -> Maybe String -> String -> List Option -> List Option
-updateOptions selectionMode maybeCustomOptionHint searchString options =
-    options
-        |> updateOrAddCustomOption maybeCustomOptionHint searchString selectionMode
-        |> updateOptionsWithSearchString searchString
 
 
 updateOrAddCustomOption : Maybe String -> String -> SelectionMode -> List Option -> List Option
@@ -80,11 +80,18 @@ updateOptionsWithSearchString searchString options =
 
                             descriptionTokens =
                                 tokenize (option |> Option.getOptionDescription |> Option.optionDescriptionToString) searchResult.descriptionMatch
+
+                            score =
+                                if searchResult.labelMatch.score < searchResult.descriptionMatch.score then
+                                    searchResult.labelMatch.score
+
+                                else
+                                    searchResult.descriptionMatch.score
                         in
                         Option.setOptionSearchFilter
                             (Just
                                 (OptionSearchFilter.new
-                                    (searchResult.labelMatch.score + searchResult.descriptionMatch.score)
+                                    score
                                     searchResult
                                     labelTokens
                                     descriptionTokens

@@ -21,6 +21,7 @@ module Option exposing
     , emptyOptionGroup
     , encode
     , filterOptionsToShowInDropdown
+    , filterOptionsToShowInDropdownBySearchScore
     , findHighestAutoSortRank
     , findHighlightedOrSelectedOptionIndex
     , findOptionByOptionValue
@@ -83,8 +84,9 @@ module Option exposing
 import Json.Decode
 import Json.Encode
 import List.Extra
+import Maybe.Extra
 import OptionLabel exposing (OptionLabel(..), getSortRank, labelDecoder, optionLabelToSearchString, optionLabelToString)
-import OptionSearchFilter exposing (OptionSearchFilter)
+import OptionSearchFilter exposing (OptionSearchFilter, OptionSearchResult, getLowScore, impossiblyLowScore, lowScoreCutOff)
 import SelectionMode exposing (SelectedItemPlacementMode(..), SelectionMode(..))
 import SortRank exposing (SortRank(..), getAutoIndexForSorting)
 
@@ -981,6 +983,11 @@ findHighlightedOrSelectedOptionIndex options =
 
 filterOptionsToShowInDropdown : List Option -> List Option
 filterOptionsToShowInDropdown =
+    filterOptionsToShowInDropdownByOptionDisplay >> filterOptionsToShowInDropdownBySearchScore
+
+
+filterOptionsToShowInDropdownByOptionDisplay : List Option -> List Option
+filterOptionsToShowInDropdownByOptionDisplay =
     List.filter
         (\option ->
             case getOptionDisplay option of
@@ -1002,6 +1009,57 @@ filterOptionsToShowInDropdown =
                 OptionDisabled ->
                     True
         )
+
+
+filterOptionsToShowInDropdownBySearchScore : List Option -> List Option
+filterOptionsToShowInDropdownBySearchScore options =
+    case findLowestSearchScore options of
+        Just lowScore ->
+            List.filter (isOptionBelowScore (lowScoreCutOff lowScore)) options
+
+        Nothing ->
+            options
+
+
+findLowestSearchScore : List Option -> Maybe Int
+findLowestSearchScore options =
+    let
+        lowSore =
+            options
+                |> optionSearchResults
+                |> List.foldl
+                    (\searchResult lowScore ->
+                        if getLowScore searchResult < lowScore then
+                            getLowScore searchResult
+
+                        else
+                            lowScore
+                    )
+                    impossiblyLowScore
+    in
+    if lowSore == impossiblyLowScore then
+        Nothing
+
+    else
+        Just lowSore
+
+
+optionSearchResults : List Option -> List OptionSearchResult
+optionSearchResults options =
+    options
+        |> List.map getMaybeOptionSearchFilter
+        |> Maybe.Extra.values
+        |> List.map .searchResult
+
+
+isOptionBelowScore : Int -> Option -> Bool
+isOptionBelowScore score option =
+    case getMaybeOptionSearchFilter option of
+        Just optionSearchFilter ->
+            score >= getLowScore optionSearchFilter.searchResult
+
+        Nothing ->
+            False
 
 
 highlightOptionInList : Option -> List Option -> List Option
