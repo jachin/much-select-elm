@@ -1080,6 +1080,7 @@ dropdown model =
                     DropdownMouseOverOption
                     DropdownMouseOutOption
                     DropdownMouseClickOption
+                    NoOp
                     model.selectionMode
                     model.optionsForTheDropdown
 
@@ -1132,16 +1133,18 @@ optionsToDropdownOptions :
     (OptionValue -> msg)
     -> (OptionValue -> msg)
     -> (OptionValue -> msg)
+    -> msg
     -> SelectionMode
     -> List Option
     -> List (Html msg)
-optionsToDropdownOptions mouseOverMsgConstructor mouseOutMsgConstructor clickMsgConstructor selectionMode options =
+optionsToDropdownOptions mouseOverMsgConstructor mouseOutMsgConstructor clickMsgConstructor noOpMegConstructor selectionMode options =
     let
         partialWithSelectionMode =
             optionToDropdownOption
                 mouseOverMsgConstructor
                 mouseOutMsgConstructor
                 clickMsgConstructor
+                noOpMegConstructor
                 selectionMode
 
         helper : OptionGroup -> Option -> ( OptionGroup, List (Html msg) )
@@ -1161,11 +1164,12 @@ optionToDropdownOption :
     (OptionValue -> msg)
     -> (OptionValue -> msg)
     -> (OptionValue -> msg)
+    -> msg
     -> SelectionMode
     -> Bool
     -> Option
     -> List (Html msg)
-optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgConstructor selectionMode prependOptionGroup option =
+optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgConstructor noOpMsgConstructor selectionMode prependOptionGroup option =
     let
         optionGroupHtml =
             if prependOptionGroup then
@@ -1229,6 +1233,7 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
                 [ onMouseEnter (option |> Option.getOptionValue |> mouseOverMsgConstructor)
                 , onMouseLeave (option |> Option.getOptionValue |> mouseOutMsgConstructor)
                 , mousedownPreventDefaultAndStopPropagation (option |> Option.getOptionValue |> clickMsgConstructor)
+                , onClickPreventDefaultAndStopPropagation noOpMsgConstructor
                 , class "option"
                 , valueDataAttribute
                 ]
@@ -1672,7 +1677,7 @@ subscriptions _ =
         ]
 
 
-mousedownPreventDefaultAndStopPropagation : a -> Html.Attribute a
+mousedownPreventDefaultAndStopPropagation : msg -> Html.Attribute msg
 mousedownPreventDefaultAndStopPropagation message =
     Html.Events.custom "mousedown"
         (Json.Decode.succeed
