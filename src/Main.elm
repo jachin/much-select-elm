@@ -189,6 +189,7 @@ update msg model =
                     Option.removeUnselectedCustomOptions model.options
                         |> Option.unhighlightSelectedOptions
 
+                -- clear out the search string
                 updatedModel =
                     updateModelWithSearchStringChanges model.maxDropdownItems "" optionsWithoutUnselectedCustomOptions model
             in
