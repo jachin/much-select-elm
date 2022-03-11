@@ -185,20 +185,16 @@ update msg model =
 
         InputBlur ->
             let
-                options =
+                optionsWithoutUnselectedCustomOptions =
                     Option.removeUnselectedCustomOptions model.options
                         |> Option.unhighlightSelectedOptions
 
-                optionsForTheDropdown =
-                    Option.removeUnselectedCustomOptions model.optionsForTheDropdown
-                        |> Option.unhighlightSelectedOptions
+                updatedModel =
+                    updateModelWithSearchStringChanges model.maxDropdownItems "" optionsWithoutUnselectedCustomOptions model
             in
-            ( { model
+            ( { updatedModel
                 | showDropdown = False
                 , focused = False
-                , searchString = ""
-                , options = options
-                , optionsForTheDropdown = optionsForTheDropdown
               }
             , inputBlurred ()
             )
