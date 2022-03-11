@@ -129,6 +129,17 @@ const makeDebouncedFunc = (func, timeout = 500) => {
   };
 };
 
+const makeDebounceLeadingFunc = (func, delay = 250) => {
+  let timeoutId;
+  return (...args) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
+      timeoutId = null;
+      func(...args);
+    }, delay);
+  };
+};
+
 // adapted from https://github.com/thread/elm-web-components
 
 class MuchSelect extends HTMLElement {
@@ -266,6 +277,34 @@ class MuchSelect extends HTMLElement {
         })
       );
     });
+
+    this._callValueCasingWidthUpdate = makeDebounceLeadingFunc(
+      (width, height) => {
+        this.appPromise.then((app) => {
+          // noinspection JSUnresolvedVariable
+          app.ports.valueCasingDimensionsChangedReceiver.send({
+            width,
+            height,
+          });
+        });
+      },
+      10
+    );
+
+    this._callOptionChanged = makeDebounceLeadingFunc((optionsJson) => {
+      this.appPromise.then((app) => {
+        // noinspection JSUnresolvedVariable
+        app.ports.optionsChangedReceiver.send(optionsJson);
+        this.updateDimensions();
+      });
+    }, 5);
+
+    this._callValueChanged = makeDebounceLeadingFunc((newValue) => {
+      this.appPromise.then((app) => {
+        // noinspection JSUnresolvedVariable
+        app.ports.valueChangedReceiver.send(newValue);
+      });
+    }, 5);
 
     // noinspection JSUnresolvedFunction
     this._resizeObserver = new ResizeObserver(() => {
@@ -608,11 +647,7 @@ class MuchSelect extends HTMLElement {
     const selectElement = this.querySelector("select[slot='select-input']");
     if (selectElement) {
       const optionsJson = buildOptionsFromSelectElement(selectElement);
-      this.appPromise.then((app) => {
-        // noinspection JSUnresolvedVariable
-        app.ports.optionsChangedReceiver.send(optionsJson);
-        this.updateDimensions();
-      });
+      this._callOptionChanged(optionsJson);
     }
   }
 
@@ -701,13 +736,7 @@ class MuchSelect extends HTMLElement {
             height = this._minimumHeight;
           }
 
-          this.appPromise.then((app) => {
-            // noinspection JSUnresolvedVariable
-            app.ports.valueCasingDimensionsChangedReceiver.send({
-              width,
-              height,
-            });
-          });
+          this._callValueCasingWidthUpdate(width, height);
         }
       });
     });
@@ -949,27 +978,16 @@ class MuchSelect extends HTMLElement {
         // TODO - This case here seems heavy handed, why would parsedSelectedValue
         //  ever be undefined? I haven't been able to figure that out, so here,
         //  my "fix".
-        // noinspection JSUnresolvedVariable
-        this.appPromise.then((app) =>
-          app.ports.valueChangedReceiver.send(null)
-        );
+        this._callValueChanged(null);
       } else {
-        // noinspection JSUnresolvedVariable
-        this.appPromise.then((app) =>
-          app.ports.valueChangedReceiver.send(this.parsedSelectedValue)
-        );
+        this._callValueChanged(this.parsedSelectedValue);
       }
     } else if (this._selectedValue && this.isInMultiSelectMode) {
-      // noinspection JSUnresolvedVariable
-      this.appPromise.then((app) =>
-        app.ports.valueChangedReceiver.send(this.parsedSelectedValue)
-      );
+      this._callValueChanged(this.parsedSelectedValue);
     } else if (this.isInMultiSelectMode) {
-      // noinspection JSUnresolvedVariable
-      this.appPromise.then((app) => app.ports.valueChangedReceiver.send([]));
+      this._callValueChanged([]);
     } else {
-      // noinspection JSUnresolvedVariable
-      this.appPromise.then((app) => app.ports.valueChangedReceiver.send(null));
+      this._callValueChanged(null);
     }
 
     this.updateHiddenInputValueSlot();
@@ -1623,10 +1641,7 @@ class MuchSelect extends HTMLElement {
   }
 
   updateOptions(options) {
-    // noinspection JSUnresolvedVariable
-    this.appPromise.then((app) =>
-      app.ports.optionsChangedReceiver.send(cleanUpOptions(options))
-    );
+    this._callOptionChanged(options);
     this.updateDimensions();
   }
 
