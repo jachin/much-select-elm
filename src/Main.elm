@@ -34,6 +34,7 @@ import Html.Events
         , onMouseEnter
         , onMouseLeave
         )
+import Html.Lazy
 import Json.Decode
 import Json.Encode
 import Keyboard exposing (Key(..))
@@ -1303,109 +1304,112 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
 
 optionsToValuesHtml : List Option -> SingleItemRemoval -> List (Html Msg)
 optionsToValuesHtml options enableSingleItemRemoval =
-    let
-        labelHtml labelText optionValue =
-            span
-                [ class "value-label"
-                , mousedownPreventDefaultAndStopPropagation
-                    (ToggleSelectedValueHighlight optionValue)
-                ]
-                [ text labelText ]
-    in
     options
         |> Option.selectedOptions
-        |> List.map
-            (\option ->
-                case option of
-                    Option display optionLabel optionValue _ _ _ ->
-                        let
-                            removalHtml =
-                                case enableSingleItemRemoval of
-                                    EnableSingleItemRemoval ->
-                                        span [ mousedownPreventDefaultAndStopPropagation <| DeselectOptionInternal option, class "remove-option" ] [ text "" ]
+        |> List.map (Html.Lazy.lazy2 optionToValueHtml enableSingleItemRemoval)
 
-                                    DisableSingleItemRemoval ->
-                                        text ""
-                        in
-                        case display of
-                            OptionShown ->
-                                text ""
 
-                            OptionHidden ->
-                                text ""
+optionToValueHtml : SingleItemRemoval -> Option -> Html Msg
+optionToValueHtml enableSingleItemRemoval option =
+    case option of
+        Option display optionLabel optionValue _ _ _ ->
+            let
+                removalHtml =
+                    case enableSingleItemRemoval of
+                        EnableSingleItemRemoval ->
+                            span [ mousedownPreventDefaultAndStopPropagation <| DeselectOptionInternal option, class "remove-option" ] [ text "" ]
 
-                            OptionSelected _ ->
-                                div
-                                    [ class "value"
-                                    ]
-                                    [ labelHtml (OptionLabel.getLabelString optionLabel) optionValue, removalHtml ]
+                        DisableSingleItemRemoval ->
+                            text ""
+            in
+            case display of
+                OptionShown ->
+                    text ""
 
-                            OptionSelectedHighlighted _ ->
-                                div
-                                    [ classList
-                                        [ ( "value", True )
-                                        , ( "highlighted-value", True )
-                                        ]
-                                    ]
-                                    [ labelHtml (OptionLabel.getLabelString optionLabel) optionValue, removalHtml ]
+                OptionHidden ->
+                    text ""
 
-                            OptionHighlighted ->
-                                text ""
+                OptionSelected _ ->
+                    div
+                        [ class "value"
+                        ]
+                        [ valueLabelHtml (OptionLabel.getLabelString optionLabel) optionValue, removalHtml ]
 
-                            OptionDisabled ->
-                                text ""
+                OptionSelectedHighlighted _ ->
+                    div
+                        [ classList
+                            [ ( "value", True )
+                            , ( "highlighted-value", True )
+                            ]
+                        ]
+                        [ valueLabelHtml (OptionLabel.getLabelString optionLabel) optionValue, removalHtml ]
 
-                    CustomOption display optionLabel optionValue _ ->
-                        case display of
-                            OptionShown ->
-                                text ""
+                OptionHighlighted ->
+                    text ""
 
-                            OptionHidden ->
-                                text ""
+                OptionDisabled ->
+                    text ""
 
-                            OptionSelected _ ->
-                                div
-                                    [ class "value"
-                                    , mousedownPreventDefaultAndStopPropagation
-                                        (ToggleSelectedValueHighlight optionValue)
-                                    ]
-                                    [ labelHtml (OptionLabel.getLabelString optionLabel) optionValue ]
+        CustomOption display optionLabel optionValue _ ->
+            case display of
+                OptionShown ->
+                    text ""
 
-                            OptionSelectedHighlighted _ ->
-                                div
-                                    [ classList
-                                        [ ( "value", True )
-                                        , ( "highlighted-value", True )
-                                        ]
-                                    ]
-                                    [ labelHtml (OptionLabel.getLabelString optionLabel) optionValue ]
+                OptionHidden ->
+                    text ""
 
-                            OptionHighlighted ->
-                                text ""
+                OptionSelected _ ->
+                    div
+                        [ class "value"
+                        , mousedownPreventDefaultAndStopPropagation
+                            (ToggleSelectedValueHighlight optionValue)
+                        ]
+                        [ valueLabelHtml (OptionLabel.getLabelString optionLabel) optionValue ]
 
-                            OptionDisabled ->
-                                text ""
+                OptionSelectedHighlighted _ ->
+                    div
+                        [ classList
+                            [ ( "value", True )
+                            , ( "highlighted-value", True )
+                            ]
+                        ]
+                        [ valueLabelHtml (OptionLabel.getLabelString optionLabel) optionValue ]
 
-                    EmptyOption display optionLabel ->
-                        case display of
-                            OptionShown ->
-                                text ""
+                OptionHighlighted ->
+                    text ""
 
-                            OptionHidden ->
-                                text ""
+                OptionDisabled ->
+                    text ""
 
-                            OptionSelected _ ->
-                                div [ class "value" ] [ text (OptionLabel.getLabelString optionLabel) ]
+        EmptyOption display optionLabel ->
+            case display of
+                OptionShown ->
+                    text ""
 
-                            OptionSelectedHighlighted _ ->
-                                text ""
+                OptionHidden ->
+                    text ""
 
-                            OptionHighlighted ->
-                                text ""
+                OptionSelected _ ->
+                    div [ class "value" ] [ text (OptionLabel.getLabelString optionLabel) ]
 
-                            OptionDisabled ->
-                                text ""
-            )
+                OptionSelectedHighlighted _ ->
+                    text ""
+
+                OptionHighlighted ->
+                    text ""
+
+                OptionDisabled ->
+                    text ""
+
+
+valueLabelHtml : String -> OptionValue -> Html Msg
+valueLabelHtml labelText optionValue =
+    span
+        [ class "value-label"
+        , mousedownPreventDefaultAndStopPropagation
+            (ToggleSelectedValueHighlight optionValue)
+        ]
+        [ text labelText ]
 
 
 rightSlotHtml : RightSlot -> Bool -> Bool -> Html Msg
