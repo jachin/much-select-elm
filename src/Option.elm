@@ -51,6 +51,7 @@ module Option exposing
     , optionDescriptionToBool
     , optionDescriptionToSearchString
     , optionDescriptionToString
+    , optionGroupToSearchString
     , optionGroupToString
     , optionToValueLabelTuple
     , optionsDecoder
@@ -574,6 +575,16 @@ getOptionValueAsString option =
 
 optionGroupToString : OptionGroup -> String
 optionGroupToString optionGroup =
+    case optionGroup of
+        OptionGroup string ->
+            string
+
+        NoOptionGroup ->
+            ""
+
+
+optionGroupToSearchString : OptionGroup -> String
+optionGroupToSearchString optionGroup =
     case optionGroup of
         OptionGroup string ->
             string

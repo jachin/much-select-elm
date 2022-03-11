@@ -14,6 +14,7 @@ type alias OptionSearchFilter =
 type alias OptionSearchResult =
     { labelMatch : Result
     , descriptionMatch : Result
+    , groupMatch : Result
     }
 
 
@@ -33,11 +34,13 @@ new totalScore searchResult labelTokens descriptionTokens =
 
 getLowScore : OptionSearchResult -> Int
 getLowScore optionSearchResult =
-    if optionSearchResult.labelMatch.score < optionSearchResult.descriptionMatch.score then
-        optionSearchResult.labelMatch.score
-
-    else
-        optionSearchResult.descriptionMatch.score
+    List.minimum
+        [ optionSearchResult.labelMatch.score
+        , optionSearchResult.descriptionMatch.score
+        , optionSearchResult.groupMatch.score
+        ]
+        |> Maybe.withDefault
+            impossiblyLowScore
 
 
 lowScoreCutOff : Int -> Int

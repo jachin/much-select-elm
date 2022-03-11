@@ -36,6 +36,13 @@ search string option =
                 |> Option.getOptionDescription
                 |> Option.optionDescriptionToSearchString
             )
+    , groupMatch =
+        simpleMatch
+            (string |> String.toLower)
+            (option
+                |> Option.getOptionGroup
+                |> Option.optionGroupToSearchString
+            )
     }
 
 
