@@ -1135,14 +1135,14 @@ optionsToDropdownOptions :
     -> SelectionMode
     -> List Option
     -> List (Html msg)
-optionsToDropdownOptions mouseOverMsgConstructor mouseOutMsgConstructor clickMsgConstructor noOpMegConstructor selectionMode options =
+optionsToDropdownOptions mouseOverMsgConstructor mouseOutMsgConstructor clickMsgConstructor noOpMsgConstructor selectionMode options =
     let
         partialWithSelectionMode =
             optionToDropdownOption
                 mouseOverMsgConstructor
                 mouseOutMsgConstructor
                 clickMsgConstructor
-                noOpMegConstructor
+                noOpMsgConstructor
                 selectionMode
 
         helper : OptionGroup -> Option -> ( OptionGroup, List (Html msg) )
@@ -1230,8 +1230,8 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
             , div
                 [ onMouseEnter (option |> Option.getOptionValue |> mouseOverMsgConstructor)
                 , onMouseLeave (option |> Option.getOptionValue |> mouseOutMsgConstructor)
-                , mousedownPreventDefaultAndStopPropagation (option |> Option.getOptionValue |> clickMsgConstructor)
-                , onClickPreventDefaultAndStopPropagation noOpMsgConstructor
+                , mousedownPreventDefault (option |> Option.getOptionValue |> clickMsgConstructor)
+                , onClickPreventDefault noOpMsgConstructor
                 , class "option"
                 , valueDataAttribute
                 ]
@@ -1248,7 +1248,7 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
                     , div
                         [ onMouseEnter (option |> Option.getOptionValue |> mouseOverMsgConstructor)
                         , onMouseLeave (option |> Option.getOptionValue |> mouseOutMsgConstructor)
-                        , mousedownPreventDefaultAndStopPropagation (option |> Option.getOptionValue |> clickMsgConstructor)
+                        , mousedownPreventDefault (option |> Option.getOptionValue |> clickMsgConstructor)
                         , class "selected"
                         , class "option"
                         , valueDataAttribute
@@ -1266,7 +1266,7 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
                     , div
                         [ onMouseEnter (option |> Option.getOptionValue |> mouseOverMsgConstructor)
                         , onMouseLeave (option |> Option.getOptionValue |> mouseOutMsgConstructor)
-                        , mousedownPreventDefaultAndStopPropagation (option |> Option.getOptionValue |> clickMsgConstructor)
+                        , mousedownPreventDefault (option |> Option.getOptionValue |> clickMsgConstructor)
                         , class "selected"
                         , class "highlighted"
                         , class "option"
@@ -1283,7 +1283,7 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
             , div
                 [ onMouseEnter (option |> Option.getOptionValue |> mouseOverMsgConstructor)
                 , onMouseLeave (option |> Option.getOptionValue |> mouseOutMsgConstructor)
-                , mousedownPreventDefaultAndStopPropagation (option |> Option.getOptionValue |> clickMsgConstructor)
+                , mousedownPreventDefault (option |> Option.getOptionValue |> clickMsgConstructor)
                 , class "highlighted"
                 , class "option"
                 , valueDataAttribute
@@ -1317,7 +1317,7 @@ optionToValueHtml enableSingleItemRemoval option =
                 removalHtml =
                     case enableSingleItemRemoval of
                         EnableSingleItemRemoval ->
-                            span [ mousedownPreventDefaultAndStopPropagation <| DeselectOptionInternal option, class "remove-option" ] [ text "" ]
+                            span [ mousedownPreventDefault <| DeselectOptionInternal option, class "remove-option" ] [ text "" ]
 
                         DisableSingleItemRemoval ->
                             text ""
@@ -1361,7 +1361,7 @@ optionToValueHtml enableSingleItemRemoval option =
                 OptionSelected _ ->
                     div
                         [ class "value"
-                        , mousedownPreventDefaultAndStopPropagation
+                        , mousedownPreventDefault
                             (ToggleSelectedValueHighlight optionValue)
                         ]
                         [ valueLabelHtml (OptionLabel.getLabelString optionLabel) optionValue ]
@@ -1406,7 +1406,7 @@ valueLabelHtml : String -> OptionValue -> Html Msg
 valueLabelHtml labelText optionValue =
     span
         [ class "value-label"
-        , mousedownPreventDefaultAndStopPropagation
+        , mousedownPreventDefault
             (ToggleSelectedValueHighlight optionValue)
         ]
         [ text labelText ]
@@ -1429,7 +1429,7 @@ rightSlotHtml rightSlot focused disabled =
         ShowClearButton ->
             div
                 [ id "clear-button-wrapper"
-                , onClickPreventDefaultAndStopPropagation ClearAllSelectedOptions
+                , onClickPreventDefault ClearAllSelectedOptions
                 ]
                 [ node "slot"
                     [ name "clear-button"
@@ -1678,26 +1678,34 @@ subscriptions _ =
         ]
 
 
-mousedownPreventDefaultAndStopPropagation : msg -> Html.Attribute msg
-mousedownPreventDefaultAndStopPropagation message =
+{-| Performs the mousedown event, but also prevent default.
+
+We used to also stop propagation but that is actually a problem because that stops all the click events
+default actions from being supressed (I think).
+
+-}
+mousedownPreventDefault : msg -> Html.Attribute msg
+mousedownPreventDefault message =
     Html.Events.custom "mousedown"
         (Json.Decode.succeed
             { message = message
-            , stopPropagation = True
+            , stopPropagation = False
             , preventDefault = True
             }
         )
 
 
-{-| Performs the event onClick, but also stops that click from propagating and
-prevents defaults to ensure the msg specified is the only action.
+{-| Performs the event onClick, but also prevent default.
+
+We used to also stop propigation but that is actually a problem because we want
+
 -}
-onClickPreventDefaultAndStopPropagation : msg -> Html.Attribute msg
-onClickPreventDefaultAndStopPropagation message =
+onClickPreventDefault : msg -> Html.Attribute msg
+onClickPreventDefault message =
     Html.Events.custom "click"
         (Json.Decode.succeed
             { message = message
-            , stopPropagation = True
+            , stopPropagation = False
             , preventDefault = True
             }
         )
