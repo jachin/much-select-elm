@@ -257,7 +257,6 @@ update msg model =
                     ( updateModelWithSearchStringChanges model.maxDropdownItems "" options model
                     , Cmd.batch
                         [ makeCommandMessagesWhenValuesChanges options (Just optionValue)
-                        , focusInput ()
                         ]
                     )
 
@@ -879,8 +878,8 @@ view model =
 
                         ShowClearButton ->
                             node "slot" [ name "clear-button" ] []
-                    , dropdown model
                     ]
+                , dropdown model
                 ]
 
         MultiSelect _ enableSingleItemRemoval ->

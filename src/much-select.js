@@ -1362,6 +1362,8 @@ class MuchSelect extends HTMLElement {
         margin-bottom: auto;
         position: relative;
         min-width: ${this._minimumWidth}px;
+        font: -moz-field;
+        font: -webkit-small-control;
       }
 
       /*
@@ -1377,8 +1379,6 @@ class MuchSelect extends HTMLElement {
         background-color: -moz-field;
         border: 1px solid darkgray;
         box-shadow: 1px 1px 1px 0 lightgray inset;
-        font: -moz-field;
-        font: -webkit-small-control;
         padding: 4px 3px 2px 3px;
         display: flex;
         flex-flow: row nowrap;
