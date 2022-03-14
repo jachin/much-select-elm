@@ -93,7 +93,13 @@ import Ports
         , valuesDecoder
         )
 import PositiveInt exposing (PositiveInt)
-import SelectionMode exposing (CustomOptions(..), SelectedItemPlacementMode(..), SelectionMode(..), SingleItemRemoval(..))
+import SelectionMode
+    exposing
+        ( CustomOptions(..)
+        , SelectedItemPlacementMode(..)
+        , SelectionMode(..)
+        , SingleItemRemoval(..)
+        )
 
 
 type Msg
@@ -192,7 +198,11 @@ update msg model =
 
                 -- clear out the search string
                 updatedModel =
-                    updateModelWithSearchStringChanges model.maxDropdownItems "" optionsWithoutUnselectedCustomOptions model
+                    updateModelWithSearchStringChanges
+                        model.maxDropdownItems
+                        ""
+                        optionsWithoutUnselectedCustomOptions
+                        model
             in
             ( { updatedModel
                 | showDropdown = False
@@ -257,6 +267,7 @@ update msg model =
                     ( updateModelWithSearchStringChanges model.maxDropdownItems "" options model
                     , Cmd.batch
                         [ makeCommandMessagesWhenValuesChanges options (Just optionValue)
+                        , focusInput ()
                         ]
                     )
 
