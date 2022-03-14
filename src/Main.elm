@@ -1066,6 +1066,14 @@ dropdownIndicator focused disabled =
             [ text "▾" ]
 
 
+type alias DropdownItemEventListeners msg =
+    { mouseOverMsgConstructor : OptionValue -> msg
+    , mouseOutMsgConstructor : OptionValue -> msg
+    , clickMsgConstructor : OptionValue -> msg
+    , noOpMsgConstructor : msg
+    }
+
+
 dropdown : Model -> Html Msg
 dropdown model =
     let
@@ -1075,10 +1083,11 @@ dropdown model =
 
             else
                 optionsToDropdownOptions
-                    DropdownMouseOverOption
-                    DropdownMouseOutOption
-                    DropdownMouseClickOption
-                    NoOp
+                    { mouseOverMsgConstructor = DropdownMouseOverOption
+                    , mouseOutMsgConstructor = DropdownMouseOutOption
+                    , clickMsgConstructor = DropdownMouseClickOption
+                    , noOpMsgConstructor = NoOp
+                    }
                     model.selectionMode
                     model.optionsForTheDropdown
 
@@ -1128,24 +1137,18 @@ dropdown model =
 
 
 optionsToDropdownOptions :
-    (OptionValue -> msg)
-    -> (OptionValue -> msg)
-    -> (OptionValue -> msg)
-    -> msg
+    DropdownItemEventListeners Msg
     -> SelectionMode
     -> List Option
-    -> List (Html msg)
-optionsToDropdownOptions mouseOverMsgConstructor mouseOutMsgConstructor clickMsgConstructor noOpMsgConstructor selectionMode options =
+    -> List (Html Msg)
+optionsToDropdownOptions eventHandlers selectionMode options =
     let
         partialWithSelectionMode =
             optionToDropdownOption
-                mouseOverMsgConstructor
-                mouseOutMsgConstructor
-                clickMsgConstructor
-                noOpMsgConstructor
+                eventHandlers
                 selectionMode
 
-        helper : OptionGroup -> Option -> ( OptionGroup, List (Html msg) )
+        helper : OptionGroup -> Option -> ( OptionGroup, List (Html Msg) )
         helper previousGroup option_ =
             ( Option.getOptionGroup option_
             , option_ |> partialWithSelectionMode (previousGroup /= Option.getOptionGroup option_)
@@ -1159,15 +1162,12 @@ optionsToDropdownOptions mouseOverMsgConstructor mouseOutMsgConstructor clickMsg
 
 
 optionToDropdownOption :
-    (OptionValue -> msg)
-    -> (OptionValue -> msg)
-    -> (OptionValue -> msg)
-    -> msg
+    DropdownItemEventListeners Msg
     -> SelectionMode
     -> Bool
     -> Option
-    -> List (Html msg)
-optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgConstructor noOpMsgConstructor selectionMode prependOptionGroup option =
+    -> List (Html Msg)
+optionToDropdownOption eventHandlers selectionMode prependOptionGroup option =
     let
         optionGroupHtml =
             if prependOptionGroup then
@@ -1186,7 +1186,7 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
             else
                 text ""
 
-        descriptionHtml : Html msg
+        descriptionHtml : Html Msg
         descriptionHtml =
             if option |> Option.getOptionDescription |> Option.optionDescriptionToBool then
                 case Option.getMaybeOptionSearchFilter option of
@@ -1212,7 +1212,7 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
             else
                 text ""
 
-        labelHtml : Html msg
+        labelHtml : Html Msg
         labelHtml =
             case Option.getMaybeOptionSearchFilter option of
                 Just optionSearchFilter ->
@@ -1228,10 +1228,10 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
         OptionShown ->
             [ optionGroupHtml
             , div
-                [ onMouseEnter (option |> Option.getOptionValue |> mouseOverMsgConstructor)
-                , onMouseLeave (option |> Option.getOptionValue |> mouseOutMsgConstructor)
-                , mousedownPreventDefault (option |> Option.getOptionValue |> clickMsgConstructor)
-                , onClickPreventDefault noOpMsgConstructor
+                [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
+                , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
+                , mousedownPreventDefault (option |> Option.getOptionValue |> eventHandlers.clickMsgConstructor)
+                , onClickPreventDefault eventHandlers.noOpMsgConstructor
                 , class "option"
                 , valueDataAttribute
                 ]
@@ -1246,9 +1246,9 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
                 SingleSelect _ _ ->
                     [ optionGroupHtml
                     , div
-                        [ onMouseEnter (option |> Option.getOptionValue |> mouseOverMsgConstructor)
-                        , onMouseLeave (option |> Option.getOptionValue |> mouseOutMsgConstructor)
-                        , mousedownPreventDefault (option |> Option.getOptionValue |> clickMsgConstructor)
+                        [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
+                        , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
+                        , mousedownPreventDefault (option |> Option.getOptionValue |> eventHandlers.clickMsgConstructor)
                         , class "selected"
                         , class "option"
                         , valueDataAttribute
@@ -1264,9 +1264,9 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
                 SingleSelect _ _ ->
                     [ optionGroupHtml
                     , div
-                        [ onMouseEnter (option |> Option.getOptionValue |> mouseOverMsgConstructor)
-                        , onMouseLeave (option |> Option.getOptionValue |> mouseOutMsgConstructor)
-                        , mousedownPreventDefault (option |> Option.getOptionValue |> clickMsgConstructor)
+                        [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
+                        , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
+                        , mousedownPreventDefault (option |> Option.getOptionValue |> eventHandlers.clickMsgConstructor)
                         , class "selected"
                         , class "highlighted"
                         , class "option"
@@ -1281,9 +1281,9 @@ optionToDropdownOption mouseOverMsgConstructor mouseOutMsgConstructor clickMsgCo
         OptionHighlighted ->
             [ optionGroupHtml
             , div
-                [ onMouseEnter (option |> Option.getOptionValue |> mouseOverMsgConstructor)
-                , onMouseLeave (option |> Option.getOptionValue |> mouseOutMsgConstructor)
-                , mousedownPreventDefault (option |> Option.getOptionValue |> clickMsgConstructor)
+                [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
+                , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
+                , mousedownPreventDefault (option |> Option.getOptionValue |> eventHandlers.clickMsgConstructor)
                 , class "highlighted"
                 , class "option"
                 , valueDataAttribute
@@ -1681,7 +1681,7 @@ subscriptions _ =
 {-| Performs the mousedown event, but also prevent default.
 
 We used to also stop propagation but that is actually a problem because that stops all the click events
-default actions from being supressed (I think).
+default actions from being suppressed (I think).
 
 -}
 mousedownPreventDefault : msg -> Html.Attribute msg
@@ -1697,7 +1697,7 @@ mousedownPreventDefault message =
 
 {-| Performs the event onClick, but also prevent default.
 
-We used to also stop propigation but that is actually a problem because we want
+We used to also stop propagation but that is actually a problem because we want
 
 -}
 onClickPreventDefault : msg -> Html.Attribute msg
