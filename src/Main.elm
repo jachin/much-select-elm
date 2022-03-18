@@ -668,10 +668,6 @@ clearAllSelectedOption model =
 
 updateModelWithSearchStringChanges : PositiveInt -> String -> List Option -> Model -> Model
 updateModelWithSearchStringChanges maxNumberOfDropdownItems searchString options model =
-    let
-        optionsUpdatedWithSearchString =
-            OptionSearcher.updateOptions model.selectionMode model.customOptionHint searchString options
-    in
     if String.length searchString == 0 then
         -- the search string is empty, let's make sure everything get cleared out of the model.
         let
@@ -703,6 +699,9 @@ updateModelWithSearchStringChanges maxNumberOfDropdownItems searchString options
         -- We have a search string and it's over the minimum length for filter. Let's update the model and filter the
         -- the options.
         let
+            optionsUpdatedWithSearchString =
+                OptionSearcher.updateOptions model.selectionMode model.customOptionHint searchString options
+
             optionsSortedByTotalScore =
                 optionsUpdatedWithSearchString
                     |> Option.sortOptionsByTotalScore
