@@ -672,44 +672,60 @@ updateModelWithSearchStringChanges maxNumberOfDropdownItems searchString options
         optionsUpdatedWithSearchString =
             OptionSearcher.updateOptions model.selectionMode model.customOptionHint searchString options
     in
-    case searchString of
-        "" ->
-            let
-                updatedOptions =
-                    OptionSearcher.updateOptions model.selectionMode model.customOptionHint searchString options
-                        |> Option.sortOptionsByGroupAndLabel
-            in
-            { model
-                | searchString = searchString
-                , options = updatedOptions
-                , optionsForTheDropdown = figureOutWhichOptionsToShow maxNumberOfDropdownItems updatedOptions
-            }
+    if String.length searchString == 0 then
+        -- the search string is empty, let's make sure everything get cleared out of the model.
+        let
+            updatedOptions =
+                OptionSearcher.updateOptions model.selectionMode model.customOptionHint searchString options
+                    |> Option.sortOptionsByGroupAndLabel
+        in
+        { model
+            | searchString = searchString
+            , options = updatedOptions
+            , optionsForTheDropdown = figureOutWhichOptionsToShow maxNumberOfDropdownItems updatedOptions
+        }
 
-        _ ->
-            let
-                optionsSortedByTotalScore =
-                    optionsUpdatedWithSearchString
-                        |> Option.sortOptionsByTotalScore
+    else if String.length searchString <= 1 then
+        -- We have a search string but it's below are minimum for filtering. This means we still want to update the
+        -- serach string it self in the model but we don't need to do anything with the options
+        let
+            updatedOptions =
+                OptionSearcher.updateOptions model.selectionMode model.customOptionHint "" options
+                    |> Option.sortOptionsByGroupAndLabel
+        in
+        { model
+            | searchString = searchString
+            , options = updatedOptions
+            , optionsForTheDropdown = figureOutWhichOptionsToShow maxNumberOfDropdownItems updatedOptions
+        }
 
-                maybeFirstOption =
-                    List.head optionsSortedByTotalScore
+    else
+        -- We have a search string and it's over the minimum length for filter. Let's update the model and filter the
+        -- the options.
+        let
+            optionsSortedByTotalScore =
+                optionsUpdatedWithSearchString
+                    |> Option.sortOptionsByTotalScore
 
-                optionsSortedByTotalScoreWithTheFirstOptionHighlighted =
-                    case maybeFirstOption of
-                        Just firstOption ->
-                            Option.highlightOptionInList firstOption optionsSortedByTotalScore
+            maybeFirstOption =
+                List.head optionsSortedByTotalScore
 
-                        Nothing ->
-                            optionsSortedByTotalScore
-            in
-            { model
-                | searchString = searchString
-                , options = optionsSortedByTotalScoreWithTheFirstOptionHighlighted
-                , optionsForTheDropdown =
-                    figureOutWhichOptionsToShow
-                        maxNumberOfDropdownItems
-                        optionsSortedByTotalScoreWithTheFirstOptionHighlighted
-            }
+            optionsSortedByTotalScoreWithTheFirstOptionHighlighted =
+                case maybeFirstOption of
+                    Just firstOption ->
+                        Option.highlightOptionInList firstOption optionsSortedByTotalScore
+
+                    Nothing ->
+                        optionsSortedByTotalScore
+        in
+        { model
+            | searchString = searchString
+            , options = optionsSortedByTotalScoreWithTheFirstOptionHighlighted
+            , optionsForTheDropdown =
+                figureOutWhichOptionsToShow
+                    maxNumberOfDropdownItems
+                    optionsSortedByTotalScoreWithTheFirstOptionHighlighted
+        }
 
 
 figureOutWhichOptionsToShow : PositiveInt -> List Option -> List Option
