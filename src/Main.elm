@@ -202,6 +202,7 @@ update msg model =
                 -- clear out the search string
                 updatedModel =
                     updateModelWithSearchStringChanges
+                        model.minimumSearchStringLength
                         model.maxDropdownItems
                         ""
                         optionsWithoutUnselectedCustomOptions
@@ -259,7 +260,7 @@ update msg model =
             in
             case model.selectionMode of
                 SingleSelect _ _ ->
-                    ( updateModelWithSearchStringChanges model.maxDropdownItems "" options model
+                    ( updateModelWithSearchStringChanges model.minimumSearchStringLength model.maxDropdownItems "" options model
                     , Cmd.batch
                         [ makeCommandMessagesWhenValuesChanges options (Just optionValue)
                         , blurInput ()
@@ -267,7 +268,7 @@ update msg model =
                     )
 
                 MultiSelect _ _ ->
-                    ( updateModelWithSearchStringChanges model.maxDropdownItems "" options model
+                    ( updateModelWithSearchStringChanges model.minimumSearchStringLength model.maxDropdownItems "" options model
                     , Cmd.batch
                         [ makeCommandMessagesWhenValuesChanges options (Just optionValue)
                         , focusInput ()
@@ -275,7 +276,7 @@ update msg model =
                     )
 
         SearchInputOnInput searchString ->
-            ( updateModelWithSearchStringChanges model.maxDropdownItems searchString model.options model
+            ( updateModelWithSearchStringChanges model.minimumSearchStringLength model.maxDropdownItems searchString model.options model
             , inputKeyUp searchString
             )
 
@@ -388,7 +389,12 @@ update msg model =
                                 SingleSelect _ _ ->
                                     selectSingleOptionInList optionValue model.options
                     in
-                    ( updateModelWithSearchStringChanges model.maxDropdownItems "" options model
+                    ( updateModelWithSearchStringChanges
+                        model.minimumSearchStringLength
+                        model.maxDropdownItems
+                        ""
+                        options
+                        model
                     , makeCommandMessagesWhenValuesChanges options (Just optionValue)
                     )
 
@@ -510,7 +516,12 @@ update msg model =
             in
             case model.selectionMode of
                 SingleSelect _ _ ->
-                    ( updateModelWithSearchStringChanges model.maxDropdownItems "" options model
+                    ( updateModelWithSearchStringChanges
+                        model.minimumSearchStringLength
+                        model.maxDropdownItems
+                        ""
+                        options
+                        model
                     , Cmd.batch
                         -- TODO Figure out what the highlighted option in here
                         [ makeCommandMessagesWhenValuesChanges options Nothing
@@ -519,7 +530,12 @@ update msg model =
                     )
 
                 MultiSelect _ _ ->
-                    ( updateModelWithSearchStringChanges model.maxDropdownItems "" options model
+                    ( updateModelWithSearchStringChanges
+                        model.minimumSearchStringLength
+                        model.maxDropdownItems
+                        ""
+                        options
+                        model
                       -- TODO Figure out what the highlighted option in here
                     , Cmd.batch
                         [ makeCommandMessagesWhenValuesChanges options Nothing
@@ -541,7 +557,13 @@ update msg model =
                     ( model, Cmd.none )
 
         EscapeKeyInInputFilter ->
-            ( updateModelWithSearchStringChanges model.maxDropdownItems "" model.options model, blurInput () )
+            ( updateModelWithSearchStringChanges model.minimumSearchStringLength
+                model.maxDropdownItems
+                ""
+                model.options
+                model
+            , blurInput ()
+            )
 
         MoveHighlightedOptionUp ->
             let
@@ -672,8 +694,8 @@ clearAllSelectedOption model =
     )
 
 
-updateModelWithSearchStringChanges : PositiveInt -> String -> List Option -> Model -> Model
-updateModelWithSearchStringChanges maxNumberOfDropdownItems searchString options model =
+updateModelWithSearchStringChanges : PositiveInt -> PositiveInt -> String -> List Option -> Model -> Model
+updateModelWithSearchStringChanges searchStringMinimumLength maxNumberOfDropdownItems searchString options model =
     if String.length searchString == 0 then
         -- the search string is empty, let's make sure everything get cleared out of the model.
         let
@@ -687,7 +709,7 @@ updateModelWithSearchStringChanges maxNumberOfDropdownItems searchString options
             , optionsForTheDropdown = figureOutWhichOptionsToShow maxNumberOfDropdownItems updatedOptions
         }
 
-    else if String.length searchString <= 1 then
+    else if String.length searchString < PositiveInt.toInt searchStringMinimumLength then
         -- We have a search string but it's below are minimum for filtering. This means we still want to update the
         -- search string it self in the model but we don't need to do anything with the options
         let
