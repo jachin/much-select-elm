@@ -28,6 +28,7 @@ flagsEmptyOptionsWithOrangeSelected =
     , disabled = False
     , allowCustomOptions = False
     , selectedItemStaysInPlace = True
+    , searchStringMinimumLength = 2
     }
 
 
@@ -99,6 +100,7 @@ flagsBookOptions =
     , disabled = False
     , allowCustomOptions = False
     , selectedItemStaysInPlace = True
+    , searchStringMinimumLength = 2
     }
 
 
@@ -115,6 +117,7 @@ flagsBookOptionsWithValue =
     , disabled = False
     , allowCustomOptions = False
     , selectedItemStaysInPlace = True
+    , searchStringMinimumLength = 2
     }
 
 
@@ -131,6 +134,7 @@ flagsBookOptionsWithSelected =
     , disabled = False
     , allowCustomOptions = False
     , selectedItemStaysInPlace = True
+    , searchStringMinimumLength = 2
     }
 
 
