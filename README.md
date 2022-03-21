@@ -105,7 +105,7 @@ The `placeholder` attribute is used to set the placeholder in the text input of 
 
 ##### `search-string-minimum-length`
 
-The `search-string-minimum-length` attribute is used to manage how many characters a user needs to typ in the `#input-filter` before the results start being filtered.
+The `search-string-minimum-length` attribute is used to manage how many characters a user needs to type in the `#input-filter` before the options in the dropdown start being filtered.
 
 ##### `selected-value`
 
