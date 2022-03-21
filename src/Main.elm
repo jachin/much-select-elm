@@ -155,7 +155,7 @@ type alias Model =
     , optionsForTheDropdown : List Option
     , showDropdown : Bool
     , searchString : String
-    , minimumSearchStringLength : PositiveInt
+    , searchStringMinimumLength : PositiveInt
     , rightSlot : RightSlot
     , maxDropdownItems : PositiveInt
     , disabled : Bool
@@ -202,7 +202,7 @@ update msg model =
                 -- clear out the search string
                 updatedModel =
                     updateModelWithSearchStringChanges
-                        model.minimumSearchStringLength
+                        model.searchStringMinimumLength
                         model.maxDropdownItems
                         ""
                         optionsWithoutUnselectedCustomOptions
@@ -260,7 +260,7 @@ update msg model =
             in
             case model.selectionMode of
                 SingleSelect _ _ ->
-                    ( updateModelWithSearchStringChanges model.minimumSearchStringLength model.maxDropdownItems "" options model
+                    ( updateModelWithSearchStringChanges model.searchStringMinimumLength model.maxDropdownItems "" options model
                     , Cmd.batch
                         [ makeCommandMessagesWhenValuesChanges options (Just optionValue)
                         , blurInput ()
@@ -268,7 +268,7 @@ update msg model =
                     )
 
                 MultiSelect _ _ ->
-                    ( updateModelWithSearchStringChanges model.minimumSearchStringLength model.maxDropdownItems "" options model
+                    ( updateModelWithSearchStringChanges model.searchStringMinimumLength model.maxDropdownItems "" options model
                     , Cmd.batch
                         [ makeCommandMessagesWhenValuesChanges options (Just optionValue)
                         , focusInput ()
@@ -276,7 +276,7 @@ update msg model =
                     )
 
         SearchInputOnInput searchString ->
-            ( updateModelWithSearchStringChanges model.minimumSearchStringLength model.maxDropdownItems searchString model.options model
+            ( updateModelWithSearchStringChanges model.searchStringMinimumLength model.maxDropdownItems searchString model.options model
             , inputKeyUp searchString
             )
 
@@ -390,7 +390,7 @@ update msg model =
                                     selectSingleOptionInList optionValue model.options
                     in
                     ( updateModelWithSearchStringChanges
-                        model.minimumSearchStringLength
+                        model.searchStringMinimumLength
                         model.maxDropdownItems
                         ""
                         options
@@ -507,7 +507,7 @@ update msg model =
             )
 
         SearchStringMinimumLengthAttributeChanged searchStringMinimumLength ->
-            ( { model | minimumSearchStringLength = PositiveInt.new searchStringMinimumLength }, Cmd.none )
+            ( { model | searchStringMinimumLength = PositiveInt.new searchStringMinimumLength }, Cmd.none )
 
         SelectHighlightedOption ->
             let
@@ -517,7 +517,7 @@ update msg model =
             case model.selectionMode of
                 SingleSelect _ _ ->
                     ( updateModelWithSearchStringChanges
-                        model.minimumSearchStringLength
+                        model.searchStringMinimumLength
                         model.maxDropdownItems
                         ""
                         options
@@ -531,7 +531,7 @@ update msg model =
 
                 MultiSelect _ _ ->
                     ( updateModelWithSearchStringChanges
-                        model.minimumSearchStringLength
+                        model.searchStringMinimumLength
                         model.maxDropdownItems
                         ""
                         options
@@ -557,7 +557,7 @@ update msg model =
                     ( model, Cmd.none )
 
         EscapeKeyInInputFilter ->
-            ( updateModelWithSearchStringChanges model.minimumSearchStringLength
+            ( updateModelWithSearchStringChanges model.searchStringMinimumLength
                 model.maxDropdownItems
                 ""
                 model.options
@@ -1666,7 +1666,7 @@ init flags =
                 optionsWithInitialValueSelected
       , showDropdown = False
       , searchString = ""
-      , minimumSearchStringLength = PositiveInt.new 0
+      , searchStringMinimumLength = PositiveInt.new 0
       , rightSlot =
             if flags.loading then
                 ShowLoadingIndicator
