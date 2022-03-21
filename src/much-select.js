@@ -198,6 +198,15 @@ class MuchSelect extends HTMLElement {
     this._maxDropdownItems = 10000;
 
     /**
+     * As the user types to filter the search results, what is the minium number of character they need to type before
+     *  the options are filtered.
+     *
+     * @type {number}
+     * @private
+     */
+    this._searchStringMinimumLength = 1;
+
+    /**
      * @type {boolean}
      * @private
      */
@@ -324,6 +333,7 @@ class MuchSelect extends HTMLElement {
       "multi-select",
       "multi-select-single-item-removal",
       "placeholder",
+      "search-string-minimum-length",
       "selected-option-goes-to-top",
       "selected-value",
       "selected-value-encoding",
@@ -365,6 +375,10 @@ class MuchSelect extends HTMLElement {
       if (oldValue !== newValue) {
         this.updateDimensions();
         this.placeholder = newValue;
+      }
+    } else if (name === "search-string-minimum-length") {
+      if (oldValue !== newValue) {
+        this.searchStringMinimumLength = newValue;
       }
     } else if (name === "selected-option-goes-to-top") {
       if (oldValue !== newValue) {
@@ -1127,6 +1141,55 @@ class MuchSelect extends HTMLElement {
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
       app.ports.maxDropdownItemsChangedReceiver.send(this._maxDropdownItems)
+    );
+  }
+
+  /**
+   * Search String Minimum Length getter.
+   *
+   * @returns {number}
+   */
+  get searchStringMinimumLength() {
+    return this._searchStringMinimumLength;
+  }
+
+  /**
+   * Search String Minimum Length setter
+   *
+   * @param value {string|number}
+   */
+  set searchStringMinimumLength(value) {
+    if (value === "false") {
+      this._searchStringMinimumLength = 0;
+    } else if (value === "") {
+      this._searchStringMinimumLength = 0;
+    } else if (Number.isInteger(value)) {
+      if (value >= 0) {
+        this._searchStringMinimumLength = value;
+      } else {
+        this._searchStringMinimumLength = 0;
+      }
+    } else if (typeof value === "string") {
+      const intVal = parseInt(value, 10);
+      if (intVal >= 0) {
+        this._searchStringMinimumLength = intVal;
+      } else {
+        this._searchStringMinimumLength = 0;
+      }
+    }
+
+    if (!this.eventsOnlyMode) {
+      this.setAttribute(
+        "search-string-minimum-length",
+        `${this._searchStringMinimumLength}`
+      );
+    }
+
+    // noinspection JSUnresolvedVariable
+    this.appPromise.then((app) =>
+      app.ports.searchStringMinimumLengthChangedReceiver.send(
+        this._searchStringMinimumLength
+      )
     );
   }
 

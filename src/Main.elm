@@ -83,6 +83,7 @@ import Ports
         , removeOptionsReceiver
         , requestAllOptionsReceiver
         , scrollDropdownToElement
+        , searchStringMinimumLengthChangedReceiver
         , selectOptionReceiver
         , selectedItemStaysInPlaceChangedReceiver
         , valueCasingDimensionsChangedReceiver
@@ -127,6 +128,7 @@ type Msg
     | DisabledAttributeChanged Bool
     | MultiSelectAttributeChanged Bool
     | MultiSelectSingleItemRemovalAttributeChanged Bool
+    | SearchStringMinimumLengthAttributeChanged Int
     | SelectedItemStaysInPlaceChanged Bool
     | SelectHighlightedOption
     | DeleteInputForSingleSelect
@@ -153,6 +155,7 @@ type alias Model =
     , optionsForTheDropdown : List Option
     , showDropdown : Bool
     , searchString : String
+    , minimumSearchStringLength : PositiveInt
     , rightSlot : RightSlot
     , maxDropdownItems : PositiveInt
     , disabled : Bool
@@ -497,6 +500,9 @@ update msg model =
             , Cmd.batch [ muchSelectIsReady (), cmd ]
             )
 
+        SearchStringMinimumLengthAttributeChanged searchStringMinimumLength ->
+            ( { model | minimumSearchStringLength = PositiveInt.new searchStringMinimumLength }, Cmd.none )
+
         SelectHighlightedOption ->
             let
                 options =
@@ -683,7 +689,7 @@ updateModelWithSearchStringChanges maxNumberOfDropdownItems searchString options
 
     else if String.length searchString <= 1 then
         -- We have a search string but it's below are minimum for filtering. This means we still want to update the
-        -- serach string it self in the model but we don't need to do anything with the options
+        -- search string it self in the model but we don't need to do anything with the options
         let
             updatedOptions =
                 OptionSearcher.updateOptions model.selectionMode model.customOptionHint "" options
@@ -1638,6 +1644,7 @@ init flags =
                 optionsWithInitialValueSelected
       , showDropdown = False
       , searchString = ""
+      , minimumSearchStringLength = PositiveInt.new 0
       , rightSlot =
             if flags.loading then
                 ShowLoadingIndicator
@@ -1699,6 +1706,7 @@ subscriptions _ =
         , deselectOptionReceiver DeselectOption
         , multiSelectChangedReceiver MultiSelectAttributeChanged
         , multiSelectSingleItemRemovalChangedReceiver MultiSelectSingleItemRemovalAttributeChanged
+        , searchStringMinimumLengthChangedReceiver SearchStringMinimumLengthAttributeChanged
         , requestAllOptionsReceiver (\() -> RequestAllOptions)
         ]
 

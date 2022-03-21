@@ -24,6 +24,7 @@ port module Ports exposing
     , removeOptionsReceiver
     , requestAllOptionsReceiver
     , scrollDropdownToElement
+    , searchStringMinimumLengthChangedReceiver
     , selectOptionReceiver
     , selectedItemStaysInPlaceChangedReceiver
     , valueCasingDimensionsChangedReceiver
@@ -143,6 +144,9 @@ port multiSelectChangedReceiver : (Bool -> msg) -> Sub msg
 
 
 port multiSelectSingleItemRemovalChangedReceiver : (Bool -> msg) -> Sub msg
+
+
+port searchStringMinimumLengthChangedReceiver : (Int -> msg) -> Sub msg
 
 
 port selectedItemStaysInPlaceChangedReceiver : (Bool -> msg) -> Sub msg
