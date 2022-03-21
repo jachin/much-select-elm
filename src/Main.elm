@@ -1561,6 +1561,7 @@ type alias Flags =
     , disabled : Bool
     , allowCustomOptions : Bool
     , selectedItemStaysInPlace : Bool
+    , searchStringMinimumLength : Int
     }
 
 
@@ -1666,7 +1667,9 @@ init flags =
                 optionsWithInitialValueSelected
       , showDropdown = False
       , searchString = ""
-      , searchStringMinimumLength = PositiveInt.new 0
+      , searchStringMinimumLength =
+            Maybe.withDefault (PositiveInt.new 2)
+                (PositiveInt.maybeNew flags.searchStringMinimumLength)
       , rightSlot =
             if flags.loading then
                 ShowLoadingIndicator

@@ -204,7 +204,7 @@ class MuchSelect extends HTMLElement {
      * @type {number}
      * @private
      */
-    this._searchStringMinimumLength = 1;
+    this._searchStringMinimumLength = 2;
 
     /**
      * @type {boolean}
@@ -780,6 +780,15 @@ class MuchSelect extends HTMLElement {
       flags.size = this.getAttribute("size").trim();
     } else {
       flags.size = "";
+    }
+
+    if (this.hasAttribute("search-string-minimum-length")) {
+      flags.searchStringMinimumLength = parseInt(
+        this.getAttribute("search-string-minimum-length").trim(),
+        10
+      );
+    } else {
+      flags.searchStringMinimumLength = this.searchStringMinimumLength;
     }
 
     flags.disabled = this.disabled;

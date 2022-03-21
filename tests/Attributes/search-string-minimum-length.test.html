@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+<script type="module">
+  import { runTests } from "@web/test-runner-mocha";
+  import { expect } from "@esm-bundle/chai";
+  import { html, fixture } from "@open-wc/testing";
+
+  import MuchSelect from "../../dist/much-select-debug.js";
+
+  if (!customElements.get("much-select")) {
+    // Putting guard rails around this because browsers do not like
+    //  having the same custom element defined more than once.
+    window.customElements.define("much-select", MuchSelect);
+  }
+
+  runTests(() => {
+    describe("Attributes", () => {
+      describe("search-string-minium-length", () => {
+        it("adding the attribute should change the value of the search string minimum length", async () => {
+          const el = /** @type {MuchSelect} */ await fixture(
+            html`<much-select></much-select>`
+          );
+          expect(el.searchStringMinimumLength).to.equal(7);
+
+          el.setAttribute("search-string-minimum-length", "");
+          expect(el.searchStringMinimumLength).to.equal(7);
+
+          el.setAttribute("search-string-minimum-length", "5");
+          expect(el.searchStringMinimumLength).to.equal(7);
+        });
+      });
+    });
+});
+</script>
+</body>
+</html>
