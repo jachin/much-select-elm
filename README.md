@@ -10,7 +10,7 @@ The project draws heavy inspiration from the jquery based [selectize.js](https:/
 
 The need for this project is that we want to use selectize.js however we need the over all app to be built in [Elm](https://elm-lang.org/). Elm needs to "own" the DOM and selectize is built in a way that's not compatible with that. 
 
-The goal for this project to achieve near feature parity with selectize using web components. The API will be different, so it will not be a drop in replacement but hopefully it will not be too hard to replace one with the other.
+The goal for this project to achieve near feature parity with selectize using web components. The API will be different, so it will not be a drop in replacement, but hopefully it will not be too hard to replace one with the other.
 
 ### Other Similar Projects
 
@@ -25,7 +25,7 @@ npm i much-select-elm
 
 ## Usage
 
-The npm package gives you the class `MuchSelect` (which inherits from `HTMLElement`), what you need to do is use it to define your own element.
+The npm package provides the class `MuchSelect` (which inherits from `HTMLElement`). To use it, the bare minimum to is do something like the following to define a custom element.
 
 ```javascript
 import MuchSelect from "@getdrip/much-select-elm";
@@ -93,17 +93,23 @@ npm run build
 
 #### Attributes
 
-##### `selected-value`
+##### `allow-custom-options`
 
-The `selected-value` attribute is used to set the value of the `<much-select>`.
+The `allow-custom-options` attribute will allow the user to add new options to the `<much-select>`, not just one of given ones. Of course, you will want to know when that's happened. You might be able to _just_ look at the value, but you might want to know when a custom option has been added too. For that there's the `customValueSelected` event.
+
 
 ##### `placeholder`
 
-The `placeholder` attribute is used to set the placeholder in the text input of the `<much-select>`. Just like in the `<input type="text">` it should only show up if the input is empty. 
+The `placeholder` attribute is used to set the placeholder in the text input of the `<much-select>`. Just like in the `<input type="text">` it should only show up if the input is empty.
 
-##### `allow-custom-options`
 
-The `allow-custom-options` attribute will allow the user to add new options to the `<much-select>`, not just one of given ones. Of course, you will want to know when that's happened. You might be able to _just_ look at the value, but you might want to know when a custom option has been added too. For that there's the `customValueSelected` event. 
+##### `search-string-minimum-length`
+
+The `search-string-minimum-length` attribute is used to manage how many characters a user needs to type in the `#input-filter` before the options in the dropdown start being filtered.
+
+##### `selected-value`
+
+The `selected-value` attribute is used to set the value of the `<much-select>`.
 
 #### Options
 
@@ -119,11 +125,11 @@ This event fires if the `<much-select>` is cleared.
 
 ##### `optionSelected`
 
-This event fires if the `<much-select>` is in single or multi select mode but it's _mostly_ for multi select mode. It will just have the newly selected option in it (not all the selected options like the `valueChanged` event).
+This event fires if the `<much-select>` is in single or multi select mode, but it's _mostly_ for multi select mode. It will just have the newly selected option in it (not all the selected options like the `valueChanged` event).
 
 ##### `optionDeselected`
 
-This event fires if the `<much-select>` is in single or multi select mode but it's _mostly_ for multi select mode. It will just have the newly deselected option in it. This is kinda of the inverse of the `optionSelected` event.
+This event fires if the `<much-select>` is in single or multi select mode, but it's _mostly_ for multi select mode. It will just have the newly deselected option in it. This is kinda of the inverse of the `optionSelected` event.
 
 ##### `inputKeyUp`
 

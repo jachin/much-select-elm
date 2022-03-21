@@ -83,6 +83,7 @@ import Ports
         , removeOptionsReceiver
         , requestAllOptionsReceiver
         , scrollDropdownToElement
+        , searchStringMinimumLengthChangedReceiver
         , selectOptionReceiver
         , selectedItemStaysInPlaceChangedReceiver
         , valueCasingDimensionsChangedReceiver
@@ -127,6 +128,7 @@ type Msg
     | DisabledAttributeChanged Bool
     | MultiSelectAttributeChanged Bool
     | MultiSelectSingleItemRemovalAttributeChanged Bool
+    | SearchStringMinimumLengthAttributeChanged Int
     | SelectedItemStaysInPlaceChanged Bool
     | SelectHighlightedOption
     | DeleteInputForSingleSelect
@@ -153,6 +155,7 @@ type alias Model =
     , optionsForTheDropdown : List Option
     , showDropdown : Bool
     , searchString : String
+    , searchStringMinimumLength : PositiveInt
     , rightSlot : RightSlot
     , maxDropdownItems : PositiveInt
     , disabled : Bool
@@ -199,6 +202,7 @@ update msg model =
                 -- clear out the search string
                 updatedModel =
                     updateModelWithSearchStringChanges
+                        model.searchStringMinimumLength
                         model.maxDropdownItems
                         ""
                         optionsWithoutUnselectedCustomOptions
@@ -256,7 +260,7 @@ update msg model =
             in
             case model.selectionMode of
                 SingleSelect _ _ ->
-                    ( updateModelWithSearchStringChanges model.maxDropdownItems "" options model
+                    ( updateModelWithSearchStringChanges model.searchStringMinimumLength model.maxDropdownItems "" options model
                     , Cmd.batch
                         [ makeCommandMessagesWhenValuesChanges options (Just optionValue)
                         , blurInput ()
@@ -264,7 +268,7 @@ update msg model =
                     )
 
                 MultiSelect _ _ ->
-                    ( updateModelWithSearchStringChanges model.maxDropdownItems "" options model
+                    ( updateModelWithSearchStringChanges model.searchStringMinimumLength model.maxDropdownItems "" options model
                     , Cmd.batch
                         [ makeCommandMessagesWhenValuesChanges options (Just optionValue)
                         , focusInput ()
@@ -272,7 +276,7 @@ update msg model =
                     )
 
         SearchInputOnInput searchString ->
-            ( updateModelWithSearchStringChanges model.maxDropdownItems searchString model.options model
+            ( updateModelWithSearchStringChanges model.searchStringMinimumLength model.maxDropdownItems searchString model.options model
             , inputKeyUp searchString
             )
 
@@ -385,7 +389,12 @@ update msg model =
                                 SingleSelect _ _ ->
                                     selectSingleOptionInList optionValue model.options
                     in
-                    ( updateModelWithSearchStringChanges model.maxDropdownItems "" options model
+                    ( updateModelWithSearchStringChanges
+                        model.searchStringMinimumLength
+                        model.maxDropdownItems
+                        ""
+                        options
+                        model
                     , makeCommandMessagesWhenValuesChanges options (Just optionValue)
                     )
 
@@ -497,6 +506,9 @@ update msg model =
             , Cmd.batch [ muchSelectIsReady (), cmd ]
             )
 
+        SearchStringMinimumLengthAttributeChanged searchStringMinimumLength ->
+            ( { model | searchStringMinimumLength = PositiveInt.new searchStringMinimumLength }, Cmd.none )
+
         SelectHighlightedOption ->
             let
                 options =
@@ -504,7 +516,12 @@ update msg model =
             in
             case model.selectionMode of
                 SingleSelect _ _ ->
-                    ( updateModelWithSearchStringChanges model.maxDropdownItems "" options model
+                    ( updateModelWithSearchStringChanges
+                        model.searchStringMinimumLength
+                        model.maxDropdownItems
+                        ""
+                        options
+                        model
                     , Cmd.batch
                         -- TODO Figure out what the highlighted option in here
                         [ makeCommandMessagesWhenValuesChanges options Nothing
@@ -513,7 +530,12 @@ update msg model =
                     )
 
                 MultiSelect _ _ ->
-                    ( updateModelWithSearchStringChanges model.maxDropdownItems "" options model
+                    ( updateModelWithSearchStringChanges
+                        model.searchStringMinimumLength
+                        model.maxDropdownItems
+                        ""
+                        options
+                        model
                       -- TODO Figure out what the highlighted option in here
                     , Cmd.batch
                         [ makeCommandMessagesWhenValuesChanges options Nothing
@@ -535,7 +557,13 @@ update msg model =
                     ( model, Cmd.none )
 
         EscapeKeyInInputFilter ->
-            ( updateModelWithSearchStringChanges model.maxDropdownItems "" model.options model, blurInput () )
+            ( updateModelWithSearchStringChanges model.searchStringMinimumLength
+                model.maxDropdownItems
+                ""
+                model.options
+                model
+            , blurInput ()
+            )
 
         MoveHighlightedOptionUp ->
             let
@@ -666,50 +694,65 @@ clearAllSelectedOption model =
     )
 
 
-updateModelWithSearchStringChanges : PositiveInt -> String -> List Option -> Model -> Model
-updateModelWithSearchStringChanges maxNumberOfDropdownItems searchString options model =
-    let
-        optionsUpdatedWithSearchString =
-            OptionSearcher.updateOptions model.selectionMode model.customOptionHint searchString options
-    in
-    case searchString of
-        "" ->
-            let
-                updatedOptions =
-                    OptionSearcher.updateOptions model.selectionMode model.customOptionHint searchString options
-                        |> Option.sortOptionsByGroupAndLabel
-            in
-            { model
-                | searchString = searchString
-                , options = updatedOptions
-                , optionsForTheDropdown = figureOutWhichOptionsToShow maxNumberOfDropdownItems updatedOptions
-            }
+updateModelWithSearchStringChanges : PositiveInt -> PositiveInt -> String -> List Option -> Model -> Model
+updateModelWithSearchStringChanges searchStringMinimumLength maxNumberOfDropdownItems searchString options model =
+    if String.length searchString == 0 then
+        -- the search string is empty, let's make sure everything get cleared out of the model.
+        let
+            updatedOptions =
+                OptionSearcher.updateOptions model.selectionMode model.customOptionHint searchString options
+                    |> Option.sortOptionsByGroupAndLabel
+        in
+        { model
+            | searchString = searchString
+            , options = updatedOptions
+            , optionsForTheDropdown = figureOutWhichOptionsToShow maxNumberOfDropdownItems updatedOptions
+        }
 
-        _ ->
-            let
-                optionsSortedByTotalScore =
-                    optionsUpdatedWithSearchString
-                        |> Option.sortOptionsByTotalScore
+    else if String.length searchString < PositiveInt.toInt searchStringMinimumLength then
+        -- We have a search string but it's below are minimum for filtering. This means we still want to update the
+        -- search string it self in the model but we don't need to do anything with the options
+        let
+            updatedOptions =
+                OptionSearcher.updateOptions model.selectionMode model.customOptionHint "" options
+                    |> Option.sortOptionsByGroupAndLabel
+        in
+        { model
+            | searchString = searchString
+            , options = updatedOptions
+            , optionsForTheDropdown = figureOutWhichOptionsToShow maxNumberOfDropdownItems updatedOptions
+        }
 
-                maybeFirstOption =
-                    List.head optionsSortedByTotalScore
+    else
+        -- We have a search string and it's over the minimum length for filter. Let's update the model and filter the
+        -- the options.
+        let
+            optionsUpdatedWithSearchString =
+                OptionSearcher.updateOptions model.selectionMode model.customOptionHint searchString options
 
-                optionsSortedByTotalScoreWithTheFirstOptionHighlighted =
-                    case maybeFirstOption of
-                        Just firstOption ->
-                            Option.highlightOptionInList firstOption optionsSortedByTotalScore
+            optionsSortedByTotalScore =
+                optionsUpdatedWithSearchString
+                    |> Option.sortOptionsByTotalScore
 
-                        Nothing ->
-                            optionsSortedByTotalScore
-            in
-            { model
-                | searchString = searchString
-                , options = optionsSortedByTotalScoreWithTheFirstOptionHighlighted
-                , optionsForTheDropdown =
-                    figureOutWhichOptionsToShow
-                        maxNumberOfDropdownItems
-                        optionsSortedByTotalScoreWithTheFirstOptionHighlighted
-            }
+            maybeFirstOption =
+                List.head optionsSortedByTotalScore
+
+            optionsSortedByTotalScoreWithTheFirstOptionHighlighted =
+                case maybeFirstOption of
+                    Just firstOption ->
+                        Option.highlightOptionInList firstOption optionsSortedByTotalScore
+
+                    Nothing ->
+                        optionsSortedByTotalScore
+        in
+        { model
+            | searchString = searchString
+            , options = optionsSortedByTotalScoreWithTheFirstOptionHighlighted
+            , optionsForTheDropdown =
+                figureOutWhichOptionsToShow
+                    maxNumberOfDropdownItems
+                    optionsSortedByTotalScoreWithTheFirstOptionHighlighted
+        }
 
 
 figureOutWhichOptionsToShow : PositiveInt -> List Option -> List Option
@@ -1518,6 +1561,7 @@ type alias Flags =
     , disabled : Bool
     , allowCustomOptions : Bool
     , selectedItemStaysInPlace : Bool
+    , searchStringMinimumLength : Int
     }
 
 
@@ -1623,6 +1667,9 @@ init flags =
                 optionsWithInitialValueSelected
       , showDropdown = False
       , searchString = ""
+      , searchStringMinimumLength =
+            Maybe.withDefault (PositiveInt.new 2)
+                (PositiveInt.maybeNew flags.searchStringMinimumLength)
       , rightSlot =
             if flags.loading then
                 ShowLoadingIndicator
@@ -1684,6 +1731,7 @@ subscriptions _ =
         , deselectOptionReceiver DeselectOption
         , multiSelectChangedReceiver MultiSelectAttributeChanged
         , multiSelectSingleItemRemovalChangedReceiver MultiSelectSingleItemRemovalAttributeChanged
+        , searchStringMinimumLengthChangedReceiver SearchStringMinimumLengthAttributeChanged
         , requestAllOptionsReceiver (\() -> RequestAllOptions)
         ]
 
