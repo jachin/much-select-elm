@@ -140,6 +140,21 @@ const makeDebounceLeadingFunc = (func, delay = 250) => {
   };
 };
 
+/**
+ * Takes a value from a getAttribute call and converts it to a boolean value.
+ * @param value {string}
+ * @returns {boolean}
+ */
+const booleanAttributeValueToBool = (value) => {
+  if (value === "false") {
+    return false;
+  }
+  if (value === "") {
+    return true;
+  }
+  return !!value;
+};
+
 // adapted from https://github.com/thread/elm-web-components
 
 class MuchSelect extends HTMLElement {
@@ -198,7 +213,14 @@ class MuchSelect extends HTMLElement {
     this._maxDropdownItems = 10000;
 
     /**
-     * As the user types to filter the search results, what is the minium number of character they need to type before
+     * There's a footer we can show in the dropdown that gives a summary of how many options are available.
+     * @type {boolean}
+     * @private
+     */
+    this._showDropdownFooter = false;
+
+    /**
+     * As the user types to filter the search results, what is the minimum number of character they need to type before
      *  the options are filtered.
      *
      * @type {number}
@@ -337,6 +359,7 @@ class MuchSelect extends HTMLElement {
       "selected-option-goes-to-top",
       "selected-value",
       "selected-value-encoding",
+      "show-dropdown-footer",
     ];
   }
 
@@ -393,6 +416,10 @@ class MuchSelect extends HTMLElement {
       if (oldValue !== newValue) {
         this.updateDimensions();
         this.selectedValueEncoding = newValue;
+      }
+    } else if (name === "show-dropdown-footer") {
+      if (oldValue !== newValue) {
+        this.showDropdownFooter = newValue;
       }
     }
   }
@@ -791,6 +818,14 @@ class MuchSelect extends HTMLElement {
       flags.searchStringMinimumLength = this.searchStringMinimumLength;
     }
 
+    if (this.hasAttribute("show-dropdown-footer")) {
+      flags.showDropdownFooter = booleanAttributeValueToBool(
+        this.getAttribute("show-dropdown-footer")
+      );
+    } else {
+      flags.showDropdownFooter = false;
+    }
+
     flags.disabled = this.disabled;
     flags.loading = this.loading;
     flags.selectedItemStaysInPlace = this.selectedItemStaysInPlace;
@@ -1150,6 +1185,33 @@ class MuchSelect extends HTMLElement {
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
       app.ports.maxDropdownItemsChangedReceiver.send(this._maxDropdownItems)
+    );
+  }
+
+  /**
+   * @returns {boolean}
+   */
+  get showDropdownFooter() {
+    return this._showDropdownFooter;
+  }
+
+  /**
+   * @param value {boolean|string}
+   */
+  set showDropdownFooter(value) {
+    this._showDropdownFooter = booleanAttributeValueToBool(value);
+
+    if (!this.eventsOnlyMode) {
+      if (this._showDropdownFooter) {
+        this.setAttribute("show-dropdown-footer", "");
+      } else {
+        this.removeAttribute("show-dropdown-footer");
+      }
+    }
+
+    // noinspection JSUnresolvedVariable
+    this.appPromise.then((app) =>
+      app.ports.showDropdownFooterChangedReceiver.send(this._showDropdownFooter)
     );
   }
 
