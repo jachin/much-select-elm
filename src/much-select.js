@@ -140,6 +140,21 @@ const makeDebounceLeadingFunc = (func, delay = 250) => {
   };
 };
 
+/**
+ * Takes a value from a getAttribute call and converts it to a boolean value.
+ * @param value {string}
+ * @returns {boolean}
+ */
+const booleanAttributeValueToBool = (value) => {
+  if (value === "false") {
+    return false;
+  }
+  if (value === "") {
+    return true;
+  }
+  return !!value;
+};
+
 // adapted from https://github.com/thread/elm-web-components
 
 class MuchSelect extends HTMLElement {
@@ -803,7 +818,13 @@ class MuchSelect extends HTMLElement {
       flags.searchStringMinimumLength = this.searchStringMinimumLength;
     }
 
-    flags.showDropdownFooter = this.hasAttribute("show-dropdown-footer");
+    if (this.hasAttribute("show-dropdown-footer")) {
+      flags.showDropdownFooter = booleanAttributeValueToBool(
+        this.getAttribute("show-dropdown-footer")
+      );
+    } else {
+      flags.showDropdownFooter = false;
+    }
 
     flags.disabled = this.disabled;
     flags.loading = this.loading;
@@ -1178,13 +1199,7 @@ class MuchSelect extends HTMLElement {
    * @param value {boolean|string}
    */
   set showDropdownFooter(value) {
-    if (value === "false") {
-      this._showDropdownFooter = false;
-    } else if (value === "") {
-      this._showDropdownFooter = true;
-    } else {
-      this._showDropdownFooter = !!value;
-    }
+    this._showDropdownFooter = booleanAttributeValueToBool(value);
 
     if (!this.eventsOnlyMode) {
       if (this._showDropdownFooter) {
