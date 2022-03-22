@@ -86,6 +86,7 @@ import Ports
         , searchStringMinimumLengthChangedReceiver
         , selectOptionReceiver
         , selectedItemStaysInPlaceChangedReceiver
+        , showDropdownFooterChangedReceiver
         , valueCasingDimensionsChangedReceiver
         , valueChanged
         , valueChangedReceiver
@@ -123,6 +124,7 @@ type Msg
     | PlaceholderAttributeChanged String
     | LoadingAttributeChanged Bool
     | MaxDropdownItemsChanged Int
+    | ShowDropdownFooterChanged Bool
     | AllowCustomOptionsChanged Bool
     | CustomOptionHintChanged (Maybe String)
     | DisabledAttributeChanged Bool
@@ -435,6 +437,13 @@ update msg model =
             ( { model
                 | maxDropdownItems = maxDropdownItems
                 , optionsForTheDropdown = figureOutWhichOptionsToShow maxDropdownItems model.options
+              }
+            , Cmd.none
+            )
+
+        ShowDropdownFooterChanged bool ->
+            ( { model
+                | showDropdownFooter = bool
               }
             , Cmd.none
             )
@@ -1146,7 +1155,7 @@ dropdown model =
                     model.optionsForTheDropdown
 
         dropdownFooterHtml =
-            if List.length model.optionsForTheDropdown < List.length model.options then
+            if model.showDropdownFooter && List.length model.optionsForTheDropdown < List.length model.options then
                 div [ id "dropdown-footer" ]
                     [ text
                         ("showing "
@@ -1727,6 +1736,7 @@ subscriptions _ =
         , selectedItemStaysInPlaceChangedReceiver SelectedItemStaysInPlaceChanged
         , optionsChangedReceiver OptionsChanged
         , maxDropdownItemsChangedReceiver MaxDropdownItemsChanged
+        , showDropdownFooterChangedReceiver ShowDropdownFooterChanged
         , allowCustomOptionsReceiver AllowCustomOptionsChanged
         , customOptionHintReceiver CustomOptionHintChanged
         , valueCasingDimensionsChangedReceiver ValueCasingWidthUpdate

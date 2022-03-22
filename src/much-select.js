@@ -198,7 +198,14 @@ class MuchSelect extends HTMLElement {
     this._maxDropdownItems = 10000;
 
     /**
-     * As the user types to filter the search results, what is the minium number of character they need to type before
+     * There's a footer we can show in the dropdown that gives a summary of how many options are available.
+     * @type {boolean}
+     * @private
+     */
+    this._showDropdownFooter = false;
+
+    /**
+     * As the user types to filter the search results, what is the minimum number of character they need to type before
      *  the options are filtered.
      *
      * @type {number}
@@ -337,6 +344,7 @@ class MuchSelect extends HTMLElement {
       "selected-option-goes-to-top",
       "selected-value",
       "selected-value-encoding",
+      "show-dropdown-footer",
     ];
   }
 
@@ -393,6 +401,10 @@ class MuchSelect extends HTMLElement {
       if (oldValue !== newValue) {
         this.updateDimensions();
         this.selectedValueEncoding = newValue;
+      }
+    } else if (name === "show-dropdown-footer") {
+      if (oldValue !== newValue) {
+        this.showDropdownFooter = newValue;
       }
     }
   }
@@ -791,9 +803,10 @@ class MuchSelect extends HTMLElement {
       flags.searchStringMinimumLength = this.searchStringMinimumLength;
     }
 
+    flags.showDropdownFooter = this.hasAttribute("show-dropdown-footer");
+
     flags.disabled = this.disabled;
     flags.loading = this.loading;
-    flags.showDropdownFooter = false;
     flags.selectedItemStaysInPlace = this.selectedItemStaysInPlace;
     flags.maxDropdownItems = this.maxDropdownItems;
     flags.allowCustomOptions = this.allowCustomOptions;
@@ -1151,6 +1164,39 @@ class MuchSelect extends HTMLElement {
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
       app.ports.maxDropdownItemsChangedReceiver.send(this._maxDropdownItems)
+    );
+  }
+
+  /**
+   * @returns {boolean}
+   */
+  get showDropdownFooter() {
+    return this._showDropdownFooter;
+  }
+
+  /**
+   * @param value {boolean|string}
+   */
+  set showDropdownFooter(value) {
+    if (value === "false") {
+      this._showDropdownFooter = false;
+    } else if (value === "") {
+      this._showDropdownFooter = true;
+    } else {
+      this._showDropdownFooter = !!value;
+    }
+
+    if (!this.eventsOnlyMode) {
+      if (this._showDropdownFooter) {
+        this.setAttribute("show-dropdown-footer", "");
+      } else {
+        this.removeAttribute("show-dropdown-footer");
+      }
+    }
+
+    // noinspection JSUnresolvedVariable
+    this.appPromise.then((app) =>
+      app.ports.showDropdownFooterChangedReceiver.send(this._showDropdownFooter)
     );
   }
 

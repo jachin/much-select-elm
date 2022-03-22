@@ -27,6 +27,7 @@ port module Ports exposing
     , searchStringMinimumLengthChangedReceiver
     , selectOptionReceiver
     , selectedItemStaysInPlaceChangedReceiver
+    , showDropdownFooterChangedReceiver
     , valueCasingDimensionsChangedReceiver
     , valueChanged
     , valueChangedReceiver
@@ -153,6 +154,9 @@ port selectedItemStaysInPlaceChangedReceiver : (Bool -> msg) -> Sub msg
 
 
 port maxDropdownItemsChangedReceiver : (Int -> msg) -> Sub msg
+
+
+port showDropdownFooterChangedReceiver : (Bool -> msg) -> Sub msg
 
 
 port allowCustomOptionsReceiver : (Bool -> msg) -> Sub msg
