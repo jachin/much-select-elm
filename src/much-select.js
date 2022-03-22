@@ -793,6 +793,7 @@ class MuchSelect extends HTMLElement {
 
     flags.disabled = this.disabled;
     flags.loading = this.loading;
+    flags.showDropdownFooter = false;
     flags.selectedItemStaysInPlace = this.selectedItemStaysInPlace;
     flags.maxDropdownItems = this.maxDropdownItems;
     flags.allowCustomOptions = this.allowCustomOptions;

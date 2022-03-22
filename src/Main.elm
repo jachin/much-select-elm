@@ -163,6 +163,7 @@ type alias Model =
     , valueCasingWidth : Float
     , valueCasingHeight : Float
     , deleteKeyPressed : Bool
+    , showDropdownFooter : Bool
     }
 
 
@@ -1562,6 +1563,7 @@ type alias Flags =
     , allowCustomOptions : Bool
     , selectedItemStaysInPlace : Bool
     , searchStringMinimumLength : Int
+    , showDropdownFooter : Bool
     }
 
 
@@ -1692,6 +1694,7 @@ init flags =
       -- TODO Should these be passed as flags?
       , valueCasingWidth = 100
       , valueCasingHeight = 45
+      , showDropdownFooter = flags.showDropdownFooter
       }
     , Cmd.batch
         [ errorCmd
