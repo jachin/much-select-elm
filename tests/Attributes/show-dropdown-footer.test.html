@@ -39,6 +39,16 @@
 
           expect(el.showDropdownFooter).to.be.true;
         });
+
+        it("removing the attribute should set it to false", async () => {
+          const el = /** @type {MuchSelect} */ await fixture(
+            html`<much-select show-dropdown-footer=""></much-select>`
+          );
+
+          el.removeAttribute("show-dropdown-footer");
+
+          expect(el.showDropdownFooter).to.be.false;
+        });
       });
     });
 });
