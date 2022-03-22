@@ -25,7 +25,7 @@ npm i much-select-elm
 
 ## Usage
 
-The npm package provides the class `MuchSelect` (which inherits from `HTMLElement`). To use it, the bare minimum to is do something like the following to define a custom element.
+The npm package provides the class `MuchSelect` (which inherits from `HTMLElement`). To use it, use something like the following to define a custom element.
 
 ```javascript
 import MuchSelect from "@getdrip/much-select-elm";
@@ -110,6 +110,10 @@ The `search-string-minimum-length` attribute is used to manage how many characte
 ##### `selected-value`
 
 The `selected-value` attribute is used to set the value of the `<much-select>`.
+
+##### `show-dropdown-footer`
+
+The `show-dropdown-footer` attribute is used to show the footer in the dropdown of the `<much-select>`. The footer contains potentially useful information about how many options are really available but might not be visible because the results are being filter.
 
 #### Options
 
