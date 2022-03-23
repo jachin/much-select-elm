@@ -533,6 +533,7 @@ update msg model =
                 SingleSelect _ _ ->
                     ( { model
                         | options = updatedOptions
+                        , searchString = ""
                       }
                         |> updateModelWithChangesThatEffectTheOptions
                     , Cmd.batch
@@ -545,6 +546,7 @@ update msg model =
                 MultiSelect _ _ ->
                     ( { model
                         | options = updatedOptions
+                        , searchString = ""
                       }
                         |> updateModelWithChangesThatEffectTheOptions
                       -- TODO Figure out what the highlighted option in here
