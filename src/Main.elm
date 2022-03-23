@@ -56,7 +56,7 @@ import Option
 import OptionLabel exposing (OptionLabel(..), optionLabelToString)
 import OptionPresentor exposing (tokensToHtml)
 import OptionSearcher
-import OptionSorting exposing (OptionSort(..), stringToOptionSort)
+import OptionSorting exposing (OptionSort(..), sortOptions, sortOptionsBySearchFilterTotalScore, stringToOptionSort)
 import Ports
     exposing
         ( addOptionsReceiver
@@ -304,16 +304,14 @@ update msg model =
                             Option.addAndSelectOptionsInOptionsListByString
                                 values
                                 model.options
+
+                        --, rightSlot =
+                        --                            updateRightSlot
+                        --                                model.rightSlot
+                        --                                model.selectionMode
+                        --                                (Option.hasSelectedOption model.options)
                     in
-                    ( { model
-                        | options = newOptions
-                        , optionsForTheDropdown = figureOutWhichOptionsToShow model.maxDropdownItems newOptions
-                        , rightSlot =
-                            updateRightSlot
-                                model.rightSlot
-                                model.selectionMode
-                                (Option.hasSelectedOption model.options)
-                      }
+                    ( updateModelWithSearchStringChanges model.searchStringMinimumLength model.maxDropdownItems model.searchString newOptions model
                     , Cmd.none
                     )
 
@@ -337,10 +335,7 @@ update msg model =
                                             |> List.filter (not << Option.isEmptyOption)
                                         )
                     in
-                    ( { model
-                        | options = newOptionWithOldSelectedOption
-                        , optionsForTheDropdown = figureOutWhichOptionsToShow model.maxDropdownItems newOptionWithOldSelectedOption
-                      }
+                    ( updateModelWithSearchStringChanges model.searchStringMinimumLength model.maxDropdownItems model.searchString newOptionWithOldSelectedOption model
                     , Cmd.none
                     )
 
@@ -723,7 +718,7 @@ updateModelWithSearchStringChanges searchStringMinimumLength maxNumberOfDropdown
         let
             updatedOptions =
                 OptionSearcher.updateOptions model.selectionMode model.customOptionHint searchString options
-                    |> Option.sortOptionsByGroupAndLabel
+                    |> sortOptions model.optionSort
         in
         { model
             | searchString = searchString
@@ -737,7 +732,7 @@ updateModelWithSearchStringChanges searchStringMinimumLength maxNumberOfDropdown
         let
             updatedOptions =
                 OptionSearcher.updateOptions model.selectionMode model.customOptionHint "" options
-                    |> Option.sortOptionsByGroupAndLabel
+                    |> sortOptions model.optionSort
         in
         { model
             | searchString = searchString
@@ -754,7 +749,7 @@ updateModelWithSearchStringChanges searchStringMinimumLength maxNumberOfDropdown
 
             optionsSortedByTotalScore =
                 optionsUpdatedWithSearchString
-                    |> Option.sortOptionsByTotalScore
+                    |> sortOptionsBySearchFilterTotalScore
 
             maybeFirstOption =
                 List.head optionsSortedByTotalScore
@@ -1609,6 +1604,10 @@ init flags =
             else
                 SelectedItemMovesToTheTop
 
+        optionSort =
+            stringToOptionSort flags.optionSort
+                |> Result.withDefault NoSorting
+
         selectionMode =
             if flags.allowMultiSelect then
                 let
@@ -1678,17 +1677,20 @@ init flags =
 
                 Err error ->
                     ( [], errorMessage (Json.Decode.errorToString error) )
+
+        optionsWithInitialValueSelectedSorted =
+            sortOptions optionSort optionsWithInitialValueSelected
     in
     ( { initialValue = initialValues
       , deleteKeyPressed = False
       , placeholder = flags.placeholder
       , customOptionHint = flags.customOptionHint
       , selectionMode = selectionMode
-      , options = optionsWithInitialValueSelected
+      , options = optionsWithInitialValueSelectedSorted
       , optionsForTheDropdown =
             figureOutWhichOptionsToShow
                 maxDropdownItems
-                optionsWithInitialValueSelected
+                optionsWithInitialValueSelectedSorted
       , optionSort = stringToOptionSort flags.optionSort |> Result.withDefault NoSorting
       , showDropdown = False
       , searchString = ""
