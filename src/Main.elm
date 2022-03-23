@@ -79,7 +79,7 @@ import Ports
         , multiSelectSingleItemRemovalChangedReceiver
         , optionDeselected
         , optionSelected
-        , optionSortingChnagedReceiver
+        , optionSortingChangedReceiver
         , optionsChangedReceiver
         , placeholderChangedReceiver
         , removeOptionsReceiver
@@ -1751,7 +1751,7 @@ subscriptions _ =
         , multiSelectChangedReceiver MultiSelectAttributeChanged
         , multiSelectSingleItemRemovalChangedReceiver MultiSelectSingleItemRemovalAttributeChanged
         , optionsChangedReceiver OptionsChanged
-        , optionSortingChnagedReceiver OptionSortingChanged
+        , optionSortingChangedReceiver OptionSortingChanged
         , placeholderChangedReceiver PlaceholderAttributeChanged
         , removeOptionsReceiver RemoveOptions
         , requestAllOptionsReceiver (\() -> RequestAllOptions)

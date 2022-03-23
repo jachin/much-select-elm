@@ -19,7 +19,7 @@ port module Ports exposing
     , multiSelectSingleItemRemovalChangedReceiver
     , optionDeselected
     , optionSelected
-    , optionSortingChnagedReceiver
+    , optionSortingChangedReceiver
     , optionsChangedReceiver
     , placeholderChangedReceiver
     , removeOptionsReceiver
@@ -169,4 +169,4 @@ port customOptionHintReceiver : (Maybe String -> msg) -> Sub msg
 port valueCasingDimensionsChangedReceiver : ({ width : Float, height : Float } -> msg) -> Sub msg
 
 
-port optionSortingChnagedReceiver : (String -> msg) -> Sub msg
+port optionSortingChangedReceiver : (String -> msg) -> Sub msg
