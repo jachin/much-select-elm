@@ -205,20 +205,14 @@ update msg model =
                 optionsWithoutUnselectedCustomOptions =
                     Option.removeUnselectedCustomOptions model.options
                         |> Option.unhighlightSelectedOptions
-
-                -- clear out the search string
-                updatedModel =
-                    updateModelWithSearchStringChanges
-                        model.searchStringMinimumLength
-                        model.maxDropdownItems
-                        ""
-                        optionsWithoutUnselectedCustomOptions
-                        model
             in
-            ( { updatedModel
-                | showDropdown = False
+            ( { model
+                | searchString = ""
+                , options = optionsWithoutUnselectedCustomOptions
+                , showDropdown = False
                 , focused = False
               }
+                |> updateModelWithChangesThatEffectTheOptions
             , inputBlurred ()
             )
 
@@ -229,14 +223,11 @@ update msg model =
             let
                 updateOptions =
                     highlightOptionInListByValue optionValue model.options
-
-                optionsForTheDropdown =
-                    highlightOptionInListByValue optionValue model.optionsForTheDropdown
             in
             ( { model
                 | options = updateOptions
-                , optionsForTheDropdown = optionsForTheDropdown
               }
+                |> updateModelWithChangesThatEffectTheOptions
             , Cmd.none
             )
 
@@ -244,20 +235,17 @@ update msg model =
             let
                 updatedOptions =
                     removeHighlightOptionInList optionValue model.options
-
-                optionsForTheDropdown =
-                    removeHighlightOptionInList optionValue model.optionsForTheDropdown
             in
             ( { model
                 | options = updatedOptions
-                , optionsForTheDropdown = optionsForTheDropdown
               }
+                |> updateModelWithChangesThatEffectTheOptions
             , Cmd.none
             )
 
         DropdownMouseClickOption optionValue ->
             let
-                options =
+                updatedOptions =
                     case model.selectionMode of
                         MultiSelect _ _ ->
                             selectOptionInListByOptionValue optionValue model.options
@@ -267,23 +255,32 @@ update msg model =
             in
             case model.selectionMode of
                 SingleSelect _ _ ->
-                    ( updateModelWithSearchStringChanges model.searchStringMinimumLength model.maxDropdownItems "" options model
+                    ( { model
+                        | options = updatedOptions
+                      }
+                        |> updateModelWithChangesThatEffectTheOptions
                     , Cmd.batch
-                        [ makeCommandMessagesWhenValuesChanges options (Just optionValue)
+                        [ makeCommandMessagesWhenValuesChanges updatedOptions (Just optionValue)
                         , blurInput ()
                         ]
                     )
 
                 MultiSelect _ _ ->
-                    ( updateModelWithSearchStringChanges model.searchStringMinimumLength model.maxDropdownItems "" options model
+                    ( { model
+                        | options = updatedOptions
+                      }
+                        |> updateModelWithChangesThatEffectTheOptions
                     , Cmd.batch
-                        [ makeCommandMessagesWhenValuesChanges options (Just optionValue)
+                        [ makeCommandMessagesWhenValuesChanges updatedOptions (Just optionValue)
                         , focusInput ()
                         ]
                     )
 
         SearchInputOnInput searchString ->
-            ( updateModelWithSearchStringChanges model.searchStringMinimumLength model.maxDropdownItems searchString model.options model
+            ( { model
+                | searchString = searchString
+              }
+                |> updateModelWithChangesThatEffectTheOptions
             , inputKeyUp searchString
             )
 
@@ -304,14 +301,11 @@ update msg model =
                             Option.addAndSelectOptionsInOptionsListByString
                                 values
                                 model.options
-
-                        --, rightSlot =
-                        --                            updateRightSlot
-                        --                                model.rightSlot
-                        --                                model.selectionMode
-                        --                                (Option.hasSelectedOption model.options)
                     in
-                    ( updateModelWithSearchStringChanges model.searchStringMinimumLength model.maxDropdownItems model.searchString newOptions model
+                    ( { model
+                        | options = newOptions
+                      }
+                        |> updateModelWithChangesThatEffectTheOptions
                     , Cmd.none
                     )
 
@@ -335,7 +329,10 @@ update msg model =
                                             |> List.filter (not << Option.isEmptyOption)
                                         )
                     in
-                    ( updateModelWithSearchStringChanges model.searchStringMinimumLength model.maxDropdownItems model.searchString newOptionWithOldSelectedOption model
+                    ( { model
+                        | options = newOptionWithOldSelectedOption
+                      }
+                        |> updateModelWithChangesThatEffectTheOptions
                     , Cmd.none
                     )
 
@@ -351,8 +348,8 @@ update msg model =
                     in
                     ( { model
                         | options = updatedOptions
-                        , optionsForTheDropdown = figureOutWhichOptionsToShow model.maxDropdownItems updatedOptions
                       }
+                        |> updateModelWithChangesThatEffectTheOptions
                     , Cmd.none
                     )
 
@@ -368,8 +365,8 @@ update msg model =
                     in
                     ( { model
                         | options = updatedOptions
-                        , optionsForTheDropdown = figureOutWhichOptionsToShow model.maxDropdownItems updatedOptions
                       }
+                        |> updateModelWithChangesThatEffectTheOptions
                     , Cmd.none
                     )
 
@@ -383,7 +380,7 @@ update msg model =
                         optionValue =
                             Option.getOptionValue option
 
-                        options =
+                        updatedOptions =
                             case model.selectionMode of
                                 MultiSelect _ _ ->
                                     selectOptionInListByOptionValue optionValue model.options
@@ -391,13 +388,11 @@ update msg model =
                                 SingleSelect _ _ ->
                                     selectSingleOptionInList optionValue model.options
                     in
-                    ( updateModelWithSearchStringChanges
-                        model.searchStringMinimumLength
-                        model.maxDropdownItems
-                        ""
-                        options
-                        model
-                    , makeCommandMessagesWhenValuesChanges options (Just optionValue)
+                    ( { model
+                        | options = updatedOptions
+                      }
+                        |> updateModelWithChangesThatEffectTheOptions
+                    , makeCommandMessagesWhenValuesChanges updatedOptions (Just optionValue)
                     )
 
                 Err error ->
@@ -443,8 +438,8 @@ update msg model =
             in
             ( { model
                 | maxDropdownItems = maxDropdownItems
-                , optionsForTheDropdown = figureOutWhichOptionsToShow maxDropdownItems model.options
               }
+                |> updateModelWithChangesThatEffectTheOptions
             , Cmd.none
             )
 
@@ -501,7 +496,7 @@ update msg model =
 
         MultiSelectAttributeChanged isInMultiSelectMode ->
             let
-                options =
+                updatedOptions =
                     if isInMultiSelectMode then
                         model.options
 
@@ -513,49 +508,48 @@ update msg model =
                         Cmd.none
 
                     else
-                        makeCommandMessagesWhenValuesChanges (Option.selectedOptions options) Nothing
+                        makeCommandMessagesWhenValuesChanges (Option.selectedOptions updatedOptions) Nothing
             in
             ( { model
                 | selectionMode = SelectionMode.setMultiSelectModeWithBool isInMultiSelectMode model.selectionMode
-                , options = options
-                , optionsForTheDropdown = figureOutWhichOptionsToShow model.maxDropdownItems options
+                , options = updatedOptions
               }
+                |> updateModelWithChangesThatEffectTheOptions
             , Cmd.batch [ muchSelectIsReady (), cmd ]
             )
 
         SearchStringMinimumLengthAttributeChanged searchStringMinimumLength ->
-            ( { model | searchStringMinimumLength = PositiveInt.new searchStringMinimumLength }, Cmd.none )
+            ( { model | searchStringMinimumLength = PositiveInt.new searchStringMinimumLength }
+                |> updateModelWithChangesThatEffectTheOptions
+            , Cmd.none
+            )
 
         SelectHighlightedOption ->
             let
-                options =
+                updatedOptions =
                     selectHighlightedOption model.selectionMode model.options
             in
             case model.selectionMode of
                 SingleSelect _ _ ->
-                    ( updateModelWithSearchStringChanges
-                        model.searchStringMinimumLength
-                        model.maxDropdownItems
-                        ""
-                        options
-                        model
+                    ( { model
+                        | options = updatedOptions
+                      }
+                        |> updateModelWithChangesThatEffectTheOptions
                     , Cmd.batch
                         -- TODO Figure out what the highlighted option in here
-                        [ makeCommandMessagesWhenValuesChanges options Nothing
+                        [ makeCommandMessagesWhenValuesChanges updatedOptions Nothing
                         , blurInput ()
                         ]
                     )
 
                 MultiSelect _ _ ->
-                    ( updateModelWithSearchStringChanges
-                        model.searchStringMinimumLength
-                        model.maxDropdownItems
-                        ""
-                        options
-                        model
+                    ( { model
+                        | options = updatedOptions
+                      }
+                        |> updateModelWithChangesThatEffectTheOptions
                       -- TODO Figure out what the highlighted option in here
                     , Cmd.batch
-                        [ makeCommandMessagesWhenValuesChanges options Nothing
+                        [ makeCommandMessagesWhenValuesChanges updatedOptions Nothing
                         , focusInput ()
                         ]
                     )
@@ -574,11 +568,10 @@ update msg model =
                     ( model, Cmd.none )
 
         EscapeKeyInInputFilter ->
-            ( updateModelWithSearchStringChanges model.searchStringMinimumLength
-                model.maxDropdownItems
-                ""
-                model.options
-                model
+            ( { model
+                | searchString = ""
+              }
+                |> updateModelWithChangesThatEffectTheOptions
             , blurInput ()
             )
 
@@ -588,7 +581,7 @@ update msg model =
                     Option.moveHighlightedOptionUp model.options
             in
             ( { model
-                | options = Option.moveHighlightedOptionUp model.options
+                | options = updatedOptions
                 , optionsForTheDropdown = figureOutWhichOptionsToShow model.maxDropdownItems updatedOptions
               }
             , scrollDropdownToElement "something"
@@ -619,8 +612,8 @@ update msg model =
             in
             ( { model
                 | options = updatedOptions
-                , optionsForTheDropdown = figureOutWhichOptionsToShow model.maxDropdownItems updatedOptions
               }
+                |> updateModelWithChangesThatEffectTheOptions
             , Cmd.none
             )
 
@@ -630,7 +623,7 @@ update msg model =
 
             else
                 let
-                    newOptions =
+                    updatedOptions =
                         if Option.hasSelectedHighlightedOptions model.options then
                             Option.deselectAllSelectedHighlightedOptions model.options
 
@@ -638,11 +631,11 @@ update msg model =
                             Option.deselectLastSelectedOption model.options
                 in
                 ( { model
-                    | options = newOptions
-                    , optionsForTheDropdown = figureOutWhichOptionsToShow model.maxDropdownItems newOptions
+                    | options = updatedOptions
                   }
+                    |> updateModelWithChangesThatEffectTheOptions
                 , Cmd.batch
-                    [ valueChanged (selectedOptionsToTuple newOptions)
+                    [ valueChanged (selectedOptionsToTuple updatedOptions)
                     , focusInput ()
                     ]
                 )
@@ -657,14 +650,14 @@ deselectOption model option =
         optionValue =
             Option.getOptionValue option
 
-        options =
+        updatedOptions =
             Option.deselectOptionInListByOptionValue optionValue model.options
     in
     ( { model
-        | options = options
-        , optionsForTheDropdown = figureOutWhichOptionsToShow model.maxDropdownItems options
+        | options = updatedOptions
       }
-    , makeCommandMessagesWhenValuesChanges options Nothing
+        |> updateModelWithChangesThatEffectTheOptions
+    , makeCommandMessagesWhenValuesChanges updatedOptions Nothing
     )
 
 
@@ -711,33 +704,43 @@ clearAllSelectedOption model =
     )
 
 
-updateModelWithSearchStringChanges : PositiveInt -> PositiveInt -> String -> List Option -> Model -> Model
-updateModelWithSearchStringChanges searchStringMinimumLength maxNumberOfDropdownItems searchString options model =
-    if String.length searchString == 0 then
+updateModelWithChangesThatEffectTheOptions : Model -> Model
+updateModelWithChangesThatEffectTheOptions model =
+    if String.length model.searchString == 0 then
         -- the search string is empty, let's make sure everything get cleared out of the model.
         let
             updatedOptions =
-                OptionSearcher.updateOptions model.selectionMode model.customOptionHint searchString options
+                OptionSearcher.updateOptions model.selectionMode model.customOptionHint model.searchString model.options
                     |> sortOptions model.optionSort
         in
         { model
-            | searchString = searchString
+            | searchString = model.searchString
             , options = updatedOptions
-            , optionsForTheDropdown = figureOutWhichOptionsToShow maxNumberOfDropdownItems updatedOptions
+            , optionsForTheDropdown = figureOutWhichOptionsToShow model.maxDropdownItems updatedOptions
+            , rightSlot =
+                updateRightSlot
+                    model.rightSlot
+                    model.selectionMode
+                    (Option.hasSelectedOption model.options)
         }
 
-    else if String.length searchString < PositiveInt.toInt searchStringMinimumLength then
+    else if String.length model.searchString < PositiveInt.toInt model.searchStringMinimumLength then
         -- We have a search string but it's below are minimum for filtering. This means we still want to update the
         -- search string it self in the model but we don't need to do anything with the options
         let
             updatedOptions =
-                OptionSearcher.updateOptions model.selectionMode model.customOptionHint "" options
+                OptionSearcher.updateOptions model.selectionMode model.customOptionHint "" model.options
                     |> sortOptions model.optionSort
         in
         { model
-            | searchString = searchString
+            | searchString = model.searchString
             , options = updatedOptions
-            , optionsForTheDropdown = figureOutWhichOptionsToShow maxNumberOfDropdownItems updatedOptions
+            , optionsForTheDropdown = figureOutWhichOptionsToShow model.maxDropdownItems updatedOptions
+            , rightSlot =
+                updateRightSlot
+                    model.rightSlot
+                    model.selectionMode
+                    (Option.hasSelectedOption updatedOptions)
         }
 
     else
@@ -745,7 +748,7 @@ updateModelWithSearchStringChanges searchStringMinimumLength maxNumberOfDropdown
         -- the options.
         let
             optionsUpdatedWithSearchString =
-                OptionSearcher.updateOptions model.selectionMode model.customOptionHint searchString options
+                OptionSearcher.updateOptions model.selectionMode model.customOptionHint model.searchString model.options
 
             optionsSortedByTotalScore =
                 optionsUpdatedWithSearchString
@@ -763,12 +766,17 @@ updateModelWithSearchStringChanges searchStringMinimumLength maxNumberOfDropdown
                         optionsSortedByTotalScore
         in
         { model
-            | searchString = searchString
+            | searchString = model.searchString
             , options = optionsSortedByTotalScoreWithTheFirstOptionHighlighted
             , optionsForTheDropdown =
                 figureOutWhichOptionsToShow
-                    maxNumberOfDropdownItems
+                    model.maxDropdownItems
                     optionsSortedByTotalScoreWithTheFirstOptionHighlighted
+            , rightSlot =
+                updateRightSlot
+                    model.rightSlot
+                    model.selectionMode
+                    (Option.hasSelectedOption optionsSortedByTotalScoreWithTheFirstOptionHighlighted)
         }
 
 
