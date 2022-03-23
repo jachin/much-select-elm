@@ -56,6 +56,7 @@ import Option
 import OptionLabel exposing (OptionLabel(..), optionLabelToString)
 import OptionPresentor exposing (tokensToHtml)
 import OptionSearcher
+import OptionSorting exposing (OptionSort(..), stringToOptionSort)
 import Ports
     exposing
         ( addOptionsReceiver
@@ -78,6 +79,7 @@ import Ports
         , multiSelectSingleItemRemovalChangedReceiver
         , optionDeselected
         , optionSelected
+        , optionSortingChnagedReceiver
         , optionsChangedReceiver
         , placeholderChangedReceiver
         , removeOptionsReceiver
@@ -116,6 +118,7 @@ type Msg
     | SearchInputOnInput String
     | ValueChanged Json.Decode.Value
     | OptionsChanged Json.Decode.Value
+    | OptionSortingChanged String
     | AddOptions Json.Decode.Value
     | RemoveOptions Json.Decode.Value
     | SelectOption Json.Decode.Value
@@ -155,6 +158,7 @@ type alias Model =
     , selectionMode : SelectionMode
     , options : List Option
     , optionsForTheDropdown : List Option
+    , optionSort : OptionSort
     , showDropdown : Bool
     , searchString : String
     , searchStringMinimumLength : PositiveInt
@@ -414,6 +418,14 @@ update msg model =
 
                 Err error ->
                     ( model, errorMessage (Json.Decode.errorToString error) )
+
+        OptionSortingChanged sortingString ->
+            case stringToOptionSort sortingString of
+                Ok optionSorting ->
+                    ( { model | optionSort = optionSorting }, Cmd.none )
+
+                Err error ->
+                    ( model, errorMessage error )
 
         PlaceholderAttributeChanged newPlaceholder ->
             ( { model | placeholder = newPlaceholder }, Cmd.none )
@@ -1566,6 +1578,7 @@ type alias Flags =
     , allowMultiSelect : Bool
     , enableMultiSelectSingleItemRemoval : Bool
     , optionsJson : String
+    , optionSort : String
     , loading : Bool
     , maxDropdownItems : Int
     , disabled : Bool
@@ -1676,6 +1689,7 @@ init flags =
             figureOutWhichOptionsToShow
                 maxDropdownItems
                 optionsWithInitialValueSelected
+      , optionSort = stringToOptionSort flags.optionSort |> Result.withDefault NoSorting
       , showDropdown = False
       , searchString = ""
       , searchStringMinimumLength =
@@ -1727,25 +1741,26 @@ main =
 subscriptions : Model -> Sub Msg
 subscriptions _ =
     Sub.batch
-        [ valueChangedReceiver ValueChanged
-        , addOptionsReceiver AddOptions
-        , removeOptionsReceiver RemoveOptions
-        , placeholderChangedReceiver PlaceholderAttributeChanged
-        , loadingChangedReceiver LoadingAttributeChanged
-        , disableChangedReceiver DisabledAttributeChanged
-        , selectedItemStaysInPlaceChangedReceiver SelectedItemStaysInPlaceChanged
-        , optionsChangedReceiver OptionsChanged
-        , maxDropdownItemsChangedReceiver MaxDropdownItemsChanged
-        , showDropdownFooterChangedReceiver ShowDropdownFooterChanged
+        [ addOptionsReceiver AddOptions
         , allowCustomOptionsReceiver AllowCustomOptionsChanged
         , customOptionHintReceiver CustomOptionHintChanged
-        , valueCasingDimensionsChangedReceiver ValueCasingWidthUpdate
-        , selectOptionReceiver SelectOption
         , deselectOptionReceiver DeselectOption
+        , disableChangedReceiver DisabledAttributeChanged
+        , loadingChangedReceiver LoadingAttributeChanged
+        , maxDropdownItemsChangedReceiver MaxDropdownItemsChanged
         , multiSelectChangedReceiver MultiSelectAttributeChanged
         , multiSelectSingleItemRemovalChangedReceiver MultiSelectSingleItemRemovalAttributeChanged
-        , searchStringMinimumLengthChangedReceiver SearchStringMinimumLengthAttributeChanged
+        , optionsChangedReceiver OptionsChanged
+        , optionSortingChnagedReceiver OptionSortingChanged
+        , placeholderChangedReceiver PlaceholderAttributeChanged
+        , removeOptionsReceiver RemoveOptions
         , requestAllOptionsReceiver (\() -> RequestAllOptions)
+        , searchStringMinimumLengthChangedReceiver SearchStringMinimumLengthAttributeChanged
+        , selectOptionReceiver SelectOption
+        , selectedItemStaysInPlaceChangedReceiver SelectedItemStaysInPlaceChanged
+        , showDropdownFooterChangedReceiver ShowDropdownFooterChanged
+        , valueCasingDimensionsChangedReceiver ValueCasingWidthUpdate
+        , valueChangedReceiver ValueChanged
         ]
 
 

@@ -253,6 +253,12 @@ class MuchSelect extends HTMLElement {
     this._customOptionHint = null;
 
     /**
+     * @type {string}
+     * @private
+     */
+    this._optionSorting = "no-sorting";
+
+    /**
      * @type {boolean}
      * @private
      */
@@ -354,6 +360,7 @@ class MuchSelect extends HTMLElement {
       "max-dropdown-items",
       "multi-select",
       "multi-select-single-item-removal",
+      "option-sorting",
       "placeholder",
       "search-string-minimum-length",
       "selected-option-goes-to-top",
@@ -398,6 +405,10 @@ class MuchSelect extends HTMLElement {
       if (oldValue !== newValue) {
         this.updateDimensions();
         this.placeholder = newValue;
+      }
+    } else if (name === "option-sorting") {
+      if (oldValue !== newValue) {
+        this.optionSorting = newValue;
       }
     } else if (name === "search-string-minimum-length") {
       if (oldValue !== newValue) {
@@ -824,6 +835,12 @@ class MuchSelect extends HTMLElement {
       );
     } else {
       flags.showDropdownFooter = false;
+    }
+
+    if (this.hasAttribute("option-sorting")) {
+      flags.optionSort = this.getAttribute("option-sorting");
+    } else {
+      flags.optionSort = "no-sorting";
     }
 
     flags.disabled = this.disabled;
@@ -1341,11 +1358,11 @@ class MuchSelect extends HTMLElement {
       } else {
         this.removeAttribute("loading");
       }
-      // noinspection JSUnresolvedVariable
-      this.appPromise.then((app) =>
-        app.ports.loadingChangedReceiver.send(this._loading)
-      );
     }
+    // noinspection JSUnresolvedVariable
+    this.appPromise.then((app) =>
+      app.ports.loadingChangedReceiver.send(this._loading)
+    );
   }
 
   get allowCustomOptions() {
@@ -1464,6 +1481,41 @@ class MuchSelect extends HTMLElement {
     if (this._connected) {
       this.parsedSelectedValue = currentValue;
     }
+  }
+
+  get optionSorting() {
+    return this._optionSorting;
+  }
+
+  /**
+   * Do not allow this value to be anything but:
+   *  - no-sorting
+   *  - by-option-label
+   * */
+  set optionSorting(value) {
+    if (value === "no-sorting") {
+      this._optionSorting = "no-sorting";
+    } else if (value === "by-option-label") {
+      this._optionSorting = "by-option-label";
+    } else if (value === null) {
+      this._optionSorting = "no-sorting";
+    } else if (value === "") {
+      this._optionSorting = "no-sorting";
+    } else {
+      throw new Error(`Unexpected value for option sorting: ${value}`);
+    }
+
+    if (!this.eventsOnlyMode) {
+      if (value === null || value === "") {
+        this.removeAttribute("option-sorting");
+      } else {
+        this.setAttribute("option-sorting", this._optionSorting);
+      }
+    }
+    // noinspection JSUnresolvedVariable
+    this.appPromise.then((app) =>
+      app.ports.optionSortingChangedReceiver.send(this._optionSorting)
+    );
   }
 
   // eslint-disable-next-line class-methods-use-this
