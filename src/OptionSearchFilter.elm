@@ -25,8 +25,8 @@ impossiblyLowScore =
     1000000
 
 
-new : Int -> OptionSearchResult -> List ( Bool, String ) -> List ( Bool, String ) -> List ( Bool, String ) -> OptionSearchFilter
-new totalScore searchResult labelTokens descriptionTokens groupTokens =
+new : Int -> Int -> OptionSearchResult -> List ( Bool, String ) -> List ( Bool, String ) -> List ( Bool, String ) -> OptionSearchFilter
+new totalScore bestScore searchResult labelTokens descriptionTokens groupTokens =
     { totalScore = totalScore
     , bestScore = totalScore
     , searchResult = searchResult

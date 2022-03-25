@@ -74,7 +74,7 @@ updateSearchResultInOption searchString option =
         groupTokens =
             tokenize (option |> Option.getOptionGroup |> Option.optionGroupToString) searchResult.groupMatch
 
-        score =
+        bestScore =
             Maybe.withDefault OptionSearchFilter.impossiblyLowScore
                 (List.minimum
                     [ searchResult.labelMatch.score
@@ -82,11 +82,19 @@ updateSearchResultInOption searchString option =
                     , searchResult.groupMatch.score
                     ]
                 )
+
+        totalScore =
+            List.sum
+                [ searchResult.labelMatch.score
+                , searchResult.descriptionMatch.score
+                , searchResult.groupMatch.score
+                ]
     in
     Option.setOptionSearchFilter
         (Just
             (OptionSearchFilter.new
-                score
+                bestScore
+                totalScore
                 searchResult
                 labelTokens
                 descriptionTokens
