@@ -1,10 +1,11 @@
-module OptionSearcher exposing (simpleMatch, updateOptions)
+module OptionSearcher exposing (doesSearchStringFindNothing, simpleMatch, updateOptions)
 
 import Fuzzy exposing (Result, match)
 import Option exposing (Option)
 import OptionLabel exposing (optionLabelToSearchString, optionLabelToString)
 import OptionPresentor exposing (tokenize)
 import OptionSearchFilter exposing (OptionSearchResult)
+import PositiveInt exposing (PositiveInt)
 import SelectionMode exposing (CustomOptions(..), SelectionMode)
 
 
@@ -106,3 +107,21 @@ updateOptionsWithSearchString searchString options =
                             )
                             option
                     )
+
+
+doesSearchStringFindNothing : String -> PositiveInt -> List Option -> Bool
+doesSearchStringFindNothing searchString searchStringMinimumLength options =
+    if String.length searchString <= PositiveInt.toInt searchStringMinimumLength then
+        False
+
+    else
+        List.all
+            (\option ->
+                case Option.getMaybeOptionSearchFilter option of
+                    Just optionSearchFilter ->
+                        optionSearchFilter.totalScore > 1000
+
+                    Nothing ->
+                        False
+            )
+            options
