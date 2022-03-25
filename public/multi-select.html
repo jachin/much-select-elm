@@ -23,7 +23,7 @@
 
 <div class="container">
 
-  <div id="much-select-multi-select">
+  <div id="much-select-multi-select" class="example">
     <h3>Multi Select</h3>
     <much-select multi-select="">
       <select slot="select-input">
@@ -40,25 +40,12 @@
 
   </div>
 
-  <div id="much-select-with-custom-options">
-    <h3>Custom Options</h3>
-    <p>With multi select you can also add your own "custom" options with the <code>allow-custom-options=""</code> attribute.</p>
-    <much-select multi-select="" allow-custom-options="">
-      <select slot="select-input">
-        <option>Arugula</option>
-        <option>Butterhead</option>
-        <option>Coral</option>
-        <option>Cress</option>
-        <option>Endive</option>
-        <option>Escarole</option>
-        <option>Frisée</option>
-        <option>Mâche</option>
-      </select>
-    </much-select>
-
+  <div id="much-select-with-custom-options" class="example">
+    <iframe height="300" title="Custom Options" src="./multi-select-examples/custom-options.html"></iframe>
+    <p><a href="./multi-select-examples/custom-options.html">open example in it's own page</a></p>
   </div>
 
-  <div id="much-select-with-removable-options">
+  <div id="much-select-with-removable-options" class="example">
     <h3>Removable Options</h3>
     <p>With multi select you can make each selected value individually removable.</p>
     <button>Toggle the remove selected item buttons</button>
@@ -85,7 +72,7 @@
     </script>
 
   </div>
-  <div id="much-select-with-no-options">
+  <div id="much-select-with-no-options" class="example">
     <h3>No Options</h3>
     <p>What does the drop down look like if you have no options</p>
     <much-select multi-select="" allow-custom-options="">

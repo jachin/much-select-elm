@@ -21,6 +21,7 @@ module Option exposing
     , emptyOptionGroup
     , encode
     , filterOptionsToShowInDropdown
+    , filterOptionsToShowInDropdownBySearchScore
     , findHighestAutoSortRank
     , findHighlightedOrSelectedOptionIndex
     , findOptionByOptionValue
@@ -72,8 +73,6 @@ module Option exposing
     , setMaybeSortRank
     , setOptionSearchFilter
     , setSelectedOptionInNewOptions
-    , sortOptionsByGroupAndLabel
-    , sortOptionsByTotalScore
     , stringToOptionValue
     , toggleSelectedHighlightByOptionValue
     , unhighlightSelectedOptions
@@ -83,10 +82,11 @@ module Option exposing
 import Json.Decode
 import Json.Encode
 import List.Extra
-import OptionLabel exposing (OptionLabel(..), getSortRank, labelDecoder, optionLabelToSearchString, optionLabelToString)
-import OptionSearchFilter exposing (OptionSearchFilter)
+import Maybe.Extra
+import OptionLabel exposing (OptionLabel(..), labelDecoder, optionLabelToSearchString, optionLabelToString)
+import OptionSearchFilter exposing (OptionSearchFilter, OptionSearchResult, getLowScore, impossiblyLowScore, lowScoreCutOff)
 import SelectionMode exposing (SelectedItemPlacementMode(..), SelectionMode(..))
-import SortRank exposing (SortRank(..), getAutoIndexForSorting)
+import SortRank exposing (SortRank(..))
 
 
 type Option
@@ -981,6 +981,11 @@ findHighlightedOrSelectedOptionIndex options =
 
 filterOptionsToShowInDropdown : List Option -> List Option
 filterOptionsToShowInDropdown =
+    filterOptionsToShowInDropdownByOptionDisplay >> filterOptionsToShowInDropdownBySearchScore
+
+
+filterOptionsToShowInDropdownByOptionDisplay : List Option -> List Option
+filterOptionsToShowInDropdownByOptionDisplay =
     List.filter
         (\option ->
             case getOptionDisplay option of
@@ -1002,6 +1007,57 @@ filterOptionsToShowInDropdown =
                 OptionDisabled ->
                     True
         )
+
+
+filterOptionsToShowInDropdownBySearchScore : List Option -> List Option
+filterOptionsToShowInDropdownBySearchScore options =
+    case findLowestSearchScore options of
+        Just lowScore ->
+            List.filter (isOptionBelowScore (lowScoreCutOff lowScore)) options
+
+        Nothing ->
+            options
+
+
+findLowestSearchScore : List Option -> Maybe Int
+findLowestSearchScore options =
+    let
+        lowSore =
+            options
+                |> optionSearchResults
+                |> List.foldl
+                    (\searchResult lowScore ->
+                        if getLowScore searchResult < lowScore then
+                            getLowScore searchResult
+
+                        else
+                            lowScore
+                    )
+                    impossiblyLowScore
+    in
+    if lowSore == impossiblyLowScore then
+        Nothing
+
+    else
+        Just lowSore
+
+
+optionSearchResults : List Option -> List OptionSearchResult
+optionSearchResults options =
+    options
+        |> List.map getMaybeOptionSearchFilter
+        |> Maybe.Extra.values
+        |> List.map .searchResult
+
+
+isOptionBelowScore : Int -> Option -> Bool
+isOptionBelowScore score option =
+    case getMaybeOptionSearchFilter option of
+        Just optionSearchFilter ->
+            score >= getLowScore optionSearchFilter.searchResult
+
+        Nothing ->
+            False
 
 
 highlightOptionInList : Option -> List Option -> List Option
@@ -1444,55 +1500,6 @@ findHighestAutoSortRank options =
 removeOptionsFromOptionList : List Option -> List Option -> List Option
 removeOptionsFromOptionList options optionsToRemove =
     List.filter (\option -> not (optionListContainsOptionWithValue option optionsToRemove)) options
-
-
-sortOptionsByTotalScore : List Option -> List Option
-sortOptionsByTotalScore options =
-    List.sortBy
-        (\option ->
-            option
-                |> getMaybeOptionSearchFilter
-                |> Maybe.map .totalScore
-                |> Maybe.withDefault 100000
-        )
-        options
-
-
-sortOptionsByGroupAndLabel : List Option -> List Option
-sortOptionsByGroupAndLabel options =
-    options
-        |> List.Extra.gatherWith
-            (\optionA optionB ->
-                getOptionGroup optionA == getOptionGroup optionB
-            )
-        |> List.map (\( option_, options_ ) -> List.append [ option_ ] options_)
-        |> List.map (\options_ -> sortOptionsByLabel options_)
-        |> List.concat
-
-
-
--- TODO This isn't done yet. It needs to be more complex.
---  It should sort primarily by the weight (bigger numbers should show up first)
---  Then it should sort by index
---  Last it should sort by alphabetically by label.
-
-
-sortOptionsByLabel : List Option -> List Option
-sortOptionsByLabel options =
-    List.sortBy
-        (\option ->
-            option
-                |> getOptionLabel
-                |> optionLabelToString
-        )
-        options
-        |> List.sortBy
-            (\option ->
-                option
-                    |> getOptionLabel
-                    |> getSortRank
-                    |> getAutoIndexForSorting
-            )
 
 
 highlightOption : Option -> Option

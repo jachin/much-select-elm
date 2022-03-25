@@ -1,4 +1,4 @@
-module OptionSearchFilter exposing (OptionSearchFilter, OptionSearchResult, new)
+module OptionSearchFilter exposing (OptionSearchFilter, OptionSearchResult, getLowScore, impossiblyLowScore, lowScoreCutOff, new)
 
 import Fuzzy exposing (Result)
 
@@ -17,6 +17,11 @@ type alias OptionSearchResult =
     }
 
 
+impossiblyLowScore : number
+impossiblyLowScore =
+    1000000
+
+
 new : Int -> OptionSearchResult -> List ( Bool, String ) -> List ( Bool, String ) -> OptionSearchFilter
 new totalScore searchResult labelTokens descriptionTokens =
     { totalScore = totalScore
@@ -24,3 +29,30 @@ new totalScore searchResult labelTokens descriptionTokens =
     , labelTokens = labelTokens
     , descriptionTokens = descriptionTokens
     }
+
+
+getLowScore : OptionSearchResult -> Int
+getLowScore optionSearchResult =
+    if optionSearchResult.labelMatch.score < optionSearchResult.descriptionMatch.score then
+        optionSearchResult.labelMatch.score
+
+    else
+        optionSearchResult.descriptionMatch.score
+
+
+lowScoreCutOff : Int -> Int
+lowScoreCutOff score =
+    if score == 0 then
+        10
+
+    else if score <= 10 then
+        100
+
+    else if score <= 100 then
+        1000
+
+    else if score <= 1000 then
+        10000
+
+    else
+        impossiblyLowScore

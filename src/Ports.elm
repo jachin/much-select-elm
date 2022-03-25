@@ -19,13 +19,16 @@ port module Ports exposing
     , multiSelectSingleItemRemovalChangedReceiver
     , optionDeselected
     , optionSelected
+    , optionSortingChangedReceiver
     , optionsChangedReceiver
     , placeholderChangedReceiver
     , removeOptionsReceiver
     , requestAllOptionsReceiver
     , scrollDropdownToElement
+    , searchStringMinimumLengthChangedReceiver
     , selectOptionReceiver
     , selectedItemStaysInPlaceChangedReceiver
+    , showDropdownFooterChangedReceiver
     , valueCasingDimensionsChangedReceiver
     , valueChanged
     , valueChangedReceiver
@@ -145,10 +148,16 @@ port multiSelectChangedReceiver : (Bool -> msg) -> Sub msg
 port multiSelectSingleItemRemovalChangedReceiver : (Bool -> msg) -> Sub msg
 
 
+port searchStringMinimumLengthChangedReceiver : (Int -> msg) -> Sub msg
+
+
 port selectedItemStaysInPlaceChangedReceiver : (Bool -> msg) -> Sub msg
 
 
 port maxDropdownItemsChangedReceiver : (Int -> msg) -> Sub msg
+
+
+port showDropdownFooterChangedReceiver : (Bool -> msg) -> Sub msg
 
 
 port allowCustomOptionsReceiver : (Bool -> msg) -> Sub msg
@@ -158,3 +167,6 @@ port customOptionHintReceiver : (Maybe String -> msg) -> Sub msg
 
 
 port valueCasingDimensionsChangedReceiver : ({ width : Float, height : Float } -> msg) -> Sub msg
+
+
+port optionSortingChangedReceiver : (String -> msg) -> Sub msg
