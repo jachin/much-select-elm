@@ -1827,7 +1827,8 @@ class MuchSelect extends HTMLElement {
   }
 
   updateOptions(options) {
-    this._callOptionChanged(options);
+    const cleanedUpOptions = cleanUpOptions(options);
+    this._callOptionChanged(cleanedUpOptions);
     this.updateDimensions();
   }
 
