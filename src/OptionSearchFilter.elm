@@ -5,9 +5,11 @@ import Fuzzy exposing (Result)
 
 type alias OptionSearchFilter =
     { totalScore : Int
+    , bestScore : Int
     , searchResult : OptionSearchResult
     , labelTokens : List ( Bool, String )
     , descriptionTokens : List ( Bool, String )
+    , groupTokens : List ( Bool, String )
     }
 
 
@@ -23,12 +25,14 @@ impossiblyLowScore =
     1000000
 
 
-new : Int -> OptionSearchResult -> List ( Bool, String ) -> List ( Bool, String ) -> OptionSearchFilter
-new totalScore searchResult labelTokens descriptionTokens =
+new : Int -> OptionSearchResult -> List ( Bool, String ) -> List ( Bool, String ) -> List ( Bool, String ) -> OptionSearchFilter
+new totalScore searchResult labelTokens descriptionTokens groupTokens =
     { totalScore = totalScore
+    , bestScore = totalScore
     , searchResult = searchResult
     , labelTokens = labelTokens
     , descriptionTokens = descriptionTokens
+    , groupTokens = groupTokens
     }
 
 

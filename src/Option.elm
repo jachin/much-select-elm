@@ -585,7 +585,7 @@ optionGroupToSearchString : OptionGroup -> String
 optionGroupToSearchString optionGroup =
     case optionGroup of
         OptionGroup string ->
-            string
+            String.toLower string
 
         NoOptionGroup ->
             ""
