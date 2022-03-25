@@ -1161,7 +1161,7 @@ dropdown model =
             if List.isEmpty model.optionsForTheDropdown then
                 [ div [ class "option disabled" ] [ node "slot" [ name "no-options" ] [ text "No available options" ] ] ]
 
-            else if doesSearchStringFindNothing model.searchString model.optionsForTheDropdown then
+            else if doesSearchStringFindNothing model.searchString model.searchStringMinimumLength model.optionsForTheDropdown then
                 [ div [ class "option disabled" ] [ node "slot" [ name "no-filted-options" ] [ text "This filter returned no results." ] ] ]
 
             else

@@ -5,6 +5,7 @@ import Option exposing (Option)
 import OptionLabel exposing (optionLabelToSearchString, optionLabelToString)
 import OptionPresentor exposing (tokenize)
 import OptionSearchFilter exposing (OptionSearchResult)
+import PositiveInt exposing (PositiveInt)
 import SelectionMode exposing (CustomOptions(..), SelectionMode)
 
 
@@ -101,9 +102,9 @@ updateOptionsWithSearchString searchString options =
                     )
 
 
-doesSearchStringFindNothing : String -> List Option -> Bool
-doesSearchStringFindNothing searchString options =
-    if String.length searchString <= 0 then
+doesSearchStringFindNothing : String -> PositiveInt -> List Option -> Bool
+doesSearchStringFindNothing searchString searchStringMinimumLength options =
+    if String.length searchString <= PositiveInt.toInt searchStringMinimumLength then
         False
 
     else
