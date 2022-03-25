@@ -55,7 +55,7 @@ import Option
         )
 import OptionLabel exposing (OptionLabel(..), optionLabelToString)
 import OptionPresentor exposing (tokensToHtml)
-import OptionSearcher
+import OptionSearcher exposing (doesSearchStringFindNothing)
 import OptionSorting exposing (OptionSort(..), sortOptions, sortOptionsBySearchFilterTotalScore, stringToOptionSort)
 import Ports
     exposing
@@ -1160,6 +1160,9 @@ dropdown model =
         optionsHtml =
             if List.isEmpty model.optionsForTheDropdown then
                 [ div [ class "option disabled" ] [ node "slot" [ name "no-options" ] [ text "No available options" ] ] ]
+
+            else if doesSearchStringFindNothing model.searchString model.optionsForTheDropdown then
+                [ div [ class "option disabled" ] [ node "slot" [ name "no-filted-options" ] [ text "This filter returned no results." ] ] ]
 
             else
                 optionsToDropdownOptions

@@ -1,4 +1,4 @@
-module OptionSearcher exposing (simpleMatch, updateOptions)
+module OptionSearcher exposing (doesSearchStringFindNothing, simpleMatch, updateOptions)
 
 import Fuzzy exposing (Result, match)
 import Option exposing (Option)
@@ -99,3 +99,21 @@ updateOptionsWithSearchString searchString options =
                             )
                             option
                     )
+
+
+doesSearchStringFindNothing : String -> List Option -> Bool
+doesSearchStringFindNothing searchString options =
+    if String.length searchString <= 0 then
+        False
+
+    else
+        List.all
+            (\option ->
+                case Option.getMaybeOptionSearchFilter option of
+                    Just optionSearchFilter ->
+                        optionSearchFilter.totalScore > 1000
+
+                    Nothing ->
+                        False
+            )
+            options
