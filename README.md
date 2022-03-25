@@ -115,6 +115,20 @@ The `selected-value` attribute is used to set the value of the `<much-select>`.
 
 The `show-dropdown-footer` attribute is used to show the footer in the dropdown of the `<much-select>`. The footer contains potentially useful information about how many options are really available but might not be visible because the results are being filter.
 
+#### Slots
+
+##### `no-options`
+
+If there are no options to display, show this message.
+
+##### `no-options`
+
+If there are no options to display, show this message.
+
+##### `no-filtered-options`
+
+If the user has typed in a search filter that just does not have any good matches show this message.
+
 #### Options
 
 ### Events
