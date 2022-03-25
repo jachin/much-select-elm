@@ -55,7 +55,7 @@ import Option
         )
 import OptionLabel exposing (OptionLabel(..), optionLabelToString)
 import OptionPresentor exposing (tokensToHtml)
-import OptionSearcher
+import OptionSearcher exposing (doesSearchStringFindNothing)
 import OptionSorting exposing (OptionSort(..), sortOptions, sortOptionsBySearchFilterTotalScore, stringToOptionSort)
 import Ports
     exposing
@@ -1158,8 +1158,12 @@ dropdown : Model -> Html Msg
 dropdown model =
     let
         optionsHtml =
+            -- TODO We should probably do something different if we are in a loading state
             if List.isEmpty model.optionsForTheDropdown then
                 [ div [ class "option disabled" ] [ node "slot" [ name "no-options" ] [ text "No available options" ] ] ]
+
+            else if doesSearchStringFindNothing model.searchString model.searchStringMinimumLength model.optionsForTheDropdown then
+                [ div [ class "option disabled" ] [ node "slot" [ name "no-filtered-options" ] [ text "This filter returned no results." ] ] ]
 
             else
                 optionsToDropdownOptions
