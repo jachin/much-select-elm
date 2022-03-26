@@ -24,7 +24,7 @@
 
 <div class="container">
 
-  <div>
+  <div class="example">
     <h3>Simple Example</h3>
     <p>Just selecting a single value from a list. If this is all you need to do you should probably just use a <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select"><code>select</code> element</a>.</p>
     <much-select>
@@ -36,7 +36,7 @@
     </much-select>
   </div>
 
-  <div>
+  <div class="example">
     <h3>Multi Select</h3>
     <p>Choose some colors, no need to just pick 1.</p>
     <much-select multi-select="true">
@@ -51,7 +51,7 @@
     </much-select>
   </div>
 
-  <div>
+  <div class="example">
     <h3>Option Groups</h3>
     <p>You can give your options a little more organization by grouping them.</p>
     <much-select>
@@ -70,7 +70,7 @@
     </much-select>
   </div>
 
-  <div>
+  <div class="example">
     <h3>Options with Descriptions</h3>
     <p>Sometimes just a human friendly label for an option isn't enough, and you'd like to add a little extra "color".</p>
     <p>You can filter your results by typing, <code>&lt;much-select&gt;</code> will also use the descriptions when trying to find the option you want.</p>
@@ -86,7 +86,7 @@
     </much-select>
   </div>
 
-  <div>
+  <div class="example">
     <h3>Options Label and Values</h3>
     <p>The labels and values are different</p>
     <much-select>
@@ -101,7 +101,7 @@
     </much-select>
   </div>
 
-  <div>
+  <div class="example">
     <h3>An initial value</h3>
     <p>Set using the <code>selected</code> attribute on the <code>&lt;much-select&gt;</code></p>
     <much-select selected-value="Blue">
@@ -116,7 +116,7 @@
     </much-select>
   </div>
 
-  <div>
+  <div class="example">
     <h3>A Placeholder</h3>
     <much-select placeholder="What is your favorite color?">
       <select slot="select-input">
@@ -130,7 +130,7 @@
     </much-select>
   </div>
 
-  <div>
+  <div class="example">
     <h3>Disabled</h3>
     <p>Disable the <code>&lt;much-select&gt;</code> with the <code>disabled</code> attribute.</p>
     <much-select disabled="disabled">
@@ -145,7 +145,7 @@
     </much-select>
   </div>
 
-  <div id="loading-indicator">
+  <div class="example" id="loading-indicator">
     <h3>Loading</h3>
     <p>Show and hide the loading indicator with the <code>loading</code> attribute.</p>
     <much-select loading="loading">
@@ -175,7 +175,7 @@
     </script>
   </div>
 
-  <div>
+  <div class="example">
     <h3>Disabled Options</h3>
     <p>This has the "yellow" and "orange" options disabled.</p>
     <much-select>
@@ -190,7 +190,7 @@
     </much-select>
   </div>
 
-  <div>
+  <div class="example">
     <h3>Change Options With the Dom</h3>
     <button id="change-the-dom">Click me to change the dom</button>
     <much-select id="change-the-dom-much-select">
@@ -215,7 +215,7 @@
     </script>
   </div>
 
-  <div>
+  <div class="example">
     <h3>Max Number of Items</h3>
     <p>You can cange the maxium number of items in the dropdown with the <code>max-dropdown-items=</code> attribute.</p>
 
@@ -233,7 +233,7 @@
     </much-select>
   </div>
 
-  <div id="remote-api-example">
+  <div class="example" id="remote-api-example">
     <h3>Remote API</h3>
     <p>As you type we'll query the remote API for additional options.</p>
     <p>This dropdown searches the <a href="https://rickandmortyapi.com/">Rick and Morty</a> API for characters from the show by name.</p>
@@ -284,7 +284,7 @@
     </script>
   </div>
 
-  <div id="custom-options-that-persist">
+  <div class="example" id="custom-options-that-persist">
     <h3>Custom Options That Persist</h3>
     <much-select allow-custom-options="">
       <select slot="select-input">
@@ -332,7 +332,7 @@
   </div>
 
 
-  <div id="events-only-mode">
+  <div class="example" id="events-only-mode">
     <h3>Events Only Mode</h3>
     <p>
       The <code>events-only=""</code> attribute is a little specialized, it

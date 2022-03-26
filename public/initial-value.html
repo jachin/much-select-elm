@@ -12,7 +12,7 @@
   <script src="./styles.js"></script>
 </head>
 
-<body class="fun">
+<body>
 <include src="header.html">
   {
   "pageName": "Initial Value"
@@ -22,7 +22,7 @@
 <include src="nav.html"></include>
 
 <div class="container">
-  <div>
+  <div class="example">
     <h3>An initial value</h3>
     <p>Set using the <code>selected</code> attribute on the <code>&lt;much-select&gt;</code></p>
     <much-select selected-value="Blue">
@@ -37,13 +37,13 @@
     </much-select>
   </div>
 
-  <div>
+  <div class="example">
     <h3>An initial Value (No Options)</h3>
     <p>If there is an initial value but no options it should create one for the initial value</p>
     <much-select selected-value="Coffee"></much-select>
   </div>
 
-  <div id="add-options-including-the-selected-value">
+  <div class="example" id="add-options-including-the-selected-value">
     <h3>An initial Value (No Options) - Then Add the Options</h3>
     <p>If there is an initial value but no options initially, then we add options (async).</p>
     <p>It should keep the selected value and "merge" the new option with the same value.</p>
@@ -67,7 +67,7 @@
     </script>
   </div>
 
-  <div id="add-options-not-including-the-selected-value">
+  <div class="example" id="add-options-not-including-the-selected-value">
     <h3>An initial Value (No Options) - Then Add the Options - But not the selected value</h3>
     <p>If there is an initial value but no options initial, then we add options (async).</p>
     <p>It should keep the selected value include the additional options in the dropdown.</p>
@@ -89,7 +89,7 @@
     </script>
   </div>
 
-  <div id="add-options-to-a-multi-select-not-including-the-selected-value">
+  <div class="example" id="add-options-to-a-multi-select-not-including-the-selected-value">
     <h3>2 Initial Options - Then Add the Options - But not the selected value</h3>
     <p>For multi select we should support multiple initial values, then we add options (async).</p>
     <p>It Should keep the selected values and add the new options.</p>
@@ -115,7 +115,7 @@
     </script>
   </div>
 
-  <div id="much-select-switch-between-multi-select-and-single-select">
+  <div class="example" id="much-select-switch-between-multi-select-and-single-select">
     <h3>Switch between multi select and single select</h3>
     <much-select multi-select="" selected-value="Safari,Firefox">
       <select slot="select-input">
@@ -145,17 +145,15 @@
     </script>
   </div>
 
-  <div id="selected-option-with-async-options">
-    <iframe height="300" title="Selected Option with Async Options" src="./initial-value-examples/async-loading-options-with-an-initial-value.html"></iframe>
-    <p><a href="./initial-value-examples/async-loading-options-with-an-initial-value.html">open example in it's own page</a></p>
-  </div>
+  <include src="./initial-value-examples/async-loading-options-with-an-initial-value/partial.html"></include>
+  <p><a href="initial-value-examples/async-loading-options-with-an-initial-value/index.html">open example in it's own page</a></p>
 
-  <div id="selected-option-with-async-options-small">
+  <div class="example" id="selected-option-with-async-options-small">
     <iframe height="300" title="Selected Option with Async Options (Smaller)" src="./initial-value-examples/async-loading-options-with-an-initial-value-smaller.html"></iframe>
     <p><a href="./initial-value-examples/async-loading-options-with-an-initial-value-smaller.html">open example in it's own page</a></p>
   </div>
 
-  <div>
+  <div class="example">
     <iframe height="300" title="Selected Option with Multi Select and Async Options (Smaller)" src="./initial-value-examples/async-loading-options-with-mulit-select-and-an-initial-value-smaller.html"></iframe>
     <p><a href="./initial-value-examples/async-loading-options-with-mulit-select-and-an-initial-value-smaller.html">open example in it's own page</a></p>
   </div>
