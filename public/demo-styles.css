@@ -11,14 +11,14 @@
     }
 
     body.boring {
-        --background-color: #2c3e50;
-        --text-color: #ecf0f1;
-        --link-text-color: #95a5a6;
-        --nav-link-text-color: #e74c3c;
+        --background-color: #2f3640;
+        --text-color: #dcdde1;
+        --link-text-color: #44bd32;
+        --nav-link-text-color: #fbc531;
         --header-font: "Andale Mono";
         --body-font: "Times New Roman";
-        --site-nav-background-color: #8e44ad;
-        --offsite-nav-background-color: #2980b9;
+        --site-nav-background-color: #8c7ae6;
+        --offsite-nav-background-color: #40739e;
     }
 }
 
@@ -33,16 +33,16 @@
         --site-nav-background-color: #2ecc71;
         --offsite-nav-background-color: #1abc9c;
     }
-
+    /*https://flatuicolors.com/palette/gb*/
     body.boring {
-        --background-color: #ecf0f1;
-        --text-color: #34495e;
-        --link-text-color: #2980b9;
-        --nav-link-text-color: #e74c3c;
+        --background-color: #f5f6fa;
+        --text-color: #2f3640;
+        --link-text-color: #273c75;
+        --nav-link-text-color: #192a56;
         --header-font: "Andale Mono";
         --body-font: "Times New Roman";
-        --site-nav-background-color: #2ecc71;
-        --offsite-nav-background-color: #1abc9c;
+        --site-nav-background-color: #dcdde1;
+        --offsite-nav-background-color: #9c88ff;
     }
 }
 
