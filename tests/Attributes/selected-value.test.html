@@ -98,6 +98,7 @@
             "<option value='211107950'>Hello</option><option value='5'>You</option>";
 
           await nextFrame();
+          await nextFrame();
 
           // Now there should be 2 options including the selected value, and the selected value should have a label now.
           expect(await el.getAllOptions()).to.eql([

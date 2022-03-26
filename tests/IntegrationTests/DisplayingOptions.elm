@@ -23,42 +23,49 @@ flagsEmptyOptionsWithOrangeSelected =
     , allowMultiSelect = False
     , enableMultiSelectSingleItemRemoval = False
     , optionsJson = "[]"
+    , optionSort = ""
     , loading = False
     , maxDropdownItems = 10
     , disabled = False
     , allowCustomOptions = False
     , selectedItemStaysInPlace = True
+    , searchStringMinimumLength = 2
+    , showDropdownFooter = False
     }
 
 
-booksJson =
+booksJsonWithIndexes =
     """
 [
   {
     "value": "The Enormous Crocodile",
     "label": "The Enormous Crocodile",
-    "labelClean": "The Enormous Crocodile"
+    "labelClean": "The Enormous Crocodile",
+    "index": 0
   },
   {
     "value": "James and the Giant Peach",
     "label": "James and the Giant Peach",
-    "labelClean": "James and the Giant Peach"
+    "labelClean": "James and the Giant Peach",
+    "index": 1
   },
   {
     "value": "Matilda",
     "label": "Matilda",
-    "labelClean": "Matilda"
+    "labelClean": "Matilda",
+    "index": 2
   },
   {
     "value": "The BFG",
     "label": "The BFG",
-    "labelClean": "The BFG"
+    "labelClean": "The BFG",
+    "index": 3
   }
 ]
 """
 
 
-booksJsonWithSelected =
+booksJsonWithIndexesAndWithSelected =
     """
 [
   {
@@ -93,12 +100,15 @@ flagsBookOptions =
     , customOptionHint = Nothing
     , allowMultiSelect = False
     , enableMultiSelectSingleItemRemoval = False
-    , optionsJson = booksJson
+    , optionsJson = booksJsonWithIndexes
+    , optionSort = ""
     , loading = False
     , maxDropdownItems = 2
     , disabled = False
     , allowCustomOptions = False
     , selectedItemStaysInPlace = True
+    , searchStringMinimumLength = 2
+    , showDropdownFooter = False
     }
 
 
@@ -109,12 +119,15 @@ flagsBookOptionsWithValue =
     , customOptionHint = Nothing
     , allowMultiSelect = False
     , enableMultiSelectSingleItemRemoval = False
-    , optionsJson = booksJson
+    , optionsJson = booksJsonWithIndexes
+    , optionSort = ""
     , loading = False
     , maxDropdownItems = 2
     , disabled = False
     , allowCustomOptions = False
     , selectedItemStaysInPlace = True
+    , searchStringMinimumLength = 2
+    , showDropdownFooter = False
     }
 
 
@@ -125,12 +138,15 @@ flagsBookOptionsWithSelected =
     , customOptionHint = Nothing
     , allowMultiSelect = False
     , enableMultiSelectSingleItemRemoval = False
-    , optionsJson = booksJsonWithSelected
+    , optionsJson = booksJsonWithIndexesAndWithSelected
+    , optionSort = ""
     , loading = False
     , maxDropdownItems = 2
     , disabled = False
     , allowCustomOptions = False
     , selectedItemStaysInPlace = True
+    , searchStringMinimumLength = 2
+    , showDropdownFooter = False
     }
 
 

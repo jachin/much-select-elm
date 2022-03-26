@@ -8,9 +8,9 @@ import Option
         , newOption
         , optionGroupToString
         , setGroupWithString
-        , sortOptionsByGroupAndLabel
         )
 import OptionLabel exposing (optionLabelToString)
+import OptionSorting exposing (OptionSort(..), sortOptions)
 import SortRank exposing (newMaybeAutoSortRank)
 import Test exposing (Test, describe, test)
 
@@ -117,7 +117,7 @@ suite =
                 \_ ->
                     Expect.equalLists
                         (musicList
-                            |> sortOptionsByGroupAndLabel
+                            |> sortOptions NoSorting
                             |> List.map optionToDebuggingString
                         )
                         ([ heartBones
@@ -130,7 +130,7 @@ suite =
             , test "options with groups should be sorted by their groups and then by their label" <|
                 \_ ->
                     Expect.equalLists
-                        (tools |> sortOptionsByGroupAndLabel |> List.map optionToDebuggingString)
+                        (tools |> sortOptions NoSorting |> List.map optionToDebuggingString)
                         ([ chisel
                          , hammer
                          , screwDriver

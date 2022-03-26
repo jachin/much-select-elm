@@ -73,8 +73,6 @@ module Option exposing
     , setMaybeSortRank
     , setOptionSearchFilter
     , setSelectedOptionInNewOptions
-    , sortOptionsByGroupAndLabel
-    , sortOptionsByTotalScore
     , stringToOptionValue
     , toggleSelectedHighlightByOptionValue
     , unhighlightSelectedOptions
@@ -85,10 +83,10 @@ import Json.Decode
 import Json.Encode
 import List.Extra
 import Maybe.Extra
-import OptionLabel exposing (OptionLabel(..), getSortRank, labelDecoder, optionLabelToSearchString, optionLabelToString)
+import OptionLabel exposing (OptionLabel(..), labelDecoder, optionLabelToSearchString, optionLabelToString)
 import OptionSearchFilter exposing (OptionSearchFilter, OptionSearchResult, getLowScore, impossiblyLowScore, lowScoreCutOff)
 import SelectionMode exposing (SelectedItemPlacementMode(..), SelectionMode(..))
-import SortRank exposing (SortRank(..), getAutoIndexForSorting)
+import SortRank exposing (SortRank(..))
 
 
 type Option
@@ -1502,55 +1500,6 @@ findHighestAutoSortRank options =
 removeOptionsFromOptionList : List Option -> List Option -> List Option
 removeOptionsFromOptionList options optionsToRemove =
     List.filter (\option -> not (optionListContainsOptionWithValue option optionsToRemove)) options
-
-
-sortOptionsByTotalScore : List Option -> List Option
-sortOptionsByTotalScore options =
-    List.sortBy
-        (\option ->
-            option
-                |> getMaybeOptionSearchFilter
-                |> Maybe.map .totalScore
-                |> Maybe.withDefault 100000
-        )
-        options
-
-
-sortOptionsByGroupAndLabel : List Option -> List Option
-sortOptionsByGroupAndLabel options =
-    options
-        |> List.Extra.gatherWith
-            (\optionA optionB ->
-                getOptionGroup optionA == getOptionGroup optionB
-            )
-        |> List.map (\( option_, options_ ) -> List.append [ option_ ] options_)
-        |> List.map (\options_ -> sortOptionsByLabel options_)
-        |> List.concat
-
-
-
--- TODO This isn't done yet. It needs to be more complex.
---  It should sort primarily by the weight (bigger numbers should show up first)
---  Then it should sort by index
---  Last it should sort by alphabetically by label.
-
-
-sortOptionsByLabel : List Option -> List Option
-sortOptionsByLabel options =
-    List.sortBy
-        (\option ->
-            option
-                |> getOptionLabel
-                |> optionLabelToString
-        )
-        options
-        |> List.sortBy
-            (\option ->
-                option
-                    |> getOptionLabel
-                    |> getSortRank
-                    |> getAutoIndexForSorting
-            )
 
 
 highlightOption : Option -> Option
