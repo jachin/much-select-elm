@@ -43,6 +43,7 @@ body {
         --text-color: #2f3640;
         --link-text-color: #273c75;
         --nav-link-text-color: #192a56;
+        --nav-link-text-hover-background-color: var(--vanadyl-blue);
         --header-font: "Andale Mono";
         --body-font: "Times New Roman";
         --site-nav-background-color: #dcdde1;
@@ -72,6 +73,7 @@ body {
         --text-color: #dcdde1;
         --link-text-color: #44bd32;
         --nav-link-text-color: #fbc531;
+        --nav-link-text-hover-background-color: var(--rise-n-shine);
         --header-font: "Andale Mono";
         --body-font: "Times New Roman";
         --site-nav-background-color: #8c7ae6;
@@ -176,7 +178,7 @@ nav ol > li > a {
 }
 
 nav ol > li > a:hover {
-    background-color: var(--faded);
+    background-color: var(--nav-link-text-hover-background-color);
 }
 
 
