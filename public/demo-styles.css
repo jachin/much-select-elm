@@ -4,7 +4,62 @@ Boring colors https://flatuicolors.com/palette/gb
 */
 
 
+body {
+    /* Fun colors */
+    --highligher-pink: #ef5777;
+    --dark-periwinkle: #575fcf;
+    --megaman: #4bcffa;
+    --fresh-turquoise: #34e7e4;
+    --minty-green: #0be881;
+    --sizeling-red: #f53b57;
+
+    /* Boring colors */
+    --blueberry-soda: #7f8fa6;
+    --mazarine-blue: #273c75;
+}
+
+@media (prefers-color-scheme: light) {
+    body,
+    body.boring {
+        --background-color: #f5f6fa;
+        --text-color: #2f3640;
+        --link-text-color: #273c75;
+        --nav-link-text-color: #192a56;
+        --header-font: "Andale Mono";
+        --body-font: "Times New Roman";
+        --site-nav-background-color: #dcdde1;
+        --offsite-nav-background-color: #9c88ff;
+
+        --example-background-color: #dcdde1;
+        --example-border-color: var(--blueberry-soda);
+        --example-border-shadow-color: var(--mazarine-blue);
+    }
+
+    body.fun {
+        --background-color: #ecf0f1;
+        --text-color: #34495e;
+        --link-text-color: #2980b9;
+        --nav-link-text-color: #e74c3c;
+        --header-font: "Comic Sans MS";
+        --body-font: "Times New Roman";
+        --site-nav-background-color: #2ecc71;
+        --offsite-nav-background-color: #1abc9c;
+    }
+}
+
 @media (prefers-color-scheme: dark) {
+    body,
+    body.boring {
+        --background-color: #2f3640;
+        --text-color: #dcdde1;
+        --link-text-color: #44bd32;
+        --nav-link-text-color: #fbc531;
+        --header-font: "Andale Mono";
+        --body-font: "Times New Roman";
+        --site-nav-background-color: #8c7ae6;
+        --offsite-nav-background-color: #40739e;
+    }
+
     body.fun {
         --background-color: #485460;
         --text-color: #ffdd59;
@@ -16,39 +71,7 @@ Boring colors https://flatuicolors.com/palette/gb
         --offsite-nav-background-color: #3c40c6;
     }
 
-    body.boring {
-        --background-color: #2f3640;
-        --text-color: #dcdde1;
-        --link-text-color: #44bd32;
-        --nav-link-text-color: #fbc531;
-        --header-font: "Andale Mono";
-        --body-font: "Times New Roman";
-        --site-nav-background-color: #8c7ae6;
-        --offsite-nav-background-color: #40739e;
-    }
-}
 
-@media (prefers-color-scheme: light) {
-    body.fun {
-        --background-color: #ecf0f1;
-        --text-color: #34495e;
-        --link-text-color: #2980b9;
-        --nav-link-text-color: #e74c3c;
-        --header-font: "Comic Sans MS";
-        --body-font: "Times New Roman";
-        --site-nav-background-color: #2ecc71;
-        --offsite-nav-background-color: #1abc9c;
-    }
-    body.boring {
-        --background-color: #f5f6fa;
-        --text-color: #2f3640;
-        --link-text-color: #273c75;
-        --nav-link-text-color: #192a56;
-        --header-font: "Andale Mono";
-        --body-font: "Times New Roman";
-        --site-nav-background-color: #dcdde1;
-        --offsite-nav-background-color: #9c88ff;
-    }
 }
 
 body {
@@ -87,10 +110,11 @@ h3 {
 .container > .example {
     margin: 1rem;
     padding: 1rem;
-    border: 3px solid var(--primary);
-    box-shadow: 2px 2px 5px 0 var(--inverse);
+    border: 3px solid var(--example-border-color);
+    box-shadow: 2px 2px 5px 0 var(--example-border-shadow-color);
     border-radius: 12px;
     max-width: 400px;
+    background-color: var(--example-background-color);
 }
 
 nav {
