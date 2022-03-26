@@ -1,13 +1,19 @@
+/*
+Fun colors https://flatuicolors.com/palette/se
+Boring colors https://flatuicolors.com/palette/gb
+*/
+
+
 @media (prefers-color-scheme: dark) {
     body.fun {
-        --background-color: #2c3e50;
-        --text-color: #ecf0f1;
-        --link-text-color: #95a5a6;
-        --nav-link-text-color: #e74c3c;
+        --background-color: #485460;
+        --text-color: #ffdd59;
+        --link-text-color: #ffa801;
+        --nav-link-text-color: #ffa801;
         --header-font: "Comic Sans MS";
         --body-font: "Times New Roman";
-        --site-nav-background-color: #8e44ad;
-        --offsite-nav-background-color: #2980b9;
+        --site-nav-background-color: #575fcf;
+        --offsite-nav-background-color: #3c40c6;
     }
 
     body.boring {
@@ -33,7 +39,6 @@
         --site-nav-background-color: #2ecc71;
         --offsite-nav-background-color: #1abc9c;
     }
-    /*https://flatuicolors.com/palette/gb*/
     body.boring {
         --background-color: #f5f6fa;
         --text-color: #2f3640;
