@@ -106,9 +106,24 @@ body {
 
 #header {
     display: flex;
+    flex-flow: row wrap;
     justify-content: space-evenly;
     align-items: end;
 }
+
+#header #site-title {
+    flex: 0 1 300px;
+    white-space: nowrap;
+}
+
+#header #page-name {
+    flex: 0 1 300px;
+}
+
+#header #sub-title {
+    flex: 0 1 300px;
+}
+
 
 h1 {
     font-family: var(--header-font);
@@ -125,6 +140,7 @@ h3 {
 .container {
     display: flex;
     flex-flow: row wrap;
+    justify-content: space-evenly;
 }
 
 .container > .example {
@@ -135,6 +151,7 @@ h3 {
     border-radius: 12px;
     max-width: 400px;
     background-color: var(--example-background-color);
+    flex: 0 1 300px;
 }
 
 nav {
