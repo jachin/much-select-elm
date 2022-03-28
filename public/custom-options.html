@@ -8,134 +8,42 @@
   <link rel="icon" href="./favicon.ico" type="image/x-icon" />
   <title>Much Select - Custom Options</title>
   <link href="demo-styles.css" rel="stylesheet">
+  <script src="./styles.js"></script>
 </head>
 
 <body>
-<h1>Much-Select - Custom Options</h1>
+<include src="header.html">
+  {
+  "pageName": "Custom Options"
+  }
+</include>
 
-<h2>Demo and Development Playground</h2>
-
-<nav>
-  <ol class="main-nav">
-    <li class="main-nav-item"><a href="index.html">Home</a></li>
-  </ol>
-</nav>
+<include src="nav.html"></include>
 
 <div class="container">
-  <div id="empty-single-select-value-changed-example">
-    <h3>Add Custom Options</h3>
-    <p>
-      Using the <code>allow-custom-options</code> attribute to allow the user to choose a their own value (one that is not in the list of options).
-    </p>
-    <much-select allow-custom-options></much-select>
-    <p>Events:</p>
-    <table id="single-select-custom-option-event-log">
-      <thead>
-      <tr>
-        <th>Event</th>
-        <th>Details</th>
-      </tr>
-      </thead>
-      <tbody>
-      </tbody>
-    </table>
-    <script>
-      window.addEventListener("load", () => {
-        document
-          .querySelector("#empty-single-select-value-changed-example much-select")
-          .addEventListener(
-            "customValueSelected",
-            makeLogEventHandler("single-select-custom-option-event-log")
-          );
-      });
-    </script>
+  <div class="example">
+    <include src="example-partials/add-custom-options.html"></include>
   </div>
 
-  <div id="not-empty-single-select-value-changed-example">
-    <h3>Add Custom Options (or select from the existing options)</h3>
-    <p>
-      If we type in an option that matches an existing option is should <em>not</em>
-      show the option to add a custom option.
-    </p>
-    <much-select allow-custom-options="true">
-      <!--suppress HtmlFormInputWithoutLabel -->
-      <select slot="select-input">
-        <option>Flashlight</option>
-        <option>Lantern</option>
-        <option>Candle</option>
-      </select>
-    </much-select>
-    <p>Events:</p>
-    <table id="not-empty-single-select-custom-option-event-log">
-      <thead>
-      <tr>
-        <th>Event</th>
-        <th>Details</th>
-      </tr>
-      </thead>
-      <tbody>
-      </tbody>
-    </table>
-    <script>
-      window.addEventListener("load", () => {
-        document
-          .querySelector("#not-empty-single-select-value-changed-example much-select")
-          .addEventListener(
-            "customValueSelected",
-            makeLogEventHandler("not-empty-single-select-custom-option-event-log")
-          );
-      });
-    </script>
+  <div class="example">
+    <include src="example-partials/add-custom-options-2.html"></include>
   </div>
 
-  <div id="custom-option-label-text">
-    <h3>Set the custom option text</h3>
-    <p>
-      You can set the value of the <code>allow-custom-options=</code> attribute to text that will be used in the dropdown.
-      The default value will be "Add (your value)...".
-    </p>
-    <much-select allow-custom-options="New Currency: ">
-      <!--suppress HtmlFormInputWithoutLabel -->
-      <select slot="select-input">
-        <option>Gold Doubloons</option>
-        <option>Schrute Bucks</option>
-        <option>Credits</option>
-      </select>
-    </much-select>
+  <div class="example">
+    <include src="example-partials/custom-option-label-text.html"></include>
   </div>
 
-  <div id="better-custom-option-label-text">
-    <h3>Set the custom option text with a placeholder</h3>
-    <p>
-      If you want to put the typed in value somewhere other than the very end, you can use the placeholder <code>{{}}</code>
-    </p>
-    <much-select allow-custom-options="Create currency {{}}...">
-      <!--suppress HtmlFormInputWithoutLabel -->
-      <select slot="select-input">
-        <option>Itchy and Scrachy Money</option>
-        <option>Merits</option>
-        <option>Diamonds</option>
-      </select>
-    </much-select>
+  <div class="example">
+    <include src="example-partials/custom-option-label-text-2.html"></include>
   </div>
 
-  <div id="empty-custom-option-label-text">
-    <h3>Empty Custom Options Label</h3>
-    <p>
-      If you <em>just</em> want the value that's being typed in, with no other hints use just <code>allow-custom-options="{{}}"</code>
-    </p>
-    <much-select allow-custom-options="{{}}">
-      <!--suppress HtmlFormInputWithoutLabel -->
-      <select slot="select-input">
-        <option>Back Rubs</option>
-        <option>Baby Sitting</option>
-        <option>Pies</option>
-      </select>
-    </much-select>
+  <div class="example">
+    <include src="example-partials/custom-option-label-text-3.html"></include>
   </div>
 </div>
 
 
 <script src="./index.js" type="module"></script>
+<script src="./event-logger.js" type="module"></script>
 </body>
 </html>

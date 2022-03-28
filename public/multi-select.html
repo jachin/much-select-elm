@@ -9,17 +9,16 @@
   <link rel="icon" href="./favicon.ico" type="image/x-icon" />
   <title>Much Select - Muti-Select</title>
   <link href="demo-styles.css" rel="stylesheet">
+  <script src="./styles.js"></script>
 </head>
 <body>
-<h1>Much-Select - Multi Select</h1>
+<include src="header.html">
+  {
+  "pageName": "Multi-Select"
+  }
+</include>
 
-<h2>Demo and Development Playground</h2>
-
-<nav>
-  <ol class="main-nav">
-    <li class="main-nav-item"><a href="index.html">Home</a></li>
-  </ol>
-</nav>
+<include src="nav.html"></include>
 
 <div class="container">
 
@@ -74,7 +73,7 @@
   </div>
   <div id="much-select-with-no-options" class="example">
     <h3>No Options</h3>
-    <p>What does the drop down look like if you have no options</p>
+    <p>What does the dropdown look like if you have no options</p>
     <much-select multi-select="" allow-custom-options="">
     </much-select>
   </div>
