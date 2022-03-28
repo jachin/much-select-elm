@@ -21,33 +21,20 @@
 <include src="nav.html"></include>
 
 <div class="container">
-  <div id="just-a-much-select-with-no-options">
-    <h3>No Options</h3>
-    <h4>Just an empty selector</h4>
-    <much-select></much-select>
+  <div class="example">
+    <include src="example-partials/no-value-no-options.html"></include>
   </div>
 
-  <div id="empty-value-with-no-options" >
-    <h3>Empty Value with No Options</h3>
-    <much-select selected-value=""></much-select>
+  <div class="example">
+    <include src="example-partials/empty-selected-value-no-options.html"></include>
   </div>
 
-  <div id="one-empty-option" >
-    <h3>One Empty Option</h3>
-    <much-select>
-      <select slot="select-input">
-        <option></option>
-      </select>
-    </much-select>
+  <div class="example">
+    <include src="example-partials/empty-selected-value-no-options.html"></include>
   </div>
 
-  <div id="one-empty-selected-option" >
-    <h3>No Empty Selected Option</h3>
-    <much-select>
-      <select slot="select-input">
-        <option selected></option>
-      </select>
-    </much-select>
+  <div class="example">
+
   </div>
 
   <div id="one-empty-option-with-a-label" >
