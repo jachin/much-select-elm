@@ -1032,6 +1032,8 @@ view model =
                         , onBlur InputBlur
                         , onFocus InputFocus
                         , onInput SearchInputOnInput
+                        , onMouseDownStopPropagation NoOp
+                        , onMouseUpStopPropagation NoOp
                         , value model.searchString
                         , placeholderAttribute
                         , id "input-filter"
