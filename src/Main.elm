@@ -236,6 +236,7 @@ update msg model =
         InputFocus ->
             ( { model
                 | showDropdown = True
+                , focused = True
                 , rightSlot = updateRightSlotTransitioning False model.rightSlot
               }
             , Cmd.none
