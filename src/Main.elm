@@ -24,6 +24,7 @@ import Html.Attributes
         , type_
         , value
         )
+import Html.Attributes.Extra exposing (attributeIf)
 import Html.Events
     exposing
         ( onBlur
@@ -972,8 +973,8 @@ view model =
             div [ id "wrapper" ]
                 [ div
                     [ id "value-casing"
-                    , onMouseDown BringInputInFocus
-                    , onFocus BringInputInFocus
+                    , attributeIf (not model.focused) (onMouseDown BringInputInFocus)
+                    , attributeIf (not model.focused) (onFocus BringInputInFocus)
                     , tabIndexAttribute
                     , classList
                         [ ( "show-placeholder", showPlaceholder )
@@ -1077,7 +1078,7 @@ view model =
 
 
 singleSelectInputField : String -> Bool -> Bool -> String -> Bool -> Html Msg
-singleSelectInputField searchString isDisabled focused placeholder_ hasSelectedOptions =
+singleSelectInputField searchString isDisabled focused placeholder_ hasSelectedOption =
     let
         keyboardEvents =
             Keyboard.customPerKey Keyboard.Keydown
@@ -1136,7 +1137,7 @@ singleSelectInputField searchString isDisabled focused placeholder_ hasSelectedO
             onFocus InputFocus
 
         showPlaceholder =
-            not hasSelectedOptions && not focused
+            not hasSelectedOption && not focused
 
         placeholderAttribute =
             if showPlaceholder then
@@ -1153,7 +1154,7 @@ singleSelectInputField searchString isDisabled focused placeholder_ hasSelectedO
             ]
             []
 
-    else if hasSelectedOptions then
+    else if hasSelectedOption then
         input
             [ typeAttr
             , idAttr
@@ -1172,6 +1173,8 @@ singleSelectInputField searchString isDisabled focused placeholder_ hasSelectedO
             , idAttr
             , onBlurAttr
             , onFocusAttr
+            , onMouseDownStopPropagation NoOp
+            , onMouseUpStopPropagation NoOp
             , onInput SearchInputOnInput
             , value searchString
             , placeholderAttribute
@@ -1897,6 +1900,17 @@ onMouseDownStopPropagationAndPreventDefault message =
         )
 
 
+onMouseDownStopPropagation : msg -> Html.Attribute msg
+onMouseDownStopPropagation message =
+    Html.Events.custom "mousedown"
+        (Json.Decode.succeed
+            { message = message
+            , stopPropagation = True
+            , preventDefault = False
+            }
+        )
+
+
 onMouseUpStopPropagationAndPreventDefault : msg -> Html.Attribute msg
 onMouseUpStopPropagationAndPreventDefault message =
     Html.Events.custom "mouseup"
@@ -1904,5 +1918,16 @@ onMouseUpStopPropagationAndPreventDefault message =
             { message = message
             , stopPropagation = True
             , preventDefault = True
+            }
+        )
+
+
+onMouseUpStopPropagation : msg -> Html.Attribute msg
+onMouseUpStopPropagation message =
+    Html.Events.custom "mouseup"
+        (Json.Decode.succeed
+            { message = message
+            , stopPropagation = True
+            , preventDefault = False
             }
         )
