@@ -27,7 +27,6 @@ import Html.Attributes
 import Html.Events
     exposing
         ( onBlur
-        , onClick
         , onFocus
         , onInput
         , onMouseDown
@@ -187,22 +186,28 @@ update msg model =
             ( model, Cmd.none )
 
         BringInputInFocus ->
-            if model.focused then
+            if isRightSlotTransitioning model.rightSlot then
+                ( model, Cmd.none )
+
+            else if model.focused then
                 ( model, focusInput () )
 
             else
                 ( { model
                     | focused = True
-                    , rightSlot = setRightSlotTransioning True model.rightSlot
+                    , rightSlot = updateRightSlotTransitioning True model.rightSlot
                   }
                 , focusInput ()
                 )
 
         BringInputOutOfFocus ->
-            if model.focused then
+            if isRightSlotTransitioning model.rightSlot then
+                ( model, Cmd.none )
+
+            else if model.focused then
                 ( { model
                     | focused = False
-                    , rightSlot = setRightSlotTransioning True model.rightSlot
+                    , rightSlot = updateRightSlotTransitioning True model.rightSlot
                   }
                 , blurInput ()
                 )
@@ -221,7 +226,7 @@ update msg model =
                 , options = optionsWithoutUnselectedCustomOptions
                 , showDropdown = False
                 , focused = False
-                , rightSlot = setRightSlotTransioning False model.rightSlot
+                , rightSlot = updateRightSlotTransitioning False model.rightSlot
               }
                 |> updateModelWithChangesThatEffectTheOptions
             , inputBlurred ()
@@ -230,7 +235,7 @@ update msg model =
         InputFocus ->
             ( { model
                 | showDropdown = True
-                , rightSlot = setRightSlotTransioning False model.rightSlot
+                , rightSlot = updateRightSlotTransitioning False model.rightSlot
               }
             , Cmd.none
             )
@@ -908,14 +913,30 @@ updateRightSlotLoading isLoading selectionMode hasSelectedOption =
                     ShowDropdownIndicator False
 
 
-setRightSlotTransioning : Bool -> RightSlot -> RightSlot
-setRightSlotTransioning bool rightSlot =
+updateRightSlotTransitioning : Bool -> RightSlot -> RightSlot
+updateRightSlotTransitioning bool rightSlot =
     case rightSlot of
         ShowDropdownIndicator _ ->
             ShowDropdownIndicator bool
 
         _ ->
             rightSlot
+
+
+isRightSlotTransitioning : RightSlot -> Bool
+isRightSlotTransitioning rightSlot =
+    case rightSlot of
+        ShowNothing ->
+            False
+
+        ShowLoadingIndicator ->
+            False
+
+        ShowDropdownIndicator transitioning ->
+            transitioning
+
+        ShowClearButton ->
+            False
 
 
 view : Model -> Html Msg
@@ -980,8 +1001,8 @@ view model =
                         ShowLoadingIndicator ->
                             node "slot" [ name "loading-indicator" ] [ defaultLoadingIndicator ]
 
-                        ShowDropdownIndicator transioning ->
-                            dropdownIndicator model.focused model.disabled transioning
+                        ShowDropdownIndicator transitioning ->
+                            dropdownIndicator model.focused model.disabled transitioning
 
                         ShowClearButton ->
                             node "slot" [ name "clear-button" ] []
@@ -1026,7 +1047,7 @@ view model =
             div [ id "wrapper", classList [ ( "disabled", model.disabled ) ] ]
                 [ div
                     [ id "value-casing"
-                    , onClick BringInputInFocus
+                    , onMouseDown BringInputInFocus
                     , onFocus BringInputInFocus
                     , Keyboard.on Keyboard.Keydown
                         [ ( Delete, DeleteKeydownForMultiSelect )
@@ -1181,7 +1202,8 @@ dropdownIndicator focused disabled transitioning =
         div
             [ id "dropdown-indicator"
             , classList [ ( "down", focused ), ( "up", not focused ) ]
-            , onMouseDownStopPropegationAndPreventDefault action
+            , onMouseDownStopPropagationAndPreventDefault action
+            , onMouseUpStopPropagationAndPreventDefault NoOp
             ]
             [ text "▾" ]
 
@@ -1553,7 +1575,7 @@ rightSlotHtml rightSlot focused disabled =
         ShowClearButton ->
             div
                 [ id "clear-button-wrapper"
-                , onClickPreventDefault ClearAllSelectedOptions
+                , onClickPreventDefaultAndStopPropagation ClearAllSelectedOptions
                 ]
                 [ node "slot"
                     [ name "clear-button"
@@ -1853,9 +1875,31 @@ onClickPreventDefault message =
         )
 
 
-onMouseDownStopPropegationAndPreventDefault : msg -> Html.Attribute msg
-onMouseDownStopPropegationAndPreventDefault message =
+onClickPreventDefaultAndStopPropagation : msg -> Html.Attribute msg
+onClickPreventDefaultAndStopPropagation message =
+    Html.Events.custom "click"
+        (Json.Decode.succeed
+            { message = message
+            , stopPropagation = True
+            , preventDefault = True
+            }
+        )
+
+
+onMouseDownStopPropagationAndPreventDefault : msg -> Html.Attribute msg
+onMouseDownStopPropagationAndPreventDefault message =
     Html.Events.custom "mousedown"
+        (Json.Decode.succeed
+            { message = message
+            , stopPropagation = True
+            , preventDefault = True
+            }
+        )
+
+
+onMouseUpStopPropagationAndPreventDefault : msg -> Html.Attribute msg
+onMouseUpStopPropagationAndPreventDefault message =
+    Html.Events.custom "mouseup"
         (Json.Decode.succeed
             { message = message
             , stopPropagation = True
