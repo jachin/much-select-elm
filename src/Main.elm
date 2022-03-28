@@ -24,10 +24,10 @@ import Html.Attributes
         , type_
         , value
         )
+import Html.Attributes.Extra exposing (attributeIf)
 import Html.Events
     exposing
         ( onBlur
-        , onClick
         , onFocus
         , onInput
         , onMouseDown
@@ -173,10 +173,18 @@ type alias Model =
     }
 
 
+{-| A type for (helping) keeping track of the focus state. While we are losing focus or while we are gaining focus we'll
+be in transition.
+-}
+type FocusTransition
+    = InFocusTransition
+    | NotInFocusTransition
+
+
 type RightSlot
     = ShowNothing
     | ShowLoadingIndicator
-    | ShowDropdownIndicator
+    | ShowDropdownIndicator FocusTransition
     | ShowClearButton
 
 
@@ -187,15 +195,31 @@ update msg model =
             ( model, Cmd.none )
 
         BringInputInFocus ->
-            if model.focused then
+            if isRightSlotTransitioning model.rightSlot then
+                ( model, Cmd.none )
+
+            else if model.focused then
                 ( model, focusInput () )
 
             else
-                ( { model | focused = True }, focusInput () )
+                ( { model
+                    | focused = True
+                    , rightSlot = updateRightSlotTransitioning InFocusTransition model.rightSlot
+                  }
+                , focusInput ()
+                )
 
         BringInputOutOfFocus ->
-            if model.focused then
-                ( { model | focused = False }, blurInput () )
+            if isRightSlotTransitioning model.rightSlot then
+                ( model, Cmd.none )
+
+            else if model.focused then
+                ( { model
+                    | focused = False
+                    , rightSlot = updateRightSlotTransitioning InFocusTransition model.rightSlot
+                  }
+                , blurInput ()
+                )
 
             else
                 ( model, blurInput () )
@@ -211,13 +235,20 @@ update msg model =
                 , options = optionsWithoutUnselectedCustomOptions
                 , showDropdown = False
                 , focused = False
+                , rightSlot = updateRightSlotTransitioning NotInFocusTransition model.rightSlot
               }
                 |> updateModelWithChangesThatEffectTheOptions
             , inputBlurred ()
             )
 
         InputFocus ->
-            ( { model | showDropdown = True }, Cmd.none )
+            ( { model
+                | showDropdown = True
+                , focused = True
+                , rightSlot = updateRightSlotTransitioning NotInFocusTransition model.rightSlot
+              }
+            , Cmd.none
+            )
 
         DropdownMouseOverOption optionValue ->
             let
@@ -842,36 +873,36 @@ updateRightSlot current selectionMode hasSelectedOption =
         ShowNothing ->
             case selectionMode of
                 SingleSelect _ _ ->
-                    ShowDropdownIndicator
+                    ShowDropdownIndicator NotInFocusTransition
 
                 MultiSelect _ _ ->
                     if hasSelectedOption then
                         ShowClearButton
 
                     else
-                        ShowDropdownIndicator
+                        ShowDropdownIndicator NotInFocusTransition
 
         ShowLoadingIndicator ->
             ShowLoadingIndicator
 
-        ShowDropdownIndicator ->
+        ShowDropdownIndicator transitioning ->
             case selectionMode of
                 SingleSelect _ _ ->
-                    ShowDropdownIndicator
+                    ShowDropdownIndicator transitioning
 
                 MultiSelect _ _ ->
                     if hasSelectedOption then
                         ShowClearButton
 
                     else
-                        ShowDropdownIndicator
+                        ShowDropdownIndicator transitioning
 
         ShowClearButton ->
             if hasSelectedOption then
                 ShowClearButton
 
             else
-                ShowDropdownIndicator
+                ShowDropdownIndicator NotInFocusTransition
 
 
 updateRightSlotLoading : Bool -> SelectionMode -> Bool -> RightSlot
@@ -882,14 +913,45 @@ updateRightSlotLoading isLoading selectionMode hasSelectedOption =
     else
         case selectionMode of
             SingleSelect _ _ ->
-                ShowDropdownIndicator
+                ShowDropdownIndicator NotInFocusTransition
 
             MultiSelect _ _ ->
                 if hasSelectedOption then
                     ShowClearButton
 
                 else
-                    ShowDropdownIndicator
+                    ShowDropdownIndicator NotInFocusTransition
+
+
+updateRightSlotTransitioning : FocusTransition -> RightSlot -> RightSlot
+updateRightSlotTransitioning focusTransition rightSlot =
+    case rightSlot of
+        ShowDropdownIndicator _ ->
+            ShowDropdownIndicator focusTransition
+
+        _ ->
+            rightSlot
+
+
+isRightSlotTransitioning : RightSlot -> Bool
+isRightSlotTransitioning rightSlot =
+    case rightSlot of
+        ShowNothing ->
+            False
+
+        ShowLoadingIndicator ->
+            False
+
+        ShowDropdownIndicator transitioning ->
+            case transitioning of
+                InFocusTransition ->
+                    True
+
+                NotInFocusTransition ->
+                    False
+
+        ShowClearButton ->
+            False
 
 
 view : Model -> Html Msg
@@ -925,8 +987,8 @@ view model =
             div [ id "wrapper" ]
                 [ div
                     [ id "value-casing"
-                    , onMouseDown BringInputInFocus
-                    , onFocus BringInputInFocus
+                    , attributeIf (not model.focused) (onMouseDown BringInputInFocus)
+                    , attributeIf (not model.focused) (onFocus BringInputInFocus)
                     , tabIndexAttribute
                     , classList
                         [ ( "show-placeholder", showPlaceholder )
@@ -954,8 +1016,8 @@ view model =
                         ShowLoadingIndicator ->
                             node "slot" [ name "loading-indicator" ] [ defaultLoadingIndicator ]
 
-                        ShowDropdownIndicator ->
-                            dropdownIndicator model.focused model.disabled
+                        ShowDropdownIndicator transitioning ->
+                            dropdownIndicator model.focused model.disabled transitioning
 
                         ShowClearButton ->
                             node "slot" [ name "clear-button" ] []
@@ -984,6 +1046,8 @@ view model =
                         , onBlur InputBlur
                         , onFocus InputFocus
                         , onInput SearchInputOnInput
+                        , onMouseDownStopPropagation NoOp
+                        , onMouseUpStopPropagation NoOp
                         , value model.searchString
                         , placeholderAttribute
                         , id "input-filter"
@@ -1000,7 +1064,7 @@ view model =
             div [ id "wrapper", classList [ ( "disabled", model.disabled ) ] ]
                 [ div
                     [ id "value-casing"
-                    , onClick BringInputInFocus
+                    , onMouseDown BringInputInFocus
                     , onFocus BringInputInFocus
                     , Keyboard.on Keyboard.Keydown
                         [ ( Delete, DeleteKeydownForMultiSelect )
@@ -1030,7 +1094,7 @@ view model =
 
 
 singleSelectInputField : String -> Bool -> Bool -> String -> Bool -> Html Msg
-singleSelectInputField searchString isDisabled focused placeholder_ hasSelectedOptions =
+singleSelectInputField searchString isDisabled focused placeholder_ hasSelectedOption =
     let
         keyboardEvents =
             Keyboard.customPerKey Keyboard.Keydown
@@ -1089,7 +1153,7 @@ singleSelectInputField searchString isDisabled focused placeholder_ hasSelectedO
             onFocus InputFocus
 
         showPlaceholder =
-            not hasSelectedOptions && not focused
+            not hasSelectedOption && not focused
 
         placeholderAttribute =
             if showPlaceholder then
@@ -1106,7 +1170,7 @@ singleSelectInputField searchString isDisabled focused placeholder_ hasSelectedO
             ]
             []
 
-    else if hasSelectedOptions then
+    else if hasSelectedOption then
         input
             [ typeAttr
             , idAttr
@@ -1125,6 +1189,8 @@ singleSelectInputField searchString isDisabled focused placeholder_ hasSelectedO
             , idAttr
             , onBlurAttr
             , onFocusAttr
+            , onMouseDownStopPropagation NoOp
+            , onMouseUpStopPropagation NoOp
             , onInput SearchInputOnInput
             , value searchString
             , placeholderAttribute
@@ -1133,15 +1199,30 @@ singleSelectInputField searchString isDisabled focused placeholder_ hasSelectedO
             []
 
 
-dropdownIndicator : Bool -> Bool -> Html Msg
-dropdownIndicator focused disabled =
+dropdownIndicator : Bool -> Bool -> FocusTransition -> Html Msg
+dropdownIndicator focused disabled transitioning =
     if disabled then
         text ""
 
     else
+        let
+            action =
+                case transitioning of
+                    InFocusTransition ->
+                        NoOp
+
+                    NotInFocusTransition ->
+                        if focused then
+                            BringInputOutOfFocus
+
+                        else
+                            BringInputInFocus
+        in
         div
             [ id "dropdown-indicator"
             , classList [ ( "down", focused ), ( "up", not focused ) ]
+            , onMouseDownStopPropagationAndPreventDefault action
+            , onMouseUpStopPropagationAndPreventDefault NoOp
             ]
             [ text "▾" ]
 
@@ -1507,13 +1588,13 @@ rightSlotHtml rightSlot focused disabled =
                 [ name "loading-indicator" ]
                 [ defaultLoadingIndicator ]
 
-        ShowDropdownIndicator ->
-            dropdownIndicator focused disabled
+        ShowDropdownIndicator transitioning ->
+            dropdownIndicator focused disabled transitioning
 
         ShowClearButton ->
             div
                 [ id "clear-button-wrapper"
-                , onClickPreventDefault ClearAllSelectedOptions
+                , onClickPreventDefaultAndStopPropagation ClearAllSelectedOptions
                 ]
                 [ node "slot"
                     [ name "clear-button"
@@ -1718,14 +1799,14 @@ init flags =
             else
                 case selectionMode of
                     SingleSelect _ _ ->
-                        ShowDropdownIndicator
+                        ShowDropdownIndicator NotInFocusTransition
 
                     MultiSelect _ _ ->
                         if Option.hasSelectedOption optionsWithInitialValueSelected then
                             ShowClearButton
 
                         else
-                            ShowDropdownIndicator
+                            ShowDropdownIndicator NotInFocusTransition
       , maxDropdownItems = maxDropdownItems
       , disabled = flags.disabled
       , focused = False
@@ -1809,5 +1890,60 @@ onClickPreventDefault message =
             { message = message
             , stopPropagation = False
             , preventDefault = True
+            }
+        )
+
+
+onClickPreventDefaultAndStopPropagation : msg -> Html.Attribute msg
+onClickPreventDefaultAndStopPropagation message =
+    Html.Events.custom "click"
+        (Json.Decode.succeed
+            { message = message
+            , stopPropagation = True
+            , preventDefault = True
+            }
+        )
+
+
+onMouseDownStopPropagationAndPreventDefault : msg -> Html.Attribute msg
+onMouseDownStopPropagationAndPreventDefault message =
+    Html.Events.custom "mousedown"
+        (Json.Decode.succeed
+            { message = message
+            , stopPropagation = True
+            , preventDefault = True
+            }
+        )
+
+
+onMouseDownStopPropagation : msg -> Html.Attribute msg
+onMouseDownStopPropagation message =
+    Html.Events.custom "mousedown"
+        (Json.Decode.succeed
+            { message = message
+            , stopPropagation = True
+            , preventDefault = False
+            }
+        )
+
+
+onMouseUpStopPropagationAndPreventDefault : msg -> Html.Attribute msg
+onMouseUpStopPropagationAndPreventDefault message =
+    Html.Events.custom "mouseup"
+        (Json.Decode.succeed
+            { message = message
+            , stopPropagation = True
+            , preventDefault = True
+            }
+        )
+
+
+onMouseUpStopPropagation : msg -> Html.Attribute msg
+onMouseUpStopPropagation message =
+    Html.Events.custom "mouseup"
+        (Json.Decode.succeed
+            { message = message
+            , stopPropagation = True
+            , preventDefault = False
             }
         )

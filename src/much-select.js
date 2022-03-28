@@ -325,7 +325,7 @@ class MuchSelect extends HTMLElement {
           });
         });
       },
-      10
+      5
     );
 
     this._callOptionChanged = makeDebounceLeadingFunc((optionsJson) => {
