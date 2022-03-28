@@ -173,10 +173,18 @@ type alias Model =
     }
 
 
+{-| A type for (helping) keeping track of the focus state. While we are losing focus or while we are gaining focus we'll
+be in transition.
+-}
+type FocusTransition
+    = InFocusTransition
+    | NotInFocusTransition
+
+
 type RightSlot
     = ShowNothing
     | ShowLoadingIndicator
-    | ShowDropdownIndicator Bool
+    | ShowDropdownIndicator FocusTransition
     | ShowClearButton
 
 
@@ -196,7 +204,7 @@ update msg model =
             else
                 ( { model
                     | focused = True
-                    , rightSlot = updateRightSlotTransitioning True model.rightSlot
+                    , rightSlot = updateRightSlotTransitioning InFocusTransition model.rightSlot
                   }
                 , focusInput ()
                 )
@@ -208,7 +216,7 @@ update msg model =
             else if model.focused then
                 ( { model
                     | focused = False
-                    , rightSlot = updateRightSlotTransitioning True model.rightSlot
+                    , rightSlot = updateRightSlotTransitioning InFocusTransition model.rightSlot
                   }
                 , blurInput ()
                 )
@@ -227,7 +235,7 @@ update msg model =
                 , options = optionsWithoutUnselectedCustomOptions
                 , showDropdown = False
                 , focused = False
-                , rightSlot = updateRightSlotTransitioning False model.rightSlot
+                , rightSlot = updateRightSlotTransitioning NotInFocusTransition model.rightSlot
               }
                 |> updateModelWithChangesThatEffectTheOptions
             , inputBlurred ()
@@ -237,7 +245,7 @@ update msg model =
             ( { model
                 | showDropdown = True
                 , focused = True
-                , rightSlot = updateRightSlotTransitioning False model.rightSlot
+                , rightSlot = updateRightSlotTransitioning NotInFocusTransition model.rightSlot
               }
             , Cmd.none
             )
@@ -865,14 +873,14 @@ updateRightSlot current selectionMode hasSelectedOption =
         ShowNothing ->
             case selectionMode of
                 SingleSelect _ _ ->
-                    ShowDropdownIndicator False
+                    ShowDropdownIndicator NotInFocusTransition
 
                 MultiSelect _ _ ->
                     if hasSelectedOption then
                         ShowClearButton
 
                     else
-                        ShowDropdownIndicator False
+                        ShowDropdownIndicator NotInFocusTransition
 
         ShowLoadingIndicator ->
             ShowLoadingIndicator
@@ -894,7 +902,7 @@ updateRightSlot current selectionMode hasSelectedOption =
                 ShowClearButton
 
             else
-                ShowDropdownIndicator False
+                ShowDropdownIndicator NotInFocusTransition
 
 
 updateRightSlotLoading : Bool -> SelectionMode -> Bool -> RightSlot
@@ -905,21 +913,21 @@ updateRightSlotLoading isLoading selectionMode hasSelectedOption =
     else
         case selectionMode of
             SingleSelect _ _ ->
-                ShowDropdownIndicator False
+                ShowDropdownIndicator NotInFocusTransition
 
             MultiSelect _ _ ->
                 if hasSelectedOption then
                     ShowClearButton
 
                 else
-                    ShowDropdownIndicator False
+                    ShowDropdownIndicator NotInFocusTransition
 
 
-updateRightSlotTransitioning : Bool -> RightSlot -> RightSlot
-updateRightSlotTransitioning bool rightSlot =
+updateRightSlotTransitioning : FocusTransition -> RightSlot -> RightSlot
+updateRightSlotTransitioning focusTransition rightSlot =
     case rightSlot of
         ShowDropdownIndicator _ ->
-            ShowDropdownIndicator bool
+            ShowDropdownIndicator focusTransition
 
         _ ->
             rightSlot
@@ -935,7 +943,12 @@ isRightSlotTransitioning rightSlot =
             False
 
         ShowDropdownIndicator transitioning ->
-            transitioning
+            case transitioning of
+                InFocusTransition ->
+                    True
+
+                NotInFocusTransition ->
+                    False
 
         ShowClearButton ->
             False
@@ -1186,7 +1199,7 @@ singleSelectInputField searchString isDisabled focused placeholder_ hasSelectedO
             []
 
 
-dropdownIndicator : Bool -> Bool -> Bool -> Html Msg
+dropdownIndicator : Bool -> Bool -> FocusTransition -> Html Msg
 dropdownIndicator focused disabled transitioning =
     if disabled then
         text ""
@@ -1194,16 +1207,16 @@ dropdownIndicator focused disabled transitioning =
     else
         let
             action =
-                if transitioning then
-                    NoOp
+                case transitioning of
+                    InFocusTransition ->
+                        NoOp
 
-                else if focused then
-                    BringInputOutOfFocus
+                    NotInFocusTransition ->
+                        if focused then
+                            BringInputOutOfFocus
 
-                else
-                    BringInputInFocus
-
-            --NoOp
+                        else
+                            BringInputInFocus
         in
         div
             [ id "dropdown-indicator"
@@ -1786,14 +1799,14 @@ init flags =
             else
                 case selectionMode of
                     SingleSelect _ _ ->
-                        ShowDropdownIndicator False
+                        ShowDropdownIndicator NotInFocusTransition
 
                     MultiSelect _ _ ->
                         if Option.hasSelectedOption optionsWithInitialValueSelected then
                             ShowClearButton
 
                         else
-                            ShowDropdownIndicator False
+                            ShowDropdownIndicator NotInFocusTransition
       , maxDropdownItems = maxDropdownItems
       , disabled = flags.disabled
       , focused = False
