@@ -20,7 +20,7 @@ port module Ports exposing
     , optionDeselected
     , optionSelected
     , optionSortingChangedReceiver
-    , optionsChangedReceiver
+    , optionsReplacedReceiver
     , placeholderChangedReceiver
     , removeOptionsReceiver
     , requestAllOptionsReceiver
@@ -118,7 +118,7 @@ valueDecoder =
 port valueChangedReceiver : (Json.Decode.Value -> msg) -> Sub msg
 
 
-port optionsChangedReceiver : (Json.Decode.Value -> msg) -> Sub msg
+port optionsReplacedReceiver : (Json.Decode.Value -> msg) -> Sub msg
 
 
 port addOptionsReceiver : (Json.Decode.Value -> msg) -> Sub msg

@@ -331,7 +331,7 @@ class MuchSelect extends HTMLElement {
     this._callOptionChanged = makeDebounceLeadingFunc((optionsJson) => {
       this.appPromise.then((app) => {
         // noinspection JSUnresolvedVariable
-        app.ports.optionsChangedReceiver.send(optionsJson);
+        app.ports.optionsReplacedReceiver.send(optionsJson);
         this.updateDimensions();
       });
     }, 5);
