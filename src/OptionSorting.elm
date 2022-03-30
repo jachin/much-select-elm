@@ -96,5 +96,6 @@ sortOptionsByLabel options =
             option
                 |> getOptionLabel
                 |> optionLabelToString
+                |> String.toLower
         )
         options
