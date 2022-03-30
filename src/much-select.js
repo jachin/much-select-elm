@@ -654,10 +654,17 @@ class MuchSelect extends HTMLElement {
       })
     );
 
-    /// ///
-    // Setup the much-select mutation observer.
-    /// ///
+    this.startMuchSelectObserver();
 
+    this.startSelectSlotObserver();
+
+    // Set up the hidden input slot (if it exists) with any initial values
+    this.updateHiddenInputValueSlot();
+
+    this._connected = true;
+  }
+
+  startMuchSelectObserver() {
     // Options for the observer (which mutations to observe)
     const muchSelectMutationObserverConfig = {
       attributes: true,
@@ -672,11 +679,17 @@ class MuchSelect extends HTMLElement {
       });
     });
     this._muchSelectObserver.observe(this, muchSelectMutationObserverConfig);
+  }
 
-    /// ///
-    // Setup the select-input slot mutation observer.
-    /// ///
+  stopMuchSelectObserver() {
+    if (this._muchSelectObserver) {
+      if (this._muchSelectObserver.disconnect) {
+        this._muchSelectObserver.disconnect();
+      }
+    }
+  }
 
+  startSelectSlotObserver() {
     // Options for the observer (which mutations to observe)
     const selectSlotConfig = {
       attributes: true,
@@ -702,11 +715,14 @@ class MuchSelect extends HTMLElement {
         selectSlotConfig
       );
     }
+  }
 
-    // Set up the hidden input slot (if it exists) with any initial values
-    this.updateHiddenInputValueSlot();
-
-    this._connected = true;
+  stopSelectSlotObserver() {
+    if (this._selectSlotObserver) {
+      if (this._selectSlotObserver.disconnect) {
+        this._selectSlotObserver.disconnect();
+      }
+    }
   }
 
   updateOptionsFromDom() {
@@ -748,9 +764,15 @@ class MuchSelect extends HTMLElement {
    * The idea with this method is that we need the selected input slot to mirror the internal state of the
    * much select, unless something else wants full control over the DOM (eventsOnlyMode is true), then we leave that
    * responsibility to them.
+   *
+   * One important thing that happens here is we need to pause the mutation observers so
+   *  that we do not feed bad data back into the Elm app. Then when we are done changing
+   *  the DOM, turn the mutation observers back on.
    */
   updateSelectInputSlot() {
     if (!this.eventsOnlyMode) {
+      this.stopMuchSelectObserver();
+      this.stopSelectSlotObserver();
       const selectInputSlot = this.querySelector("[slot='select-input']");
       if (selectInputSlot) {
         selectInputSlot.querySelectorAll("option").forEach((optionEl) => {
@@ -763,6 +785,8 @@ class MuchSelect extends HTMLElement {
           }
         });
       }
+      this.startMuchSelectObserver();
+      this.startSelectSlotObserver();
     }
   }
 
