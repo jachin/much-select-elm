@@ -80,7 +80,8 @@ import Ports
         , optionDeselected
         , optionSelected
         , optionSortingChangedReceiver
-        , optionsChangedReceiver
+        , optionsReplacedReceiver
+        , optionsUpdated
         , placeholderChangedReceiver
         , removeOptionsReceiver
         , requestAllOptionsReceiver
@@ -117,7 +118,7 @@ type Msg
     | DropdownMouseClickOption OptionValue
     | SearchInputOnInput String
     | ValueChanged Json.Decode.Value
-    | OptionsChanged Json.Decode.Value
+    | OptionsReplaced Json.Decode.Value
     | OptionSortingChanged String
     | AddOptions Json.Decode.Value
     | RemoveOptions Json.Decode.Value
@@ -343,28 +344,21 @@ update msg model =
                 Err error ->
                     ( model, errorMessage (Json.Decode.errorToString error) )
 
-        OptionsChanged optionsJson ->
-            case Json.Decode.decodeValue Option.optionsDecoder optionsJson of
+        OptionsReplaced newOptionsJson ->
+            case Json.Decode.decodeValue Option.optionsDecoder newOptionsJson of
                 Ok newOptions ->
                     let
                         newOptionWithOldSelectedOption =
-                            case model.selectionMode of
-                                SingleSelect _ selectedItemPlacementMode ->
-                                    Option.mergeTwoListsOfOptionsPreservingSelectedOptions selectedItemPlacementMode model.options newOptions
-
-                                MultiSelect _ _ ->
-                                    -- Also filter out any empty options.
-                                    Option.mergeTwoListsOfOptionsPreservingSelectedOptions SelectedItemStaysInPlace
-                                        model.options
-                                        (newOptions
-                                            |> List.filter (not << Option.isEmptyOption)
-                                        )
+                            Option.replaceOptions
+                                (SelectionMode.getSelectedItemPlacementMode model.selectionMode)
+                                model.options
+                                newOptions
                     in
                     ( { model
                         | options = newOptionWithOldSelectedOption
                       }
                         |> updateModelWithChangesThatEffectTheOptions
-                    , Cmd.none
+                    , optionsUpdated True
                     )
 
                 Err error ->
@@ -381,7 +375,7 @@ update msg model =
                         | options = updatedOptions
                       }
                         |> updateModelWithChangesThatEffectTheOptions
-                    , Cmd.none
+                    , optionsUpdated False
                     )
 
                 Err error ->
@@ -398,7 +392,7 @@ update msg model =
                         | options = updatedOptions
                       }
                         |> updateModelWithChangesThatEffectTheOptions
-                    , Cmd.none
+                    , optionsUpdated True
                     )
 
                 Err error ->
@@ -1847,7 +1841,7 @@ subscriptions _ =
         , maxDropdownItemsChangedReceiver MaxDropdownItemsChanged
         , multiSelectChangedReceiver MultiSelectAttributeChanged
         , multiSelectSingleItemRemovalChangedReceiver MultiSelectSingleItemRemovalAttributeChanged
-        , optionsChangedReceiver OptionsChanged
+        , optionsReplacedReceiver OptionsReplaced
         , optionSortingChangedReceiver OptionSortingChanged
         , placeholderChangedReceiver PlaceholderAttributeChanged
         , removeOptionsReceiver RemoveOptions
