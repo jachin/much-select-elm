@@ -1082,8 +1082,8 @@ view model =
                                 model.focused
                                 model.disabled
                            ]
-                        ++ [ dropdown model ]
                     )
+                , dropdown model
                 ]
 
 
