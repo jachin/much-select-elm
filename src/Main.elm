@@ -318,7 +318,10 @@ update msg model =
                 Ok newOptions ->
                     let
                         newOptionWithOldSelectedOption =
-                            Option.replaceOptions model.options newOptions
+                            Option.replaceOptions
+                                (SelectionMode.getSelectedItemPlacementMode model.selectionMode)
+                                model.options
+                                newOptions
                     in
                     ( { model
                         | options = newOptionWithOldSelectedOption

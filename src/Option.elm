@@ -755,9 +755,13 @@ mergeTwoListsOfOptionsPreservingSelectedOptions selectedItemPlacementMode option
     setSelectedOptionInNewOptions superList newOptions
 
 
-replaceOptions : List Option -> List Option -> List Option
-replaceOptions oldOptions newOptions =
-    selectOptionsInList (selectedOptions oldOptions) newOptions
+replaceOptions : SelectedItemPlacementMode -> List Option -> List Option -> List Option
+replaceOptions selectedItemPlacementMode oldOptions newOptions =
+    let
+        oldSelectedOptions =
+            selectedOptions oldOptions
+    in
+    mergeTwoListsOfOptionsPreservingSelectedOptions selectedItemPlacementMode newOptions oldSelectedOptions
 
 
 isOptionValueEqualToOptionLabel : Option -> Bool
