@@ -43,28 +43,9 @@
     <much-select selected-value="Coffee"></much-select>
   </div>
 
-  <div class="example" id="add-options-including-the-selected-value">
-    <h3>An initial Value (No Options) - Then Add the Options</h3>
-    <p>If there is an initial value but no options initially, then we add options (async).</p>
-    <p>It should keep the selected value and "merge" the new option with the same value.</p>
-    <button>Click me to add options via the DOM</button>
-    <much-select selected-value="Coffee"></much-select>
-    <script>
-      document
-  .querySelector("#add-options-including-the-selected-value button")
-  .addEventListener("click", () => {
-          document.querySelector(
-      "#add-options-including-the-selected-value much-select"
-    ).innerHTML = `
-        <select slot="select-input">
-          <option value="Coffee">Coffee</option>
-          <option value="Tea">Tea</option>
-          <option value="Water">Water</option>
-          <option value="Soda">Soda</option>
-        </select>
-      `;
-      });
-    </script>
+  <div class="example">
+    <include src="example-partials/add-options-including-the-selected-value.html"></include>
+    <a href="add-options-including-the-selected-value.html">open example on its own page</a>
   </div>
 
   <div class="example" id="add-options-not-including-the-selected-value">
