@@ -47,5 +47,5 @@ suite =
                         [ Option.selectOption 0 thirdEyeBlind, futureCop ]
                         [ futureCop, theMidnight ]
                     )
-                    [ Option.selectOption 0 thirdEyeBlind, futureCop, theMidnight ]
+                    [ futureCop, theMidnight, Option.selectOption 0 thirdEyeBlind ]
         ]

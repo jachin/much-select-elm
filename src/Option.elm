@@ -761,7 +761,10 @@ replaceOptions selectedItemPlacementMode oldOptions newOptions =
         oldSelectedOptions =
             selectedOptions oldOptions
     in
-    mergeTwoListsOfOptionsPreservingSelectedOptions selectedItemPlacementMode newOptions oldSelectedOptions
+    mergeTwoListsOfOptionsPreservingSelectedOptions
+        selectedItemPlacementMode
+        oldSelectedOptions
+        newOptions
 
 
 isOptionValueEqualToOptionLabel : Option -> Bool
