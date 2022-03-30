@@ -21,6 +21,7 @@ port module Ports exposing
     , optionSelected
     , optionSortingChangedReceiver
     , optionsReplacedReceiver
+    , optionsUpdated
     , placeholderChangedReceiver
     , removeOptionsReceiver
     , requestAllOptionsReceiver
@@ -80,6 +81,12 @@ port allOptions : Json.Decode.Value -> Cmd msg
 
 
 port requestAllOptionsReceiver : (() -> msg) -> Sub msg
+
+
+{-| This is called when options have been updated, the bool is true if all the options have been "replaced" and it's
+false if the have just been "tweaked"
+-}
+port optionsUpdated : Bool -> Cmd msg
 
 
 port scrollDropdownToElement : String -> Cmd msg

@@ -756,7 +756,7 @@ mergeTwoListsOfOptionsPreservingSelectedOptions selectedItemPlacementMode option
 
 
 replaceOptions : List Option -> List Option -> List Option
-replaceOptions newOptions oldOptions =
+replaceOptions oldOptions newOptions =
     selectOptionsInList (selectedOptions oldOptions) newOptions
 
 

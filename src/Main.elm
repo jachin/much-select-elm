@@ -81,6 +81,7 @@ import Ports
         , optionSelected
         , optionSortingChangedReceiver
         , optionsReplacedReceiver
+        , optionsUpdated
         , placeholderChangedReceiver
         , removeOptionsReceiver
         , requestAllOptionsReceiver
@@ -323,7 +324,7 @@ update msg model =
                         | options = newOptionWithOldSelectedOption
                       }
                         |> updateModelWithChangesThatEffectTheOptions
-                    , Cmd.none
+                    , optionsUpdated True
                     )
 
                 Err error ->
@@ -340,7 +341,7 @@ update msg model =
                         | options = updatedOptions
                       }
                         |> updateModelWithChangesThatEffectTheOptions
-                    , Cmd.none
+                    , optionsUpdated False
                     )
 
                 Err error ->
@@ -357,7 +358,7 @@ update msg model =
                         | options = updatedOptions
                       }
                         |> updateModelWithChangesThatEffectTheOptions
-                    , Cmd.none
+                    , optionsUpdated True
                     )
 
                 Err error ->

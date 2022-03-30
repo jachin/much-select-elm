@@ -501,6 +501,20 @@ class MuchSelect extends HTMLElement {
       })
     );
 
+    this.appPromise.then((app) => {
+      app.ports.optionsUpdated.subscribe((optionsReplaced) => {
+        this.dispatchEvent(
+          new CustomEvent("optionsUpdated", {
+            bubbles: true,
+            detail: {
+              optionsReplaced,
+              optionsUpdated: !optionsReplaced,
+            },
+          })
+        );
+      });
+    });
+
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
       app.ports.inputKeyUp.subscribe((searchString) => {
