@@ -9,59 +9,33 @@
   <link rel="icon" href="./favicon.ico" type="image/x-icon" />
   <title>Much Select</title>
   <link href="demo-styles.css" rel="stylesheet">
+  <script src="./styles.js"></script>
 </head>
 
 <body>
 
-<h1>Much-Select</h1>
+<include src="header.html">
+  {
+  "pageName": "Home"
+  }
+</include>
 
-<h2>Demo and Development Playground</h2>
-
-<nav>
-  <ol class="main-nav">
-    <li class="main-nav-item"><a href="attributes.html">Attributes</a></li>
-    <li class="main-nav-item"><a href="initial-value.html">Initial Value</a></li>
-    <li class="main-nav-item"><a href="option-api.html">Option API</a></li>
-    <li class="main-nav-item"><a href="events.html">Events</a></li>
-    <li class="main-nav-item"><a href="empty-options.html">Empty Options</a></li>
-    <li class="main-nav-item"><a href="dropdown-options.html">Dropdown Options</a></li>
-    <li class="main-nav-item"><a href="fancy-characters.html">Fancy Characters</a></li>
-    <li class="main-nav-item"><a href="custom-options.html">Custom Options</a></li>
-    <li class="main-nav-item"><a href="slots.html">Slots</a></li>
-    <li class="main-nav-item"><a href="multi-select.html">Multi Select</a></li>
-    <li class="main-nav-item"><a href="selected-value-encoding.html">Selected Value Encoding</a></li>
-  </ol>
-</nav>
+<include src="nav.html"></include>
 
 <div class="container">
-
-  <div>
-    <h3>Simple Example</h3>
-    <much-select>
-      <select slot="select-input">
-        <option>Bricks</option>
-        <option>Sticks</option>
-        <option>Straw</option>
-      </select>
-    </much-select>
+  <div class="example">
+    <include src="example-partials/simple-example.html"></include>
+    <a href="simple-example.html">open example on its own page</a>
   </div>
 
-  <div>
-    <h3>Multi Select</h3>
-    <much-select multi-select="true">
-      <select slot="select-input">
-        <option>Red</option>
-        <option>Yellow</option>
-        <option>Orange</option>
-        <option>Green</option>
-        <option>Blue</option>
-        <option>Purple</option>
-      </select>
-    </much-select>
+  <div class="example">
+    <include src="example-partials/multi-select.html"></include>
+    <a href="multi-select-example.html">open example on its own page</a>
   </div>
 
-  <div>
+  <div class="example">
     <h3>Option Groups</h3>
+    <p>You can give your options a little more organization by grouping them.</p>
     <much-select>
       <select slot="select-input">
         <optgroup label="Primary">
@@ -78,8 +52,10 @@
     </much-select>
   </div>
 
-  <div>
+  <div class="example">
     <h3>Options with Descriptions</h3>
+    <p>Sometimes just a human friendly label for an option isn't enough, and you'd like to add a little extra "color".</p>
+    <p>You can filter your results by typing, <code>&lt;much-select&gt;</code> will also use the descriptions when trying to find the option you want.</p>
     <much-select>
       <select slot="select-input">
         <option data-description="scarlet, vermilion, ruby, ruby red, ruby-colored, cherry">Red</option>
@@ -92,7 +68,7 @@
     </much-select>
   </div>
 
-  <div>
+  <div class="example">
     <h3>Options Label and Values</h3>
     <p>The labels and values are different</p>
     <much-select>
@@ -107,7 +83,7 @@
     </much-select>
   </div>
 
-  <div>
+  <div class="example">
     <h3>An initial value</h3>
     <p>Set using the <code>selected</code> attribute on the <code>&lt;much-select&gt;</code></p>
     <much-select selected-value="Blue">
@@ -122,7 +98,7 @@
     </much-select>
   </div>
 
-  <div>
+  <div class="example">
     <h3>A Placeholder</h3>
     <much-select placeholder="What is your favorite color?">
       <select slot="select-input">
@@ -136,7 +112,7 @@
     </much-select>
   </div>
 
-  <div>
+  <div class="example">
     <h3>Disabled</h3>
     <p>Disable the <code>&lt;much-select&gt;</code> with the <code>disabled</code> attribute.</p>
     <much-select disabled="disabled">
@@ -151,7 +127,7 @@
     </much-select>
   </div>
 
-  <div id="loading-indicator">
+  <div class="example" id="loading-indicator">
     <h3>Loading</h3>
     <p>Show and hide the loading indicator with the <code>loading</code> attribute.</p>
     <much-select loading="loading">
@@ -181,7 +157,7 @@
     </script>
   </div>
 
-  <div>
+  <div class="example">
     <h3>Disabled Options</h3>
     <p>This has the "yellow" and "orange" options disabled.</p>
     <much-select>
@@ -196,7 +172,7 @@
     </much-select>
   </div>
 
-  <div>
+  <div class="example">
     <h3>Change Options With the Dom</h3>
     <button id="change-the-dom">Click me to change the dom</button>
     <much-select id="change-the-dom-much-select">
@@ -221,12 +197,13 @@
     </script>
   </div>
 
-  <div>
+  <div class="example">
     <h3>Max Number of Items</h3>
-    <p>You can cange the maxium number of items in the dropdown with the <code>max-dropdown-items=</code> attribute.</p>
+    <p>You can change the maximum number of items in the dropdown with the <code>max-dropdown-items=</code> attribute.</p>
 
-    <p>In this case it's set to 3, you can get to the remaining options by move your selection up and down with the arrow keys for filtering the options.
-      To make this option work a little bit better we also have the following attributes set: <code>search-string-minimum-length="0" show-dropdown-footer=""</code>.
+    <p>In this case it's set to 3, you can get to the remaining options by move your selection up and down with the
+      arrow keys for filtering the options. To demonstrate why you might want to use this option we also have the
+      following attributes set: <code>search-string-minimum-length="0" show-dropdown-footer=""</code>.
     </p>
     <much-select max-dropdown-items="3" search-string-minimum-length="0" show-dropdown-footer="">
       <select slot="select-input">
@@ -239,7 +216,7 @@
     </much-select>
   </div>
 
-  <div id="remote-api-example">
+  <div class="example" id="remote-api-example">
     <h3>Remote API</h3>
     <p>As you type we'll query the remote API for additional options.</p>
     <p>This dropdown searches the <a href="https://rickandmortyapi.com/">Rick and Morty</a> API for characters from the show by name.</p>
@@ -254,7 +231,7 @@
         muchSelect.addEventListener("inputKeyUpDebounced", (evt) => {
           const { searchString } = evt.detail;
           if (searchString.length < 3) {
-            // Lets not search unless we have at least 3 characters in the search string.
+            // Let's not search unless we have at least 3 characters in the search string.
             return;
           }
           const url = new URL("https://rickandmortyapi.com/api/character/");
@@ -275,13 +252,14 @@
               })
               .then((data) => {
                 data.results.forEach((result) => {
+                  // noinspection JSUnresolvedVariable
                   muchSelect.addOption({ value: result.name });
                 });
                 muchSelect.loading = false;
               });
           };
 
-          // The API is just too fast, slow it down a bit so we can watch
+          // The API is just too fast, slow it down a bit, so we can watch
           //  it work.
           window.setTimeout(searchRickAndMortyCharactersByName, 2000);
         });
@@ -289,13 +267,13 @@
     </script>
   </div>
 
-  <div id="custom-options-that-persist">
+  <div class="example" id="custom-options-that-persist">
     <h3>Custom Options That Persist</h3>
     <much-select allow-custom-options="">
       <select slot="select-input">
         <option value="Bánh mì">Bánh mì</option>
-        <option value="Cheesesteak">Cheesesteak</option>
-        <option value="Cheesesteak">Po' boy</option>
+        <option value="Cheese steak">Cheese steak</option>
+        <option value="Po' boy">Po' boy</option>
       </select>
     </much-select>
 
@@ -337,10 +315,10 @@
   </div>
 
 
-  <div id="events-only-mode">
+  <div class="example" id="events-only-mode">
     <h3>Events Only Mode</h3>
     <p>
-      The <code>events-only=""</code> attribute is a little bit specialized, it
+      The <code>events-only=""</code> attribute is a little specialized, it
       is for when you are in a situation where something else <em>really</em>
       wants to have full control over the DOM. Elm would an example of this. In
       this case, we only want the <code>much-select</code> element to emmit events

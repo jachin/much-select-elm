@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!--suppress HtmlFormInputWithoutLabel -->
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -6,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <!--suppress HtmlUnknownTarget -->
   <link rel="icon" href="./favicon.ico" type="image/x-icon" />
-  <title>Much Select - Selected Value Encoding</title>
+  <title>Much Select</title>
   <link href="demo-styles.css" rel="stylesheet">
   <script src="./styles.js"></script>
 </head>
@@ -15,20 +16,14 @@
 
 <include src="header.html">
   {
-  "pageName": "Attributes"
+  "pageName": "Multi Select Example"
   }
 </include>
 
 <include src="nav.html"></include>
 
 <div class="container">
-  <div class="example">
-    <include src="example-partials/minimum-search-string-length.html"></include>
-  </div>
-
-  <div class="example">
-    <include src="example-partials/show-dropdown-footer.html"></include>
-  </div>
+  <include src="example-partials/multi-select.html"></include>
 </div>
 
 <script src="./index.js" type="module"></script>
