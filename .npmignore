@@ -31,3 +31,9 @@ elm-stuff/
 public/
 build/site
 build/output
+
+* Test coverage files
+coverage
+
+* Elm review stuff
+review

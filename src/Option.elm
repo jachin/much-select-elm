@@ -59,6 +59,7 @@ module Option exposing
     , removeHighlightOptionInList
     , removeOptionsFromOptionList
     , removeUnselectedCustomOptions
+    , replaceOptions
     , selectHighlightedOption
     , selectOption
     , selectOptionInList
@@ -763,6 +764,18 @@ mergeTwoListsOfOptionsPreservingSelectedOptions selectedItemPlacementMode option
             List.Extra.uniqueBy getOptionValueAsString superList
     in
     setSelectedOptionInNewOptions superList newOptions
+
+
+replaceOptions : SelectedItemPlacementMode -> List Option -> List Option -> List Option
+replaceOptions selectedItemPlacementMode oldOptions newOptions =
+    let
+        oldSelectedOptions =
+            selectedOptions oldOptions
+    in
+    mergeTwoListsOfOptionsPreservingSelectedOptions
+        selectedItemPlacementMode
+        oldSelectedOptions
+        newOptions
 
 
 isOptionValueEqualToOptionLabel : Option -> Bool

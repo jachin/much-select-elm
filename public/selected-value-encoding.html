@@ -6,25 +6,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <!--suppress HtmlUnknownTarget -->
   <link rel="icon" href="./favicon.ico" type="image/x-icon" />
-  <title>Much Select</title>
+  <title>Much Select - Selected Value Encoding</title>
   <link href="demo-styles.css" rel="stylesheet">
+  <script src="./styles.js"></script>
 </head>
 
 <body>
 
-<h1>Much-Select - Selected Value Encoding</h1>
+<include src="header.html">
+  {
+  "pageName": "Selected Value Encoding"
+  }
+</include>
 
-<h2>Demo and Development Playground</h2>
-
-<nav>
-  <ol class="main-nav">
-    <li class="main-nav-item"><a href="index.html">Home</a></li>
-  </ol>
-</nav>
+<include src="nav.html"></include>
 
 <div class="container">
 
-  <div id="multi-select-comma-seperated-values">
+  <div class="example" id="multi-select-comma-seperated-values">
     <h3>Comma Seperated Selected Values</h3>
     <much-select multi-select="true" selected-value="Dory,Betta" selected-value-encoding="comma" allow-custom-options>
       <select slot="select-input">
@@ -38,7 +37,7 @@
     </much-select>
   </div>
 
-  <div id="multi-select-json-seperated-values">
+  <div class="example" id="multi-select-json-seperated-values">
     <h3>JSON Encoded Selected Values</h3>
     <p>
       In this example we've added the <code>selected-value-encoding="json"</code> attribute. This means that the <code>selected-value=</code> attribute is expected to be in JSON that has <em>also</em> been URI encoded with <code>encodeURIComponent()</code> (or something else that does the same job).
@@ -60,7 +59,7 @@
     </much-select>
   </div>
 
-  <div id="single-select-json-seperated-values">
+  <div class="example" id="single-select-json-seperated-values">
     <h3>JSON Encoded Selected Values (for a Single Select)</h3>
     <p>
       This might be less common but you can use <code>selected-value-encoding="json"</code> in single select mode.

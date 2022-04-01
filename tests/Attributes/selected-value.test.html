@@ -4,7 +4,7 @@
 <script type="module">
   import { runTests } from "@web/test-runner-mocha";
   import { expect } from "@esm-bundle/chai";
-  import { html, fixture, nextFrame } from "@open-wc/testing";
+  import { html, fixture, oneEvent } from "@open-wc/testing";
 
   import MuchSelect from "../../dist/much-select-debug.js";
 
@@ -57,7 +57,7 @@
           expect(el.parsedSelectedValue).to.eql(["red", "green"]);
         });
         it("preserver the order of the selected values even if the order of the options are different", async () => {
-          const el = /** @type {MuchSelect} */ await fixture(html` <much-select
+          const el = /** @type {MuchSelect} */ await fixture(html`<much-select
             multi-select
             selected-value-encoding="json"
             selected-value="%5B%22red%22%2C%22green%22%5D"
@@ -71,7 +71,7 @@
         });
 
         it("can decode a selected value that's a string of IDs", async () => {
-          const el = /** @type {MuchSelect} */ await fixture(html` <much-select
+          const el = /** @type {MuchSelect} */ await fixture(html`<much-select
             multi-select
             selected-value-encoding="json"
             selected-value="%5B%22211107950%22%5D"
@@ -91,14 +91,24 @@
               isSelected: true,
             },
           ]);
+        });
+
+        it("can decode a selected value that's a string of IDs then support updating the DOM with additional option details", async () => {
+          const el = /** @type {MuchSelect} */ await fixture(html`<much-select
+            multi-select
+            selected-value-encoding="json"
+            selected-value="%5B%22211107950%22%5D"
+          >
+            <select slot="select-input"></select>
+          </much-select>`);
 
           const selectEl = el.querySelector("select");
 
           selectEl.innerHTML =
             "<option value='211107950'>Hello</option><option value='5'>You</option>";
 
-          await nextFrame();
-          await nextFrame();
+          // Make sure we wait long enough for the update to finish.
+          await oneEvent(el, "optionsUpdated");
 
           // Now there should be 2 options including the selected value, and the selected value should have a label now.
           expect(await el.getAllOptions()).to.eql([
@@ -113,7 +123,7 @@
         });
 
         it("works in multi select mode with an empty selected value", async () => {
-          const el = /** @type {MuchSelect} */ await fixture(html` <much-select
+          const el = /** @type {MuchSelect} */ await fixture(html`<much-select
             multi-select
             selected-value-encoding="json"
             selected-value=""
@@ -128,7 +138,7 @@
         });
 
         it("works in select mode with an empty selected value", async () => {
-          const el = /** @type {MuchSelect} */ await fixture(html` <much-select
+          const el = /** @type {MuchSelect} */ await fixture(html`<much-select
             selected-value-encoding="json"
             selected-value=""
           >
