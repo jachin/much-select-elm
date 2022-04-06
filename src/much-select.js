@@ -543,15 +543,6 @@ class MuchSelect extends HTMLElement {
             bubbles: true,
           })
         );
-
-        this.dispatchEvent(
-          new CustomEvent("blurOrUnfocusedValueChanged", {
-            bubbles: true,
-            detail: {
-              value: this.selectedValue,
-            },
-          })
-        );
       })
     );
 
