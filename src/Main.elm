@@ -1330,17 +1330,27 @@ optionToDropdownOption eventHandlers selectionMode prependOptionGroup option =
     let
         optionGroupHtml =
             if prependOptionGroup then
-                div
-                    [ class "optgroup"
-                    ]
-                    [ span [ class "optgroup-header" ]
-                        [ text
-                            (option
-                                |> Option.getOptionGroup
-                                |> Option.optionGroupToString
-                            )
-                        ]
-                    ]
+                case Option.getMaybeOptionSearchFilter option of
+                    Just optionSearchFilter ->
+                        div
+                            [ class "optgroup"
+                            ]
+                            [ span [ class "optgroup-header" ]
+                                (tokensToHtml optionSearchFilter.groupTokens)
+                            ]
+
+                    Nothing ->
+                        div
+                            [ class "optgroup"
+                            ]
+                            [ span [ class "optgroup-header" ]
+                                [ text
+                                    (option
+                                        |> Option.getOptionGroup
+                                        |> Option.optionGroupToString
+                                    )
+                                ]
+                            ]
 
             else
                 text ""

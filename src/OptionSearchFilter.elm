@@ -5,15 +5,18 @@ import Fuzzy exposing (Result)
 
 type alias OptionSearchFilter =
     { totalScore : Int
+    , bestScore : Int
     , searchResult : OptionSearchResult
     , labelTokens : List ( Bool, String )
     , descriptionTokens : List ( Bool, String )
+    , groupTokens : List ( Bool, String )
     }
 
 
 type alias OptionSearchResult =
     { labelMatch : Result
     , descriptionMatch : Result
+    , groupMatch : Result
     }
 
 
@@ -22,22 +25,26 @@ impossiblyLowScore =
     1000000
 
 
-new : Int -> OptionSearchResult -> List ( Bool, String ) -> List ( Bool, String ) -> OptionSearchFilter
-new totalScore searchResult labelTokens descriptionTokens =
+new : Int -> Int -> OptionSearchResult -> List ( Bool, String ) -> List ( Bool, String ) -> List ( Bool, String ) -> OptionSearchFilter
+new totalScore bestScore searchResult labelTokens descriptionTokens groupTokens =
     { totalScore = totalScore
+    , bestScore = totalScore
     , searchResult = searchResult
     , labelTokens = labelTokens
     , descriptionTokens = descriptionTokens
+    , groupTokens = groupTokens
     }
 
 
 getLowScore : OptionSearchResult -> Int
 getLowScore optionSearchResult =
-    if optionSearchResult.labelMatch.score < optionSearchResult.descriptionMatch.score then
-        optionSearchResult.labelMatch.score
-
-    else
-        optionSearchResult.descriptionMatch.score
+    List.minimum
+        [ optionSearchResult.labelMatch.score
+        , optionSearchResult.descriptionMatch.score
+        , optionSearchResult.groupMatch.score
+        ]
+        |> Maybe.withDefault
+            impossiblyLowScore
 
 
 lowScoreCutOff : Int -> Int

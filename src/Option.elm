@@ -51,6 +51,7 @@ module Option exposing
     , optionDescriptionToBool
     , optionDescriptionToSearchString
     , optionDescriptionToString
+    , optionGroupToSearchString
     , optionGroupToString
     , optionToValueLabelTuple
     , optionsDecoder
@@ -576,6 +577,16 @@ optionGroupToString optionGroup =
     case optionGroup of
         OptionGroup string ->
             string
+
+        NoOptionGroup ->
+            ""
+
+
+optionGroupToSearchString : OptionGroup -> String
+optionGroupToSearchString optionGroup =
+    case optionGroup of
+        OptionGroup string ->
+            String.toLower string
 
         NoOptionGroup ->
             ""
