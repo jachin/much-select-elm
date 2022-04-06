@@ -1,23 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Async Loading Options with Mulit Select (Smaller)</title>
-
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <!--suppress HtmlUnknownTarget -->
-  <link rel="icon" href="../favicon.ico" type="image/x-icon" />
-  <title>Much Select - Initial Value</title>
-  <link href="../demo-styles.css" rel="stylesheet">
-</head>
-<body>
-
-<div id="selected-option-with-async-options">
-  <h3>Async Loading Options with Mulit Select (Smaller)</h3>
+<div id="selected-option-with-multi-select-with-async-options">
+  <h3>Async Loading Options with Multi Select (Smaller)</h3>
   <p>In this example we start with a single selected value, then asynchronously load in more options (after 2 seconds).</p>
-  <p>The description for the selected gets loaded in with all async options.</p>
-  <much-select multi-select >
+  <p>The description for the selected option gets loaded in with all async options.</p>
+  <much-select multi-select>
     <select slot="select-input">
       <option selected value="les Escaldes">les Escaldes</option>
       <option selected value="Andorra la Vella">Andorra la Vella</option>
@@ -26,7 +11,9 @@
 
   <script>
     (() => {
-      const muchSelect = document.querySelector("much-select");
+      const muchSelect = document.querySelector(
+        "#selected-option-with-multi-select-with-async-options much-select"
+      );
       const possibleOptions = [
         {
           label: "les Escaldes",
@@ -55,8 +42,3 @@
     })();
   </script>
 </div>
-
-<script src="../index.js" type="module"></script>
-
-</body>
-</html>
