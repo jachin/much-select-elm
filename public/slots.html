@@ -23,264 +23,36 @@
 
 <div class="container">
 
-  <div>
-    <h3>Override The Clear Button</h3>
-    <p>
-      Let's change how the clear button looks.
-    </p>
-    <much-select multi-select="true" selected-value="Blue">
-      <select slot="select-input">
-        <option>Red</option>
-        <option>Yellow</option>
-        <option>Blue</option>
-        <option>Orange</option>
-        <option>Green</option>
-        <option>Purple</option>
-      </select>
-      <div slot="clear-button">✿</div>
-    </much-select>
+  <div class="example">
+    <include src="example-partials/override-the-clear-button.html"></include>
   </div>
 
-  <div>
-    <h3>Override The Clear Button with an SVG</h3>
-    <p>
-      Let's change how the clear button works with an SVG.
-    </p>
-    <much-select multi-select="true" selected-value="Blue,Yellow,Purple,Green,Orange,Red">
-      <select slot="select-input">
-        <option>Red</option>
-        <option>Yellow</option>
-        <option>Blue</option>
-        <option>Orange</option>
-        <option>Green</option>
-        <option>Purple</option>
-      </select>
-      <div slot="clear-button">
-        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="30" height="30" viewBox="0 0 640 640">
-          <defs>
-            <style>
-              .cls-1 {
-                fill: #226122;
-                filter: url(#filter);
-              }
-
-              .cls-2, .cls-4 {
-                fill: #fff;
-              }
-
-              .cls-3 {
-                fill: #0ec00e;
-                filter: url(#filter-2);
-              }
-
-              .cls-4 {
-                fill-rule: evenodd;
-              }
-            </style>
-            <filter id="filter" x="6" y="6" width="628" height="628" filterUnits="userSpaceOnUse">
-              <feFlood result="flood" flood-color="#b43a3a"/>
-              <feComposite result="composite" operator="in" in2="SourceGraphic"/>
-              <feBlend result="blend" in2="SourceGraphic"/>
-            </filter>
-            <filter id="filter-2" x="35" y="39" width="562" height="562" filterUnits="userSpaceOnUse">
-              <feFlood result="flood" flood-color="#f55"/>
-              <feComposite result="composite" operator="in" in2="SourceGraphic"/>
-              <feBlend result="blend" in2="SourceGraphic"/>
-            </filter>
-          </defs>
-          <circle class="cls-1" cx="320" cy="320" r="314"/>
-          <circle id="Ellipse_1_Kopie" data-name="Ellipse 1 Kopie" class="cls-2" cx="317" cy="320" r="290"/>
-          <circle id="Ellipse_1_Kopie_2" data-name="Ellipse 1 Kopie 2" class="cls-3" cx="316" cy="320" r="281"/>
-          <path id="Abgerundetes_Rechteck_1" data-name="Abgerundetes Rechteck 1" class="cls-4" d="M217.023,370.289L369.8,217.467c19.147-19.153,46.691-22.654,61.521-7.821s11.329,42.385-7.818,61.538L270.725,424.006c-19.147,19.153-46.691,22.654-61.52,7.82S197.876,389.441,217.023,370.289Z"/>
-          <path id="Abgerundetes_Rechteck_1_Kopie" data-name="Abgerundetes Rechteck 1 Kopie" class="cls-4" d="M270.912,217.051L423.949,370.088c19.179,19.18,22.685,46.77,7.831,61.624s-42.445,11.348-61.624-7.831L217.119,270.844c-19.18-19.179-22.686-46.769-7.831-61.624S251.732,197.872,270.912,217.051Z"/>
-        </svg>
-      </div>
-    </much-select>
+  <div class="example">
+    <include src="example-partials/override-the-clear-button-with-an-svg.html"></include>
   </div>
 
-  <div>
-    <h3>Default Clear Button</h3>
-    <p>
-      Let's see how the default clear button works.
-    </p>
-    <much-select multi-select="true" selected-value="Blue,Yellow,Orange">
-      <select slot="select-input">
-        <option>Red</option>
-        <option>Yellow</option>
-        <option>Blue</option>
-        <option>Orange</option>
-        <option>Green</option>
-        <option>Purple</option>
-      </select>
-    </much-select>
+  <div class="example">
+    <include src="example-partials/default-clear-button.html"></include>
   </div>
 
-  <div id="loading-indicator">
-    <h3>Custom Loading Indicator</h3>
-    <p>Use the <code>loading-indicator</code> slot to provide a custom loading animation.</p>
-    <p>The default loading animation just uses CSS and a single `<code>div</code> tag, but this example uses SVG.</p>
-    <much-select loading="loading">
-      <select slot="select-input">
-        <option>Red</option>
-        <option>Yellow</option>
-        <option>Blue</option>
-        <option>Orange</option>
-        <option>Green</option>
-        <option>Purple</option>
-      </select>
-      <svg slot="loading-indicator" width="25" height="25" viewBox="0 0 105 105" xmlns="http://www.w3.org/2000/svg" fill="#000">
-        <circle cx="12.5" cy="12.5" r="12.5">
-          <animate attributeName="fill-opacity"
-                   begin="0s" dur="1s"
-                   values="1;.2;1" calcMode="linear"
-                   repeatCount="indefinite" />
-        </circle>
-        <circle cx="12.5" cy="52.5" r="12.5" fill-opacity=".5">
-          <animate attributeName="fill-opacity"
-                   begin="100ms" dur="1s"
-                   values="1;.2;1" calcMode="linear"
-                   repeatCount="indefinite" />
-        </circle>
-        <circle cx="52.5" cy="12.5" r="12.5">
-          <animate attributeName="fill-opacity"
-                   begin="300ms" dur="1s"
-                   values="1;.2;1" calcMode="linear"
-                   repeatCount="indefinite" />
-        </circle>
-        <circle cx="52.5" cy="52.5" r="12.5">
-          <animate attributeName="fill-opacity"
-                   begin="600ms" dur="1s"
-                   values="1;.2;1" calcMode="linear"
-                   repeatCount="indefinite" />
-        </circle>
-        <circle cx="92.5" cy="12.5" r="12.5">
-          <animate attributeName="fill-opacity"
-                   begin="800ms" dur="1s"
-                   values="1;.2;1" calcMode="linear"
-                   repeatCount="indefinite" />
-        </circle>
-        <circle cx="92.5" cy="52.5" r="12.5">
-          <animate attributeName="fill-opacity"
-                   begin="400ms" dur="1s"
-                   values="1;.2;1" calcMode="linear"
-                   repeatCount="indefinite" />
-        </circle>
-        <circle cx="12.5" cy="92.5" r="12.5">
-          <animate attributeName="fill-opacity"
-                   begin="700ms" dur="1s"
-                   values="1;.2;1" calcMode="linear"
-                   repeatCount="indefinite" />
-        </circle>
-        <circle cx="52.5" cy="92.5" r="12.5">
-          <animate attributeName="fill-opacity"
-                   begin="500ms" dur="1s"
-                   values="1;.2;1" calcMode="linear"
-                   repeatCount="indefinite" />
-        </circle>
-        <circle cx="92.5" cy="92.5" r="12.5">
-          <animate attributeName="fill-opacity"
-                   begin="200ms" dur="1s"
-                   values="1;.2;1" calcMode="linear"
-                   repeatCount="indefinite" />
-        </circle>
-      </svg>
-    </much-select>
-    <button>Toggle loading attribute</button>
-    <script>
-      document
-  .querySelector("#loading-indicator button")
-  .addEventListener("click", () => {
-    const muchSelectElement = document.querySelector(
-      "#loading-indicator much-select"
-    );
-          if (muchSelectElement.hasAttribute("loading")) {
-            muchSelectElement.removeAttribute("loading");
-          } else {
-          muchSelectElement.setAttribute("loading", "loading");
-          }
-        });
-    </script>
+  <div class="example">
+    <include src="example-partials/override-loading-indicator.html"></include>
   </div>
 
-  <div>
-    <h3>No options</h3>
-    <p>
-      Override what shows up if there are no options
-    </p>
-    <much-select>
-      <div slot="no-options">Nothing to see here...</div>
-    </much-select>
+  <div class="example">
+    <include src="example-partials/override-no-options-slot.html"></include>
   </div>
 
-  <div>
-    <h3>Hidden Input</h3>
-    <p>
-      If you want to use a much select in a traditional HTML form you can use the <code>hidden-value-input</code> slot. If you put a hidden input in that slot, it's value will mirror that of the much-select.
-    </p>
-    <p>
-      You can use your browser's developer tools to see the hidden input and watch its value change as you change the much-select's value.
-    </p>
-    <much-select>
-      <select slot="select-input">
-        <option>Alberta</option>
-        <option>British Columbia</option>
-        <option>Manitoba</option>
-        <option>New Brunswick</option>
-        <option>Newfoundland and Labrador</option>
-        <option>Nova Scotia</option>
-        <option>Ontario</option>
-        <option>Prince Edward Island</option>
-        <option>Quebec</option>
-        <option>Saskatchewan</option>
-      </select>
-      <input slot="hidden-value-input" type="hidden" name="my-special-value">
-    </much-select>
+  <div class="example">
+    <include src="example-partials/hidden-input-slot.html"></include>
   </div>
 
-  <div>
-    <h3>Hidden Input JSON encoding</h3>
-    <p>
-      If you're using the <code>hidden-value-input</code> and the <code>selected-value-encoding</code> attribute, the value in the hidden input slot will also be encoded.
-    </p>
-    <p>
-      You can use your browser's developer tools to see the hidden input and watch its value change as you change the much-select's value.
-    </p>
-    <much-select selected-value-encoding="json">
-      <select slot="select-input">
-        <option>New South Wales</option>
-        <option>Queensland</option>
-        <option>South Australia</option>
-        <option>Tasmania</option>
-        <option>Victoria</option>
-        <option>Western Australia</option>
-      </select>
-      <input slot="hidden-value-input" type="hidden" name="my-special-value">
-    </much-select>
+  <div class="example">
+    <include src="example-partials/hidden-input-json-encoding-slot.html"></include>
   </div>
 
-  <div>
-    <h3>No Options</h3>
-    <p>
-      You can over ride the message the user sees when there are no options.
-    </p>
-    <much-select>
-      <div slot="no-options">Oh bummmer, no options</div>
-    </much-select>
-  </div>
-
-  <div>
-    <h3>No Filtered Options</h3>
-    <p>
-      You can over ride the message the user sees when they have entered a search string that does not match any of the avalible options.
-    </p>
-    <much-select>
-      <div slot="no-filtered-options">Nope, you probably shouldn't drink that.</div>
-      <select slot="select-input">
-        <option>Black Tea</option>
-        <option>Green Tea</option>
-        <option>Red Tea</option>
-      </select>
-    </much-select>
+  <div class="example">
+    <include src="example-partials/override-no-filtered-options-slot.html"></include>
   </div>
 
 </div>
