@@ -1480,17 +1480,17 @@ optionsToValuesHtml options enableSingleItemRemoval =
 
 optionToValueHtml : SingleItemRemoval -> Option -> Html Msg
 optionToValueHtml enableSingleItemRemoval option =
+    let
+        removalHtml =
+            case enableSingleItemRemoval of
+                EnableSingleItemRemoval ->
+                    span [ mousedownPreventDefault <| DeselectOptionInternal option, class "remove-option" ] [ text "" ]
+
+                DisableSingleItemRemoval ->
+                    text ""
+    in
     case option of
         Option display optionLabel optionValue _ _ _ ->
-            let
-                removalHtml =
-                    case enableSingleItemRemoval of
-                        EnableSingleItemRemoval ->
-                            span [ mousedownPreventDefault <| DeselectOptionInternal option, class "remove-option" ] [ text "" ]
-
-                        DisableSingleItemRemoval ->
-                            text ""
-            in
             case display of
                 OptionShown ->
                     text ""
@@ -1533,7 +1533,7 @@ optionToValueHtml enableSingleItemRemoval option =
                         , mousedownPreventDefault
                             (ToggleSelectedValueHighlight optionValue)
                         ]
-                        [ valueLabelHtml (OptionLabel.getLabelString optionLabel) optionValue ]
+                        [ valueLabelHtml (OptionLabel.getLabelString optionLabel) optionValue, removalHtml ]
 
                 OptionSelectedHighlighted _ ->
                     div
@@ -1542,7 +1542,7 @@ optionToValueHtml enableSingleItemRemoval option =
                             , ( "highlighted-value", True )
                             ]
                         ]
-                        [ valueLabelHtml (OptionLabel.getLabelString optionLabel) optionValue ]
+                        [ valueLabelHtml (OptionLabel.getLabelString optionLabel) optionValue, removalHtml ]
 
                 OptionHighlighted ->
                     text ""
