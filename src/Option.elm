@@ -1050,6 +1050,7 @@ findLowestSearchScore options =
     let
         lowSore =
             options
+                |> List.filter (\option -> not (isCustomOption option))
                 |> optionSearchResults
                 |> List.foldl
                     (\searchResult lowScore ->

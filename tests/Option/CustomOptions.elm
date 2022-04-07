@@ -83,4 +83,19 @@ suite =
                         |> List.map Option.getOptionValueAsString
                     )
                     [ "monkey bread", "Birch Wood", "Cut Copper" ]
+        , test "and regular options show be visible in the dropdown if the search string matches OK" <|
+            \_ ->
+                Expect.equalLists
+                    ([ mossyCobblestone
+                     ]
+                        |> OptionSearcher.updateOptions
+                            (MultiSelect AllowCustomOptions EnableSingleItemRemoval)
+                            (Just "{{}}")
+                            "cob"
+                        |> OptionSorting.sortOptionsBySearchFilterTotalScore
+                        |> Option.highlightFirstOptionInList
+                        |> figureOutWhichOptionsToShow (PositiveInt.new 10)
+                        |> List.map Option.getOptionValueAsString
+                    )
+                    [ "cob", "Mossy Cobblestone" ]
         ]
