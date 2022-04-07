@@ -1322,8 +1322,11 @@ selectOptionInListByOptionValue value options =
                     EmptyOption _ _ ->
                         selectOption nextSelectedIndex option_
 
-            else
+            else if isOptionSelected option_ then
                 option_
+
+            else
+                removeHighlightOption option_
         )
         options
 
@@ -1349,8 +1352,11 @@ selectOptionInListByOptionValueWithIndex index value options =
                     EmptyOption _ _ ->
                         selectOption index option_
 
-            else
+            else if isOptionSelected option_ then
                 option_
+
+            else
+                removeHighlightOption option_
         )
         options
 
