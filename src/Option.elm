@@ -34,6 +34,7 @@ module Option exposing
     , getOptionValueAsString
     , hasSelectedHighlightedOptions
     , hasSelectedOption
+    , highlightFirstOptionInList
     , highlightOption
     , highlightOptionInList
     , highlightOptionInListByValue
@@ -914,6 +915,7 @@ updateOrAddCustomOption maybeCustomOptionHint searchString options =
                             |> optionLabelToSearchString
                         )
                             == String.toLower searchString
+                            && not (isCustomOption option_)
                     )
                 |> not
 
@@ -1095,6 +1097,16 @@ highlightOptionInList option options =
                 removeHighlightOption option_
         )
         options
+
+
+highlightFirstOptionInList : List Option -> List Option
+highlightFirstOptionInList options =
+    case List.head options of
+        Just firstOption ->
+            highlightOptionInList firstOption options
+
+        Nothing ->
+            options
 
 
 highlightOptionInListByValue : OptionValue -> List Option -> List Option
