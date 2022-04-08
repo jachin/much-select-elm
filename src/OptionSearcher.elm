@@ -1,10 +1,10 @@
-module OptionSearcher exposing (doesSearchStringFindNothing, simpleMatch, updateOptions)
+module OptionSearcher exposing (doesSearchStringFindNothing, simpleMatch, updateOptions, updateSearchResultInOption)
 
-import Fuzzy exposing (Result, match)
+import Fuzzy exposing (Result, addPenalty, match)
 import Option exposing (Option)
 import OptionLabel exposing (optionLabelToSearchString, optionLabelToString)
 import OptionPresentor exposing (tokenize)
-import OptionSearchFilter exposing (OptionSearchResult)
+import OptionSearchFilter exposing (OptionSearchFilter, OptionSearchResult)
 import PositiveInt exposing (PositiveInt)
 import SelectionMode exposing (CustomOptions(..), SelectionMode)
 
@@ -19,6 +19,17 @@ updateOptions selectionMode maybeCustomOptionHint searchString options =
 simpleMatch : String -> String -> Result
 simpleMatch needle hay =
     match [] [ " " ] needle hay
+
+
+
+{- This matcher is for the option groups. We add a penalty of 50 points because we want matches on the label and
+   description to show up first.
+-}
+
+
+groupMatch : String -> String -> Result
+groupMatch needle hay =
+    match [ addPenalty 5 ] [ " " ] needle hay
 
 
 search : String -> Option -> OptionSearchResult
@@ -37,7 +48,60 @@ search string option =
                 |> Option.getOptionDescription
                 |> Option.optionDescriptionToSearchString
             )
+    , groupMatch =
+        groupMatch
+            (string |> String.toLower)
+            (option
+                |> Option.getOptionGroup
+                |> Option.optionGroupToSearchString
+            )
     }
+
+
+updateSearchResultInOption : String -> Option -> Option
+updateSearchResultInOption searchString option =
+    let
+        searchResult : OptionSearchResult
+        searchResult =
+            search searchString option
+
+        labelTokens =
+            tokenize (option |> Option.getOptionLabel |> optionLabelToString) searchResult.labelMatch
+
+        descriptionTokens =
+            tokenize (option |> Option.getOptionDescription |> Option.optionDescriptionToString) searchResult.descriptionMatch
+
+        groupTokens =
+            tokenize (option |> Option.getOptionGroup |> Option.optionGroupToString) searchResult.groupMatch
+
+        bestScore =
+            Maybe.withDefault OptionSearchFilter.impossiblyLowScore
+                (List.minimum
+                    [ searchResult.labelMatch.score
+                    , searchResult.descriptionMatch.score
+                    , searchResult.groupMatch.score
+                    ]
+                )
+
+        totalScore =
+            List.sum
+                [ searchResult.labelMatch.score
+                , searchResult.descriptionMatch.score
+                , searchResult.groupMatch.score
+                ]
+    in
+    Option.setOptionSearchFilter
+        (Just
+            (OptionSearchFilter.new
+                bestScore
+                totalScore
+                searchResult
+                labelTokens
+                descriptionTokens
+                groupTokens
+            )
+        )
+        option
 
 
 updateOrAddCustomOption : Maybe String -> String -> SelectionMode -> List Option -> List Option
@@ -70,36 +134,7 @@ updateOptionsWithSearchString searchString options =
         _ ->
             options
                 |> List.map
-                    (\option ->
-                        let
-                            searchResult : OptionSearchResult
-                            searchResult =
-                                search searchString option
-
-                            labelTokens =
-                                tokenize (option |> Option.getOptionLabel |> optionLabelToString) searchResult.labelMatch
-
-                            descriptionTokens =
-                                tokenize (option |> Option.getOptionDescription |> Option.optionDescriptionToString) searchResult.descriptionMatch
-
-                            score =
-                                if searchResult.labelMatch.score < searchResult.descriptionMatch.score then
-                                    searchResult.labelMatch.score
-
-                                else
-                                    searchResult.descriptionMatch.score
-                        in
-                        Option.setOptionSearchFilter
-                            (Just
-                                (OptionSearchFilter.new
-                                    score
-                                    searchResult
-                                    labelTokens
-                                    descriptionTokens
-                                )
-                            )
-                            option
-                    )
+                    (updateSearchResultInOption searchString)
 
 
 doesSearchStringFindNothing : String -> PositiveInt -> List Option -> Bool

@@ -22,60 +22,19 @@
 
 <div class="container">
 
-  <div id="much-select-multi-select" class="example">
-    <h3>Multi Select</h3>
-    <much-select multi-select="">
-      <select slot="select-input">
-        <option>Ada</option>
-        <option>ALGOL 68</option>
-        <option>C</option>
-        <option>C++</option>
-        <option>Objective-C</option>
-        <option>C#</option>
-        <option>Java</option>
-        <option>Go</option>
-      </select>
-    </much-select>
-
+  <div class="example">
+    <include src="example-partials/multi-select.html"></include>
   </div>
 
-  <div id="much-select-with-custom-options" class="example">
-    <iframe height="300" title="Custom Options" src="./multi-select-examples/custom-options.html"></iframe>
-    <p><a href="./multi-select-examples/custom-options.html">open example in it's own page</a></p>
+  <div class="example">
+    <include src="example-partials/allow-custom-options.html"></include>
   </div>
 
-  <div id="much-select-with-removable-options" class="example">
-    <h3>Removable Options</h3>
-    <p>With multi select you can make each selected value individually removable.</p>
-    <button>Toggle the remove selected item buttons</button>
-    <much-select multi-select allow-custom-options multi-select-single-item-removal selected-value="Butterhead,Escarole">
-      <select slot="select-input">
-        <option>Arugula</option>
-        <option>Butterhead</option>
-        <option>Coral</option>
-        <option>Cress</option>
-        <option>Endive</option>
-        <option>Escarole</option>
-        <option>Frisée</option>
-        <option>Mâche</option>
-      </select>
-    </much-select>
-    <script>
-      document
-        .querySelector("#much-select-with-removable-options button")
-        .addEventListener("click", () => {
-          document
-            .querySelector("#much-select-with-removable-options much-select")
-            .toggleAttribute("multi-select-single-item-removal");
-        });
-    </script>
-
+  <div class="example">
+    <include src="example-partials/multi-select-single-item-removal.html"></include>
   </div>
-  <div id="much-select-with-no-options" class="example">
-    <h3>No Options</h3>
-    <p>What does the dropdown look like if you have no options</p>
-    <much-select multi-select="" allow-custom-options="">
-    </much-select>
+  <div class="example">
+    <include src="example-partials/empty-options-multi-select.html"></include>
   </div>
 </div>
 

@@ -448,14 +448,13 @@ class MuchSelect extends HTMLElement {
         evt.stopImmediatePropagation();
         evt.preventDefault();
       });
-
-      this.dispatchEvent(new CustomEvent("muchSelectReady"));
     });
 
     // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
     this.appPromise.then((app) =>
       app.ports.muchSelectIsReady.subscribe(() => {
         this.dispatchEvent(new CustomEvent("ready", { bubbles: true }));
+        this.dispatchEvent(new CustomEvent("muchSelectReady"));
       })
     );
 
@@ -541,15 +540,6 @@ class MuchSelect extends HTMLElement {
         this.dispatchEvent(
           new CustomEvent("cleared", {
             bubbles: true,
-          })
-        );
-
-        this.dispatchEvent(
-          new CustomEvent("blurOrUnfocusedValueChanged", {
-            bubbles: true,
-            detail: {
-              value: this.selectedValue,
-            },
           })
         );
       })
