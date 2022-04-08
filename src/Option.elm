@@ -919,36 +919,36 @@ updateOrAddCustomOption maybeCustomOptionHint searchString options =
                     )
                 |> not
 
-        options_ =
-            List.Extra.dropWhile
+        optionsWithoutUnselectedCustomOptions =
+            List.filter
                 (\option_ ->
                     case option_ of
                         CustomOption optionDisplay _ _ _ ->
                             -- If a custom option is selected we want to make sure it stays in the list of options.
                             case optionDisplay of
                                 OptionShown ->
-                                    True
+                                    False
 
                                 OptionHidden ->
-                                    True
+                                    False
 
                                 OptionSelected _ ->
-                                    False
+                                    True
 
                                 OptionSelectedHighlighted _ ->
-                                    False
+                                    True
 
                                 OptionHighlighted ->
-                                    True
+                                    False
 
                                 OptionDisabled ->
                                     True
 
                         Option _ _ _ _ _ _ ->
-                            False
+                            True
 
                         EmptyOption _ _ ->
-                            False
+                            True
                 )
                 options
 
@@ -979,10 +979,10 @@ updateOrAddCustomOption maybeCustomOptionHint searchString options =
             (OptionValue searchString)
             Nothing
         ]
-            ++ options_
+            ++ optionsWithoutUnselectedCustomOptions
 
     else
-        options_
+        optionsWithoutUnselectedCustomOptions
 
 
 findHighlightedOptionIndex : List Option -> Maybe Int

@@ -59,6 +59,11 @@ suite =
                 Expect.equalLists
                     (updateOrAddCustomOption (Just "{{}}") "pizza" [])
                     [ newCustomOption "pizza" Nothing ]
+        , test "should drop any extra custom option" <|
+            \_ ->
+                Expect.equalLists
+                    (updateOrAddCustomOption (Just "{{}}") "pizza" blocks)
+                    [ newCustomOption "pizza" Nothing, birchWood, cutCopper, mossyCobblestone ]
         , test "should stay in the dropdown if there's only a custom option with an empty hint" <|
             \_ ->
                 Expect.equalLists
