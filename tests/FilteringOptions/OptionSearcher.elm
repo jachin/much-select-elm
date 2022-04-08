@@ -55,7 +55,7 @@ suite : Test
 suite =
     describe "Filtering Search Results"
         [ describe "by option group"
-            [ test "if some of the serach string matches the troup" <|
+            [ test "if some of the search string matches the group" <|
                 \_ ->
                     Expect.equal
                         (OptionSearcher.updateOptions selectionMode Nothing "frog" (frogs ++ monnies)

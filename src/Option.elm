@@ -34,6 +34,7 @@ module Option exposing
     , getOptionValueAsString
     , hasSelectedHighlightedOptions
     , hasSelectedOption
+    , highlightFirstOptionInList
     , highlightOption
     , highlightOptionInList
     , highlightOptionInListByValue
@@ -914,6 +915,7 @@ updateOrAddCustomOption maybeCustomOptionHint searchString options =
                             |> optionLabelToSearchString
                         )
                             == String.toLower searchString
+                            && not (isCustomOption option_)
                     )
                 |> not
 
@@ -1048,6 +1050,7 @@ findLowestSearchScore options =
     let
         lowSore =
             options
+                |> List.filter (\option -> not (isCustomOption option))
                 |> optionSearchResults
                 |> List.foldl
                     (\searchResult lowScore ->
@@ -1095,6 +1098,16 @@ highlightOptionInList option options =
                 removeHighlightOption option_
         )
         options
+
+
+highlightFirstOptionInList : List Option -> List Option
+highlightFirstOptionInList options =
+    case List.head options of
+        Just firstOption ->
+            highlightOptionInList firstOption options
+
+        Nothing ->
+            options
 
 
 highlightOptionInListByValue : OptionValue -> List Option -> List Option
@@ -1309,8 +1322,11 @@ selectOptionInListByOptionValue value options =
                     EmptyOption _ _ ->
                         selectOption nextSelectedIndex option_
 
-            else
+            else if isOptionSelected option_ then
                 option_
+
+            else
+                removeHighlightOption option_
         )
         options
 
@@ -1336,8 +1352,11 @@ selectOptionInListByOptionValueWithIndex index value options =
                     EmptyOption _ _ ->
                         selectOption index option_
 
-            else
+            else if isOptionSelected option_ then
                 option_
+
+            else
+                removeHighlightOption option_
         )
         options
 

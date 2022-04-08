@@ -268,7 +268,7 @@ suite =
                         )
                         (figureOutWhichOptionsToShow three (selectOptionInList wrench tools))
             ]
-        , describe "when we options that are selected and highlighted"
+        , describe "when we have options that are selected and highlighted"
             [ test "it should show the options around the highlighted option" <|
                 \_ ->
                     Expect.equalLists
@@ -280,8 +280,8 @@ suite =
                         )
                         (figureOutWhichOptionsToShow three
                             (tools
-                                |> highlightOptionInList wrench
                                 |> selectOptionInList xActoKnife
+                                |> highlightOptionInList wrench
                             )
                         )
             ]

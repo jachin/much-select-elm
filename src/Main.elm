@@ -253,11 +253,12 @@ update msg model =
 
         DropdownMouseOverOption optionValue ->
             let
-                updateOptions =
-                    highlightOptionInListByValue optionValue model.options
+                updatedOptions =
+                    model.options
+                        |> highlightOptionInListByValue optionValue
             in
             ( { model
-                | options = updateOptions
+                | options = updatedOptions
               }
                 |> updateModelWithChangesThatEffectTheOptions
             , Cmd.none
@@ -289,6 +290,7 @@ update msg model =
                 SingleSelect _ _ ->
                     ( { model
                         | options = updatedOptions
+                        , searchString = ""
                       }
                         |> updateModelWithChangesThatEffectTheOptions
                     , Cmd.batch
@@ -300,6 +302,7 @@ update msg model =
                 MultiSelect _ _ ->
                     ( { model
                         | options = updatedOptions
+                        , searchString = ""
                       }
                         |> updateModelWithChangesThatEffectTheOptions
                     , Cmd.batch
@@ -741,8 +744,7 @@ updateModelWithChangesThatEffectTheOptions model =
                     |> sortOptions model.optionSort
         in
         { model
-            | searchString = model.searchString
-            , options = updatedOptions
+            | options = updatedOptions
             , optionsForTheDropdown = figureOutWhichOptionsToShow model.maxDropdownItems updatedOptions
             , rightSlot =
                 updateRightSlot
@@ -760,8 +762,7 @@ updateModelWithChangesThatEffectTheOptions model =
                     |> sortOptions model.optionSort
         in
         { model
-            | searchString = model.searchString
-            , options = updatedOptions
+            | options = updatedOptions
             , optionsForTheDropdown = figureOutWhichOptionsToShow model.maxDropdownItems updatedOptions
             , rightSlot =
                 updateRightSlot
@@ -773,38 +774,44 @@ updateModelWithChangesThatEffectTheOptions model =
     else
         -- We have a search string and it's over the minimum length for filter. Let's update the model and filter the
         -- the options.
-        let
-            optionsUpdatedWithSearchString =
-                OptionSearcher.updateOptions model.selectionMode model.customOptionHint model.searchString model.options
+        updateModelWithChangesThatEffectTheOptionsWithSearchString
+            model.rightSlot
+            model.maxDropdownItems
+            model.selectionMode
+            model.customOptionHint
+            model.searchString
+            model.options
+            model
 
-            optionsSortedByTotalScore =
-                optionsUpdatedWithSearchString
-                    |> sortOptionsBySearchFilterTotalScore
 
-            maybeFirstOption =
-                List.head optionsSortedByTotalScore
-
-            optionsSortedByTotalScoreWithTheFirstOptionHighlighted =
-                case maybeFirstOption of
-                    Just firstOption ->
-                        Option.highlightOptionInList firstOption optionsSortedByTotalScore
-
-                    Nothing ->
-                        optionsSortedByTotalScore
-        in
-        { model
-            | searchString = model.searchString
-            , options = optionsSortedByTotalScoreWithTheFirstOptionHighlighted
-            , optionsForTheDropdown =
-                figureOutWhichOptionsToShow
-                    model.maxDropdownItems
-                    optionsSortedByTotalScoreWithTheFirstOptionHighlighted
-            , rightSlot =
-                updateRightSlot
-                    model.rightSlot
-                    model.selectionMode
-                    (Option.hasSelectedOption optionsSortedByTotalScoreWithTheFirstOptionHighlighted)
-        }
+updateModelWithChangesThatEffectTheOptionsWithSearchString :
+    RightSlot
+    -> PositiveInt
+    -> SelectionMode
+    -> Maybe String
+    -> String
+    -> List Option
+    -> { a | options : List Option, optionsForTheDropdown : List Option, rightSlot : RightSlot }
+    -> { a | options : List Option, optionsForTheDropdown : List Option, rightSlot : RightSlot }
+updateModelWithChangesThatEffectTheOptionsWithSearchString rightSlot maxDropdownItems selectionMode customOptionHint searchString options model =
+    { model
+        | options =
+            options
+                |> OptionSearcher.updateOptions selectionMode customOptionHint searchString
+                |> sortOptionsBySearchFilterTotalScore
+                |> Option.highlightFirstOptionInList
+        , optionsForTheDropdown =
+            options
+                |> OptionSearcher.updateOptions selectionMode customOptionHint searchString
+                |> sortOptionsBySearchFilterTotalScore
+                |> Option.highlightFirstOptionInList
+                |> figureOutWhichOptionsToShow maxDropdownItems
+        , rightSlot =
+            updateRightSlot
+                rightSlot
+                selectionMode
+                (Option.hasSelectedOption options)
+    }
 
 
 figureOutWhichOptionsToShow : PositiveInt -> List Option -> List Option
@@ -1480,17 +1487,17 @@ optionsToValuesHtml options enableSingleItemRemoval =
 
 optionToValueHtml : SingleItemRemoval -> Option -> Html Msg
 optionToValueHtml enableSingleItemRemoval option =
+    let
+        removalHtml =
+            case enableSingleItemRemoval of
+                EnableSingleItemRemoval ->
+                    span [ mousedownPreventDefault <| DeselectOptionInternal option, class "remove-option" ] [ text "" ]
+
+                DisableSingleItemRemoval ->
+                    text ""
+    in
     case option of
         Option display optionLabel optionValue _ _ _ ->
-            let
-                removalHtml =
-                    case enableSingleItemRemoval of
-                        EnableSingleItemRemoval ->
-                            span [ mousedownPreventDefault <| DeselectOptionInternal option, class "remove-option" ] [ text "" ]
-
-                        DisableSingleItemRemoval ->
-                            text ""
-            in
             case display of
                 OptionShown ->
                     text ""
@@ -1533,7 +1540,7 @@ optionToValueHtml enableSingleItemRemoval option =
                         , mousedownPreventDefault
                             (ToggleSelectedValueHighlight optionValue)
                         ]
-                        [ valueLabelHtml (OptionLabel.getLabelString optionLabel) optionValue ]
+                        [ valueLabelHtml (OptionLabel.getLabelString optionLabel) optionValue, removalHtml ]
 
                 OptionSelectedHighlighted _ ->
                     div
@@ -1542,7 +1549,7 @@ optionToValueHtml enableSingleItemRemoval option =
                             , ( "highlighted-value", True )
                             ]
                         ]
-                        [ valueLabelHtml (OptionLabel.getLabelString optionLabel) optionValue ]
+                        [ valueLabelHtml (OptionLabel.getLabelString optionLabel) optionValue, removalHtml ]
 
                 OptionHighlighted ->
                     text ""

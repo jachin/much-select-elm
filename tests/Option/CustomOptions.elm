@@ -1,7 +1,12 @@
 module Option.CustomOptions exposing (suite)
 
 import Expect
-import Option exposing (newCustomOption, newOption, removeUnselectedCustomOptions, selectOption, selectOptionInListByOptionValue, stringToOptionValue)
+import Main exposing (figureOutWhichOptionsToShow)
+import Option exposing (newCustomOption, newOption, removeUnselectedCustomOptions, selectOption, selectOptionInListByOptionValue, stringToOptionValue, updateOrAddCustomOption)
+import OptionSearcher
+import OptionSorting
+import PositiveInt
+import SelectionMode exposing (CustomOptions(..), SelectedItemPlacementMode(..), SelectionMode(..), SingleItemRemoval(..))
 import Test exposing (Test, describe, test)
 
 
@@ -49,4 +54,48 @@ suite =
                     , mossyCobblestone
                     , selectOption 1 tuff
                     ]
+        , test "should be able to maintain a custom option with an empty hint" <|
+            \_ ->
+                Expect.equalLists
+                    (updateOrAddCustomOption (Just "{{}}") "pizza" [])
+                    [ newCustomOption "pizza" Nothing ]
+        , test "should stay in the dropdown if there's only a custom option with an empty hint" <|
+            \_ ->
+                Expect.equalLists
+                    (OptionSearcher.updateOptions (MultiSelect AllowCustomOptions EnableSingleItemRemoval) (Just "{{}}") "monkey bread" []
+                        |> figureOutWhichOptionsToShow (PositiveInt.new 10)
+                        |> List.map Option.getOptionValueAsString
+                    )
+                    [ "monkey bread" ]
+
+        {- https://github.com/DripEmail/much-select-elm/issues/135 -}
+        , test "should stay in the dropdown if there's a custom option and some existing selected options" <|
+            \_ ->
+                Expect.equalLists
+                    ([ newCustomOption "monkey bread" Nothing |> Option.highlightOption
+                     , birchWood |> Option.selectOption 1
+                     , cutCopper |> Option.selectOption 2
+                     ]
+                        |> OptionSearcher.updateOptions
+                            (MultiSelect AllowCustomOptions EnableSingleItemRemoval)
+                            (Just "{{}}")
+                            "monkey bread"
+                        |> List.map Option.getOptionValueAsString
+                    )
+                    [ "monkey bread", "Birch Wood", "Cut Copper" ]
+        , test "and regular options show be visible in the dropdown if the search string matches OK" <|
+            \_ ->
+                Expect.equalLists
+                    ([ mossyCobblestone
+                     ]
+                        |> OptionSearcher.updateOptions
+                            (MultiSelect AllowCustomOptions EnableSingleItemRemoval)
+                            (Just "{{}}")
+                            "cob"
+                        |> OptionSorting.sortOptionsBySearchFilterTotalScore
+                        |> Option.highlightFirstOptionInList
+                        |> figureOutWhichOptionsToShow (PositiveInt.new 10)
+                        |> List.map Option.getOptionValueAsString
+                    )
+                    [ "cob", "Mossy Cobblestone" ]
         ]

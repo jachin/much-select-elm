@@ -38,10 +38,6 @@
     document
       .querySelector("#much-select-ready-event button")
       .addEventListener("click", () => {
-        const oldMuchSelect = document.querySelector(
-          "#much-select-ready-event much-select"
-        );
-
         const newMuchSelect = document.createElement("much-select");
 
         newMuchSelect.addEventListener(
@@ -51,8 +47,8 @@
         );
 
         document
-          .querySelector("#much-select-ready-event")
-          .replaceChild(newMuchSelect, oldMuchSelect);
+          .querySelector("#much-select-ready-event much-select")
+          .replaceWith(newMuchSelect);
       });
   </script>
 </div>
