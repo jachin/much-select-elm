@@ -1,6 +1,6 @@
 module OptionSearcher exposing (doesSearchStringFindNothing, simpleMatch, updateOptions, updateSearchResultInOption)
 
-import Fuzzy exposing (Result, addPenalty, match)
+import Fuzzy exposing (Result, match)
 import Option exposing (Option)
 import OptionLabel exposing (optionLabelToSearchString, optionLabelToString)
 import OptionPresentor exposing (tokenize)
@@ -29,7 +29,7 @@ simpleMatch needle hay =
 
 groupMatch : String -> String -> Result
 groupMatch needle hay =
-    match [ addPenalty 5 ] [ " " ] needle hay
+    match [] [ " " ] needle hay
 
 
 search : String -> Option -> OptionSearchResult
@@ -78,8 +78,8 @@ updateSearchResultInOption searchString option =
             Maybe.withDefault OptionSearchFilter.impossiblyLowScore
                 (List.minimum
                     [ searchResult.labelMatch.score
-                    , searchResult.descriptionMatch.score
-                    , searchResult.groupMatch.score
+                    , floor (toFloat (searchResult.descriptionMatch.score + 1) * 1.25)
+                    , floor (toFloat (searchResult.groupMatch.score + 5) * 1.5)
                     ]
                 )
 
