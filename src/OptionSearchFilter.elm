@@ -1,7 +1,9 @@
 module OptionSearchFilter exposing
     ( OptionSearchFilter
     , OptionSearchResult
+    , descriptionHandicap
     , getLowScore
+    , groupHandicap
     , impossiblyLowScore
     , lowScoreCutOff
     , new
@@ -47,8 +49,8 @@ getLowScore : OptionSearchResult -> Int
 getLowScore optionSearchResult =
     List.minimum
         [ optionSearchResult.labelMatch.score
-        , optionSearchResult.descriptionMatch.score
-        , optionSearchResult.groupMatch.score
+        , descriptionHandicap optionSearchResult.descriptionMatch.score
+        , groupHandicap optionSearchResult.groupMatch.score
         ]
         |> Maybe.withDefault
             impossiblyLowScore
@@ -70,3 +72,13 @@ lowScoreCutOff score =
 
     else
         impossiblyLowScore
+
+
+descriptionHandicap : Int -> Int
+descriptionHandicap score =
+    floor (toFloat (score + 1) * 1.25)
+
+
+groupHandicap : Int -> Int
+groupHandicap score =
+    floor (toFloat (score + 1) * 1.5)
