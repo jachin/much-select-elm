@@ -4,7 +4,7 @@ import Fuzzy exposing (Result, match)
 import Option exposing (Option)
 import OptionLabel exposing (optionLabelToSearchString, optionLabelToString)
 import OptionPresentor exposing (tokenize)
-import OptionSearchFilter exposing (OptionSearchFilter, OptionSearchResult)
+import OptionSearchFilter exposing (OptionSearchFilter, OptionSearchResult, descriptionHandicap, groupHandicap)
 import PositiveInt exposing (PositiveInt)
 import SelectionMode exposing (CustomOptions(..), SelectionMode)
 
@@ -78,23 +78,23 @@ updateSearchResultInOption searchString option =
             Maybe.withDefault OptionSearchFilter.impossiblyLowScore
                 (List.minimum
                     [ searchResult.labelMatch.score
-                    , floor (toFloat (searchResult.descriptionMatch.score + 1) * 1.25)
-                    , floor (toFloat (searchResult.groupMatch.score + 5) * 1.5)
+                    , descriptionHandicap searchResult.descriptionMatch.score
+                    , groupHandicap searchResult.groupMatch.score
                     ]
                 )
 
         totalScore =
             List.sum
                 [ searchResult.labelMatch.score
-                , searchResult.descriptionMatch.score
-                , searchResult.groupMatch.score
+                , descriptionHandicap searchResult.descriptionMatch.score
+                , groupHandicap searchResult.groupMatch.score
                 ]
     in
     Option.setOptionSearchFilter
         (Just
             (OptionSearchFilter.new
-                bestScore
                 totalScore
+                bestScore
                 searchResult
                 labelTokens
                 descriptionTokens
@@ -147,7 +147,7 @@ doesSearchStringFindNothing searchString searchStringMinimumLength options =
             (\option ->
                 case Option.getMaybeOptionSearchFilter option of
                     Just optionSearchFilter ->
-                        optionSearchFilter.totalScore > 1000
+                        optionSearchFilter.bestScore > 1000
 
                     Nothing ->
                         False
