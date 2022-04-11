@@ -76,9 +76,17 @@ lowScoreCutOff score =
 
 descriptionHandicap : Int -> Int
 descriptionHandicap score =
-    floor (toFloat (score + 1) * 1.25)
+    if score < 5 then
+        5
+
+    else
+        floor (toFloat score * 1.25)
 
 
 groupHandicap : Int -> Int
 groupHandicap score =
-    floor (toFloat (score + 1) * 1.5)
+    if score < 10 then
+        10
+
+    else
+        floor (toFloat score * 1.5)

@@ -93,8 +93,8 @@ updateSearchResultInOption searchString option =
     Option.setOptionSearchFilter
         (Just
             (OptionSearchFilter.new
-                bestScore
                 totalScore
+                bestScore
                 searchResult
                 labelTokens
                 descriptionTokens
@@ -147,7 +147,7 @@ doesSearchStringFindNothing searchString searchStringMinimumLength options =
             (\option ->
                 case Option.getMaybeOptionSearchFilter option of
                     Just optionSearchFilter ->
-                        optionSearchFilter.totalScore > 1000
+                        optionSearchFilter.bestScore > 1000
 
                     Nothing ->
                         False
