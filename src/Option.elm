@@ -87,7 +87,7 @@ import Json.Encode
 import List.Extra
 import Maybe.Extra
 import OptionLabel exposing (OptionLabel(..), labelDecoder, optionLabelToSearchString, optionLabelToString)
-import OptionSearchFilter exposing (OptionSearchFilter, OptionSearchResult, getLowScore, impossiblyLowScore, lowScoreCutOff)
+import OptionSearchFilter exposing (OptionSearchFilter, OptionSearchResult)
 import SelectionMode exposing (SelectedItemPlacementMode(..), SelectionMode(..))
 import SortRank exposing (SortRank(..))
 
@@ -1039,7 +1039,7 @@ filterOptionsToShowInDropdownBySearchScore : List Option -> List Option
 filterOptionsToShowInDropdownBySearchScore options =
     case findLowestSearchScore options of
         Just lowScore ->
-            List.filter (isOptionBelowScore (lowScoreCutOff lowScore)) options
+            List.filter (isOptionBelowScore (OptionSearchFilter.lowScoreCutOff lowScore)) options
 
         Nothing ->
             options
@@ -1054,15 +1054,15 @@ findLowestSearchScore options =
                 |> optionSearchResults
                 |> List.foldl
                     (\searchResult lowScore ->
-                        if getLowScore searchResult < lowScore then
-                            getLowScore searchResult
+                        if OptionSearchFilter.getLowScore searchResult < lowScore then
+                            OptionSearchFilter.getLowScore searchResult
 
                         else
                             lowScore
                     )
-                    impossiblyLowScore
+                    OptionSearchFilter.impossiblyLowScore
     in
-    if lowSore == impossiblyLowScore then
+    if lowSore == OptionSearchFilter.impossiblyLowScore then
         Nothing
 
     else
@@ -1081,7 +1081,7 @@ isOptionBelowScore : Int -> Option -> Bool
 isOptionBelowScore score option =
     case getMaybeOptionSearchFilter option of
         Just optionSearchFilter ->
-            score >= getLowScore optionSearchFilter.searchResult
+            score >= OptionSearchFilter.getLowScore optionSearchFilter.searchResult
 
         Nothing ->
             False

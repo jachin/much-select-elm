@@ -1,4 +1,11 @@
-module OptionSearchFilter exposing (OptionSearchFilter, OptionSearchResult, impossiblyLowScore, new)
+module OptionSearchFilter exposing
+    ( OptionSearchFilter
+    , OptionSearchResult
+    , getLowScore
+    , impossiblyLowScore
+    , lowScoreCutOff
+    , new
+    )
 
 import Fuzzy exposing (Result)
 
@@ -34,3 +41,32 @@ new totalScore bestScore searchResult labelTokens descriptionTokens groupTokens 
     , descriptionTokens = descriptionTokens
     , groupTokens = groupTokens
     }
+
+
+getLowScore : OptionSearchResult -> Int
+getLowScore optionSearchResult =
+    List.minimum
+        [ optionSearchResult.labelMatch.score
+        , optionSearchResult.descriptionMatch.score
+        , optionSearchResult.groupMatch.score
+        ]
+        |> Maybe.withDefault
+            impossiblyLowScore
+
+
+lowScoreCutOff : Int -> Int
+lowScoreCutOff score =
+    if score == 0 then
+        10
+
+    else if score <= 10 then
+        100
+
+    else if score <= 100 then
+        1000
+
+    else if score <= 1000 then
+        10000
+
+    else
+        impossiblyLowScore
