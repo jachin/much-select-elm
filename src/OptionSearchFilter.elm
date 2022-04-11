@@ -1,4 +1,11 @@
-module OptionSearchFilter exposing (OptionSearchFilter, OptionSearchResult, getLowScore, impossiblyLowScore, lowScoreCutOff, new)
+module OptionSearchFilter exposing
+    ( OptionSearchFilter
+    , OptionSearchResult
+    , getLowScore
+    , impossiblyLowScore
+    , lowScoreCutOff
+    , new
+    )
 
 import Fuzzy exposing (Result)
 
@@ -28,7 +35,7 @@ impossiblyLowScore =
 new : Int -> Int -> OptionSearchResult -> List ( Bool, String ) -> List ( Bool, String ) -> List ( Bool, String ) -> OptionSearchFilter
 new totalScore bestScore searchResult labelTokens descriptionTokens groupTokens =
     { totalScore = totalScore
-    , bestScore = totalScore
+    , bestScore = bestScore
     , searchResult = searchResult
     , labelTokens = labelTokens
     , descriptionTokens = descriptionTokens
