@@ -767,16 +767,43 @@ mergeTwoListsOfOptionsPreservingSelectedOptions selectedItemPlacementMode option
     setSelectedOptionInNewOptions superList newOptions
 
 
-replaceOptions : SelectedItemPlacementMode -> List Option -> List Option -> List Option
-replaceOptions selectedItemPlacementMode oldOptions newOptions =
+replaceOptions : SelectionMode -> List Option -> List Option -> List Option
+replaceOptions selectionMode oldOptions newOptions =
     let
         oldSelectedOptions =
             selectedOptions oldOptions
     in
-    mergeTwoListsOfOptionsPreservingSelectedOptions
-        selectedItemPlacementMode
-        oldSelectedOptions
-        newOptions
+    case selectionMode of
+        SingleSelect _ selectedItemPlacementMode ->
+            let
+                maybeSelectedOptionValue =
+                    selectedOptions (newOptions ++ oldOptions)
+                        |> List.head
+                        |> Maybe.map getOptionValue
+            in
+            case maybeSelectedOptionValue of
+                Just selectedOptionValue ->
+                    mergeTwoListsOfOptionsPreservingSelectedOptions
+                        selectedItemPlacementMode
+                        oldSelectedOptions
+                        newOptions
+                        |> selectSingleOptionInList selectedOptionValue
+                        |> List.filter
+                            (\option ->
+                                isOptionSelected option || List.member option newOptions
+                            )
+
+                Nothing ->
+                    mergeTwoListsOfOptionsPreservingSelectedOptions
+                        selectedItemPlacementMode
+                        oldSelectedOptions
+                        newOptions
+
+        MultiSelect _ _ ->
+            mergeTwoListsOfOptionsPreservingSelectedOptions
+                SelectedItemStaysInPlace
+                oldSelectedOptions
+                newOptions
 
 
 isOptionValueEqualToOptionLabel : Option -> Bool
