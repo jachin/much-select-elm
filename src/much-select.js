@@ -1561,6 +1561,9 @@ class MuchSelect extends HTMLElement {
 
         min-height: 40px;
         min-width: ${this._minimumWidth}px;
+
+        --border-color: #D3D3D3;
+        --box-shadow: 1px 1px 1px 0 lightgray inset;
       }
 
       /*
@@ -1591,8 +1594,8 @@ class MuchSelect extends HTMLElement {
         -webkit-appearance: textfield;
         background-color: white;
         background-color: -moz-field;
-        border: 1px solid darkgray;
-        box-shadow: 1px 1px 1px 0 lightgray inset;
+        border: 1px solid var(--border-color);
+        box-shadow: var(--box-shadow);
         padding: 4px 3px 2px 3px;
         display: flex;
         flex-flow: row nowrap;

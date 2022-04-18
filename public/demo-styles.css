@@ -68,6 +68,9 @@ body {
         --example-background-color: var(--hint-of-pensive);
         --example-border-color: var(--blueberry-soda);
         --example-border-shadow-color: var(--mazarine-blue);
+
+        --much-select-border-color: #D3D3D3;
+        --much-select-box-shadow: 1px 1px 1px 0 lightgray inset;
     }
 
     body.fun {
@@ -83,6 +86,9 @@ body {
         --example-background-color: var(--yriel-yellow);
         --example-border-color: var(--red-orange);
         --example-border-shadow-color: var(--sunset-orange);
+
+        --much-select-border-color: var(--spirio-disco-ball);
+        --much-select-box-shadow: 1px 1px 1px 0 var(--spirio-disco-ball) inset;
     }
 }
 
@@ -102,6 +108,9 @@ body {
         --example-background-color: var(--pico-void);
         --example-border-color: var(--blueberry-soda);
         --example-border-shadow-color: var(--chain-gang-grey);
+
+        --much-select-border-color: #696969;
+        --much-select-box-shadow: 1px 1px 1px 0 lightgray inset;
     }
 
     body.fun {
@@ -117,6 +126,9 @@ body {
         --example-background-color: var(--black-pearl);
         --example-border-color: var(--sizeling-red);
         --example-border-shadow-color: var(--highligher-pink);
+
+        --much-select-border-color: var(--good-night);
+        --much-select-box-shadow: 1px 1px 1px 0 var(--good-night) inset;
     }
 
 
@@ -236,6 +248,13 @@ much-select {
     margin: 10px 0;
     max-width: 300px;
 }
+
+
+much-select::part(much-select-wrapper) {
+    --border-color: var(--much-select-border-color);
+    --box-shadow: var(--much-select-box-shadow);
+}
+
 
 button {
     font-family: "Comic Sans MS", "Comic Sans", cursive;
