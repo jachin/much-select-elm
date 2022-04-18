@@ -1717,20 +1717,20 @@ class MuchSelect extends HTMLElement {
 
       #dropdown-indicator {
         position: absolute;
-        right: 5px;
+        right: 8px;
         top: 15px;
         cursor: pointer;
         display: block;
         transition: transform 0.25s;
-        font-family: "Times New Roman" serif;
+        /*font-family: "Times New Roman" serif;*/
       }
 
       #dropdown-indicator.down {
-        transform: rotate(180deg);
+        transform: rotate(270deg);
       }
 
       #dropdown-indicator.up {
-        transform: rotate(0deg);
+        transform: rotate(90deg);
       }
 
       slot[name='loading-indicator'] {
