@@ -1225,7 +1225,7 @@ dropdownIndicator focused disabled transitioning =
             , onMouseDownStopPropagationAndPreventDefault action
             , onMouseUpStopPropagationAndPreventDefault NoOp
             ]
-            [ text "▾" ]
+            [ text "❯" ]
 
 
 type alias DropdownItemEventListeners msg =
