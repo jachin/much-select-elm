@@ -957,6 +957,17 @@ isRightSlotTransitioning rightSlot =
 
 view : Model -> Html Msg
 view model =
+    div
+        [ id "wrapper"
+        , Html.Attributes.attribute "part" "much-select-wrapper"
+        ]
+        [ valueCasing model
+        , dropdown model
+        ]
+
+
+valueCasing : Model -> Html Msg
+valueCasing model =
     let
         tabIndexAttribute =
             if model.disabled then
