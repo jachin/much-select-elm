@@ -985,45 +985,42 @@ view model =
                     else
                         ""
             in
-            div [ id "wrapper" ]
-                [ div
-                    [ id "value-casing"
-                    , attributeIf (not model.focused) (onMouseDown BringInputInFocus)
-                    , attributeIf (not model.focused) (onFocus BringInputInFocus)
-                    , tabIndexAttribute
-                    , classList
-                        [ ( "show-placeholder", showPlaceholder )
-                        , ( "has-option-selected", hasOptionSelected )
-                        , ( "no-option-selected", not hasOptionSelected )
-                        , ( "single", True )
-                        , ( "disabled", model.disabled )
-                        , ( "focused", model.focused )
-                        , ( "not-focused", not model.focused )
-                        ]
+            div
+                [ id "value-casing"
+                , attributeIf (not model.focused) (onMouseDown BringInputInFocus)
+                , attributeIf (not model.focused) (onFocus BringInputInFocus)
+                , tabIndexAttribute
+                , classList
+                    [ ( "show-placeholder", showPlaceholder )
+                    , ( "has-option-selected", hasOptionSelected )
+                    , ( "no-option-selected", not hasOptionSelected )
+                    , ( "single", True )
+                    , ( "disabled", model.disabled )
+                    , ( "focused", model.focused )
+                    , ( "not-focused", not model.focused )
                     ]
-                    [ span
-                        [ id "selected-value" ]
-                        [ text valueStr ]
-                    , singleSelectInputField
-                        model.searchString
-                        model.disabled
-                        model.focused
-                        model.placeholder
-                        hasOptionSelected
-                    , case model.rightSlot of
-                        ShowNothing ->
-                            text ""
+                ]
+                [ span
+                    [ id "selected-value" ]
+                    [ text valueStr ]
+                , singleSelectInputField
+                    model.searchString
+                    model.disabled
+                    model.focused
+                    model.placeholder
+                    hasOptionSelected
+                , case model.rightSlot of
+                    ShowNothing ->
+                        text ""
 
-                        ShowLoadingIndicator ->
-                            node "slot" [ name "loading-indicator" ] [ defaultLoadingIndicator ]
+                    ShowLoadingIndicator ->
+                        node "slot" [ name "loading-indicator" ] [ defaultLoadingIndicator ]
 
-                        ShowDropdownIndicator transitioning ->
-                            dropdownIndicator model.focused model.disabled transitioning
+                    ShowDropdownIndicator transitioning ->
+                        dropdownIndicator model.focused model.disabled transitioning
 
-                        ShowClearButton ->
-                            node "slot" [ name "clear-button" ] []
-                    ]
-                , dropdown model
+                    ShowClearButton ->
+                        node "slot" [ name "clear-button" ] []
                 ]
 
         MultiSelect _ enableSingleItemRemoval ->
@@ -1062,36 +1059,33 @@ view model =
                         ]
                         []
             in
-            div [ id "wrapper", classList [ ( "disabled", model.disabled ) ] ]
-                [ div
-                    [ id "value-casing"
-                    , onMouseDown BringInputInFocus
-                    , onFocus BringInputInFocus
-                    , Keyboard.on Keyboard.Keydown
-                        [ ( Delete, DeleteKeydownForMultiSelect )
-                        , ( Backspace, DeleteKeydownForMultiSelect )
-                        ]
-                    , tabIndexAttribute
-                    , classList
-                        [ ( "show-placeholder", showPlaceholder )
-                        , ( "has-option-selected", hasOptionSelected )
-                        , ( "no-option-selected", not hasOptionSelected )
-                        , ( "multi", True )
-                        , ( "disabled", model.disabled )
-                        , ( "focused", model.focused )
-                        , ( "not-focused", not model.focused )
-                        ]
+            div
+                [ id "value-casing"
+                , onMouseDown BringInputInFocus
+                , onFocus BringInputInFocus
+                , Keyboard.on Keyboard.Keydown
+                    [ ( Delete, DeleteKeydownForMultiSelect )
+                    , ( Backspace, DeleteKeydownForMultiSelect )
                     ]
-                    (optionsToValuesHtml model.options enableSingleItemRemoval
-                        ++ [ inputFilter
-                           , rightSlotHtml
-                                model.rightSlot
-                                model.focused
-                                model.disabled
-                           ]
-                    )
-                , dropdown model
+                , tabIndexAttribute
+                , classList
+                    [ ( "show-placeholder", showPlaceholder )
+                    , ( "has-option-selected", hasOptionSelected )
+                    , ( "no-option-selected", not hasOptionSelected )
+                    , ( "multi", True )
+                    , ( "disabled", model.disabled )
+                    , ( "focused", model.focused )
+                    , ( "not-focused", not model.focused )
+                    ]
                 ]
+                (optionsToValuesHtml model.options enableSingleItemRemoval
+                    ++ [ inputFilter
+                       , rightSlotHtml
+                            model.rightSlot
+                            model.focused
+                            model.disabled
+                       ]
+                )
 
 
 singleSelectInputField : String -> Bool -> Bool -> String -> Bool -> Html Msg
