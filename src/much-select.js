@@ -343,6 +343,10 @@ class MuchSelect extends HTMLElement {
       });
     }, 5);
 
+    this._callUpdateOptionsFromDom = makeDebounceLeadingFunc(() => {
+      this.updateOptionsFromDom();
+    }, 100);
+
     // noinspection JSUnresolvedFunction
     this._resizeObserver = new ResizeObserver(() => {
       // When the size changes we need to tell Elm, so it can
@@ -691,9 +695,9 @@ class MuchSelect extends HTMLElement {
     this._selectSlotObserver = new MutationObserver((mutationsList) => {
       mutationsList.forEach((mutation) => {
         if (mutation.type === "childList") {
-          this.updateOptionsFromDom();
+          this._callUpdateOptionsFromDom();
         } else if (mutation.type === "attributes") {
-          this.updateOptionsFromDom();
+          this._callUpdateOptionsFromDom();
         }
       });
     });
