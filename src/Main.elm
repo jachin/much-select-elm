@@ -238,7 +238,7 @@ update msg model =
                 , focused = False
                 , rightSlot = updateRightSlotTransitioning NotInFocusTransition model.rightSlot
               }
-                |> updateModelWithChangesThatEffectTheOptions
+                |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
             , inputBlurred ()
             )
 
@@ -260,7 +260,7 @@ update msg model =
             ( { model
                 | options = updatedOptions
               }
-                |> updateModelWithChangesThatEffectTheOptions
+                |> updateModelWithChangesThatEffectTheOptionsWhenTheMouseMoves
             , Cmd.none
             )
 
@@ -272,7 +272,7 @@ update msg model =
             ( { model
                 | options = updatedOptions
               }
-                |> updateModelWithChangesThatEffectTheOptions
+                |> updateModelWithChangesThatEffectTheOptionsWhenTheMouseMoves
             , Cmd.none
             )
 
@@ -292,7 +292,7 @@ update msg model =
                         | options = updatedOptions
                         , searchString = ""
                       }
-                        |> updateModelWithChangesThatEffectTheOptions
+                        |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , Cmd.batch
                         [ makeCommandMessagesWhenValuesChanges updatedOptions (Just optionValue)
                         , blurInput ()
@@ -304,7 +304,7 @@ update msg model =
                         | options = updatedOptions
                         , searchString = ""
                       }
-                        |> updateModelWithChangesThatEffectTheOptions
+                        |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , Cmd.batch
                         [ makeCommandMessagesWhenValuesChanges updatedOptions (Just optionValue)
                         , focusInput ()
@@ -315,7 +315,7 @@ update msg model =
             ( { model
                 | searchString = searchString
               }
-                |> updateModelWithChangesThatEffectTheOptions
+                |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
             , inputKeyUp searchString
             )
 
@@ -340,7 +340,7 @@ update msg model =
                     ( { model
                         | options = newOptions
                       }
-                        |> updateModelWithChangesThatEffectTheOptions
+                        |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , Cmd.none
                     )
 
@@ -360,7 +360,7 @@ update msg model =
                     ( { model
                         | options = newOptionWithOldSelectedOption
                       }
-                        |> updateModelWithChangesThatEffectTheOptions
+                        |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , optionsUpdated True
                     )
 
@@ -377,7 +377,7 @@ update msg model =
                     ( { model
                         | options = updatedOptions
                       }
-                        |> updateModelWithChangesThatEffectTheOptions
+                        |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , optionsUpdated False
                     )
 
@@ -394,7 +394,7 @@ update msg model =
                     ( { model
                         | options = updatedOptions
                       }
-                        |> updateModelWithChangesThatEffectTheOptions
+                        |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , optionsUpdated True
                     )
 
@@ -419,7 +419,7 @@ update msg model =
                     ( { model
                         | options = updatedOptions
                       }
-                        |> updateModelWithChangesThatEffectTheOptions
+                        |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , makeCommandMessagesWhenValuesChanges updatedOptions (Just optionValue)
                     )
 
@@ -467,7 +467,7 @@ update msg model =
             ( { model
                 | maxDropdownItems = maxDropdownItems
               }
-                |> updateModelWithChangesThatEffectTheOptions
+                |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
             , Cmd.none
             )
 
@@ -542,13 +542,13 @@ update msg model =
                 | selectionMode = SelectionMode.setMultiSelectModeWithBool isInMultiSelectMode model.selectionMode
                 , options = updatedOptions
               }
-                |> updateModelWithChangesThatEffectTheOptions
+                |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
             , Cmd.batch [ muchSelectIsReady (), cmd ]
             )
 
         SearchStringMinimumLengthAttributeChanged searchStringMinimumLength ->
             ( { model | searchStringMinimumLength = PositiveInt.new searchStringMinimumLength }
-                |> updateModelWithChangesThatEffectTheOptions
+                |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
             , Cmd.none
             )
 
@@ -563,7 +563,7 @@ update msg model =
                         | options = updatedOptions
                         , searchString = ""
                       }
-                        |> updateModelWithChangesThatEffectTheOptions
+                        |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , Cmd.batch
                         -- TODO Figure out what the highlighted option in here
                         [ makeCommandMessagesWhenValuesChanges updatedOptions Nothing
@@ -576,7 +576,7 @@ update msg model =
                         | options = updatedOptions
                         , searchString = ""
                       }
-                        |> updateModelWithChangesThatEffectTheOptions
+                        |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                       -- TODO Figure out what the highlighted option in here
                     , Cmd.batch
                         [ makeCommandMessagesWhenValuesChanges updatedOptions Nothing
@@ -601,7 +601,7 @@ update msg model =
             ( { model
                 | searchString = ""
               }
-                |> updateModelWithChangesThatEffectTheOptions
+                |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
             , blurInput ()
             )
 
@@ -643,7 +643,7 @@ update msg model =
             ( { model
                 | options = updatedOptions
               }
-                |> updateModelWithChangesThatEffectTheOptions
+                |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
             , Cmd.none
             )
 
@@ -663,7 +663,7 @@ update msg model =
                 ( { model
                     | options = updatedOptions
                   }
-                    |> updateModelWithChangesThatEffectTheOptions
+                    |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                 , Cmd.batch
                     [ valueChanged (selectedOptionsToTuple updatedOptions)
                     , focusInput ()
@@ -686,7 +686,7 @@ deselectOption model option =
     ( { model
         | options = updatedOptions
       }
-        |> updateModelWithChangesThatEffectTheOptions
+        |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
     , makeCommandMessagesWhenValuesChanges updatedOptions Nothing
     )
 
@@ -734,9 +734,22 @@ clearAllSelectedOption model =
     )
 
 
-updateModelWithChangesThatEffectTheOptions : Model -> Model
-updateModelWithChangesThatEffectTheOptions model =
+updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges : Model -> Model
+updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges model =
     updateModelWithChangesThatEffectTheOptionsWithSearchString
+        model.rightSlot
+        model.maxDropdownItems
+        model.selectionMode
+        model.customOptionHint
+        model.searchString
+        model.searchStringMinimumLength
+        model.options
+        model
+
+
+updateModelWithChangesThatEffectTheOptionsWhenTheMouseMoves : Model -> Model
+updateModelWithChangesThatEffectTheOptionsWhenTheMouseMoves model =
+    updatePartOfTheModelWithChangesThatEffectTheOptionsWhenTheMouseMoves
         model.rightSlot
         model.maxDropdownItems
         model.selectionMode
@@ -774,6 +787,42 @@ updateModelWithChangesThatEffectTheOptionsWithSearchString rightSlot maxDropdown
             updateTheOptionsForTheDropdown
                 maxDropdownItems
                 updatedOptions
+                |> Option.highlightFirstOptionInList
+        , rightSlot =
+            updateRightSlot
+                rightSlot
+                selectionMode
+                (Option.hasSelectedOption options)
+    }
+
+
+updatePartOfTheModelWithChangesThatEffectTheOptionsWhenTheMouseMoves :
+    RightSlot
+    -> PositiveInt
+    -> SelectionMode
+    -> Maybe String
+    -> String
+    -> PositiveInt
+    -> List Option
+    -> { a | options : List Option, optionsForTheDropdown : List Option, rightSlot : RightSlot }
+    -> { a | options : List Option, optionsForTheDropdown : List Option, rightSlot : RightSlot }
+updatePartOfTheModelWithChangesThatEffectTheOptionsWhenTheMouseMoves rightSlot maxDropdownItems selectionMode customOptionHint searchString searchStringMinimumLength options model =
+    let
+        updatedOptions =
+            updateTheFullListOfOptions
+                selectionMode
+                customOptionHint
+                searchString
+                searchStringMinimumLength
+                options
+    in
+    { model
+        | options =
+            updatedOptions
+        , optionsForTheDropdown =
+            updateTheOptionsForTheDropdown
+                maxDropdownItems
+                updatedOptions
         , rightSlot =
             updateRightSlot
                 rightSlot
@@ -793,7 +842,6 @@ updateTheOptionsForTheDropdown maxDropdownItems options =
     options
         |> sortOptionsBySearchFilterTotalScore
         |> figureOutWhichOptionsToShow maxDropdownItems
-        |> Option.highlightFirstOptionInList
 
 
 figureOutWhichOptionsToShow : PositiveInt -> List Option -> List Option
