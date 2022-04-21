@@ -67,7 +67,7 @@ suite =
         , test "should stay in the dropdown if there's only a custom option with an empty hint" <|
             \_ ->
                 Expect.equalLists
-                    (OptionSearcher.updateOptions (MultiSelect AllowCustomOptions EnableSingleItemRemoval) (Just "{{}}") "monkey bread" []
+                    (OptionSearcher.updateOptions (MultiSelect AllowCustomOptions EnableSingleItemRemoval) (Just "{{}}") "monkey bread" (PositiveInt.new 2) []
                         |> figureOutWhichOptionsToShow (PositiveInt.new 10)
                         |> List.map Option.getOptionValueAsString
                     )
@@ -85,6 +85,7 @@ suite =
                             (MultiSelect AllowCustomOptions EnableSingleItemRemoval)
                             (Just "{{}}")
                             "monkey bread"
+                            (PositiveInt.new 2)
                         |> List.map Option.getOptionValueAsString
                     )
                     [ "monkey bread", "Birch Wood", "Cut Copper" ]
@@ -97,9 +98,10 @@ suite =
                             (MultiSelect AllowCustomOptions EnableSingleItemRemoval)
                             (Just "{{}}")
                             "cob"
+                            (PositiveInt.new 10)
                         |> OptionSorting.sortOptionsBySearchFilterTotalScore
                         |> Option.highlightFirstOptionInList
-                        |> figureOutWhichOptionsToShow (PositiveInt.new 10)
+                        |> figureOutWhichOptionsToShow (PositiveInt.new 2)
                         |> List.map Option.getOptionValueAsString
                     )
                     [ "cob", "Mossy Cobblestone" ]

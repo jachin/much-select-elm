@@ -740,7 +740,7 @@ updateModelWithChangesThatEffectTheOptions model =
         -- the search string is empty, let's make sure everything get cleared out of the model.
         let
             updatedOptions =
-                OptionSearcher.updateOptions model.selectionMode model.customOptionHint model.searchString model.options
+                OptionSearcher.updateOptions model.selectionMode model.customOptionHint model.searchString model.searchStringMinimumLength model.options
                     |> sortOptions model.optionSort
         in
         { model
@@ -758,7 +758,12 @@ updateModelWithChangesThatEffectTheOptions model =
         -- search string it self in the model but we don't need to do anything with the options
         let
             updatedOptions =
-                OptionSearcher.updateOptions model.selectionMode model.customOptionHint "" model.options
+                OptionSearcher.updateOptions
+                    model.selectionMode
+                    model.customOptionHint
+                    model.searchString
+                    model.searchStringMinimumLength
+                    model.options
                     |> sortOptions model.optionSort
         in
         { model
@@ -780,6 +785,7 @@ updateModelWithChangesThatEffectTheOptions model =
             model.selectionMode
             model.customOptionHint
             model.searchString
+            model.searchStringMinimumLength
             model.options
             model
 
@@ -790,22 +796,23 @@ updateModelWithChangesThatEffectTheOptionsWithSearchString :
     -> SelectionMode
     -> Maybe String
     -> String
+    -> PositiveInt
     -> List Option
     -> { a | options : List Option, optionsForTheDropdown : List Option, rightSlot : RightSlot }
     -> { a | options : List Option, optionsForTheDropdown : List Option, rightSlot : RightSlot }
-updateModelWithChangesThatEffectTheOptionsWithSearchString rightSlot maxDropdownItems selectionMode customOptionHint searchString options model =
+updateModelWithChangesThatEffectTheOptionsWithSearchString rightSlot maxDropdownItems selectionMode customOptionHint searchString searchStringMinimumLength options model =
     { model
         | options =
             options
-                |> OptionSearcher.updateOptions selectionMode customOptionHint searchString
+                |> OptionSearcher.updateOptions selectionMode customOptionHint searchString searchStringMinimumLength
                 |> sortOptionsBySearchFilterTotalScore
                 |> Option.highlightFirstOptionInList
         , optionsForTheDropdown =
             options
-                |> OptionSearcher.updateOptions selectionMode customOptionHint searchString
+                |> OptionSearcher.updateOptions selectionMode customOptionHint searchString searchStringMinimumLength
                 |> sortOptionsBySearchFilterTotalScore
-                |> Option.highlightFirstOptionInList
                 |> figureOutWhichOptionsToShow maxDropdownItems
+                |> Option.highlightFirstOptionInList
         , rightSlot =
             updateRightSlot
                 rightSlot

@@ -295,7 +295,11 @@ suite =
                         )
                         (figureOutWhichOptionsToShow three
                             (tools
-                                |> OptionSearcher.updateOptions (MultiSelect NoCustomOptions DisableSingleItemRemoval) Nothing "wrench"
+                                |> OptionSearcher.updateOptions
+                                    (MultiSelect NoCustomOptions DisableSingleItemRemoval)
+                                    Nothing
+                                    "wrench"
+                                    (PositiveInt.new 2)
                                 |> highlightOptionInList wrench
                             )
                         )

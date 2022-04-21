@@ -933,7 +933,7 @@ updateOrAddCustomOption maybeCustomOptionHint searchString options =
     let
         -- If we have an exact match with an existing option don't show the custom
         --  option.
-        showAddOption =
+        noExactOptionLabelMatch =
             options
                 |> List.any
                     (\option_ ->
@@ -999,7 +999,7 @@ updateOrAddCustomOption maybeCustomOptionHint searchString options =
                 Nothing ->
                     "Add " ++ searchString ++ "…"
     in
-    if showAddOption then
+    if noExactOptionLabelMatch then
         [ CustomOption
             OptionShown
             (OptionLabel.newWithCleanLabel label Nothing)

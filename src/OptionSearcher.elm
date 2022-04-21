@@ -9,10 +9,10 @@ import PositiveInt exposing (PositiveInt)
 import SelectionMode exposing (CustomOptions(..), SelectionMode)
 
 
-updateOptions : SelectionMode -> Maybe String -> String -> List Option -> List Option
-updateOptions selectionMode maybeCustomOptionHint searchString options =
+updateOptions : SelectionMode -> Maybe String -> String -> PositiveInt -> List Option -> List Option
+updateOptions selectionMode maybeCustomOptionHint searchString searchStringMinimumLength options =
     options
-        |> updateOrAddCustomOption maybeCustomOptionHint searchString selectionMode
+        |> updateOrAddCustomOption maybeCustomOptionHint searchString searchStringMinimumLength selectionMode
         |> updateOptionsWithSearchString searchString
 
 
@@ -104,8 +104,24 @@ updateSearchResultInOption searchString option =
         option
 
 
-updateOrAddCustomOption : Maybe String -> String -> SelectionMode -> List Option -> List Option
-updateOrAddCustomOption maybeCustomOptionHint searchString selectionMode options =
+updateOrAddCustomOption : Maybe String -> String -> PositiveInt -> SelectionMode -> List Option -> List Option
+updateOrAddCustomOption maybeCustomOptionHint searchString searchStringMinimumLength selectionMode options =
+    let
+        doOptionFiltering =
+            PositiveInt.lessThanOrEqualTo searchStringMinimumLength (String.length searchString)
+
+        showCustomOption =
+            if String.length searchString > 0 then
+                case SelectionMode.getCustomOptions selectionMode of
+                    AllowCustomOptions ->
+                        True
+
+                    NoCustomOptions ->
+                        False
+
+            else
+                False
+    in
     case searchString of
         "" ->
             options

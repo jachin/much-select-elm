@@ -64,7 +64,7 @@ suite =
             [ test "if some of the search string matches the group" <|
                 \_ ->
                     Expect.equal
-                        (OptionSearcher.updateOptions selectionMode Nothing "frog" (frogs ++ monnies)
+                        (OptionSearcher.updateOptions selectionMode Nothing "frog" (PositiveInt.new 2) (frogs ++ monnies)
                             |> figureOutWhichOptionsToShow (PositiveInt.new 10)
                             |> List.length
                         )
@@ -72,7 +72,7 @@ suite =
             , test "if some of the search string matches the group we should make sure the dropdown contains just the options that should be there" <|
                 \_ ->
                     Expect.equal
-                        (OptionSearcher.updateOptions selectionMode Nothing "frog" (frogs ++ monnies)
+                        (OptionSearcher.updateOptions selectionMode Nothing "frog" (PositiveInt.new 2) (frogs ++ monnies)
                             |> figureOutWhichOptionsToShow (PositiveInt.new 10)
                             |> doesSearchStringFindNothing "frog" (PositiveInt.new 10)
                         )
@@ -80,7 +80,7 @@ suite =
             , test "if some of the search string matches a group and a option the option should be first" <|
                 \_ ->
                     Expect.equal
-                        (OptionSearcher.updateOptions selectionMode Nothing "frog" (frogs ++ monnies)
+                        (OptionSearcher.updateOptions selectionMode Nothing "frog" (PositiveInt.new 2) (frogs ++ monnies)
                             |> sortOptionsBySearchFilterTotalScore
                             |> figureOutWhichOptionsToShow (PositiveInt.new 10)
                             |> List.head
@@ -90,7 +90,7 @@ suite =
             , test "if some of the search string matches a label that option should be first" <|
                 \_ ->
                     Expect.equal
-                        (OptionSearcher.updateOptions selectionMode Nothing "pent" (frogs ++ monnies)
+                        (OptionSearcher.updateOptions selectionMode Nothing "pent" (PositiveInt.new 2) (frogs ++ monnies)
                             |> sortOptionsBySearchFilterTotalScore
                             |> figureOutWhichOptionsToShow (PositiveInt.new 10)
                             |> List.head
@@ -100,7 +100,7 @@ suite =
             , test "if some of the search string matches a label that option should be first even if it's not the first option in the list" <|
                 \_ ->
                     Expect.equal
-                        (OptionSearcher.updateOptions selectionMode Nothing "yiya" (frogs ++ monnies)
+                        (OptionSearcher.updateOptions selectionMode Nothing "yiya" (PositiveInt.new 2) (frogs ++ monnies)
                             |> sortOptionsBySearchFilterTotalScore
                             |> figureOutWhichOptionsToShow (PositiveInt.new 10)
                             |> List.head
