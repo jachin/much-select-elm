@@ -67,7 +67,7 @@ suite =
         , test "should stay in the dropdown if there's only a custom option with an empty hint" <|
             \_ ->
                 Expect.equalLists
-                    (OptionSearcher.updateOptions (MultiSelect AllowCustomOptions EnableSingleItemRemoval) (Just "{{}}") "monkey bread" (PositiveInt.new 2) []
+                    (OptionSearcher.updateOptionsWithSearchStringAndCustomOption (MultiSelect AllowCustomOptions EnableSingleItemRemoval) (Just "{{}}") "monkey bread" (PositiveInt.new 2) []
                         |> figureOutWhichOptionsToShow (PositiveInt.new 10)
                         |> List.map Option.getOptionValueAsString
                     )
@@ -81,7 +81,7 @@ suite =
                      , birchWood |> Option.selectOption 1
                      , cutCopper |> Option.selectOption 2
                      ]
-                        |> OptionSearcher.updateOptions
+                        |> OptionSearcher.updateOptionsWithSearchStringAndCustomOption
                             (MultiSelect AllowCustomOptions EnableSingleItemRemoval)
                             (Just "{{}}")
                             "monkey bread"
@@ -94,7 +94,23 @@ suite =
                 Expect.equalLists
                     ([ mossyCobblestone
                      ]
-                        |> OptionSearcher.updateOptions
+                        |> OptionSearcher.updateOptionsWithSearchStringAndCustomOption
+                            (MultiSelect AllowCustomOptions EnableSingleItemRemoval)
+                            (Just "{{}}")
+                            "cob"
+                            (PositiveInt.new 10)
+                        |> OptionSorting.sortOptionsBySearchFilterTotalScore
+                        |> Option.highlightFirstOptionInList
+                        |> figureOutWhichOptionsToShow (PositiveInt.new 2)
+                        |> List.map Option.getOptionValueAsString
+                    )
+                    [ "cob", "Mossy Cobblestone" ]
+        , test "a custom option should show up even if it is shorter than the minimum search length" <|
+            \_ ->
+                Expect.equalLists
+                    ([ mossyCobblestone
+                     ]
+                        |> OptionSearcher.updateOptionsWithSearchStringAndCustomOption
                             (MultiSelect AllowCustomOptions EnableSingleItemRemoval)
                             (Just "{{}}")
                             "cob"

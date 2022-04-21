@@ -740,7 +740,7 @@ updateModelWithChangesThatEffectTheOptions model =
         -- the search string is empty, let's make sure everything get cleared out of the model.
         let
             updatedOptions =
-                OptionSearcher.updateOptions model.selectionMode model.customOptionHint model.searchString model.searchStringMinimumLength model.options
+                OptionSearcher.updateOptionsWithSearchStringAndCustomOption model.selectionMode model.customOptionHint model.searchString model.searchStringMinimumLength model.options
                     |> sortOptions model.optionSort
         in
         { model
@@ -758,7 +758,7 @@ updateModelWithChangesThatEffectTheOptions model =
         -- search string it self in the model but we don't need to do anything with the options
         let
             updatedOptions =
-                OptionSearcher.updateOptions
+                OptionSearcher.updateOptionsWithSearchStringAndCustomOption
                     model.selectionMode
                     model.customOptionHint
                     model.searchString
@@ -804,12 +804,12 @@ updateModelWithChangesThatEffectTheOptionsWithSearchString rightSlot maxDropdown
     { model
         | options =
             options
-                |> OptionSearcher.updateOptions selectionMode customOptionHint searchString searchStringMinimumLength
+                |> OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionMode customOptionHint searchString searchStringMinimumLength
                 |> sortOptionsBySearchFilterTotalScore
                 |> Option.highlightFirstOptionInList
         , optionsForTheDropdown =
             options
-                |> OptionSearcher.updateOptions selectionMode customOptionHint searchString searchStringMinimumLength
+                |> OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionMode customOptionHint searchString searchStringMinimumLength
                 |> sortOptionsBySearchFilterTotalScore
                 |> figureOutWhichOptionsToShow maxDropdownItems
                 |> Option.highlightFirstOptionInList

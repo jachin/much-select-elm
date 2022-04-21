@@ -295,7 +295,7 @@ suite =
                         )
                         (figureOutWhichOptionsToShow three
                             (tools
-                                |> OptionSearcher.updateOptions
+                                |> OptionSearcher.updateOptionsWithSearchStringAndCustomOption
                                     (MultiSelect NoCustomOptions DisableSingleItemRemoval)
                                     Nothing
                                     "wrench"
