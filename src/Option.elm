@@ -38,6 +38,7 @@ module Option exposing
     , highlightOption
     , highlightOptionInList
     , highlightOptionInListByValue
+    , isCustomOption
     , isEmptyOption
     , isOptionInListOfOptionsByValue
     , isOptionValueInListOfOptionsByValue
@@ -57,6 +58,7 @@ module Option exposing
     , optionToValueLabelTuple
     , optionsDecoder
     , optionsValues
+    , prependCustomOption
     , removeHighlightOptionInList
     , removeOptionsFromOptionList
     , removeUnselectedCustomOptions
@@ -79,14 +81,13 @@ module Option exposing
     , stringToOptionValue
     , toggleSelectedHighlightByOptionValue
     , unhighlightSelectedOptions
-    , updateOrAddCustomOption
     )
 
 import Json.Decode
 import Json.Encode
 import List.Extra
 import Maybe.Extra
-import OptionLabel exposing (OptionLabel(..), labelDecoder, optionLabelToSearchString, optionLabelToString)
+import OptionLabel exposing (OptionLabel(..), labelDecoder, optionLabelToString)
 import OptionSearchFilter exposing (OptionSearchFilter, OptionSearchResult)
 import SelectionMode exposing (SelectedItemPlacementMode(..), SelectionMode(..))
 import SortRank exposing (SortRank(..))
@@ -928,57 +929,9 @@ optionValuesEqual option optionValue =
     getOptionValue option == optionValue
 
 
-updateOrAddCustomOption : Maybe String -> String -> List Option -> List Option
-updateOrAddCustomOption maybeCustomOptionHint searchString options =
+prependCustomOption : Maybe String -> String -> List Option -> List Option
+prependCustomOption maybeCustomOptionHint searchString options =
     let
-        -- If we have an exact match with an existing option don't show the custom
-        --  option.
-        noExactOptionLabelMatch =
-            options
-                |> List.any
-                    (\option_ ->
-                        (option_
-                            |> getOptionLabel
-                            |> optionLabelToSearchString
-                        )
-                            == String.toLower searchString
-                            && not (isCustomOption option_)
-                    )
-                |> not
-
-        optionsWithoutUnselectedCustomOptions =
-            List.filter
-                (\option_ ->
-                    case option_ of
-                        CustomOption optionDisplay _ _ _ ->
-                            -- If a custom option is selected we want to make sure it stays in the list of options.
-                            case optionDisplay of
-                                OptionShown ->
-                                    False
-
-                                OptionHidden ->
-                                    False
-
-                                OptionSelected _ ->
-                                    True
-
-                                OptionSelectedHighlighted _ ->
-                                    True
-
-                                OptionHighlighted ->
-                                    False
-
-                                OptionDisabled ->
-                                    True
-
-                        Option _ _ _ _ _ _ ->
-                            True
-
-                        EmptyOption _ _ ->
-                            True
-                )
-                options
-
         label =
             case maybeCustomOptionHint of
                 Just customOptionHint ->
@@ -999,17 +952,13 @@ updateOrAddCustomOption maybeCustomOptionHint searchString options =
                 Nothing ->
                     "Add " ++ searchString ++ "…"
     in
-    if noExactOptionLabelMatch then
-        [ CustomOption
-            OptionShown
-            (OptionLabel.newWithCleanLabel label Nothing)
-            (OptionValue searchString)
-            Nothing
-        ]
-            ++ optionsWithoutUnselectedCustomOptions
-
-    else
-        optionsWithoutUnselectedCustomOptions
+    [ CustomOption
+        OptionShown
+        (OptionLabel.newWithCleanLabel label Nothing)
+        (OptionValue searchString)
+        Nothing
+    ]
+        ++ options
 
 
 findHighlightedOptionIndex : List Option -> Maybe Int

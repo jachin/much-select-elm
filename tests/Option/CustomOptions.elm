@@ -2,7 +2,7 @@ module Option.CustomOptions exposing (suite)
 
 import Expect
 import Main exposing (figureOutWhichOptionsToShow)
-import Option exposing (newCustomOption, newOption, removeUnselectedCustomOptions, selectOption, selectOptionInListByOptionValue, stringToOptionValue, updateOrAddCustomOption)
+import Option exposing (newCustomOption, newOption, prependCustomOption, removeUnselectedCustomOptions, selectOption, selectOptionInListByOptionValue, stringToOptionValue)
 import OptionSearcher
 import OptionSorting
 import PositiveInt
@@ -57,13 +57,8 @@ suite =
         , test "should be able to maintain a custom option with an empty hint" <|
             \_ ->
                 Expect.equalLists
-                    (updateOrAddCustomOption (Just "{{}}") "pizza" [])
+                    (prependCustomOption (Just "{{}}") "pizza" [])
                     [ newCustomOption "pizza" Nothing ]
-        , test "should drop any extra custom option" <|
-            \_ ->
-                Expect.equalLists
-                    (updateOrAddCustomOption (Just "{{}}") "pizza" blocks)
-                    [ newCustomOption "pizza" Nothing, birchWood, cutCopper, mossyCobblestone ]
         , test "should stay in the dropdown if there's only a custom option with an empty hint" <|
             \_ ->
                 Expect.equalLists

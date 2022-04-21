@@ -1,7 +1,7 @@
 module OptionSearcher exposing (doesSearchStringFindNothing, simpleMatch, updateOptionsWithSearchStringAndCustomOption, updateSearchResultInOption)
 
 import Fuzzy exposing (Result, match)
-import Option exposing (Option)
+import Option exposing (Option(..), OptionDisplay(..))
 import OptionLabel exposing (optionLabelToSearchString, optionLabelToString)
 import OptionPresentor exposing (tokenize)
 import OptionSearchFilter exposing (OptionSearchFilter, OptionSearchResult, descriptionHandicap, groupHandicap)
@@ -118,12 +118,30 @@ updateOrAddCustomOption maybeCustomOptionHint searchString selectionMode options
 
             else
                 False
+
+        -- If we have an exact match with an existing option don't show the custom
+        --  option.
+        noExactOptionLabelMatch =
+            options
+                |> List.any
+                    (\option_ ->
+                        (option_
+                            |> Option.getOptionLabel
+                            |> optionLabelToSearchString
+                        )
+                            == String.toLower searchString
+                            && not (Option.isCustomOption option_)
+                    )
+                |> not
     in
-    if showCustomOption then
-        Option.updateOrAddCustomOption maybeCustomOptionHint searchString options
+    if showCustomOption && noExactOptionLabelMatch then
+        Option.prependCustomOption
+            maybeCustomOptionHint
+            searchString
+            (Option.removeUnselectedCustomOptions options)
 
     else
-        options
+        Option.removeUnselectedCustomOptions options
 
 
 updateOptionsWithSearchString : String -> PositiveInt -> List Option -> List Option
