@@ -736,58 +736,15 @@ clearAllSelectedOption model =
 
 updateModelWithChangesThatEffectTheOptions : Model -> Model
 updateModelWithChangesThatEffectTheOptions model =
-    if String.length model.searchString == 0 then
-        -- the search string is empty, let's make sure everything get cleared out of the model.
-        let
-            updatedOptions =
-                OptionSearcher.updateOptionsWithSearchStringAndCustomOption model.selectionMode model.customOptionHint model.searchString model.searchStringMinimumLength model.options
-                    |> sortOptions model.optionSort
-        in
-        { model
-            | options = updatedOptions
-            , optionsForTheDropdown = figureOutWhichOptionsToShow model.maxDropdownItems updatedOptions
-            , rightSlot =
-                updateRightSlot
-                    model.rightSlot
-                    model.selectionMode
-                    (Option.hasSelectedOption model.options)
-        }
-
-    else if String.length model.searchString < PositiveInt.toInt model.searchStringMinimumLength then
-        -- We have a search string but it's below are minimum for filtering. This means we still want to update the
-        -- search string it self in the model but we don't need to do anything with the options
-        let
-            updatedOptions =
-                OptionSearcher.updateOptionsWithSearchStringAndCustomOption
-                    model.selectionMode
-                    model.customOptionHint
-                    model.searchString
-                    model.searchStringMinimumLength
-                    model.options
-                    |> sortOptions model.optionSort
-        in
-        { model
-            | options = updatedOptions
-            , optionsForTheDropdown = figureOutWhichOptionsToShow model.maxDropdownItems updatedOptions
-            , rightSlot =
-                updateRightSlot
-                    model.rightSlot
-                    model.selectionMode
-                    (Option.hasSelectedOption updatedOptions)
-        }
-
-    else
-        -- We have a search string and it's over the minimum length for filter. Let's update the model and filter the
-        -- the options.
-        updateModelWithChangesThatEffectTheOptionsWithSearchString
-            model.rightSlot
-            model.maxDropdownItems
-            model.selectionMode
-            model.customOptionHint
-            model.searchString
-            model.searchStringMinimumLength
-            model.options
-            model
+    updateModelWithChangesThatEffectTheOptionsWithSearchString
+        model.rightSlot
+        model.maxDropdownItems
+        model.selectionMode
+        model.customOptionHint
+        model.searchString
+        model.searchStringMinimumLength
+        model.options
+        model
 
 
 updateModelWithChangesThatEffectTheOptionsWithSearchString :
@@ -801,24 +758,42 @@ updateModelWithChangesThatEffectTheOptionsWithSearchString :
     -> { a | options : List Option, optionsForTheDropdown : List Option, rightSlot : RightSlot }
     -> { a | options : List Option, optionsForTheDropdown : List Option, rightSlot : RightSlot }
 updateModelWithChangesThatEffectTheOptionsWithSearchString rightSlot maxDropdownItems selectionMode customOptionHint searchString searchStringMinimumLength options model =
+    let
+        updatedOptions =
+            updateTheFullListOfOptions
+                selectionMode
+                customOptionHint
+                searchString
+                searchStringMinimumLength
+                options
+    in
     { model
         | options =
-            options
-                |> OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionMode customOptionHint searchString searchStringMinimumLength
-                |> sortOptionsBySearchFilterTotalScore
-                |> Option.highlightFirstOptionInList
+            updatedOptions
         , optionsForTheDropdown =
-            options
-                |> OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionMode customOptionHint searchString searchStringMinimumLength
-                |> sortOptionsBySearchFilterTotalScore
-                |> figureOutWhichOptionsToShow maxDropdownItems
-                |> Option.highlightFirstOptionInList
+            updateTheOptionsForTheDropdown
+                maxDropdownItems
+                updatedOptions
         , rightSlot =
             updateRightSlot
                 rightSlot
                 selectionMode
                 (Option.hasSelectedOption options)
     }
+
+
+updateTheFullListOfOptions : SelectionMode -> Maybe String -> String -> PositiveInt -> List Option -> List Option
+updateTheFullListOfOptions selectionMode customOptionHint searchString searchStringMinimumLength options =
+    options
+        |> OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionMode customOptionHint searchString searchStringMinimumLength
+
+
+updateTheOptionsForTheDropdown : PositiveInt -> List Option -> List Option
+updateTheOptionsForTheDropdown maxDropdownItems options =
+    options
+        |> sortOptionsBySearchFilterTotalScore
+        |> figureOutWhichOptionsToShow maxDropdownItems
+        |> Option.highlightFirstOptionInList
 
 
 figureOutWhichOptionsToShow : PositiveInt -> List Option -> List Option

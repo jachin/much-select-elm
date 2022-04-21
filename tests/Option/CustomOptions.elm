@@ -1,7 +1,7 @@
 module Option.CustomOptions exposing (suite)
 
 import Expect
-import Main exposing (figureOutWhichOptionsToShow)
+import Main exposing (figureOutWhichOptionsToShow, updateTheFullListOfOptions, updateTheOptionsForTheDropdown)
 import Option exposing (newCustomOption, newOption, prependCustomOption, removeUnselectedCustomOptions, selectOption, selectOptionInListByOptionValue, stringToOptionValue)
 import OptionSearcher
 import OptionSorting
@@ -116,4 +116,19 @@ suite =
                         |> List.map Option.getOptionValueAsString
                     )
                     [ "cob", "Mossy Cobblestone" ]
+        , test "should show up at the top in the dropdown" <|
+            \_ ->
+                Expect.equalLists
+                    ([ birchWood
+                     ]
+                        |> updateTheFullListOfOptions
+                            (SingleSelect AllowCustomOptions SelectedItemStaysInPlace)
+                            (Just "{{}}")
+                            "mil"
+                            (PositiveInt.new 5)
+                        |> updateTheOptionsForTheDropdown
+                            (PositiveInt.new 10)
+                        |> List.map Option.getOptionValueAsString
+                    )
+                    [ "mil", "Birch Wood" ]
         ]
