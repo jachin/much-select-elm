@@ -18,7 +18,6 @@ module Option exposing
     , deselectOption
     , deselectOptionInListByOptionValue
     , deselectOptions
-    , emptyOptionGroup
     , encode
     , filterOptionsToShowInDropdown
     , filterOptionsToShowInDropdownBySearchScore
@@ -32,6 +31,7 @@ module Option exposing
     , getOptionLabel
     , getOptionValue
     , getOptionValueAsString
+    , groupOptionsInOrder
     , hasSelectedHighlightedOptions
     , hasSelectedOption
     , highlightFirstOptionInList
@@ -49,6 +49,7 @@ module Option exposing
     , newCustomOption
     , newDisabledOption
     , newOption
+    , newOptionGroup
     , newSelectedOption
     , optionDescriptionToBool
     , optionDescriptionToSearchString
@@ -85,7 +86,7 @@ module Option exposing
 
 import Json.Decode
 import Json.Encode
-import List.Extra
+import List.Extra exposing (groupWhile)
 import Maybe.Extra
 import OptionLabel exposing (OptionLabel(..), labelDecoder, optionLabelToString)
 import OptionSearchFilter exposing (OptionSearchFilter, OptionSearchResult)
@@ -186,9 +187,13 @@ type OptionGroup
     | NoOptionGroup
 
 
-emptyOptionGroup : OptionGroup
-emptyOptionGroup =
-    NoOptionGroup
+newOptionGroup : String -> OptionGroup
+newOptionGroup string =
+    if string == "" then
+        NoOptionGroup
+
+    else
+        OptionGroup string
 
 
 getOptionGroup : Option -> OptionGroup
@@ -2246,6 +2251,17 @@ optionListContainsOptionWithValueString valueString options =
 optionToValueLabelTuple : Option -> ( String, String )
 optionToValueLabelTuple option =
     ( getOptionValueAsString option, getOptionLabel option |> optionLabelToString )
+
+
+groupOptionsInOrder : List Option -> List ( OptionGroup, List Option )
+groupOptionsInOrder options =
+    let
+        helper : Option -> Option -> Bool
+        helper optionA optionB =
+            getOptionGroup optionA == getOptionGroup optionB
+    in
+    groupWhile helper options
+        |> List.map (\( first, rest ) -> ( getOptionGroup first, first :: rest ))
 
 
 

@@ -1,6 +1,7 @@
 module Main exposing (..)
 
 import Browser
+import Debouncer.Messages exposing (Debouncer, fromSeconds, provideInput, settleWhenQuietFor, toDebouncer)
 import Html
     exposing
         ( Html
@@ -105,6 +106,7 @@ import SelectionMode
         , SelectionMode(..)
         , SingleItemRemoval(..)
         )
+import Task
 
 
 type Msg
@@ -116,7 +118,9 @@ type Msg
     | DropdownMouseOverOption OptionValue
     | DropdownMouseOutOption OptionValue
     | DropdownMouseClickOption OptionValue
-    | SearchInputOnInput String
+    | UpdateSearchString String
+    | UpdateOptionsWithSearchString
+    | MsgQuietUpdateOptionsWithSearchStringOneSecond (Debouncer.Messages.Msg Msg)
     | ValueChanged Json.Decode.Value
     | OptionsReplaced Json.Decode.Value
     | OptionSortingChanged String
@@ -160,6 +164,7 @@ type alias Model =
     , options : List Option
     , optionSort : OptionSort
     , showDropdown : Bool
+    , quietSearchForOneSecond : Debouncer Msg
     , searchString : String
     , searchStringMinimumLength : PositiveInt
     , rightSlot : RightSlot
@@ -186,6 +191,14 @@ type RightSlot
     | ShowLoadingIndicator
     | ShowDropdownIndicator FocusTransition
     | ShowClearButton
+
+
+updateDebouncer : Debouncer.Messages.UpdateConfig Msg Model
+updateDebouncer =
+    { mapMsg = MsgQuietUpdateOptionsWithSearchStringOneSecond
+    , getDebouncer = .quietSearchForOneSecond
+    , setDebouncer = \debouncer model -> { model | quietSearchForOneSecond = debouncer }
+    }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -310,13 +323,29 @@ update msg model =
                         ]
                     )
 
-        SearchInputOnInput searchString ->
+        UpdateSearchString searchString ->
             ( { model
                 | searchString = searchString
               }
-                |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-            , inputKeyUp searchString
+            , Cmd.batch
+                [ inputKeyUp searchString
+                , Task.perform
+                    (\_ ->
+                        UpdateOptionsWithSearchString
+                            |> provideInput
+                            |> MsgQuietUpdateOptionsWithSearchStringOneSecond
+                    )
+                    (Task.succeed
+                        always
+                    )
+                ]
             )
+
+        UpdateOptionsWithSearchString ->
+            ( updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges model, Cmd.none )
+
+        MsgQuietUpdateOptionsWithSearchStringOneSecond subMsg ->
+            Debouncer.Messages.update update updateDebouncer subMsg model
 
         ValueChanged valuesJson ->
             let
@@ -1063,7 +1092,7 @@ view model =
                         [ type_ "text"
                         , onBlur InputBlur
                         , onFocus InputFocus
-                        , onInput SearchInputOnInput
+                        , onInput UpdateSearchString
                         , onMouseDownStopPropagation NoOp
                         , onMouseUpStopPropagation NoOp
                         , value model.searchString
@@ -1209,7 +1238,7 @@ singleSelectInputField searchString isDisabled focused placeholder_ hasSelectedO
             , onFocusAttr
             , onMouseDownStopPropagation NoOp
             , onMouseUpStopPropagation NoOp
-            , onInput SearchInputOnInput
+            , onInput UpdateSearchString
             , value searchString
             , placeholderAttribute
             , keyboardEvents
@@ -1314,60 +1343,44 @@ optionsToDropdownOptions :
     -> List Option
     -> List (Html Msg)
 optionsToDropdownOptions eventHandlers selectionMode options =
-    let
-        partialWithSelectionMode =
-            optionToDropdownOption
-                eventHandlers
-                selectionMode
+    List.concatMap (optionGroupToHtml eventHandlers selectionMode) (Option.groupOptionsInOrder options)
 
-        helper : OptionGroup -> Option -> ( OptionGroup, List (Html Msg) )
-        helper previousGroup option_ =
-            ( Option.getOptionGroup option_
-            , option_ |> partialWithSelectionMode (previousGroup /= Option.getOptionGroup option_)
-            )
+
+optionGroupToHtml : DropdownItemEventListeners Msg -> SelectionMode -> ( OptionGroup, List Option ) -> List (Html Msg)
+optionGroupToHtml dropdownItemEventListeners selectionMode ( optionGroup, options ) =
+    let
+        optionGroupHtml =
+            case List.head options |> Maybe.andThen Option.getMaybeOptionSearchFilter of
+                Just optionSearchFilter ->
+                    div
+                        [ class "optgroup"
+                        ]
+                        [ span [ class "optgroup-header" ]
+                            (tokensToHtml optionSearchFilter.groupTokens)
+                        ]
+
+                Nothing ->
+                    div
+                        [ class "optgroup"
+                        ]
+                        [ span [ class "optgroup-header" ]
+                            [ text
+                                (optionGroup
+                                    |> Option.optionGroupToString
+                                )
+                            ]
+                        ]
     in
-    options
-        |> mapAccuml helper Option.emptyOptionGroup
-        |> Tuple.second
-        |> List.concat
-        |> List.filter (\htmlTag -> htmlTag /= text "")
+    optionGroupHtml :: List.map (optionToDropdownOption dropdownItemEventListeners selectionMode) options
 
 
 optionToDropdownOption :
     DropdownItemEventListeners Msg
     -> SelectionMode
-    -> Bool
     -> Option
-    -> List (Html Msg)
-optionToDropdownOption eventHandlers selectionMode prependOptionGroup option =
+    -> Html Msg
+optionToDropdownOption eventHandlers selectionMode option =
     let
-        optionGroupHtml =
-            if prependOptionGroup then
-                case Option.getMaybeOptionSearchFilter option of
-                    Just optionSearchFilter ->
-                        div
-                            [ class "optgroup"
-                            ]
-                            [ span [ class "optgroup-header" ]
-                                (tokensToHtml optionSearchFilter.groupTokens)
-                            ]
-
-                    Nothing ->
-                        div
-                            [ class "optgroup"
-                            ]
-                            [ span [ class "optgroup-header" ]
-                                [ text
-                                    (option
-                                        |> Option.getOptionGroup
-                                        |> Option.optionGroupToString
-                                    )
-                                ]
-                            ]
-
-            else
-                text ""
-
         descriptionHtml : Html Msg
         descriptionHtml =
             if option |> Option.getOptionDescription |> Option.optionDescriptionToBool then
@@ -1408,8 +1421,7 @@ optionToDropdownOption eventHandlers selectionMode prependOptionGroup option =
     in
     case Option.getOptionDisplay option of
         OptionShown ->
-            [ optionGroupHtml
-            , div
+            div
                 [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
                 , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
                 , mousedownPreventDefault (option |> Option.getOptionValue |> eventHandlers.clickMsgConstructor)
@@ -1418,16 +1430,14 @@ optionToDropdownOption eventHandlers selectionMode prependOptionGroup option =
                 , valueDataAttribute
                 ]
                 [ labelHtml, descriptionHtml ]
-            ]
 
         OptionHidden ->
-            [ optionGroupHtml, text "" ]
+            text ""
 
         OptionSelected _ ->
             case selectionMode of
                 SingleSelect _ _ ->
-                    [ optionGroupHtml
-                    , div
+                    div
                         [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
                         , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
                         , mousedownPreventDefault (option |> Option.getOptionValue |> eventHandlers.clickMsgConstructor)
@@ -1436,16 +1446,14 @@ optionToDropdownOption eventHandlers selectionMode prependOptionGroup option =
                         , valueDataAttribute
                         ]
                         [ labelHtml, descriptionHtml ]
-                    ]
 
                 MultiSelect _ _ ->
-                    [ optionGroupHtml, text "" ]
+                    text ""
 
         OptionSelectedHighlighted _ ->
             case selectionMode of
                 SingleSelect _ _ ->
-                    [ optionGroupHtml
-                    , div
+                    div
                         [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
                         , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
                         , mousedownPreventDefault (option |> Option.getOptionValue |> eventHandlers.clickMsgConstructor)
@@ -1455,14 +1463,12 @@ optionToDropdownOption eventHandlers selectionMode prependOptionGroup option =
                         , valueDataAttribute
                         ]
                         [ labelHtml, descriptionHtml ]
-                    ]
 
                 MultiSelect _ _ ->
-                    [ optionGroupHtml, text "" ]
+                    text ""
 
         OptionHighlighted ->
-            [ optionGroupHtml
-            , div
+            div
                 [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
                 , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
                 , mousedownPreventDefault (option |> Option.getOptionValue |> eventHandlers.clickMsgConstructor)
@@ -1471,17 +1477,14 @@ optionToDropdownOption eventHandlers selectionMode prependOptionGroup option =
                 , valueDataAttribute
                 ]
                 [ labelHtml, descriptionHtml ]
-            ]
 
         OptionDisabled ->
-            [ optionGroupHtml
-            , div
+            div
                 [ class "disabled"
                 , class "option"
                 , valueDataAttribute
                 ]
                 [ labelHtml, descriptionHtml ]
-            ]
 
 
 optionsToValuesHtml : List Option -> SingleItemRemoval -> List (Html Msg)
@@ -1801,6 +1804,10 @@ init flags =
       , options = optionsWithInitialValueSelectedSorted
       , optionSort = stringToOptionSort flags.optionSort |> Result.withDefault NoSorting
       , showDropdown = False
+      , quietSearchForOneSecond =
+            Debouncer.Messages.manual
+                |> settleWhenQuietFor (Just <| fromSeconds 1)
+                |> toDebouncer
       , searchString = ""
       , searchStringMinimumLength =
             Maybe.withDefault (PositiveInt.new 2)
