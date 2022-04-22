@@ -158,7 +158,6 @@ type alias Model =
     , customOptionHint : Maybe String
     , selectionMode : SelectionMode
     , options : List Option
-    , optionsForTheDropdown : List Option
     , optionSort : OptionSort
     , showDropdown : Bool
     , searchString : String
@@ -612,7 +611,6 @@ update msg model =
             in
             ( { model
                 | options = updatedOptions
-                , optionsForTheDropdown = figureOutWhichOptionsToShow model.maxDropdownItems updatedOptions
               }
             , scrollDropdownToElement "something"
             )
@@ -624,7 +622,6 @@ update msg model =
             in
             ( { model
                 | options = updatedOptions
-                , optionsForTheDropdown = figureOutWhichOptionsToShow model.maxDropdownItems updatedOptions
               }
             , scrollDropdownToElement "something"
             )
@@ -722,7 +719,6 @@ clearAllSelectedOption model =
     in
     ( { model
         | options = Option.deselectAllOptionsInOptionsList newOptions
-        , optionsForTheDropdown = figureOutWhichOptionsToShow model.maxDropdownItems newOptions
         , rightSlot = updateRightSlot model.rightSlot model.selectionMode False
         , searchString = ""
       }
@@ -768,8 +764,8 @@ updateModelWithChangesThatEffectTheOptionsWithSearchString :
     -> String
     -> PositiveInt
     -> List Option
-    -> { a | options : List Option, optionsForTheDropdown : List Option, rightSlot : RightSlot }
-    -> { a | options : List Option, optionsForTheDropdown : List Option, rightSlot : RightSlot }
+    -> { a | options : List Option, rightSlot : RightSlot }
+    -> { a | options : List Option, rightSlot : RightSlot }
 updateModelWithChangesThatEffectTheOptionsWithSearchString rightSlot maxDropdownItems selectionMode customOptionHint searchString searchStringMinimumLength options model =
     let
         updatedOptions =
@@ -783,11 +779,6 @@ updateModelWithChangesThatEffectTheOptionsWithSearchString rightSlot maxDropdown
     { model
         | options =
             updatedOptions
-        , optionsForTheDropdown =
-            updateTheOptionsForTheDropdown
-                maxDropdownItems
-                updatedOptions
-                |> Option.highlightFirstOptionInList
         , rightSlot =
             updateRightSlot
                 rightSlot
@@ -804,8 +795,8 @@ updatePartOfTheModelWithChangesThatEffectTheOptionsWhenTheMouseMoves :
     -> String
     -> PositiveInt
     -> List Option
-    -> { a | options : List Option, optionsForTheDropdown : List Option, rightSlot : RightSlot }
-    -> { a | options : List Option, optionsForTheDropdown : List Option, rightSlot : RightSlot }
+    -> { a | options : List Option, rightSlot : RightSlot }
+    -> { a | options : List Option, rightSlot : RightSlot }
 updatePartOfTheModelWithChangesThatEffectTheOptionsWhenTheMouseMoves rightSlot maxDropdownItems selectionMode customOptionHint searchString searchStringMinimumLength options model =
     let
         updatedOptions =
@@ -819,10 +810,6 @@ updatePartOfTheModelWithChangesThatEffectTheOptionsWhenTheMouseMoves rightSlot m
     { model
         | options =
             updatedOptions
-        , optionsForTheDropdown =
-            updateTheOptionsForTheDropdown
-                maxDropdownItems
-                updatedOptions
         , rightSlot =
             updateRightSlot
                 rightSlot
@@ -1269,12 +1256,15 @@ type alias DropdownItemEventListeners msg =
 dropdown : Model -> Html Msg
 dropdown model =
     let
+        optionsForTheDropdown =
+            figureOutWhichOptionsToShow model.maxDropdownItems model.options
+
         optionsHtml =
             -- TODO We should probably do something different if we are in a loading state
-            if List.isEmpty model.optionsForTheDropdown then
+            if List.isEmpty optionsForTheDropdown then
                 [ div [ class "option disabled" ] [ node "slot" [ name "no-options" ] [ text "No available options" ] ] ]
 
-            else if doesSearchStringFindNothing model.searchString model.searchStringMinimumLength model.optionsForTheDropdown then
+            else if doesSearchStringFindNothing model.searchString model.searchStringMinimumLength optionsForTheDropdown then
                 [ div [ class "option disabled" ] [ node "slot" [ name "no-filtered-options" ] [ text "This filter returned no results." ] ] ]
 
             else
@@ -1285,14 +1275,14 @@ dropdown model =
                     , noOpMsgConstructor = NoOp
                     }
                     model.selectionMode
-                    model.optionsForTheDropdown
+                    optionsForTheDropdown
 
         dropdownFooterHtml =
-            if model.showDropdownFooter && List.length model.optionsForTheDropdown < List.length model.options then
+            if model.showDropdownFooter && List.length optionsForTheDropdown < List.length model.options then
                 div [ id "dropdown-footer" ]
                     [ text
                         ("showing "
-                            ++ (model.optionsForTheDropdown |> List.length |> String.fromInt)
+                            ++ (optionsForTheDropdown |> List.length |> String.fromInt)
                             ++ " of "
                             ++ (model.options |> List.length |> String.fromInt)
                             ++ " options"
@@ -1823,10 +1813,6 @@ init flags =
       , customOptionHint = flags.customOptionHint
       , selectionMode = selectionMode
       , options = optionsWithInitialValueSelectedSorted
-      , optionsForTheDropdown =
-            figureOutWhichOptionsToShow
-                maxDropdownItems
-                optionsWithInitialValueSelectedSorted
       , optionSort = stringToOptionSort flags.optionSort |> Result.withDefault NoSorting
       , showDropdown = False
       , searchString = ""
