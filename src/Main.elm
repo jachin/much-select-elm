@@ -1360,16 +1360,19 @@ optionGroupToHtml dropdownItemEventListeners selectionMode ( optionGroup, option
                         ]
 
                 Nothing ->
-                    div
-                        [ class "optgroup"
-                        ]
-                        [ span [ class "optgroup-header" ]
-                            [ text
-                                (optionGroup
-                                    |> Option.optionGroupToString
-                                )
-                            ]
-                        ]
+                    case Option.optionGroupToString optionGroup of
+                        "" ->
+                            text ""
+
+                        optionGroupAsString ->
+                            div
+                                [ class "optgroup"
+                                ]
+                                [ span [ class "optgroup-header" ]
+                                    [ text
+                                        optionGroupAsString
+                                    ]
+                                ]
     in
     optionGroupHtml :: List.map (optionToDropdownOption dropdownItemEventListeners selectionMode) options
 
