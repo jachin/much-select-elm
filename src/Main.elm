@@ -1291,34 +1291,20 @@ dropdown model =
 
             else
                 text ""
+    in
+    if model.disabled then
+        text ""
 
-        dropdownCss =
-            [ style "top"
+    else
+        div
+            [ id "dropdown"
+            , classList [ ( "showing", model.showDropdown ), ( "hiding", not model.showDropdown ) ]
+            , style "top"
                 (String.fromFloat model.valueCasingHeight ++ "px")
             , style
                 "width"
                 (String.fromFloat model.valueCasingWidth ++ "px")
             ]
-    in
-    if model.disabled then
-        text ""
-
-    else if model.showDropdown && not (List.isEmpty optionsHtml) then
-        div
-            ([ id "dropdown"
-             , class "showing"
-             ]
-                ++ dropdownCss
-            )
-            (optionsHtml ++ [ dropdownFooterHtml ])
-
-    else
-        div
-            ([ id "dropdown"
-             , class "hiding"
-             ]
-                ++ dropdownCss
-            )
             (optionsHtml ++ [ dropdownFooterHtml ])
 
 
