@@ -1,8 +1,17 @@
 module Option.OrderingInGroups exposing (suite)
 
 import Expect
-import Option exposing (Option(..), OptionGroup, groupOptionsInOrder, newOption, newOptionGroup, optionGroupToString, setGroupWithString)
+import Option
+    exposing
+        ( Option(..)
+        , OptionGroup
+        , newOption
+        , newOptionGroup
+        , optionGroupToString
+        , setGroupWithString
+        )
 import OptionLabel exposing (optionLabelToString)
+import OptionsUtilities exposing (groupOptionsInOrder)
 import Test exposing (Test, describe, test)
 
 

@@ -2,9 +2,10 @@ module Option.CustomOptions exposing (suite)
 
 import Expect
 import Main exposing (figureOutWhichOptionsToShowInTheDropdown, updateTheFullListOfOptions, updateTheOptionsForTheDropdown)
-import Option exposing (newCustomOption, newOption, prependCustomOption, removeUnselectedCustomOptions, selectOption, selectOptionInListByOptionValue, stringToOptionValue)
+import Option exposing (newCustomOption, newOption, selectOption, stringToOptionValue)
 import OptionSearcher
 import OptionSorting
+import OptionsUtilities exposing (highlightFirstOptionInList, prependCustomOption, removeUnselectedCustomOptions, selectOptionInListByOptionValue)
 import PositiveInt
 import SelectionMode exposing (CustomOptions(..), SelectedItemPlacementMode(..), SelectionMode(..), SingleItemRemoval(..))
 import Test exposing (Test, describe, test)
@@ -95,7 +96,7 @@ suite =
                             "cob"
                             (PositiveInt.new 10)
                         |> OptionSorting.sortOptionsBySearchFilterTotalScore
-                        |> Option.highlightFirstOptionInList
+                        |> highlightFirstOptionInList
                         |> figureOutWhichOptionsToShowInTheDropdown (PositiveInt.new 2)
                         |> List.map Option.getOptionValueAsString
                     )
@@ -111,7 +112,7 @@ suite =
                             "cob"
                             (PositiveInt.new 10)
                         |> OptionSorting.sortOptionsBySearchFilterTotalScore
-                        |> Option.highlightFirstOptionInList
+                        |> highlightFirstOptionInList
                         |> figureOutWhichOptionsToShowInTheDropdown (PositiveInt.new 2)
                         |> List.map Option.getOptionValueAsString
                     )

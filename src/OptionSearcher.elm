@@ -5,6 +5,7 @@ import Option exposing (Option(..), OptionDisplay(..))
 import OptionLabel exposing (optionLabelToSearchString, optionLabelToString)
 import OptionPresentor exposing (tokenize)
 import OptionSearchFilter exposing (OptionSearchFilter, OptionSearchResult, descriptionHandicap, groupHandicap)
+import OptionsUtilities exposing (prependCustomOption, removeUnselectedCustomOptions)
 import PositiveInt exposing (PositiveInt)
 import SelectionMode exposing (CustomOptions(..), SelectionMode)
 
@@ -135,13 +136,13 @@ updateOrAddCustomOption maybeCustomOptionHint searchString selectionMode options
                 |> not
     in
     if showCustomOption && noExactOptionLabelMatch then
-        Option.prependCustomOption
+        prependCustomOption
             maybeCustomOptionHint
             searchString
-            (Option.removeUnselectedCustomOptions options)
+            (removeUnselectedCustomOptions options)
 
     else
-        Option.removeUnselectedCustomOptions options
+        removeUnselectedCustomOptions options
 
 
 updateOptionsWithSearchString : String -> PositiveInt -> List Option -> List Option

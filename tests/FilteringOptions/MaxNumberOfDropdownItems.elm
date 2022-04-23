@@ -2,8 +2,9 @@ module FilteringOptions.MaxNumberOfDropdownItems exposing (suite)
 
 import Expect
 import Main exposing (figureOutWhichOptionsToShowInTheDropdown)
-import Option exposing (highlightOptionInList, newOption, selectOptionInList, setGroupWithString)
+import Option exposing (newOption, setGroupWithString)
 import OptionSearcher
+import OptionsUtilities exposing (highlightOptionInList, selectOptionInList)
 import PositiveInt
 import SelectionMode exposing (CustomOptions(..), SelectedItemPlacementMode(..), SelectionMode(..), SingleItemRemoval(..))
 import Test exposing (Test, describe, test)

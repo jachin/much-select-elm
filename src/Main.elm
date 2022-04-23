@@ -40,24 +40,19 @@ import Json.Decode
 import Json.Encode
 import Keyboard exposing (Key(..))
 import Keyboard.Events as Keyboard
-import List.Extra exposing (mapAccuml)
+import List.Extra
 import Option
     exposing
         ( Option(..)
         , OptionDisplay(..)
         , OptionGroup
         , OptionValue
-        , highlightOptionInListByValue
-        , removeHighlightOptionInList
-        , selectHighlightedOption
-        , selectOptionInListByOptionValue
-        , selectSingleOptionInList
-        , selectedOptionsToTuple
         )
 import OptionLabel exposing (OptionLabel(..), optionLabelToString)
 import OptionPresentor exposing (tokensToHtml)
 import OptionSearcher exposing (doesSearchStringFindNothing)
 import OptionSorting exposing (OptionSort(..), sortOptions, sortOptionsBySearchFilterTotalScore, stringToOptionSort)
+import OptionsUtilities exposing (addAdditionalOptionsToOptionList, addAndSelectOptionsInOptionsListByString, customSelectedOptions, deselectAllButTheFirstSelectedOptionInList, deselectAllOptionsInOptionsList, deselectAllSelectedHighlightedOptions, deselectLastSelectedOption, deselectOptionInListByOptionValue, filterOptionsToShowInDropdown, findHighlightedOrSelectedOptionIndex, findOptionByOptionValue, groupOptionsInOrder, hasSelectedHighlightedOptions, hasSelectedOption, highlightOptionInListByValue, isOptionValueInListOfOptionsByValue, moveHighlightedOptionDown, moveHighlightedOptionUp, optionsValues, removeHighlightOptionInList, removeOptionsFromOptionList, removeUnselectedCustomOptions, replaceOptions, selectHighlightedOption, selectOptionInListByOptionValue, selectOptionsInOptionsListByString, selectSingleOptionInList, selectedOptions, selectedOptionsToTuple, toggleSelectedHighlightByOptionValue, unhighlightSelectedOptions)
 import Ports
     exposing
         ( addOptionsReceiver
@@ -240,8 +235,8 @@ update msg model =
         InputBlur ->
             let
                 optionsWithoutUnselectedCustomOptions =
-                    Option.removeUnselectedCustomOptions model.options
-                        |> Option.unhighlightSelectedOptions
+                    removeUnselectedCustomOptions model.options
+                        |> unhighlightSelectedOptions
             in
             ( { model
                 | searchString = ""
@@ -361,7 +356,7 @@ update msg model =
                 Ok values ->
                     let
                         newOptions =
-                            Option.addAndSelectOptionsInOptionsListByString
+                            addAndSelectOptionsInOptionsListByString
                                 values
                                 model.options
                     in
@@ -380,7 +375,7 @@ update msg model =
                 Ok newOptions ->
                     let
                         newOptionWithOldSelectedOption =
-                            Option.replaceOptions
+                            replaceOptions
                                 model.selectionMode
                                 model.options
                                 newOptions
@@ -400,7 +395,7 @@ update msg model =
                 Ok newOptions ->
                     let
                         updatedOptions =
-                            Option.addAdditionalOptionsToOptionList model.options newOptions
+                            addAdditionalOptionsToOptionList model.options newOptions
                     in
                     ( { model
                         | options = updatedOptions
@@ -417,7 +412,7 @@ update msg model =
                 Ok optionsToRemove ->
                     let
                         updatedOptions =
-                            Option.removeOptionsFromOptionList model.options optionsToRemove
+                            removeOptionsFromOptionList model.options optionsToRemove
                     in
                     ( { model
                         | options = updatedOptions
@@ -482,7 +477,7 @@ update msg model =
                     updateRightSlotLoading
                         bool
                         model.selectionMode
-                        (Option.hasSelectedOption model.options)
+                        (hasSelectedOption model.options)
               }
             , Cmd.none
             )
@@ -557,14 +552,14 @@ update msg model =
                         model.options
 
                     else
-                        Option.deselectAllButTheFirstSelectedOptionInList model.options
+                        deselectAllButTheFirstSelectedOptionInList model.options
 
                 cmd =
                     if isInMultiSelectMode then
                         Cmd.none
 
                     else
-                        makeCommandMessagesWhenValuesChanges (Option.selectedOptions updatedOptions) Nothing
+                        makeCommandMessagesWhenValuesChanges (selectedOptions updatedOptions) Nothing
             in
             ( { model
                 | selectionMode = SelectionMode.setMultiSelectModeWithBool isInMultiSelectMode model.selectionMode
@@ -615,7 +610,7 @@ update msg model =
         DeleteInputForSingleSelect ->
             case model.selectionMode of
                 SingleSelect _ _ ->
-                    if Option.hasSelectedOption model.options then
+                    if hasSelectedOption model.options then
                         -- if there are ANY selected options, clear them all;
                         clearAllSelectedOption model
 
@@ -636,7 +631,7 @@ update msg model =
         MoveHighlightedOptionUp ->
             let
                 updatedOptions =
-                    Option.moveHighlightedOptionUp model.options
+                    moveHighlightedOptionUp model.options
             in
             ( { model
                 | options = updatedOptions
@@ -647,7 +642,7 @@ update msg model =
         MoveHighlightedOptionDown ->
             let
                 updatedOptions =
-                    Option.moveHighlightedOptionDown model.options
+                    moveHighlightedOptionDown model.options
             in
             ( { model
                 | options = updatedOptions
@@ -664,7 +659,7 @@ update msg model =
         ToggleSelectedValueHighlight optionValue ->
             let
                 updatedOptions =
-                    Option.toggleSelectedHighlightByOptionValue model.options optionValue
+                    toggleSelectedHighlightByOptionValue model.options optionValue
             in
             ( { model
                 | options = updatedOptions
@@ -680,11 +675,11 @@ update msg model =
             else
                 let
                     updatedOptions =
-                        if Option.hasSelectedHighlightedOptions model.options then
-                            Option.deselectAllSelectedHighlightedOptions model.options
+                        if hasSelectedHighlightedOptions model.options then
+                            deselectAllSelectedHighlightedOptions model.options
 
                         else
-                            Option.deselectLastSelectedOption model.options
+                            deselectLastSelectedOption model.options
                 in
                 ( { model
                     | options = updatedOptions
@@ -707,7 +702,7 @@ deselectOption model option =
             Option.getOptionValue option
 
         updatedOptions =
-            Option.deselectOptionInListByOptionValue optionValue model.options
+            deselectOptionInListByOptionValue optionValue model.options
     in
     ( { model
         | options = updatedOptions
@@ -721,13 +716,13 @@ clearAllSelectedOption : Model -> ( Model, Cmd Msg )
 clearAllSelectedOption model =
     let
         deselectedItems =
-            if List.isEmpty <| Option.selectedOptionsToTuple model.options then
+            if List.isEmpty <| selectedOptionsToTuple model.options then
                 -- no deselected options
                 []
 
             else
                 -- an option has been deselected. return the deselected value as a tuple.
-                Option.selectedOptionsToTuple model.options
+                selectedOptionsToTuple model.options
 
         deselectEventCmdMsg =
             if List.isEmpty deselectedItems then
@@ -737,7 +732,7 @@ clearAllSelectedOption model =
                 optionDeselected deselectedItems
 
         newOptions =
-            Option.deselectAllOptionsInOptionsList model.options
+            deselectAllOptionsInOptionsList model.options
 
         focusCmdMsg =
             if model.focused then
@@ -747,7 +742,7 @@ clearAllSelectedOption model =
                 Cmd.none
     in
     ( { model
-        | options = Option.deselectAllOptionsInOptionsList newOptions
+        | options = deselectAllOptionsInOptionsList newOptions
         , rightSlot = updateRightSlot model.rightSlot model.selectionMode False
         , searchString = ""
       }
@@ -763,7 +758,6 @@ updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges : Model -> 
 updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges model =
     updateModelWithChangesThatEffectTheOptionsWithSearchString
         model.rightSlot
-        model.maxDropdownItems
         model.selectionMode
         model.customOptionHint
         model.searchString
@@ -776,7 +770,6 @@ updateModelWithChangesThatEffectTheOptionsWhenTheMouseMoves : Model -> Model
 updateModelWithChangesThatEffectTheOptionsWhenTheMouseMoves model =
     updatePartOfTheModelWithChangesThatEffectTheOptionsWhenTheMouseMoves
         model.rightSlot
-        model.maxDropdownItems
         model.selectionMode
         model.customOptionHint
         model.searchString
@@ -787,7 +780,6 @@ updateModelWithChangesThatEffectTheOptionsWhenTheMouseMoves model =
 
 updateModelWithChangesThatEffectTheOptionsWithSearchString :
     RightSlot
-    -> PositiveInt
     -> SelectionMode
     -> Maybe String
     -> String
@@ -795,7 +787,7 @@ updateModelWithChangesThatEffectTheOptionsWithSearchString :
     -> List Option
     -> { a | options : List Option, rightSlot : RightSlot }
     -> { a | options : List Option, rightSlot : RightSlot }
-updateModelWithChangesThatEffectTheOptionsWithSearchString rightSlot maxDropdownItems selectionMode customOptionHint searchString searchStringMinimumLength options model =
+updateModelWithChangesThatEffectTheOptionsWithSearchString rightSlot selectionMode customOptionHint searchString searchStringMinimumLength options model =
     let
         updatedOptions =
             updateTheFullListOfOptions
@@ -812,13 +804,12 @@ updateModelWithChangesThatEffectTheOptionsWithSearchString rightSlot maxDropdown
             updateRightSlot
                 rightSlot
                 selectionMode
-                (Option.hasSelectedOption options)
+                (hasSelectedOption options)
     }
 
 
 updatePartOfTheModelWithChangesThatEffectTheOptionsWhenTheMouseMoves :
     RightSlot
-    -> PositiveInt
     -> SelectionMode
     -> Maybe String
     -> String
@@ -826,7 +817,7 @@ updatePartOfTheModelWithChangesThatEffectTheOptionsWhenTheMouseMoves :
     -> List Option
     -> { a | options : List Option, rightSlot : RightSlot }
     -> { a | options : List Option, rightSlot : RightSlot }
-updatePartOfTheModelWithChangesThatEffectTheOptionsWhenTheMouseMoves rightSlot maxDropdownItems selectionMode customOptionHint searchString searchStringMinimumLength options model =
+updatePartOfTheModelWithChangesThatEffectTheOptionsWhenTheMouseMoves rightSlot selectionMode customOptionHint searchString searchStringMinimumLength options model =
     let
         updatedOptions =
             updateTheFullListOfOptions
@@ -843,7 +834,7 @@ updatePartOfTheModelWithChangesThatEffectTheOptionsWhenTheMouseMoves rightSlot m
             updateRightSlot
                 rightSlot
                 selectionMode
-                (Option.hasSelectedOption options)
+                (hasSelectedOption options)
     }
 
 
@@ -864,7 +855,7 @@ figureOutWhichOptionsToShowInTheDropdown : PositiveInt -> List Option -> List Op
 figureOutWhichOptionsToShowInTheDropdown maxDropdownItems options =
     let
         optionsThatCouldBeShown =
-            Option.filterOptionsToShowInDropdown options
+            filterOptionsToShowInDropdown options
 
         lastIndexOfOptions =
             List.length optionsThatCouldBeShown - 1
@@ -876,7 +867,7 @@ figureOutWhichOptionsToShowInTheDropdown maxDropdownItems options =
         optionsThatCouldBeShown
 
     else
-        case Option.findHighlightedOrSelectedOptionIndex optionsThatCouldBeShown of
+        case findHighlightedOrSelectedOptionIndex optionsThatCouldBeShown of
             Just index ->
                 case index of
                     0 ->
@@ -1015,7 +1006,7 @@ view model =
         SingleSelect _ _ ->
             let
                 hasOptionSelected =
-                    Option.hasSelectedOption model.options
+                    hasSelectedOption model.options
 
                 showPlaceholder =
                     not hasOptionSelected && not model.focused
@@ -1023,7 +1014,7 @@ view model =
                 valueStr =
                     if hasOptionSelected then
                         model.options
-                            |> Option.selectedOptionsToTuple
+                            |> selectedOptionsToTuple
                             |> List.map Tuple.second
                             |> List.head
                             |> Maybe.withDefault ""
@@ -1075,7 +1066,7 @@ view model =
         MultiSelect _ enableSingleItemRemoval ->
             let
                 hasOptionSelected =
-                    Option.hasSelectedOption model.options
+                    hasSelectedOption model.options
 
                 showPlaceholder =
                     not hasOptionSelected && not model.focused
@@ -1343,7 +1334,7 @@ optionsToDropdownOptions :
     -> List Option
     -> List (Html Msg)
 optionsToDropdownOptions eventHandlers selectionMode options =
-    List.concatMap (optionGroupToHtml eventHandlers selectionMode) (Option.groupOptionsInOrder options)
+    List.concatMap (optionGroupToHtml eventHandlers selectionMode) (groupOptionsInOrder options)
 
 
 optionGroupToHtml : DropdownItemEventListeners Msg -> SelectionMode -> ( OptionGroup, List Option ) -> List (Html Msg)
@@ -1493,7 +1484,7 @@ optionToDropdownOption eventHandlers selectionMode option =
 optionsToValuesHtml : List Option -> SingleItemRemoval -> List (Html Msg)
 optionsToValuesHtml options enableSingleItemRemoval =
     options
-        |> Option.selectedOptions
+        |> selectedOptions
         |> List.map (Html.Lazy.lazy2 optionToValueHtml enableSingleItemRemoval)
 
 
@@ -1636,7 +1627,7 @@ makeCommandMessagesWhenValuesChanges : List Option -> Maybe OptionValue -> Cmd M
 makeCommandMessagesWhenValuesChanges selectedOptions maybeSelectedValue =
     let
         selectedCustomOptions =
-            Option.customSelectedOptions selectedOptions
+            customSelectedOptions selectedOptions
 
         clearCmd =
             if List.isEmpty selectedOptions then
@@ -1650,13 +1641,13 @@ makeCommandMessagesWhenValuesChanges selectedOptions maybeSelectedValue =
                 Cmd.none
 
             else
-                customOptionSelected (Option.optionsValues selectedCustomOptions)
+                customOptionSelected (optionsValues selectedCustomOptions)
 
         -- Any time we select a new value we need to emit an `optionSelected` event.
         optionSelectedCmd =
             case maybeSelectedValue of
                 Just selectedValue ->
-                    case Option.findOptionByOptionValue selectedValue selectedOptions of
+                    case findOptionByOptionValue selectedValue selectedOptions of
                         Just option ->
                             optionSelected (Option.optionToValueLabelTuple option)
 
@@ -1761,12 +1752,12 @@ init flags =
                         SingleSelect _ _ ->
                             case List.head initialValues of
                                 Just initialValueStr_ ->
-                                    if Option.isOptionValueInListOfOptionsByValue (Option.stringToOptionValue initialValueStr_) options then
+                                    if isOptionValueInListOfOptionsByValue (Option.stringToOptionValue initialValueStr_) options then
                                         let
                                             optionsWithUniqueValues =
                                                 options |> List.Extra.uniqueBy Option.getOptionValueAsString
                                         in
-                                        ( Option.selectOptionsInOptionsListByString
+                                        ( selectOptionsInOptionsListByString
                                             initialValues
                                             optionsWithUniqueValues
                                         , Cmd.none
@@ -1789,7 +1780,7 @@ init flags =
                                 optionsWithInitialValues =
                                     options
                                         |> List.filter (not << Option.isEmptyOption)
-                                        |> Option.addAndSelectOptionsInOptionsListByString initialValues
+                                        |> addAndSelectOptionsInOptionsListByString initialValues
                             in
                             ( optionsWithInitialValues, Cmd.none )
 
@@ -1825,7 +1816,7 @@ init flags =
                         ShowDropdownIndicator NotInFocusTransition
 
                     MultiSelect _ _ ->
-                        if Option.hasSelectedOption optionsWithInitialValueSelected then
+                        if hasSelectedOption optionsWithInitialValueSelected then
                             ShowClearButton
 
                         else
@@ -1843,7 +1834,7 @@ init flags =
         [ errorCmd
         , initialValueErrCmd
         , muchSelectIsReady ()
-        , makeCommandMessageForInitialValue (Option.selectedOptions optionsWithInitialValueSelected)
+        , makeCommandMessageForInitialValue (selectedOptions optionsWithInitialValueSelected)
         ]
     )
 

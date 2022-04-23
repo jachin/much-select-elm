@@ -2,6 +2,7 @@ module Option.Highlighting exposing (suite)
 
 import Expect
 import Option
+import OptionsUtilities exposing (moveHighlightedOptionDown, moveHighlightedOptionUp)
 import Test exposing (Test, describe, test)
 
 
@@ -16,7 +17,7 @@ suite =
                          , Option.newOption "two" Nothing
                          , Option.newOption "three" Nothing
                          ]
-                            |> Option.moveHighlightedOptionDown
+                            |> moveHighlightedOptionDown
                         )
                         [ Option.newOption "one" Nothing |> Option.highlightOption
                         , Option.newOption "two" Nothing
@@ -29,7 +30,7 @@ suite =
                          , Option.newOption "two" Nothing |> Option.selectOption 0
                          , Option.newOption "three" Nothing
                          ]
-                            |> Option.moveHighlightedOptionDown
+                            |> moveHighlightedOptionDown
                         )
                         [ Option.newOption "one" Nothing
                         , Option.newOption "two" Nothing |> Option.selectOption 0
@@ -43,7 +44,7 @@ suite =
                          , Option.newDisabledOption "three" Nothing
                          , Option.newOption "four" Nothing
                          ]
-                            |> Option.moveHighlightedOptionDown
+                            |> moveHighlightedOptionDown
                         )
                         [ Option.newOption "one" Nothing
                         , Option.newDisabledOption "two" Nothing
@@ -59,7 +60,7 @@ suite =
                          , Option.newOption "two" Nothing
                          , Option.newOption "three" Nothing
                          ]
-                            |> Option.moveHighlightedOptionUp
+                            |> moveHighlightedOptionUp
                         )
                         [ Option.newOption "one" Nothing |> Option.highlightOption
                         , Option.newOption "two" Nothing
@@ -72,7 +73,7 @@ suite =
                          , Option.newOption "two" Nothing |> Option.selectOption 0
                          , Option.newOption "three" Nothing |> Option.highlightOption
                          ]
-                            |> Option.moveHighlightedOptionUp
+                            |> moveHighlightedOptionUp
                         )
                         [ Option.newOption "one" Nothing |> Option.highlightOption
                         , Option.newOption "two" Nothing |> Option.selectOption 0
@@ -86,7 +87,7 @@ suite =
                          , Option.newDisabledOption "three" Nothing
                          , Option.newOption "four" Nothing |> Option.highlightOption
                          ]
-                            |> Option.moveHighlightedOptionUp
+                            |> moveHighlightedOptionUp
                         )
                         [ Option.newOption "one" Nothing |> Option.highlightOption
                         , Option.newDisabledOption "two" Nothing
@@ -102,7 +103,7 @@ suite =
                          , Option.newOption "four" Nothing
                          , Option.newOption "five" Nothing
                          ]
-                            |> Option.moveHighlightedOptionUp
+                            |> moveHighlightedOptionUp
                         )
                         [ Option.newOption "one" Nothing
                         , Option.newOption "two" Nothing |> Option.highlightOption

@@ -2,7 +2,7 @@ module FilteringOptions.OptionSearcher exposing (suite)
 
 import Expect
 import Main exposing (figureOutWhichOptionsToShowInTheDropdown)
-import Option exposing (filterOptionsToShowInDropdown)
+import Option
 import OptionSearcher exposing (doesSearchStringFindNothing)
 import OptionSorting exposing (sortOptionsBySearchFilterTotalScore)
 import PositiveInt
