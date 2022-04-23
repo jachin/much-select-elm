@@ -1,7 +1,7 @@
 module FilteringOptions.OptionSearcher exposing (suite)
 
 import Expect
-import Main exposing (figureOutWhichOptionsToShow)
+import Main exposing (figureOutWhichOptionsToShowInTheDropdown)
 import Option exposing (filterOptionsToShowInDropdown)
 import OptionSearcher exposing (doesSearchStringFindNothing)
 import OptionSorting exposing (sortOptionsBySearchFilterTotalScore)
@@ -65,7 +65,7 @@ suite =
                 \_ ->
                     Expect.equal
                         (OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionMode Nothing "frog" (PositiveInt.new 2) (frogs ++ monnies)
-                            |> figureOutWhichOptionsToShow (PositiveInt.new 10)
+                            |> figureOutWhichOptionsToShowInTheDropdown (PositiveInt.new 10)
                             |> List.length
                         )
                         4
@@ -73,7 +73,7 @@ suite =
                 \_ ->
                     Expect.equal
                         (OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionMode Nothing "frog" (PositiveInt.new 2) (frogs ++ monnies)
-                            |> figureOutWhichOptionsToShow (PositiveInt.new 10)
+                            |> figureOutWhichOptionsToShowInTheDropdown (PositiveInt.new 10)
                             |> doesSearchStringFindNothing "frog" (PositiveInt.new 10)
                         )
                         False
@@ -82,7 +82,7 @@ suite =
                     Expect.equal
                         (OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionMode Nothing "frog" (PositiveInt.new 2) (frogs ++ monnies)
                             |> sortOptionsBySearchFilterTotalScore
-                            |> figureOutWhichOptionsToShow (PositiveInt.new 10)
+                            |> figureOutWhichOptionsToShowInTheDropdown (PositiveInt.new 10)
                             |> List.head
                             |> Maybe.map Option.getOptionValueAsString
                         )
@@ -92,7 +92,7 @@ suite =
                     Expect.equal
                         (OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionMode Nothing "pent" (PositiveInt.new 2) (frogs ++ monnies)
                             |> sortOptionsBySearchFilterTotalScore
-                            |> figureOutWhichOptionsToShow (PositiveInt.new 10)
+                            |> figureOutWhichOptionsToShowInTheDropdown (PositiveInt.new 10)
                             |> List.head
                             |> Maybe.map Option.getOptionValueAsString
                         )
@@ -102,7 +102,7 @@ suite =
                     Expect.equal
                         (OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionMode Nothing "yiya" (PositiveInt.new 2) (frogs ++ monnies)
                             |> sortOptionsBySearchFilterTotalScore
-                            |> figureOutWhichOptionsToShow (PositiveInt.new 10)
+                            |> figureOutWhichOptionsToShowInTheDropdown (PositiveInt.new 10)
                             |> List.head
                             |> Maybe.map Option.getOptionValueAsString
                         )

@@ -1,7 +1,7 @@
 module Option.CustomOptions exposing (suite)
 
 import Expect
-import Main exposing (figureOutWhichOptionsToShow, updateTheFullListOfOptions, updateTheOptionsForTheDropdown)
+import Main exposing (figureOutWhichOptionsToShowInTheDropdown, updateTheFullListOfOptions, updateTheOptionsForTheDropdown)
 import Option exposing (newCustomOption, newOption, prependCustomOption, removeUnselectedCustomOptions, selectOption, selectOptionInListByOptionValue, stringToOptionValue)
 import OptionSearcher
 import OptionSorting
@@ -63,7 +63,7 @@ suite =
             \_ ->
                 Expect.equalLists
                     (OptionSearcher.updateOptionsWithSearchStringAndCustomOption (MultiSelect AllowCustomOptions EnableSingleItemRemoval) (Just "{{}}") "monkey bread" (PositiveInt.new 2) []
-                        |> figureOutWhichOptionsToShow (PositiveInt.new 10)
+                        |> figureOutWhichOptionsToShowInTheDropdown (PositiveInt.new 10)
                         |> List.map Option.getOptionValueAsString
                     )
                     [ "monkey bread" ]
@@ -96,7 +96,7 @@ suite =
                             (PositiveInt.new 10)
                         |> OptionSorting.sortOptionsBySearchFilterTotalScore
                         |> Option.highlightFirstOptionInList
-                        |> figureOutWhichOptionsToShow (PositiveInt.new 2)
+                        |> figureOutWhichOptionsToShowInTheDropdown (PositiveInt.new 2)
                         |> List.map Option.getOptionValueAsString
                     )
                     [ "cob", "Mossy Cobblestone" ]
@@ -112,7 +112,7 @@ suite =
                             (PositiveInt.new 10)
                         |> OptionSorting.sortOptionsBySearchFilterTotalScore
                         |> Option.highlightFirstOptionInList
-                        |> figureOutWhichOptionsToShow (PositiveInt.new 2)
+                        |> figureOutWhichOptionsToShowInTheDropdown (PositiveInt.new 2)
                         |> List.map Option.getOptionValueAsString
                     )
                     [ "cob", "Mossy Cobblestone" ]

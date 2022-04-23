@@ -857,11 +857,11 @@ updateTheOptionsForTheDropdown : PositiveInt -> List Option -> List Option
 updateTheOptionsForTheDropdown maxDropdownItems options =
     options
         |> sortOptionsBySearchFilterTotalScore
-        |> figureOutWhichOptionsToShow maxDropdownItems
+        |> figureOutWhichOptionsToShowInTheDropdown maxDropdownItems
 
 
-figureOutWhichOptionsToShow : PositiveInt -> List Option -> List Option
-figureOutWhichOptionsToShow maxDropdownItems options =
+figureOutWhichOptionsToShowInTheDropdown : PositiveInt -> List Option -> List Option
+figureOutWhichOptionsToShowInTheDropdown maxDropdownItems options =
     let
         optionsThatCouldBeShown =
             Option.filterOptionsToShowInDropdown options
@@ -1286,7 +1286,7 @@ dropdown : Model -> Html Msg
 dropdown model =
     let
         optionsForTheDropdown =
-            figureOutWhichOptionsToShow model.maxDropdownItems model.options
+            figureOutWhichOptionsToShowInTheDropdown model.maxDropdownItems model.options
 
         optionsHtml =
             -- TODO We should probably do something different if we are in a loading state
