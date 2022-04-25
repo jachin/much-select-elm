@@ -1,7 +1,7 @@
 module Main exposing (..)
 
 import Browser
-import Debouncer.Messages exposing (Debouncer, fromSeconds, provideInput, settleWhenQuietFor, toDebouncer)
+import Debouncer.Messages exposing (Debouncer, Milliseconds, fromSeconds, provideInput, settleWhenQuietFor, toDebouncer)
 import Html
     exposing
         ( Html
@@ -52,7 +52,40 @@ import OptionLabel exposing (OptionLabel(..), optionLabelToString)
 import OptionPresentor exposing (tokensToHtml)
 import OptionSearcher exposing (doesSearchStringFindNothing)
 import OptionSorting exposing (OptionSort(..), sortOptions, sortOptionsBySearchFilterTotalScore, stringToOptionSort)
-import OptionsUtilities exposing (addAdditionalOptionsToOptionList, addAndSelectOptionsInOptionsListByString, customSelectedOptions, deselectAllButTheFirstSelectedOptionInList, deselectAllOptionsInOptionsList, deselectAllSelectedHighlightedOptions, deselectLastSelectedOption, deselectOptionInListByOptionValue, filterOptionsToShowInDropdown, findHighlightedOrSelectedOptionIndex, findOptionByOptionValue, groupOptionsInOrder, hasSelectedHighlightedOptions, hasSelectedOption, highlightOptionInListByValue, isOptionValueInListOfOptionsByValue, moveHighlightedOptionDown, moveHighlightedOptionUp, optionsValues, removeHighlightOptionInList, removeOptionsFromOptionList, removeUnselectedCustomOptions, replaceOptions, selectHighlightedOption, selectOptionInListByOptionValue, selectOptionsInOptionsListByString, selectSingleOptionInList, selectedOptions, selectedOptionsToTuple, toggleSelectedHighlightByOptionValue, unhighlightSelectedOptions)
+import OptionsUtilities
+    exposing
+        ( addAdditionalOptionsToOptionList
+        , addAndSelectOptionsInOptionsListByString
+        , customSelectedOptions
+        , deselectAllButTheFirstSelectedOptionInList
+        , deselectAllOptionsInOptionsList
+        , deselectAllSelectedHighlightedOptions
+        , deselectLastSelectedOption
+        , deselectOptionInListByOptionValue
+        , filterOptionsToShowInDropdown
+        , findHighlightedOrSelectedOptionIndex
+        , findOptionByOptionValue
+        , groupOptionsInOrder
+        , hasSelectedHighlightedOptions
+        , hasSelectedOption
+        , highlightOptionInListByValue
+        , isOptionValueInListOfOptionsByValue
+        , moveHighlightedOptionDown
+        , moveHighlightedOptionUp
+        , optionsValues
+        , removeHighlightOptionInList
+        , removeOptionsFromOptionList
+        , removeUnselectedCustomOptions
+        , replaceOptions
+        , selectHighlightedOption
+        , selectOptionInListByOptionValue
+        , selectOptionsInOptionsListByString
+        , selectSingleOptionInList
+        , selectedOptions
+        , selectedOptionsToTuple
+        , toggleSelectedHighlightByOptionValue
+        , unhighlightSelectedOptions
+        )
 import Ports
     exposing
         ( addOptionsReceiver
@@ -115,7 +148,7 @@ type Msg
     | DropdownMouseClickOption OptionValue
     | UpdateSearchString String
     | UpdateOptionsWithSearchString
-    | MsgQuietUpdateOptionsWithSearchStringOneSecond (Debouncer.Messages.Msg Msg)
+    | MsgQuietUpdateOptionsWithSearchString (Debouncer.Messages.Msg Msg)
     | ValueChanged Json.Decode.Value
     | OptionsReplaced Json.Decode.Value
     | OptionSortingChanged String
@@ -159,7 +192,7 @@ type alias Model =
     , options : List Option
     , optionSort : OptionSort
     , showDropdown : Bool
-    , quietSearchForOneSecond : Debouncer Msg
+    , quietSearchForDynamicInterval : Debouncer Msg
     , searchString : String
     , searchStringMinimumLength : PositiveInt
     , rightSlot : RightSlot
@@ -190,9 +223,9 @@ type RightSlot
 
 updateDebouncer : Debouncer.Messages.UpdateConfig Msg Model
 updateDebouncer =
-    { mapMsg = MsgQuietUpdateOptionsWithSearchStringOneSecond
-    , getDebouncer = .quietSearchForOneSecond
-    , setDebouncer = \debouncer model -> { model | quietSearchForOneSecond = debouncer }
+    { mapMsg = MsgQuietUpdateOptionsWithSearchString
+    , getDebouncer = .quietSearchForDynamicInterval
+    , setDebouncer = \debouncer model -> { model | quietSearchForDynamicInterval = debouncer }
     }
 
 
@@ -328,7 +361,7 @@ update msg model =
                     (\_ ->
                         UpdateOptionsWithSearchString
                             |> provideInput
-                            |> MsgQuietUpdateOptionsWithSearchStringOneSecond
+                            |> MsgQuietUpdateOptionsWithSearchString
                     )
                     (Task.succeed
                         always
@@ -339,7 +372,7 @@ update msg model =
         UpdateOptionsWithSearchString ->
             ( updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges model, Cmd.none )
 
-        MsgQuietUpdateOptionsWithSearchStringOneSecond subMsg ->
+        MsgQuietUpdateOptionsWithSearchString subMsg ->
             Debouncer.Messages.update update updateDebouncer subMsg model
 
         ValueChanged valuesJson ->
@@ -399,6 +432,7 @@ update msg model =
                     in
                     ( { model
                         | options = updatedOptions
+                        , quietSearchForDynamicInterval = makeDynamicDebouncer (List.length updatedOptions)
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , optionsUpdated False
@@ -416,6 +450,7 @@ update msg model =
                     in
                     ( { model
                         | options = updatedOptions
+                        , quietSearchForDynamicInterval = makeDynamicDebouncer (List.length updatedOptions)
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , optionsUpdated True
@@ -1698,6 +1733,24 @@ type alias Flags =
     }
 
 
+makeDynamicDebouncer : Int -> Debouncer msg
+makeDynamicDebouncer numberOfOptions =
+    if numberOfOptions < 100 then
+        Debouncer.Messages.manual
+            |> settleWhenQuietFor (Just <| fromSeconds 0.001)
+            |> toDebouncer
+
+    else if numberOfOptions < 1000 then
+        Debouncer.Messages.manual
+            |> settleWhenQuietFor (Just <| fromSeconds 0.1)
+            |> toDebouncer
+
+    else
+        Debouncer.Messages.manual
+            |> settleWhenQuietFor (Just <| fromSeconds 1)
+            |> toDebouncer
+
+
 init : Flags -> ( Model, Cmd Msg )
 init flags =
     let
@@ -1803,10 +1856,8 @@ init flags =
       , options = optionsWithInitialValueSelectedSorted
       , optionSort = stringToOptionSort flags.optionSort |> Result.withDefault NoSorting
       , showDropdown = False
-      , quietSearchForOneSecond =
-            Debouncer.Messages.manual
-                |> settleWhenQuietFor (Just <| fromSeconds 1)
-                |> toDebouncer
+      , quietSearchForDynamicInterval =
+            makeDynamicDebouncer (List.length optionsWithInitialValueSelectedSorted)
       , searchString = ""
       , searchStringMinimumLength =
             Maybe.withDefault (PositiveInt.new 2)
