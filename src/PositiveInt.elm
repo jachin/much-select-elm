@@ -1,4 +1,4 @@
-module PositiveInt exposing (PositiveInt, maybeNew, new, toInt)
+module PositiveInt exposing (PositiveInt, lessThanOrEqualTo, maybeNew, new, toInt)
 
 
 type PositiveInt
@@ -24,3 +24,8 @@ toInt positiveInt =
     case positiveInt of
         PositiveInt int ->
             int
+
+
+lessThanOrEqualTo : PositiveInt -> Int -> Bool
+lessThanOrEqualTo (PositiveInt a) b =
+    a <= b

@@ -1,19 +1,20 @@
-module OptionSearcher exposing (doesSearchStringFindNothing, simpleMatch, updateOptions, updateSearchResultInOption)
+module OptionSearcher exposing (doesSearchStringFindNothing, simpleMatch, updateOptionsWithSearchStringAndCustomOption, updateSearchResultInOption)
 
 import Fuzzy exposing (Result, match)
-import Option exposing (Option)
+import Option exposing (Option(..), OptionDisplay(..))
 import OptionLabel exposing (optionLabelToSearchString, optionLabelToString)
 import OptionPresentor exposing (tokenize)
 import OptionSearchFilter exposing (OptionSearchFilter, OptionSearchResult, descriptionHandicap, groupHandicap)
+import OptionsUtilities exposing (prependCustomOption, removeUnselectedCustomOptions)
 import PositiveInt exposing (PositiveInt)
 import SelectionMode exposing (CustomOptions(..), SelectionMode)
 
 
-updateOptions : SelectionMode -> Maybe String -> String -> List Option -> List Option
-updateOptions selectionMode maybeCustomOptionHint searchString options =
+updateOptionsWithSearchStringAndCustomOption : SelectionMode -> Maybe String -> String -> PositiveInt -> List Option -> List Option
+updateOptionsWithSearchStringAndCustomOption selectionMode maybeCustomOptionHint searchString searchStringMinimumLength options =
     options
         |> updateOrAddCustomOption maybeCustomOptionHint searchString selectionMode
-        |> updateOptionsWithSearchString searchString
+        |> updateOptionsWithSearchString searchString searchStringMinimumLength
 
 
 simpleMatch : String -> String -> Result
@@ -106,35 +107,63 @@ updateSearchResultInOption searchString option =
 
 updateOrAddCustomOption : Maybe String -> String -> SelectionMode -> List Option -> List Option
 updateOrAddCustomOption maybeCustomOptionHint searchString selectionMode options =
-    case searchString of
-        "" ->
+    let
+        showCustomOption =
+            if String.length searchString > 0 then
+                case SelectionMode.getCustomOptions selectionMode of
+                    AllowCustomOptions ->
+                        True
+
+                    NoCustomOptions ->
+                        False
+
+            else
+                False
+
+        -- If we have an exact match with an existing option don't show the custom
+        --  option.
+        noExactOptionLabelMatch =
             options
-
-        _ ->
-            case SelectionMode.getCustomOptions selectionMode of
-                AllowCustomOptions ->
-                    Option.updateOrAddCustomOption maybeCustomOptionHint searchString options
-
-                NoCustomOptions ->
-                    options
-
-
-updateOptionsWithSearchString : String -> List Option -> List Option
-updateOptionsWithSearchString searchString options =
-    case searchString of
-        "" ->
-            options
-                |> List.map
-                    (\option ->
-                        Option.setOptionSearchFilter
-                            Nothing
-                            option
+                |> List.any
+                    (\option_ ->
+                        (option_
+                            |> Option.getOptionLabel
+                            |> optionLabelToSearchString
+                        )
+                            == String.toLower searchString
+                            && not (Option.isCustomOption option_)
                     )
+                |> not
+    in
+    if showCustomOption && noExactOptionLabelMatch then
+        prependCustomOption
+            maybeCustomOptionHint
+            searchString
+            (removeUnselectedCustomOptions options)
 
-        _ ->
-            options
-                |> List.map
-                    (updateSearchResultInOption searchString)
+    else
+        removeUnselectedCustomOptions options
+
+
+updateOptionsWithSearchString : String -> PositiveInt -> List Option -> List Option
+updateOptionsWithSearchString searchString searchStringMinimumLength options =
+    let
+        doOptionFiltering =
+            PositiveInt.lessThanOrEqualTo searchStringMinimumLength (String.length searchString)
+    in
+    if doOptionFiltering then
+        options
+            |> List.map
+                (updateSearchResultInOption searchString)
+
+    else
+        options
+            |> List.map
+                (\option ->
+                    Option.setOptionSearchFilter
+                        Nothing
+                        option
+                )
 
 
 doesSearchStringFindNothing : String -> PositiveInt -> List Option -> Bool
