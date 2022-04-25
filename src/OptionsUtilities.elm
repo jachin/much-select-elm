@@ -9,25 +9,61 @@ import SelectionMode exposing (SelectedItemPlacementMode(..), SelectionMode(..))
 import SortRank exposing (SortRank)
 
 
-moveHighlightedOptionDown : List Option -> List Option
-moveHighlightedOptionDown options =
+moveHighlightedOptionDown : List Option -> List Option -> List Option
+moveHighlightedOptionDown allOptions visibleOptions =
     let
         maybeLowerSibling =
-            options
+            visibleOptions
                 |> findHighlightedOrSelectedOptionIndex
-                |> Maybe.andThen (\index -> findClosestHighlightableOptionGoingDown index options)
+                |> Maybe.andThen (\index -> findClosestHighlightableOptionGoingDown index visibleOptions)
     in
     case maybeLowerSibling of
         Just option ->
-            highlightOptionInList option options
+            highlightOptionInList option allOptions
 
         Nothing ->
-            case List.head options of
+            case List.head visibleOptions of
                 Just firstOption ->
-                    highlightOptionInList firstOption options
+                    highlightOptionInList firstOption allOptions
 
                 Nothing ->
-                    options
+                    allOptions
+
+
+findClosestHighlightableOptionGoingUp : Int -> List Option -> Maybe Option
+findClosestHighlightableOptionGoingUp index options =
+    List.Extra.splitAt index options
+        |> Tuple.first
+        |> List.reverse
+        |> List.Extra.find optionIsHighlightable
+
+
+moveHighlightedOptionUp : List Option -> List Option -> List Option
+moveHighlightedOptionUp allOptions visibleOptions =
+    let
+        maybeHigherSibling =
+            visibleOptions
+                |> findHighlightedOrSelectedOptionIndex
+                |> Maybe.andThen (\index -> findClosestHighlightableOptionGoingUp index visibleOptions)
+    in
+    case maybeHigherSibling of
+        Just option ->
+            highlightOptionInList option allOptions
+
+        Nothing ->
+            case List.head visibleOptions of
+                Just firstOption ->
+                    highlightOptionInList firstOption allOptions
+
+                Nothing ->
+                    allOptions
+
+
+findClosestHighlightableOptionGoingDown : Int -> List Option -> Maybe Option
+findClosestHighlightableOptionGoingDown index options =
+    List.Extra.splitAt index options
+        |> Tuple.second
+        |> List.Extra.find optionIsHighlightable
 
 
 selectOptionInList : Option -> List Option -> List Option
@@ -677,42 +713,6 @@ optionListContainsOptionWithValue needle haystack =
 hasSelectedOption : List Option -> Bool
 hasSelectedOption options =
     options |> selectedOptions |> List.isEmpty |> not
-
-
-findClosestHighlightableOptionGoingUp : Int -> List Option -> Maybe Option
-findClosestHighlightableOptionGoingUp index options =
-    List.Extra.splitAt index options
-        |> Tuple.first
-        |> List.reverse
-        |> List.Extra.find optionIsHighlightable
-
-
-moveHighlightedOptionUp : List Option -> List Option
-moveHighlightedOptionUp options =
-    let
-        maybeHigherSibling =
-            options
-                |> findHighlightedOrSelectedOptionIndex
-                |> Maybe.andThen (\index -> findClosestHighlightableOptionGoingUp index options)
-    in
-    case maybeHigherSibling of
-        Just option ->
-            highlightOptionInList option options
-
-        Nothing ->
-            case List.head options of
-                Just firstOption ->
-                    highlightOptionInList firstOption options
-
-                Nothing ->
-                    options
-
-
-findClosestHighlightableOptionGoingDown : Int -> List Option -> Maybe Option
-findClosestHighlightableOptionGoingDown index options =
-    List.Extra.splitAt index options
-        |> Tuple.second
-        |> List.Extra.find optionIsHighlightable
 
 
 highlightOptionInListByValue : OptionValue -> List Option -> List Option

@@ -631,7 +631,7 @@ update msg model =
         MoveHighlightedOptionUp ->
             let
                 updatedOptions =
-                    moveHighlightedOptionUp model.options
+                    moveHighlightedOptionUp model.options (figureOutWhichOptionsToShowInTheDropdown model.maxDropdownItems model.options)
             in
             ( { model
                 | options = updatedOptions
@@ -642,7 +642,7 @@ update msg model =
         MoveHighlightedOptionDown ->
             let
                 updatedOptions =
-                    moveHighlightedOptionDown model.options
+                    moveHighlightedOptionDown model.options (figureOutWhichOptionsToShowInTheDropdown model.maxDropdownItems model.options)
             in
             ( { model
                 | options = updatedOptions
