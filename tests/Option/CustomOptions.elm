@@ -1,10 +1,11 @@
 module Option.CustomOptions exposing (suite)
 
 import Expect
-import Main exposing (figureOutWhichOptionsToShow)
-import Option exposing (newCustomOption, newOption, removeUnselectedCustomOptions, selectOption, selectOptionInListByOptionValue, stringToOptionValue, updateOrAddCustomOption)
+import Main exposing (figureOutWhichOptionsToShowInTheDropdown, updateTheFullListOfOptions, updateTheOptionsForTheDropdown)
+import Option exposing (newCustomOption, newOption, selectOption, stringToOptionValue)
 import OptionSearcher
 import OptionSorting
+import OptionsUtilities exposing (highlightFirstOptionInList, prependCustomOption, removeUnselectedCustomOptions, selectOptionInListByOptionValue)
 import PositiveInt
 import SelectionMode exposing (CustomOptions(..), SelectedItemPlacementMode(..), SelectionMode(..), SingleItemRemoval(..))
 import Test exposing (Test, describe, test)
@@ -26,8 +27,8 @@ torch =
     newCustomOption "Torch" Nothing
 
 
-tuff =
-    newCustomOption "Tuff" Nothing
+turf =
+    newCustomOption "Turf" Nothing
 
 
 vines =
@@ -35,7 +36,7 @@ vines =
 
 
 blocks =
-    [ birchWood, cutCopper, mossyCobblestone, torch, tuff, vines ]
+    [ birchWood, cutCopper, mossyCobblestone, torch, turf, vines ]
 
 
 suite : Test
@@ -46,29 +47,28 @@ suite =
                 Expect.equalLists
                     (blocks
                         |> selectOptionInListByOptionValue (stringToOptionValue "Cut Copper")
-                        |> selectOptionInListByOptionValue (stringToOptionValue "Tuff")
+                        |> selectOptionInListByOptionValue (stringToOptionValue "Turf")
                         |> removeUnselectedCustomOptions
                     )
                     [ birchWood
                     , selectOption 0 cutCopper
                     , mossyCobblestone
-                    , selectOption 1 tuff
+                    , selectOption 1 turf
                     ]
         , test "should be able to maintain a custom option with an empty hint" <|
             \_ ->
                 Expect.equalLists
-                    (updateOrAddCustomOption (Just "{{}}") "pizza" [])
+                    (prependCustomOption (Just "{{}}") "pizza" [])
                     [ newCustomOption "pizza" Nothing ]
-        , test "should drop any extra custom option" <|
-            \_ ->
-                Expect.equalLists
-                    (updateOrAddCustomOption (Just "{{}}") "pizza" blocks)
-                    [ newCustomOption "pizza" Nothing, birchWood, cutCopper, mossyCobblestone ]
         , test "should stay in the dropdown if there's only a custom option with an empty hint" <|
             \_ ->
+                let
+                    selectionMode =
+                        MultiSelect AllowCustomOptions EnableSingleItemRemoval
+                in
                 Expect.equalLists
-                    (OptionSearcher.updateOptions (MultiSelect AllowCustomOptions EnableSingleItemRemoval) (Just "{{}}") "monkey bread" []
-                        |> figureOutWhichOptionsToShow (PositiveInt.new 10)
+                    (OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionMode (Just "{{}}") "monkey bread" (PositiveInt.new 2) []
+                        |> figureOutWhichOptionsToShowInTheDropdown selectionMode (PositiveInt.new 10)
                         |> List.map Option.getOptionValueAsString
                     )
                     [ "monkey bread" ]
@@ -81,26 +81,72 @@ suite =
                      , birchWood |> Option.selectOption 1
                      , cutCopper |> Option.selectOption 2
                      ]
-                        |> OptionSearcher.updateOptions
+                        |> OptionSearcher.updateOptionsWithSearchStringAndCustomOption
                             (MultiSelect AllowCustomOptions EnableSingleItemRemoval)
                             (Just "{{}}")
                             "monkey bread"
+                            (PositiveInt.new 2)
                         |> List.map Option.getOptionValueAsString
                     )
                     [ "monkey bread", "Birch Wood", "Cut Copper" ]
         , test "and regular options show be visible in the dropdown if the search string matches OK" <|
             \_ ->
+                let
+                    selectionMode =
+                        MultiSelect AllowCustomOptions EnableSingleItemRemoval
+                in
                 Expect.equalLists
                     ([ mossyCobblestone
                      ]
-                        |> OptionSearcher.updateOptions
-                            (MultiSelect AllowCustomOptions EnableSingleItemRemoval)
+                        |> OptionSearcher.updateOptionsWithSearchStringAndCustomOption
+                            selectionMode
                             (Just "{{}}")
                             "cob"
+                            (PositiveInt.new 10)
                         |> OptionSorting.sortOptionsBySearchFilterTotalScore
-                        |> Option.highlightFirstOptionInList
-                        |> figureOutWhichOptionsToShow (PositiveInt.new 10)
+                        |> highlightFirstOptionInList
+                        |> figureOutWhichOptionsToShowInTheDropdown selectionMode (PositiveInt.new 2)
                         |> List.map Option.getOptionValueAsString
                     )
                     [ "cob", "Mossy Cobblestone" ]
+        , test "a custom option should show up even if it is shorter than the minimum search length" <|
+            \_ ->
+                let
+                    selectionMode =
+                        MultiSelect AllowCustomOptions EnableSingleItemRemoval
+                in
+                Expect.equalLists
+                    ([ mossyCobblestone
+                     ]
+                        |> OptionSearcher.updateOptionsWithSearchStringAndCustomOption
+                            (MultiSelect AllowCustomOptions EnableSingleItemRemoval)
+                            (Just "{{}}")
+                            "cob"
+                            (PositiveInt.new 10)
+                        |> OptionSorting.sortOptionsBySearchFilterTotalScore
+                        |> highlightFirstOptionInList
+                        |> figureOutWhichOptionsToShowInTheDropdown selectionMode (PositiveInt.new 2)
+                        |> List.map Option.getOptionValueAsString
+                    )
+                    [ "cob", "Mossy Cobblestone" ]
+        , test "should show up at the top in the dropdown" <|
+            \_ ->
+                let
+                    selectionMode =
+                        SingleSelect AllowCustomOptions SelectedItemStaysInPlace
+                in
+                Expect.equalLists
+                    ([ birchWood
+                     ]
+                        |> updateTheFullListOfOptions
+                            (SingleSelect AllowCustomOptions SelectedItemStaysInPlace)
+                            (Just "{{}}")
+                            "mil"
+                            (PositiveInt.new 5)
+                        |> updateTheOptionsForTheDropdown
+                            selectionMode
+                            (PositiveInt.new 10)
+                        |> List.map Option.getOptionValueAsString
+                    )
+                    [ "mil", "Birch Wood" ]
         ]

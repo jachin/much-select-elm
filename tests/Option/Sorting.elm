@@ -4,13 +4,13 @@ import Expect
 import Option
     exposing
         ( Option(..)
-        , findHighestAutoSortRank
         , newOption
         , optionGroupToString
         , setGroupWithString
         )
 import OptionLabel exposing (optionLabelToString)
 import OptionSorting exposing (OptionSort(..), sortOptions)
+import OptionsUtilities exposing (findHighestAutoSortRank)
 import SortRank exposing (newMaybeAutoSortRank)
 import Test exposing (Test, describe, test)
 

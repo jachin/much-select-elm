@@ -3,14 +3,17 @@ module Option.Selecting exposing (suite)
 import Expect
 import Option
     exposing
-        ( deselectEveryOptionExceptOptionsInList
-        , newOption
+        ( newOption
         , selectOption
+        , stringToOptionValue
+        )
+import OptionsUtilities
+    exposing
+        ( deselectEveryOptionExceptOptionsInList
         , selectOptionInListByOptionValue
         , selectOptionsInList
         , selectOptionsInOptionsListByString
         , selectSingleOptionInList
-        , stringToOptionValue
         )
 import Test exposing (Test, describe, test)
 

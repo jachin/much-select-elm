@@ -3,15 +3,18 @@ module Option.AddingOptions exposing (suite)
 import Expect
 import Option
     exposing
-        ( addAdditionalOptionsToOptionList
-        , addAdditionalOptionsToOptionListWithAutoSortRank
-        , addAndSelectOptionsInOptionsListByString
-        , merge2Options
-        , mergeTwoListsOfOptionsPreservingSelectedOptions
+        ( merge2Options
         , newOption
         , selectOption
         , setDescriptionWithString
         , setLabelWithString
+        )
+import OptionsUtilities
+    exposing
+        ( addAdditionalOptionsToOptionList
+        , addAdditionalOptionsToOptionListWithAutoSortRank
+        , addAndSelectOptionsInOptionsListByString
+        , mergeTwoListsOfOptionsPreservingSelectedOptions
         )
 import SelectionMode exposing (SelectedItemPlacementMode(..))
 import SortRank exposing (newMaybeAutoSortRank)

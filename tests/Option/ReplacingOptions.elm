@@ -2,6 +2,7 @@ module Option.ReplacingOptions exposing (suite)
 
 import Expect
 import Option
+import OptionsUtilities exposing (replaceOptions)
 import SelectionMode
 import Test exposing (Test, describe, test)
 
@@ -26,7 +27,7 @@ suite =
                 \_ ->
                     Expect.equalLists
                         [ futureCop, theMidnight ]
-                        (Option.replaceOptions
+                        (replaceOptions
                             (SelectionMode.MultiSelect SelectionMode.NoCustomOptions SelectionMode.EnableSingleItemRemoval)
                             [ thirdEyeBlind, futureCop ]
                             [ futureCop, theMidnight ]
@@ -35,7 +36,7 @@ suite =
                 \_ ->
                     Expect.equalLists
                         [ futureCop, Option.selectOption 0 theMidnight ]
-                        (Option.replaceOptions
+                        (replaceOptions
                             (SelectionMode.MultiSelect SelectionMode.NoCustomOptions SelectionMode.EnableSingleItemRemoval)
                             [ thirdEyeBlind, futureCop ]
                             [ futureCop, Option.selectOption 0 theMidnight ]
@@ -43,7 +44,7 @@ suite =
             , test "should preserver selected options even if the selected value is not in the new list of options" <|
                 \_ ->
                     Expect.equalLists
-                        (Option.replaceOptions
+                        (replaceOptions
                             (SelectionMode.MultiSelect SelectionMode.NoCustomOptions SelectionMode.EnableSingleItemRemoval)
                             [ Option.selectOption 0 thirdEyeBlind, futureCop ]
                             [ futureCop, theMidnight ]
@@ -54,7 +55,7 @@ suite =
             [ test "should preserver a single selected item in the new list of options" <|
                 \_ ->
                     Expect.equalLists
-                        (Option.replaceOptions
+                        (replaceOptions
                             (SelectionMode.SingleSelect SelectionMode.NoCustomOptions SelectionMode.SelectedItemStaysInPlace)
                             [ futureCop, theMidnight ]
                             [ Option.selectOption 0 thirdEyeBlind, futureCop ]
@@ -63,7 +64,7 @@ suite =
             , test "should preserver a single selected item in the old list of options" <|
                 \_ ->
                     Expect.equalLists
-                        (Option.replaceOptions
+                        (replaceOptions
                             (SelectionMode.SingleSelect SelectionMode.NoCustomOptions SelectionMode.SelectedItemStaysInPlace)
                             [ Option.selectOption 0 thirdEyeBlind, theMidnight ]
                             [ thirdEyeBlind, futureCop ]
@@ -72,7 +73,7 @@ suite =
             , test "should preserver a single selected item when the selected item is in both the old and new list" <|
                 \_ ->
                     Expect.equalLists
-                        (Option.replaceOptions
+                        (replaceOptions
                             (SelectionMode.SingleSelect SelectionMode.NoCustomOptions SelectionMode.SelectedItemStaysInPlace)
                             [ Option.selectOption 0 thirdEyeBlind, theMidnight ]
                             [ Option.selectOption 0 thirdEyeBlind, futureCop ]
@@ -81,7 +82,7 @@ suite =
             , test "should preserver a single selected item when the selected item is NOT in the new list" <|
                 \_ ->
                     Expect.equalLists
-                        (Option.replaceOptions
+                        (replaceOptions
                             (SelectionMode.SingleSelect SelectionMode.NoCustomOptions SelectionMode.SelectedItemStaysInPlace)
                             [ Option.selectOption 0 thirdEyeBlind, theMidnight ]
                             [ futureCop ]
@@ -90,7 +91,7 @@ suite =
             , test "should preserver a single selected item when different items are selected in the old and new list, favoring the new selected option" <|
                 \_ ->
                     Expect.equalLists
-                        (Option.replaceOptions
+                        (replaceOptions
                             (SelectionMode.SingleSelect SelectionMode.NoCustomOptions SelectionMode.SelectedItemStaysInPlace)
                             [ Option.selectOption 0 thirdEyeBlind, theMidnight ]
                             [ Option.selectOption 0 futureCop ]

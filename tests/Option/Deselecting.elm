@@ -1,7 +1,14 @@
 module Option.Deselecting exposing (suite)
 
 import Expect
-import Option exposing (deselectAllButTheFirstSelectedOptionInList, deselectAllOptionsInOptionsList, deselectOption, deselectOptions, newCustomOption, newOption, selectOption, selectOptionInListByOptionValue, stringToOptionValue)
+import Option exposing (newOption, selectOption, stringToOptionValue)
+import OptionsUtilities
+    exposing
+        ( deselectAllButTheFirstSelectedOptionInList
+        , deselectAllOptionsInOptionsList
+        , deselectOptions
+        , selectOptionInListByOptionValue
+        )
 import Test exposing (Test, describe, test)
 
 
