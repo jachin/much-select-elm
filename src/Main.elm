@@ -1343,12 +1343,17 @@ optionGroupToHtml dropdownItemEventListeners selectionMode ( optionGroup, option
         optionGroupHtml =
             case List.head options |> Maybe.andThen Option.getMaybeOptionSearchFilter of
                 Just optionSearchFilter ->
-                    div
-                        [ class "optgroup"
-                        ]
-                        [ span [ class "optgroup-header" ]
-                            (tokensToHtml optionSearchFilter.groupTokens)
-                        ]
+                    case Option.optionGroupToString optionGroup of
+                        "" ->
+                            text ""
+
+                        _ ->
+                            div
+                                [ class "optgroup"
+                                ]
+                                [ span [ class "optgroup-header" ]
+                                    (tokensToHtml optionSearchFilter.groupTokens)
+                                ]
 
                 Nothing ->
                     case Option.optionGroupToString optionGroup of
