@@ -2,7 +2,39 @@ module OptionsUtilities exposing (..)
 
 import List.Extra exposing (groupWhile)
 import Maybe.Extra
-import Option exposing (Option(..), OptionDisplay(..), OptionGroup, OptionValue(..), deselectOption, getMaybeOptionSearchFilter, getOptionDisplay, getOptionGroup, getOptionLabel, getOptionSelectedIndex, getOptionValue, getOptionValueAsString, highlightOption, isCustomOption, isOptionHighlighted, isOptionSelected, isOptionSelectedHighlighted, isOptionValueInListOfStrings, merge2Options, newSelectedOption, optionIsHighlightable, optionToValueLabelTuple, optionValueToString, optionValuesEqual, removeHighlightOption, selectOption, setLabel, setLabelWithString, setOptionDisplay, stringToOptionValue)
+import Option
+    exposing
+        ( Option(..)
+        , OptionDisplay(..)
+        , OptionGroup
+        , OptionValue(..)
+        , deselectOption
+        , getMaybeOptionSearchFilter
+        , getOptionDisplay
+        , getOptionGroup
+        , getOptionLabel
+        , getOptionSelectedIndex
+        , getOptionValue
+        , getOptionValueAsString
+        , highlightOption
+        , isCustomOption
+        , isOptionHighlighted
+        , isOptionSelected
+        , isOptionSelectedHighlighted
+        , isOptionValueInListOfStrings
+        , merge2Options
+        , newSelectedOption
+        , optionIsHighlightable
+        , optionToValueLabelTuple
+        , optionValueToString
+        , optionValuesEqual
+        , removeHighlightOption
+        , selectOption
+        , setLabel
+        , setLabelWithString
+        , setOptionDisplay
+        , stringToOptionValue
+        )
 import OptionLabel exposing (OptionLabel)
 import OptionSearchFilter exposing (OptionSearchResult)
 import SelectionMode exposing (SelectedItemPlacementMode(..), SelectionMode(..))
@@ -64,6 +96,16 @@ findClosestHighlightableOptionGoingDown index options =
     List.Extra.splitAt index options
         |> Tuple.second
         |> List.Extra.find optionIsHighlightable
+
+
+adjustHighlightedOptionAfterSearch : List Option -> List Option -> List Option
+adjustHighlightedOptionAfterSearch allOptions visibleOptions =
+    case List.head visibleOptions of
+        Just firstOption ->
+            highlightOptionInList firstOption allOptions
+
+        Nothing ->
+            allOptions
 
 
 selectOptionInList : Option -> List Option -> List Option

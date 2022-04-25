@@ -56,6 +56,7 @@ import OptionsUtilities
     exposing
         ( addAdditionalOptionsToOptionList
         , addAndSelectOptionsInOptionsListByString
+        , adjustHighlightedOptionAfterSearch
         , customSelectedOptions
         , deselectAllButTheFirstSelectedOptionInList
         , deselectAllOptionsInOptionsList
@@ -797,6 +798,7 @@ updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges model =
         model.customOptionHint
         model.searchString
         model.searchStringMinimumLength
+        model.maxDropdownItems
         model.options
         model
 
@@ -819,10 +821,11 @@ updateModelWithChangesThatEffectTheOptionsWithSearchString :
     -> Maybe String
     -> String
     -> PositiveInt
+    -> PositiveInt
     -> List Option
     -> { a | options : List Option, rightSlot : RightSlot }
     -> { a | options : List Option, rightSlot : RightSlot }
-updateModelWithChangesThatEffectTheOptionsWithSearchString rightSlot selectionMode customOptionHint searchString searchStringMinimumLength options model =
+updateModelWithChangesThatEffectTheOptionsWithSearchString rightSlot selectionMode customOptionHint searchString searchStringMinimumLength maxDropdownItems options model =
     let
         updatedOptions =
             updateTheFullListOfOptions
@@ -834,7 +837,7 @@ updateModelWithChangesThatEffectTheOptionsWithSearchString rightSlot selectionMo
     in
     { model
         | options =
-            updatedOptions
+            adjustHighlightedOptionAfterSearch updatedOptions (figureOutWhichOptionsToShowInTheDropdown maxDropdownItems updatedOptions)
         , rightSlot =
             updateRightSlot
                 rightSlot
