@@ -667,7 +667,7 @@ update msg model =
         MoveHighlightedOptionUp ->
             let
                 updatedOptions =
-                    moveHighlightedOptionUp model.options (figureOutWhichOptionsToShowInTheDropdown model.maxDropdownItems model.options)
+                    moveHighlightedOptionUp model.options (figureOutWhichOptionsToShowInTheDropdown model.selectionMode model.maxDropdownItems model.options)
             in
             ( { model
                 | options = updatedOptions
@@ -678,7 +678,7 @@ update msg model =
         MoveHighlightedOptionDown ->
             let
                 updatedOptions =
-                    moveHighlightedOptionDown model.options (figureOutWhichOptionsToShowInTheDropdown model.maxDropdownItems model.options)
+                    moveHighlightedOptionDown model.options (figureOutWhichOptionsToShowInTheDropdown model.selectionMode model.maxDropdownItems model.options)
             in
             ( { model
                 | options = updatedOptions
@@ -837,7 +837,7 @@ updateModelWithChangesThatEffectTheOptionsWithSearchString rightSlot selectionMo
     in
     { model
         | options =
-            adjustHighlightedOptionAfterSearch updatedOptions (figureOutWhichOptionsToShowInTheDropdown maxDropdownItems updatedOptions)
+            adjustHighlightedOptionAfterSearch updatedOptions (figureOutWhichOptionsToShowInTheDropdown selectionMode maxDropdownItems updatedOptions)
         , rightSlot =
             updateRightSlot
                 rightSlot
@@ -882,18 +882,18 @@ updateTheFullListOfOptions selectionMode customOptionHint searchString searchStr
         |> OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionMode customOptionHint searchString searchStringMinimumLength
 
 
-updateTheOptionsForTheDropdown : PositiveInt -> List Option -> List Option
-updateTheOptionsForTheDropdown maxDropdownItems options =
+updateTheOptionsForTheDropdown : SelectionMode -> PositiveInt -> List Option -> List Option
+updateTheOptionsForTheDropdown selectionMode maxDropdownItems options =
     options
         |> sortOptionsBySearchFilterTotalScore
-        |> figureOutWhichOptionsToShowInTheDropdown maxDropdownItems
+        |> figureOutWhichOptionsToShowInTheDropdown selectionMode maxDropdownItems
 
 
-figureOutWhichOptionsToShowInTheDropdown : PositiveInt -> List Option -> List Option
-figureOutWhichOptionsToShowInTheDropdown maxDropdownItems options =
+figureOutWhichOptionsToShowInTheDropdown : SelectionMode -> PositiveInt -> List Option -> List Option
+figureOutWhichOptionsToShowInTheDropdown selectionMode maxDropdownItems options =
     let
         optionsThatCouldBeShown =
-            filterOptionsToShowInDropdown options
+            filterOptionsToShowInDropdown selectionMode options
 
         lastIndexOfOptions =
             List.length optionsThatCouldBeShown - 1
@@ -1315,7 +1315,7 @@ dropdown : Model -> Html Msg
 dropdown model =
     let
         optionsForTheDropdown =
-            figureOutWhichOptionsToShowInTheDropdown model.maxDropdownItems model.options
+            figureOutWhichOptionsToShowInTheDropdown model.selectionMode model.maxDropdownItems model.options
 
         optionsHtml =
             -- TODO We should probably do something different if we are in a loading state

@@ -835,34 +835,59 @@ findHighlightedOrSelectedOptionIndex options =
             findSelectedOptionIndex options
 
 
-filterOptionsToShowInDropdown : List Option -> List Option
-filterOptionsToShowInDropdown =
-    filterOptionsToShowInDropdownByOptionDisplay >> filterOptionsToShowInDropdownBySearchScore
+filterOptionsToShowInDropdown : SelectionMode -> List Option -> List Option
+filterOptionsToShowInDropdown selectionMode =
+    filterOptionsToShowInDropdownByOptionDisplay selectionMode >> filterOptionsToShowInDropdownBySearchScore
 
 
-filterOptionsToShowInDropdownByOptionDisplay : List Option -> List Option
-filterOptionsToShowInDropdownByOptionDisplay =
-    List.filter
-        (\option ->
-            case getOptionDisplay option of
-                OptionShown ->
-                    True
+filterOptionsToShowInDropdownByOptionDisplay : SelectionMode -> List Option -> List Option
+filterOptionsToShowInDropdownByOptionDisplay selectionMode =
+    case selectionMode of
+        SingleSelect _ _ ->
+            List.filter
+                (\option ->
+                    case getOptionDisplay option of
+                        OptionShown ->
+                            True
 
-                OptionHidden ->
-                    False
+                        OptionHidden ->
+                            False
 
-                OptionSelected _ ->
-                    True
+                        OptionSelected _ ->
+                            True
 
-                OptionSelectedHighlighted _ ->
-                    True
+                        OptionSelectedHighlighted _ ->
+                            True
 
-                OptionHighlighted ->
-                    True
+                        OptionHighlighted ->
+                            True
 
-                OptionDisabled ->
-                    True
-        )
+                        OptionDisabled ->
+                            True
+                )
+
+        MultiSelect _ _ ->
+            List.filter
+                (\option ->
+                    case getOptionDisplay option of
+                        OptionShown ->
+                            True
+
+                        OptionHidden ->
+                            False
+
+                        OptionSelected _ ->
+                            False
+
+                        OptionSelectedHighlighted _ ->
+                            False
+
+                        OptionHighlighted ->
+                            True
+
+                        OptionDisabled ->
+                            True
+                )
 
 
 filterOptionsToShowInDropdownBySearchScore : List Option -> List Option
