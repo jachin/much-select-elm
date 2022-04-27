@@ -1032,14 +1032,6 @@ isRightSlotTransitioning rightSlot =
 
 view : Model -> Html Msg
 view model =
-    let
-        tabIndexAttribute =
-            if model.disabled then
-                style "" ""
-
-            else
-                tabindex 0
-    in
     case model.selectionMode of
         SingleSelect _ _ _ ->
             let
@@ -1065,7 +1057,7 @@ view model =
                     [ id "value-casing"
                     , attributeIf (not model.focused) (onMouseDown BringInputInFocus)
                     , attributeIf (not model.focused) (onFocus BringInputInFocus)
-                    , tabIndexAttribute
+                    , tabIndexAttribute model.disabled
                     , classList
                         [ ( "show-placeholder", showPlaceholder )
                         , ( "has-option-selected", hasOptionSelected )
@@ -1146,7 +1138,7 @@ view model =
                         [ ( Delete, DeleteKeydownForMultiSelect )
                         , ( Backspace, DeleteKeydownForMultiSelect )
                         ]
-                    , tabIndexAttribute
+                    , tabIndexAttribute model.disabled
                     , classList
                         [ ( "show-placeholder", showPlaceholder )
                         , ( "has-option-selected", hasOptionSelected )
@@ -1167,6 +1159,14 @@ view model =
                     )
                 , dropdown model
                 ]
+
+
+tabIndexAttribute disabled =
+    if disabled then
+        style "" ""
+
+    else
+        tabindex 0
 
 
 singleSelectInputField : String -> Bool -> Bool -> String -> Bool -> Html Msg
