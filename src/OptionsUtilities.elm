@@ -362,6 +362,11 @@ selectSingleOptionInList value options =
             )
 
 
+selectSingleOptionInListByString : String -> List Option -> List Option
+selectSingleOptionInListByString string options =
+    selectSingleOptionInList (stringToOptionValue string) options
+
+
 selectEmptyOption : List Option -> List Option
 selectEmptyOption options =
     options

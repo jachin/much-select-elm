@@ -88,6 +88,7 @@ import OptionsUtilities
         , selectOptionInListByOptionValue
         , selectOptionsInOptionsListByString
         , selectSingleOptionInList
+        , selectSingleOptionInListByString
         , selectedOptions
         , selectedOptionsToTuple
         , toggleSelectedHighlightByOptionValue
@@ -134,7 +135,7 @@ import Ports
         , valuesDecoder
         )
 import PositiveInt exposing (PositiveInt)
-import SelectionMode exposing (CustomOptions(..), OutputStyle(..), SelectedItemPlacementMode(..), SelectionMode(..), SingleItemRemoval(..), stringToOutputStyle)
+import SelectionMode exposing (CustomOptions(..), OutputStyle(..), SelectedItemPlacementMode(..), SelectionMode(..), SingleItemRemoval(..), getOutputStyle, stringToOutputStyle)
 import Task
 
 
@@ -268,30 +269,49 @@ update msg model =
                 ( model, blurInput () )
 
         InputBlur ->
-            let
-                optionsWithoutUnselectedCustomOptions =
-                    removeUnselectedCustomOptions model.options
-                        |> unhighlightSelectedOptions
-            in
-            ( { model
-                | searchString = ""
-                , options = optionsWithoutUnselectedCustomOptions
-                , showDropdown = False
-                , focused = False
-                , rightSlot = updateRightSlotTransitioning NotInFocusTransition model.rightSlot
-              }
-                |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-            , inputBlurred ()
-            )
+            case getOutputStyle model.selectionMode of
+                CustomHtml ->
+                    let
+                        optionsWithoutUnselectedCustomOptions =
+                            removeUnselectedCustomOptions model.options
+                                |> unhighlightSelectedOptions
+                    in
+                    ( { model
+                        | searchString = ""
+                        , options = optionsWithoutUnselectedCustomOptions
+                        , showDropdown = False
+                        , focused = False
+                        , rightSlot = updateRightSlotTransitioning NotInFocusTransition model.rightSlot
+                      }
+                        |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
+                    , inputBlurred ()
+                    )
+
+                Datalist ->
+                    ( { model
+                        | focused = False
+                        , options = selectSingleOptionInListByString model.searchString model.options
+                      }
+                    , inputBlurred ()
+                    )
 
         InputFocus ->
-            ( { model
-                | showDropdown = True
-                , focused = True
-                , rightSlot = updateRightSlotTransitioning NotInFocusTransition model.rightSlot
-              }
-            , Cmd.none
-            )
+            case getOutputStyle model.selectionMode of
+                CustomHtml ->
+                    ( { model
+                        | showDropdown = True
+                        , focused = True
+                        , rightSlot = updateRightSlotTransitioning NotInFocusTransition model.rightSlot
+                      }
+                    , Cmd.none
+                    )
+
+                Datalist ->
+                    ( { model
+                        | focused = True
+                      }
+                    , Cmd.none
+                    )
 
         DropdownMouseOverOption optionValue ->
             let
