@@ -96,7 +96,7 @@ equalOptionListValues optionsA optionsB =
 
 
 selectionMode =
-    SelectionMode.SingleSelect SelectionMode.NoCustomOptions SelectionMode.SelectedItemStaysInPlace
+    SelectionMode.SingleSelect SelectionMode.NoCustomOptions SelectionMode.SelectedItemStaysInPlace SelectionMode.CustomHtml
 
 
 suite : Test

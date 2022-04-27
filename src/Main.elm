@@ -51,7 +51,13 @@ import Option
 import OptionLabel exposing (OptionLabel(..), optionLabelToString)
 import OptionPresentor exposing (tokensToHtml)
 import OptionSearcher exposing (doesSearchStringFindNothing)
-import OptionSorting exposing (OptionSort(..), sortOptions, sortOptionsBySearchFilterTotalScore, stringToOptionSort)
+import OptionSorting
+    exposing
+        ( OptionSort(..)
+        , sortOptions
+        , sortOptionsBySearchFilterTotalScore
+        , stringToOptionSort
+        )
 import OptionsUtilities
     exposing
         ( addAdditionalOptionsToOptionList
@@ -128,13 +134,7 @@ import Ports
         , valuesDecoder
         )
 import PositiveInt exposing (PositiveInt)
-import SelectionMode
-    exposing
-        ( CustomOptions(..)
-        , SelectedItemPlacementMode(..)
-        , SelectionMode(..)
-        , SingleItemRemoval(..)
-        )
+import SelectionMode exposing (CustomOptions(..), OutputStyle(..), SelectedItemPlacementMode(..), SelectionMode(..), SingleItemRemoval(..), stringToOutputStyle)
 import Task
 
 
@@ -324,11 +324,11 @@ update msg model =
                         MultiSelect _ _ ->
                             selectOptionInListByOptionValue optionValue model.options
 
-                        SingleSelect _ _ ->
+                        SingleSelect _ _ _ ->
                             selectSingleOptionInList optionValue model.options
             in
             case model.selectionMode of
-                SingleSelect _ _ ->
+                SingleSelect _ _ _ ->
                     ( { model
                         | options = updatedOptions
                         , searchString = ""
@@ -380,7 +380,7 @@ update msg model =
             let
                 valuesResult =
                     case model.selectionMode of
-                        SingleSelect _ _ ->
+                        SingleSelect _ _ _ ->
                             Json.Decode.decodeValue valueDecoder valuesJson
 
                         MultiSelect _ _ ->
@@ -472,7 +472,7 @@ update msg model =
                                 MultiSelect _ _ ->
                                     selectOptionInListByOptionValue optionValue model.options
 
-                                SingleSelect _ _ ->
+                                SingleSelect _ _ _ ->
                                     selectSingleOptionInList optionValue model.options
                     in
                     ( { model
@@ -569,7 +569,7 @@ update msg model =
 
                 newMode =
                     case model.selectionMode of
-                        SingleSelect _ _ ->
+                        SingleSelect _ _ _ ->
                             model.selectionMode
 
                         MultiSelect customOptions _ ->
@@ -617,7 +617,7 @@ update msg model =
                     selectHighlightedOption model.selectionMode model.options
             in
             case model.selectionMode of
-                SingleSelect _ _ ->
+                SingleSelect _ _ _ ->
                     ( { model
                         | options = updatedOptions
                         , searchString = ""
@@ -645,7 +645,7 @@ update msg model =
 
         DeleteInputForSingleSelect ->
             case model.selectionMode of
-                SingleSelect _ _ ->
+                SingleSelect _ _ _ ->
                     if hasSelectedOption model.options then
                         -- if there are ANY selected options, clear them all;
                         clearAllSelectedOption model
@@ -948,7 +948,7 @@ updateRightSlot current selectionMode hasSelectedOption =
     case current of
         ShowNothing ->
             case selectionMode of
-                SingleSelect _ _ ->
+                SingleSelect _ _ _ ->
                     ShowDropdownIndicator NotInFocusTransition
 
                 MultiSelect _ _ ->
@@ -963,7 +963,7 @@ updateRightSlot current selectionMode hasSelectedOption =
 
         ShowDropdownIndicator transitioning ->
             case selectionMode of
-                SingleSelect _ _ ->
+                SingleSelect _ _ _ ->
                     ShowDropdownIndicator transitioning
 
                 MultiSelect _ _ ->
@@ -988,7 +988,7 @@ updateRightSlotLoading isLoading selectionMode hasSelectedOption =
 
     else
         case selectionMode of
-            SingleSelect _ _ ->
+            SingleSelect _ _ _ ->
                 ShowDropdownIndicator NotInFocusTransition
 
             MultiSelect _ _ ->
@@ -1041,7 +1041,7 @@ view model =
                 tabindex 0
     in
     case model.selectionMode of
-        SingleSelect _ _ ->
+        SingleSelect _ _ _ ->
             let
                 hasOptionSelected =
                     hasSelectedOption model.options
@@ -1473,7 +1473,7 @@ optionToDropdownOption eventHandlers selectionMode option =
 
         OptionSelected _ ->
             case selectionMode of
-                SingleSelect _ _ ->
+                SingleSelect _ _ _ ->
                     div
                         [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
                         , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
@@ -1489,7 +1489,7 @@ optionToDropdownOption eventHandlers selectionMode option =
 
         OptionSelectedHighlighted _ ->
             case selectionMode of
-                SingleSelect _ _ ->
+                SingleSelect _ _ _ ->
                     div
                         [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
                         , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
@@ -1723,6 +1723,7 @@ type alias Flags =
     , placeholder : String
     , customOptionHint : Maybe String
     , allowMultiSelect : Bool
+    , outputStyle : String
     , enableMultiSelectSingleItemRemoval : Bool
     , optionsJson : String
     , optionSort : String
@@ -1778,6 +1779,10 @@ init flags =
             stringToOptionSort flags.optionSort
                 |> Result.withDefault NoSorting
 
+        outputStyle =
+            stringToOutputStyle flags.outputStyle
+                |> Result.withDefault CustomHtml
+
         selectionMode =
             if flags.allowMultiSelect then
                 let
@@ -1791,13 +1796,13 @@ init flags =
                 MultiSelect allowCustomOptions singleItemRemoval
 
             else
-                SingleSelect allowCustomOptions selectedItemPlacementMode
+                SingleSelect allowCustomOptions selectedItemPlacementMode outputStyle
 
         ( initialValues, initialValueErrCmd ) =
             case Json.Decode.decodeValue (Json.Decode.oneOf [ valuesDecoder, valueDecoder ]) flags.value of
                 Ok values ->
                     case selectionMode of
-                        SingleSelect _ _ ->
+                        SingleSelect _ _ _ ->
                             ( values, Cmd.none )
 
                         MultiSelect _ _ ->
@@ -1810,7 +1815,7 @@ init flags =
             case Json.Decode.decodeString Option.optionsDecoder flags.optionsJson of
                 Ok options ->
                     case selectionMode of
-                        SingleSelect _ _ ->
+                        SingleSelect _ _ _ ->
                             case List.head initialValues of
                                 Just initialValueStr_ ->
                                     if isOptionValueInListOfOptionsByValue (Option.stringToOptionValue initialValueStr_) options then
@@ -1871,7 +1876,7 @@ init flags =
 
             else
                 case selectionMode of
-                    SingleSelect _ _ ->
+                    SingleSelect _ _ _ ->
                         ShowDropdownIndicator NotInFocusTransition
 
                     MultiSelect _ _ ->

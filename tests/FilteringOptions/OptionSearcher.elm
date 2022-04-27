@@ -11,7 +11,10 @@ import Test exposing (Test, describe, test)
 
 
 selectionMode =
-    SelectionMode.SingleSelect SelectionMode.NoCustomOptions SelectionMode.SelectedItemStaysInPlace
+    SelectionMode.SingleSelect
+        SelectionMode.NoCustomOptions
+        SelectionMode.SelectedItemStaysInPlace
+        SelectionMode.CustomHtml
 
 
 minervaryaPentali =

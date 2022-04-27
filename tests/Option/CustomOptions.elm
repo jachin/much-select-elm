@@ -133,13 +133,13 @@ suite =
             \_ ->
                 let
                     selectionMode =
-                        SingleSelect AllowCustomOptions SelectedItemStaysInPlace
+                        SingleSelect AllowCustomOptions SelectedItemStaysInPlace SelectionMode.CustomHtml
                 in
                 Expect.equalLists
                     ([ birchWood
                      ]
                         |> updateTheFullListOfOptions
-                            (SingleSelect AllowCustomOptions SelectedItemStaysInPlace)
+                            (SingleSelect AllowCustomOptions SelectedItemStaysInPlace SelectionMode.CustomHtml)
                             (Just "{{}}")
                             "mil"
                             (PositiveInt.new 5)

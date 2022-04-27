@@ -19,6 +19,13 @@ thirdEyeBlind =
     Option.newOption "Third Eye Blind" Nothing
 
 
+selectionMode =
+    SelectionMode.SingleSelect
+        SelectionMode.NoCustomOptions
+        SelectionMode.SelectedItemStaysInPlace
+        SelectionMode.CustomHtml
+
+
 suite : Test
 suite =
     describe "Replacing options"
@@ -28,7 +35,7 @@ suite =
                     Expect.equalLists
                         [ futureCop, theMidnight ]
                         (replaceOptions
-                            (SelectionMode.MultiSelect SelectionMode.NoCustomOptions SelectionMode.EnableSingleItemRemoval)
+                            selectionMode
                             [ thirdEyeBlind, futureCop ]
                             [ futureCop, theMidnight ]
                         )
@@ -37,7 +44,7 @@ suite =
                     Expect.equalLists
                         [ futureCop, Option.selectOption 0 theMidnight ]
                         (replaceOptions
-                            (SelectionMode.MultiSelect SelectionMode.NoCustomOptions SelectionMode.EnableSingleItemRemoval)
+                            selectionMode
                             [ thirdEyeBlind, futureCop ]
                             [ futureCop, Option.selectOption 0 theMidnight ]
                         )
@@ -45,7 +52,7 @@ suite =
                 \_ ->
                     Expect.equalLists
                         (replaceOptions
-                            (SelectionMode.MultiSelect SelectionMode.NoCustomOptions SelectionMode.EnableSingleItemRemoval)
+                            selectionMode
                             [ Option.selectOption 0 thirdEyeBlind, futureCop ]
                             [ futureCop, theMidnight ]
                         )
@@ -56,7 +63,7 @@ suite =
                 \_ ->
                     Expect.equalLists
                         (replaceOptions
-                            (SelectionMode.SingleSelect SelectionMode.NoCustomOptions SelectionMode.SelectedItemStaysInPlace)
+                            selectionMode
                             [ futureCop, theMidnight ]
                             [ Option.selectOption 0 thirdEyeBlind, futureCop ]
                         )
@@ -65,7 +72,7 @@ suite =
                 \_ ->
                     Expect.equalLists
                         (replaceOptions
-                            (SelectionMode.SingleSelect SelectionMode.NoCustomOptions SelectionMode.SelectedItemStaysInPlace)
+                            selectionMode
                             [ Option.selectOption 0 thirdEyeBlind, theMidnight ]
                             [ thirdEyeBlind, futureCop ]
                         )
@@ -74,7 +81,7 @@ suite =
                 \_ ->
                     Expect.equalLists
                         (replaceOptions
-                            (SelectionMode.SingleSelect SelectionMode.NoCustomOptions SelectionMode.SelectedItemStaysInPlace)
+                            selectionMode
                             [ Option.selectOption 0 thirdEyeBlind, theMidnight ]
                             [ Option.selectOption 0 thirdEyeBlind, futureCop ]
                         )
@@ -83,7 +90,7 @@ suite =
                 \_ ->
                     Expect.equalLists
                         (replaceOptions
-                            (SelectionMode.SingleSelect SelectionMode.NoCustomOptions SelectionMode.SelectedItemStaysInPlace)
+                            selectionMode
                             [ Option.selectOption 0 thirdEyeBlind, theMidnight ]
                             [ futureCop ]
                         )
@@ -92,7 +99,7 @@ suite =
                 \_ ->
                     Expect.equalLists
                         (replaceOptions
-                            (SelectionMode.SingleSelect SelectionMode.NoCustomOptions SelectionMode.SelectedItemStaysInPlace)
+                            selectionMode
                             [ Option.selectOption 0 thirdEyeBlind, theMidnight ]
                             [ Option.selectOption 0 futureCop ]
                         )
