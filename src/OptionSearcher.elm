@@ -1,4 +1,4 @@
-module OptionSearcher exposing (doesSearchStringFindNothing, simpleMatch, updateOptionsWithSearchStringAndCustomOption, updateSearchResultInOption)
+module OptionSearcher exposing (doesSearchStringFindNothing, simpleMatch, updateOptionsWithSearchStringAndCustomOption, updateOrAddCustomOption, updateSearchResultInOption)
 
 import Fuzzy exposing (Result, match)
 import Option exposing (Option(..), OptionDisplay(..))

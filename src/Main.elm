@@ -50,7 +50,7 @@ import Option
         )
 import OptionLabel exposing (OptionLabel(..), optionLabelToString)
 import OptionPresentor exposing (tokensToHtml)
-import OptionSearcher exposing (doesSearchStringFindNothing)
+import OptionSearcher exposing (doesSearchStringFindNothing, updateOrAddCustomOption)
 import OptionSorting
     exposing
         ( OptionSort(..)
@@ -150,6 +150,7 @@ type Msg
     | UpdateSearchString String
     | UpdateOptionsWithSearchString
     | MsgQuietUpdateOptionsWithSearchString (Debouncer.Messages.Msg Msg)
+    | TextInputOnInput String
     | ValueChanged Json.Decode.Value
     | OptionsReplaced Json.Decode.Value
     | OptionSortingChanged String
@@ -375,6 +376,14 @@ update msg model =
 
         MsgQuietUpdateOptionsWithSearchString subMsg ->
             Debouncer.Messages.update update updateDebouncer subMsg model
+
+        TextInputOnInput inputString ->
+            ( { model
+                | searchString = inputString
+                , options = updateOrAddCustomOption (Just "{{}}") inputString model.selectionMode model.options
+              }
+            , inputKeyUp inputString
+            )
 
         ValueChanged valuesJson ->
             let
@@ -1033,65 +1042,8 @@ isRightSlotTransitioning rightSlot =
 view : Model -> Html Msg
 view model =
     case model.selectionMode of
-        SingleSelect _ _ _ ->
-            let
-                hasOptionSelected =
-                    hasSelectedOption model.options
-
-                showPlaceholder =
-                    not hasOptionSelected && not model.focused
-
-                valueStr =
-                    if hasOptionSelected then
-                        model.options
-                            |> selectedOptionsToTuple
-                            |> List.map Tuple.second
-                            |> List.head
-                            |> Maybe.withDefault ""
-
-                    else
-                        ""
-            in
-            div [ id "wrapper" ]
-                [ div
-                    [ id "value-casing"
-                    , attributeIf (not model.focused) (onMouseDown BringInputInFocus)
-                    , attributeIf (not model.focused) (onFocus BringInputInFocus)
-                    , tabIndexAttribute model.disabled
-                    , classList
-                        [ ( "show-placeholder", showPlaceholder )
-                        , ( "has-option-selected", hasOptionSelected )
-                        , ( "no-option-selected", not hasOptionSelected )
-                        , ( "single", True )
-                        , ( "disabled", model.disabled )
-                        , ( "focused", model.focused )
-                        , ( "not-focused", not model.focused )
-                        ]
-                    ]
-                    [ span
-                        [ id "selected-value" ]
-                        [ text valueStr ]
-                    , singleSelectInputField
-                        model.searchString
-                        model.disabled
-                        model.focused
-                        model.placeholder
-                        hasOptionSelected
-                    , case model.rightSlot of
-                        ShowNothing ->
-                            text ""
-
-                        ShowLoadingIndicator ->
-                            node "slot" [ name "loading-indicator" ] [ defaultLoadingIndicator ]
-
-                        ShowDropdownIndicator transitioning ->
-                            dropdownIndicator model.focused model.disabled transitioning
-
-                        ShowClearButton ->
-                            node "slot" [ name "clear-button" ] []
-                    ]
-                , dropdown model
-                ]
+        SingleSelect _ _ outputStyle ->
+            singleSelectView outputStyle model
 
         MultiSelect _ enableSingleItemRemoval ->
             let
@@ -1161,6 +1113,78 @@ view model =
                 ]
 
 
+singleSelectView : OutputStyle -> Model -> Html Msg
+singleSelectView outputStyle model =
+    case outputStyle of
+        CustomHtml ->
+            singleSelectViewCustomHtml model
+
+        Datalist ->
+            singleSelectViewDatalistHtml model
+
+
+singleSelectViewCustomHtml : Model -> Html Msg
+singleSelectViewCustomHtml model =
+    let
+        hasOptionSelected =
+            hasSelectedOption model.options
+
+        showPlaceholder =
+            not hasOptionSelected && not model.focused
+
+        valueStr =
+            if hasOptionSelected then
+                model.options
+                    |> selectedOptionsToTuple
+                    |> List.map Tuple.second
+                    |> List.head
+                    |> Maybe.withDefault ""
+
+            else
+                ""
+    in
+    div [ id "wrapper" ]
+        [ div
+            [ id "value-casing"
+            , attributeIf (not model.focused) (onMouseDown BringInputInFocus)
+            , attributeIf (not model.focused) (onFocus BringInputInFocus)
+            , tabIndexAttribute model.disabled
+            , classList
+                [ ( "show-placeholder", showPlaceholder )
+                , ( "has-option-selected", hasOptionSelected )
+                , ( "no-option-selected", not hasOptionSelected )
+                , ( "single", True )
+                , ( "disabled", model.disabled )
+                , ( "focused", model.focused )
+                , ( "not-focused", not model.focused )
+                ]
+            ]
+            [ span
+                [ id "selected-value" ]
+                [ text valueStr ]
+            , singleSelectCustomHtmlInputField
+                model.searchString
+                model.disabled
+                model.focused
+                model.placeholder
+                hasOptionSelected
+            , case model.rightSlot of
+                ShowNothing ->
+                    text ""
+
+                ShowLoadingIndicator ->
+                    node "slot" [ name "loading-indicator" ] [ defaultLoadingIndicator ]
+
+                ShowDropdownIndicator transitioning ->
+                    dropdownIndicator model.focused model.disabled transitioning
+
+                ShowClearButton ->
+                    node "slot" [ name "clear-button" ] []
+            ]
+        , dropdown model
+        ]
+
+
 tabIndexAttribute disabled =
     if disabled then
         style "" ""
@@ -1169,8 +1193,8 @@ tabIndexAttribute disabled =
         tabindex 0
 
 
-singleSelectInputField : String -> Bool -> Bool -> String -> Bool -> Html Msg
-singleSelectInputField searchString isDisabled focused placeholder_ hasSelectedOption =
+singleSelectCustomHtmlInputField : String -> Bool -> Bool -> String -> Bool -> Html Msg
+singleSelectCustomHtmlInputField searchString isDisabled focused placeholder_ hasSelectedOption =
     let
         keyboardEvents =
             Keyboard.customPerKey Keyboard.Keydown
@@ -1271,6 +1295,103 @@ singleSelectInputField searchString isDisabled focused placeholder_ hasSelectedO
             , value searchString
             , placeholderAttribute
             , keyboardEvents
+            ]
+            []
+
+
+singleSelectViewDatalistHtml : Model -> Html Msg
+singleSelectViewDatalistHtml model =
+    let
+        hasOptionSelected =
+            hasSelectedOption model.options
+
+        showPlaceholder =
+            not hasOptionSelected && not model.focused
+
+        valueStr =
+            if hasOptionSelected then
+                model.options
+                    |> selectedOptionsToTuple
+                    |> List.map Tuple.second
+                    |> List.head
+                    |> Maybe.withDefault ""
+
+            else
+                ""
+    in
+    div [ id "wrapper" ]
+        [ div
+            [ id "value-casing"
+            , attributeIf (not model.focused) (onMouseDown BringInputInFocus)
+            , attributeIf (not model.focused) (onFocus BringInputInFocus)
+            , tabIndexAttribute model.disabled
+            , classList
+                [ ( "show-placeholder", showPlaceholder )
+                , ( "has-option-selected", hasOptionSelected )
+                , ( "no-option-selected", not hasOptionSelected )
+                , ( "single", True )
+                , ( "disabled", model.disabled )
+                , ( "focused", model.focused )
+                , ( "not-focused", not model.focused )
+                ]
+            ]
+            [ span
+                [ id "selected-value" ]
+                [ text valueStr ]
+            , singleSelectDatasetInputField
+                model.searchString
+                model.disabled
+                model.focused
+                model.placeholder
+                hasOptionSelected
+            ]
+        , datalist model.options
+        ]
+
+
+singleSelectDatasetInputField : String -> Bool -> Bool -> String -> Bool -> Html Msg
+singleSelectDatasetInputField searchString isDisabled focused placeholder_ hasSelectedOption =
+    let
+        idAttr =
+            id "input-filter"
+
+        typeAttr =
+            type_ "text"
+
+        onBlurAttr =
+            onBlur InputBlur
+
+        onFocusAttr =
+            onFocus InputFocus
+
+        showPlaceholder =
+            not hasSelectedOption && not focused
+
+        placeholderAttribute =
+            if showPlaceholder then
+                placeholder placeholder_
+
+            else
+                style "" ""
+    in
+    if isDisabled then
+        input
+            [ disabled True
+            , idAttr
+            , placeholderAttribute
+            ]
+            []
+
+    else
+        input
+            [ typeAttr
+            , idAttr
+            , onBlurAttr
+            , onFocusAttr
+            , onInput TextInputOnInput
+            , value searchString
+            , placeholderAttribute
+            , Html.Attributes.list "datalist-options"
             ]
             []
 
@@ -1632,6 +1753,18 @@ valueLabelHtml labelText optionValue =
             (ToggleSelectedValueHighlight optionValue)
         ]
         [ text labelText ]
+
+
+datalist : List Option -> Html Msg
+datalist options =
+    Html.datalist
+        [ Html.Attributes.id "datalist-options" ]
+        (options
+            |> List.map
+                (\option ->
+                    Html.option [ Html.Attributes.value (Option.getOptionValueAsString option) ] []
+                )
+        )
 
 
 rightSlotHtml : RightSlot -> Bool -> Bool -> Html Msg
