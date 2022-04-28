@@ -31,7 +31,7 @@ type SingleItemRemoval
 
 type SelectionMode
     = SingleSelect CustomOptions SelectedItemPlacementMode OutputStyle
-    | MultiSelect CustomOptions SingleItemRemoval
+    | MultiSelect CustomOptions SingleItemRemoval OutputStyle
 
 
 type SelectedItemPlacementMode
@@ -45,7 +45,7 @@ getCustomOptions selectionMode =
         SingleSelect customOptions _ _ ->
             customOptions
 
-        MultiSelect customOptions _ ->
+        MultiSelect customOptions _ _ ->
             customOptions
 
 
@@ -59,12 +59,12 @@ setAllowCustomOptionsWithBool bool mode =
             else
                 SingleSelect NoCustomOptions selectedItemPlacementMode outputStyle
 
-        MultiSelect _ singleItemRemoval ->
+        MultiSelect _ singleItemRemoval outputStyle ->
             if bool then
-                MultiSelect AllowCustomOptions singleItemRemoval
+                MultiSelect AllowCustomOptions singleItemRemoval outputStyle
 
             else
-                MultiSelect NoCustomOptions singleItemRemoval
+                MultiSelect NoCustomOptions singleItemRemoval outputStyle
 
 
 getSelectedItemPlacementMode : SelectionMode -> SelectedItemPlacementMode
@@ -73,7 +73,7 @@ getSelectedItemPlacementMode selectionMode =
         SingleSelect _ selectedItemPlacementMode _ ->
             selectedItemPlacementMode
 
-        MultiSelect _ _ ->
+        MultiSelect _ _ _ ->
             SelectedItemStaysInPlace
 
 
@@ -87,26 +87,26 @@ setSelectedItemStaysInPlace selectedItemStaysInPlace selectionMode =
             else
                 SingleSelect customOptions SelectedItemMovesToTheTop outputStyle
 
-        MultiSelect _ _ ->
+        MultiSelect _ _ _ ->
             selectionMode
 
 
 setMultiSelectModeWithBool : Bool -> SelectionMode -> SelectionMode
 setMultiSelectModeWithBool isInMultiSelectMode selectionMode =
     case selectionMode of
-        SingleSelect customOptions _ _ ->
+        SingleSelect customOptions _ outputStyle ->
             if isInMultiSelectMode then
-                MultiSelect customOptions DisableSingleItemRemoval
+                MultiSelect customOptions DisableSingleItemRemoval outputStyle
 
             else
                 selectionMode
 
-        MultiSelect customOptions _ ->
+        MultiSelect customOptions _ outputStyle ->
             if isInMultiSelectMode then
                 selectionMode
 
             else
-                SingleSelect customOptions SelectedItemStaysInPlace CustomHtml
+                SingleSelect customOptions SelectedItemStaysInPlace outputStyle
 
 
 stringToOutputStyle : String -> Result String OutputStyle
@@ -128,5 +128,5 @@ getOutputStyle selectionMode =
         SingleSelect _ _ outputStyle ->
             outputStyle
 
-        MultiSelect _ _ ->
-            CustomHtml
+        MultiSelect _ _ outputStyle ->
+            outputStyle

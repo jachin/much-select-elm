@@ -382,7 +382,7 @@ update msg model =
             let
                 updatedOptions =
                     case model.selectionMode of
-                        MultiSelect _ _ ->
+                        MultiSelect _ _ _ ->
                             selectOptionInListByOptionValue optionValue model.options
 
                         SingleSelect _ _ _ ->
@@ -401,7 +401,7 @@ update msg model =
                         ]
                     )
 
-                MultiSelect _ _ ->
+                MultiSelect _ _ _ ->
                     ( { model
                         | options = updatedOptions
                         , searchString = ""
@@ -452,7 +452,7 @@ update msg model =
                         SingleSelect _ _ _ ->
                             Json.Decode.decodeValue valueDecoder valuesJson
 
-                        MultiSelect _ _ ->
+                        MultiSelect _ _ _ ->
                             Json.Decode.decodeValue valuesDecoder valuesJson
             in
             case valuesResult of
@@ -538,7 +538,7 @@ update msg model =
 
                         updatedOptions =
                             case model.selectionMode of
-                                MultiSelect _ _ ->
+                                MultiSelect _ _ _ ->
                                     selectOptionInListByOptionValue optionValue model.options
 
                                 SingleSelect _ _ _ ->
@@ -641,8 +641,8 @@ update msg model =
                         SingleSelect _ _ _ ->
                             model.selectionMode
 
-                        MultiSelect customOptions _ ->
-                            MultiSelect customOptions multiSelectSingleItemRemoval
+                        MultiSelect customOptions _ outputStyle ->
+                            MultiSelect customOptions multiSelectSingleItemRemoval outputStyle
             in
             ( { model
                 | selectionMode = newMode
@@ -701,7 +701,7 @@ update msg model =
                         ]
                     )
 
-                MultiSelect _ _ ->
+                MultiSelect _ _ _ ->
                     ( { model
                         | options = updatedOptions
                         , searchString = ""
@@ -723,7 +723,7 @@ update msg model =
                     else
                         ( model, Cmd.none )
 
-                MultiSelect _ _ ->
+                MultiSelect _ _ _ ->
                     ( model, Cmd.none )
 
         EscapeKeyInInputFilter ->
@@ -1021,7 +1021,7 @@ updateRightSlot current selectionMode hasSelectedOption =
                 SingleSelect _ _ _ ->
                     ShowDropdownIndicator NotInFocusTransition
 
-                MultiSelect _ _ ->
+                MultiSelect _ _ _ ->
                     if hasSelectedOption then
                         ShowClearButton
 
@@ -1036,7 +1036,7 @@ updateRightSlot current selectionMode hasSelectedOption =
                 SingleSelect _ _ _ ->
                     ShowDropdownIndicator transitioning
 
-                MultiSelect _ _ ->
+                MultiSelect _ _ _ ->
                     if hasSelectedOption then
                         ShowClearButton
 
@@ -1061,7 +1061,7 @@ updateRightSlotLoading isLoading selectionMode hasSelectedOption =
             SingleSelect _ _ _ ->
                 ShowDropdownIndicator NotInFocusTransition
 
-            MultiSelect _ _ ->
+            MultiSelect _ _ _ ->
                 if hasSelectedOption then
                     ShowClearButton
 
@@ -1106,7 +1106,7 @@ view model =
         SingleSelect _ _ outputStyle ->
             singleSelectView outputStyle model
 
-        MultiSelect _ enableSingleItemRemoval ->
+        MultiSelect _ enableSingleItemRemoval _ ->
             let
                 hasOptionSelected =
                     hasSelectedOption model.options
@@ -1652,7 +1652,7 @@ optionToDropdownOption eventHandlers selectionMode option =
                         ]
                         [ labelHtml, descriptionHtml ]
 
-                MultiSelect _ _ ->
+                MultiSelect _ _ _ ->
                     text ""
 
         OptionSelectedHighlighted _ ->
@@ -1669,7 +1669,7 @@ optionToDropdownOption eventHandlers selectionMode option =
                         ]
                         [ labelHtml, descriptionHtml ]
 
-                MultiSelect _ _ ->
+                MultiSelect _ _ _ ->
                     text ""
 
         OptionHighlighted ->
@@ -1973,7 +1973,7 @@ init flags =
                         else
                             DisableSingleItemRemoval
                 in
-                MultiSelect allowCustomOptions singleItemRemoval
+                MultiSelect allowCustomOptions singleItemRemoval outputStyle
 
             else
                 SingleSelect allowCustomOptions selectedItemPlacementMode outputStyle
@@ -1985,7 +1985,7 @@ init flags =
                         SingleSelect _ _ _ ->
                             ( values, Cmd.none )
 
-                        MultiSelect _ _ ->
+                        MultiSelect _ _ _ ->
                             ( values, Cmd.none )
 
                 Err error ->
@@ -2020,7 +2020,7 @@ init flags =
                                     in
                                     ( optionsWithUniqueValues, Cmd.none )
 
-                        MultiSelect _ _ ->
+                        MultiSelect _ _ _ ->
                             let
                                 -- Don't include any empty options, that doesn't make sense.
                                 optionsWithInitialValues =
@@ -2059,7 +2059,7 @@ init flags =
                     SingleSelect _ _ _ ->
                         ShowDropdownIndicator NotInFocusTransition
 
-                    MultiSelect _ _ ->
+                    MultiSelect _ _ _ ->
                         if hasSelectedOption optionsWithInitialValueSelected then
                             ShowClearButton
 

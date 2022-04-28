@@ -308,7 +308,7 @@ selectHighlightedOption selectionMode options =
                         case option of
                             Option _ _ value _ _ _ ->
                                 case selectionMode of
-                                    MultiSelect _ _ ->
+                                    MultiSelect _ _ _ ->
                                         selectOptionInListByOptionValue value options
                                             |> clearAnyUnselectedCustomOptions
 
@@ -317,7 +317,7 @@ selectHighlightedOption selectionMode options =
 
                             CustomOption _ _ value _ ->
                                 case selectionMode of
-                                    MultiSelect _ _ ->
+                                    MultiSelect _ _ _ ->
                                         selectOptionInListByOptionValue value options
 
                                     SingleSelect _ _ _ ->
@@ -325,7 +325,7 @@ selectHighlightedOption selectionMode options =
 
                             EmptyOption _ _ ->
                                 case selectionMode of
-                                    MultiSelect _ _ ->
+                                    MultiSelect _ _ _ ->
                                         selectEmptyOption options
 
                                     SingleSelect _ _ _ ->
@@ -931,7 +931,7 @@ filterOptionsToShowInDropdownByOptionDisplay selectionMode =
                             True
                 )
 
-        MultiSelect _ _ ->
+        MultiSelect _ _ _ ->
             List.filter
                 (\option ->
                     case getOptionDisplay option of
@@ -1094,7 +1094,7 @@ replaceOptions selectionMode oldOptions newOptions =
                         oldSelectedOptions
                         newOptions
 
-        MultiSelect _ _ ->
+        MultiSelect _ _ _ ->
             mergeTwoListsOfOptionsPreservingSelectedOptions
                 SelectedItemStaysInPlace
                 oldSelectedOptions
