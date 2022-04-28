@@ -79,6 +79,7 @@ import OptionsUtilities
         , deselectLastSelectedOption
         , deselectOptionInListByOptionValue
         , filterOptionsToShowInDropdown
+        , findHighlightedOption
         , findHighlightedOrSelectedOptionIndex
         , findOptionByOptionUsingValueString
         , findOptionByOptionValue
@@ -681,6 +682,9 @@ update msg model =
 
         SelectHighlightedOption ->
             let
+                maybeHighlightedOptionValue =
+                    findHighlightedOption model.options |> Maybe.map Option.getOptionValue
+
                 updatedOptions =
                     selectHighlightedOption model.selectionMode model.options
             in
@@ -692,8 +696,7 @@ update msg model =
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , Cmd.batch
-                        -- TODO Figure out what the highlighted option in here
-                        [ makeCommandMessagesWhenValuesChanges updatedOptions Nothing
+                        [ makeCommandMessagesWhenValuesChanges updatedOptions maybeHighlightedOptionValue
                         , blurInput ()
                         ]
                     )
@@ -704,9 +707,8 @@ update msg model =
                         , searchString = ""
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-                      -- TODO Figure out what the highlighted option in here
                     , Cmd.batch
-                        [ makeCommandMessagesWhenValuesChanges updatedOptions Nothing
+                        [ makeCommandMessagesWhenValuesChanges updatedOptions maybeHighlightedOptionValue
                         , focusInput ()
                         ]
                     )

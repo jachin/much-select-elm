@@ -870,6 +870,11 @@ prependCustomOption maybeCustomOptionHint searchString options =
         ++ options
 
 
+findHighlightedOption : List Option -> Maybe Option
+findHighlightedOption options =
+    List.Extra.find (\option -> isOptionHighlighted option) options
+
+
 findHighlightedOptionIndex : List Option -> Maybe Int
 findHighlightedOptionIndex options =
     List.Extra.findIndex (\option -> isOptionHighlighted option) options
