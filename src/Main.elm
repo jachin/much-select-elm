@@ -16,6 +16,7 @@ import Html
         , div
         , input
         , node
+        , optgroup
         , span
         , text
         )
@@ -1847,12 +1848,28 @@ datalist : List Option -> Html Msg
 datalist options =
     Html.datalist
         [ Html.Attributes.id "datalist-options" ]
-        (options
-            |> List.map
-                (\option ->
-                    Html.option [ Html.Attributes.value (Option.getOptionValueAsString option) ] []
-                )
+        (List.concatMap
+            dataListOptionGroupToHtml
+            (groupOptionsInOrder options)
         )
+
+
+dataListOptionGroupToHtml : ( OptionGroup, List Option ) -> List (Html Msg)
+dataListOptionGroupToHtml ( optionGroup, options ) =
+    case Option.optionGroupToString optionGroup of
+        "" ->
+            List.map optionToDatalistOption options
+
+        optionGroupAsString ->
+            [ optgroup
+                [ Html.Attributes.attribute "label" optionGroupAsString ]
+                (List.map optionToDatalistOption options)
+            ]
+
+
+optionToDatalistOption : Option -> Html msg
+optionToDatalistOption option =
+    Html.option [ Html.Attributes.value (Option.getOptionValueAsString option) ] []
 
 
 rightSlotHtml : RightSlot -> Bool -> Bool -> Html Msg
