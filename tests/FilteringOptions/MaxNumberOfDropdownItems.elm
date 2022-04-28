@@ -6,7 +6,7 @@ import Option exposing (newOption, setGroupWithString)
 import OptionSearcher
 import OptionsUtilities exposing (highlightOptionInList, selectOptionInList)
 import PositiveInt
-import SelectionMode exposing (CustomOptions(..), SelectedItemPlacementMode(..), SelectionMode(..), SingleItemRemoval(..))
+import SelectionMode exposing (CustomOptions(..), OutputStyle(..), SelectedItemPlacementMode(..), SelectionMode(..), SingleItemRemoval(..))
 import Test exposing (Test, describe, test)
 
 
@@ -303,7 +303,7 @@ suite =
                             three
                             (tools
                                 |> OptionSearcher.updateOptionsWithSearchStringAndCustomOption
-                                    (MultiSelect NoCustomOptions DisableSingleItemRemoval)
+                                    (MultiSelect NoCustomOptions DisableSingleItemRemoval CustomHtml)
                                     Nothing
                                     "wrench"
                                     (PositiveInt.new 2)

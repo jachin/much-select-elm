@@ -223,8 +223,7 @@ type alias Model =
     , maxDropdownItems : PositiveInt
     , disabled : Bool
     , focused : Bool
-    , valueCasingWidth : Float
-    , valueCasingHeight : Float
+    , valueCasing : ValueCasing
     , deleteKeyPressed : Bool
     , showDropdownFooter : Bool
     }
@@ -243,6 +242,10 @@ type RightSlot
     | ShowLoadingIndicator
     | ShowDropdownIndicator FocusTransition
     | ShowClearButton
+
+
+type ValueCasing
+    = ValueCasing Float Float
 
 
 updateDebouncer : Debouncer.Messages.UpdateConfig Msg Model
@@ -758,7 +761,7 @@ update msg model =
             )
 
         ValueCasingWidthUpdate dims ->
-            ( { model | valueCasingWidth = dims.width, valueCasingHeight = dims.height }, Cmd.none )
+            ( { model | valueCasing = ValueCasing dims.width dims.height }, Cmd.none )
 
         ClearAllSelectedOptions ->
             clearAllSelectedOption model
@@ -1137,8 +1140,7 @@ multiSelectView outputStyle enableSingleItemRemoval model =
                 model.maxDropdownItems
                 model.searchStringMinimumLength
                 model.showDropdownFooter
-                model.valueCasingHeight
-                model.valueCasingHeight
+                model.valueCasing
                 model.showDropdown
 
         Datalist ->
@@ -1234,21 +1236,21 @@ singleSelectViewCustomHtml model =
                 ShowClearButton ->
                     node "slot" [ name "clear-button" ] []
             ]
-        , dropdown model.selectionMode
+        , dropdown
+            model.selectionMode
             model.options
             model.maxDropdownItems
             model.searchString
             model.searchStringMinimumLength
             model.showDropdownFooter
-            model.valueCasingHeight
-            model.valueCasingWidth
+            model.valueCasing
             model.showDropdown
             model.disabled
         ]
 
 
-multiSelectViewCustomHtml : SelectionMode -> SingleItemRemoval -> List Option -> Bool -> String -> String -> Bool -> RightSlot -> PositiveInt -> PositiveInt -> Bool -> Float -> Float -> Bool -> Html Msg
-multiSelectViewCustomHtml selectionMode enableSingleItemRemoval options isFocused placeholderString searchString isDisabled rightSlot maxDropdownItems searchStringMinimumLength showDropdownFooter valueCasingHeight valueCasingWidth showDropdown =
+multiSelectViewCustomHtml : SelectionMode -> SingleItemRemoval -> List Option -> Bool -> String -> String -> Bool -> RightSlot -> PositiveInt -> PositiveInt -> Bool -> ValueCasing -> Bool -> Html Msg
+multiSelectViewCustomHtml selectionMode enableSingleItemRemoval options isFocused placeholderString searchString isDisabled rightSlot maxDropdownItems searchStringMinimumLength showDropdownFooter valueCasing showDropdown =
     let
         hasOptionSelected =
             hasSelectedOption options
@@ -1312,14 +1314,14 @@ multiSelectViewCustomHtml selectionMode enableSingleItemRemoval options isFocuse
                         isDisabled
                    ]
             )
-        , dropdown selectionMode
+        , dropdown
+            selectionMode
             options
             maxDropdownItems
             searchString
             searchStringMinimumLength
             showDropdownFooter
-            valueCasingHeight
-            valueCasingWidth
+            valueCasing
             showDropdown
             isDisabled
         ]
@@ -1558,8 +1560,8 @@ type alias DropdownItemEventListeners msg =
     }
 
 
-dropdown : SelectionMode -> List Option -> PositiveInt -> String -> PositiveInt -> Bool -> Float -> Float -> Bool -> Bool -> Html Msg
-dropdown selectionMode options maxDropdownItems searchString searchStringMinimumLength showDropdownFooter valueCasingHeight valueCasingWidth showDropdown isDisabled =
+dropdown : SelectionMode -> List Option -> PositiveInt -> String -> PositiveInt -> Bool -> ValueCasing -> Bool -> Bool -> Html Msg
+dropdown selectionMode options maxDropdownItems searchString searchStringMinimumLength showDropdownFooter (ValueCasing valueCasingWidth valueCasingHeight) showDropdown isDisabled =
     let
         optionsForTheDropdown =
             figureOutWhichOptionsToShowInTheDropdown selectionMode maxDropdownItems options
@@ -2165,8 +2167,7 @@ init flags =
       , focused = False
 
       -- TODO Should these be passed as flags?
-      , valueCasingWidth = 100
-      , valueCasingHeight = 45
+      , valueCasing = ValueCasing 100 45
       , showDropdownFooter = flags.showDropdownFooter
       }
     , Cmd.batch

@@ -7,7 +7,7 @@ import OptionSearcher
 import OptionSorting
 import OptionsUtilities exposing (highlightFirstOptionInList, prependCustomOption, removeUnselectedCustomOptions, selectOptionInListByOptionValue)
 import PositiveInt
-import SelectionMode exposing (CustomOptions(..), SelectedItemPlacementMode(..), SelectionMode(..), SingleItemRemoval(..))
+import SelectionMode exposing (CustomOptions(..), OutputStyle(..), SelectedItemPlacementMode(..), SelectionMode(..), SingleItemRemoval(..))
 import Test exposing (Test, describe, test)
 
 
@@ -64,7 +64,7 @@ suite =
             \_ ->
                 let
                     selectionMode =
-                        MultiSelect AllowCustomOptions EnableSingleItemRemoval
+                        MultiSelect AllowCustomOptions EnableSingleItemRemoval CustomHtml
                 in
                 Expect.equalLists
                     (OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionMode (Just "{{}}") "monkey bread" (PositiveInt.new 2) []
@@ -82,7 +82,7 @@ suite =
                      , cutCopper |> Option.selectOption 2
                      ]
                         |> OptionSearcher.updateOptionsWithSearchStringAndCustomOption
-                            (MultiSelect AllowCustomOptions EnableSingleItemRemoval)
+                            (MultiSelect AllowCustomOptions EnableSingleItemRemoval CustomHtml)
                             (Just "{{}}")
                             "monkey bread"
                             (PositiveInt.new 2)
@@ -93,7 +93,7 @@ suite =
             \_ ->
                 let
                     selectionMode =
-                        MultiSelect AllowCustomOptions EnableSingleItemRemoval
+                        MultiSelect AllowCustomOptions EnableSingleItemRemoval CustomHtml
                 in
                 Expect.equalLists
                     ([ mossyCobblestone
@@ -113,13 +113,13 @@ suite =
             \_ ->
                 let
                     selectionMode =
-                        MultiSelect AllowCustomOptions EnableSingleItemRemoval
+                        MultiSelect AllowCustomOptions EnableSingleItemRemoval CustomHtml
                 in
                 Expect.equalLists
                     ([ mossyCobblestone
                      ]
                         |> OptionSearcher.updateOptionsWithSearchStringAndCustomOption
-                            (MultiSelect AllowCustomOptions EnableSingleItemRemoval)
+                            (MultiSelect AllowCustomOptions EnableSingleItemRemoval CustomHtml)
                             (Just "{{}}")
                             "cob"
                             (PositiveInt.new 10)
