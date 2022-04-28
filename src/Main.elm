@@ -1106,7 +1106,24 @@ view model =
         SingleSelect _ _ outputStyle ->
             singleSelectView outputStyle model
 
-        MultiSelect _ enableSingleItemRemoval _ ->
+        MultiSelect _ enableSingleItemRemoval outputStyle ->
+            multiSelectView outputStyle enableSingleItemRemoval model
+
+
+singleSelectView : OutputStyle -> Model -> Html Msg
+singleSelectView outputStyle model =
+    case outputStyle of
+        CustomHtml ->
+            singleSelectViewCustomHtml model
+
+        Datalist ->
+            singleSelectViewDatalistHtml model
+
+
+multiSelectView : OutputStyle -> SingleItemRemoval -> Model -> Html Msg
+multiSelectView outputStyle enableSingleItemRemoval model =
+    case outputStyle of
+        CustomHtml ->
             let
                 hasOptionSelected =
                     hasSelectedOption model.options
@@ -1173,15 +1190,39 @@ view model =
                 , dropdown model
                 ]
 
-
-singleSelectView : OutputStyle -> Model -> Html Msg
-singleSelectView outputStyle model =
-    case outputStyle of
-        CustomHtml ->
-            singleSelectViewCustomHtml model
-
         Datalist ->
-            singleSelectViewDatalistHtml model
+            let
+                hasOptionSelected =
+                    hasSelectedOption model.options
+
+                showPlaceholder =
+                    not hasOptionSelected && not model.focused
+            in
+            div [ id "wrapper" ]
+                [ div
+                    [ id "value-casing"
+                    , attributeIf (not model.focused) (onMouseDown BringInputInFocus)
+                    , attributeIf (not model.focused) (onFocus BringInputInFocus)
+                    , tabIndexAttribute model.disabled
+                    , classList
+                        [ ( "show-placeholder", showPlaceholder )
+                        , ( "has-option-selected", hasOptionSelected )
+                        , ( "no-option-selected", not hasOptionSelected )
+                        , ( "single", True )
+                        , ( "disabled", model.disabled )
+                        , ( "focused", model.focused )
+                        , ( "not-focused", not model.focused )
+                        ]
+                    ]
+                    [ singleSelectDatasetInputField
+                        model.searchString
+                        model.disabled
+                        model.focused
+                        model.placeholder
+                        hasOptionSelected
+                    ]
+                , datalist model.options
+                ]
 
 
 singleSelectViewCustomHtml : Model -> Html Msg
