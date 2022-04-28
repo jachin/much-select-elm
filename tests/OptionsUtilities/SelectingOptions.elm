@@ -41,10 +41,15 @@ suite =
                     Expect.equalLists
                         (selectSingleOptionInListByStringOrSelectCustomValue "Moon Lit Street" [])
                         [ newCustomOption "Moon Lit Street" Nothing |> selectOption 0 ]
-            , test "should selected an existion option if it matches" <|
+            , test "should selected an existing option if the string matches" <|
                 \_ ->
                     Expect.equalLists
                         (selectSingleOptionInListByStringOrSelectCustomValue "Boot Hill" options)
                         [ slaveShip, desertIsland, bootHill |> selectOption 0 ]
+            , test "should not selected an existing option if the string has miss matching case" <|
+                \_ ->
+                    Expect.equalLists
+                        (selectSingleOptionInListByStringOrSelectCustomValue "boot hill" options)
+                        ((newCustomOption "boot hill" Nothing |> selectOption 0) :: options)
             ]
         ]
