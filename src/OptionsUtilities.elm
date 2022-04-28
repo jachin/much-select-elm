@@ -37,7 +37,8 @@ import Option
         )
 import OptionLabel exposing (OptionLabel)
 import OptionSearchFilter exposing (OptionSearchResult)
-import SelectionMode exposing (SelectedItemPlacementMode(..), SelectionMode(..))
+import OutputStyle exposing (SelectedItemPlacementMode(..))
+import SelectionMode exposing (SelectionMode(..), getSelectedItemPlacementMode)
 import SortRank exposing (SortRank)
 
 
@@ -1069,12 +1070,15 @@ replaceOptions selectionMode oldOptions newOptions =
             selectedOptions oldOptions
     in
     case selectionMode of
-        SingleSelect _ selectedItemPlacementMode _ ->
+        SingleSelect _ _ _ ->
             let
                 maybeSelectedOptionValue =
                     selectedOptions (newOptions ++ oldOptions)
                         |> List.head
                         |> Maybe.map getOptionValue
+
+                selectedItemPlacementMode =
+                    getSelectedItemPlacementMode selectionMode
             in
             case maybeSelectedOptionValue of
                 Just selectedOptionValue ->
@@ -1152,6 +1156,9 @@ mergeTwoListsOfOptionsPreservingSelectedOptions selectedItemPlacementMode option
                 SelectedItemMovesToTheTop ->
                     updatedOptionsA
                         ++ updatedOptionsB
+
+                SelectedItemIsHidden ->
+                    updatedOptionsB ++ updatedOptionsA
 
         newOptions =
             List.Extra.uniqueBy getOptionValueAsString superList

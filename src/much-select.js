@@ -388,8 +388,7 @@ class MuchSelect extends HTMLElement {
   attributeChangedCallback(name, oldValue, newValue) {
     if (name === "allow-custom-options") {
       if (oldValue !== newValue) {
-        this.allowCustomOptions = newValue;
-        this.customOptionHint = newValue;
+        this.updateAllowCustomOptions(newValue);
       }
     } else if (name === "disabled") {
       if (oldValue !== newValue) {
@@ -1420,6 +1419,19 @@ class MuchSelect extends HTMLElement {
     );
   }
 
+  updateAllowCustomOptions(newValue) {
+    this.allowCustomOptions = newValue;
+    this.customOptionHint = newValue;
+
+    // noinspection JSUnresolvedVariable
+    this.appPromise.then((app) =>
+      app.ports.allowCustomOptionsReceiver.send(
+        this.allowCustomOptions,
+        this.customOptionHint
+      )
+    );
+  }
+
   get allowCustomOptions() {
     return this._allowCustomOptions;
   }
@@ -1432,6 +1444,7 @@ class MuchSelect extends HTMLElement {
     } else {
       this._allowCustomOptions = !!value;
     }
+    // TODO - This is wrong, we need to preserver the custom hit message if it's there.
     if (!this.eventsOnlyMode) {
       if (this._allowCustomOptions) {
         this.setAttribute("allow-custom-options", "true");
@@ -1439,11 +1452,6 @@ class MuchSelect extends HTMLElement {
         this.removeAttribute("allow-custom-options");
       }
     }
-
-    // noinspection JSUnresolvedVariable
-    this.appPromise.then((app) =>
-      app.ports.allowCustomOptionsReceiver.send(this._allowCustomOptions)
-    );
   }
 
   get customOptionHint() {
@@ -1466,11 +1474,6 @@ class MuchSelect extends HTMLElement {
         `Unexpected type for the customOptionHint, it should be a string but instead it is a: ${typeof value}`
       );
     }
-
-    // noinspection JSUnresolvedVariable
-    this.appPromise.then((app) =>
-      app.ports.customOptionHintReceiver.send(this._customOptionHint)
-    );
   }
 
   get selectedItemStaysInPlace() {

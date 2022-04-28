@@ -6,11 +6,12 @@ import OptionLabel exposing (optionLabelToSearchString, optionLabelToString)
 import OptionPresentor exposing (tokenize)
 import OptionSearchFilter exposing (OptionSearchFilter, OptionSearchResult, descriptionHandicap, groupHandicap)
 import OptionsUtilities exposing (prependCustomOption, removeUnselectedCustomOptions)
+import OutputStyle exposing (CustomOptions(..), SearchStringMinimumLength(..))
 import PositiveInt exposing (PositiveInt)
-import SelectionMode exposing (CustomOptions(..), SelectionMode)
+import SelectionMode exposing (SelectionMode)
 
 
-updateOptionsWithSearchStringAndCustomOption : SelectionMode -> Maybe String -> String -> PositiveInt -> List Option -> List Option
+updateOptionsWithSearchStringAndCustomOption : SelectionMode -> Maybe String -> String -> SearchStringMinimumLength -> List Option -> List Option
 updateOptionsWithSearchStringAndCustomOption selectionMode maybeCustomOptionHint searchString searchStringMinimumLength options =
     options
         |> updateOrAddCustomOption maybeCustomOptionHint searchString selectionMode
@@ -111,7 +112,7 @@ updateOrAddCustomOption maybeCustomOptionHint searchString selectionMode options
         showCustomOption =
             if String.length searchString > 0 then
                 case SelectionMode.getCustomOptions selectionMode of
-                    AllowCustomOptions ->
+                    AllowCustomOptions _ ->
                         True
 
                     NoCustomOptions ->
@@ -145,11 +146,16 @@ updateOrAddCustomOption maybeCustomOptionHint searchString selectionMode options
         removeUnselectedCustomOptions options
 
 
-updateOptionsWithSearchString : String -> PositiveInt -> List Option -> List Option
+updateOptionsWithSearchString : String -> SearchStringMinimumLength -> List Option -> List Option
 updateOptionsWithSearchString searchString searchStringMinimumLength options =
     let
         doOptionFiltering =
-            PositiveInt.lessThanOrEqualTo searchStringMinimumLength (String.length searchString)
+            case searchStringMinimumLength of
+                FixedSearchStringMinimumLength positiveInt ->
+                    PositiveInt.lessThanOrEqualTo positiveInt (String.length searchString)
+
+                NoMinimumToSearchStringLength ->
+                    True
     in
     if doOptionFiltering then
         options
@@ -166,19 +172,24 @@ updateOptionsWithSearchString searchString searchStringMinimumLength options =
                 )
 
 
-doesSearchStringFindNothing : String -> PositiveInt -> List Option -> Bool
+doesSearchStringFindNothing : String -> SearchStringMinimumLength -> List Option -> Bool
 doesSearchStringFindNothing searchString searchStringMinimumLength options =
-    if String.length searchString <= PositiveInt.toInt searchStringMinimumLength then
-        False
+    case searchStringMinimumLength of
+        NoMinimumToSearchStringLength ->
+            True
 
-    else
-        List.all
-            (\option ->
-                case Option.getMaybeOptionSearchFilter option of
-                    Just optionSearchFilter ->
-                        optionSearchFilter.bestScore > 1000
+        FixedSearchStringMinimumLength num ->
+            if String.length searchString <= PositiveInt.toInt num then
+                False
 
-                    Nothing ->
-                        False
-            )
-            options
+            else
+                List.all
+                    (\option ->
+                        case Option.getMaybeOptionSearchFilter option of
+                            Just optionSearchFilter ->
+                                optionSearchFilter.bestScore > 1000
+
+                            Nothing ->
+                                False
+                    )
+                    options
