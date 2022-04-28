@@ -401,20 +401,25 @@ selectSingleOptionInListByString string options =
 
 selectSingleOptionInListByStringOrSelectCustomValue : String -> List Option -> List Option
 selectSingleOptionInListByStringOrSelectCustomValue string options =
-    case selectSingleOptionInListResult (Option.stringToOptionValue string) options of
-        Ok newOptions ->
-            newOptions
+    case string of
+        "" ->
+            options
 
-        Err _ ->
-            CustomOption
-                (OptionSelected 0)
-                (OptionLabel.newWithCleanLabel string Nothing)
-                (OptionValue string)
-                Nothing
-                :: (options
-                        |> clearAnyUnselectedCustomOptions
-                        |> deselectAllOptionsInOptionsList
-                   )
+        _ ->
+            case selectSingleOptionInListResult (Option.stringToOptionValue string) options of
+                Ok newOptions ->
+                    newOptions
+
+                Err _ ->
+                    CustomOption
+                        (OptionSelected 0)
+                        (OptionLabel.newWithCleanLabel string Nothing)
+                        (OptionValue string)
+                        Nothing
+                        :: (options
+                                |> clearAnyUnselectedCustomOptions
+                                |> deselectAllOptionsInOptionsList
+                           )
 
 
 selectEmptyOption : List Option -> List Option
