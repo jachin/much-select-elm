@@ -1,7 +1,15 @@
 module Main exposing (..)
 
 import Browser
-import Debouncer.Messages exposing (Debouncer, Milliseconds, fromSeconds, provideInput, settleWhenQuietFor, toDebouncer)
+import Debouncer.Messages
+    exposing
+        ( Debouncer
+        , Milliseconds
+        , fromSeconds
+        , provideInput
+        , settleWhenQuietFor
+        , toDebouncer
+        )
 import Html
     exposing
         ( Html
@@ -41,6 +49,7 @@ import Json.Encode
 import Keyboard exposing (Key(..))
 import Keyboard.Events as Keyboard
 import List.Extra
+import Maybe.Extra
 import Option
     exposing
         ( Option(..)
@@ -71,6 +80,7 @@ import OptionsUtilities
         , deselectOptionInListByOptionValue
         , filterOptionsToShowInDropdown
         , findHighlightedOrSelectedOptionIndex
+        , findOptionByOptionUsingValueString
         , findOptionByOptionValue
         , groupOptionsInOrder
         , hasSelectedHighlightedOptions
@@ -88,7 +98,7 @@ import OptionsUtilities
         , selectOptionInListByOptionValue
         , selectOptionsInOptionsListByString
         , selectSingleOptionInList
-        , selectSingleOptionInListByString
+        , selectSingleOptionInListByStringOrSelectCustomValue
         , selectedOptions
         , selectedOptionsToTuple
         , toggleSelectedHighlightByOptionValue
@@ -135,7 +145,16 @@ import Ports
         , valuesDecoder
         )
 import PositiveInt exposing (PositiveInt)
-import SelectionMode exposing (CustomOptions(..), OutputStyle(..), SelectedItemPlacementMode(..), SelectionMode(..), SingleItemRemoval(..), getOutputStyle, stringToOutputStyle)
+import SelectionMode
+    exposing
+        ( CustomOptions(..)
+        , OutputStyle(..)
+        , SelectedItemPlacementMode(..)
+        , SelectionMode(..)
+        , SingleItemRemoval(..)
+        , getOutputStyle
+        , stringToOutputStyle
+        )
 import Task
 
 
@@ -239,19 +258,24 @@ update msg model =
             ( model, Cmd.none )
 
         BringInputInFocus ->
-            if isRightSlotTransitioning model.rightSlot then
-                ( model, Cmd.none )
+            case getOutputStyle model.selectionMode of
+                CustomHtml ->
+                    if isRightSlotTransitioning model.rightSlot then
+                        ( model, Cmd.none )
 
-            else if model.focused then
-                ( model, focusInput () )
+                    else if model.focused then
+                        ( model, focusInput () )
 
-            else
-                ( { model
-                    | focused = True
-                    , rightSlot = updateRightSlotTransitioning InFocusTransition model.rightSlot
-                  }
-                , focusInput ()
-                )
+                    else
+                        ( { model
+                            | focused = True
+                            , rightSlot = updateRightSlotTransitioning InFocusTransition model.rightSlot
+                          }
+                        , focusInput ()
+                        )
+
+                Datalist ->
+                    ( model, focusInput () )
 
         BringInputOutOfFocus ->
             if isRightSlotTransitioning model.rightSlot then
@@ -288,11 +312,26 @@ update msg model =
                     )
 
                 Datalist ->
+                    let
+                        options =
+                            selectSingleOptionInListByStringOrSelectCustomValue model.searchString model.options
+
+                        maybeSelectedOption =
+                            findOptionByOptionUsingValueString model.searchString options
+
+                        maybeSelectedOptionValue =
+                            Maybe.map Option.getOptionValue maybeSelectedOption
+                    in
                     ( { model
                         | focused = False
-                        , options = selectSingleOptionInListByString model.searchString model.options
+                        , options = options
                       }
-                    , inputBlurred ()
+                    , Cmd.batch
+                        [ inputBlurred ()
+                        , makeCommandMessagesWhenValuesChanges
+                            (Maybe.Extra.toList maybeSelectedOption)
+                            maybeSelectedOptionValue
+                        ]
                     )
 
         InputFocus ->
@@ -1327,17 +1366,6 @@ singleSelectViewDatalistHtml model =
 
         showPlaceholder =
             not hasOptionSelected && not model.focused
-
-        valueStr =
-            if hasOptionSelected then
-                model.options
-                    |> selectedOptionsToTuple
-                    |> List.map Tuple.second
-                    |> List.head
-                    |> Maybe.withDefault ""
-
-            else
-                ""
     in
     div [ id "wrapper" ]
         [ div
@@ -1355,10 +1383,7 @@ singleSelectViewDatalistHtml model =
                 , ( "not-focused", not model.focused )
                 ]
             ]
-            [ span
-                [ id "selected-value" ]
-                [ text valueStr ]
-            , singleSelectDatasetInputField
+            [ singleSelectDatasetInputField
                 model.searchString
                 model.disabled
                 model.focused

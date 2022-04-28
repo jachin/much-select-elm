@@ -362,9 +362,59 @@ selectSingleOptionInList value options =
             )
 
 
+selectSingleOptionInListResult : OptionValue -> List Option -> Result String (List Option)
+selectSingleOptionInListResult optionValue options =
+    if List.any (\option_ -> getOptionValue option_ == optionValue) options then
+        (options
+            |> List.map
+                (\option_ ->
+                    if optionValuesEqual option_ optionValue then
+                        case option_ of
+                            Option _ _ _ _ _ _ ->
+                                selectOption 0 option_
+
+                            CustomOption _ _ optionValue_ _ ->
+                                case optionValue_ of
+                                    OptionValue valueStr ->
+                                        selectOption 0 option_ |> setLabelWithString valueStr Nothing
+
+                                    EmptyOptionValue ->
+                                        selectOption 0 option_
+
+                            EmptyOption _ _ ->
+                                selectOption 0 option_
+
+                    else
+                        deselectOption option_
+                )
+        )
+            |> Ok
+
+    else
+        Err "That option is not in this list"
+
+
 selectSingleOptionInListByString : String -> List Option -> List Option
 selectSingleOptionInListByString string options =
     selectSingleOptionInList (stringToOptionValue string) options
+
+
+selectSingleOptionInListByStringOrSelectCustomValue : String -> List Option -> List Option
+selectSingleOptionInListByStringOrSelectCustomValue string options =
+    case selectSingleOptionInListResult (Option.stringToOptionValue string) options of
+        Ok newOptions ->
+            newOptions
+
+        Err _ ->
+            CustomOption
+                (OptionSelected 0)
+                (OptionLabel.newWithCleanLabel string Nothing)
+                (OptionValue string)
+                Nothing
+                :: (options
+                        |> clearAnyUnselectedCustomOptions
+                        |> deselectAllOptionsInOptionsList
+                   )
 
 
 selectEmptyOption : List Option -> List Option
@@ -988,6 +1038,11 @@ findOptionByOptionValue optionValue options =
 findOptionByOptionUsingOptionValue : Option -> List Option -> Maybe Option
 findOptionByOptionUsingOptionValue option options =
     findOptionByOptionValue (getOptionValue option) options
+
+
+findOptionByOptionUsingValueString : String -> List Option -> Maybe Option
+findOptionByOptionUsingValueString valueString options =
+    findOptionByOptionValue (stringToOptionValue valueString) options
 
 
 deselectAllOptionsInOptionsList : List Option -> List Option
