@@ -1125,71 +1125,21 @@ multiSelectView : OutputStyle -> SingleItemRemoval -> Model -> Html Msg
 multiSelectView outputStyle enableSingleItemRemoval model =
     case outputStyle of
         CustomHtml ->
-            let
-                hasOptionSelected =
-                    hasSelectedOption model.options
-
-                showPlaceholder =
-                    not hasOptionSelected && not model.focused
-
-                placeholderAttribute =
-                    if showPlaceholder then
-                        placeholder model.placeholder
-
-                    else
-                        Html.Attributes.classList []
-
-                inputFilter =
-                    input
-                        [ type_ "text"
-                        , onBlur InputBlur
-                        , onFocus InputFocus
-                        , onInput UpdateSearchString
-                        , onMouseDownStopPropagation NoOp
-                        , onMouseUpStopPropagation NoOp
-                        , value model.searchString
-                        , placeholderAttribute
-                        , id "input-filter"
-                        , disabled model.disabled
-                        , Keyboard.on Keyboard.Keydown
-                            [ ( Enter, SelectHighlightedOption )
-                            , ( Escape, EscapeKeyInInputFilter )
-                            , ( ArrowUp, MoveHighlightedOptionUp )
-                            , ( ArrowDown, MoveHighlightedOptionDown )
-                            ]
-                        ]
-                        []
-            in
-            div [ id "wrapper", classList [ ( "disabled", model.disabled ) ] ]
-                [ div
-                    [ id "value-casing"
-                    , onMouseDown BringInputInFocus
-                    , onFocus BringInputInFocus
-                    , Keyboard.on Keyboard.Keydown
-                        [ ( Delete, DeleteKeydownForMultiSelect )
-                        , ( Backspace, DeleteKeydownForMultiSelect )
-                        ]
-                    , tabIndexAttribute model.disabled
-                    , classList
-                        [ ( "show-placeholder", showPlaceholder )
-                        , ( "has-option-selected", hasOptionSelected )
-                        , ( "no-option-selected", not hasOptionSelected )
-                        , ( "multi", True )
-                        , ( "disabled", model.disabled )
-                        , ( "focused", model.focused )
-                        , ( "not-focused", not model.focused )
-                        ]
-                    ]
-                    (optionsToValuesHtml model.options enableSingleItemRemoval
-                        ++ [ inputFilter
-                           , rightSlotHtml
-                                model.rightSlot
-                                model.focused
-                                model.disabled
-                           ]
-                    )
-                , dropdown model
-                ]
+            multiSelectViewCustomHtml
+                model.selectionMode
+                enableSingleItemRemoval
+                model.options
+                model.focused
+                model.placeholder
+                model.searchString
+                model.disabled
+                model.rightSlot
+                model.maxDropdownItems
+                model.searchStringMinimumLength
+                model.showDropdownFooter
+                model.valueCasingHeight
+                model.valueCasingHeight
+                model.showDropdown
 
         Datalist ->
             let
@@ -1284,7 +1234,94 @@ singleSelectViewCustomHtml model =
                 ShowClearButton ->
                     node "slot" [ name "clear-button" ] []
             ]
-        , dropdown model
+        , dropdown model.selectionMode
+            model.options
+            model.maxDropdownItems
+            model.searchString
+            model.searchStringMinimumLength
+            model.showDropdownFooter
+            model.valueCasingHeight
+            model.valueCasingWidth
+            model.showDropdown
+            model.disabled
+        ]
+
+
+multiSelectViewCustomHtml : SelectionMode -> SingleItemRemoval -> List Option -> Bool -> String -> String -> Bool -> RightSlot -> PositiveInt -> PositiveInt -> Bool -> Float -> Float -> Bool -> Html Msg
+multiSelectViewCustomHtml selectionMode enableSingleItemRemoval options isFocused placeholderString searchString isDisabled rightSlot maxDropdownItems searchStringMinimumLength showDropdownFooter valueCasingHeight valueCasingWidth showDropdown =
+    let
+        hasOptionSelected =
+            hasSelectedOption options
+
+        showPlaceholder =
+            not hasOptionSelected && not isFocused
+
+        placeholderAttribute =
+            if showPlaceholder then
+                placeholder placeholderString
+
+            else
+                Html.Attributes.classList []
+
+        inputFilter =
+            input
+                [ type_ "text"
+                , onBlur InputBlur
+                , onFocus InputFocus
+                , onInput UpdateSearchString
+                , onMouseDownStopPropagation NoOp
+                , onMouseUpStopPropagation NoOp
+                , value searchString
+                , placeholderAttribute
+                , id "input-filter"
+                , disabled isDisabled
+                , Keyboard.on Keyboard.Keydown
+                    [ ( Enter, SelectHighlightedOption )
+                    , ( Escape, EscapeKeyInInputFilter )
+                    , ( ArrowUp, MoveHighlightedOptionUp )
+                    , ( ArrowDown, MoveHighlightedOptionDown )
+                    ]
+                ]
+                []
+    in
+    div [ id "wrapper", classList [ ( "disabled", isDisabled ) ] ]
+        [ div
+            [ id "value-casing"
+            , onMouseDown BringInputInFocus
+            , onFocus BringInputInFocus
+            , Keyboard.on Keyboard.Keydown
+                [ ( Delete, DeleteKeydownForMultiSelect )
+                , ( Backspace, DeleteKeydownForMultiSelect )
+                ]
+            , tabIndexAttribute isDisabled
+            , classList
+                [ ( "show-placeholder", showPlaceholder )
+                , ( "has-option-selected", hasOptionSelected )
+                , ( "no-option-selected", not hasOptionSelected )
+                , ( "multi", True )
+                , ( "disabled", isDisabled )
+                , ( "focused", isFocused )
+                , ( "not-focused", not isFocused )
+                ]
+            ]
+            (optionsToValuesHtml options enableSingleItemRemoval
+                ++ [ inputFilter
+                   , rightSlotHtml
+                        rightSlot
+                        isFocused
+                        isDisabled
+                   ]
+            )
+        , dropdown selectionMode
+            options
+            maxDropdownItems
+            searchString
+            searchStringMinimumLength
+            showDropdownFooter
+            valueCasingHeight
+            valueCasingWidth
+            showDropdown
+            isDisabled
         ]
 
 
@@ -1521,18 +1558,18 @@ type alias DropdownItemEventListeners msg =
     }
 
 
-dropdown : Model -> Html Msg
-dropdown model =
+dropdown : SelectionMode -> List Option -> PositiveInt -> String -> PositiveInt -> Bool -> Float -> Float -> Bool -> Bool -> Html Msg
+dropdown selectionMode options maxDropdownItems searchString searchStringMinimumLength showDropdownFooter valueCasingHeight valueCasingWidth showDropdown isDisabled =
     let
         optionsForTheDropdown =
-            figureOutWhichOptionsToShowInTheDropdown model.selectionMode model.maxDropdownItems model.options
+            figureOutWhichOptionsToShowInTheDropdown selectionMode maxDropdownItems options
 
         optionsHtml =
             -- TODO We should probably do something different if we are in a loading state
             if List.isEmpty optionsForTheDropdown then
                 [ div [ class "option disabled" ] [ node "slot" [ name "no-options" ] [ text "No available options" ] ] ]
 
-            else if doesSearchStringFindNothing model.searchString model.searchStringMinimumLength optionsForTheDropdown then
+            else if doesSearchStringFindNothing searchString searchStringMinimumLength optionsForTheDropdown then
                 [ div [ class "option disabled" ] [ node "slot" [ name "no-filtered-options" ] [ text "This filter returned no results." ] ] ]
 
             else
@@ -1542,17 +1579,17 @@ dropdown model =
                     , clickMsgConstructor = DropdownMouseClickOption
                     , noOpMsgConstructor = NoOp
                     }
-                    model.selectionMode
+                    selectionMode
                     optionsForTheDropdown
 
         dropdownFooterHtml =
-            if model.showDropdownFooter && List.length optionsForTheDropdown < List.length model.options then
+            if showDropdownFooter && List.length optionsForTheDropdown < List.length options then
                 div [ id "dropdown-footer" ]
                     [ text
                         ("showing "
                             ++ (optionsForTheDropdown |> List.length |> String.fromInt)
                             ++ " of "
-                            ++ (model.options |> List.length |> String.fromInt)
+                            ++ (options |> List.length |> String.fromInt)
                             ++ " options"
                         )
                     ]
@@ -1560,18 +1597,18 @@ dropdown model =
             else
                 text ""
     in
-    if model.disabled then
+    if isDisabled then
         text ""
 
     else
         div
             [ id "dropdown"
-            , classList [ ( "showing", model.showDropdown ), ( "hiding", not model.showDropdown ) ]
+            , classList [ ( "showing", showDropdown ), ( "hiding", not showDropdown ) ]
             , style "top"
-                (String.fromFloat model.valueCasingHeight ++ "px")
+                (String.fromFloat valueCasingHeight ++ "px")
             , style
                 "width"
-                (String.fromFloat model.valueCasingWidth ++ "px")
+                (String.fromFloat valueCasingWidth ++ "px")
             ]
             (optionsHtml ++ [ dropdownFooterHtml ])
 
