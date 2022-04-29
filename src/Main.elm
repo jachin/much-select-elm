@@ -106,7 +106,13 @@ import OptionsUtilities
         , toggleSelectedHighlightByOptionValue
         , unhighlightSelectedOptions
         )
-import OutputStyle exposing (DropdownStyle(..), MaxDropdownItems(..), SearchStringMinimumLength(..), SingleItemRemoval(..))
+import OutputStyle
+    exposing
+        ( DropdownStyle(..)
+        , MaxDropdownItems(..)
+        , SearchStringMinimumLength(..)
+        , SingleItemRemoval(..)
+        )
 import Ports
     exposing
         ( addOptionsReceiver
@@ -150,7 +156,7 @@ import PositiveInt exposing (PositiveInt)
 import SelectionMode
     exposing
         ( OutputStyle(..)
-        , SelectionMode(..)
+        , SelectionConfig(..)
         , defaultSelectionMode
         , getCustomOptionHint
         , getMaxDropdownItems
@@ -226,7 +232,7 @@ type Msg
 type alias Model =
     { initialValue : List String
     , placeholder : String
-    , selectionMode : SelectionMode
+    , selectionMode : SelectionConfig
     , options : List Option
     , optionSort : OptionSort
     , quietSearchForDynamicInterval : Debouncer Msg
@@ -915,7 +921,7 @@ updateModelWithChangesThatEffectTheOptionsWhenTheMouseMoves model =
 
 updateModelWithChangesThatEffectTheOptionsWithSearchString :
     RightSlot
-    -> SelectionMode
+    -> SelectionConfig
     -> String
     -> List Option
     -> { a | options : List Option, rightSlot : RightSlot }
@@ -941,7 +947,7 @@ updateModelWithChangesThatEffectTheOptionsWithSearchString rightSlot selectionMo
 
 updatePartOfTheModelWithChangesThatEffectTheOptionsWhenTheMouseMoves :
     RightSlot
-    -> SelectionMode
+    -> SelectionConfig
     -> String
     -> List Option
     -> { a | options : List Option, rightSlot : RightSlot }
@@ -965,20 +971,20 @@ updatePartOfTheModelWithChangesThatEffectTheOptionsWhenTheMouseMoves rightSlot s
     }
 
 
-updateTheFullListOfOptions : SelectionMode -> String -> List Option -> List Option
+updateTheFullListOfOptions : SelectionConfig -> String -> List Option -> List Option
 updateTheFullListOfOptions selectionMode searchString options =
     options
         |> OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionMode (getCustomOptionHint selectionMode) searchString (getSearchStringMinimumLength selectionMode)
 
 
-updateTheOptionsForTheDropdown : SelectionMode -> List Option -> List Option
+updateTheOptionsForTheDropdown : SelectionConfig -> List Option -> List Option
 updateTheOptionsForTheDropdown selectionMode options =
     options
         |> sortOptionsBySearchFilterTotalScore
         |> figureOutWhichOptionsToShowInTheDropdown selectionMode
 
 
-figureOutWhichOptionsToShowInTheDropdown : SelectionMode -> List Option -> List Option
+figureOutWhichOptionsToShowInTheDropdown : SelectionConfig -> List Option -> List Option
 figureOutWhichOptionsToShowInTheDropdown selectionMode options =
     let
         optionsThatCouldBeShown =
@@ -1038,7 +1044,7 @@ figureOutWhichOptionsToShowInTheDropdown selectionMode options =
             optionsThatCouldBeShown
 
 
-updateRightSlot : RightSlot -> SelectionMode -> Bool -> RightSlot
+updateRightSlot : RightSlot -> SelectionConfig -> Bool -> RightSlot
 updateRightSlot current selectionMode hasSelectedOption =
     case current of
         ShowNothing ->
@@ -1076,7 +1082,7 @@ updateRightSlot current selectionMode hasSelectedOption =
                 ShowDropdownIndicator NotInFocusTransition
 
 
-updateRightSlotLoading : Bool -> SelectionMode -> Bool -> RightSlot
+updateRightSlotLoading : Bool -> SelectionConfig -> Bool -> RightSlot
 updateRightSlotLoading isLoading selectionMode hasSelectedOption =
     if isLoading then
         ShowLoadingIndicator
@@ -1134,7 +1140,7 @@ view model =
         multiSelectView model.valueCasing model.selectionMode model.options model.searchString model.rightSlot
 
 
-singleSelectView : ValueCasing -> SelectionMode -> List Option -> String -> RightSlot -> Html Msg
+singleSelectView : ValueCasing -> SelectionConfig -> List Option -> String -> RightSlot -> Html Msg
 singleSelectView valueCasing selectionMode options searchString rightSlot =
     case getOutputStyle selectionMode of
         CustomHtml ->
@@ -1149,7 +1155,7 @@ singleSelectView valueCasing selectionMode options searchString rightSlot =
             singleSelectViewDatalistHtml selectionMode options searchString
 
 
-multiSelectView : ValueCasing -> SelectionMode -> List Option -> String -> RightSlot -> Html Msg
+multiSelectView : ValueCasing -> SelectionConfig -> List Option -> String -> RightSlot -> Html Msg
 multiSelectView valueCasing selectionMode options searchString rightSlot =
     case getOutputStyle selectionMode of
         CustomHtml ->
@@ -1193,7 +1199,7 @@ multiSelectView valueCasing selectionMode options searchString rightSlot =
                 ]
 
 
-singleSelectViewCustomHtml : ValueCasing -> SelectionMode -> List Option -> String -> RightSlot -> Html Msg
+singleSelectViewCustomHtml : ValueCasing -> SelectionConfig -> List Option -> String -> RightSlot -> Html Msg
 singleSelectViewCustomHtml valueCasing selectionMode options searchString rightSlot =
     let
         hasOptionSelected =
@@ -1259,7 +1265,7 @@ singleSelectViewCustomHtml valueCasing selectionMode options searchString rightS
         ]
 
 
-multiSelectViewCustomHtml : SelectionMode -> List Option -> String -> RightSlot -> ValueCasing -> Html Msg
+multiSelectViewCustomHtml : SelectionConfig -> List Option -> String -> RightSlot -> ValueCasing -> Html Msg
 multiSelectViewCustomHtml selectionMode options searchString rightSlot valueCasing =
     let
         hasOptionSelected =
@@ -1446,7 +1452,7 @@ singleSelectCustomHtmlInputField searchString isDisabled focused placeholder_ ha
             []
 
 
-singleSelectViewDatalistHtml : SelectionMode -> List Option -> String -> Html Msg
+singleSelectViewDatalistHtml : SelectionConfig -> List Option -> String -> Html Msg
 singleSelectViewDatalistHtml selectionMode options searchString =
     let
         hasOptionSelected =
@@ -1480,7 +1486,7 @@ singleSelectViewDatalistHtml selectionMode options searchString =
         ]
 
 
-singleSelectDatasetInputField : String -> SelectionMode -> Bool -> Html Msg
+singleSelectDatasetInputField : String -> SelectionConfig -> Bool -> Html Msg
 singleSelectDatasetInputField searchString selectionMode hasSelectedOption =
     let
         idAttr =
@@ -1563,7 +1569,7 @@ type alias DropdownItemEventListeners msg =
     }
 
 
-dropdown : SelectionMode -> List Option -> String -> ValueCasing -> Html Msg
+dropdown : SelectionConfig -> List Option -> String -> ValueCasing -> Html Msg
 dropdown selectionMode options searchString (ValueCasing valueCasingWidth valueCasingHeight) =
     let
         optionsForTheDropdown =
@@ -1620,14 +1626,14 @@ dropdown selectionMode options searchString (ValueCasing valueCasingWidth valueC
 
 optionsToDropdownOptions :
     DropdownItemEventListeners Msg
-    -> SelectionMode
+    -> SelectionConfig
     -> List Option
     -> List (Html Msg)
 optionsToDropdownOptions eventHandlers selectionMode options =
     List.concatMap (optionGroupToHtml eventHandlers selectionMode) (groupOptionsInOrder options)
 
 
-optionGroupToHtml : DropdownItemEventListeners Msg -> SelectionMode -> ( OptionGroup, List Option ) -> List (Html Msg)
+optionGroupToHtml : DropdownItemEventListeners Msg -> SelectionConfig -> ( OptionGroup, List Option ) -> List (Html Msg)
 optionGroupToHtml dropdownItemEventListeners selectionMode ( optionGroup, options ) =
     let
         optionGroupHtml =
@@ -1665,7 +1671,7 @@ optionGroupToHtml dropdownItemEventListeners selectionMode ( optionGroup, option
 
 optionToDropdownOption :
     DropdownItemEventListeners Msg
-    -> SelectionMode
+    -> SelectionConfig
     -> Option
     -> Html Msg
 optionToDropdownOption eventHandlers selectionMode option =

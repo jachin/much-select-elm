@@ -38,7 +38,7 @@ import Option
 import OptionLabel exposing (OptionLabel)
 import OptionSearchFilter exposing (OptionSearchResult)
 import OutputStyle exposing (SelectedItemPlacementMode(..))
-import SelectionMode exposing (SelectionMode(..), getSelectedItemPlacementMode)
+import SelectionMode exposing (SelectionConfig(..), getSelectedItemPlacementMode)
 import SortRank exposing (SortRank)
 
 
@@ -295,7 +295,7 @@ deselectOptionInListByOptionValue value options =
         options
 
 
-selectHighlightedOption : SelectionMode -> List Option -> List Option
+selectHighlightedOption : SelectionConfig -> List Option -> List Option
 selectHighlightedOption selectionMode options =
     options
         |> List.filter
@@ -901,12 +901,12 @@ findHighlightedOrSelectedOptionIndex options =
             findSelectedOptionIndex options
 
 
-filterOptionsToShowInDropdown : SelectionMode -> List Option -> List Option
+filterOptionsToShowInDropdown : SelectionConfig -> List Option -> List Option
 filterOptionsToShowInDropdown selectionMode =
     filterOptionsToShowInDropdownByOptionDisplay selectionMode >> filterOptionsToShowInDropdownBySearchScore
 
 
-filterOptionsToShowInDropdownByOptionDisplay : SelectionMode -> List Option -> List Option
+filterOptionsToShowInDropdownByOptionDisplay : SelectionConfig -> List Option -> List Option
 filterOptionsToShowInDropdownByOptionDisplay selectionMode =
     case selectionMode of
         SingleSelect _ _ _ ->
@@ -1063,7 +1063,7 @@ deselectAllOptionsInOptionsList options =
         options
 
 
-replaceOptions : SelectionMode -> List Option -> List Option -> List Option
+replaceOptions : SelectionConfig -> List Option -> List Option -> List Option
 replaceOptions selectionMode oldOptions newOptions =
     let
         oldSelectedOptions =

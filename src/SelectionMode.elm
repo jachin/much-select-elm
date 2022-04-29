@@ -1,6 +1,6 @@
 module SelectionMode exposing
     ( OutputStyle(..)
-    , SelectionMode(..)
+    , SelectionConfig(..)
     , canDoSingleItemRemoval
     , defaultSelectionMode
     , getCustomOptionHint
@@ -63,12 +63,12 @@ type OutputStyle
     | Datalist
 
 
-type SelectionMode
+type SelectionConfig
     = SingleSelect SingleSelectOutputStyle Placeholder InteractionState
     | MultiSelect MultiSelectOutputStyle Placeholder InteractionState
 
 
-defaultSelectionMode : SelectionMode
+defaultSelectionMode : SelectionConfig
 defaultSelectionMode =
     SingleSelect
         (SingleSelectCustomHtml
@@ -84,7 +84,7 @@ defaultSelectionMode =
         Unfocused
 
 
-makeSelectionMode : Bool -> Bool -> Bool -> String -> String -> Maybe String -> Bool -> Int -> Bool -> Int -> Bool -> Result String SelectionMode
+makeSelectionMode : Bool -> Bool -> Bool -> String -> String -> Maybe String -> Bool -> Int -> Bool -> Int -> Bool -> Result String SelectionConfig
 makeSelectionMode disabled allowMultiSelect allowCustomOptions outputStyle placeholder customOptionHint enableMultiSelectSingleItemRemoval maxDropdownItems selectedItemStaysInPlace searchStringMinimumLength shouldShowDropdownFooter =
     let
         outputStyleResult =
@@ -200,7 +200,7 @@ makeMultiSelectOutputStyle outputStyle allowCustomOptions enableMultiSelectSingl
             Ok MultiSelectDataList
 
 
-isSingleSelect : SelectionMode -> Bool
+isSingleSelect : SelectionConfig -> Bool
 isSingleSelect selectionMode =
     case selectionMode of
         SingleSelect _ _ _ ->
@@ -210,7 +210,7 @@ isSingleSelect selectionMode =
             False
 
 
-getOutputStyle : SelectionMode -> OutputStyle
+getOutputStyle : SelectionConfig -> OutputStyle
 getOutputStyle selectionMode =
     case selectionMode of
         SingleSelect singleSelectOutputStyle _ _ ->
@@ -230,7 +230,7 @@ getOutputStyle selectionMode =
                     Datalist
 
 
-getCustomOptions : SelectionMode -> CustomOptions
+getCustomOptions : SelectionConfig -> CustomOptions
 getCustomOptions selectionMode =
     case selectionMode of
         SingleSelect singleSelectOutputStyle _ _ ->
@@ -250,7 +250,7 @@ getCustomOptions selectionMode =
                     AllowCustomOptions Nothing
 
 
-setCustomOptions : CustomOptions -> SelectionMode -> SelectionMode
+setCustomOptions : CustomOptions -> SelectionConfig -> SelectionConfig
 setCustomOptions customOptions selectionMode =
     case selectionMode of
         SingleSelect singleSelectOutputStyle placeholder interactionState ->
@@ -275,7 +275,7 @@ setCustomOptions customOptions selectionMode =
                     selectionMode
 
 
-getCustomOptionHint : SelectionMode -> CustomOptionHint
+getCustomOptionHint : SelectionConfig -> CustomOptionHint
 getCustomOptionHint selectionMode =
     case selectionMode of
         SingleSelect singleSelectOutputStyle placeholder interactionState ->
@@ -305,7 +305,7 @@ getCustomOptionHint selectionMode =
                     Nothing
 
 
-setAllowCustomOptionsWithBool : Bool -> CustomOptionHint -> SelectionMode -> SelectionMode
+setAllowCustomOptionsWithBool : Bool -> CustomOptionHint -> SelectionConfig -> SelectionConfig
 setAllowCustomOptionsWithBool allowCustomOptions customOptionHint mode =
     let
         newAllowCustomOptions : CustomOptions
@@ -319,7 +319,7 @@ setAllowCustomOptionsWithBool allowCustomOptions customOptionHint mode =
     setCustomOptions newAllowCustomOptions mode
 
 
-getSelectedItemPlacementMode : SelectionMode -> SelectedItemPlacementMode
+getSelectedItemPlacementMode : SelectionConfig -> SelectedItemPlacementMode
 getSelectedItemPlacementMode selectionMode =
     case selectionMode of
         SingleSelect singleSelectOutputStyle _ _ ->
@@ -334,7 +334,7 @@ getSelectedItemPlacementMode selectionMode =
             SelectedItemStaysInPlace
 
 
-setSelectedItemStaysInPlaceWithBool : Bool -> SelectionMode -> SelectionMode
+setSelectedItemStaysInPlaceWithBool : Bool -> SelectionConfig -> SelectionConfig
 setSelectedItemStaysInPlaceWithBool selectedItemStaysInPlace selectionMode =
     if selectedItemStaysInPlace then
         setSelectedItemPlacementMode SelectedItemStaysInPlace selectionMode
@@ -343,7 +343,7 @@ setSelectedItemStaysInPlaceWithBool selectedItemStaysInPlace selectionMode =
         setSelectedItemPlacementMode SelectedItemMovesToTheTop selectionMode
 
 
-setSelectedItemPlacementMode : SelectedItemPlacementMode -> SelectionMode -> SelectionMode
+setSelectedItemPlacementMode : SelectedItemPlacementMode -> SelectionConfig -> SelectionConfig
 setSelectedItemPlacementMode selectedItemPlacementMode selectionMode =
     case selectionMode of
         SingleSelect singleSelectOutputStyle placeholder interactionState ->
@@ -363,7 +363,7 @@ setSelectedItemPlacementMode selectedItemPlacementMode selectionMode =
             selectionMode
 
 
-setMultiSelectModeWithBool : Bool -> SelectionMode -> SelectionMode
+setMultiSelectModeWithBool : Bool -> SelectionConfig -> SelectionConfig
 setMultiSelectModeWithBool isInMultiSelectMode selectionMode =
     case selectionMode of
         SingleSelect singleSelectOutputStyle placeholder interactionState ->
@@ -394,7 +394,7 @@ stringToOutputStyle string =
             Err "Invalid output style"
 
 
-isFocused : SelectionMode -> Bool
+isFocused : SelectionConfig -> Bool
 isFocused selectionMode =
     case selectionMode of
         SingleSelect _ _ interactionState ->
@@ -420,7 +420,7 @@ isFocused selectionMode =
                     False
 
 
-setIsFocused : Bool -> SelectionMode -> SelectionMode
+setIsFocused : Bool -> SelectionConfig -> SelectionConfig
 setIsFocused isFocused_ selectionMode =
     let
         newInteractionState =
@@ -433,7 +433,7 @@ setIsFocused isFocused_ selectionMode =
     setInteractionState newInteractionState selectionMode
 
 
-isDisabled : SelectionMode -> Bool
+isDisabled : SelectionConfig -> Bool
 isDisabled selectionMode =
     case selectionMode of
         SingleSelect _ _ interactionState ->
@@ -459,7 +459,7 @@ isDisabled selectionMode =
                     True
 
 
-setIsDisabled : Bool -> SelectionMode -> SelectionMode
+setIsDisabled : Bool -> SelectionConfig -> SelectionConfig
 setIsDisabled isDisabled_ selectionMode =
     if isDisabled_ then
         setInteractionState Disabled selectionMode
@@ -468,7 +468,7 @@ setIsDisabled isDisabled_ selectionMode =
         selectionMode
 
 
-setInteractionState : InteractionState -> SelectionMode -> SelectionMode
+setInteractionState : InteractionState -> SelectionConfig -> SelectionConfig
 setInteractionState newInteractionState selectionMode =
     case selectionMode of
         SingleSelect singleSelectOutputStyle placeholder _ ->
@@ -478,7 +478,7 @@ setInteractionState newInteractionState selectionMode =
             MultiSelect multiSelectOutputStyle placeholder newInteractionState
 
 
-setShowDropdown : Bool -> SelectionMode -> SelectionMode
+setShowDropdown : Bool -> SelectionConfig -> SelectionConfig
 setShowDropdown showDropdown_ selectionMode =
     let
         newDropdownState =
@@ -514,7 +514,7 @@ setShowDropdown showDropdown_ selectionMode =
                     selectionMode
 
 
-setDropdownStyle : DropdownStyle -> SelectionMode -> SelectionMode
+setDropdownStyle : DropdownStyle -> SelectionConfig -> SelectionConfig
 setDropdownStyle dropdownStyle selectionMode =
     case selectionMode of
         SingleSelect singleSelectOutputStyle placeholder interactionState ->
@@ -542,7 +542,7 @@ setDropdownStyle dropdownStyle selectionMode =
                     selectionMode
 
 
-setMaxDropdownItems : MaxDropdownItems -> SelectionMode -> SelectionMode
+setMaxDropdownItems : MaxDropdownItems -> SelectionConfig -> SelectionConfig
 setMaxDropdownItems maxDropdownItems selectionMode =
     case selectionMode of
         SingleSelect singleSelectOutputStyle placeholder interactionState ->
@@ -570,7 +570,7 @@ setMaxDropdownItems maxDropdownItems selectionMode =
                     selectionMode
 
 
-getMaxDropdownItems : SelectionMode -> MaxDropdownItems
+getMaxDropdownItems : SelectionConfig -> MaxDropdownItems
 getMaxDropdownItems selectionMode =
     case selectionMode of
         SingleSelect singleSelectOutputStyle _ _ ->
@@ -590,7 +590,7 @@ getMaxDropdownItems selectionMode =
                     NoLimitToDropdownItems
 
 
-setSingleItemRemoval : SingleItemRemoval -> SelectionMode -> SelectionMode
+setSingleItemRemoval : SingleItemRemoval -> SelectionConfig -> SelectionConfig
 setSingleItemRemoval newSingleItemRemoval selectionMode =
     case selectionMode of
         SingleSelect _ _ _ ->
@@ -608,7 +608,7 @@ setSingleItemRemoval newSingleItemRemoval selectionMode =
                     selectionMode
 
 
-setSearchStringMinimumLength : SearchStringMinimumLength -> SelectionMode -> SelectionMode
+setSearchStringMinimumLength : SearchStringMinimumLength -> SelectionConfig -> SelectionConfig
 setSearchStringMinimumLength newSearchStringMinimumLength selectionMode =
     case selectionMode of
         SingleSelect singleSelectOutputStyle placeholder interactionState ->
@@ -636,7 +636,7 @@ setSearchStringMinimumLength newSearchStringMinimumLength selectionMode =
                     selectionMode
 
 
-getSearchStringMinimumLength : SelectionMode -> SearchStringMinimumLength
+getSearchStringMinimumLength : SelectionConfig -> SearchStringMinimumLength
 getSearchStringMinimumLength selectionMode =
     case selectionMode of
         SingleSelect singleSelectOutputStyle placeholder interactionState ->
@@ -656,7 +656,7 @@ getSearchStringMinimumLength selectionMode =
                     NoMinimumToSearchStringLength
 
 
-getPlaceHolder : SelectionMode -> Placeholder
+getPlaceHolder : SelectionConfig -> Placeholder
 getPlaceHolder selectionMode =
     case selectionMode of
         SingleSelect _ placeholder _ ->
@@ -666,7 +666,7 @@ getPlaceHolder selectionMode =
             placeholder
 
 
-getSingleItemRemoval : SelectionMode -> SingleItemRemoval
+getSingleItemRemoval : SelectionConfig -> SingleItemRemoval
 getSingleItemRemoval selectionMode =
     case selectionMode of
         SingleSelect _ _ _ ->
@@ -681,7 +681,7 @@ getSingleItemRemoval selectionMode =
                     EnableSingleItemRemoval
 
 
-canDoSingleItemRemoval : SelectionMode -> Bool
+canDoSingleItemRemoval : SelectionConfig -> Bool
 canDoSingleItemRemoval selectionMode =
     case getSingleItemRemoval selectionMode of
         EnableSingleItemRemoval ->
@@ -691,7 +691,7 @@ canDoSingleItemRemoval selectionMode =
             False
 
 
-getDropdownStyle : SelectionMode -> DropdownStyle
+getDropdownStyle : SelectionConfig -> DropdownStyle
 getDropdownStyle selectionMode =
     case selectionMode of
         SingleSelect singleSelectOutputStyle placeholder interactionState ->
@@ -711,7 +711,7 @@ getDropdownStyle selectionMode =
                     NoFooter
 
 
-showDropdownFooter : SelectionMode -> Bool
+showDropdownFooter : SelectionConfig -> Bool
 showDropdownFooter selectionMode =
     case getDropdownStyle selectionMode of
         NoFooter ->
@@ -721,7 +721,7 @@ showDropdownFooter selectionMode =
             True
 
 
-getDropdownState : SelectionMode -> DropdownState
+getDropdownState : SelectionConfig -> DropdownState
 getDropdownState selectionMode =
     case selectionMode of
         SingleSelect singleSelectOutputStyle placeholder interactionState ->
@@ -741,7 +741,7 @@ getDropdownState selectionMode =
                     NotManagedByMe
 
 
-showDropdown : SelectionMode -> Bool
+showDropdown : SelectionConfig -> Bool
 showDropdown selectionMode =
     case getDropdownState selectionMode of
         Expanded ->

@@ -6,7 +6,7 @@ import Option exposing (newOption, setGroupWithString)
 import OptionSearcher
 import OptionsUtilities exposing (highlightOptionInList, selectOptionInList)
 import PositiveInt
-import SelectionMode exposing (CustomOptions(..), OutputStyle(..), SelectedItemPlacementMode(..), SelectionMode(..), SingleItemRemoval(..))
+import SelectionMode exposing (CustomOptions(..), OutputStyle(..), SelectedItemPlacementMode(..), SelectionConfig(..), SingleItemRemoval(..))
 import Test exposing (Test, describe, test)
 
 

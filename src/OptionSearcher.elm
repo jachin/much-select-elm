@@ -8,10 +8,10 @@ import OptionSearchFilter exposing (OptionSearchFilter, OptionSearchResult, desc
 import OptionsUtilities exposing (prependCustomOption, removeUnselectedCustomOptions)
 import OutputStyle exposing (CustomOptions(..), SearchStringMinimumLength(..))
 import PositiveInt exposing (PositiveInt)
-import SelectionMode exposing (SelectionMode)
+import SelectionMode exposing (SelectionConfig)
 
 
-updateOptionsWithSearchStringAndCustomOption : SelectionMode -> Maybe String -> String -> SearchStringMinimumLength -> List Option -> List Option
+updateOptionsWithSearchStringAndCustomOption : SelectionConfig -> Maybe String -> String -> SearchStringMinimumLength -> List Option -> List Option
 updateOptionsWithSearchStringAndCustomOption selectionMode maybeCustomOptionHint searchString searchStringMinimumLength options =
     options
         |> updateOrAddCustomOption maybeCustomOptionHint searchString selectionMode
@@ -106,7 +106,7 @@ updateSearchResultInOption searchString option =
         option
 
 
-updateOrAddCustomOption : Maybe String -> String -> SelectionMode -> List Option -> List Option
+updateOrAddCustomOption : Maybe String -> String -> SelectionConfig -> List Option -> List Option
 updateOrAddCustomOption maybeCustomOptionHint searchString selectionMode options =
     let
         showCustomOption =

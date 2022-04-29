@@ -7,7 +7,7 @@ import OptionSearcher
 import OptionSorting
 import OptionsUtilities exposing (highlightFirstOptionInList, prependCustomOption, removeUnselectedCustomOptions, selectOptionInListByOptionValue)
 import PositiveInt
-import SelectionMode exposing (CustomOptions(..), OutputStyle(..), SelectedItemPlacementMode(..), SelectionMode(..), SingleItemRemoval(..))
+import SelectionMode exposing OutputStyle(..), SelectionConfig(..))
 import Test exposing (Test, describe, test)
 
 
@@ -64,6 +64,7 @@ suite =
             \_ ->
                 let
                     selectionMode =
+
                         MultiSelect AllowCustomOptions EnableSingleItemRemoval CustomHtml
                 in
                 Expect.equalLists
