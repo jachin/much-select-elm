@@ -8,14 +8,14 @@ import OptionSearchFilter exposing (OptionSearchFilter, OptionSearchResult, desc
 import OptionsUtilities exposing (prependCustomOption, removeUnselectedCustomOptions)
 import OutputStyle exposing (CustomOptions(..), SearchStringMinimumLength(..))
 import PositiveInt exposing (PositiveInt)
-import SelectionMode exposing (SelectionConfig)
+import SelectionMode exposing (SelectionConfig, getCustomOptionHint, getSearchStringMinimumLength)
 
 
-updateOptionsWithSearchStringAndCustomOption : SelectionConfig -> Maybe String -> String -> SearchStringMinimumLength -> List Option -> List Option
-updateOptionsWithSearchStringAndCustomOption selectionMode maybeCustomOptionHint searchString searchStringMinimumLength options =
+updateOptionsWithSearchStringAndCustomOption : SelectionConfig -> String -> List Option -> List Option
+updateOptionsWithSearchStringAndCustomOption selectionConfig searchString options =
     options
-        |> updateOrAddCustomOption maybeCustomOptionHint searchString selectionMode
-        |> updateOptionsWithSearchString searchString searchStringMinimumLength
+        |> updateOrAddCustomOption searchString selectionConfig
+        |> updateOptionsWithSearchString searchString (selectionConfig |> getSearchStringMinimumLength)
 
 
 simpleMatch : String -> String -> Result
@@ -106,8 +106,8 @@ updateSearchResultInOption searchString option =
         option
 
 
-updateOrAddCustomOption : Maybe String -> String -> SelectionConfig -> List Option -> List Option
-updateOrAddCustomOption maybeCustomOptionHint searchString selectionMode options =
+updateOrAddCustomOption : String -> SelectionConfig -> List Option -> List Option
+updateOrAddCustomOption searchString selectionMode options =
     let
         showCustomOption =
             if String.length searchString > 0 then
@@ -138,7 +138,7 @@ updateOrAddCustomOption maybeCustomOptionHint searchString selectionMode options
     in
     if showCustomOption && noExactOptionLabelMatch then
         prependCustomOption
-            maybeCustomOptionHint
+            (selectionMode |> getCustomOptionHint)
             searchString
             (removeUnselectedCustomOptions options)
 

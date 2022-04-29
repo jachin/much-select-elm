@@ -158,7 +158,6 @@ import SelectionMode
         ( OutputStyle(..)
         , SelectionConfig(..)
         , defaultSelectionConfig
-        , getCustomOptionHint
         , getMaxDropdownItems
         , getOutputStyle
         , getPlaceHolder
@@ -462,7 +461,7 @@ update msg model =
         TextInputOnInput inputString ->
             ( { model
                 | searchString = inputString
-                , options = updateOrAddCustomOption (Just "{{}}") inputString model.selectionMode model.options
+                , options = updateOrAddCustomOption inputString model.selectionMode model.options
               }
             , inputKeyUp inputString
             )
@@ -974,7 +973,7 @@ updatePartOfTheModelWithChangesThatEffectTheOptionsWhenTheMouseMoves rightSlot s
 updateTheFullListOfOptions : SelectionConfig -> String -> List Option -> List Option
 updateTheFullListOfOptions selectionMode searchString options =
     options
-        |> OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionMode (getCustomOptionHint selectionMode) searchString (getSearchStringMinimumLength selectionMode)
+        |> OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionMode searchString
 
 
 updateTheOptionsForTheDropdown : SelectionConfig -> List Option -> List Option

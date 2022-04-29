@@ -20,10 +20,9 @@ thirdEyeBlind =
 
 
 selectionMode =
-    SelectionMode.SingleSelectConfig
-        SelectionMode.NoCustomOptions
-        SelectionMode.SelectedItemStaysInPlace
-        SelectionMode.CustomHtml
+    SelectionMode.defaultSelectionConfig
+        |> SelectionMode.setAllowCustomOptionsWithBool False Nothing
+        |> SelectionMode.setSelectedItemStaysInPlaceWithBool True
 
 
 suite : Test
