@@ -61,6 +61,7 @@ import SortRank exposing (SortRank(..))
 type Option
     = Option OptionDisplay OptionLabel OptionValue OptionDescription OptionGroup (Maybe OptionSearchFilter)
     | CustomOption OptionDisplay OptionLabel OptionValue (Maybe OptionSearchFilter)
+    | DatalistOption OptionDisplay OptionValue
     | EmptyOption OptionDisplay OptionLabel
 
 
@@ -75,6 +76,9 @@ getOptionLabel option =
 
         EmptyOption _ label ->
             label
+
+        DatalistOption _ optionValue ->
+            optionValue |> optionValueToString |> OptionLabel.new
 
 
 type OptionDisplay
@@ -172,6 +176,9 @@ getOptionGroup option =
         EmptyOption _ _ ->
             NoOptionGroup
 
+        DatalistOption _ _ ->
+            NoOptionGroup
+
 
 newOption : String -> Maybe String -> Option
 newOption value maybeCleanLabel =
@@ -220,6 +227,9 @@ setLabelWithString string maybeCleanString option =
         EmptyOption optionDisplay _ ->
             EmptyOption optionDisplay (OptionLabel.newWithCleanLabel string maybeCleanString)
 
+        DatalistOption optionDisplay _ ->
+            DatalistOption optionDisplay (stringToOptionValue string)
+
 
 setLabel : OptionLabel -> Option -> Option
 setLabel label option =
@@ -244,6 +254,9 @@ setLabel label option =
             EmptyOption optionDisplay
                 label
 
+        DatalistOption optionDisplay _ ->
+            DatalistOption optionDisplay (stringToOptionValue (OptionLabel.optionLabelToString label))
+
 
 setDescriptionWithString : String -> Option -> Option
 setDescriptionWithString string option =
@@ -265,6 +278,9 @@ setDescriptionWithString string option =
 
         EmptyOption optionDisplay optionLabel ->
             EmptyOption optionDisplay optionLabel
+
+        DatalistOption _ _ ->
+            option
 
 
 setDescription : OptionDescription -> Option -> Option
@@ -288,6 +304,9 @@ setDescription description option =
         EmptyOption optionDisplay optionLabel ->
             EmptyOption optionDisplay optionLabel
 
+        DatalistOption _ _ ->
+            option
+
 
 setGroup : OptionGroup -> Option -> Option
 setGroup optionGroup option =
@@ -308,6 +327,9 @@ setGroup optionGroup option =
 
         EmptyOption optionDisplay optionLabel ->
             EmptyOption optionDisplay optionLabel
+
+        DatalistOption _ _ ->
+            option
 
 
 setGroupWithString : String -> Option -> Option
@@ -330,6 +352,9 @@ setGroupWithString string option =
         EmptyOption optionDisplay optionLabel ->
             EmptyOption optionDisplay optionLabel
 
+        DatalistOption _ _ ->
+            option
+
 
 setOptionDisplay : OptionDisplay -> Option -> Option
 setOptionDisplay optionDisplay option =
@@ -351,6 +376,9 @@ setOptionDisplay optionDisplay option =
 
         EmptyOption _ optionLabel ->
             EmptyOption optionDisplay optionLabel
+
+        DatalistOption _ _ ->
+            option
 
 
 setOptionSearchFilter : Maybe OptionSearchFilter -> Option -> Option
@@ -376,6 +404,9 @@ setOptionSearchFilter maybeOptionSearchFilter option =
             EmptyOption
                 optionDisplay
                 optionLabel
+
+        DatalistOption _ _ ->
+            option
 
 
 setMaybeSortRank : Maybe SortRank -> Option -> Option
@@ -436,6 +467,9 @@ isOptionSelected option =
         EmptyOption optionDisplay _ ->
             isOptionDisplaySelected optionDisplay
 
+        DatalistOption _ _ ->
+            False
+
 
 getOptionDisplay : Option -> OptionDisplay
 getOptionDisplay option =
@@ -448,6 +482,9 @@ getOptionDisplay option =
 
         EmptyOption display _ ->
             display
+
+        DatalistOption _ _ ->
+            OptionShown
 
 
 getOptionSelectedIndex : Option -> Int
@@ -462,6 +499,9 @@ getOptionSelectedIndex option =
         EmptyOption optionDisplay _ ->
             optionDisplayToSelectedIndex optionDisplay
 
+        DatalistOption optionDisplay _ ->
+            optionDisplayToSelectedIndex optionDisplay
+
 
 setOptionSelectedIndex : Int -> Option -> Option
 setOptionSelectedIndex selectedIndex option =
@@ -473,6 +513,9 @@ setOptionSelectedIndex selectedIndex option =
             setOptionDisplay (setOptionDisplaySelectedIndex selectedIndex optionDisplay) option
 
         EmptyOption optionDisplay _ ->
+            setOptionDisplay (setOptionDisplaySelectedIndex selectedIndex optionDisplay) option
+
+        DatalistOption optionDisplay _ ->
             setOptionDisplay (setOptionDisplaySelectedIndex selectedIndex optionDisplay) option
 
 
@@ -532,6 +575,9 @@ getOptionValue option =
         EmptyOption _ _ ->
             EmptyOptionValue
 
+        DatalistOption _ optionValue ->
+            optionValue
+
 
 getOptionValueAsString : Option -> String
 getOptionValueAsString option =
@@ -575,6 +621,9 @@ getOptionDescription option =
         EmptyOption _ _ ->
             NoDescription
 
+        DatalistOption _ _ ->
+            NoDescription
+
 
 getMaybeOptionSearchFilter : Option -> Maybe OptionSearchFilter
 getMaybeOptionSearchFilter option =
@@ -586,6 +635,9 @@ getMaybeOptionSearchFilter option =
             maybeOptionSearchFilter
 
         EmptyOption _ _ ->
+            Nothing
+
+        DatalistOption _ _ ->
             Nothing
 
 
@@ -769,6 +821,9 @@ highlightOption option =
                 OptionDisabled ->
                     EmptyOption OptionDisabled label
 
+        DatalistOption _ _ ->
+            option
+
 
 removeHighlightOption : Option -> Option
 removeHighlightOption option =
@@ -857,6 +912,9 @@ removeHighlightOption option =
                 OptionSelectedHighlighted selectedIndex ->
                     EmptyOption (OptionSelectedHighlighted selectedIndex) label
 
+        DatalistOption _ _ ->
+            option
+
 
 isOptionHighlighted : Option -> Bool
 isOptionHighlighted option =
@@ -920,6 +978,9 @@ isOptionHighlighted option =
 
                 OptionDisabled ->
                     False
+
+        DatalistOption _ _ ->
+            False
 
 
 optionIsHighlightable : Option -> Bool
@@ -985,6 +1046,9 @@ optionIsHighlightable option =
                 OptionDisabled ->
                     False
 
+        DatalistOption _ _ ->
+            False
+
 
 selectOption : Int -> Option -> Option
 selectOption selectionIndex option =
@@ -1048,6 +1112,26 @@ selectOption selectionIndex option =
 
                 OptionDisabled ->
                     EmptyOption OptionDisabled label
+
+        DatalistOption optionDisplay optionValue ->
+            case optionDisplay of
+                OptionShown ->
+                    DatalistOption (OptionSelected selectionIndex) optionValue
+
+                OptionHidden ->
+                    option
+
+                OptionSelected selectedIndex ->
+                    DatalistOption (OptionSelected selectedIndex) optionValue
+
+                OptionSelectedHighlighted selectedIndex ->
+                    DatalistOption (OptionSelected selectedIndex) optionValue
+
+                OptionHighlighted ->
+                    option
+
+                OptionDisabled ->
+                    DatalistOption OptionDisabled optionValue
 
 
 deselectOption : Option -> Option
@@ -1118,6 +1202,26 @@ deselectOption option =
                 OptionDisabled ->
                     EmptyOption OptionDisabled label
 
+        DatalistOption optionDisplay optionValue ->
+            case optionDisplay of
+                OptionShown ->
+                    option
+
+                OptionHidden ->
+                    option
+
+                OptionSelected _ ->
+                    DatalistOption OptionShown optionValue
+
+                OptionSelectedHighlighted _ ->
+                    DatalistOption OptionShown optionValue
+
+                OptionHighlighted ->
+                    option
+
+                OptionDisabled ->
+                    option
+
 
 isOptionSelectedHighlighted : Option -> Bool
 isOptionSelectedHighlighted option =
@@ -1130,6 +1234,9 @@ isOptionSelectedHighlighted option =
 
         EmptyOption optionDisplay _ ->
             isOptionDisplaySelectedHighlighted optionDisplay
+
+        DatalistOption _ _ ->
+            False
 
 
 isOptionDisplaySelectedHighlighted : OptionDisplay -> Bool
@@ -1166,6 +1273,9 @@ isEmptyOption option =
         EmptyOption _ _ ->
             True
 
+        DatalistOption _ _ ->
+            False
+
 
 optionToValueLabelTuple : Option -> ( String, String )
 optionToValueLabelTuple option =
@@ -1182,6 +1292,9 @@ isCustomOption option =
             True
 
         EmptyOption _ _ ->
+            False
+
+        DatalistOption _ _ ->
             False
 
 

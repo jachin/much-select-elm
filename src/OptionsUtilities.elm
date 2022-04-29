@@ -37,8 +37,11 @@ import Option
         )
 import OptionLabel exposing (OptionLabel)
 import OptionSearchFilter exposing (OptionSearchResult)
-import SelectionMode exposing (SelectedItemPlacementMode(..), SelectionMode(..))
+import OutputStyle exposing (SelectedItemPlacementMode(..))
+import SearchString exposing (SearchString)
+import SelectionMode exposing (SelectionConfig(..), getSelectedItemPlacementMode)
 import SortRank exposing (SortRank)
+import ValueString exposing (ValueString)
 
 
 moveHighlightedOptionDown : List Option -> List Option -> List Option
@@ -237,6 +240,9 @@ selectOptionInListByOptionValue value options =
                     EmptyOption _ _ ->
                         selectOption nextSelectedIndex option_
 
+                    DatalistOption _ _ ->
+                        selectOption nextSelectedIndex option_
+
             else if isOptionSelected option_ then
                 option_
 
@@ -267,6 +273,9 @@ selectOptionInListByOptionValueWithIndex index value options =
                     EmptyOption _ _ ->
                         selectOption index option_
 
+                    DatalistOption _ _ ->
+                        selectOption index option_
+
             else if isOptionSelected option_ then
                 option_
 
@@ -294,7 +303,7 @@ deselectOptionInListByOptionValue value options =
         options
 
 
-selectHighlightedOption : SelectionMode -> List Option -> List Option
+selectHighlightedOption : SelectionConfig -> List Option -> List Option
 selectHighlightedOption selectionMode options =
     options
         |> List.filter
@@ -308,28 +317,31 @@ selectHighlightedOption selectionMode options =
                         case option of
                             Option _ _ value _ _ _ ->
                                 case selectionMode of
-                                    MultiSelect _ _ ->
+                                    MultiSelectConfig _ _ _ ->
                                         selectOptionInListByOptionValue value options
                                             |> clearAnyUnselectedCustomOptions
 
-                                    SingleSelect _ _ ->
+                                    SingleSelectConfig _ _ _ ->
                                         selectSingleOptionInList value options
 
                             CustomOption _ _ value _ ->
                                 case selectionMode of
-                                    MultiSelect _ _ ->
+                                    MultiSelectConfig _ _ _ ->
                                         selectOptionInListByOptionValue value options
 
-                                    SingleSelect _ _ ->
+                                    SingleSelectConfig _ _ _ ->
                                         selectSingleOptionInList value options
 
                             EmptyOption _ _ ->
                                 case selectionMode of
-                                    MultiSelect _ _ ->
+                                    MultiSelectConfig _ _ _ ->
                                         selectEmptyOption options
 
-                                    SingleSelect _ _ ->
+                                    SingleSelectConfig _ _ _ ->
                                         selectEmptyOption options
+
+                            DatalistOption _ _ ->
+                                options
 
                     Nothing ->
                         options
@@ -357,9 +369,74 @@ selectSingleOptionInList value options =
                         EmptyOption _ _ ->
                             selectOption 0 option_
 
+                        DatalistOption _ _ ->
+                            selectOption 0 option_
+
                 else
                     deselectOption option_
             )
+
+
+selectSingleOptionInListResult : OptionValue -> List Option -> Result String (List Option)
+selectSingleOptionInListResult optionValue options =
+    if List.any (\option_ -> getOptionValue option_ == optionValue) options then
+        (options
+            |> List.map
+                (\option_ ->
+                    if optionValuesEqual option_ optionValue then
+                        case option_ of
+                            Option _ _ _ _ _ _ ->
+                                selectOption 0 option_
+
+                            CustomOption _ _ optionValue_ _ ->
+                                case optionValue_ of
+                                    OptionValue valueStr ->
+                                        selectOption 0 option_ |> setLabelWithString valueStr Nothing
+
+                                    EmptyOptionValue ->
+                                        selectOption 0 option_
+
+                            EmptyOption _ _ ->
+                                selectOption 0 option_
+
+                            DatalistOption _ _ ->
+                                selectOption 0 option_
+
+                    else
+                        deselectOption option_
+                )
+        )
+            |> Ok
+
+    else
+        Err "That option is not in this list"
+
+
+selectSingleOptionInListByString : String -> List Option -> List Option
+selectSingleOptionInListByString string options =
+    selectSingleOptionInList (stringToOptionValue string) options
+
+
+selectSingleOptionInListByStringOrSelectCustomValue : SearchString -> List Option -> List Option
+selectSingleOptionInListByStringOrSelectCustomValue searchString options =
+    if SearchString.isEmpty searchString then
+        options
+
+    else
+        case selectSingleOptionInListResult (Option.stringToOptionValue (SearchString.toString searchString)) options of
+            Ok newOptions ->
+                newOptions
+
+            Err _ ->
+                CustomOption
+                    (OptionSelected 0)
+                    (OptionLabel.newWithCleanLabel (SearchString.toString searchString) Nothing)
+                    (OptionValue (SearchString.toString searchString))
+                    Nothing
+                    :: (options
+                            |> clearAnyUnselectedCustomOptions
+                            |> deselectAllOptionsInOptionsList
+                       )
 
 
 selectEmptyOption : List Option -> List Option
@@ -376,6 +453,9 @@ selectEmptyOption options =
 
                     EmptyOption _ _ ->
                         selectOption 0 option_
+
+                    DatalistOption _ _ ->
+                        deselectOption option_
             )
 
 
@@ -524,6 +604,9 @@ unhighlightSelectedOptions =
 
                         OptionDisabled ->
                             option
+
+                DatalistOption _ _ ->
+                    option
         )
 
 
@@ -616,6 +699,9 @@ toggleSelectedHighlightByOptionValue options optionValue =
 
                     EmptyOption _ _ ->
                         option_
+
+                    DatalistOption _ _ ->
+                        option_
             )
 
 
@@ -666,6 +752,9 @@ deselectAllSelectedHighlightedOptions options =
                                 option_
 
                     EmptyOption _ _ ->
+                        option_
+
+                    DatalistOption _ _ ->
                         option_
             )
 
@@ -783,7 +872,7 @@ removeHighlightOptionInList value options =
         options
 
 
-prependCustomOption : Maybe String -> String -> List Option -> List Option
+prependCustomOption : Maybe String -> SearchString -> List Option -> List Option
 prependCustomOption maybeCustomOptionHint searchString options =
     let
         label =
@@ -795,24 +884,29 @@ prependCustomOption maybeCustomOptionHint searchString options =
                     in
                     case parts of
                         [] ->
-                            "Add " ++ searchString ++ "…"
+                            "Add " ++ SearchString.toString searchString ++ "…"
 
                         [ _ ] ->
-                            customOptionHint ++ searchString
+                            customOptionHint ++ SearchString.toString searchString
 
                         first :: second :: _ ->
-                            first ++ searchString ++ second
+                            first ++ SearchString.toString searchString ++ second
 
                 Nothing ->
-                    "Add " ++ searchString ++ "…"
+                    "Add " ++ SearchString.toString searchString ++ "…"
     in
     [ CustomOption
         OptionShown
         (OptionLabel.newWithCleanLabel label Nothing)
-        (OptionValue searchString)
+        (OptionValue (SearchString.toString searchString))
         Nothing
     ]
         ++ options
+
+
+findHighlightedOption : List Option -> Maybe Option
+findHighlightedOption options =
+    List.Extra.find (\option -> isOptionHighlighted option) options
 
 
 findHighlightedOptionIndex : List Option -> Maybe Int
@@ -835,15 +929,15 @@ findHighlightedOrSelectedOptionIndex options =
             findSelectedOptionIndex options
 
 
-filterOptionsToShowInDropdown : SelectionMode -> List Option -> List Option
+filterOptionsToShowInDropdown : SelectionConfig -> List Option -> List Option
 filterOptionsToShowInDropdown selectionMode =
     filterOptionsToShowInDropdownByOptionDisplay selectionMode >> filterOptionsToShowInDropdownBySearchScore
 
 
-filterOptionsToShowInDropdownByOptionDisplay : SelectionMode -> List Option -> List Option
+filterOptionsToShowInDropdownByOptionDisplay : SelectionConfig -> List Option -> List Option
 filterOptionsToShowInDropdownByOptionDisplay selectionMode =
     case selectionMode of
-        SingleSelect _ _ ->
+        SingleSelectConfig _ _ _ ->
             List.filter
                 (\option ->
                     case getOptionDisplay option of
@@ -866,7 +960,7 @@ filterOptionsToShowInDropdownByOptionDisplay selectionMode =
                             True
                 )
 
-        MultiSelect _ _ ->
+        MultiSelectConfig _ _ _ ->
             List.filter
                 (\option ->
                     case getOptionDisplay option of
@@ -985,6 +1079,16 @@ findOptionByOptionUsingOptionValue option options =
     findOptionByOptionValue (getOptionValue option) options
 
 
+findOptionByOptionUsingValueString : ValueString -> List Option -> Maybe Option
+findOptionByOptionUsingValueString valueString options =
+    findOptionByOptionValue (ValueString.toOptionValue valueString) options
+
+
+updateDatalistOptionsWithValue : ValueString -> List Option -> List Option
+updateDatalistOptionsWithValue valueString options =
+    options
+
+
 deselectAllOptionsInOptionsList : List Option -> List Option
 deselectAllOptionsInOptionsList options =
     List.map
@@ -992,19 +1096,22 @@ deselectAllOptionsInOptionsList options =
         options
 
 
-replaceOptions : SelectionMode -> List Option -> List Option -> List Option
+replaceOptions : SelectionConfig -> List Option -> List Option -> List Option
 replaceOptions selectionMode oldOptions newOptions =
     let
         oldSelectedOptions =
             selectedOptions oldOptions
     in
     case selectionMode of
-        SingleSelect _ selectedItemPlacementMode ->
+        SingleSelectConfig _ _ _ ->
             let
                 maybeSelectedOptionValue =
                     selectedOptions (newOptions ++ oldOptions)
                         |> List.head
                         |> Maybe.map getOptionValue
+
+                selectedItemPlacementMode =
+                    getSelectedItemPlacementMode selectionMode
             in
             case maybeSelectedOptionValue of
                 Just selectedOptionValue ->
@@ -1024,7 +1131,7 @@ replaceOptions selectionMode oldOptions newOptions =
                         oldSelectedOptions
                         newOptions
 
-        MultiSelect _ _ ->
+        MultiSelectConfig _ _ _ ->
             mergeTwoListsOfOptionsPreservingSelectedOptions
                 SelectedItemStaysInPlace
                 oldSelectedOptions
@@ -1082,6 +1189,9 @@ mergeTwoListsOfOptionsPreservingSelectedOptions selectedItemPlacementMode option
                 SelectedItemMovesToTheTop ->
                     updatedOptionsA
                         ++ updatedOptionsB
+
+                SelectedItemIsHidden ->
+                    updatedOptionsB ++ updatedOptionsA
 
         newOptions =
             List.Extra.uniqueBy getOptionValueAsString superList

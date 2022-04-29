@@ -1,16 +1,16 @@
 module Main exposing (..)
 
 import Browser
-import Debouncer.Messages exposing (Debouncer, Milliseconds, fromSeconds, provideInput, settleWhenQuietFor, toDebouncer)
-import Html
+import Debouncer.Messages
     exposing
-        ( Html
-        , div
-        , input
-        , node
-        , span
-        , text
+        ( Debouncer
+        , Milliseconds
+        , fromSeconds
+        , provideInput
+        , settleWhenQuietFor
+        , toDebouncer
         )
+import Html exposing (Html, button, div, input, node, optgroup, span, text)
 import Html.Attributes
     exposing
         ( class
@@ -26,21 +26,14 @@ import Html.Attributes
         , value
         )
 import Html.Attributes.Extra exposing (attributeIf)
-import Html.Events
-    exposing
-        ( onBlur
-        , onFocus
-        , onInput
-        , onMouseDown
-        , onMouseEnter
-        , onMouseLeave
-        )
+import Html.Events exposing (onBlur, onClick, onFocus, onInput, onMouseDown, onMouseEnter, onMouseLeave)
 import Html.Lazy
 import Json.Decode
 import Json.Encode
 import Keyboard exposing (Key(..))
 import Keyboard.Events as Keyboard
 import List.Extra
+import Maybe.Extra
 import Option
     exposing
         ( Option(..)
@@ -50,8 +43,14 @@ import Option
         )
 import OptionLabel exposing (OptionLabel(..), optionLabelToString)
 import OptionPresentor exposing (tokensToHtml)
-import OptionSearcher exposing (doesSearchStringFindNothing)
-import OptionSorting exposing (OptionSort(..), sortOptions, sortOptionsBySearchFilterTotalScore, stringToOptionSort)
+import OptionSearcher exposing (doesSearchStringFindNothing, updateOrAddCustomOption)
+import OptionSorting
+    exposing
+        ( OptionSort(..)
+        , sortOptions
+        , sortOptionsBySearchFilterTotalScore
+        , stringToOptionSort
+        )
 import OptionsUtilities
     exposing
         ( addAdditionalOptionsToOptionList
@@ -64,7 +63,9 @@ import OptionsUtilities
         , deselectLastSelectedOption
         , deselectOptionInListByOptionValue
         , filterOptionsToShowInDropdown
+        , findHighlightedOption
         , findHighlightedOrSelectedOptionIndex
+        , findOptionByOptionUsingValueString
         , findOptionByOptionValue
         , groupOptionsInOrder
         , hasSelectedHighlightedOptions
@@ -82,10 +83,19 @@ import OptionsUtilities
         , selectOptionInListByOptionValue
         , selectOptionsInOptionsListByString
         , selectSingleOptionInList
+        , selectSingleOptionInListByStringOrSelectCustomValue
         , selectedOptions
         , selectedOptionsToTuple
         , toggleSelectedHighlightByOptionValue
         , unhighlightSelectedOptions
+        , updateDatalistOptionsWithValue
+        )
+import OutputStyle
+    exposing
+        ( DropdownStyle(..)
+        , MaxDropdownItems(..)
+        , SearchStringMinimumLength(..)
+        , SingleItemRemoval(..)
         )
 import Ports
     exposing
@@ -93,7 +103,6 @@ import Ports
         , allOptions
         , allowCustomOptionsReceiver
         , blurInput
-        , customOptionHintReceiver
         , customOptionSelected
         , deselectOptionReceiver
         , disableChangedReceiver
@@ -128,14 +137,34 @@ import Ports
         , valuesDecoder
         )
 import PositiveInt exposing (PositiveInt)
+import SearchString exposing (SearchString)
 import SelectionMode
     exposing
-        ( CustomOptions(..)
-        , SelectedItemPlacementMode(..)
-        , SelectionMode(..)
-        , SingleItemRemoval(..)
+        ( OutputStyle(..)
+        , SelectionConfig(..)
+        , defaultSelectionConfig
+        , getMaxDropdownItems
+        , getOutputStyle
+        , getPlaceholder
+        , getSearchStringMinimumLength
+        , getSingleItemRemoval
+        , isDisabled
+        , isFocused
+        , isSingleSelect
+        , makeSelectionConfig
+        , setDropdownStyle
+        , setIsDisabled
+        , setIsFocused
+        , setMaxDropdownItems
+        , setSearchStringMinimumLength
+        , setSelectedItemStaysInPlaceWithBool
+        , setShowDropdown
+        , setSingleItemRemoval
+        , showDropdown
+        , showDropdownFooter
         )
 import Task
+import ValueString exposing (ValueString)
 
 
 type Msg
@@ -148,8 +177,10 @@ type Msg
     | DropdownMouseOutOption OptionValue
     | DropdownMouseClickOption OptionValue
     | UpdateSearchString String
+    | UpdateValueString String
     | UpdateOptionsWithSearchString
     | MsgQuietUpdateOptionsWithSearchString (Debouncer.Messages.Msg Msg)
+    | TextInputOnInput String
     | ValueChanged Json.Decode.Value
     | OptionsReplaced Json.Decode.Value
     | OptionSortingChanged String
@@ -162,8 +193,7 @@ type Msg
     | LoadingAttributeChanged Bool
     | MaxDropdownItemsChanged Int
     | ShowDropdownFooterChanged Bool
-    | AllowCustomOptionsChanged Bool
-    | CustomOptionHintChanged (Maybe String)
+    | AllowCustomOptionsChanged ( Bool, String )
     | DisabledAttributeChanged Bool
     | MultiSelectAttributeChanged Bool
     | MultiSelectSingleItemRemovalAttributeChanged Bool
@@ -182,28 +212,23 @@ type Msg
       --  If you can think of a better name we're all ears.
     | ToggleSelectedValueHighlight OptionValue
     | DeleteKeydownForMultiSelect
+    | AddMultiSelectValue Int
+    | RemoveMultiSelectValue Int
     | RequestAllOptions
 
 
 type alias Model =
     { initialValue : List String
     , placeholder : String
-    , customOptionHint : Maybe String
-    , selectionMode : SelectionMode
+    , selectionMode : SelectionConfig
     , options : List Option
     , optionSort : OptionSort
-    , showDropdown : Bool
     , quietSearchForDynamicInterval : Debouncer Msg
-    , searchString : String
-    , searchStringMinimumLength : PositiveInt
+    , searchString : SearchString
+    , valueString : ValueString
     , rightSlot : RightSlot
-    , maxDropdownItems : PositiveInt
-    , disabled : Bool
-    , focused : Bool
-    , valueCasingWidth : Float
-    , valueCasingHeight : Float
+    , valueCasing : ValueCasing
     , deleteKeyPressed : Bool
-    , showDropdownFooter : Bool
     }
 
 
@@ -222,6 +247,10 @@ type RightSlot
     | ShowClearButton
 
 
+type ValueCasing
+    = ValueCasing Float Float
+
+
 updateDebouncer : Debouncer.Messages.UpdateConfig Msg Model
 updateDebouncer =
     { mapMsg = MsgQuietUpdateOptionsWithSearchString
@@ -237,27 +266,32 @@ update msg model =
             ( model, Cmd.none )
 
         BringInputInFocus ->
-            if isRightSlotTransitioning model.rightSlot then
-                ( model, Cmd.none )
+            case getOutputStyle model.selectionMode of
+                CustomHtml ->
+                    if isRightSlotTransitioning model.rightSlot then
+                        ( model, Cmd.none )
 
-            else if model.focused then
-                ( model, focusInput () )
+                    else if isFocused model.selectionMode then
+                        ( model, focusInput () )
 
-            else
-                ( { model
-                    | focused = True
-                    , rightSlot = updateRightSlotTransitioning InFocusTransition model.rightSlot
-                  }
-                , focusInput ()
-                )
+                    else
+                        ( { model
+                            | selectionMode = setIsFocused True model.selectionMode
+                            , rightSlot = updateRightSlotTransitioning InFocusTransition model.rightSlot
+                          }
+                        , focusInput ()
+                        )
+
+                Datalist ->
+                    ( model, focusInput () )
 
         BringInputOutOfFocus ->
             if isRightSlotTransitioning model.rightSlot then
                 ( model, Cmd.none )
 
-            else if model.focused then
+            else if isFocused model.selectionMode then
                 ( { model
-                    | focused = False
+                    | selectionMode = setIsFocused False model.selectionMode
                     , rightSlot = updateRightSlotTransitioning InFocusTransition model.rightSlot
                   }
                 , blurInput ()
@@ -267,30 +301,68 @@ update msg model =
                 ( model, blurInput () )
 
         InputBlur ->
-            let
-                optionsWithoutUnselectedCustomOptions =
-                    removeUnselectedCustomOptions model.options
-                        |> unhighlightSelectedOptions
-            in
-            ( { model
-                | searchString = ""
-                , options = optionsWithoutUnselectedCustomOptions
-                , showDropdown = False
-                , focused = False
-                , rightSlot = updateRightSlotTransitioning NotInFocusTransition model.rightSlot
-              }
-                |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-            , inputBlurred ()
-            )
+            case getOutputStyle model.selectionMode of
+                CustomHtml ->
+                    let
+                        optionsWithoutUnselectedCustomOptions =
+                            removeUnselectedCustomOptions model.options
+                                |> unhighlightSelectedOptions
+                    in
+                    ( { model
+                        | searchString = SearchString.reset
+                        , options = optionsWithoutUnselectedCustomOptions
+                        , selectionMode =
+                            model.selectionMode
+                                |> setShowDropdown False
+                                |> setIsFocused False
+                        , rightSlot = updateRightSlotTransitioning NotInFocusTransition model.rightSlot
+                      }
+                        |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
+                    , inputBlurred ()
+                    )
+
+                Datalist ->
+                    let
+                        options =
+                            updateDatalistOptionsWithValue model.valueString model.options
+
+                        maybeSelectedOption =
+                            findOptionByOptionUsingValueString model.valueString options
+
+                        maybeSelectedOptionValue =
+                            Maybe.map Option.getOptionValue maybeSelectedOption
+                    in
+                    ( { model
+                        | selectionMode = setIsFocused False model.selectionMode
+                        , options = options
+                      }
+                    , Cmd.batch
+                        [ inputBlurred ()
+                        , makeCommandMessagesWhenValuesChanges
+                            (Maybe.Extra.toList maybeSelectedOption)
+                            maybeSelectedOptionValue
+                        ]
+                    )
 
         InputFocus ->
-            ( { model
-                | showDropdown = True
-                , focused = True
-                , rightSlot = updateRightSlotTransitioning NotInFocusTransition model.rightSlot
-              }
-            , Cmd.none
-            )
+            case getOutputStyle model.selectionMode of
+                CustomHtml ->
+                    ( { model
+                        | selectionMode =
+                            model.selectionMode
+                                |> setShowDropdown True
+                                |> setIsFocused True
+                        , rightSlot = updateRightSlotTransitioning NotInFocusTransition model.rightSlot
+                      }
+                    , Cmd.none
+                    )
+
+                Datalist ->
+                    ( { model
+                        | selectionMode = setIsFocused True model.selectionMode
+                      }
+                    , Cmd.none
+                    )
 
         DropdownMouseOverOption optionValue ->
             let
@@ -321,17 +393,17 @@ update msg model =
             let
                 updatedOptions =
                     case model.selectionMode of
-                        MultiSelect _ _ ->
+                        MultiSelectConfig _ _ _ ->
                             selectOptionInListByOptionValue optionValue model.options
 
-                        SingleSelect _ _ ->
+                        SingleSelectConfig _ _ _ ->
                             selectSingleOptionInList optionValue model.options
             in
             case model.selectionMode of
-                SingleSelect _ _ ->
+                SingleSelectConfig _ _ _ ->
                     ( { model
                         | options = updatedOptions
-                        , searchString = ""
+                        , searchString = SearchString.reset
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , Cmd.batch
@@ -340,10 +412,10 @@ update msg model =
                         ]
                     )
 
-                MultiSelect _ _ ->
+                MultiSelectConfig _ _ _ ->
                     ( { model
                         | options = updatedOptions
-                        , searchString = ""
+                        , searchString = SearchString.reset
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , Cmd.batch
@@ -354,7 +426,7 @@ update msg model =
 
         UpdateSearchString searchString ->
             ( { model
-                | searchString = searchString
+                | searchString = SearchString.new searchString
               }
             , Cmd.batch
                 [ inputKeyUp searchString
@@ -370,20 +442,31 @@ update msg model =
                 ]
             )
 
+        UpdateValueString valueString ->
+            ( model, Cmd.none )
+
         UpdateOptionsWithSearchString ->
             ( updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges model, Cmd.none )
 
         MsgQuietUpdateOptionsWithSearchString subMsg ->
             Debouncer.Messages.update update updateDebouncer subMsg model
 
+        TextInputOnInput inputString ->
+            ( { model
+                | searchString = SearchString.new inputString
+                , options = updateOrAddCustomOption (SearchString.new inputString) model.selectionMode model.options
+              }
+            , inputKeyUp inputString
+            )
+
         ValueChanged valuesJson ->
             let
                 valuesResult =
                     case model.selectionMode of
-                        SingleSelect _ _ ->
+                        SingleSelectConfig _ _ _ ->
                             Json.Decode.decodeValue valueDecoder valuesJson
 
-                        MultiSelect _ _ ->
+                        MultiSelectConfig _ _ _ ->
                             Json.Decode.decodeValue valuesDecoder valuesJson
             in
             case valuesResult of
@@ -469,10 +552,10 @@ update msg model =
 
                         updatedOptions =
                             case model.selectionMode of
-                                MultiSelect _ _ ->
+                                MultiSelectConfig _ _ _ ->
                                     selectOptionInListByOptionValue optionValue model.options
 
-                                SingleSelect _ _ ->
+                                SingleSelectConfig _ _ _ ->
                                     selectSingleOptionInList optionValue model.options
                     in
                     ( { model
@@ -521,37 +604,57 @@ update msg model =
         MaxDropdownItemsChanged int ->
             let
                 maxDropdownItems =
-                    PositiveInt.new int
+                    FixedMaxDropdownItems (PositiveInt.new int)
             in
             ( { model
-                | maxDropdownItems = maxDropdownItems
+                | selectionMode = setMaxDropdownItems maxDropdownItems model.selectionMode
               }
                 |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
             , Cmd.none
             )
 
         ShowDropdownFooterChanged bool ->
+            let
+                newDropdownStyle =
+                    if bool then
+                        ShowFooter
+
+                    else
+                        NoFooter
+            in
             ( { model
-                | showDropdownFooter = bool
+                | selectionMode = setDropdownStyle newDropdownStyle model.selectionMode
               }
             , Cmd.none
             )
 
-        AllowCustomOptionsChanged canAddCustomOptions ->
-            ( { model | selectionMode = SelectionMode.setAllowCustomOptionsWithBool canAddCustomOptions model.selectionMode }
+        AllowCustomOptionsChanged ( canAddCustomOptions, customOptionHint ) ->
+            let
+                maybeCustomOptionHint =
+                    case customOptionHint of
+                        "" ->
+                            Nothing
+
+                        _ ->
+                            Just customOptionHint
+            in
+            ( { model
+                | selectionMode =
+                    SelectionMode.setAllowCustomOptionsWithBool
+                        canAddCustomOptions
+                        maybeCustomOptionHint
+                        model.selectionMode
+              }
             , Cmd.none
             )
 
-        CustomOptionHintChanged maybeString ->
-            ( { model | customOptionHint = maybeString }, Cmd.none )
-
         DisabledAttributeChanged bool ->
-            ( { model | disabled = bool }, Cmd.none )
+            ( { model | selectionMode = setIsDisabled bool model.selectionMode }, Cmd.none )
 
         SelectedItemStaysInPlaceChanged selectedItemStaysInPlace ->
             ( { model
                 | selectionMode =
-                    SelectionMode.setSelectedItemStaysInPlace
+                    setSelectedItemStaysInPlaceWithBool
                         selectedItemStaysInPlace
                         model.selectionMode
               }
@@ -566,17 +669,9 @@ update msg model =
 
                     else
                         DisableSingleItemRemoval
-
-                newMode =
-                    case model.selectionMode of
-                        SingleSelect _ _ ->
-                            model.selectionMode
-
-                        MultiSelect customOptions _ ->
-                            MultiSelect customOptions multiSelectSingleItemRemoval
             in
             ( { model
-                | selectionMode = newMode
+                | selectionMode = setSingleItemRemoval multiSelectSingleItemRemoval model.selectionMode
               }
             , Cmd.batch [ muchSelectIsReady (), Cmd.none ]
             )
@@ -606,46 +701,52 @@ update msg model =
             )
 
         SearchStringMinimumLengthAttributeChanged searchStringMinimumLength ->
-            ( { model | searchStringMinimumLength = PositiveInt.new searchStringMinimumLength }
+            ( { model
+                | selectionMode =
+                    setSearchStringMinimumLength
+                        (FixedSearchStringMinimumLength (PositiveInt.new searchStringMinimumLength))
+                        model.selectionMode
+              }
                 |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
             , Cmd.none
             )
 
         SelectHighlightedOption ->
             let
+                maybeHighlightedOptionValue =
+                    findHighlightedOption model.options |> Maybe.map Option.getOptionValue
+
                 updatedOptions =
                     selectHighlightedOption model.selectionMode model.options
             in
             case model.selectionMode of
-                SingleSelect _ _ ->
+                SingleSelectConfig _ _ _ ->
                     ( { model
                         | options = updatedOptions
-                        , searchString = ""
+                        , searchString = SearchString.reset
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , Cmd.batch
-                        -- TODO Figure out what the highlighted option in here
-                        [ makeCommandMessagesWhenValuesChanges updatedOptions Nothing
+                        [ makeCommandMessagesWhenValuesChanges updatedOptions maybeHighlightedOptionValue
                         , blurInput ()
                         ]
                     )
 
-                MultiSelect _ _ ->
+                MultiSelectConfig _ _ _ ->
                     ( { model
                         | options = updatedOptions
-                        , searchString = ""
+                        , searchString = SearchString.reset
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-                      -- TODO Figure out what the highlighted option in here
                     , Cmd.batch
-                        [ makeCommandMessagesWhenValuesChanges updatedOptions Nothing
+                        [ makeCommandMessagesWhenValuesChanges updatedOptions maybeHighlightedOptionValue
                         , focusInput ()
                         ]
                     )
 
         DeleteInputForSingleSelect ->
             case model.selectionMode of
-                SingleSelect _ _ ->
+                SingleSelectConfig _ _ _ ->
                     if hasSelectedOption model.options then
                         -- if there are ANY selected options, clear them all;
                         clearAllSelectedOption model
@@ -653,12 +754,12 @@ update msg model =
                     else
                         ( model, Cmd.none )
 
-                MultiSelect _ _ ->
+                MultiSelectConfig _ _ _ ->
                     ( model, Cmd.none )
 
         EscapeKeyInInputFilter ->
             ( { model
-                | searchString = ""
+                | searchString = SearchString.reset
               }
                 |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
             , blurInput ()
@@ -667,7 +768,7 @@ update msg model =
         MoveHighlightedOptionUp ->
             let
                 updatedOptions =
-                    moveHighlightedOptionUp model.options (figureOutWhichOptionsToShowInTheDropdown model.selectionMode model.maxDropdownItems model.options)
+                    moveHighlightedOptionUp model.options (figureOutWhichOptionsToShowInTheDropdown model.selectionMode model.options)
             in
             ( { model
                 | options = updatedOptions
@@ -678,7 +779,7 @@ update msg model =
         MoveHighlightedOptionDown ->
             let
                 updatedOptions =
-                    moveHighlightedOptionDown model.options (figureOutWhichOptionsToShowInTheDropdown model.selectionMode model.maxDropdownItems model.options)
+                    moveHighlightedOptionDown model.options (figureOutWhichOptionsToShowInTheDropdown model.selectionMode model.options)
             in
             ( { model
                 | options = updatedOptions
@@ -687,7 +788,7 @@ update msg model =
             )
 
         ValueCasingWidthUpdate dims ->
-            ( { model | valueCasingWidth = dims.width, valueCasingHeight = dims.height }, Cmd.none )
+            ( { model | valueCasing = ValueCasing dims.width dims.height }, Cmd.none )
 
         ClearAllSelectedOptions ->
             clearAllSelectedOption model
@@ -705,7 +806,7 @@ update msg model =
             )
 
         DeleteKeydownForMultiSelect ->
-            if String.length model.searchString > 0 then
+            if SearchString.length model.searchString > 0 then
                 ( model, Cmd.none )
 
             else
@@ -726,6 +827,12 @@ update msg model =
                     , focusInput ()
                     ]
                 )
+
+        AddMultiSelectValue indexWhereToAdd ->
+            ( model, Cmd.none )
+
+        RemoveMultiSelectValue indexWhereToAdd ->
+            ( model, Cmd.none )
 
         RequestAllOptions ->
             ( model, allOptions (Json.Encode.list Option.encode model.options) )
@@ -771,7 +878,7 @@ clearAllSelectedOption model =
             deselectAllOptionsInOptionsList model.options
 
         focusCmdMsg =
-            if model.focused then
+            if isFocused model.selectionMode then
                 focusInput ()
 
             else
@@ -780,7 +887,7 @@ clearAllSelectedOption model =
     ( { model
         | options = deselectAllOptionsInOptionsList newOptions
         , rightSlot = updateRightSlot model.rightSlot model.selectionMode False
-        , searchString = ""
+        , searchString = SearchString.reset
       }
     , Cmd.batch
         [ makeCommandMessagesWhenValuesChanges [] Nothing
@@ -795,10 +902,7 @@ updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges model =
     updateModelWithChangesThatEffectTheOptionsWithSearchString
         model.rightSlot
         model.selectionMode
-        model.customOptionHint
         model.searchString
-        model.searchStringMinimumLength
-        model.maxDropdownItems
         model.options
         model
 
@@ -808,36 +912,29 @@ updateModelWithChangesThatEffectTheOptionsWhenTheMouseMoves model =
     updatePartOfTheModelWithChangesThatEffectTheOptionsWhenTheMouseMoves
         model.rightSlot
         model.selectionMode
-        model.customOptionHint
         model.searchString
-        model.searchStringMinimumLength
         model.options
         model
 
 
 updateModelWithChangesThatEffectTheOptionsWithSearchString :
     RightSlot
-    -> SelectionMode
-    -> Maybe String
-    -> String
-    -> PositiveInt
-    -> PositiveInt
+    -> SelectionConfig
+    -> SearchString
     -> List Option
     -> { a | options : List Option, rightSlot : RightSlot }
     -> { a | options : List Option, rightSlot : RightSlot }
-updateModelWithChangesThatEffectTheOptionsWithSearchString rightSlot selectionMode customOptionHint searchString searchStringMinimumLength maxDropdownItems options model =
+updateModelWithChangesThatEffectTheOptionsWithSearchString rightSlot selectionMode searchString options model =
     let
         updatedOptions =
             updateTheFullListOfOptions
                 selectionMode
-                customOptionHint
                 searchString
-                searchStringMinimumLength
                 options
     in
     { model
         | options =
-            adjustHighlightedOptionAfterSearch updatedOptions (figureOutWhichOptionsToShowInTheDropdown selectionMode maxDropdownItems updatedOptions)
+            adjustHighlightedOptionAfterSearch updatedOptions (figureOutWhichOptionsToShowInTheDropdown selectionMode updatedOptions)
         , rightSlot =
             updateRightSlot
                 rightSlot
@@ -848,21 +945,17 @@ updateModelWithChangesThatEffectTheOptionsWithSearchString rightSlot selectionMo
 
 updatePartOfTheModelWithChangesThatEffectTheOptionsWhenTheMouseMoves :
     RightSlot
-    -> SelectionMode
-    -> Maybe String
-    -> String
-    -> PositiveInt
+    -> SelectionConfig
+    -> SearchString
     -> List Option
     -> { a | options : List Option, rightSlot : RightSlot }
     -> { a | options : List Option, rightSlot : RightSlot }
-updatePartOfTheModelWithChangesThatEffectTheOptionsWhenTheMouseMoves rightSlot selectionMode customOptionHint searchString searchStringMinimumLength options model =
+updatePartOfTheModelWithChangesThatEffectTheOptionsWhenTheMouseMoves rightSlot selectionMode searchString options model =
     let
         updatedOptions =
             updateTheFullListOfOptions
                 selectionMode
-                customOptionHint
                 searchString
-                searchStringMinimumLength
                 options
     in
     { model
@@ -876,82 +969,88 @@ updatePartOfTheModelWithChangesThatEffectTheOptionsWhenTheMouseMoves rightSlot s
     }
 
 
-updateTheFullListOfOptions : SelectionMode -> Maybe String -> String -> PositiveInt -> List Option -> List Option
-updateTheFullListOfOptions selectionMode customOptionHint searchString searchStringMinimumLength options =
+updateTheFullListOfOptions : SelectionConfig -> SearchString -> List Option -> List Option
+updateTheFullListOfOptions selectionMode searchString options =
     options
-        |> OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionMode customOptionHint searchString searchStringMinimumLength
+        |> OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionMode searchString
 
 
-updateTheOptionsForTheDropdown : SelectionMode -> PositiveInt -> List Option -> List Option
-updateTheOptionsForTheDropdown selectionMode maxDropdownItems options =
+updateTheOptionsForTheDropdown : SelectionConfig -> List Option -> List Option
+updateTheOptionsForTheDropdown selectionMode options =
     options
         |> sortOptionsBySearchFilterTotalScore
-        |> figureOutWhichOptionsToShowInTheDropdown selectionMode maxDropdownItems
+        |> figureOutWhichOptionsToShowInTheDropdown selectionMode
 
 
-figureOutWhichOptionsToShowInTheDropdown : SelectionMode -> PositiveInt -> List Option -> List Option
-figureOutWhichOptionsToShowInTheDropdown selectionMode maxDropdownItems options =
+figureOutWhichOptionsToShowInTheDropdown : SelectionConfig -> List Option -> List Option
+figureOutWhichOptionsToShowInTheDropdown selectionMode options =
     let
         optionsThatCouldBeShown =
             filterOptionsToShowInDropdown selectionMode options
 
         lastIndexOfOptions =
             List.length optionsThatCouldBeShown - 1
-
-        maxNumberOfDropdownItems =
-            PositiveInt.toInt maxDropdownItems
     in
-    if List.length optionsThatCouldBeShown <= maxNumberOfDropdownItems then
-        optionsThatCouldBeShown
+    case getMaxDropdownItems selectionMode of
+        OutputStyle.FixedMaxDropdownItems maxDropdownItems ->
+            let
+                maxNumberOfDropdownItems =
+                    PositiveInt.toInt maxDropdownItems
+            in
+            if List.length optionsThatCouldBeShown <= maxNumberOfDropdownItems then
+                optionsThatCouldBeShown
 
-    else
-        case findHighlightedOrSelectedOptionIndex optionsThatCouldBeShown of
-            Just index ->
-                case index of
-                    0 ->
-                        List.take maxNumberOfDropdownItems optionsThatCouldBeShown
-
-                    _ ->
-                        if index == List.length optionsThatCouldBeShown - 1 then
-                            List.drop (List.length options - maxNumberOfDropdownItems) optionsThatCouldBeShown
-
-                        else
-                            let
-                                isEven =
-                                    modBy 2 maxNumberOfDropdownItems
-                                        == 0
-
-                                half =
-                                    if isEven then
-                                        maxNumberOfDropdownItems // 2
-
-                                    else
-                                        (maxNumberOfDropdownItems // 2) + 1
-                            in
-                            if index + half > lastIndexOfOptions then
-                                -- The "window" runs off the "tail" of the list, so just take the last options
-                                List.drop (List.length options - maxNumberOfDropdownItems) optionsThatCouldBeShown
-
-                            else if index - half < 0 then
-                                -- The "window" runs off the "head" of the list, so just take the first options
+            else
+                case findHighlightedOrSelectedOptionIndex optionsThatCouldBeShown of
+                    Just index ->
+                        case index of
+                            0 ->
                                 List.take maxNumberOfDropdownItems optionsThatCouldBeShown
 
-                            else
-                                options |> List.drop (index + 1 - half) |> List.take maxNumberOfDropdownItems
+                            _ ->
+                                if index == List.length optionsThatCouldBeShown - 1 then
+                                    List.drop (List.length options - maxNumberOfDropdownItems) optionsThatCouldBeShown
 
-            Nothing ->
-                List.take maxNumberOfDropdownItems options
+                                else
+                                    let
+                                        isEven =
+                                            modBy 2 maxNumberOfDropdownItems
+                                                == 0
+
+                                        half =
+                                            if isEven then
+                                                maxNumberOfDropdownItems // 2
+
+                                            else
+                                                (maxNumberOfDropdownItems // 2) + 1
+                                    in
+                                    if index + half > lastIndexOfOptions then
+                                        -- The "window" runs off the "tail" of the list, so just take the last options
+                                        List.drop (List.length options - maxNumberOfDropdownItems) optionsThatCouldBeShown
+
+                                    else if index - half < 0 then
+                                        -- The "window" runs off the "head" of the list, so just take the first options
+                                        List.take maxNumberOfDropdownItems optionsThatCouldBeShown
+
+                                    else
+                                        options |> List.drop (index + 1 - half) |> List.take maxNumberOfDropdownItems
+
+                    Nothing ->
+                        List.take maxNumberOfDropdownItems options
+
+        OutputStyle.NoLimitToDropdownItems ->
+            optionsThatCouldBeShown
 
 
-updateRightSlot : RightSlot -> SelectionMode -> Bool -> RightSlot
+updateRightSlot : RightSlot -> SelectionConfig -> Bool -> RightSlot
 updateRightSlot current selectionMode hasSelectedOption =
     case current of
         ShowNothing ->
             case selectionMode of
-                SingleSelect _ _ ->
+                SingleSelectConfig _ _ _ ->
                     ShowDropdownIndicator NotInFocusTransition
 
-                MultiSelect _ _ ->
+                MultiSelectConfig _ _ _ ->
                     if hasSelectedOption then
                         ShowClearButton
 
@@ -963,10 +1062,10 @@ updateRightSlot current selectionMode hasSelectedOption =
 
         ShowDropdownIndicator transitioning ->
             case selectionMode of
-                SingleSelect _ _ ->
+                SingleSelectConfig _ _ _ ->
                     ShowDropdownIndicator transitioning
 
-                MultiSelect _ _ ->
+                MultiSelectConfig _ _ _ ->
                     if hasSelectedOption then
                         ShowClearButton
 
@@ -981,17 +1080,17 @@ updateRightSlot current selectionMode hasSelectedOption =
                 ShowDropdownIndicator NotInFocusTransition
 
 
-updateRightSlotLoading : Bool -> SelectionMode -> Bool -> RightSlot
+updateRightSlotLoading : Bool -> SelectionConfig -> Bool -> RightSlot
 updateRightSlotLoading isLoading selectionMode hasSelectedOption =
     if isLoading then
         ShowLoadingIndicator
 
     else
         case selectionMode of
-            SingleSelect _ _ ->
+            SingleSelectConfig _ _ _ ->
                 ShowDropdownIndicator NotInFocusTransition
 
-            MultiSelect _ _ ->
+            MultiSelectConfig _ _ _ ->
                 if hasSelectedOption then
                     ShowClearButton
 
@@ -1032,145 +1131,269 @@ isRightSlotTransitioning rightSlot =
 
 view : Model -> Html Msg
 view model =
+    if isSingleSelect model.selectionMode then
+        singleSelectView
+            model.valueCasing
+            model.selectionMode
+            model.options
+            model.searchString
+            model.rightSlot
+
+    else
+        multiSelectView model.valueCasing
+            model.selectionMode
+            model.options
+            model.searchString
+            model.valueString
+            model.rightSlot
+
+
+singleSelectView : ValueCasing -> SelectionConfig -> List Option -> SearchString -> RightSlot -> Html Msg
+singleSelectView valueCasing selectionMode options searchString rightSlot =
+    case getOutputStyle selectionMode of
+        CustomHtml ->
+            singleSelectViewCustomHtml
+                valueCasing
+                selectionMode
+                options
+                searchString
+                rightSlot
+
+        Datalist ->
+            singleSelectViewDatalistHtml selectionMode options searchString
+
+
+multiSelectView : ValueCasing -> SelectionConfig -> List Option -> SearchString -> ValueString -> RightSlot -> Html Msg
+multiSelectView valueCasing selectionMode options searchString valueString rightSlot =
+    case getOutputStyle selectionMode of
+        CustomHtml ->
+            multiSelectViewCustomHtml
+                selectionMode
+                options
+                searchString
+                rightSlot
+                valueCasing
+
+        Datalist ->
+            multiSelectViewDataset
+                selectionMode
+                options
+                valueString
+                rightSlot
+                valueCasing
+
+
+singleSelectViewCustomHtml : ValueCasing -> SelectionConfig -> List Option -> SearchString -> RightSlot -> Html Msg
+singleSelectViewCustomHtml valueCasing selectionMode options searchString rightSlot =
     let
-        tabIndexAttribute =
-            if model.disabled then
-                style "" ""
+        hasOptionSelected =
+            hasSelectedOption options
+
+        showPlaceholder =
+            not hasOptionSelected && not (isFocused selectionMode)
+
+        valueStr =
+            if hasOptionSelected then
+                options
+                    |> selectedOptionsToTuple
+                    |> List.map Tuple.second
+                    |> List.head
+                    |> Maybe.withDefault ""
 
             else
-                tabindex 0
+                ""
     in
-    case model.selectionMode of
-        SingleSelect _ _ ->
-            let
-                hasOptionSelected =
-                    hasSelectedOption model.options
-
-                showPlaceholder =
-                    not hasOptionSelected && not model.focused
-
-                valueStr =
-                    if hasOptionSelected then
-                        model.options
-                            |> selectedOptionsToTuple
-                            |> List.map Tuple.second
-                            |> List.head
-                            |> Maybe.withDefault ""
-
-                    else
-                        ""
-            in
-            div [ id "wrapper" ]
-                [ div
-                    [ id "value-casing"
-                    , attributeIf (not model.focused) (onMouseDown BringInputInFocus)
-                    , attributeIf (not model.focused) (onFocus BringInputInFocus)
-                    , tabIndexAttribute
-                    , classList
-                        [ ( "show-placeholder", showPlaceholder )
-                        , ( "has-option-selected", hasOptionSelected )
-                        , ( "no-option-selected", not hasOptionSelected )
-                        , ( "single", True )
-                        , ( "disabled", model.disabled )
-                        , ( "focused", model.focused )
-                        , ( "not-focused", not model.focused )
-                        ]
-                    ]
-                    [ span
-                        [ id "selected-value" ]
-                        [ text valueStr ]
-                    , singleSelectInputField
-                        model.searchString
-                        model.disabled
-                        model.focused
-                        model.placeholder
-                        hasOptionSelected
-                    , case model.rightSlot of
-                        ShowNothing ->
-                            text ""
-
-                        ShowLoadingIndicator ->
-                            node "slot" [ name "loading-indicator" ] [ defaultLoadingIndicator ]
-
-                        ShowDropdownIndicator transitioning ->
-                            dropdownIndicator model.focused model.disabled transitioning
-
-                        ShowClearButton ->
-                            node "slot" [ name "clear-button" ] []
-                    ]
-                , dropdown model
+    div [ id "wrapper" ]
+        [ div
+            [ id "value-casing"
+            , attributeIf (not (isFocused selectionMode)) (onMouseDown BringInputInFocus)
+            , attributeIf (not (isFocused selectionMode)) (onFocus BringInputInFocus)
+            , tabIndexAttribute (isDisabled selectionMode)
+            , classList
+                [ ( "show-placeholder", showPlaceholder )
+                , ( "has-option-selected", hasOptionSelected )
+                , ( "no-option-selected", not hasOptionSelected )
+                , ( "single", True )
+                , ( "disabled", isDisabled selectionMode )
+                , ( "focused", isFocused selectionMode )
+                , ( "not-focused", not (isFocused selectionMode) )
                 ]
+            ]
+            [ span
+                [ id "selected-value" ]
+                [ text valueStr ]
+            , singleSelectCustomHtmlInputField
+                searchString
+                (isDisabled selectionMode)
+                (isFocused selectionMode)
+                (getPlaceholder selectionMode)
+                hasOptionSelected
+            , case rightSlot of
+                ShowNothing ->
+                    text ""
 
-        MultiSelect _ enableSingleItemRemoval ->
-            let
-                hasOptionSelected =
-                    hasSelectedOption model.options
+                ShowLoadingIndicator ->
+                    node "slot" [ name "loading-indicator" ] [ defaultLoadingIndicator ]
 
-                showPlaceholder =
-                    not hasOptionSelected && not model.focused
+                ShowDropdownIndicator transitioning ->
+                    dropdownIndicator (isFocused selectionMode) (isDisabled selectionMode) transitioning
 
-                placeholderAttribute =
-                    if showPlaceholder then
-                        placeholder model.placeholder
+                ShowClearButton ->
+                    node "slot" [ name "clear-button" ] []
+            ]
+        , dropdown
+            selectionMode
+            options
+            searchString
+            valueCasing
+        ]
 
-                    else
-                        Html.Attributes.classList []
 
-                inputFilter =
-                    input
-                        [ type_ "text"
-                        , onBlur InputBlur
-                        , onFocus InputFocus
-                        , onInput UpdateSearchString
-                        , onMouseDownStopPropagation NoOp
-                        , onMouseUpStopPropagation NoOp
-                        , value model.searchString
-                        , placeholderAttribute
-                        , id "input-filter"
-                        , disabled model.disabled
-                        , Keyboard.on Keyboard.Keydown
-                            [ ( Enter, SelectHighlightedOption )
-                            , ( Escape, EscapeKeyInInputFilter )
-                            , ( ArrowUp, MoveHighlightedOptionUp )
-                            , ( ArrowDown, MoveHighlightedOptionDown )
-                            ]
-                        ]
-                        []
-            in
-            div [ id "wrapper", classList [ ( "disabled", model.disabled ) ] ]
-                [ div
-                    [ id "value-casing"
-                    , onMouseDown BringInputInFocus
-                    , onFocus BringInputInFocus
-                    , Keyboard.on Keyboard.Keydown
-                        [ ( Delete, DeleteKeydownForMultiSelect )
-                        , ( Backspace, DeleteKeydownForMultiSelect )
-                        ]
-                    , tabIndexAttribute
-                    , classList
-                        [ ( "show-placeholder", showPlaceholder )
-                        , ( "has-option-selected", hasOptionSelected )
-                        , ( "no-option-selected", not hasOptionSelected )
-                        , ( "multi", True )
-                        , ( "disabled", model.disabled )
-                        , ( "focused", model.focused )
-                        , ( "not-focused", not model.focused )
-                        ]
+multiSelectViewCustomHtml : SelectionConfig -> List Option -> SearchString -> RightSlot -> ValueCasing -> Html Msg
+multiSelectViewCustomHtml selectionMode options searchString rightSlot valueCasing =
+    let
+        hasOptionSelected =
+            hasSelectedOption options
+
+        showPlaceholder =
+            not hasOptionSelected && not (isFocused selectionMode)
+
+        placeholderAttribute =
+            if showPlaceholder then
+                placeholder (getPlaceholder selectionMode)
+
+            else
+                Html.Attributes.classList []
+
+        inputFilter =
+            input
+                [ type_ "text"
+                , onBlur InputBlur
+                , onFocus InputFocus
+                , onInput UpdateSearchString
+                , onMouseDownStopPropagation NoOp
+                , onMouseUpStopPropagation NoOp
+                , value (SearchString.toString searchString)
+                , placeholderAttribute
+                , id "input-filter"
+                , disabled (isDisabled selectionMode)
+                , Keyboard.on Keyboard.Keydown
+                    [ ( Enter, SelectHighlightedOption )
+                    , ( Escape, EscapeKeyInInputFilter )
+                    , ( ArrowUp, MoveHighlightedOptionUp )
+                    , ( ArrowDown, MoveHighlightedOptionDown )
                     ]
-                    (optionsToValuesHtml model.options enableSingleItemRemoval
-                        ++ [ inputFilter
-                           , rightSlotHtml
-                                model.rightSlot
-                                model.focused
-                                model.disabled
-                           ]
-                    )
-                , dropdown model
                 ]
+                []
+    in
+    div [ id "wrapper", classList [ ( "disabled", isDisabled selectionMode ) ] ]
+        [ div
+            [ id "value-casing"
+            , onMouseDown BringInputInFocus
+            , onFocus BringInputInFocus
+            , Keyboard.on Keyboard.Keydown
+                [ ( Delete, DeleteKeydownForMultiSelect )
+                , ( Backspace, DeleteKeydownForMultiSelect )
+                ]
+            , tabIndexAttribute (isDisabled selectionMode)
+            , classList
+                [ ( "show-placeholder", showPlaceholder )
+                , ( "has-option-selected", hasOptionSelected )
+                , ( "no-option-selected", not hasOptionSelected )
+                , ( "multi", True )
+                , ( "disabled", isDisabled selectionMode )
+                , ( "focused", isFocused selectionMode )
+                , ( "not-focused", not (isFocused selectionMode) )
+                ]
+            ]
+            (optionsToValuesHtml options (getSingleItemRemoval selectionMode)
+                ++ [ inputFilter
+                   , rightSlotHtml
+                        rightSlot
+                        (isFocused selectionMode)
+                        (isDisabled selectionMode)
+                   ]
+            )
+        , dropdown
+            selectionMode
+            options
+            searchString
+            valueCasing
+        ]
 
 
-singleSelectInputField : String -> Bool -> Bool -> String -> Bool -> Html Msg
-singleSelectInputField searchString isDisabled focused placeholder_ hasSelectedOption =
+multiSelectViewDataset : SelectionConfig -> List Option -> ValueString -> RightSlot -> ValueCasing -> Html Msg
+multiSelectViewDataset selectionConfig options valueString rightSlot valueCasing =
+    let
+        hasOptionSelected =
+            hasSelectedOption options
+
+        showPlaceholder =
+            not hasOptionSelected && not (isFocused selectionConfig)
+
+        selectedOptions =
+            options |> OptionsUtilities.selectedOptions
+
+        showAddButtons =
+            ValueString.length valueString > 0
+
+        showRemoveButtons =
+            List.length selectedOptions > 1
+
+        makeInputs selectedOptions_ =
+            case List.length selectedOptions_ of
+                0 ->
+                    [ multiSelectDatasetInputField
+                        valueString
+                        selectionConfig
+                        showAddButtons
+                        showRemoveButtons
+                        0
+                    ]
+
+                _ ->
+                    List.indexedMap
+                        (\index selectedOption ->
+                            multiSelectDatasetInputField
+                                (ValueString.fromOptionValue (Option.getOptionValue selectedOption))
+                                selectionConfig
+                                showAddButtons
+                                showRemoveButtons
+                                index
+                        )
+                        selectedOptions_
+    in
+    div [ id "wrapper" ]
+        [ div
+            [ id "value-casing"
+            , attributeIf (not (isFocused selectionConfig)) (onMouseDown BringInputInFocus)
+            , attributeIf (not (isFocused selectionConfig)) (onFocus BringInputInFocus)
+            , tabIndexAttribute (isDisabled selectionConfig)
+            , classList
+                [ ( "show-placeholder", showPlaceholder )
+                , ( "has-option-selected", hasOptionSelected )
+                , ( "no-option-selected", not hasOptionSelected )
+                , ( "single", True )
+                , ( "disabled", isDisabled selectionConfig )
+                , ( "focused", isFocused selectionConfig )
+                , ( "not-focused", not (isFocused selectionConfig) )
+                ]
+            ]
+            (makeInputs selectedOptions)
+        , datalist options
+        ]
+
+
+tabIndexAttribute disabled =
+    if disabled then
+        style "" ""
+
+    else
+        tabindex 0
+
+
+singleSelectCustomHtmlInputField : SearchString -> Bool -> Bool -> String -> Bool -> Html Msg
+singleSelectCustomHtmlInputField searchString isDisabled focused placeholder_ hasSelectedOption =
     let
         keyboardEvents =
             Keyboard.customPerKey Keyboard.Keydown
@@ -1268,9 +1491,160 @@ singleSelectInputField searchString isDisabled focused placeholder_ hasSelectedO
             , onMouseDownStopPropagation NoOp
             , onMouseUpStopPropagation NoOp
             , onInput UpdateSearchString
-            , value searchString
+            , value (SearchString.toString searchString)
             , placeholderAttribute
             , keyboardEvents
+            ]
+            []
+
+
+singleSelectViewDatalistHtml : SelectionConfig -> List Option -> SearchString -> Html Msg
+singleSelectViewDatalistHtml selectionMode options searchString =
+    let
+        hasOptionSelected =
+            hasSelectedOption options
+
+        showPlaceholder =
+            not hasOptionSelected && not (isFocused selectionMode)
+    in
+    div [ id "wrapper" ]
+        [ div
+            [ id "value-casing"
+            , attributeIf (not (isFocused selectionMode)) (onMouseDown BringInputInFocus)
+            , attributeIf (not (isFocused selectionMode)) (onFocus BringInputInFocus)
+            , tabIndexAttribute (isDisabled selectionMode)
+            , classList
+                [ ( "show-placeholder", showPlaceholder )
+                , ( "has-option-selected", hasOptionSelected )
+                , ( "no-option-selected", not hasOptionSelected )
+                , ( "single", True )
+                , ( "disabled", isDisabled selectionMode )
+                , ( "focused", isFocused selectionMode )
+                , ( "not-focused", not (isFocused selectionMode) )
+                ]
+            ]
+            [ singleSelectDatasetInputField
+                (SearchString.toString searchString)
+                selectionMode
+                hasOptionSelected
+            ]
+        , datalist options
+        ]
+
+
+multiSelectDatasetInputField : ValueString -> SelectionConfig -> Bool -> Bool -> Int -> Html Msg
+multiSelectDatasetInputField valueString selectionMode showAddButtons showRemoveButtons index =
+    let
+        idAttr =
+            id "input-filter"
+
+        typeAttr =
+            type_ "text"
+
+        onBlurAttr =
+            onBlur InputBlur
+
+        onFocusAttr =
+            onFocus InputFocus
+
+        showPlaceholder =
+            ValueString.length valueString < 1
+
+        placeholderAttribute =
+            if showPlaceholder then
+                placeholder (getPlaceholder selectionMode)
+
+            else
+                style "" ""
+
+        addRemoveButtons =
+            if showRemoveButtons && showAddButtons then
+                [ button [ onClick (AddMultiSelectValue index) ] [ text "add" ]
+                , button [ onClick (RemoveMultiSelectValue index) ] [ text "remove" ]
+                ]
+
+            else if showAddButtons then
+                [ button [ onClick (AddMultiSelectValue index) ] [ text "add" ]
+                ]
+
+            else if showRemoveButtons then
+                [ button [ onClick (RemoveMultiSelectValue index) ] [ text "remove" ]
+                ]
+
+            else
+                []
+
+        inputHtml =
+            if isDisabled selectionMode then
+                input
+                    [ disabled True
+                    , idAttr
+                    , placeholderAttribute
+                    ]
+                    []
+
+            else
+                input
+                    [ typeAttr
+                    , idAttr
+                    , onBlurAttr
+                    , onFocusAttr
+                    , onInput UpdateValueString
+                    , value (ValueString.toString valueString)
+                    , placeholderAttribute
+                    , Html.Attributes.list "datalist-options"
+                    ]
+                    []
+    in
+    div [ class "input-wrapper " ]
+        (inputHtml
+            :: addRemoveButtons
+        )
+
+
+singleSelectDatasetInputField : String -> SelectionConfig -> Bool -> Html Msg
+singleSelectDatasetInputField searchString selectionMode hasSelectedOption =
+    let
+        idAttr =
+            id "input-filter"
+
+        typeAttr =
+            type_ "text"
+
+        onBlurAttr =
+            onBlur InputBlur
+
+        onFocusAttr =
+            onFocus InputFocus
+
+        showPlaceholder =
+            not hasSelectedOption && not (isFocused selectionMode)
+
+        placeholderAttribute =
+            if showPlaceholder then
+                placeholder (getPlaceholder selectionMode)
+
+            else
+                style "" ""
+    in
+    if isDisabled selectionMode then
+        input
+            [ disabled True
+            , idAttr
+            , placeholderAttribute
+            ]
+            []
+
+    else
+        input
+            [ typeAttr
+            , idAttr
+            , onBlurAttr
+            , onFocusAttr
+            , onInput UpdateValueString
+            , value searchString
+            , placeholderAttribute
+            , Html.Attributes.list "datalist-options"
             ]
             []
 
@@ -1311,18 +1685,18 @@ type alias DropdownItemEventListeners msg =
     }
 
 
-dropdown : Model -> Html Msg
-dropdown model =
+dropdown : SelectionConfig -> List Option -> SearchString -> ValueCasing -> Html Msg
+dropdown selectionMode options searchString (ValueCasing valueCasingWidth valueCasingHeight) =
     let
         optionsForTheDropdown =
-            figureOutWhichOptionsToShowInTheDropdown model.selectionMode model.maxDropdownItems model.options
+            figureOutWhichOptionsToShowInTheDropdown selectionMode options
 
         optionsHtml =
             -- TODO We should probably do something different if we are in a loading state
             if List.isEmpty optionsForTheDropdown then
                 [ div [ class "option disabled" ] [ node "slot" [ name "no-options" ] [ text "No available options" ] ] ]
 
-            else if doesSearchStringFindNothing model.searchString model.searchStringMinimumLength optionsForTheDropdown then
+            else if doesSearchStringFindNothing searchString (getSearchStringMinimumLength selectionMode) optionsForTheDropdown then
                 [ div [ class "option disabled" ] [ node "slot" [ name "no-filtered-options" ] [ text "This filter returned no results." ] ] ]
 
             else
@@ -1332,17 +1706,17 @@ dropdown model =
                     , clickMsgConstructor = DropdownMouseClickOption
                     , noOpMsgConstructor = NoOp
                     }
-                    model.selectionMode
+                    selectionMode
                     optionsForTheDropdown
 
         dropdownFooterHtml =
-            if model.showDropdownFooter && List.length optionsForTheDropdown < List.length model.options then
+            if showDropdownFooter selectionMode && List.length optionsForTheDropdown < List.length options then
                 div [ id "dropdown-footer" ]
                     [ text
                         ("showing "
                             ++ (optionsForTheDropdown |> List.length |> String.fromInt)
                             ++ " of "
-                            ++ (model.options |> List.length |> String.fromInt)
+                            ++ (options |> List.length |> String.fromInt)
                             ++ " options"
                         )
                     ]
@@ -1350,32 +1724,32 @@ dropdown model =
             else
                 text ""
     in
-    if model.disabled then
+    if isDisabled selectionMode then
         text ""
 
     else
         div
             [ id "dropdown"
-            , classList [ ( "showing", model.showDropdown ), ( "hiding", not model.showDropdown ) ]
+            , classList [ ( "showing", showDropdown selectionMode ), ( "hiding", not (showDropdown selectionMode) ) ]
             , style "top"
-                (String.fromFloat model.valueCasingHeight ++ "px")
+                (String.fromFloat valueCasingHeight ++ "px")
             , style
                 "width"
-                (String.fromFloat model.valueCasingWidth ++ "px")
+                (String.fromFloat valueCasingWidth ++ "px")
             ]
             (optionsHtml ++ [ dropdownFooterHtml ])
 
 
 optionsToDropdownOptions :
     DropdownItemEventListeners Msg
-    -> SelectionMode
+    -> SelectionConfig
     -> List Option
     -> List (Html Msg)
 optionsToDropdownOptions eventHandlers selectionMode options =
     List.concatMap (optionGroupToHtml eventHandlers selectionMode) (groupOptionsInOrder options)
 
 
-optionGroupToHtml : DropdownItemEventListeners Msg -> SelectionMode -> ( OptionGroup, List Option ) -> List (Html Msg)
+optionGroupToHtml : DropdownItemEventListeners Msg -> SelectionConfig -> ( OptionGroup, List Option ) -> List (Html Msg)
 optionGroupToHtml dropdownItemEventListeners selectionMode ( optionGroup, options ) =
     let
         optionGroupHtml =
@@ -1413,7 +1787,7 @@ optionGroupToHtml dropdownItemEventListeners selectionMode ( optionGroup, option
 
 optionToDropdownOption :
     DropdownItemEventListeners Msg
-    -> SelectionMode
+    -> SelectionConfig
     -> Option
     -> Html Msg
 optionToDropdownOption eventHandlers selectionMode option =
@@ -1473,7 +1847,7 @@ optionToDropdownOption eventHandlers selectionMode option =
 
         OptionSelected _ ->
             case selectionMode of
-                SingleSelect _ _ ->
+                SingleSelectConfig _ _ _ ->
                     div
                         [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
                         , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
@@ -1484,12 +1858,12 @@ optionToDropdownOption eventHandlers selectionMode option =
                         ]
                         [ labelHtml, descriptionHtml ]
 
-                MultiSelect _ _ ->
+                MultiSelectConfig _ _ _ ->
                     text ""
 
         OptionSelectedHighlighted _ ->
             case selectionMode of
-                SingleSelect _ _ ->
+                SingleSelectConfig _ _ _ ->
                     div
                         [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
                         , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
@@ -1501,7 +1875,7 @@ optionToDropdownOption eventHandlers selectionMode option =
                         ]
                         [ labelHtml, descriptionHtml ]
 
-                MultiSelect _ _ ->
+                MultiSelectConfig _ _ _ ->
                     text ""
 
         OptionHighlighted ->
@@ -1623,6 +1997,9 @@ optionToValueHtml enableSingleItemRemoval option =
                 OptionDisabled ->
                     text ""
 
+        DatalistOption _ _ ->
+            text ""
+
 
 valueLabelHtml : String -> OptionValue -> Html Msg
 valueLabelHtml labelText optionValue =
@@ -1632,6 +2009,34 @@ valueLabelHtml labelText optionValue =
             (ToggleSelectedValueHighlight optionValue)
         ]
         [ text labelText ]
+
+
+datalist : List Option -> Html Msg
+datalist options =
+    Html.datalist
+        [ Html.Attributes.id "datalist-options" ]
+        (List.concatMap
+            dataListOptionGroupToHtml
+            (groupOptionsInOrder options)
+        )
+
+
+dataListOptionGroupToHtml : ( OptionGroup, List Option ) -> List (Html Msg)
+dataListOptionGroupToHtml ( optionGroup, options ) =
+    case Option.optionGroupToString optionGroup of
+        "" ->
+            List.map optionToDatalistOption options
+
+        optionGroupAsString ->
+            [ optgroup
+                [ Html.Attributes.attribute "label" optionGroupAsString ]
+                (List.map optionToDatalistOption options)
+            ]
+
+
+optionToDatalistOption : Option -> Html msg
+optionToDatalistOption option =
+    Html.option [ Html.Attributes.value (Option.getOptionValueAsString option) ] []
 
 
 rightSlotHtml : RightSlot -> Bool -> Bool -> Html Msg
@@ -1723,6 +2128,7 @@ type alias Flags =
     , placeholder : String
     , customOptionHint : Maybe String
     , allowMultiSelect : Bool
+    , outputStyle : String
     , enableMultiSelectSingleItemRemoval : Bool
     , optionsJson : String
     , optionSort : String
@@ -1757,51 +2163,18 @@ makeDynamicDebouncer numberOfOptions =
 init : Flags -> ( Model, Cmd Msg )
 init flags =
     let
-        maxDropdownItems =
-            PositiveInt.new flags.maxDropdownItems
-
-        allowCustomOptions =
-            if flags.allowCustomOptions then
-                AllowCustomOptions
-
-            else
-                NoCustomOptions
-
-        selectedItemPlacementMode =
-            if flags.selectedItemStaysInPlace then
-                SelectedItemStaysInPlace
-
-            else
-                SelectedItemMovesToTheTop
+        selectionMode =
+            makeSelectionConfig flags.disabled flags.allowMultiSelect flags.allowCustomOptions flags.outputStyle flags.placeholder flags.customOptionHint flags.enableMultiSelectSingleItemRemoval flags.maxDropdownItems flags.selectedItemStaysInPlace flags.searchStringMinimumLength flags.showDropdownFooter
+                |> Result.withDefault defaultSelectionConfig
 
         optionSort =
             stringToOptionSort flags.optionSort
                 |> Result.withDefault NoSorting
 
-        selectionMode =
-            if flags.allowMultiSelect then
-                let
-                    singleItemRemoval =
-                        if flags.enableMultiSelectSingleItemRemoval then
-                            EnableSingleItemRemoval
-
-                        else
-                            DisableSingleItemRemoval
-                in
-                MultiSelect allowCustomOptions singleItemRemoval
-
-            else
-                SingleSelect allowCustomOptions selectedItemPlacementMode
-
         ( initialValues, initialValueErrCmd ) =
             case Json.Decode.decodeValue (Json.Decode.oneOf [ valuesDecoder, valueDecoder ]) flags.value of
                 Ok values ->
-                    case selectionMode of
-                        SingleSelect _ _ ->
-                            ( values, Cmd.none )
-
-                        MultiSelect _ _ ->
-                            ( values, Cmd.none )
+                    ( values, Cmd.none )
 
                 Err error ->
                     ( [], errorMessage (Json.Decode.errorToString error) )
@@ -1810,7 +2183,7 @@ init flags =
             case Json.Decode.decodeString Option.optionsDecoder flags.optionsJson of
                 Ok options ->
                     case selectionMode of
-                        SingleSelect _ _ ->
+                        SingleSelectConfig _ _ _ ->
                             case List.head initialValues of
                                 Just initialValueStr_ ->
                                     if isOptionValueInListOfOptionsByValue (Option.stringToOptionValue initialValueStr_) options then
@@ -1835,7 +2208,7 @@ init flags =
                                     in
                                     ( optionsWithUniqueValues, Cmd.none )
 
-                        MultiSelect _ _ ->
+                        MultiSelectConfig _ _ _ ->
                             let
                                 -- Don't include any empty options, that doesn't make sense.
                                 optionsWithInitialValues =
@@ -1854,40 +2227,31 @@ init flags =
     ( { initialValue = initialValues
       , deleteKeyPressed = False
       , placeholder = flags.placeholder
-      , customOptionHint = flags.customOptionHint
       , selectionMode = selectionMode
       , options = optionsWithInitialValueSelectedSorted
       , optionSort = stringToOptionSort flags.optionSort |> Result.withDefault NoSorting
-      , showDropdown = False
       , quietSearchForDynamicInterval =
             makeDynamicDebouncer (List.length optionsWithInitialValueSelectedSorted)
-      , searchString = ""
-      , searchStringMinimumLength =
-            Maybe.withDefault (PositiveInt.new 2)
-                (PositiveInt.maybeNew flags.searchStringMinimumLength)
+      , searchString = SearchString.reset
+      , valueString = ValueString.reset
       , rightSlot =
             if flags.loading then
                 ShowLoadingIndicator
 
             else
                 case selectionMode of
-                    SingleSelect _ _ ->
+                    SingleSelectConfig _ _ _ ->
                         ShowDropdownIndicator NotInFocusTransition
 
-                    MultiSelect _ _ ->
+                    MultiSelectConfig _ _ _ ->
                         if hasSelectedOption optionsWithInitialValueSelected then
                             ShowClearButton
 
                         else
                             ShowDropdownIndicator NotInFocusTransition
-      , maxDropdownItems = maxDropdownItems
-      , disabled = flags.disabled
-      , focused = False
 
       -- TODO Should these be passed as flags?
-      , valueCasingWidth = 100
-      , valueCasingHeight = 45
-      , showDropdownFooter = flags.showDropdownFooter
+      , valueCasing = ValueCasing 100 45
       }
     , Cmd.batch
         [ errorCmd
@@ -1913,7 +2277,6 @@ subscriptions _ =
     Sub.batch
         [ addOptionsReceiver AddOptions
         , allowCustomOptionsReceiver AllowCustomOptionsChanged
-        , customOptionHintReceiver CustomOptionHintChanged
         , deselectOptionReceiver DeselectOption
         , disableChangedReceiver DisabledAttributeChanged
         , loadingChangedReceiver LoadingAttributeChanged

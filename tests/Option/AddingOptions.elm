@@ -16,7 +16,7 @@ import OptionsUtilities
         , addAndSelectOptionsInOptionsListByString
         , mergeTwoListsOfOptionsPreservingSelectedOptions
         )
-import SelectionMode exposing (SelectedItemPlacementMode(..))
+import OutputStyle exposing (SelectedItemPlacementMode(..))
 import SortRank exposing (newMaybeAutoSortRank)
 import Test exposing (Test, describe, test)
 
