@@ -88,6 +88,7 @@ import OptionsUtilities
         , selectedOptionsToTuple
         , toggleSelectedHighlightByOptionValue
         , unhighlightSelectedOptions
+        , updateDatalistOptionsWithValue
         )
 import OutputStyle
     exposing
@@ -136,6 +137,7 @@ import Ports
         , valuesDecoder
         )
 import PositiveInt exposing (PositiveInt)
+import SearchString exposing (SearchString)
 import SelectionMode
     exposing
         ( OutputStyle(..)
@@ -162,6 +164,7 @@ import SelectionMode
         , showDropdownFooter
         )
 import Task
+import ValueString exposing (ValueString)
 
 
 type Msg
@@ -174,6 +177,7 @@ type Msg
     | DropdownMouseOutOption OptionValue
     | DropdownMouseClickOption OptionValue
     | UpdateSearchString String
+    | UpdateValueString String
     | UpdateOptionsWithSearchString
     | MsgQuietUpdateOptionsWithSearchString (Debouncer.Messages.Msg Msg)
     | TextInputOnInput String
@@ -209,6 +213,7 @@ type Msg
     | ToggleSelectedValueHighlight OptionValue
     | DeleteKeydownForMultiSelect
     | AddMultiSelectValue Int
+    | RemoveMultiSelectValue Int
     | RequestAllOptions
 
 
@@ -219,7 +224,8 @@ type alias Model =
     , options : List Option
     , optionSort : OptionSort
     , quietSearchForDynamicInterval : Debouncer Msg
-    , searchString : String
+    , searchString : SearchString
+    , valueString : ValueString
     , rightSlot : RightSlot
     , valueCasing : ValueCasing
     , deleteKeyPressed : Bool
@@ -303,7 +309,7 @@ update msg model =
                                 |> unhighlightSelectedOptions
                     in
                     ( { model
-                        | searchString = ""
+                        | searchString = SearchString.reset
                         , options = optionsWithoutUnselectedCustomOptions
                         , selectionMode =
                             model.selectionMode
@@ -318,10 +324,10 @@ update msg model =
                 Datalist ->
                     let
                         options =
-                            selectSingleOptionInListByStringOrSelectCustomValue model.searchString model.options
+                            updateDatalistOptionsWithValue model.valueString model.options
 
                         maybeSelectedOption =
-                            findOptionByOptionUsingValueString model.searchString options
+                            findOptionByOptionUsingValueString model.valueString options
 
                         maybeSelectedOptionValue =
                             Maybe.map Option.getOptionValue maybeSelectedOption
@@ -397,7 +403,7 @@ update msg model =
                 SingleSelectConfig _ _ _ ->
                     ( { model
                         | options = updatedOptions
-                        , searchString = ""
+                        , searchString = SearchString.reset
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , Cmd.batch
@@ -409,7 +415,7 @@ update msg model =
                 MultiSelectConfig _ _ _ ->
                     ( { model
                         | options = updatedOptions
-                        , searchString = ""
+                        , searchString = SearchString.reset
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , Cmd.batch
@@ -420,7 +426,7 @@ update msg model =
 
         UpdateSearchString searchString ->
             ( { model
-                | searchString = searchString
+                | searchString = SearchString.new searchString
               }
             , Cmd.batch
                 [ inputKeyUp searchString
@@ -436,6 +442,9 @@ update msg model =
                 ]
             )
 
+        UpdateValueString valueString ->
+            ( model, Cmd.none )
+
         UpdateOptionsWithSearchString ->
             ( updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges model, Cmd.none )
 
@@ -444,8 +453,8 @@ update msg model =
 
         TextInputOnInput inputString ->
             ( { model
-                | searchString = inputString
-                , options = updateOrAddCustomOption inputString model.selectionMode model.options
+                | searchString = SearchString.new inputString
+                , options = updateOrAddCustomOption (SearchString.new inputString) model.selectionMode model.options
               }
             , inputKeyUp inputString
             )
@@ -714,7 +723,7 @@ update msg model =
                 SingleSelectConfig _ _ _ ->
                     ( { model
                         | options = updatedOptions
-                        , searchString = ""
+                        , searchString = SearchString.reset
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , Cmd.batch
@@ -726,7 +735,7 @@ update msg model =
                 MultiSelectConfig _ _ _ ->
                     ( { model
                         | options = updatedOptions
-                        , searchString = ""
+                        , searchString = SearchString.reset
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , Cmd.batch
@@ -750,7 +759,7 @@ update msg model =
 
         EscapeKeyInInputFilter ->
             ( { model
-                | searchString = ""
+                | searchString = SearchString.reset
               }
                 |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
             , blurInput ()
@@ -797,7 +806,7 @@ update msg model =
             )
 
         DeleteKeydownForMultiSelect ->
-            if String.length model.searchString > 0 then
+            if SearchString.length model.searchString > 0 then
                 ( model, Cmd.none )
 
             else
@@ -820,6 +829,9 @@ update msg model =
                 )
 
         AddMultiSelectValue indexWhereToAdd ->
+            ( model, Cmd.none )
+
+        RemoveMultiSelectValue indexWhereToAdd ->
             ( model, Cmd.none )
 
         RequestAllOptions ->
@@ -875,7 +887,7 @@ clearAllSelectedOption model =
     ( { model
         | options = deselectAllOptionsInOptionsList newOptions
         , rightSlot = updateRightSlot model.rightSlot model.selectionMode False
-        , searchString = ""
+        , searchString = SearchString.reset
       }
     , Cmd.batch
         [ makeCommandMessagesWhenValuesChanges [] Nothing
@@ -908,7 +920,7 @@ updateModelWithChangesThatEffectTheOptionsWhenTheMouseMoves model =
 updateModelWithChangesThatEffectTheOptionsWithSearchString :
     RightSlot
     -> SelectionConfig
-    -> String
+    -> SearchString
     -> List Option
     -> { a | options : List Option, rightSlot : RightSlot }
     -> { a | options : List Option, rightSlot : RightSlot }
@@ -934,7 +946,7 @@ updateModelWithChangesThatEffectTheOptionsWithSearchString rightSlot selectionMo
 updatePartOfTheModelWithChangesThatEffectTheOptionsWhenTheMouseMoves :
     RightSlot
     -> SelectionConfig
-    -> String
+    -> SearchString
     -> List Option
     -> { a | options : List Option, rightSlot : RightSlot }
     -> { a | options : List Option, rightSlot : RightSlot }
@@ -957,7 +969,7 @@ updatePartOfTheModelWithChangesThatEffectTheOptionsWhenTheMouseMoves rightSlot s
     }
 
 
-updateTheFullListOfOptions : SelectionConfig -> String -> List Option -> List Option
+updateTheFullListOfOptions : SelectionConfig -> SearchString -> List Option -> List Option
 updateTheFullListOfOptions selectionMode searchString options =
     options
         |> OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionMode searchString
@@ -1120,13 +1132,23 @@ isRightSlotTransitioning rightSlot =
 view : Model -> Html Msg
 view model =
     if isSingleSelect model.selectionMode then
-        singleSelectView model.valueCasing model.selectionMode model.options model.searchString model.rightSlot
+        singleSelectView
+            model.valueCasing
+            model.selectionMode
+            model.options
+            model.searchString
+            model.rightSlot
 
     else
-        multiSelectView model.valueCasing model.selectionMode model.options model.searchString model.rightSlot
+        multiSelectView model.valueCasing
+            model.selectionMode
+            model.options
+            model.searchString
+            model.valueString
+            model.rightSlot
 
 
-singleSelectView : ValueCasing -> SelectionConfig -> List Option -> String -> RightSlot -> Html Msg
+singleSelectView : ValueCasing -> SelectionConfig -> List Option -> SearchString -> RightSlot -> Html Msg
 singleSelectView valueCasing selectionMode options searchString rightSlot =
     case getOutputStyle selectionMode of
         CustomHtml ->
@@ -1141,8 +1163,8 @@ singleSelectView valueCasing selectionMode options searchString rightSlot =
             singleSelectViewDatalistHtml selectionMode options searchString
 
 
-multiSelectView : ValueCasing -> SelectionConfig -> List Option -> String -> RightSlot -> Html Msg
-multiSelectView valueCasing selectionMode options searchString rightSlot =
+multiSelectView : ValueCasing -> SelectionConfig -> List Option -> SearchString -> ValueString -> RightSlot -> Html Msg
+multiSelectView valueCasing selectionMode options searchString valueString rightSlot =
     case getOutputStyle selectionMode of
         CustomHtml ->
             multiSelectViewCustomHtml
@@ -1156,12 +1178,12 @@ multiSelectView valueCasing selectionMode options searchString rightSlot =
             multiSelectViewDataset
                 selectionMode
                 options
-                searchString
+                valueString
                 rightSlot
                 valueCasing
 
 
-singleSelectViewCustomHtml : ValueCasing -> SelectionConfig -> List Option -> String -> RightSlot -> Html Msg
+singleSelectViewCustomHtml : ValueCasing -> SelectionConfig -> List Option -> SearchString -> RightSlot -> Html Msg
 singleSelectViewCustomHtml valueCasing selectionMode options searchString rightSlot =
     let
         hasOptionSelected =
@@ -1227,7 +1249,7 @@ singleSelectViewCustomHtml valueCasing selectionMode options searchString rightS
         ]
 
 
-multiSelectViewCustomHtml : SelectionConfig -> List Option -> String -> RightSlot -> ValueCasing -> Html Msg
+multiSelectViewCustomHtml : SelectionConfig -> List Option -> SearchString -> RightSlot -> ValueCasing -> Html Msg
 multiSelectViewCustomHtml selectionMode options searchString rightSlot valueCasing =
     let
         hasOptionSelected =
@@ -1251,7 +1273,7 @@ multiSelectViewCustomHtml selectionMode options searchString rightSlot valueCasi
                 , onInput UpdateSearchString
                 , onMouseDownStopPropagation NoOp
                 , onMouseUpStopPropagation NoOp
-                , value searchString
+                , value (SearchString.toString searchString)
                 , placeholderAttribute
                 , id "input-filter"
                 , disabled (isDisabled selectionMode)
@@ -1300,8 +1322,8 @@ multiSelectViewCustomHtml selectionMode options searchString rightSlot valueCasi
         ]
 
 
-multiSelectViewDataset : SelectionConfig -> List Option -> String -> RightSlot -> ValueCasing -> Html Msg
-multiSelectViewDataset selectionConfig options searchString rightSlot valueCasing =
+multiSelectViewDataset : SelectionConfig -> List Option -> ValueString -> RightSlot -> ValueCasing -> Html Msg
+multiSelectViewDataset selectionConfig options valueString rightSlot valueCasing =
     let
         hasOptionSelected =
             hasSelectedOption options
@@ -1313,7 +1335,7 @@ multiSelectViewDataset selectionConfig options searchString rightSlot valueCasin
             options |> OptionsUtilities.selectedOptions
 
         showAddButtons =
-            String.length searchString > 0
+            ValueString.length valueString > 0
 
         showRemoveButtons =
             List.length selectedOptions > 1
@@ -1322,20 +1344,22 @@ multiSelectViewDataset selectionConfig options searchString rightSlot valueCasin
             case List.length selectedOptions_ of
                 0 ->
                     [ multiSelectDatasetInputField
-                        searchString
+                        valueString
                         selectionConfig
                         showAddButtons
                         showRemoveButtons
+                        0
                     ]
 
                 _ ->
-                    List.map
-                        (\selectedOption ->
+                    List.indexedMap
+                        (\index selectedOption ->
                             multiSelectDatasetInputField
-                                (Option.getOptionValueAsString selectedOption)
+                                (ValueString.fromOptionValue (Option.getOptionValue selectedOption))
                                 selectionConfig
                                 showAddButtons
                                 showRemoveButtons
+                                index
                         )
                         selectedOptions_
     in
@@ -1368,7 +1392,7 @@ tabIndexAttribute disabled =
         tabindex 0
 
 
-singleSelectCustomHtmlInputField : String -> Bool -> Bool -> String -> Bool -> Html Msg
+singleSelectCustomHtmlInputField : SearchString -> Bool -> Bool -> String -> Bool -> Html Msg
 singleSelectCustomHtmlInputField searchString isDisabled focused placeholder_ hasSelectedOption =
     let
         keyboardEvents =
@@ -1467,14 +1491,14 @@ singleSelectCustomHtmlInputField searchString isDisabled focused placeholder_ ha
             , onMouseDownStopPropagation NoOp
             , onMouseUpStopPropagation NoOp
             , onInput UpdateSearchString
-            , value searchString
+            , value (SearchString.toString searchString)
             , placeholderAttribute
             , keyboardEvents
             ]
             []
 
 
-singleSelectViewDatalistHtml : SelectionConfig -> List Option -> String -> Html Msg
+singleSelectViewDatalistHtml : SelectionConfig -> List Option -> SearchString -> Html Msg
 singleSelectViewDatalistHtml selectionMode options searchString =
     let
         hasOptionSelected =
@@ -1500,7 +1524,7 @@ singleSelectViewDatalistHtml selectionMode options searchString =
                 ]
             ]
             [ singleSelectDatasetInputField
-                searchString
+                (SearchString.toString searchString)
                 selectionMode
                 hasOptionSelected
             ]
@@ -1508,8 +1532,8 @@ singleSelectViewDatalistHtml selectionMode options searchString =
         ]
 
 
-multiSelectDatasetInputField : String -> SelectionConfig -> Bool -> Bool -> Html Msg
-multiSelectDatasetInputField valueString selectionMode showAddButtons showRemoveButtons =
+multiSelectDatasetInputField : ValueString -> SelectionConfig -> Bool -> Bool -> Int -> Html Msg
+multiSelectDatasetInputField valueString selectionMode showAddButtons showRemoveButtons index =
     let
         idAttr =
             id "input-filter"
@@ -1524,7 +1548,7 @@ multiSelectDatasetInputField valueString selectionMode showAddButtons showRemove
             onFocus InputFocus
 
         showPlaceholder =
-            String.length valueString < 1
+            ValueString.length valueString < 1
 
         placeholderAttribute =
             if showPlaceholder then
@@ -1535,16 +1559,16 @@ multiSelectDatasetInputField valueString selectionMode showAddButtons showRemove
 
         addRemoveButtons =
             if showRemoveButtons && showAddButtons then
-                [ button [ onClick (AddMultiSelectValue 0) ] [ text "add" ]
-                , button [ onClick (AddMultiSelectValue 0) ] [ text "remove" ]
+                [ button [ onClick (AddMultiSelectValue index) ] [ text "add" ]
+                , button [ onClick (RemoveMultiSelectValue index) ] [ text "remove" ]
                 ]
 
             else if showAddButtons then
-                [ button [ onClick (AddMultiSelectValue 0) ] [ text "add" ]
+                [ button [ onClick (AddMultiSelectValue index) ] [ text "add" ]
                 ]
 
             else if showRemoveButtons then
-                [ button [ onClick (AddMultiSelectValue 0) ] [ text "remove" ]
+                [ button [ onClick (RemoveMultiSelectValue index) ] [ text "remove" ]
                 ]
 
             else
@@ -1565,8 +1589,8 @@ multiSelectDatasetInputField valueString selectionMode showAddButtons showRemove
                     , idAttr
                     , onBlurAttr
                     , onFocusAttr
-                    , onInput TextInputOnInput
-                    , value valueString
+                    , onInput UpdateValueString
+                    , value (ValueString.toString valueString)
                     , placeholderAttribute
                     , Html.Attributes.list "datalist-options"
                     ]
@@ -1617,7 +1641,7 @@ singleSelectDatasetInputField searchString selectionMode hasSelectedOption =
             , idAttr
             , onBlurAttr
             , onFocusAttr
-            , onInput TextInputOnInput
+            , onInput UpdateValueString
             , value searchString
             , placeholderAttribute
             , Html.Attributes.list "datalist-options"
@@ -1661,7 +1685,7 @@ type alias DropdownItemEventListeners msg =
     }
 
 
-dropdown : SelectionConfig -> List Option -> String -> ValueCasing -> Html Msg
+dropdown : SelectionConfig -> List Option -> SearchString -> ValueCasing -> Html Msg
 dropdown selectionMode options searchString (ValueCasing valueCasingWidth valueCasingHeight) =
     let
         optionsForTheDropdown =
@@ -1973,6 +1997,9 @@ optionToValueHtml enableSingleItemRemoval option =
                 OptionDisabled ->
                     text ""
 
+        DatalistOption _ _ ->
+            text ""
+
 
 valueLabelHtml : String -> OptionValue -> Html Msg
 valueLabelHtml labelText optionValue =
@@ -2205,7 +2232,8 @@ init flags =
       , optionSort = stringToOptionSort flags.optionSort |> Result.withDefault NoSorting
       , quietSearchForDynamicInterval =
             makeDynamicDebouncer (List.length optionsWithInitialValueSelectedSorted)
-      , searchString = ""
+      , searchString = SearchString.reset
+      , valueString = ValueString.reset
       , rightSlot =
             if flags.loading then
                 ShowLoadingIndicator

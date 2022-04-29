@@ -8,10 +8,11 @@ import OptionSearchFilter exposing (OptionSearchFilter, OptionSearchResult, desc
 import OptionsUtilities exposing (prependCustomOption, removeUnselectedCustomOptions)
 import OutputStyle exposing (CustomOptions(..), SearchStringMinimumLength(..))
 import PositiveInt exposing (PositiveInt)
+import SearchString exposing (SearchString)
 import SelectionMode exposing (SelectionConfig, getCustomOptionHint, getSearchStringMinimumLength)
 
 
-updateOptionsWithSearchStringAndCustomOption : SelectionConfig -> String -> List Option -> List Option
+updateOptionsWithSearchStringAndCustomOption : SelectionConfig -> SearchString -> List Option -> List Option
 updateOptionsWithSearchStringAndCustomOption selectionConfig searchString options =
     options
         |> updateOrAddCustomOption searchString selectionConfig
@@ -60,12 +61,12 @@ search string option =
     }
 
 
-updateSearchResultInOption : String -> Option -> Option
+updateSearchResultInOption : SearchString -> Option -> Option
 updateSearchResultInOption searchString option =
     let
         searchResult : OptionSearchResult
         searchResult =
-            search searchString option
+            search (SearchString.toString searchString) option
 
         labelTokens =
             tokenize (option |> Option.getOptionLabel |> optionLabelToString) searchResult.labelMatch
@@ -106,11 +107,11 @@ updateSearchResultInOption searchString option =
         option
 
 
-updateOrAddCustomOption : String -> SelectionConfig -> List Option -> List Option
+updateOrAddCustomOption : SearchString -> SelectionConfig -> List Option -> List Option
 updateOrAddCustomOption searchString selectionMode options =
     let
         showCustomOption =
-            if String.length searchString > 0 then
+            if SearchString.length searchString > 0 then
                 case SelectionMode.getCustomOptions selectionMode of
                     AllowCustomOptions _ ->
                         True
@@ -131,7 +132,7 @@ updateOrAddCustomOption searchString selectionMode options =
                             |> Option.getOptionLabel
                             |> optionLabelToSearchString
                         )
-                            == String.toLower searchString
+                            == SearchString.toLower searchString
                             && not (Option.isCustomOption option_)
                     )
                 |> not
@@ -146,13 +147,13 @@ updateOrAddCustomOption searchString selectionMode options =
         removeUnselectedCustomOptions options
 
 
-updateOptionsWithSearchString : String -> SearchStringMinimumLength -> List Option -> List Option
+updateOptionsWithSearchString : SearchString -> SearchStringMinimumLength -> List Option -> List Option
 updateOptionsWithSearchString searchString searchStringMinimumLength options =
     let
         doOptionFiltering =
             case searchStringMinimumLength of
                 FixedSearchStringMinimumLength positiveInt ->
-                    PositiveInt.lessThanOrEqualTo positiveInt (String.length searchString)
+                    PositiveInt.lessThanOrEqualTo positiveInt (SearchString.length searchString)
 
                 NoMinimumToSearchStringLength ->
                     True
@@ -172,14 +173,14 @@ updateOptionsWithSearchString searchString searchStringMinimumLength options =
                 )
 
 
-doesSearchStringFindNothing : String -> SearchStringMinimumLength -> List Option -> Bool
+doesSearchStringFindNothing : SearchString -> SearchStringMinimumLength -> List Option -> Bool
 doesSearchStringFindNothing searchString searchStringMinimumLength options =
     case searchStringMinimumLength of
         NoMinimumToSearchStringLength ->
             True
 
         FixedSearchStringMinimumLength num ->
-            if String.length searchString <= PositiveInt.toInt num then
+            if SearchString.length searchString <= PositiveInt.toInt num then
                 False
 
             else

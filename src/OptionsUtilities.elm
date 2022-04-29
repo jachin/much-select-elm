@@ -38,8 +38,10 @@ import Option
 import OptionLabel exposing (OptionLabel)
 import OptionSearchFilter exposing (OptionSearchResult)
 import OutputStyle exposing (SelectedItemPlacementMode(..))
+import SearchString exposing (SearchString)
 import SelectionMode exposing (SelectionConfig(..), getSelectedItemPlacementMode)
 import SortRank exposing (SortRank)
+import ValueString exposing (ValueString)
 
 
 moveHighlightedOptionDown : List Option -> List Option -> List Option
@@ -238,6 +240,9 @@ selectOptionInListByOptionValue value options =
                     EmptyOption _ _ ->
                         selectOption nextSelectedIndex option_
 
+                    DatalistOption _ _ ->
+                        selectOption nextSelectedIndex option_
+
             else if isOptionSelected option_ then
                 option_
 
@@ -266,6 +271,9 @@ selectOptionInListByOptionValueWithIndex index value options =
                                 selectOption index option_
 
                     EmptyOption _ _ ->
+                        selectOption index option_
+
+                    DatalistOption _ _ ->
                         selectOption index option_
 
             else if isOptionSelected option_ then
@@ -332,6 +340,9 @@ selectHighlightedOption selectionMode options =
                                     SingleSelectConfig _ _ _ ->
                                         selectEmptyOption options
 
+                            DatalistOption _ _ ->
+                                options
+
                     Nothing ->
                         options
            )
@@ -356,6 +367,9 @@ selectSingleOptionInList value options =
                                     selectOption 0 option_
 
                         EmptyOption _ _ ->
+                            selectOption 0 option_
+
+                        DatalistOption _ _ ->
                             selectOption 0 option_
 
                 else
@@ -385,6 +399,9 @@ selectSingleOptionInListResult optionValue options =
                             EmptyOption _ _ ->
                                 selectOption 0 option_
 
+                            DatalistOption _ _ ->
+                                selectOption 0 option_
+
                     else
                         deselectOption option_
                 )
@@ -400,27 +417,26 @@ selectSingleOptionInListByString string options =
     selectSingleOptionInList (stringToOptionValue string) options
 
 
-selectSingleOptionInListByStringOrSelectCustomValue : String -> List Option -> List Option
-selectSingleOptionInListByStringOrSelectCustomValue string options =
-    case string of
-        "" ->
-            options
+selectSingleOptionInListByStringOrSelectCustomValue : SearchString -> List Option -> List Option
+selectSingleOptionInListByStringOrSelectCustomValue searchString options =
+    if SearchString.isEmpty searchString then
+        options
 
-        _ ->
-            case selectSingleOptionInListResult (Option.stringToOptionValue string) options of
-                Ok newOptions ->
-                    newOptions
+    else
+        case selectSingleOptionInListResult (Option.stringToOptionValue (SearchString.toString searchString)) options of
+            Ok newOptions ->
+                newOptions
 
-                Err _ ->
-                    CustomOption
-                        (OptionSelected 0)
-                        (OptionLabel.newWithCleanLabel string Nothing)
-                        (OptionValue string)
-                        Nothing
-                        :: (options
-                                |> clearAnyUnselectedCustomOptions
-                                |> deselectAllOptionsInOptionsList
-                           )
+            Err _ ->
+                CustomOption
+                    (OptionSelected 0)
+                    (OptionLabel.newWithCleanLabel (SearchString.toString searchString) Nothing)
+                    (OptionValue (SearchString.toString searchString))
+                    Nothing
+                    :: (options
+                            |> clearAnyUnselectedCustomOptions
+                            |> deselectAllOptionsInOptionsList
+                       )
 
 
 selectEmptyOption : List Option -> List Option
@@ -437,6 +453,9 @@ selectEmptyOption options =
 
                     EmptyOption _ _ ->
                         selectOption 0 option_
+
+                    DatalistOption _ _ ->
+                        deselectOption option_
             )
 
 
@@ -585,6 +604,9 @@ unhighlightSelectedOptions =
 
                         OptionDisabled ->
                             option
+
+                DatalistOption _ _ ->
+                    option
         )
 
 
@@ -677,6 +699,9 @@ toggleSelectedHighlightByOptionValue options optionValue =
 
                     EmptyOption _ _ ->
                         option_
+
+                    DatalistOption _ _ ->
+                        option_
             )
 
 
@@ -727,6 +752,9 @@ deselectAllSelectedHighlightedOptions options =
                                 option_
 
                     EmptyOption _ _ ->
+                        option_
+
+                    DatalistOption _ _ ->
                         option_
             )
 
@@ -844,7 +872,7 @@ removeHighlightOptionInList value options =
         options
 
 
-prependCustomOption : Maybe String -> String -> List Option -> List Option
+prependCustomOption : Maybe String -> SearchString -> List Option -> List Option
 prependCustomOption maybeCustomOptionHint searchString options =
     let
         label =
@@ -856,21 +884,21 @@ prependCustomOption maybeCustomOptionHint searchString options =
                     in
                     case parts of
                         [] ->
-                            "Add " ++ searchString ++ "…"
+                            "Add " ++ SearchString.toString searchString ++ "…"
 
                         [ _ ] ->
-                            customOptionHint ++ searchString
+                            customOptionHint ++ SearchString.toString searchString
 
                         first :: second :: _ ->
-                            first ++ searchString ++ second
+                            first ++ SearchString.toString searchString ++ second
 
                 Nothing ->
-                    "Add " ++ searchString ++ "…"
+                    "Add " ++ SearchString.toString searchString ++ "…"
     in
     [ CustomOption
         OptionShown
         (OptionLabel.newWithCleanLabel label Nothing)
-        (OptionValue searchString)
+        (OptionValue (SearchString.toString searchString))
         Nothing
     ]
         ++ options
@@ -1051,9 +1079,14 @@ findOptionByOptionUsingOptionValue option options =
     findOptionByOptionValue (getOptionValue option) options
 
 
-findOptionByOptionUsingValueString : String -> List Option -> Maybe Option
+findOptionByOptionUsingValueString : ValueString -> List Option -> Maybe Option
 findOptionByOptionUsingValueString valueString options =
-    findOptionByOptionValue (stringToOptionValue valueString) options
+    findOptionByOptionValue (ValueString.toOptionValue valueString) options
+
+
+updateDatalistOptionsWithValue : ValueString -> List Option -> List Option
+updateDatalistOptionsWithValue valueString options =
+    options
 
 
 deselectAllOptionsInOptionsList : List Option -> List Option
