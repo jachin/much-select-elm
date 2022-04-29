@@ -12,7 +12,7 @@ import Test exposing (Test, describe, test)
 
 
 selectionMode =
-    SelectionMode.defaultSelectionMode
+    SelectionMode.defaultSelectionConfig
 
 
 minervaryaPentali =

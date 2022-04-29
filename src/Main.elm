@@ -157,7 +157,7 @@ import SelectionMode
     exposing
         ( OutputStyle(..)
         , SelectionConfig(..)
-        , defaultSelectionMode
+        , defaultSelectionConfig
         , getCustomOptionHint
         , getMaxDropdownItems
         , getOutputStyle
@@ -167,7 +167,7 @@ import SelectionMode
         , isDisabled
         , isFocused
         , isSingleSelect
-        , makeSelectionMode
+        , makeSelectionConfig
         , setDropdownStyle
         , setIsDisabled
         , setIsFocused
@@ -2045,8 +2045,8 @@ init : Flags -> ( Model, Cmd Msg )
 init flags =
     let
         selectionMode =
-            makeSelectionMode flags.disabled flags.allowMultiSelect flags.allowCustomOptions flags.outputStyle flags.placeholder flags.customOptionHint flags.enableMultiSelectSingleItemRemoval flags.maxDropdownItems flags.selectedItemStaysInPlace flags.searchStringMinimumLength flags.showDropdownFooter
-                |> Result.withDefault defaultSelectionMode
+            makeSelectionConfig flags.disabled flags.allowMultiSelect flags.allowCustomOptions flags.outputStyle flags.placeholder flags.customOptionHint flags.enableMultiSelectSingleItemRemoval flags.maxDropdownItems flags.selectedItemStaysInPlace flags.searchStringMinimumLength flags.showDropdownFooter
+                |> Result.withDefault defaultSelectionConfig
 
         optionSort =
             stringToOptionSort flags.optionSort

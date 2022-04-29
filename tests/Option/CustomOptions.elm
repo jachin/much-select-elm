@@ -6,8 +6,9 @@ import Option exposing (newCustomOption, newOption, selectOption, stringToOption
 import OptionSearcher
 import OptionSorting
 import OptionsUtilities exposing (highlightFirstOptionInList, prependCustomOption, removeUnselectedCustomOptions, selectOptionInListByOptionValue)
+import OutputStyle exposing (SingleItemRemoval(..))
 import PositiveInt
-import SelectionMode exposing OutputStyle(..), SelectionConfig(..))
+import SelectionMode exposing (OutputStyle(..), SelectionConfig(..), SelectionMode(..), defaultSelectionConfig, setAllowCustomOptionsWithBool, setSelectionMode, setSingleItemRemoval)
 import Test exposing (Test, describe, test)
 
 
@@ -64,8 +65,10 @@ suite =
             \_ ->
                 let
                     selectionMode =
-
-                        MultiSelectConfig AllowCustomOptions EnableSingleItemRemoval CustomHtml
+                        defaultSelectionConfig
+                            |> setSelectionMode MultiSelect
+                            |> setAllowCustomOptionsWithBool True Nothing
+                            |> setSingleItemRemoval EnableSingleItemRemoval
                 in
                 Expect.equalLists
                     (OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionMode (Just "{{}}") "monkey bread" (PositiveInt.new 2) []

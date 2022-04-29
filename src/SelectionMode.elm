@@ -1,8 +1,9 @@
 module SelectionMode exposing
     ( OutputStyle(..)
     , SelectionConfig(..)
+    , SelectionMode(..)
     , canDoSingleItemRemoval
-    , defaultSelectionMode
+    , defaultSelectionConfig
     , getCustomOptionHint
     , getCustomOptions
     , getDropdownStyle
@@ -15,7 +16,7 @@ module SelectionMode exposing
     , isDisabled
     , isFocused
     , isSingleSelect
-    , makeSelectionMode
+    , makeSelectionConfig
     , setAllowCustomOptionsWithBool
     , setDropdownStyle
     , setInteractionState
@@ -25,6 +26,7 @@ module SelectionMode exposing
     , setMultiSelectModeWithBool
     , setSearchStringMinimumLength
     , setSelectedItemStaysInPlaceWithBool
+    , setSelectionMode
     , setShowDropdown
     , setSingleItemRemoval
     , showDropdown
@@ -63,13 +65,18 @@ type OutputStyle
     | Datalist
 
 
+type SelectionMode
+    = SingleSelect
+    | MultiSelect
+
+
 type SelectionConfig
     = SingleSelectConfig SingleSelectOutputStyle Placeholder InteractionState
     | MultiSelectConfig MultiSelectOutputStyle Placeholder InteractionState
 
 
-defaultSelectionMode : SelectionConfig
-defaultSelectionMode =
+defaultSelectionConfig : SelectionConfig
+defaultSelectionConfig =
     SingleSelectConfig
         (SingleSelectCustomHtml
             { customOptions = NoCustomOptions
@@ -84,8 +91,8 @@ defaultSelectionMode =
         Unfocused
 
 
-makeSelectionMode : Bool -> Bool -> Bool -> String -> String -> Maybe String -> Bool -> Int -> Bool -> Int -> Bool -> Result String SelectionConfig
-makeSelectionMode disabled allowMultiSelect allowCustomOptions outputStyle placeholder customOptionHint enableMultiSelectSingleItemRemoval maxDropdownItems selectedItemStaysInPlace searchStringMinimumLength shouldShowDropdownFooter =
+makeSelectionConfig : Bool -> Bool -> Bool -> String -> String -> Maybe String -> Bool -> Int -> Bool -> Int -> Bool -> Result String SelectionConfig
+makeSelectionConfig disabled allowMultiSelect allowCustomOptions outputStyle placeholder customOptionHint enableMultiSelectSingleItemRemoval maxDropdownItems selectedItemStaysInPlace searchStringMinimumLength shouldShowDropdownFooter =
     let
         outputStyleResult =
             stringToOutputStyle outputStyle
@@ -211,8 +218,8 @@ isSingleSelect selectionMode =
 
 
 getOutputStyle : SelectionConfig -> OutputStyle
-getOutputStyle selectionMode =
-    case selectionMode of
+getOutputStyle selectionConfig =
+    case selectionConfig of
         SingleSelectConfig singleSelectOutputStyle _ _ ->
             case singleSelectOutputStyle of
                 SingleSelectCustomHtml _ ->
@@ -231,8 +238,8 @@ getOutputStyle selectionMode =
 
 
 getCustomOptions : SelectionConfig -> CustomOptions
-getCustomOptions selectionMode =
-    case selectionMode of
+getCustomOptions selectionConfig =
+    case selectionConfig of
         SingleSelectConfig singleSelectOutputStyle _ _ ->
             case singleSelectOutputStyle of
                 SingleSelectCustomHtml singleSelectCustomHtmlFields ->
@@ -251,8 +258,8 @@ getCustomOptions selectionMode =
 
 
 setCustomOptions : CustomOptions -> SelectionConfig -> SelectionConfig
-setCustomOptions customOptions selectionMode =
-    case selectionMode of
+setCustomOptions customOptions selectionConfig =
+    case selectionConfig of
         SingleSelectConfig singleSelectOutputStyle placeholder interactionState ->
             case singleSelectOutputStyle of
                 SingleSelectCustomHtml singleSelectCustomHtmlFields ->
@@ -264,7 +271,7 @@ setCustomOptions customOptions selectionMode =
                         interactionState
 
                 SingleSelectDatalist ->
-                    selectionMode
+                    selectionConfig
 
         MultiSelectConfig multiSelectOutputStyle placeholder interactionState ->
             case multiSelectOutputStyle of
@@ -272,13 +279,13 @@ setCustomOptions customOptions selectionMode =
                     MultiSelectConfig (MultiSelectCustomHtml { multiSelectCustomHtmlFields | customOptions = customOptions }) placeholder interactionState
 
                 MultiSelectDataList ->
-                    selectionMode
+                    selectionConfig
 
 
 getCustomOptionHint : SelectionConfig -> CustomOptionHint
-getCustomOptionHint selectionMode =
-    case selectionMode of
-        SingleSelectConfig singleSelectOutputStyle placeholder interactionState ->
+getCustomOptionHint selectionConfig =
+    case selectionConfig of
+        SingleSelectConfig singleSelectOutputStyle _ _ ->
             case singleSelectOutputStyle of
                 SingleSelectCustomHtml singleSelectCustomHtmlFields ->
                     case singleSelectCustomHtmlFields.customOptions of
@@ -291,7 +298,7 @@ getCustomOptionHint selectionMode =
                 SingleSelectDatalist ->
                     Nothing
 
-        MultiSelectConfig multiSelectOutputStyle placeholder interactionState ->
+        MultiSelectConfig multiSelectOutputStyle _ _ ->
             case multiSelectOutputStyle of
                 MultiSelectCustomHtml multiSelectCustomHtmlFields ->
                     case multiSelectCustomHtmlFields.customOptions of
@@ -320,8 +327,8 @@ setAllowCustomOptionsWithBool allowCustomOptions customOptionHint mode =
 
 
 getSelectedItemPlacementMode : SelectionConfig -> SelectedItemPlacementMode
-getSelectedItemPlacementMode selectionMode =
-    case selectionMode of
+getSelectedItemPlacementMode selectionConfig =
+    case selectionConfig of
         SingleSelectConfig singleSelectOutputStyle _ _ ->
             case singleSelectOutputStyle of
                 SingleSelectCustomHtml singleSelectCustomHtmlFields ->
@@ -335,17 +342,17 @@ getSelectedItemPlacementMode selectionMode =
 
 
 setSelectedItemStaysInPlaceWithBool : Bool -> SelectionConfig -> SelectionConfig
-setSelectedItemStaysInPlaceWithBool selectedItemStaysInPlace selectionMode =
+setSelectedItemStaysInPlaceWithBool selectedItemStaysInPlace selectionConfig =
     if selectedItemStaysInPlace then
-        setSelectedItemPlacementMode SelectedItemStaysInPlace selectionMode
+        setSelectedItemPlacementMode SelectedItemStaysInPlace selectionConfig
 
     else
-        setSelectedItemPlacementMode SelectedItemMovesToTheTop selectionMode
+        setSelectedItemPlacementMode SelectedItemMovesToTheTop selectionConfig
 
 
 setSelectedItemPlacementMode : SelectedItemPlacementMode -> SelectionConfig -> SelectionConfig
-setSelectedItemPlacementMode selectedItemPlacementMode selectionMode =
-    case selectionMode of
+setSelectedItemPlacementMode selectedItemPlacementMode selectionConfig =
+    case selectionConfig of
         SingleSelectConfig singleSelectOutputStyle placeholder interactionState ->
             case singleSelectOutputStyle of
                 SingleSelectCustomHtml singleSelectCustomHtmlFields ->
@@ -357,28 +364,48 @@ setSelectedItemPlacementMode selectedItemPlacementMode selectionMode =
                         interactionState
 
                 SingleSelectDatalist ->
-                    selectionMode
+                    selectionConfig
 
         MultiSelectConfig _ _ _ ->
-            selectionMode
+            selectionConfig
 
 
 setMultiSelectModeWithBool : Bool -> SelectionConfig -> SelectionConfig
-setMultiSelectModeWithBool isInMultiSelectMode selectionMode =
-    case selectionMode of
+setMultiSelectModeWithBool isInMultiSelectMode selectionConfig =
+    case selectionConfig of
         SingleSelectConfig singleSelectOutputStyle placeholder interactionState ->
             if isInMultiSelectMode then
                 MultiSelectConfig (OutputStyle.singleToMulti singleSelectOutputStyle) placeholder interactionState
 
             else
-                selectionMode
+                selectionConfig
 
         MultiSelectConfig multiSelectOutputStyle placeholder interactionState ->
             if isInMultiSelectMode then
-                selectionMode
+                selectionConfig
 
             else
                 SingleSelectConfig (OutputStyle.multiToSingle multiSelectOutputStyle) placeholder interactionState
+
+
+setSelectionMode : SelectionMode -> SelectionConfig -> SelectionConfig
+setSelectionMode selectionMode selectionConfig =
+    case selectionMode of
+        SingleSelect ->
+            case selectionConfig of
+                SingleSelectConfig _ _ _ ->
+                    selectionConfig
+
+                MultiSelectConfig multiSelectOutputStyle placeholder interactionState ->
+                    SingleSelectConfig (OutputStyle.multiToSingle multiSelectOutputStyle) placeholder interactionState
+
+        MultiSelect ->
+            case selectionConfig of
+                SingleSelectConfig singleSelectOutputStyle placeholder interactionState ->
+                    MultiSelectConfig (OutputStyle.singleToMulti singleSelectOutputStyle) placeholder interactionState
+
+                MultiSelectConfig _ _ _ ->
+                    selectionConfig
 
 
 stringToOutputStyle : String -> Result String OutputStyle
@@ -395,8 +422,8 @@ stringToOutputStyle string =
 
 
 isFocused : SelectionConfig -> Bool
-isFocused selectionMode =
-    case selectionMode of
+isFocused selectionConfig =
+    case selectionConfig of
         SingleSelectConfig _ _ interactionState ->
             case interactionState of
                 Focused ->
@@ -421,7 +448,7 @@ isFocused selectionMode =
 
 
 setIsFocused : Bool -> SelectionConfig -> SelectionConfig
-setIsFocused isFocused_ selectionMode =
+setIsFocused isFocused_ selectionConfig =
     let
         newInteractionState =
             if isFocused_ then
@@ -430,12 +457,12 @@ setIsFocused isFocused_ selectionMode =
             else
                 Unfocused
     in
-    setInteractionState newInteractionState selectionMode
+    setInteractionState newInteractionState selectionConfig
 
 
 isDisabled : SelectionConfig -> Bool
-isDisabled selectionMode =
-    case selectionMode of
+isDisabled selectionConfig =
+    case selectionConfig of
         SingleSelectConfig _ _ interactionState ->
             case interactionState of
                 Focused ->
@@ -460,17 +487,17 @@ isDisabled selectionMode =
 
 
 setIsDisabled : Bool -> SelectionConfig -> SelectionConfig
-setIsDisabled isDisabled_ selectionMode =
+setIsDisabled isDisabled_ selectionConfig =
     if isDisabled_ then
-        setInteractionState Disabled selectionMode
+        setInteractionState Disabled selectionConfig
 
     else
-        selectionMode
+        selectionConfig
 
 
 setInteractionState : InteractionState -> SelectionConfig -> SelectionConfig
-setInteractionState newInteractionState selectionMode =
-    case selectionMode of
+setInteractionState newInteractionState selectionConfig =
+    case selectionConfig of
         SingleSelectConfig singleSelectOutputStyle placeholder _ ->
             SingleSelectConfig singleSelectOutputStyle placeholder newInteractionState
 
@@ -479,7 +506,7 @@ setInteractionState newInteractionState selectionMode =
 
 
 setShowDropdown : Bool -> SelectionConfig -> SelectionConfig
-setShowDropdown showDropdown_ selectionMode =
+setShowDropdown showDropdown_ selectionConfig =
     let
         newDropdownState =
             if showDropdown_ then
@@ -488,7 +515,7 @@ setShowDropdown showDropdown_ selectionMode =
             else
                 Collapsed
     in
-    case selectionMode of
+    case selectionConfig of
         SingleSelectConfig singleSelectOutputStyle placeholder interactionState ->
             case singleSelectOutputStyle of
                 SingleSelectCustomHtml singleSelectCustomHtmlFields ->
@@ -500,7 +527,7 @@ setShowDropdown showDropdown_ selectionMode =
                         interactionState
 
                 SingleSelectDatalist ->
-                    selectionMode
+                    selectionConfig
 
         MultiSelectConfig multiSelectOutputStyle placeholder interactionState ->
             case multiSelectOutputStyle of
@@ -511,12 +538,12 @@ setShowDropdown showDropdown_ selectionMode =
                         interactionState
 
                 MultiSelectDataList ->
-                    selectionMode
+                    selectionConfig
 
 
 setDropdownStyle : DropdownStyle -> SelectionConfig -> SelectionConfig
-setDropdownStyle dropdownStyle selectionMode =
-    case selectionMode of
+setDropdownStyle dropdownStyle selectionConfig =
+    case selectionConfig of
         SingleSelectConfig singleSelectOutputStyle placeholder interactionState ->
             case singleSelectOutputStyle of
                 SingleSelectCustomHtml singleSelectCustomHtmlFields ->
@@ -528,7 +555,7 @@ setDropdownStyle dropdownStyle selectionMode =
                         interactionState
 
                 SingleSelectDatalist ->
-                    selectionMode
+                    selectionConfig
 
         MultiSelectConfig multiSelectOutputStyle placeholder interactionState ->
             case multiSelectOutputStyle of
@@ -539,12 +566,12 @@ setDropdownStyle dropdownStyle selectionMode =
                         interactionState
 
                 MultiSelectDataList ->
-                    selectionMode
+                    selectionConfig
 
 
 setMaxDropdownItems : MaxDropdownItems -> SelectionConfig -> SelectionConfig
-setMaxDropdownItems maxDropdownItems selectionMode =
-    case selectionMode of
+setMaxDropdownItems maxDropdownItems selectionConfig =
+    case selectionConfig of
         SingleSelectConfig singleSelectOutputStyle placeholder interactionState ->
             case singleSelectOutputStyle of
                 SingleSelectCustomHtml singleSelectCustomHtmlFields ->
@@ -556,7 +583,7 @@ setMaxDropdownItems maxDropdownItems selectionMode =
                         interactionState
 
                 SingleSelectDatalist ->
-                    selectionMode
+                    selectionConfig
 
         MultiSelectConfig multiSelectOutputStyle placeholder interactionState ->
             case multiSelectOutputStyle of
@@ -567,12 +594,12 @@ setMaxDropdownItems maxDropdownItems selectionMode =
                         interactionState
 
                 MultiSelectDataList ->
-                    selectionMode
+                    selectionConfig
 
 
 getMaxDropdownItems : SelectionConfig -> MaxDropdownItems
-getMaxDropdownItems selectionMode =
-    case selectionMode of
+getMaxDropdownItems selectionConfig =
+    case selectionConfig of
         SingleSelectConfig singleSelectOutputStyle _ _ ->
             case singleSelectOutputStyle of
                 SingleSelectCustomHtml singleSelectCustomHtmlFields ->
@@ -591,10 +618,10 @@ getMaxDropdownItems selectionMode =
 
 
 setSingleItemRemoval : SingleItemRemoval -> SelectionConfig -> SelectionConfig
-setSingleItemRemoval newSingleItemRemoval selectionMode =
-    case selectionMode of
+setSingleItemRemoval newSingleItemRemoval selectionConfig =
+    case selectionConfig of
         SingleSelectConfig _ _ _ ->
-            selectionMode
+            selectionConfig
 
         MultiSelectConfig multiSelectOutputStyle placeholder interactionState ->
             case multiSelectOutputStyle of
@@ -605,12 +632,12 @@ setSingleItemRemoval newSingleItemRemoval selectionMode =
                         interactionState
 
                 MultiSelectDataList ->
-                    selectionMode
+                    selectionConfig
 
 
 setSearchStringMinimumLength : SearchStringMinimumLength -> SelectionConfig -> SelectionConfig
-setSearchStringMinimumLength newSearchStringMinimumLength selectionMode =
-    case selectionMode of
+setSearchStringMinimumLength newSearchStringMinimumLength selectionConfig =
+    case selectionConfig of
         SingleSelectConfig singleSelectOutputStyle placeholder interactionState ->
             case singleSelectOutputStyle of
                 SingleSelectCustomHtml singleSelectCustomHtmlFields ->
@@ -622,7 +649,7 @@ setSearchStringMinimumLength newSearchStringMinimumLength selectionMode =
                         interactionState
 
                 SingleSelectDatalist ->
-                    selectionMode
+                    selectionConfig
 
         MultiSelectConfig multiSelectOutputStyle placeholder interactionState ->
             case multiSelectOutputStyle of
@@ -633,13 +660,13 @@ setSearchStringMinimumLength newSearchStringMinimumLength selectionMode =
                         interactionState
 
                 MultiSelectDataList ->
-                    selectionMode
+                    selectionConfig
 
 
 getSearchStringMinimumLength : SelectionConfig -> SearchStringMinimumLength
-getSearchStringMinimumLength selectionMode =
-    case selectionMode of
-        SingleSelectConfig singleSelectOutputStyle placeholder interactionState ->
+getSearchStringMinimumLength selectionConfig =
+    case selectionConfig of
+        SingleSelectConfig singleSelectOutputStyle _ _ ->
             case singleSelectOutputStyle of
                 SingleSelectCustomHtml singleSelectCustomHtmlFields ->
                     singleSelectCustomHtmlFields.searchStringMinimumLength
@@ -647,7 +674,7 @@ getSearchStringMinimumLength selectionMode =
                 SingleSelectDatalist ->
                     NoMinimumToSearchStringLength
 
-        MultiSelectConfig multiSelectOutputStyle placeholder interactionState ->
+        MultiSelectConfig multiSelectOutputStyle _ _ ->
             case multiSelectOutputStyle of
                 MultiSelectCustomHtml multiSelectCustomHtmlFields ->
                     multiSelectCustomHtmlFields.searchStringMinimumLength
@@ -657,8 +684,8 @@ getSearchStringMinimumLength selectionMode =
 
 
 getPlaceHolder : SelectionConfig -> Placeholder
-getPlaceHolder selectionMode =
-    case selectionMode of
+getPlaceHolder selectionConfig =
+    case selectionConfig of
         SingleSelectConfig _ placeholder _ ->
             placeholder
 
@@ -667,12 +694,12 @@ getPlaceHolder selectionMode =
 
 
 getSingleItemRemoval : SelectionConfig -> SingleItemRemoval
-getSingleItemRemoval selectionMode =
-    case selectionMode of
+getSingleItemRemoval selectionConfig =
+    case selectionConfig of
         SingleSelectConfig _ _ _ ->
             DisableSingleItemRemoval
 
-        MultiSelectConfig multiSelectOutputStyle placeholder interactionState ->
+        MultiSelectConfig multiSelectOutputStyle _ _ ->
             case multiSelectOutputStyle of
                 MultiSelectCustomHtml multiSelectCustomHtmlFields ->
                     multiSelectCustomHtmlFields.singleItemRemoval
@@ -682,8 +709,8 @@ getSingleItemRemoval selectionMode =
 
 
 canDoSingleItemRemoval : SelectionConfig -> Bool
-canDoSingleItemRemoval selectionMode =
-    case getSingleItemRemoval selectionMode of
+canDoSingleItemRemoval selectionConfig =
+    case getSingleItemRemoval selectionConfig of
         EnableSingleItemRemoval ->
             True
 
@@ -692,9 +719,9 @@ canDoSingleItemRemoval selectionMode =
 
 
 getDropdownStyle : SelectionConfig -> DropdownStyle
-getDropdownStyle selectionMode =
-    case selectionMode of
-        SingleSelectConfig singleSelectOutputStyle placeholder interactionState ->
+getDropdownStyle selectionConfig =
+    case selectionConfig of
+        SingleSelectConfig singleSelectOutputStyle _ _ ->
             case singleSelectOutputStyle of
                 SingleSelectCustomHtml singleSelectCustomHtmlFields ->
                     singleSelectCustomHtmlFields.dropdownStyle
@@ -702,7 +729,7 @@ getDropdownStyle selectionMode =
                 SingleSelectDatalist ->
                     NoFooter
 
-        MultiSelectConfig multiSelectOutputStyle placeholder interactionState ->
+        MultiSelectConfig multiSelectOutputStyle _ _ ->
             case multiSelectOutputStyle of
                 MultiSelectCustomHtml multiSelectCustomHtmlFields ->
                     multiSelectCustomHtmlFields.dropdownStyle
@@ -712,8 +739,8 @@ getDropdownStyle selectionMode =
 
 
 showDropdownFooter : SelectionConfig -> Bool
-showDropdownFooter selectionMode =
-    case getDropdownStyle selectionMode of
+showDropdownFooter selectionConfig =
+    case getDropdownStyle selectionConfig of
         NoFooter ->
             False
 
@@ -722,9 +749,9 @@ showDropdownFooter selectionMode =
 
 
 getDropdownState : SelectionConfig -> DropdownState
-getDropdownState selectionMode =
-    case selectionMode of
-        SingleSelectConfig singleSelectOutputStyle placeholder interactionState ->
+getDropdownState selectionConfig =
+    case selectionConfig of
+        SingleSelectConfig singleSelectOutputStyle _ _ ->
             case singleSelectOutputStyle of
                 SingleSelectCustomHtml singleSelectCustomHtmlFields ->
                     singleSelectCustomHtmlFields.dropdownState
@@ -732,7 +759,7 @@ getDropdownState selectionMode =
                 SingleSelectDatalist ->
                     NotManagedByMe
 
-        MultiSelectConfig multiSelectOutputStyle placeholder interactionState ->
+        MultiSelectConfig multiSelectOutputStyle _ _ ->
             case multiSelectOutputStyle of
                 MultiSelectCustomHtml multiSelectCustomHtmlFields ->
                     multiSelectCustomHtmlFields.dropdownState
@@ -742,8 +769,8 @@ getDropdownState selectionMode =
 
 
 showDropdown : SelectionConfig -> Bool
-showDropdown selectionMode =
-    case getDropdownState selectionMode of
+showDropdown selectionConfig =
+    case getDropdownState selectionConfig of
         Expanded ->
             True
 
