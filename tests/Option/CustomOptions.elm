@@ -19,6 +19,7 @@ import OptionsUtilities
         )
 import OutputStyle exposing (MaxDropdownItems(..), SearchStringMinimumLength(..), SingleItemRemoval(..))
 import PositiveInt
+import SearchString
 import SelectionMode
     exposing
         ( OutputStyle(..)
@@ -87,7 +88,7 @@ suite =
         , test "should be able to maintain a custom option with an empty hint" <|
             \_ ->
                 Expect.equalLists
-                    (prependCustomOption (Just "{{}}") "pizza" [])
+                    (prependCustomOption (Just "{{}}") (SearchString.new "pizza") [])
                     [ newCustomOption "pizza" Nothing ]
         , test "should stay in the dropdown if there's only a custom option with an empty hint" <|
             \_ ->
@@ -100,7 +101,7 @@ suite =
                             |> SelectionMode.setMaxDropdownItems maxDropdownItemsIsTen
                 in
                 Expect.equalLists
-                    (OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionConfig "monkey bread" []
+                    (OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionConfig (SearchString.new "monkey bread") []
                         |> figureOutWhichOptionsToShowInTheDropdown selectionConfig
                         |> List.map Option.getOptionValueAsString
                     )
@@ -124,7 +125,7 @@ suite =
                      ]
                         |> OptionSearcher.updateOptionsWithSearchStringAndCustomOption
                             selectionConfig
-                            "monkey bread"
+                            (SearchString.new "monkey bread")
                         |> List.map Option.getOptionValueAsString
                     )
                     [ "monkey bread", "Birch Wood", "Cut Copper" ]
@@ -144,7 +145,7 @@ suite =
                      ]
                         |> OptionSearcher.updateOptionsWithSearchStringAndCustomOption
                             selectionConfig
-                            "cob"
+                            (SearchString.new "cob")
                         |> OptionSorting.sortOptionsBySearchFilterTotalScore
                         |> highlightFirstOptionInList
                         |> figureOutWhichOptionsToShowInTheDropdown selectionConfig
@@ -167,7 +168,7 @@ suite =
                      ]
                         |> OptionSearcher.updateOptionsWithSearchStringAndCustomOption
                             selectionConfig
-                            "cob"
+                            (SearchString.new "cob")
                         |> OptionSorting.sortOptionsBySearchFilterTotalScore
                         |> highlightFirstOptionInList
                         |> figureOutWhichOptionsToShowInTheDropdown selectionConfig
@@ -188,7 +189,7 @@ suite =
                      ]
                         |> updateTheFullListOfOptions
                             selectionConfig
-                            "mil"
+                            (SearchString.new "mil")
                         |> updateTheOptionsForTheDropdown
                             selectionConfig
                         |> List.map Option.getOptionValueAsString

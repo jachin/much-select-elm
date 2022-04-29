@@ -7,6 +7,7 @@ import OptionSearcher
 import OptionsUtilities exposing (highlightOptionInList, selectOptionInList)
 import OutputStyle exposing (MaxDropdownItems(..), SearchStringMinimumLength(..))
 import PositiveInt
+import SearchString
 import SelectionMode exposing (OutputStyle(..), SelectionConfig(..), defaultSelectionConfig)
 import Test exposing (Test, describe, test)
 
@@ -333,7 +334,7 @@ suite =
                             (tools
                                 |> OptionSearcher.updateOptionsWithSearchStringAndCustomOption
                                     multiSelectConfig
-                                    "wrench"
+                                    (SearchString.new "wrench")
                                 |> highlightOptionInList wrench
                             )
                         )
