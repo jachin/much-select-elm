@@ -20,7 +20,7 @@ thirdEyeBlind =
 
 
 selectionMode =
-    SelectionMode.SingleSelect
+    SelectionMode.SingleSelectConfig
         SelectionMode.NoCustomOptions
         SelectionMode.SelectedItemStaysInPlace
         SelectionMode.CustomHtml

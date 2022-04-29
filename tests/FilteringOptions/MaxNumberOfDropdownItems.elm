@@ -96,7 +96,7 @@ equalOptionListValues optionsA optionsB =
 
 
 selectionMode =
-    SelectionMode.SingleSelect SelectionMode.NoCustomOptions SelectionMode.SelectedItemStaysInPlace SelectionMode.CustomHtml
+    SelectionMode.SingleSelectConfig SelectionMode.NoCustomOptions SelectionMode.SelectedItemStaysInPlace SelectionMode.CustomHtml
 
 
 suite : Test
@@ -303,7 +303,7 @@ suite =
                             three
                             (tools
                                 |> OptionSearcher.updateOptionsWithSearchStringAndCustomOption
-                                    (MultiSelect NoCustomOptions DisableSingleItemRemoval CustomHtml)
+                                    (MultiSelectConfig NoCustomOptions DisableSingleItemRemoval CustomHtml)
                                     Nothing
                                     "wrench"
                                     (PositiveInt.new 2)

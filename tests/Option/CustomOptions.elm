@@ -65,7 +65,7 @@ suite =
                 let
                     selectionMode =
 
-                        MultiSelect AllowCustomOptions EnableSingleItemRemoval CustomHtml
+                        MultiSelectConfig AllowCustomOptions EnableSingleItemRemoval CustomHtml
                 in
                 Expect.equalLists
                     (OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionMode (Just "{{}}") "monkey bread" (PositiveInt.new 2) []
@@ -83,7 +83,7 @@ suite =
                      , cutCopper |> Option.selectOption 2
                      ]
                         |> OptionSearcher.updateOptionsWithSearchStringAndCustomOption
-                            (MultiSelect AllowCustomOptions EnableSingleItemRemoval CustomHtml)
+                            (MultiSelectConfig AllowCustomOptions EnableSingleItemRemoval CustomHtml)
                             (Just "{{}}")
                             "monkey bread"
                             (PositiveInt.new 2)
@@ -94,7 +94,7 @@ suite =
             \_ ->
                 let
                     selectionMode =
-                        MultiSelect AllowCustomOptions EnableSingleItemRemoval CustomHtml
+                        MultiSelectConfig AllowCustomOptions EnableSingleItemRemoval CustomHtml
                 in
                 Expect.equalLists
                     ([ mossyCobblestone
@@ -114,13 +114,13 @@ suite =
             \_ ->
                 let
                     selectionMode =
-                        MultiSelect AllowCustomOptions EnableSingleItemRemoval CustomHtml
+                        MultiSelectConfig AllowCustomOptions EnableSingleItemRemoval CustomHtml
                 in
                 Expect.equalLists
                     ([ mossyCobblestone
                      ]
                         |> OptionSearcher.updateOptionsWithSearchStringAndCustomOption
-                            (MultiSelect AllowCustomOptions EnableSingleItemRemoval CustomHtml)
+                            (MultiSelectConfig AllowCustomOptions EnableSingleItemRemoval CustomHtml)
                             (Just "{{}}")
                             "cob"
                             (PositiveInt.new 10)
@@ -134,13 +134,13 @@ suite =
             \_ ->
                 let
                     selectionMode =
-                        SingleSelect AllowCustomOptions SelectedItemStaysInPlace SelectionMode.CustomHtml
+                        SingleSelectConfig AllowCustomOptions SelectedItemStaysInPlace SelectionMode.CustomHtml
                 in
                 Expect.equalLists
                     ([ birchWood
                      ]
                         |> updateTheFullListOfOptions
-                            (SingleSelect AllowCustomOptions SelectedItemStaysInPlace SelectionMode.CustomHtml)
+                            (SingleSelectConfig AllowCustomOptions SelectedItemStaysInPlace SelectionMode.CustomHtml)
                             (Just "{{}}")
                             "mil"
                             (PositiveInt.new 5)

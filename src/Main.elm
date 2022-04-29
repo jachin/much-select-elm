@@ -404,14 +404,14 @@ update msg model =
             let
                 updatedOptions =
                     case model.selectionMode of
-                        MultiSelect _ _ _ ->
+                        MultiSelectConfig _ _ _ ->
                             selectOptionInListByOptionValue optionValue model.options
 
-                        SingleSelect _ _ _ ->
+                        SingleSelectConfig _ _ _ ->
                             selectSingleOptionInList optionValue model.options
             in
             case model.selectionMode of
-                SingleSelect _ _ _ ->
+                SingleSelectConfig _ _ _ ->
                     ( { model
                         | options = updatedOptions
                         , searchString = ""
@@ -423,7 +423,7 @@ update msg model =
                         ]
                     )
 
-                MultiSelect _ _ _ ->
+                MultiSelectConfig _ _ _ ->
                     ( { model
                         | options = updatedOptions
                         , searchString = ""
@@ -471,10 +471,10 @@ update msg model =
             let
                 valuesResult =
                     case model.selectionMode of
-                        SingleSelect _ _ _ ->
+                        SingleSelectConfig _ _ _ ->
                             Json.Decode.decodeValue valueDecoder valuesJson
 
-                        MultiSelect _ _ _ ->
+                        MultiSelectConfig _ _ _ ->
                             Json.Decode.decodeValue valuesDecoder valuesJson
             in
             case valuesResult of
@@ -560,10 +560,10 @@ update msg model =
 
                         updatedOptions =
                             case model.selectionMode of
-                                MultiSelect _ _ _ ->
+                                MultiSelectConfig _ _ _ ->
                                     selectOptionInListByOptionValue optionValue model.options
 
-                                SingleSelect _ _ _ ->
+                                SingleSelectConfig _ _ _ ->
                                     selectSingleOptionInList optionValue model.options
                     in
                     ( { model
@@ -728,7 +728,7 @@ update msg model =
                     selectHighlightedOption model.selectionMode model.options
             in
             case model.selectionMode of
-                SingleSelect _ _ _ ->
+                SingleSelectConfig _ _ _ ->
                     ( { model
                         | options = updatedOptions
                         , searchString = ""
@@ -740,7 +740,7 @@ update msg model =
                         ]
                     )
 
-                MultiSelect _ _ _ ->
+                MultiSelectConfig _ _ _ ->
                     ( { model
                         | options = updatedOptions
                         , searchString = ""
@@ -754,7 +754,7 @@ update msg model =
 
         DeleteInputForSingleSelect ->
             case model.selectionMode of
-                SingleSelect _ _ _ ->
+                SingleSelectConfig _ _ _ ->
                     if hasSelectedOption model.options then
                         -- if there are ANY selected options, clear them all;
                         clearAllSelectedOption model
@@ -762,7 +762,7 @@ update msg model =
                     else
                         ( model, Cmd.none )
 
-                MultiSelect _ _ _ ->
+                MultiSelectConfig _ _ _ ->
                     ( model, Cmd.none )
 
         EscapeKeyInInputFilter ->
@@ -1049,10 +1049,10 @@ updateRightSlot current selectionMode hasSelectedOption =
     case current of
         ShowNothing ->
             case selectionMode of
-                SingleSelect _ _ _ ->
+                SingleSelectConfig _ _ _ ->
                     ShowDropdownIndicator NotInFocusTransition
 
-                MultiSelect _ _ _ ->
+                MultiSelectConfig _ _ _ ->
                     if hasSelectedOption then
                         ShowClearButton
 
@@ -1064,10 +1064,10 @@ updateRightSlot current selectionMode hasSelectedOption =
 
         ShowDropdownIndicator transitioning ->
             case selectionMode of
-                SingleSelect _ _ _ ->
+                SingleSelectConfig _ _ _ ->
                     ShowDropdownIndicator transitioning
 
-                MultiSelect _ _ _ ->
+                MultiSelectConfig _ _ _ ->
                     if hasSelectedOption then
                         ShowClearButton
 
@@ -1089,10 +1089,10 @@ updateRightSlotLoading isLoading selectionMode hasSelectedOption =
 
     else
         case selectionMode of
-            SingleSelect _ _ _ ->
+            SingleSelectConfig _ _ _ ->
                 ShowDropdownIndicator NotInFocusTransition
 
-            MultiSelect _ _ _ ->
+            MultiSelectConfig _ _ _ ->
                 if hasSelectedOption then
                     ShowClearButton
 
@@ -1731,7 +1731,7 @@ optionToDropdownOption eventHandlers selectionMode option =
 
         OptionSelected _ ->
             case selectionMode of
-                SingleSelect _ _ _ ->
+                SingleSelectConfig _ _ _ ->
                     div
                         [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
                         , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
@@ -1742,12 +1742,12 @@ optionToDropdownOption eventHandlers selectionMode option =
                         ]
                         [ labelHtml, descriptionHtml ]
 
-                MultiSelect _ _ _ ->
+                MultiSelectConfig _ _ _ ->
                     text ""
 
         OptionSelectedHighlighted _ ->
             case selectionMode of
-                SingleSelect _ _ _ ->
+                SingleSelectConfig _ _ _ ->
                     div
                         [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
                         , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
@@ -1759,7 +1759,7 @@ optionToDropdownOption eventHandlers selectionMode option =
                         ]
                         [ labelHtml, descriptionHtml ]
 
-                MultiSelect _ _ _ ->
+                MultiSelectConfig _ _ _ ->
                     text ""
 
         OptionHighlighted ->
@@ -2064,7 +2064,7 @@ init flags =
             case Json.Decode.decodeString Option.optionsDecoder flags.optionsJson of
                 Ok options ->
                     case selectionMode of
-                        SingleSelect _ _ _ ->
+                        SingleSelectConfig _ _ _ ->
                             case List.head initialValues of
                                 Just initialValueStr_ ->
                                     if isOptionValueInListOfOptionsByValue (Option.stringToOptionValue initialValueStr_) options then
@@ -2089,7 +2089,7 @@ init flags =
                                     in
                                     ( optionsWithUniqueValues, Cmd.none )
 
-                        MultiSelect _ _ _ ->
+                        MultiSelectConfig _ _ _ ->
                             let
                                 -- Don't include any empty options, that doesn't make sense.
                                 optionsWithInitialValues =
@@ -2120,10 +2120,10 @@ init flags =
 
             else
                 case selectionMode of
-                    SingleSelect _ _ _ ->
+                    SingleSelectConfig _ _ _ ->
                         ShowDropdownIndicator NotInFocusTransition
 
-                    MultiSelect _ _ _ ->
+                    MultiSelectConfig _ _ _ ->
                         if hasSelectedOption optionsWithInitialValueSelected then
                             ShowClearButton
 

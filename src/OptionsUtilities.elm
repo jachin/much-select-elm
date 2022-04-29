@@ -309,27 +309,27 @@ selectHighlightedOption selectionMode options =
                         case option of
                             Option _ _ value _ _ _ ->
                                 case selectionMode of
-                                    MultiSelect _ _ _ ->
+                                    MultiSelectConfig _ _ _ ->
                                         selectOptionInListByOptionValue value options
                                             |> clearAnyUnselectedCustomOptions
 
-                                    SingleSelect _ _ _ ->
+                                    SingleSelectConfig _ _ _ ->
                                         selectSingleOptionInList value options
 
                             CustomOption _ _ value _ ->
                                 case selectionMode of
-                                    MultiSelect _ _ _ ->
+                                    MultiSelectConfig _ _ _ ->
                                         selectOptionInListByOptionValue value options
 
-                                    SingleSelect _ _ _ ->
+                                    SingleSelectConfig _ _ _ ->
                                         selectSingleOptionInList value options
 
                             EmptyOption _ _ ->
                                 case selectionMode of
-                                    MultiSelect _ _ _ ->
+                                    MultiSelectConfig _ _ _ ->
                                         selectEmptyOption options
 
-                                    SingleSelect _ _ _ ->
+                                    SingleSelectConfig _ _ _ ->
                                         selectEmptyOption options
 
                     Nothing ->
@@ -909,7 +909,7 @@ filterOptionsToShowInDropdown selectionMode =
 filterOptionsToShowInDropdownByOptionDisplay : SelectionConfig -> List Option -> List Option
 filterOptionsToShowInDropdownByOptionDisplay selectionMode =
     case selectionMode of
-        SingleSelect _ _ _ ->
+        SingleSelectConfig _ _ _ ->
             List.filter
                 (\option ->
                     case getOptionDisplay option of
@@ -932,7 +932,7 @@ filterOptionsToShowInDropdownByOptionDisplay selectionMode =
                             True
                 )
 
-        MultiSelect _ _ _ ->
+        MultiSelectConfig _ _ _ ->
             List.filter
                 (\option ->
                     case getOptionDisplay option of
@@ -1070,7 +1070,7 @@ replaceOptions selectionMode oldOptions newOptions =
             selectedOptions oldOptions
     in
     case selectionMode of
-        SingleSelect _ _ _ ->
+        SingleSelectConfig _ _ _ ->
             let
                 maybeSelectedOptionValue =
                     selectedOptions (newOptions ++ oldOptions)
@@ -1098,7 +1098,7 @@ replaceOptions selectionMode oldOptions newOptions =
                         oldSelectedOptions
                         newOptions
 
-        MultiSelect _ _ _ ->
+        MultiSelectConfig _ _ _ ->
             mergeTwoListsOfOptionsPreservingSelectedOptions
                 SelectedItemStaysInPlace
                 oldSelectedOptions
