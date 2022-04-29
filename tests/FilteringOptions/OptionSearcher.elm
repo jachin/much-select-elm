@@ -14,7 +14,7 @@ import Test exposing (Test, describe, test)
 selectionConfig =
     SelectionMode.defaultSelectionConfig
         |> SelectionMode.setSearchStringMinimumLength searchStringMinLengthTwo
-        |> SelectionMode.setAllowCustomOptionsWithBool True Nothing
+        |> SelectionMode.setAllowCustomOptionsWithBool False Nothing
 
 
 minervaryaPentali =
