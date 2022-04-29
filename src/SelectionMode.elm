@@ -9,7 +9,7 @@ module SelectionMode exposing
     , getDropdownStyle
     , getMaxDropdownItems
     , getOutputStyle
-    , getPlaceHolder
+    , getPlaceholder
     , getSearchStringMinimumLength
     , getSelectedItemPlacementMode
     , getSingleItemRemoval
@@ -683,8 +683,8 @@ getSearchStringMinimumLength selectionConfig =
                     NoMinimumToSearchStringLength
 
 
-getPlaceHolder : SelectionConfig -> Placeholder
-getPlaceHolder selectionConfig =
+getPlaceholder : SelectionConfig -> Placeholder
+getPlaceholder selectionConfig =
     case selectionConfig of
         SingleSelectConfig _ placeholder _ ->
             placeholder

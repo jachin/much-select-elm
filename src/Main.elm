@@ -10,16 +10,7 @@ import Debouncer.Messages
         , settleWhenQuietFor
         , toDebouncer
         )
-import Html
-    exposing
-        ( Html
-        , div
-        , input
-        , node
-        , optgroup
-        , span
-        , text
-        )
+import Html exposing (Html, button, div, input, node, optgroup, span, text)
 import Html.Attributes
     exposing
         ( class
@@ -35,15 +26,7 @@ import Html.Attributes
         , value
         )
 import Html.Attributes.Extra exposing (attributeIf)
-import Html.Events
-    exposing
-        ( onBlur
-        , onFocus
-        , onInput
-        , onMouseDown
-        , onMouseEnter
-        , onMouseLeave
-        )
+import Html.Events exposing (onBlur, onClick, onFocus, onInput, onMouseDown, onMouseEnter, onMouseLeave)
 import Html.Lazy
 import Json.Decode
 import Json.Encode
@@ -160,7 +143,7 @@ import SelectionMode
         , defaultSelectionConfig
         , getMaxDropdownItems
         , getOutputStyle
-        , getPlaceHolder
+        , getPlaceholder
         , getSearchStringMinimumLength
         , getSingleItemRemoval
         , isDisabled
@@ -225,6 +208,7 @@ type Msg
       --  If you can think of a better name we're all ears.
     | ToggleSelectedValueHighlight OptionValue
     | DeleteKeydownForMultiSelect
+    | AddMultiSelectValue Int
     | RequestAllOptions
 
 
@@ -835,6 +819,9 @@ update msg model =
                     ]
                 )
 
+        AddMultiSelectValue indexWhereToAdd ->
+            ( model, Cmd.none )
+
         RequestAllOptions ->
             ( model, allOptions (Json.Encode.list Option.encode model.options) )
 
@@ -1166,36 +1153,12 @@ multiSelectView valueCasing selectionMode options searchString rightSlot =
                 valueCasing
 
         Datalist ->
-            let
-                hasOptionSelected =
-                    hasSelectedOption options
-
-                showPlaceholder =
-                    not hasOptionSelected && not (isFocused selectionMode)
-            in
-            div [ id "wrapper" ]
-                [ div
-                    [ id "value-casing"
-                    , attributeIf (not (isFocused selectionMode)) (onMouseDown BringInputInFocus)
-                    , attributeIf (not (isFocused selectionMode)) (onFocus BringInputInFocus)
-                    , tabIndexAttribute (isDisabled selectionMode)
-                    , classList
-                        [ ( "show-placeholder", showPlaceholder )
-                        , ( "has-option-selected", hasOptionSelected )
-                        , ( "no-option-selected", not hasOptionSelected )
-                        , ( "single", True )
-                        , ( "disabled", isDisabled selectionMode )
-                        , ( "focused", isFocused selectionMode )
-                        , ( "not-focused", not (isFocused selectionMode) )
-                        ]
-                    ]
-                    [ singleSelectDatasetInputField
-                        searchString
-                        selectionMode
-                        hasOptionSelected
-                    ]
-                , datalist options
-                ]
+            multiSelectViewDataset
+                selectionMode
+                options
+                searchString
+                rightSlot
+                valueCasing
 
 
 singleSelectViewCustomHtml : ValueCasing -> SelectionConfig -> List Option -> String -> RightSlot -> Html Msg
@@ -1241,7 +1204,7 @@ singleSelectViewCustomHtml valueCasing selectionMode options searchString rightS
                 searchString
                 (isDisabled selectionMode)
                 (isFocused selectionMode)
-                (getPlaceHolder selectionMode)
+                (getPlaceholder selectionMode)
                 hasOptionSelected
             , case rightSlot of
                 ShowNothing ->
@@ -1275,7 +1238,7 @@ multiSelectViewCustomHtml selectionMode options searchString rightSlot valueCasi
 
         placeholderAttribute =
             if showPlaceholder then
-                placeholder (getPlaceHolder selectionMode)
+                placeholder (getPlaceholder selectionMode)
 
             else
                 Html.Attributes.classList []
@@ -1334,6 +1297,66 @@ multiSelectViewCustomHtml selectionMode options searchString rightSlot valueCasi
             options
             searchString
             valueCasing
+        ]
+
+
+multiSelectViewDataset : SelectionConfig -> List Option -> String -> RightSlot -> ValueCasing -> Html Msg
+multiSelectViewDataset selectionConfig options searchString rightSlot valueCasing =
+    let
+        hasOptionSelected =
+            hasSelectedOption options
+
+        showPlaceholder =
+            not hasOptionSelected && not (isFocused selectionConfig)
+
+        selectedOptions =
+            options |> OptionsUtilities.selectedOptions
+
+        showAddButtons =
+            String.length searchString > 0
+
+        showRemoveButtons =
+            List.length selectedOptions > 1
+
+        makeInputs selectedOptions_ =
+            case List.length selectedOptions_ of
+                0 ->
+                    [ multiSelectDatasetInputField
+                        searchString
+                        selectionConfig
+                        showAddButtons
+                        showRemoveButtons
+                    ]
+
+                _ ->
+                    List.map
+                        (\selectedOption ->
+                            multiSelectDatasetInputField
+                                (Option.getOptionValueAsString selectedOption)
+                                selectionConfig
+                                showAddButtons
+                                showRemoveButtons
+                        )
+                        selectedOptions_
+    in
+    div [ id "wrapper" ]
+        [ div
+            [ id "value-casing"
+            , attributeIf (not (isFocused selectionConfig)) (onMouseDown BringInputInFocus)
+            , attributeIf (not (isFocused selectionConfig)) (onFocus BringInputInFocus)
+            , tabIndexAttribute (isDisabled selectionConfig)
+            , classList
+                [ ( "show-placeholder", showPlaceholder )
+                , ( "has-option-selected", hasOptionSelected )
+                , ( "no-option-selected", not hasOptionSelected )
+                , ( "single", True )
+                , ( "disabled", isDisabled selectionConfig )
+                , ( "focused", isFocused selectionConfig )
+                , ( "not-focused", not (isFocused selectionConfig) )
+                ]
+            ]
+            (makeInputs selectedOptions)
+        , datalist options
         ]
 
 
@@ -1485,6 +1508,76 @@ singleSelectViewDatalistHtml selectionMode options searchString =
         ]
 
 
+multiSelectDatasetInputField : String -> SelectionConfig -> Bool -> Bool -> Html Msg
+multiSelectDatasetInputField valueString selectionMode showAddButtons showRemoveButtons =
+    let
+        idAttr =
+            id "input-filter"
+
+        typeAttr =
+            type_ "text"
+
+        onBlurAttr =
+            onBlur InputBlur
+
+        onFocusAttr =
+            onFocus InputFocus
+
+        showPlaceholder =
+            String.length valueString < 1
+
+        placeholderAttribute =
+            if showPlaceholder then
+                placeholder (getPlaceholder selectionMode)
+
+            else
+                style "" ""
+
+        addRemoveButtons =
+            if showRemoveButtons && showAddButtons then
+                [ button [ onClick (AddMultiSelectValue 0) ] [ text "add" ]
+                , button [ onClick (AddMultiSelectValue 0) ] [ text "remove" ]
+                ]
+
+            else if showAddButtons then
+                [ button [ onClick (AddMultiSelectValue 0) ] [ text "add" ]
+                ]
+
+            else if showRemoveButtons then
+                [ button [ onClick (AddMultiSelectValue 0) ] [ text "remove" ]
+                ]
+
+            else
+                []
+
+        inputHtml =
+            if isDisabled selectionMode then
+                input
+                    [ disabled True
+                    , idAttr
+                    , placeholderAttribute
+                    ]
+                    []
+
+            else
+                input
+                    [ typeAttr
+                    , idAttr
+                    , onBlurAttr
+                    , onFocusAttr
+                    , onInput TextInputOnInput
+                    , value valueString
+                    , placeholderAttribute
+                    , Html.Attributes.list "datalist-options"
+                    ]
+                    []
+    in
+    div [ class "input-wrapper " ]
+        (inputHtml
+            :: addRemoveButtons
+        )
+
+
 singleSelectDatasetInputField : String -> SelectionConfig -> Bool -> Html Msg
 singleSelectDatasetInputField searchString selectionMode hasSelectedOption =
     let
@@ -1505,7 +1598,7 @@ singleSelectDatasetInputField searchString selectionMode hasSelectedOption =
 
         placeholderAttribute =
             if showPlaceholder then
-                placeholder (getPlaceHolder selectionMode)
+                placeholder (getPlaceholder selectionMode)
 
             else
                 style "" ""
