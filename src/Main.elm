@@ -39,7 +39,6 @@ import Option
         ( Option(..)
         , OptionDisplay(..)
         , OptionGroup
-        , OptionValue
         )
 import OptionLabel exposing (OptionLabel(..), optionLabelToString)
 import OptionPresentor exposing (tokensToHtml)
@@ -51,6 +50,7 @@ import OptionSorting
         , sortOptionsBySearchFilterTotalScore
         , stringToOptionSort
         )
+import OptionValue exposing (OptionValue(..))
 import OptionsUtilities
     exposing
         ( addAdditionalOptionsToOptionList
@@ -76,6 +76,7 @@ import OptionsUtilities
         , moveHighlightedOptionUp
         , optionsValues
         , removeHighlightOptionInList
+        , removeOptionFromOptionListBySelectedIndex
         , removeOptionsFromOptionList
         , removeUnselectedCustomOptions
         , replaceOptions
@@ -83,7 +84,6 @@ import OptionsUtilities
         , selectOptionInListByOptionValue
         , selectOptionsInOptionsListByString
         , selectSingleOptionInList
-        , selectSingleOptionInListByStringOrSelectCustomValue
         , selectedOptions
         , selectedOptionsToTuple
         , toggleSelectedHighlightByOptionValue
@@ -226,6 +226,7 @@ type alias Model =
     , quietSearchForDynamicInterval : Debouncer Msg
     , searchString : SearchString
     , valueString : ValueString
+    , focusedIndex : Int
     , rightSlot : RightSlot
     , valueCasing : ValueCasing
     , deleteKeyPressed : Bool
@@ -324,7 +325,7 @@ update msg model =
                 Datalist ->
                     let
                         options =
-                            updateDatalistOptionsWithValue model.valueString model.options
+                            updateDatalistOptionsWithValue model.valueString model.focusedIndex model.options
 
                         maybeSelectedOption =
                             findOptionByOptionUsingValueString model.valueString options
@@ -443,7 +444,16 @@ update msg model =
             )
 
         UpdateValueString valueString ->
-            ( model, Cmd.none )
+            ( { model
+                | options =
+                    updateDatalistOptionsWithValue
+                        (ValueString.fromString valueString)
+                        model.focusedIndex
+                        model.options
+                , valueString = ValueString.fromString valueString
+              }
+            , Cmd.none
+            )
 
         UpdateOptionsWithSearchString ->
             ( updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges model, Cmd.none )
@@ -488,7 +498,7 @@ update msg model =
                     ( model, errorMessage (Json.Decode.errorToString error) )
 
         OptionsReplaced newOptionsJson ->
-            case Json.Decode.decodeValue Option.optionsDecoder newOptionsJson of
+            case Json.Decode.decodeValue (Option.optionsDecoder (SelectionMode.getOutputStyle model.selectionMode)) newOptionsJson of
                 Ok newOptions ->
                     let
                         newOptionWithOldSelectedOption =
@@ -508,7 +518,7 @@ update msg model =
                     ( model, errorMessage (Json.Decode.errorToString error) )
 
         AddOptions optionsJson ->
-            case Json.Decode.decodeValue Option.optionsDecoder optionsJson of
+            case Json.Decode.decodeValue (Option.optionsDecoder (SelectionMode.getOutputStyle model.selectionMode)) optionsJson of
                 Ok newOptions ->
                     let
                         updatedOptions =
@@ -526,7 +536,7 @@ update msg model =
                     ( model, errorMessage (Json.Decode.errorToString error) )
 
         RemoveOptions optionsJson ->
-            case Json.Decode.decodeValue Option.optionsDecoder optionsJson of
+            case Json.Decode.decodeValue (Option.optionsDecoder (SelectionMode.getOutputStyle model.selectionMode)) optionsJson of
                 Ok optionsToRemove ->
                     let
                         updatedOptions =
@@ -544,7 +554,7 @@ update msg model =
                     ( model, errorMessage (Json.Decode.errorToString error) )
 
         SelectOption optionJson ->
-            case Json.Decode.decodeValue Option.decoder optionJson of
+            case Json.Decode.decodeValue (Option.decoder (SelectionMode.getOutputStyle model.selectionMode)) optionJson of
                 Ok option ->
                     let
                         optionValue =
@@ -572,7 +582,7 @@ update msg model =
             deselectOption model optionToDeselect
 
         DeselectOption optionJson ->
-            case Json.Decode.decodeValue Option.decoder optionJson of
+            case Json.Decode.decodeValue (Option.decoder (SelectionMode.getOutputStyle model.selectionMode)) optionJson of
                 Ok option ->
                     deselectOption model option
 
@@ -829,10 +839,15 @@ update msg model =
                 )
 
         AddMultiSelectValue indexWhereToAdd ->
-            ( model, Cmd.none )
+            ( { model
+                | focusedIndex = indexWhereToAdd + 1
+                , options = updateDatalistOptionsWithValue ValueString.reset (indexWhereToAdd + 1) model.options
+              }
+            , Cmd.none
+            )
 
-        RemoveMultiSelectValue indexWhereToAdd ->
-            ( model, Cmd.none )
+        RemoveMultiSelectValue indexWhereToDelete ->
+            ( { model | options = removeOptionFromOptionListBySelectedIndex indexWhereToDelete model.options }, Cmd.none )
 
         RequestAllOptions ->
             ( model, allOptions (Json.Encode.list Option.encode model.options) )
@@ -1340,11 +1355,12 @@ multiSelectViewDataset selectionConfig options valueString rightSlot valueCasing
         showRemoveButtons =
             List.length selectedOptions > 1
 
+        makeInputs : List Option -> List (Html Msg)
         makeInputs selectedOptions_ =
             case List.length selectedOptions_ of
                 0 ->
                     [ multiSelectDatasetInputField
-                        valueString
+                        EmptyOptionValue
                         selectionConfig
                         showAddButtons
                         showRemoveButtons
@@ -1352,14 +1368,14 @@ multiSelectViewDataset selectionConfig options valueString rightSlot valueCasing
                     ]
 
                 _ ->
-                    List.indexedMap
-                        (\index selectedOption ->
+                    List.map
+                        (\selectedOption ->
                             multiSelectDatasetInputField
-                                (ValueString.fromOptionValue (Option.getOptionValue selectedOption))
+                                (Option.getOptionValue selectedOption)
                                 selectionConfig
                                 showAddButtons
                                 showRemoveButtons
-                                index
+                                (Option.getOptionSelectedIndex selectedOption)
                         )
                         selectedOptions_
     in
@@ -1379,7 +1395,7 @@ multiSelectViewDataset selectionConfig options valueString rightSlot valueCasing
                 , ( "not-focused", not (isFocused selectionConfig) )
                 ]
             ]
-            (makeInputs selectedOptions)
+            (makeInputs selectedOptions |> Debug.log "make inputs")
         , datalist options
         ]
 
@@ -1532,8 +1548,8 @@ singleSelectViewDatalistHtml selectionMode options searchString =
         ]
 
 
-multiSelectDatasetInputField : ValueString -> SelectionConfig -> Bool -> Bool -> Int -> Html Msg
-multiSelectDatasetInputField valueString selectionMode showAddButtons showRemoveButtons index =
+multiSelectDatasetInputField : OptionValue -> SelectionConfig -> Bool -> Bool -> Int -> Html Msg
+multiSelectDatasetInputField optionValue selectionMode showAddButtons showRemoveButtons index =
     let
         idAttr =
             id "input-filter"
@@ -1548,7 +1564,7 @@ multiSelectDatasetInputField valueString selectionMode showAddButtons showRemove
             onFocus InputFocus
 
         showPlaceholder =
-            ValueString.length valueString < 1
+            OptionValue.length optionValue < 1
 
         placeholderAttribute =
             if showPlaceholder then
@@ -1590,7 +1606,7 @@ multiSelectDatasetInputField valueString selectionMode showAddButtons showRemove
                     , onBlurAttr
                     , onFocusAttr
                     , onInput UpdateValueString
-                    , value (ValueString.toString valueString)
+                    , value (OptionValue.optionValueToString optionValue)
                     , placeholderAttribute
                     , Html.Attributes.list "datalist-options"
                     ]
@@ -2180,13 +2196,13 @@ init flags =
                     ( [], errorMessage (Json.Decode.errorToString error) )
 
         ( optionsWithInitialValueSelected, errorCmd ) =
-            case Json.Decode.decodeString Option.optionsDecoder flags.optionsJson of
+            case Json.Decode.decodeString (Option.optionsDecoder (SelectionMode.getOutputStyle selectionMode)) flags.optionsJson of
                 Ok options ->
                     case selectionMode of
                         SingleSelectConfig _ _ _ ->
                             case List.head initialValues of
                                 Just initialValueStr_ ->
-                                    if isOptionValueInListOfOptionsByValue (Option.stringToOptionValue initialValueStr_) options then
+                                    if isOptionValueInListOfOptionsByValue (OptionValue.stringToOptionValue initialValueStr_) options then
                                         let
                                             optionsWithUniqueValues =
                                                 options |> List.Extra.uniqueBy Option.getOptionValueAsString
@@ -2234,6 +2250,7 @@ init flags =
             makeDynamicDebouncer (List.length optionsWithInitialValueSelectedSorted)
       , searchString = SearchString.reset
       , valueString = ValueString.reset
+      , focusedIndex = 0
       , rightSlot =
             if flags.loading then
                 ShowLoadingIndicator

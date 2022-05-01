@@ -7,7 +7,6 @@ import Option
         ( Option(..)
         , OptionDisplay(..)
         , OptionGroup
-        , OptionValue(..)
         , deselectOption
         , getMaybeOptionSearchFilter
         , getOptionDisplay
@@ -23,20 +22,20 @@ import Option
         , isOptionSelectedHighlighted
         , isOptionValueInListOfStrings
         , merge2Options
+        , newSelectedDatalisOption
         , newSelectedOption
         , optionIsHighlightable
         , optionToValueLabelTuple
-        , optionValueToString
         , optionValuesEqual
         , removeHighlightOption
         , selectOption
         , setLabel
         , setLabelWithString
         , setOptionDisplay
-        , stringToOptionValue
         )
 import OptionLabel exposing (OptionLabel)
 import OptionSearchFilter exposing (OptionSearchResult)
+import OptionValue exposing (OptionValue(..), optionValueToString, stringToOptionValue)
 import OutputStyle exposing (SelectedItemPlacementMode(..))
 import SearchString exposing (SearchString)
 import SelectionMode exposing (SelectionConfig(..), getSelectedItemPlacementMode)
@@ -423,7 +422,7 @@ selectSingleOptionInListByStringOrSelectCustomValue searchString options =
         options
 
     else
-        case selectSingleOptionInListResult (Option.stringToOptionValue (SearchString.toString searchString)) options of
+        case selectSingleOptionInListResult (OptionValue.stringToOptionValue (SearchString.toString searchString)) options of
             Ok newOptions ->
                 newOptions
 
@@ -538,6 +537,11 @@ findHighestAutoSortRank options =
 removeOptionsFromOptionList : List Option -> List Option -> List Option
 removeOptionsFromOptionList options optionsToRemove =
     List.filter (\option -> not (optionListContainsOptionWithValue option optionsToRemove)) options
+
+
+removeOptionFromOptionListBySelectedIndex : Int -> List Option -> List Option
+removeOptionFromOptionListBySelectedIndex selectedIndex options =
+    List.filter (\option -> getOptionSelectedIndex option /= selectedIndex) options
 
 
 unhighlightSelectedOptions : List Option -> List Option
@@ -1084,9 +1088,26 @@ findOptionByOptionUsingValueString valueString options =
     findOptionByOptionValue (ValueString.toOptionValue valueString) options
 
 
-updateDatalistOptionsWithValue : ValueString -> List Option -> List Option
-updateDatalistOptionsWithValue valueString options =
-    options
+updateDatalistOptionsWithValue : ValueString -> Int -> List Option -> List Option
+updateDatalistOptionsWithValue valueString selectedValueIndex options =
+    if List.any (Option.hasSelctedItemIndex selectedValueIndex) options then
+        updateDatalistOptionWithValueBySelectedValueIndex valueString selectedValueIndex options
+
+    else
+        newSelectedDatalisOption valueString selectedValueIndex :: options
+
+
+updateDatalistOptionWithValueBySelectedValueIndex : ValueString -> Int -> List Option -> List Option
+updateDatalistOptionWithValueBySelectedValueIndex valueString selectedIndex options =
+    List.map
+        (\option ->
+            if Option.getOptionSelectedIndex option == selectedIndex then
+                Option.setOptionValue (ValueString.toOptionValue valueString) option
+
+            else
+                option
+        )
+        options
 
 
 deselectAllOptionsInOptionsList : List Option -> List Option
