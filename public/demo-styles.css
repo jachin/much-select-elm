@@ -268,9 +268,10 @@ much-select::part(value-casing) {
     display: flex;
     flex-flow: column;
     min-height: 34px;
-    cursor: pointer;
+}
+
+much-select::part(value-casing output-style-custom-html) {
     background-color: var(--much-select-background-color);
-    border: 1px solid darkgray;
     box-shadow: 1px 1px 1px 0 lightgray inset;
     padding: 4px 3px 2px 3px;
 }
@@ -278,6 +279,7 @@ much-select::part(value-casing) {
 much-select::part(value-casing output-style-custom-html) {
     flex-flow: row;
     cursor: pointer;
+    border: 1px solid darkgray;
 }
 
 much-select::part(value-casing output-style-custom-html multi) {
@@ -289,24 +291,24 @@ much-select::part(value-casing output-style-datalist) {
     cursor: pointer;
 }
 
-much-select::part(value-casing):hover {
+much-select::part(value-casing output-style-custom-html):hover {
     outline: none;
     border-color: var(--example-border-color);
 }
 
 
-much-select::part(value-casing):focus {
+much-select::part(value-casing output-style-custom-html):focus {
     outline: none;
     border-color: var(--example-border-color);
 }
 
 
-much-select::part(value-casing disabled) {
+much-select::part(value-casing output-style-custom-html disabled) {
     border: 1px solid lightgray;
     cursor: pointer;
 }
 
-much-select::part(value-casing single) {
+much-select::part(value-casing output-style-custom-html single) {
     background-image: linear-gradient(to bottom, #fefefe, #f2f2f2);
     background-repeat: repeat-x;
 }
