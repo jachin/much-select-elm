@@ -33,7 +33,6 @@ import Json.Encode
 import Keyboard exposing (Key(..))
 import Keyboard.Events as Keyboard
 import List.Extra
-import Maybe.Extra
 import Option
     exposing
         ( Option(..)
@@ -65,7 +64,6 @@ import OptionsUtilities
         , filterOptionsToShowInDropdown
         , findHighlightedOption
         , findHighlightedOrSelectedOptionIndex
-        , findOptionByOptionUsingValueString
         , findOptionByOptionValue
         , groupOptionsInOrder
         , hasSelectedHighlightedOptions
@@ -225,7 +223,6 @@ type alias Model =
     , optionSort : OptionSort
     , quietSearchForDynamicInterval : Debouncer Msg
     , searchString : SearchString
-    , valueString : ValueString
     , focusedIndex : Int
     , rightSlot : RightSlot
     , valueCasing : ValueCasing
@@ -323,25 +320,11 @@ update msg model =
                     )
 
                 Datalist ->
-                    let
-                        options =
-                            updateDatalistOptionsWithValue model.valueString model.focusedIndex model.options
-
-                        maybeSelectedOption =
-                            findOptionByOptionUsingValueString model.valueString options
-
-                        maybeSelectedOptionValue =
-                            Maybe.map Option.getOptionValue maybeSelectedOption
-                    in
                     ( { model
                         | selectionMode = setIsFocused False model.selectionMode
-                        , options = options
                       }
                     , Cmd.batch
                         [ inputBlurred ()
-                        , makeCommandMessagesWhenValuesChanges
-                            (Maybe.Extra.toList maybeSelectedOption)
-                            maybeSelectedOptionValue
                         ]
                     )
 
@@ -444,15 +427,26 @@ update msg model =
             )
 
         UpdateOptionValueValue selectedValueIndex valueString ->
+            let
+                updatedOptions =
+                    updateDatalistOptionsWithValue
+                        (ValueString.fromString valueString)
+                        selectedValueIndex
+                        model.options
+
+                maybeSelectedOptionValue =
+                    Just (OptionValue.stringToOptionValue valueString)
+            in
             ( { model
                 | options =
                     updateDatalistOptionsWithValue
                         (ValueString.fromString valueString)
                         selectedValueIndex
                         model.options
-                , valueString = ValueString.fromString valueString
               }
-            , Cmd.none
+            , makeCommandMessagesWhenValuesChanges
+                (updatedOptions |> selectedOptions)
+                maybeSelectedOptionValue
             )
 
         UpdateOptionsWithSearchString ->
@@ -1159,7 +1153,6 @@ view model =
             model.selectionMode
             model.options
             model.searchString
-            model.valueString
             model.rightSlot
 
 
@@ -1178,8 +1171,8 @@ singleSelectView valueCasing selectionMode options searchString rightSlot =
             singleSelectViewDatalistHtml selectionMode options
 
 
-multiSelectView : ValueCasing -> SelectionConfig -> List Option -> SearchString -> ValueString -> RightSlot -> Html Msg
-multiSelectView valueCasing selectionMode options searchString valueString rightSlot =
+multiSelectView : ValueCasing -> SelectionConfig -> List Option -> SearchString -> RightSlot -> Html Msg
+multiSelectView valueCasing selectionMode options searchString rightSlot =
     case getOutputStyle selectionMode of
         CustomHtml ->
             multiSelectViewCustomHtml
@@ -1193,9 +1186,7 @@ multiSelectView valueCasing selectionMode options searchString valueString right
             multiSelectViewDataset
                 selectionMode
                 options
-                valueString
                 rightSlot
-                valueCasing
 
 
 singleSelectViewCustomHtml : ValueCasing -> SelectionConfig -> List Option -> SearchString -> RightSlot -> Html Msg
@@ -1335,8 +1326,8 @@ multiSelectViewCustomHtml selectionConfig options searchString rightSlot valueCa
         ]
 
 
-multiSelectViewDataset : SelectionConfig -> List Option -> ValueString -> RightSlot -> ValueCasing -> Html Msg
-multiSelectViewDataset selectionConfig options valueString rightSlot valueCasing =
+multiSelectViewDataset : SelectionConfig -> List Option -> RightSlot -> Html Msg
+multiSelectViewDataset selectionConfig options rightSlot =
     let
         hasOptionSelected =
             hasSelectedOption options
@@ -1345,7 +1336,7 @@ multiSelectViewDataset selectionConfig options valueString rightSlot valueCasing
             options |> OptionsUtilities.selectedOptions
 
         showAddButtons =
-            ValueString.length valueString > 0
+            List.any (\option -> option |> Option.getOptionValue |> OptionValue.isEmpty) selectedOptions
 
         showRemoveButtons =
             List.length selectedOptions > 1
@@ -2270,7 +2261,6 @@ init flags =
       , quietSearchForDynamicInterval =
             makeDynamicDebouncer (List.length optionsWithInitialValueSelectedSorted)
       , searchString = SearchString.reset
-      , valueString = ValueString.reset
       , focusedIndex = 0
       , rightSlot =
             if flags.loading then

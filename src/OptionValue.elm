@@ -1,4 +1,4 @@
-module OptionValue exposing (OptionValue(..), length, optionValueToString, stringToOptionValue)
+module OptionValue exposing (OptionValue(..), isEmpty, length, optionValueToString, stringToOptionValue)
 
 
 type OptionValue
@@ -18,7 +18,12 @@ optionValueToString optionValue =
 
 stringToOptionValue : String -> OptionValue
 stringToOptionValue string =
-    OptionValue string
+    case string of
+        "" ->
+            EmptyOptionValue
+
+        _ ->
+            OptionValue string
 
 
 length : OptionValue -> Int
@@ -29,3 +34,13 @@ length optionValue =
 
         EmptyOptionValue ->
             0
+
+
+isEmpty : OptionValue -> Bool
+isEmpty optionValue =
+    case optionValue of
+        OptionValue _ ->
+            False
+
+        EmptyOptionValue ->
+            True
