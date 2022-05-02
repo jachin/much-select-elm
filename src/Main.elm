@@ -241,6 +241,8 @@ type RightSlot
     | ShowLoadingIndicator
     | ShowDropdownIndicator FocusTransition
     | ShowClearButton
+    | ShowAddButton
+    | ShowAddAndRemoveButtons
 
 
 type ValueCasing
@@ -441,6 +443,7 @@ update msg model =
                         (OptionValue.stringToOptionValue valueString)
                         selectedValueIndex
                         model.options
+                , rightSlot = updateRightSlot model.rightSlot model.selectionConfig True (updatedOptions |> selectedOptions)
               }
             , makeCommandMessagesWhenValuesChanges
                 (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
@@ -843,6 +846,7 @@ update msg model =
             ( { model
                 | focusedIndex = indexWhereToAdd + 1
                 , options = updatedOptions
+                , rightSlot = updateRightSlot model.rightSlot model.selectionConfig True (updatedOptions |> selectedOptions)
               }
             , makeCommandMessagesWhenValuesChanges
                 (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
@@ -854,7 +858,10 @@ update msg model =
                 updatedOptions =
                     OptionsUtilities.removeOptionFromOptionListBySelectedIndex indexWhereToDelete model.options
             in
-            ( { model | options = updatedOptions }
+            ( { model
+                | options = updatedOptions
+                , rightSlot = updateRightSlot model.rightSlot model.selectionConfig True (updatedOptions |> selectedOptions)
+              }
             , makeCommandMessagesWhenValuesChanges
                 (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
                 Nothing
@@ -912,7 +919,7 @@ clearAllSelectedOption model =
     in
     ( { model
         | options = deselectAllOptionsInOptionsList newOptions
-        , rightSlot = updateRightSlot model.rightSlot model.selectionConfig False
+        , rightSlot = updateRightSlot model.rightSlot model.selectionConfig False []
         , searchString = SearchString.reset
       }
     , Cmd.batch
@@ -966,6 +973,7 @@ updateModelWithChangesThatEffectTheOptionsWithSearchString rightSlot selectionMo
                 rightSlot
                 selectionMode
                 (hasSelectedOption options)
+                (options |> selectedOptions)
     }
 
 
@@ -992,6 +1000,7 @@ updatePartOfTheModelWithChangesThatEffectTheOptionsWhenTheMouseMoves rightSlot s
                 rightSlot
                 selectionMode
                 (hasSelectedOption options)
+                (options |> selectedOptions)
     }
 
 
@@ -1068,42 +1077,69 @@ figureOutWhichOptionsToShowInTheDropdown selectionMode options =
             optionsThatCouldBeShown
 
 
-updateRightSlot : RightSlot -> SelectionConfig -> Bool -> RightSlot
-updateRightSlot current selectionMode hasSelectedOption =
-    case current of
-        ShowNothing ->
-            case selectionMode of
-                SingleSelectConfig _ _ _ ->
-                    ShowDropdownIndicator NotInFocusTransition
+updateRightSlot : RightSlot -> SelectionConfig -> Bool -> List Option -> RightSlot
+updateRightSlot current selectionMode hasSelectedOption selectedOptions =
+    case SelectionMode.getOutputStyle selectionMode of
+        SelectionMode.CustomHtml ->
+            case current of
+                ShowNothing ->
+                    case selectionMode of
+                        SingleSelectConfig _ _ _ ->
+                            ShowDropdownIndicator NotInFocusTransition
 
-                MultiSelectConfig _ _ _ ->
+                        MultiSelectConfig _ _ _ ->
+                            if hasSelectedOption then
+                                ShowClearButton
+
+                            else
+                                ShowDropdownIndicator NotInFocusTransition
+
+                ShowLoadingIndicator ->
+                    ShowLoadingIndicator
+
+                ShowDropdownIndicator transitioning ->
+                    case selectionMode of
+                        SingleSelectConfig _ _ _ ->
+                            ShowDropdownIndicator transitioning
+
+                        MultiSelectConfig _ _ _ ->
+                            if hasSelectedOption then
+                                ShowClearButton
+
+                            else
+                                ShowDropdownIndicator transitioning
+
+                ShowClearButton ->
                     if hasSelectedOption then
                         ShowClearButton
 
                     else
                         ShowDropdownIndicator NotInFocusTransition
 
-        ShowLoadingIndicator ->
-            ShowLoadingIndicator
+                _ ->
+                    current
 
-        ShowDropdownIndicator transitioning ->
-            case selectionMode of
-                SingleSelectConfig _ _ _ ->
-                    ShowDropdownIndicator transitioning
+        SelectionMode.Datalist ->
+            updateRightSlotForDatalist selectedOptions
 
-                MultiSelectConfig _ _ _ ->
-                    if hasSelectedOption then
-                        ShowClearButton
 
-                    else
-                        ShowDropdownIndicator transitioning
+updateRightSlotForDatalist : List Option -> RightSlot
+updateRightSlotForDatalist selectedOptions =
+    let
+        showAddButtons =
+            List.any (\option -> option |> Option.getOptionValue |> OptionValue.isEmpty |> not) selectedOptions
 
-        ShowClearButton ->
-            if hasSelectedOption then
-                ShowClearButton
+        showRemoveButtons =
+            List.length selectedOptions > 1
+    in
+    if showAddButtons && not showRemoveButtons then
+        ShowAddButton
 
-            else
-                ShowDropdownIndicator NotInFocusTransition
+    else if showAddButtons && showRemoveButtons then
+        ShowAddAndRemoveButtons
+
+    else
+        ShowNothing
 
 
 updateRightSlotLoading : Bool -> SelectionConfig -> Bool -> RightSlot
@@ -1152,6 +1188,12 @@ isRightSlotTransitioning rightSlot =
                     False
 
         ShowClearButton ->
+            False
+
+        ShowAddButton ->
+            False
+
+        ShowAddAndRemoveButtons ->
             False
 
 
@@ -1256,10 +1298,16 @@ singleSelectViewCustomHtml valueCasing selectionConfig options searchString righ
                     node "slot" [ name "loading-indicator" ] [ defaultLoadingIndicator ]
 
                 ShowDropdownIndicator transitioning ->
-                    dropdownIndicator (isFocused selectionConfig) (isDisabled selectionConfig) transitioning
+                    dropdownIndicator (SelectionMode.getInteractionState selectionConfig) transitioning
 
                 ShowClearButton ->
                     node "slot" [ name "clear-button" ] []
+
+                ShowAddButton ->
+                    text ""
+
+                ShowAddAndRemoveButtons ->
+                    text ""
             ]
         , dropdown
             selectionConfig
@@ -1331,8 +1379,8 @@ multiSelectViewCustomHtml selectionConfig options searchString rightSlot valueCa
                 ++ [ inputFilter
                    , rightSlotHtml
                         rightSlot
-                        (isFocused selectionConfig)
-                        (isDisabled selectionConfig)
+                        (SelectionMode.getInteractionState selectionConfig)
+                        0
                    ]
             )
         , dropdown
@@ -1352,12 +1400,6 @@ multiSelectViewDataset selectionConfig options rightSlot =
         selectedOptions =
             options |> OptionsUtilities.selectedOptions
 
-        showAddButtons =
-            List.any (\option -> option |> Option.getOptionValue |> OptionValue.isEmpty |> not) selectedOptions
-
-        showRemoveButtons =
-            List.length selectedOptions > 1
-
         makeInputs : List Option -> List (Html Msg)
         makeInputs selectedOptions_ =
             case List.length selectedOptions_ of
@@ -1365,8 +1407,7 @@ multiSelectViewDataset selectionConfig options rightSlot =
                     [ multiSelectDatasetInputField
                         Nothing
                         selectionConfig
-                        showAddButtons
-                        showRemoveButtons
+                        rightSlot
                         0
                     ]
 
@@ -1376,8 +1417,7 @@ multiSelectViewDataset selectionConfig options rightSlot =
                             multiSelectDatasetInputField
                                 (Just selectedOption)
                                 selectionConfig
-                                showAddButtons
-                                showRemoveButtons
+                                rightSlot
                                 (Option.getOptionSelectedIndex selectedOption)
                         )
                         selectedOptions_
@@ -1576,8 +1616,8 @@ singleSelectViewDatalistHtml selectionConfig options =
         ]
 
 
-multiSelectDatasetInputField : Maybe Option -> SelectionConfig -> Bool -> Bool -> Int -> Html Msg
-multiSelectDatasetInputField maybeOption selectionMode showAddButtons showRemoveButtons index =
+multiSelectDatasetInputField : Maybe Option -> SelectionConfig -> RightSlot -> Int -> Html Msg
+multiSelectDatasetInputField maybeOption selectionConfig rightSlot index =
     let
         idAttr =
             id "input-filter"
@@ -1586,24 +1626,7 @@ multiSelectDatasetInputField maybeOption selectionMode showAddButtons showRemove
             type_ "text"
 
         placeholderAttribute =
-            placeholder (getPlaceholder selectionMode)
-
-        addRemoveButtons =
-            if showRemoveButtons && showAddButtons then
-                [ button [ onClick (AddMultiSelectValue index) ] [ text "add" ]
-                , button [ onClick (RemoveMultiSelectValue index) ] [ text "remove" ]
-                ]
-
-            else if showAddButtons then
-                [ button [ onClick (AddMultiSelectValue index) ] [ text "add" ]
-                ]
-
-            else if showRemoveButtons then
-                [ button [ onClick (RemoveMultiSelectValue index) ] [ text "remove" ]
-                ]
-
-            else
-                []
+            placeholder (getPlaceholder selectionConfig)
 
         valueString =
             case maybeOption of
@@ -1614,7 +1637,7 @@ multiSelectDatasetInputField maybeOption selectionMode showAddButtons showRemove
                     ""
 
         inputHtml =
-            if isDisabled selectionMode then
+            if isDisabled selectionConfig then
                 input
                     [ disabled True
                     , idAttr
@@ -1633,10 +1656,10 @@ multiSelectDatasetInputField maybeOption selectionMode showAddButtons showRemove
                     ]
                     []
     in
-    div [ class "input-wrapper " ]
-        (inputHtml
-            :: addRemoveButtons
-        )
+    div [ class "input-wrapper" ]
+        [ inputHtml
+        , rightSlotHtml rightSlot (SelectionMode.getInteractionState selectionConfig) index
+        ]
 
 
 singleSelectDatasetInputField : Maybe Option -> SelectionConfig -> Bool -> Html Msg
@@ -1694,32 +1717,44 @@ singleSelectDatasetInputField maybeOption selectionMode hasSelectedOption =
             []
 
 
-dropdownIndicator : Bool -> Bool -> FocusTransition -> Html Msg
-dropdownIndicator focused disabled transitioning =
-    if disabled then
-        text ""
+dropdownIndicator : SelectionMode.InteractionState -> FocusTransition -> Html Msg
+dropdownIndicator interactionState transitioning =
+    case interactionState of
+        SelectionMode.Disabled ->
+            text ""
 
-    else
-        let
-            action =
-                case transitioning of
-                    InFocusTransition ->
-                        NoOp
+        _ ->
+            let
+                action =
+                    case transitioning of
+                        InFocusTransition ->
+                            NoOp
 
-                    NotInFocusTransition ->
-                        if focused then
-                            BringInputOutOfFocus
+                        NotInFocusTransition ->
+                            if interactionState == SelectionMode.Focused then
+                                BringInputOutOfFocus
 
-                        else
-                            BringInputInFocus
-        in
-        div
-            [ id "dropdown-indicator"
-            , classList [ ( "down", focused ), ( "up", not focused ) ]
-            , onMouseDownStopPropagationAndPreventDefault action
-            , onMouseUpStopPropagationAndPreventDefault NoOp
-            ]
-            [ text "▾" ]
+                            else
+                                BringInputInFocus
+
+                classes =
+                    case interactionState of
+                        SelectionMode.Focused ->
+                            [ ( "down", True ) ]
+
+                        SelectionMode.Unfocused ->
+                            [ ( "up", True ) ]
+
+                        SelectionMode.Disabled ->
+                            []
+            in
+            div
+                [ id "dropdown-indicator"
+                , classList classes
+                , onMouseDownStopPropagationAndPreventDefault action
+                , onMouseUpStopPropagationAndPreventDefault NoOp
+                ]
+                [ text "▾" ]
 
 
 type alias DropdownItemEventListeners msg =
@@ -2084,8 +2119,8 @@ optionToDatalistOption option =
     Html.option [ Html.Attributes.value (Option.getOptionValueAsString option) ] []
 
 
-rightSlotHtml : RightSlot -> Bool -> Bool -> Html Msg
-rightSlotHtml rightSlot focused disabled =
+rightSlotHtml : RightSlot -> SelectionMode.InteractionState -> Int -> Html Msg
+rightSlotHtml rightSlot interactionState selectedIndex =
     case rightSlot of
         ShowNothing ->
             text ""
@@ -2096,7 +2131,7 @@ rightSlotHtml rightSlot focused disabled =
                 [ defaultLoadingIndicator ]
 
         ShowDropdownIndicator transitioning ->
-            dropdownIndicator focused disabled transitioning
+            dropdownIndicator interactionState transitioning
 
         ShowClearButton ->
             div
@@ -2108,6 +2143,17 @@ rightSlotHtml rightSlot focused disabled =
                     ]
                     [ text "✕"
                     ]
+                ]
+
+        ShowAddButton ->
+            div [ id "add-remove-buttons" ]
+                [ button [ onClick (AddMultiSelectValue selectedIndex) ] [ text "add" ]
+                ]
+
+        ShowAddAndRemoveButtons ->
+            div [ id "add-remove-buttons" ]
+                [ button [ onClick (AddMultiSelectValue selectedIndex) ] [ text "add" ]
+                , button [ onClick (RemoveMultiSelectValue selectedIndex) ] [ text "remove" ]
                 ]
 
 
@@ -2208,7 +2254,7 @@ makeDynamicDebouncer numberOfOptions =
 init : Flags -> ( Model, Cmd Msg )
 init flags =
     let
-        selectionMode =
+        selectionConfig =
             makeSelectionConfig flags.disabled flags.allowMultiSelect flags.allowCustomOptions flags.outputStyle flags.placeholder flags.customOptionHint flags.enableMultiSelectSingleItemRemoval flags.maxDropdownItems flags.selectedItemStaysInPlace flags.searchStringMinimumLength flags.showDropdownFooter
                 |> Result.withDefault defaultSelectionConfig
 
@@ -2225,9 +2271,9 @@ init flags =
                     ( [], errorMessage (Json.Decode.errorToString error) )
 
         ( optionsWithInitialValueSelected, errorCmd ) =
-            case Json.Decode.decodeString (Option.optionsDecoder (SelectionMode.getOutputStyle selectionMode)) flags.optionsJson of
+            case Json.Decode.decodeString (Option.optionsDecoder (SelectionMode.getOutputStyle selectionConfig)) flags.optionsJson of
                 Ok options ->
-                    case selectionMode of
+                    case selectionConfig of
                         SingleSelectConfig _ _ _ ->
                             case List.head initialValues of
                                 Just initialValueStr_ ->
@@ -2272,7 +2318,7 @@ init flags =
     ( { initialValue = initialValues
       , deleteKeyPressed = False
       , placeholder = flags.placeholder
-      , selectionConfig = selectionMode
+      , selectionConfig = selectionConfig
       , options = optionsWithInitialValueSelectedSorted
       , optionSort = stringToOptionSort flags.optionSort |> Result.withDefault NoSorting
       , quietSearchForDynamicInterval =
@@ -2284,16 +2330,26 @@ init flags =
                 ShowLoadingIndicator
 
             else
-                case selectionMode of
-                    SingleSelectConfig _ _ _ ->
-                        ShowDropdownIndicator NotInFocusTransition
+                case SelectionMode.getOutputStyle selectionConfig of
+                    SelectionMode.CustomHtml ->
+                        case SelectionMode.getSelectionMode selectionConfig of
+                            SelectionMode.SingleSelect ->
+                                ShowDropdownIndicator NotInFocusTransition
 
-                    MultiSelectConfig _ _ _ ->
-                        if hasSelectedOption optionsWithInitialValueSelected then
-                            ShowClearButton
+                            SelectionMode.MultiSelect ->
+                                if hasSelectedOption optionsWithInitialValueSelected then
+                                    ShowClearButton
 
-                        else
-                            ShowDropdownIndicator NotInFocusTransition
+                                else
+                                    ShowDropdownIndicator NotInFocusTransition
+
+                    Datalist ->
+                        case SelectionMode.getSelectionMode selectionConfig of
+                            SelectionMode.SingleSelect ->
+                                ShowNothing
+
+                            SelectionMode.MultiSelect ->
+                                updateRightSlotForDatalist optionsWithInitialValueSelectedSorted
 
       -- TODO Should these be passed as flags?
       , valueCasing = ValueCasing 100 45

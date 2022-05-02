@@ -35,10 +35,19 @@ import Option
         )
 import OptionLabel exposing (OptionLabel)
 import OptionSearchFilter exposing (OptionSearchResult)
-import OptionValue exposing (OptionValue(..), optionValueToString, stringToOptionValue)
+import OptionValue
+    exposing
+        ( OptionValue(..)
+        , optionValueToString
+        , stringToOptionValue
+        )
 import OutputStyle exposing (SelectedItemPlacementMode(..))
 import SearchString exposing (SearchString)
-import SelectionMode exposing (SelectionConfig(..), getSelectedItemPlacementMode)
+import SelectionMode
+    exposing
+        ( SelectionConfig(..)
+        , getSelectedItemPlacementMode
+        )
 import SortRank exposing (SortRank)
 import ValueString exposing (ValueString)
 

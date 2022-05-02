@@ -1,5 +1,6 @@
 module SelectionMode exposing
-    ( OutputStyle(..)
+    ( InteractionState(..)
+    , OutputStyle(..)
     , SelectionConfig(..)
     , SelectionMode(..)
     , canDoSingleItemRemoval
@@ -7,6 +8,7 @@ module SelectionMode exposing
     , getCustomOptionHint
     , getCustomOptions
     , getDropdownStyle
+    , getInteractionState
     , getMaxDropdownItems
     , getOutputStyle
     , getPlaceholder
@@ -504,6 +506,16 @@ setIsDisabled isDisabled_ selectionConfig =
 
     else
         selectionConfig
+
+
+getInteractionState : SelectionConfig -> InteractionState
+getInteractionState selectionConfig =
+    case selectionConfig of
+        SingleSelectConfig _ _ interactionState ->
+            interactionState
+
+        MultiSelectConfig _ _ interactionState ->
+            interactionState
 
 
 setInteractionState : InteractionState -> SelectionConfig -> SelectionConfig
