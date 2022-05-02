@@ -218,7 +218,7 @@ type Msg
 type alias Model =
     { initialValue : List String
     , placeholder : String
-    , selectionMode : SelectionConfig
+    , selectionConfig : SelectionConfig
     , options : List Option
     , optionSort : OptionSort
     , quietSearchForDynamicInterval : Debouncer Msg
@@ -264,17 +264,17 @@ update msg model =
             ( model, Cmd.none )
 
         BringInputInFocus ->
-            case getOutputStyle model.selectionMode of
+            case getOutputStyle model.selectionConfig of
                 CustomHtml ->
                     if isRightSlotTransitioning model.rightSlot then
                         ( model, Cmd.none )
 
-                    else if isFocused model.selectionMode then
+                    else if isFocused model.selectionConfig then
                         ( model, focusInput () )
 
                     else
                         ( { model
-                            | selectionMode = setIsFocused True model.selectionMode
+                            | selectionConfig = setIsFocused True model.selectionConfig
                             , rightSlot = updateRightSlotTransitioning InFocusTransition model.rightSlot
                           }
                         , focusInput ()
@@ -287,9 +287,9 @@ update msg model =
             if isRightSlotTransitioning model.rightSlot then
                 ( model, Cmd.none )
 
-            else if isFocused model.selectionMode then
+            else if isFocused model.selectionConfig then
                 ( { model
-                    | selectionMode = setIsFocused False model.selectionMode
+                    | selectionConfig = setIsFocused False model.selectionConfig
                     , rightSlot = updateRightSlotTransitioning InFocusTransition model.rightSlot
                   }
                 , blurInput ()
@@ -299,7 +299,7 @@ update msg model =
                 ( model, blurInput () )
 
         InputBlur ->
-            case getOutputStyle model.selectionMode of
+            case getOutputStyle model.selectionConfig of
                 CustomHtml ->
                     let
                         optionsWithoutUnselectedCustomOptions =
@@ -309,8 +309,8 @@ update msg model =
                     ( { model
                         | searchString = SearchString.reset
                         , options = optionsWithoutUnselectedCustomOptions
-                        , selectionMode =
-                            model.selectionMode
+                        , selectionConfig =
+                            model.selectionConfig
                                 |> setShowDropdown False
                                 |> setIsFocused False
                         , rightSlot = updateRightSlotTransitioning NotInFocusTransition model.rightSlot
@@ -321,7 +321,7 @@ update msg model =
 
                 Datalist ->
                     ( { model
-                        | selectionMode = setIsFocused False model.selectionMode
+                        | selectionConfig = setIsFocused False model.selectionConfig
                       }
                     , Cmd.batch
                         [ inputBlurred ()
@@ -329,11 +329,11 @@ update msg model =
                     )
 
         InputFocus ->
-            case getOutputStyle model.selectionMode of
+            case getOutputStyle model.selectionConfig of
                 CustomHtml ->
                     ( { model
-                        | selectionMode =
-                            model.selectionMode
+                        | selectionConfig =
+                            model.selectionConfig
                                 |> setShowDropdown True
                                 |> setIsFocused True
                         , rightSlot = updateRightSlotTransitioning NotInFocusTransition model.rightSlot
@@ -343,7 +343,7 @@ update msg model =
 
                 Datalist ->
                     ( { model
-                        | selectionMode = setIsFocused True model.selectionMode
+                        | selectionConfig = setIsFocused True model.selectionConfig
                       }
                     , Cmd.none
                     )
@@ -376,14 +376,14 @@ update msg model =
         DropdownMouseClickOption optionValue ->
             let
                 updatedOptions =
-                    case model.selectionMode of
+                    case model.selectionConfig of
                         MultiSelectConfig _ _ _ ->
                             selectOptionInListByOptionValue optionValue model.options
 
                         SingleSelectConfig _ _ _ ->
                             selectSingleOptionInList optionValue model.options
             in
-            case model.selectionMode of
+            case model.selectionConfig of
                 SingleSelectConfig _ _ _ ->
                     ( { model
                         | options = updatedOptions
@@ -458,7 +458,7 @@ update msg model =
         TextInputOnInput inputString ->
             ( { model
                 | searchString = SearchString.new inputString
-                , options = updateOrAddCustomOption (SearchString.new inputString) model.selectionMode model.options
+                , options = updateOrAddCustomOption (SearchString.new inputString) model.selectionConfig model.options
               }
             , inputKeyUp inputString
             )
@@ -466,7 +466,7 @@ update msg model =
         ValueChanged valuesJson ->
             let
                 valuesResult =
-                    case model.selectionMode of
+                    case model.selectionConfig of
                         SingleSelectConfig _ _ _ ->
                             Json.Decode.decodeValue valueDecoder valuesJson
 
@@ -492,12 +492,12 @@ update msg model =
                     ( model, errorMessage (Json.Decode.errorToString error) )
 
         OptionsReplaced newOptionsJson ->
-            case Json.Decode.decodeValue (Option.optionsDecoder (SelectionMode.getOutputStyle model.selectionMode)) newOptionsJson of
+            case Json.Decode.decodeValue (Option.optionsDecoder (SelectionMode.getOutputStyle model.selectionConfig)) newOptionsJson of
                 Ok newOptions ->
                     let
                         newOptionWithOldSelectedOption =
                             replaceOptions
-                                model.selectionMode
+                                model.selectionConfig
                                 model.options
                                 newOptions
                     in
@@ -512,7 +512,7 @@ update msg model =
                     ( model, errorMessage (Json.Decode.errorToString error) )
 
         AddOptions optionsJson ->
-            case Json.Decode.decodeValue (Option.optionsDecoder (SelectionMode.getOutputStyle model.selectionMode)) optionsJson of
+            case Json.Decode.decodeValue (Option.optionsDecoder (SelectionMode.getOutputStyle model.selectionConfig)) optionsJson of
                 Ok newOptions ->
                     let
                         updatedOptions =
@@ -530,7 +530,7 @@ update msg model =
                     ( model, errorMessage (Json.Decode.errorToString error) )
 
         RemoveOptions optionsJson ->
-            case Json.Decode.decodeValue (Option.optionsDecoder (SelectionMode.getOutputStyle model.selectionMode)) optionsJson of
+            case Json.Decode.decodeValue (Option.optionsDecoder (SelectionMode.getOutputStyle model.selectionConfig)) optionsJson of
                 Ok optionsToRemove ->
                     let
                         updatedOptions =
@@ -548,14 +548,14 @@ update msg model =
                     ( model, errorMessage (Json.Decode.errorToString error) )
 
         SelectOption optionJson ->
-            case Json.Decode.decodeValue (Option.decoder (SelectionMode.getOutputStyle model.selectionMode)) optionJson of
+            case Json.Decode.decodeValue (Option.decoder (SelectionMode.getOutputStyle model.selectionConfig)) optionJson of
                 Ok option ->
                     let
                         optionValue =
                             Option.getOptionValue option
 
                         updatedOptions =
-                            case model.selectionMode of
+                            case model.selectionConfig of
                                 MultiSelectConfig _ _ _ ->
                                     selectOptionInListByOptionValue optionValue model.options
 
@@ -576,7 +576,7 @@ update msg model =
             deselectOption model optionToDeselect
 
         DeselectOption optionJson ->
-            case Json.Decode.decodeValue (Option.decoder (SelectionMode.getOutputStyle model.selectionMode)) optionJson of
+            case Json.Decode.decodeValue (Option.decoder (SelectionMode.getOutputStyle model.selectionConfig)) optionJson of
                 Ok option ->
                     deselectOption model option
 
@@ -599,7 +599,7 @@ update msg model =
                 | rightSlot =
                     updateRightSlotLoading
                         bool
-                        model.selectionMode
+                        model.selectionConfig
                         (hasSelectedOption model.options)
               }
             , Cmd.none
@@ -611,7 +611,7 @@ update msg model =
                     FixedMaxDropdownItems (PositiveInt.new int)
             in
             ( { model
-                | selectionMode = setMaxDropdownItems maxDropdownItems model.selectionMode
+                | selectionConfig = setMaxDropdownItems maxDropdownItems model.selectionConfig
               }
                 |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
             , Cmd.none
@@ -627,7 +627,7 @@ update msg model =
                         NoFooter
             in
             ( { model
-                | selectionMode = setDropdownStyle newDropdownStyle model.selectionMode
+                | selectionConfig = setDropdownStyle newDropdownStyle model.selectionConfig
               }
             , Cmd.none
             )
@@ -643,24 +643,24 @@ update msg model =
                             Just customOptionHint
             in
             ( { model
-                | selectionMode =
+                | selectionConfig =
                     SelectionMode.setAllowCustomOptionsWithBool
                         canAddCustomOptions
                         maybeCustomOptionHint
-                        model.selectionMode
+                        model.selectionConfig
               }
             , Cmd.none
             )
 
         DisabledAttributeChanged bool ->
-            ( { model | selectionMode = setIsDisabled bool model.selectionMode }, Cmd.none )
+            ( { model | selectionConfig = setIsDisabled bool model.selectionConfig }, Cmd.none )
 
         SelectedItemStaysInPlaceChanged selectedItemStaysInPlace ->
             ( { model
-                | selectionMode =
+                | selectionConfig =
                     setSelectedItemStaysInPlaceWithBool
                         selectedItemStaysInPlace
-                        model.selectionMode
+                        model.selectionConfig
               }
             , Cmd.none
             )
@@ -675,7 +675,7 @@ update msg model =
                         DisableSingleItemRemoval
             in
             ( { model
-                | selectionMode = setSingleItemRemoval multiSelectSingleItemRemoval model.selectionMode
+                | selectionConfig = setSingleItemRemoval multiSelectSingleItemRemoval model.selectionConfig
               }
             , Cmd.batch [ muchSelectIsReady (), Cmd.none ]
             )
@@ -697,7 +697,7 @@ update msg model =
                         makeCommandMessagesWhenValuesChanges (selectedOptions updatedOptions) Nothing
             in
             ( { model
-                | selectionMode = SelectionMode.setMultiSelectModeWithBool isInMultiSelectMode model.selectionMode
+                | selectionConfig = SelectionMode.setMultiSelectModeWithBool isInMultiSelectMode model.selectionConfig
                 , options = updatedOptions
               }
                 |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
@@ -706,10 +706,10 @@ update msg model =
 
         SearchStringMinimumLengthAttributeChanged searchStringMinimumLength ->
             ( { model
-                | selectionMode =
+                | selectionConfig =
                     setSearchStringMinimumLength
                         (FixedSearchStringMinimumLength (PositiveInt.new searchStringMinimumLength))
-                        model.selectionMode
+                        model.selectionConfig
               }
                 |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
             , Cmd.none
@@ -721,9 +721,9 @@ update msg model =
                     findHighlightedOption model.options |> Maybe.map Option.getOptionValue
 
                 updatedOptions =
-                    selectHighlightedOption model.selectionMode model.options
+                    selectHighlightedOption model.selectionConfig model.options
             in
-            case model.selectionMode of
+            case model.selectionConfig of
                 SingleSelectConfig _ _ _ ->
                     ( { model
                         | options = updatedOptions
@@ -749,7 +749,7 @@ update msg model =
                     )
 
         DeleteInputForSingleSelect ->
-            case model.selectionMode of
+            case model.selectionConfig of
                 SingleSelectConfig _ _ _ ->
                     if hasSelectedOption model.options then
                         -- if there are ANY selected options, clear them all;
@@ -772,7 +772,7 @@ update msg model =
         MoveHighlightedOptionUp ->
             let
                 updatedOptions =
-                    moveHighlightedOptionUp model.options (figureOutWhichOptionsToShowInTheDropdown model.selectionMode model.options)
+                    moveHighlightedOptionUp model.options (figureOutWhichOptionsToShowInTheDropdown model.selectionConfig model.options)
             in
             ( { model
                 | options = updatedOptions
@@ -783,7 +783,7 @@ update msg model =
         MoveHighlightedOptionDown ->
             let
                 updatedOptions =
-                    moveHighlightedOptionDown model.options (figureOutWhichOptionsToShowInTheDropdown model.selectionMode model.options)
+                    moveHighlightedOptionDown model.options (figureOutWhichOptionsToShowInTheDropdown model.selectionConfig model.options)
             in
             ( { model
                 | options = updatedOptions
@@ -887,7 +887,7 @@ clearAllSelectedOption model =
             deselectAllOptionsInOptionsList model.options
 
         focusCmdMsg =
-            if isFocused model.selectionMode then
+            if isFocused model.selectionConfig then
                 focusInput ()
 
             else
@@ -895,7 +895,7 @@ clearAllSelectedOption model =
     in
     ( { model
         | options = deselectAllOptionsInOptionsList newOptions
-        , rightSlot = updateRightSlot model.rightSlot model.selectionMode False
+        , rightSlot = updateRightSlot model.rightSlot model.selectionConfig False
         , searchString = SearchString.reset
       }
     , Cmd.batch
@@ -910,7 +910,7 @@ updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges : Model -> 
 updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges model =
     updateModelWithChangesThatEffectTheOptionsWithSearchString
         model.rightSlot
-        model.selectionMode
+        model.selectionConfig
         model.searchString
         model.options
         model
@@ -920,7 +920,7 @@ updateModelWithChangesThatEffectTheOptionsWhenTheMouseMoves : Model -> Model
 updateModelWithChangesThatEffectTheOptionsWhenTheMouseMoves model =
     updatePartOfTheModelWithChangesThatEffectTheOptionsWhenTheMouseMoves
         model.rightSlot
-        model.selectionMode
+        model.selectionConfig
         model.searchString
         model.options
         model
@@ -1140,17 +1140,17 @@ isRightSlotTransitioning rightSlot =
 
 view : Model -> Html Msg
 view model =
-    if isSingleSelect model.selectionMode then
+    if isSingleSelect model.selectionConfig then
         singleSelectView
             model.valueCasing
-            model.selectionMode
+            model.selectionConfig
             model.options
             model.searchString
             model.rightSlot
 
     else
         multiSelectView model.valueCasing
-            model.selectionMode
+            model.selectionConfig
             model.options
             model.searchString
             model.rightSlot
@@ -2255,7 +2255,7 @@ init flags =
     ( { initialValue = initialValues
       , deleteKeyPressed = False
       , placeholder = flags.placeholder
-      , selectionMode = selectionMode
+      , selectionConfig = selectionMode
       , options = optionsWithInitialValueSelectedSorted
       , optionSort = stringToOptionSort flags.optionSort |> Result.withDefault NoSorting
       , quietSearchForDynamicInterval =
