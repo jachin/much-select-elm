@@ -542,6 +542,7 @@ removeOptionsFromOptionList options optionsToRemove =
 removeOptionFromOptionListBySelectedIndex : Int -> List Option -> List Option
 removeOptionFromOptionListBySelectedIndex selectedIndex options =
     List.filter (\option -> getOptionSelectedIndex option /= selectedIndex) options
+        |> reIndexSelectedOptions
 
 
 unhighlightSelectedOptions : List Option -> List Option
@@ -803,6 +804,46 @@ removeUnselectedCustomOptions options =
                 |> unselectedOptions
     in
     removeOptionsFromOptionList options unselectedCustomOptions
+
+
+{-|
+
+    Clean up options. This function is designed for the datalist mode.
+    The idea is that there should only be at most 1 empty option.
+
+-}
+removeEmptySelectedOptions : List Option -> List Option
+removeEmptySelectedOptions options =
+    let
+        selectedOptions_ =
+            options
+                |> selectedOptions
+
+        selectedOptionsSansEmptyOptions =
+            options
+                |> selectedOptions
+                |> List.filter Option.isEmptyOptionOrHasEmptyValue
+    in
+    if List.length selectedOptions_ > 1 then
+        reIndexSelectedOptions selectedOptionsSansEmptyOptions
+
+    else
+        options
+
+
+reIndexSelectedOptions : List Option -> List Option
+reIndexSelectedOptions options =
+    let
+        selectedOptions_ =
+            options
+                |> selectedOptions
+
+        nonSelectedOptions =
+            options
+                |> unselectedOptions
+    in
+    List.indexedMap (\index option -> Option.selectOption index option) selectedOptions_
+        ++ nonSelectedOptions
 
 
 customSelectedOptions : List Option -> List Option
@@ -1093,21 +1134,21 @@ findOptionByOptionUsingValueString valueString options =
     findOptionByOptionValue (ValueString.toOptionValue valueString) options
 
 
-updateDatalistOptionsWithValue : ValueString -> Int -> List Option -> List Option
-updateDatalistOptionsWithValue valueString selectedValueIndex options =
+updateDatalistOptionsWithValue : OptionValue -> Int -> List Option -> List Option
+updateDatalistOptionsWithValue optionValue selectedValueIndex options =
     if List.any (Option.hasSelctedItemIndex selectedValueIndex) options then
-        updateDatalistOptionWithValueBySelectedValueIndex valueString selectedValueIndex options
+        updateDatalistOptionWithValueBySelectedValueIndex optionValue selectedValueIndex options
 
     else
-        newSelectedDatalisOption valueString selectedValueIndex :: options
+        newSelectedDatalisOption optionValue selectedValueIndex :: options
 
 
-updateDatalistOptionWithValueBySelectedValueIndex : ValueString -> Int -> List Option -> List Option
-updateDatalistOptionWithValueBySelectedValueIndex valueString selectedIndex options =
+updateDatalistOptionWithValueBySelectedValueIndex : OptionValue -> Int -> List Option -> List Option
+updateDatalistOptionWithValueBySelectedValueIndex optionValue selectedIndex options =
     List.map
         (\option ->
             if Option.getOptionSelectedIndex option == selectedIndex then
-                Option.setOptionValue (ValueString.toOptionValue valueString) option
+                Option.setOptionValue optionValue option
 
             else
                 option

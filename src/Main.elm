@@ -74,7 +74,6 @@ import OptionsUtilities
         , moveHighlightedOptionUp
         , optionsValues
         , removeHighlightOptionInList
-        , removeOptionFromOptionListBySelectedIndex
         , removeOptionsFromOptionList
         , removeUnselectedCustomOptions
         , replaceOptions
@@ -162,7 +161,6 @@ import SelectionMode
         , showDropdownFooter
         )
 import Task
-import ValueString exposing (ValueString)
 
 
 type Msg
@@ -430,7 +428,7 @@ update msg model =
             let
                 updatedOptions =
                     updateDatalistOptionsWithValue
-                        (ValueString.fromString valueString)
+                        (OptionValue.stringToOptionValue valueString)
                         selectedValueIndex
                         model.options
 
@@ -440,7 +438,7 @@ update msg model =
             ( { model
                 | options =
                     updateDatalistOptionsWithValue
-                        (ValueString.fromString valueString)
+                        (OptionValue.stringToOptionValue valueString)
                         selectedValueIndex
                         model.options
               }
@@ -466,27 +464,32 @@ update msg model =
         ValueChanged valuesJson ->
             let
                 valuesResult =
-                    case model.selectionConfig of
-                        SingleSelectConfig _ _ _ ->
+                    case SelectionMode.getSelectionMode model.selectionConfig of
+                        SelectionMode.SingleSelect ->
                             Json.Decode.decodeValue valueDecoder valuesJson
 
-                        MultiSelectConfig _ _ _ ->
+                        SelectionMode.MultiSelect ->
                             Json.Decode.decodeValue valuesDecoder valuesJson
             in
             case valuesResult of
                 Ok values ->
-                    let
-                        newOptions =
-                            addAndSelectOptionsInOptionsListByString
-                                values
-                                model.options
-                    in
-                    ( { model
-                        | options = newOptions
-                      }
-                        |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-                    , Cmd.none
-                    )
+                    case SelectionMode.getOutputStyle model.selectionConfig of
+                        CustomHtml ->
+                            let
+                                newOptions =
+                                    addAndSelectOptionsInOptionsListByString
+                                        values
+                                        model.options
+                            in
+                            ( { model
+                                | options = newOptions
+                              }
+                                |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
+                            , Cmd.none
+                            )
+
+                        Datalist ->
+                            ( model, Cmd.none )
 
                 Err error ->
                     ( model, errorMessage (Json.Decode.errorToString error) )
@@ -833,15 +836,29 @@ update msg model =
                 )
 
         AddMultiSelectValue indexWhereToAdd ->
+            let
+                updatedOptions =
+                    updateDatalistOptionsWithValue EmptyOptionValue (indexWhereToAdd + 1) model.options
+            in
             ( { model
                 | focusedIndex = indexWhereToAdd + 1
-                , options = updateDatalistOptionsWithValue ValueString.reset (indexWhereToAdd + 1) model.options
+                , options = updatedOptions
               }
-            , Cmd.none
+            , makeCommandMessagesWhenValuesChanges
+                (updatedOptions |> selectedOptions)
+                Nothing
             )
 
         RemoveMultiSelectValue indexWhereToDelete ->
-            ( { model | options = removeOptionFromOptionListBySelectedIndex indexWhereToDelete model.options }, Cmd.none )
+            let
+                updatedOptions =
+                    OptionsUtilities.removeOptionFromOptionListBySelectedIndex indexWhereToDelete model.options
+            in
+            ( { model | options = updatedOptions }
+            , makeCommandMessagesWhenValuesChanges
+                (updatedOptions |> selectedOptions |> OptionsUtilities.removeEmptySelectedOptions)
+                Nothing
+            )
 
         RequestAllOptions ->
             ( model, allOptions (Json.Encode.list Option.encode model.options) )

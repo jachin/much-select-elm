@@ -18,6 +18,7 @@ module Option exposing
     , highlightOption
     , isCustomOption
     , isEmptyOption
+    , isEmptyOptionOrHasEmptyValue
     , isOptionDisplaySelectedHighlighted
     , isOptionHighlighted
     , isOptionSelected
@@ -25,6 +26,7 @@ module Option exposing
     , isOptionValueInListOfStrings
     , merge2Options
     , newCustomOption
+    , newDatalistOption
     , newDisabledOption
     , newOption
     , newOptionGroup
@@ -188,11 +190,18 @@ newCustomOption value maybeCleanLabel =
         Nothing
 
 
-newSelectedDatalisOption : ValueString -> Int -> Option
-newSelectedDatalisOption valueString selectedIndex =
+newSelectedDatalisOption : OptionValue -> Int -> Option
+newSelectedDatalisOption optionValue selectedIndex =
     DatalistOption
         (OptionSelected selectedIndex)
-        (ValueString.toOptionValue valueString)
+        optionValue
+
+
+newDatalistOption : OptionValue -> Option
+newDatalistOption optionValue =
+    DatalistOption
+        OptionShown
+        optionValue
 
 
 setOptionValue : OptionValue -> Option -> Option
@@ -1072,11 +1081,11 @@ selectOption selectionIndex option =
                 OptionHidden ->
                     Option (OptionSelected selectionIndex) label value description group search
 
-                OptionSelected selectedIndex ->
-                    Option (OptionSelected selectedIndex) label value description group search
+                OptionSelected _ ->
+                    Option (OptionSelected selectionIndex) label value description group search
 
-                OptionSelectedHighlighted selectedIndex ->
-                    Option (OptionSelectedHighlighted selectedIndex) label value description group search
+                OptionSelectedHighlighted _ ->
+                    Option (OptionSelectedHighlighted selectionIndex) label value description group search
 
                 OptionHighlighted ->
                     Option (OptionSelected selectionIndex) label value description group search
@@ -1092,11 +1101,11 @@ selectOption selectionIndex option =
                 OptionHidden ->
                     CustomOption OptionHidden label value search
 
-                OptionSelected selectedIndex ->
-                    CustomOption (OptionSelected selectedIndex) label value search
+                OptionSelected _ ->
+                    CustomOption (OptionSelected selectionIndex) label value search
 
-                OptionSelectedHighlighted selectedIndex ->
-                    CustomOption (OptionSelectedHighlighted selectedIndex) label value search
+                OptionSelectedHighlighted _ ->
+                    CustomOption (OptionSelectedHighlighted selectionIndex) label value search
 
                 OptionHighlighted ->
                     CustomOption (OptionSelected selectionIndex) label value search
@@ -1112,11 +1121,11 @@ selectOption selectionIndex option =
                 OptionHidden ->
                     EmptyOption (OptionSelected selectionIndex) label
 
-                OptionSelected selectedIndex ->
-                    EmptyOption (OptionSelected selectedIndex) label
+                OptionSelected _ ->
+                    EmptyOption (OptionSelected selectionIndex) label
 
-                OptionSelectedHighlighted selectedIndex ->
-                    EmptyOption (OptionSelected selectedIndex) label
+                OptionSelectedHighlighted _ ->
+                    EmptyOption (OptionSelected selectionIndex) label
 
                 OptionHighlighted ->
                     EmptyOption (OptionSelected selectionIndex) label
@@ -1132,11 +1141,11 @@ selectOption selectionIndex option =
                 OptionHidden ->
                     option
 
-                OptionSelected selectedIndex ->
-                    DatalistOption (OptionSelected selectedIndex) optionValue
+                OptionSelected _ ->
+                    DatalistOption (OptionSelected selectionIndex) optionValue
 
-                OptionSelectedHighlighted selectedIndex ->
-                    DatalistOption (OptionSelected selectedIndex) optionValue
+                OptionSelectedHighlighted _ ->
+                    DatalistOption (OptionSelected selectionIndex) optionValue
 
                 OptionHighlighted ->
                     option
@@ -1286,6 +1295,11 @@ isEmptyOption option =
 
         DatalistOption _ _ ->
             False
+
+
+isEmptyOptionOrHasEmptyValue : Option -> Bool
+isEmptyOptionOrHasEmptyValue option =
+    isEmptyOption option || (getOptionValue option |> OptionValue.isEmpty)
 
 
 optionToValueLabelTuple : Option -> ( String, String )

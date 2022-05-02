@@ -5,8 +5,8 @@ import Option
     exposing
         ( newOption
         , selectOption
-        , stringToOptionValue
         )
+import OptionValue exposing (stringToOptionValue)
 import OptionsUtilities
     exposing
         ( deselectEveryOptionExceptOptionsInList
