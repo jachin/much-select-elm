@@ -2054,7 +2054,7 @@ datalist options =
         [ Html.Attributes.id "datalist-options" ]
         (List.concatMap
             dataListOptionGroupToHtml
-            (groupOptionsInOrder options)
+            (groupOptionsInOrder (options |> OptionsUtilities.unselectedOptions))
         )
 
 
