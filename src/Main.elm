@@ -177,7 +177,7 @@ type Msg
     | DropdownMouseOutOption OptionValue
     | DropdownMouseClickOption OptionValue
     | UpdateSearchString String
-    | UpdateValueString String
+    | UpdateOptionValueValue Int String
     | UpdateOptionsWithSearchString
     | MsgQuietUpdateOptionsWithSearchString (Debouncer.Messages.Msg Msg)
     | TextInputOnInput String
@@ -443,12 +443,12 @@ update msg model =
                 ]
             )
 
-        UpdateValueString valueString ->
+        UpdateOptionValueValue selectedValueIndex valueString ->
             ( { model
                 | options =
                     updateDatalistOptionsWithValue
                         (ValueString.fromString valueString)
-                        model.focusedIndex
+                        selectedValueIndex
                         model.options
                 , valueString = ValueString.fromString valueString
               }
@@ -1175,7 +1175,7 @@ singleSelectView valueCasing selectionMode options searchString rightSlot =
                 rightSlot
 
         Datalist ->
-            singleSelectViewDatalistHtml selectionMode options searchString
+            singleSelectViewDatalistHtml selectionMode options
 
 
 multiSelectView : ValueCasing -> SelectionConfig -> List Option -> SearchString -> ValueString -> RightSlot -> Html Msg
@@ -1215,7 +1215,14 @@ singleSelectViewCustomHtml valueCasing selectionConfig options searchString righ
             else
                 ""
     in
-    div [ id "wrapper" ]
+    div
+        [ id "wrapper"
+
+        -- This stops the dropdown from flashes when the user clicks
+        -- on an optgroup. And it kinda makes sense. we don't want
+        --  mousedown events escaping and effecting the DOM.
+        , onMouseDownStopPropagationAndPreventDefault NoOp
+        ]
         [ div
             [ id "value-casing"
             , attributeIf (not (isFocused selectionConfig)) (onMouseDown BringInputInFocus)
@@ -1291,7 +1298,15 @@ multiSelectViewCustomHtml selectionConfig options searchString rightSlot valueCa
                 ]
                 []
     in
-    div [ id "wrapper", classList [ ( "disabled", isDisabled selectionConfig ) ] ]
+    div
+        [ id "wrapper"
+
+        -- This stops the dropdown from flashes when the user clicks
+        -- on an optgroup. And it kinda makes sense. we don't want
+        --  mousedown events escaping and effecting the DOM.
+        , onMouseDownStopPropagationAndPreventDefault NoOp
+        , classList [ ( "disabled", isDisabled selectionConfig ) ]
+        ]
         [ div
             [ id "value-casing"
             , onMouseDown BringInputInFocus
@@ -1340,7 +1355,7 @@ multiSelectViewDataset selectionConfig options valueString rightSlot valueCasing
             case List.length selectedOptions_ of
                 0 ->
                     [ multiSelectDatasetInputField
-                        EmptyOptionValue
+                        Nothing
                         selectionConfig
                         showAddButtons
                         showRemoveButtons
@@ -1351,7 +1366,7 @@ multiSelectViewDataset selectionConfig options valueString rightSlot valueCasing
                     List.map
                         (\selectedOption ->
                             multiSelectDatasetInputField
-                                (Option.getOptionValue selectedOption)
+                                (Just selectedOption)
                                 selectionConfig
                                 showAddButtons
                                 showRemoveButtons
@@ -1525,42 +1540,36 @@ singleSelectCustomHtmlInputField searchString isDisabled focused placeholder_ ha
             []
 
 
-singleSelectViewDatalistHtml : SelectionConfig -> List Option -> SearchString -> Html Msg
-singleSelectViewDatalistHtml selectionMode options searchString =
+singleSelectViewDatalistHtml : SelectionConfig -> List Option -> Html Msg
+singleSelectViewDatalistHtml selectionConfig options =
     let
+        maybeSelectedOption =
+            OptionsUtilities.findSelectedOption options
+
         hasOptionSelected =
             hasSelectedOption options
-
-        showPlaceholder =
-            not hasOptionSelected && not (isFocused selectionMode)
     in
     div [ id "wrapper" ]
         [ div
             [ id "value-casing"
-            , attributeIf (not (isFocused selectionMode)) (onMouseDown BringInputInFocus)
-            , attributeIf (not (isFocused selectionMode)) (onFocus BringInputInFocus)
-            , tabIndexAttribute (isDisabled selectionMode)
+
+            --, attributeIf (not (isFocused selectionConfig)) (onMouseDown BringInputInFocus)
+            --, attributeIf (not (isFocused selectionConfig)) (onFocus BringInputInFocus)
+            , tabIndexAttribute (isDisabled selectionConfig)
             , classList
-                [ ( "show-placeholder", showPlaceholder )
-                , ( "has-option-selected", hasOptionSelected )
-                , ( "no-option-selected", not hasOptionSelected )
-                , ( "single", True )
-                , ( "disabled", isDisabled selectionMode )
-                , ( "focused", isFocused selectionMode )
-                , ( "not-focused", not (isFocused selectionMode) )
-                ]
+                (valueCasingClassList selectionConfig hasOptionSelected)
             ]
             [ singleSelectDatasetInputField
-                (SearchString.toString searchString)
-                selectionMode
+                maybeSelectedOption
+                selectionConfig
                 hasOptionSelected
             ]
         , datalist options
         ]
 
 
-multiSelectDatasetInputField : OptionValue -> SelectionConfig -> Bool -> Bool -> Int -> Html Msg
-multiSelectDatasetInputField optionValue selectionMode showAddButtons showRemoveButtons index =
+multiSelectDatasetInputField : Maybe Option -> SelectionConfig -> Bool -> Bool -> Int -> Html Msg
+multiSelectDatasetInputField maybeOption selectionMode showAddButtons showRemoveButtons index =
     let
         idAttr =
             id "input-filter"
@@ -1568,21 +1577,8 @@ multiSelectDatasetInputField optionValue selectionMode showAddButtons showRemove
         typeAttr =
             type_ "text"
 
-        onBlurAttr =
-            onBlur InputBlur
-
-        onFocusAttr =
-            onFocus InputFocus
-
-        showPlaceholder =
-            OptionValue.length optionValue < 1
-
         placeholderAttribute =
-            if showPlaceholder then
-                placeholder (getPlaceholder selectionMode)
-
-            else
-                style "" ""
+            placeholder (getPlaceholder selectionMode)
 
         addRemoveButtons =
             if showRemoveButtons && showAddButtons then
@@ -1601,6 +1597,14 @@ multiSelectDatasetInputField optionValue selectionMode showAddButtons showRemove
             else
                 []
 
+        valueString =
+            case maybeOption of
+                Just option ->
+                    Option.getOptionValueAsString option
+
+                Nothing ->
+                    ""
+
         inputHtml =
             if isDisabled selectionMode then
                 input
@@ -1614,10 +1618,8 @@ multiSelectDatasetInputField optionValue selectionMode showAddButtons showRemove
                 input
                     [ typeAttr
                     , idAttr
-                    , onBlurAttr
-                    , onFocusAttr
-                    , onInput UpdateValueString
-                    , value (OptionValue.optionValueToString optionValue)
+                    , onInput (UpdateOptionValueValue index)
+                    , value valueString
                     , placeholderAttribute
                     , Html.Attributes.list "datalist-options"
                     ]
@@ -1629,8 +1631,8 @@ multiSelectDatasetInputField optionValue selectionMode showAddButtons showRemove
         )
 
 
-singleSelectDatasetInputField : String -> SelectionConfig -> Bool -> Html Msg
-singleSelectDatasetInputField searchString selectionMode hasSelectedOption =
+singleSelectDatasetInputField : Maybe Option -> SelectionConfig -> Bool -> Html Msg
+singleSelectDatasetInputField maybeOption selectionMode hasSelectedOption =
     let
         idAttr =
             id "input-filter"
@@ -1653,6 +1655,14 @@ singleSelectDatasetInputField searchString selectionMode hasSelectedOption =
 
             else
                 style "" ""
+
+        valueString =
+            case maybeOption of
+                Just option ->
+                    Option.getOptionValueAsString option
+
+                Nothing ->
+                    ""
     in
     if isDisabled selectionMode then
         input
@@ -1668,8 +1678,8 @@ singleSelectDatasetInputField searchString selectionMode hasSelectedOption =
             , idAttr
             , onBlurAttr
             , onFocusAttr
-            , onInput UpdateValueString
-            , value searchString
+            , onInput (UpdateOptionValueValue 0)
+            , value valueString
             , placeholderAttribute
             , Html.Attributes.list "datalist-options"
             ]

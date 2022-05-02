@@ -641,6 +641,11 @@ selectedOptions options =
         |> List.sortBy getOptionSelectedIndex
 
 
+findSelectedOption : List Option -> Maybe Option
+findSelectedOption options =
+    options |> selectedOptions |> List.head
+
+
 unselectedOptions : List Option -> List Option
 unselectedOptions options =
     options
