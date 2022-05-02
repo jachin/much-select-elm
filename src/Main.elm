@@ -1336,7 +1336,7 @@ multiSelectViewDataset selectionConfig options rightSlot =
             options |> OptionsUtilities.selectedOptions
 
         showAddButtons =
-            List.any (\option -> option |> Option.getOptionValue |> OptionValue.isEmpty) selectedOptions
+            List.any (\option -> option |> Option.getOptionValue |> OptionValue.isEmpty |> not) selectedOptions
 
         showRemoveButtons =
             List.length selectedOptions > 1
