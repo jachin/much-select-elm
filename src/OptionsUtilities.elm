@@ -863,6 +863,18 @@ customSelectedOptions =
     customOptions >> selectedOptions
 
 
+organizeNewDatalistOptions : List Option -> List Option
+organizeNewDatalistOptions options =
+    let
+        selectedOptions_ =
+            options |> selectedOptions
+
+        optionsForTheDatasetHints =
+            options |> List.map Option.deselectOption
+    in
+    (selectedOptions_ ++ optionsForTheDatasetHints) |> reIndexSelectedOptions
+
+
 customOptions : List Option -> List Option
 customOptions options =
     List.filter isCustomOption options

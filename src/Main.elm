@@ -438,11 +438,7 @@ update msg model =
                     Just (OptionValue.stringToOptionValue valueString)
             in
             ( { model
-                | options =
-                    updateDatalistOptionsWithValue
-                        (OptionValue.stringToOptionValue valueString)
-                        selectedValueIndex
-                        model.options
+                | options = updatedOptions
                 , rightSlot = updateRightSlot model.rightSlot model.selectionConfig True (updatedOptions |> selectedOptions)
               }
             , makeCommandMessagesWhenValuesChanges
@@ -2313,7 +2309,12 @@ init flags =
                     ( [], errorMessage (Json.Decode.errorToString error) )
 
         optionsWithInitialValueSelectedSorted =
-            sortOptions optionSort optionsWithInitialValueSelected
+            case SelectionMode.getOutputStyle selectionConfig of
+                CustomHtml ->
+                    sortOptions optionSort optionsWithInitialValueSelected
+
+                Datalist ->
+                    OptionsUtilities.organizeNewDatalistOptions optionsWithInitialValueSelected
     in
     ( { initialValue = initialValues
       , deleteKeyPressed = False
