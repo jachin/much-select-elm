@@ -443,7 +443,7 @@ update msg model =
                         model.options
               }
             , makeCommandMessagesWhenValuesChanges
-                (updatedOptions |> selectedOptions)
+                (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
                 maybeSelectedOptionValue
             )
 
@@ -845,7 +845,7 @@ update msg model =
                 , options = updatedOptions
               }
             , makeCommandMessagesWhenValuesChanges
-                (updatedOptions |> selectedOptions)
+                (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
                 Nothing
             )
 
@@ -856,7 +856,7 @@ update msg model =
             in
             ( { model | options = updatedOptions }
             , makeCommandMessagesWhenValuesChanges
-                (updatedOptions |> selectedOptions |> OptionsUtilities.removeEmptySelectedOptions)
+                (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
                 Nothing
             )
 

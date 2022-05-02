@@ -812,8 +812,8 @@ removeUnselectedCustomOptions options =
     The idea is that there should only be at most 1 empty option.
 
 -}
-removeEmptySelectedOptions : List Option -> List Option
-removeEmptySelectedOptions options =
+cleanupEmptySelectedOptions : List Option -> List Option
+cleanupEmptySelectedOptions options =
     let
         selectedOptions_ =
             options
@@ -822,10 +822,13 @@ removeEmptySelectedOptions options =
         selectedOptionsSansEmptyOptions =
             options
                 |> selectedOptions
-                |> List.filter Option.isEmptyOptionOrHasEmptyValue
+                |> List.filter (Option.isEmptyOptionOrHasEmptyValue >> not)
     in
-    if List.length selectedOptions_ > 1 then
-        reIndexSelectedOptions selectedOptionsSansEmptyOptions
+    if List.length selectedOptions_ > 1 && List.length selectedOptionsSansEmptyOptions > 1 then
+        selectedOptionsSansEmptyOptions
+
+    else if List.length selectedOptions_ > 1 then
+        List.take 1 selectedOptions_
 
     else
         options
@@ -1141,6 +1144,22 @@ updateDatalistOptionsWithValue optionValue selectedValueIndex options =
 
     else
         newSelectedDatalisOption optionValue selectedValueIndex :: options
+
+
+addNewEmptyOptionAtIndex : Int -> List Option -> List Option
+addNewEmptyOptionAtIndex index options =
+    let
+        firstPart =
+            List.take index options
+
+        secondPart =
+            List.drop index options
+    in
+    (firstPart
+        ++ [ DatalistOption (OptionSelected index) EmptyOptionValue ]
+        ++ secondPart
+    )
+        |> reIndexSelectedOptions
 
 
 updateDatalistOptionWithValueBySelectedValueIndex : OptionValue -> Int -> List Option -> List Option
