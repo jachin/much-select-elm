@@ -1199,13 +1199,10 @@ multiSelectView valueCasing selectionMode options searchString valueString right
 
 
 singleSelectViewCustomHtml : ValueCasing -> SelectionConfig -> List Option -> SearchString -> RightSlot -> Html Msg
-singleSelectViewCustomHtml valueCasing selectionMode options searchString rightSlot =
+singleSelectViewCustomHtml valueCasing selectionConfig options searchString rightSlot =
     let
         hasOptionSelected =
             hasSelectedOption options
-
-        showPlaceholder =
-            not hasOptionSelected && not (isFocused selectionMode)
 
         valueStr =
             if hasOptionSelected then
@@ -1221,27 +1218,20 @@ singleSelectViewCustomHtml valueCasing selectionMode options searchString rightS
     div [ id "wrapper" ]
         [ div
             [ id "value-casing"
-            , attributeIf (not (isFocused selectionMode)) (onMouseDown BringInputInFocus)
-            , attributeIf (not (isFocused selectionMode)) (onFocus BringInputInFocus)
-            , tabIndexAttribute (isDisabled selectionMode)
+            , attributeIf (not (isFocused selectionConfig)) (onMouseDown BringInputInFocus)
+            , attributeIf (not (isFocused selectionConfig)) (onFocus BringInputInFocus)
+            , tabIndexAttribute (isDisabled selectionConfig)
             , classList
-                [ ( "show-placeholder", showPlaceholder )
-                , ( "has-option-selected", hasOptionSelected )
-                , ( "no-option-selected", not hasOptionSelected )
-                , ( "single", True )
-                , ( "disabled", isDisabled selectionMode )
-                , ( "focused", isFocused selectionMode )
-                , ( "not-focused", not (isFocused selectionMode) )
-                ]
+                (valueCasingClassList selectionConfig hasOptionSelected)
             ]
             [ span
                 [ id "selected-value" ]
                 [ text valueStr ]
             , singleSelectCustomHtmlInputField
                 searchString
-                (isDisabled selectionMode)
-                (isFocused selectionMode)
-                (getPlaceholder selectionMode)
+                (isDisabled selectionConfig)
+                (isFocused selectionConfig)
+                (getPlaceholder selectionConfig)
                 hasOptionSelected
             , case rightSlot of
                 ShowNothing ->
@@ -1251,13 +1241,13 @@ singleSelectViewCustomHtml valueCasing selectionMode options searchString rightS
                     node "slot" [ name "loading-indicator" ] [ defaultLoadingIndicator ]
 
                 ShowDropdownIndicator transitioning ->
-                    dropdownIndicator (isFocused selectionMode) (isDisabled selectionMode) transitioning
+                    dropdownIndicator (isFocused selectionConfig) (isDisabled selectionConfig) transitioning
 
                 ShowClearButton ->
                     node "slot" [ name "clear-button" ] []
             ]
         , dropdown
-            selectionMode
+            selectionConfig
             options
             searchString
             valueCasing
@@ -1265,17 +1255,17 @@ singleSelectViewCustomHtml valueCasing selectionMode options searchString rightS
 
 
 multiSelectViewCustomHtml : SelectionConfig -> List Option -> SearchString -> RightSlot -> ValueCasing -> Html Msg
-multiSelectViewCustomHtml selectionMode options searchString rightSlot valueCasing =
+multiSelectViewCustomHtml selectionConfig options searchString rightSlot valueCasing =
     let
         hasOptionSelected =
             hasSelectedOption options
 
         showPlaceholder =
-            not hasOptionSelected && not (isFocused selectionMode)
+            not hasOptionSelected && not (isFocused selectionConfig)
 
         placeholderAttribute =
             if showPlaceholder then
-                placeholder (getPlaceholder selectionMode)
+                placeholder (getPlaceholder selectionConfig)
 
             else
                 Html.Attributes.classList []
@@ -1291,7 +1281,7 @@ multiSelectViewCustomHtml selectionMode options searchString rightSlot valueCasi
                 , value (SearchString.toString searchString)
                 , placeholderAttribute
                 , id "input-filter"
-                , disabled (isDisabled selectionMode)
+                , disabled (isDisabled selectionConfig)
                 , Keyboard.on Keyboard.Keydown
                     [ ( Enter, SelectHighlightedOption )
                     , ( Escape, EscapeKeyInInputFilter )
@@ -1301,7 +1291,7 @@ multiSelectViewCustomHtml selectionMode options searchString rightSlot valueCasi
                 ]
                 []
     in
-    div [ id "wrapper", classList [ ( "disabled", isDisabled selectionMode ) ] ]
+    div [ id "wrapper", classList [ ( "disabled", isDisabled selectionConfig ) ] ]
         [ div
             [ id "value-casing"
             , onMouseDown BringInputInFocus
@@ -1310,27 +1300,20 @@ multiSelectViewCustomHtml selectionMode options searchString rightSlot valueCasi
                 [ ( Delete, DeleteKeydownForMultiSelect )
                 , ( Backspace, DeleteKeydownForMultiSelect )
                 ]
-            , tabIndexAttribute (isDisabled selectionMode)
+            , tabIndexAttribute (isDisabled selectionConfig)
             , classList
-                [ ( "show-placeholder", showPlaceholder )
-                , ( "has-option-selected", hasOptionSelected )
-                , ( "no-option-selected", not hasOptionSelected )
-                , ( "multi", True )
-                , ( "disabled", isDisabled selectionMode )
-                , ( "focused", isFocused selectionMode )
-                , ( "not-focused", not (isFocused selectionMode) )
-                ]
+                (valueCasingClassList selectionConfig hasOptionSelected)
             ]
-            (optionsToValuesHtml options (getSingleItemRemoval selectionMode)
+            (optionsToValuesHtml options (getSingleItemRemoval selectionConfig)
                 ++ [ inputFilter
                    , rightSlotHtml
                         rightSlot
-                        (isFocused selectionMode)
-                        (isDisabled selectionMode)
+                        (isFocused selectionConfig)
+                        (isDisabled selectionConfig)
                    ]
             )
         , dropdown
-            selectionMode
+            selectionConfig
             options
             searchString
             valueCasing
@@ -1342,9 +1325,6 @@ multiSelectViewDataset selectionConfig options valueString rightSlot valueCasing
     let
         hasOptionSelected =
             hasSelectedOption options
-
-        showPlaceholder =
-            not hasOptionSelected && not (isFocused selectionConfig)
 
         selectedOptions =
             options |> OptionsUtilities.selectedOptions
@@ -1382,22 +1362,53 @@ multiSelectViewDataset selectionConfig options valueString rightSlot valueCasing
     div [ id "wrapper" ]
         [ div
             [ id "value-casing"
-            , attributeIf (not (isFocused selectionConfig)) (onMouseDown BringInputInFocus)
-            , attributeIf (not (isFocused selectionConfig)) (onFocus BringInputInFocus)
-            , tabIndexAttribute (isDisabled selectionConfig)
             , classList
-                [ ( "show-placeholder", showPlaceholder )
-                , ( "has-option-selected", hasOptionSelected )
-                , ( "no-option-selected", not hasOptionSelected )
-                , ( "single", True )
-                , ( "disabled", isDisabled selectionConfig )
-                , ( "focused", isFocused selectionConfig )
-                , ( "not-focused", not (isFocused selectionConfig) )
-                ]
+                (valueCasingClassList selectionConfig hasOptionSelected)
             ]
-            (makeInputs selectedOptions |> Debug.log "make inputs")
+            (makeInputs selectedOptions)
         , datalist options
         ]
+
+
+valueCasingClassList : SelectionConfig -> Bool -> List ( String, Bool )
+valueCasingClassList selectionConfig hasOptionSelected =
+    let
+        isFocused_ =
+            isFocused selectionConfig
+
+        selectionModeClass =
+            case SelectionMode.getSelectionMode selectionConfig of
+                SelectionMode.SingleSelect ->
+                    ( "single", True )
+
+                SelectionMode.MultiSelect ->
+                    ( "multi", True )
+
+        outputStyleClass =
+            case SelectionMode.getOutputStyle selectionConfig of
+                SelectionMode.CustomHtml ->
+                    ( "output-style-custom-html", True )
+
+                Datalist ->
+                    ( "output-style-datalist", True )
+
+        showPlaceholder =
+            case SelectionMode.getOutputStyle selectionConfig of
+                CustomHtml ->
+                    not hasOptionSelected && not isFocused_
+
+                Datalist ->
+                    False
+    in
+    [ ( "has-option-selected", hasOptionSelected )
+    , ( "no-option-selected", not hasOptionSelected )
+    , selectionModeClass
+    , outputStyleClass
+    , ( "disabled", isDisabled selectionConfig )
+    , ( "focused", isFocused_ )
+    , ( "not-focused", not isFocused_ )
+    , ( "show-placeholder", showPlaceholder )
+    ]
 
 
 tabIndexAttribute disabled =

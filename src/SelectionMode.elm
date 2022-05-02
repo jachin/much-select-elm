@@ -12,6 +12,7 @@ module SelectionMode exposing
     , getPlaceholder
     , getSearchStringMinimumLength
     , getSelectedItemPlacementMode
+    , getSelectionMode
     , getSingleItemRemoval
     , isDisabled
     , isFocused
@@ -386,6 +387,16 @@ setMultiSelectModeWithBool isInMultiSelectMode selectionConfig =
 
             else
                 SingleSelectConfig (OutputStyle.multiToSingle multiSelectOutputStyle) placeholder interactionState
+
+
+getSelectionMode : SelectionConfig -> SelectionMode
+getSelectionMode selectionConfig =
+    case selectionConfig of
+        SingleSelectConfig singleSelectOutputStyle placeholder interactionState ->
+            SingleSelect
+
+        MultiSelectConfig multiSelectOutputStyle placeholder interactionState ->
+            MultiSelect
 
 
 setSelectionMode : SelectionMode -> SelectionConfig -> SelectionConfig
