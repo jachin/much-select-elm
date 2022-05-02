@@ -1263,6 +1263,7 @@ singleSelectViewCustomHtml valueCasing selectionConfig options searchString righ
     in
     div
         [ id "wrapper"
+        , Html.Attributes.attribute "part" "wrapper"
 
         -- This stops the dropdown from flashes when the user clicks
         -- on an optgroup. And it kinda makes sense. we don't want
@@ -1352,6 +1353,7 @@ multiSelectViewCustomHtml selectionConfig options searchString rightSlot valueCa
     in
     div
         [ id "wrapper"
+        , Html.Attributes.attribute "part" "wrapper"
 
         -- This stops the dropdown from flashes when the user clicks
         -- on an optgroup. And it kinda makes sense. we don't want
@@ -1361,6 +1363,7 @@ multiSelectViewCustomHtml selectionConfig options searchString rightSlot valueCa
         ]
         [ div
             [ id "value-casing"
+            , Html.Attributes.attribute "part" "value-casing"
             , onMouseDown BringInputInFocus
             , onFocus BringInputInFocus
             , Keyboard.on Keyboard.Keydown
@@ -1418,9 +1421,10 @@ multiSelectViewDataset selectionConfig options rightSlot =
                         )
                         selectedOptions_
     in
-    div [ id "wrapper" ]
+    div [ id "wrapper", Html.Attributes.attribute "part" "wrapper" ]
         [ div
             [ id "value-casing"
+            , Html.Attributes.attribute "part" "value-casing"
             , classList
                 (valueCasingClassList selectionConfig hasOptionSelected)
             ]
@@ -1593,12 +1597,10 @@ singleSelectViewDatalistHtml selectionConfig options =
         hasOptionSelected =
             hasSelectedOption options
     in
-    div [ id "wrapper" ]
+    div [ id "wrapper", Html.Attributes.attribute "part" "wrapper" ]
         [ div
             [ id "value-casing"
-
-            --, attributeIf (not (isFocused selectionConfig)) (onMouseDown BringInputInFocus)
-            --, attributeIf (not (isFocused selectionConfig)) (onFocus BringInputInFocus)
+            , Html.Attributes.attribute "part" "value-casing"
             , tabIndexAttribute (isDisabled selectionConfig)
             , classList
                 (valueCasingClassList selectionConfig hasOptionSelected)
@@ -1616,7 +1618,11 @@ multiSelectDatasetInputField : Maybe Option -> SelectionConfig -> RightSlot -> I
 multiSelectDatasetInputField maybeOption selectionConfig rightSlot index =
     let
         idAttr =
-            id "input-filter"
+            id ("input-filter-" ++ String.fromInt index)
+
+        classes =
+            [ ( "input-filter", True )
+            ]
 
         typeAttr =
             type_ "text"
@@ -1637,7 +1643,9 @@ multiSelectDatasetInputField maybeOption selectionConfig rightSlot index =
                 input
                     [ disabled True
                     , idAttr
+                    , Html.Attributes.attribute "part" "input-filter"
                     , placeholderAttribute
+                    , classList classes
                     ]
                     []
 
@@ -1645,6 +1653,8 @@ multiSelectDatasetInputField maybeOption selectionConfig rightSlot index =
                 input
                     [ typeAttr
                     , idAttr
+                    , Html.Attributes.attribute "part" "input-filter"
+                    , classList classes
                     , onInput (UpdateOptionValueValue index)
                     , value valueString
                     , placeholderAttribute
@@ -1652,7 +1662,7 @@ multiSelectDatasetInputField maybeOption selectionConfig rightSlot index =
                     ]
                     []
     in
-    div [ class "input-wrapper" ]
+    div [ class "input-wrapper", Html.Attributes.attribute "part" "input-wrapper" ]
         [ inputHtml
         , rightSlotHtml rightSlot (SelectionMode.getInteractionState selectionConfig) index
         ]
@@ -1695,6 +1705,7 @@ singleSelectDatasetInputField maybeOption selectionMode hasSelectedOption =
         input
             [ disabled True
             , idAttr
+            , Html.Attributes.attribute "part" "input-filter"
             , placeholderAttribute
             ]
             []
@@ -1703,6 +1714,7 @@ singleSelectDatasetInputField maybeOption selectionMode hasSelectedOption =
         input
             [ typeAttr
             , idAttr
+            , Html.Attributes.attribute "part" "input-filter"
             , onBlurAttr
             , onFocusAttr
             , onInput (UpdateOptionValueValue 0)

@@ -242,3 +242,8 @@ button {
 iframe {
     border: none;
 }
+
+
+much-select::part(input-wrapper) {
+    display: flex;
+}

@@ -457,14 +457,6 @@ class MuchSelect extends HTMLElement {
     this.parentDivPromise.then((parentDiv) => {
       const wrapperDiv = parentDiv.querySelector("#wrapper");
       this._resizeObserver.observe(wrapperDiv);
-
-      // parentDiv.addEventListener("mousedown", (evt) => {
-      //   // This stops the dropdown from flashes when the user clicks
-      //   //  on an optgroup. And it kinda makes sense. we don't want
-      //   //  mousedown events escaping and effecting the DOM.
-      //   evt.stopImmediatePropagation();
-      //   evt.preventDefault();
-      // });
     });
 
     // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
@@ -1639,7 +1631,7 @@ class MuchSelect extends HTMLElement {
         This value casing (and what's inside of it) is supposed to be the
         "main event".
       */
-      #value-casing {
+      #value-casing.output-style-custom-html {
         min-height: 34px;
         cursor: pointer;
         -moz-appearance: textfield;
@@ -1653,25 +1645,21 @@ class MuchSelect extends HTMLElement {
         flex-flow: row nowrap;
       }
 
-      #value-casing:hover, #value-casing:focus {
-        /*
-        TODO: I'm not sure this is the best place or the best way to indicate this
-        "input" is focused.
-        */
+      #value-casing.output-style-custom-html:hover, #value-casing.output-style-custom-html:focus {
         outline: none;
         border-color: blue;
       }
 
-      #value-casing.multi {
+      #value-casing.output-style-custom-html.multi {
         flex-flow: row wrap;
       }
 
-      #value-casing.disabled {
+      #value-casing.output-style-custom-html.disabled {
         border: 1px solid lightgray;
         cursor: pointer;
       }
 
-      #value-casing .placeholder {
+      #value-casing.output-style-custom-html .placeholder {
         color: silver;
         font-size: 25px;
         white-space: nowrap;
@@ -1680,7 +1668,7 @@ class MuchSelect extends HTMLElement {
         flex-basis: auto;
       }
 
-      #value-casing #input-filter {
+      #value-casing.output-style-custom-html #input-filter {
         /*
         TODO, seems like the height and font-size should not be hardcoded.
         */
@@ -1709,7 +1697,7 @@ class MuchSelect extends HTMLElement {
         background: none;
       }
 
-      #input-filter:hover, #input-filter:focus {
+      .output-style-custom-html #input-filter:hover, .output-style-custom-html #input-filter:focus {
         /*
         We do not want an outline on the input (filter) because we want everything
         inside of the #value-casing to (kinda) act like a text input.
@@ -1718,7 +1706,7 @@ class MuchSelect extends HTMLElement {
         background: white;
       }
 
-      #input-filter:disabled {
+      .output-style-custom-html #input-filter:disabled {
         /*
         Removing the default background color on the disabled input.
         We might want to do some additional styling for "disabled"
@@ -1728,23 +1716,23 @@ class MuchSelect extends HTMLElement {
         background: none;
       }
 
-      #value-casing.single {
+      #value-casing.output-style-custom-html.single {
         background-image: linear-gradient(to bottom, #fefefe, #f2f2f2);
         background-repeat: repeat-x;
       }
 
-      #value-casing.single.disabled {
+      #value-casing.output-style-custom-html.single.disabled {
         background-image: none;
       }
 
-      #value-casing.single.has-option-selected #selected-value {
+      #value-casing.output-style-custom-html.single.has-option-selected #selected-value {
         padding: 3px;
         font-size: 20px;
         margin: 2px 2px;
         min-width: 10px;
       }
 
-      #value-casing.multi .value {
+      #value-casing.output-style-custom-html.multi .value {
         padding: 3px;
         font-size: 20px;
         color: white;
@@ -1760,7 +1748,7 @@ class MuchSelect extends HTMLElement {
         flex-basis: auto;
       }
 
-      #value-casing.multi .value.highlighted-value {
+      #value-casing.output-style-custom-html.multi .value.highlighted-value {
         background-image: linear-gradient(to bottom, #d99477, #efb680);
         background-repeat: repeat-x;
       }
