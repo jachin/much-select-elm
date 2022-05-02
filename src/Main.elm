@@ -1272,6 +1272,7 @@ singleSelectViewCustomHtml valueCasing selectionConfig options searchString righ
         ]
         [ div
             [ id "value-casing"
+            , valueCasingPartsAttribute selectionConfig
             , attributeIf (not (isFocused selectionConfig)) (onMouseDown BringInputInFocus)
             , attributeIf (not (isFocused selectionConfig)) (onFocus BringInputInFocus)
             , tabIndexAttribute (isDisabled selectionConfig)
@@ -1341,6 +1342,7 @@ multiSelectViewCustomHtml selectionConfig options searchString rightSlot valueCa
                 , value (SearchString.toString searchString)
                 , placeholderAttribute
                 , id "input-filter"
+                , Html.Attributes.attribute "part" "input-filter"
                 , disabled (isDisabled selectionConfig)
                 , Keyboard.on Keyboard.Keydown
                     [ ( Enter, SelectHighlightedOption )
@@ -1363,7 +1365,7 @@ multiSelectViewCustomHtml selectionConfig options searchString rightSlot valueCa
         ]
         [ div
             [ id "value-casing"
-            , Html.Attributes.attribute "part" "value-casing"
+            , valueCasingPartsAttribute selectionConfig
             , onMouseDown BringInputInFocus
             , onFocus BringInputInFocus
             , Keyboard.on Keyboard.Keydown
@@ -1424,7 +1426,7 @@ multiSelectViewDataset selectionConfig options rightSlot =
     div [ id "wrapper", Html.Attributes.attribute "part" "wrapper" ]
         [ div
             [ id "value-casing"
-            , Html.Attributes.attribute "part" "value-casing"
+            , valueCasingPartsAttribute selectionConfig
             , classList
                 (valueCasingClassList selectionConfig hasOptionSelected)
             ]
@@ -1532,6 +1534,9 @@ singleSelectCustomHtmlInputField searchString isDisabled focused placeholder_ ha
         idAttr =
             id "input-filter"
 
+        partAttr =
+            Html.Attributes.attribute "part" "input-filter"
+
         typeAttr =
             type_ "text"
 
@@ -1555,6 +1560,7 @@ singleSelectCustomHtmlInputField searchString isDisabled focused placeholder_ ha
         input
             [ disabled True
             , idAttr
+            , partAttr
             , placeholderAttribute
             ]
             []
@@ -1563,6 +1569,7 @@ singleSelectCustomHtmlInputField searchString isDisabled focused placeholder_ ha
         input
             [ typeAttr
             , idAttr
+            , partAttr
             , onBlurAttr
             , onFocusAttr
             , value ""
@@ -1576,6 +1583,7 @@ singleSelectCustomHtmlInputField searchString isDisabled focused placeholder_ ha
         input
             [ typeAttr
             , idAttr
+            , partAttr
             , onBlurAttr
             , onFocusAttr
             , onMouseDownStopPropagation NoOp
@@ -1600,7 +1608,7 @@ singleSelectViewDatalistHtml selectionConfig options =
     div [ id "wrapper", Html.Attributes.attribute "part" "wrapper" ]
         [ div
             [ id "value-casing"
-            , Html.Attributes.attribute "part" "value-casing"
+            , valueCasingPartsAttribute selectionConfig
             , tabIndexAttribute (isDisabled selectionConfig)
             , classList
                 (valueCasingClassList selectionConfig hasOptionSelected)
@@ -1618,10 +1626,10 @@ multiSelectDatasetInputField : Maybe Option -> SelectionConfig -> RightSlot -> I
 multiSelectDatasetInputField maybeOption selectionConfig rightSlot index =
     let
         idAttr =
-            id ("input-filter-" ++ String.fromInt index)
+            id ("input-value-" ++ String.fromInt index)
 
         classes =
-            [ ( "input-filter", True )
+            [ ( "input-value", True )
             ]
 
         typeAttr =
@@ -1643,7 +1651,7 @@ multiSelectDatasetInputField maybeOption selectionConfig rightSlot index =
                 input
                     [ disabled True
                     , idAttr
-                    , Html.Attributes.attribute "part" "input-filter"
+                    , Html.Attributes.attribute "part" "input-value"
                     , placeholderAttribute
                     , classList classes
                     ]
@@ -1653,7 +1661,7 @@ multiSelectDatasetInputField maybeOption selectionConfig rightSlot index =
                 input
                     [ typeAttr
                     , idAttr
-                    , Html.Attributes.attribute "part" "input-filter"
+                    , Html.Attributes.attribute "part" "input-value"
                     , classList classes
                     , onInput (UpdateOptionValueValue index)
                     , value valueString
@@ -1672,7 +1680,10 @@ singleSelectDatasetInputField : Maybe Option -> SelectionConfig -> Bool -> Html 
 singleSelectDatasetInputField maybeOption selectionMode hasSelectedOption =
     let
         idAttr =
-            id "input-filter"
+            id "input-value"
+
+        partAttr =
+            Html.Attributes.attribute "part" "input-value"
 
         typeAttr =
             type_ "text"
@@ -1705,7 +1716,7 @@ singleSelectDatasetInputField maybeOption selectionMode hasSelectedOption =
         input
             [ disabled True
             , idAttr
-            , Html.Attributes.attribute "part" "input-filter"
+            , partAttr
             , placeholderAttribute
             ]
             []
@@ -1714,7 +1725,7 @@ singleSelectDatasetInputField maybeOption selectionMode hasSelectedOption =
         input
             [ typeAttr
             , idAttr
-            , Html.Attributes.attribute "part" "input-filter"
+            , partAttr
             , onBlurAttr
             , onFocusAttr
             , onInput (UpdateOptionValueValue 0)
@@ -2003,6 +2014,12 @@ optionToValueHtml enableSingleItemRemoval option =
 
                 DisableSingleItemRemoval ->
                     text ""
+
+        partAttr =
+            Html.Attributes.attribute "part" "value"
+
+        highlightPartAttr =
+            Html.Attributes.attribute "part" "value highlighted-value"
     in
     case option of
         Option display optionLabel optionValue _ _ _ ->
@@ -2016,6 +2033,7 @@ optionToValueHtml enableSingleItemRemoval option =
                 OptionSelected _ ->
                     div
                         [ class "value"
+                        , partAttr
                         ]
                         [ valueLabelHtml (OptionLabel.getLabelString optionLabel) optionValue, removalHtml ]
 
@@ -2025,6 +2043,7 @@ optionToValueHtml enableSingleItemRemoval option =
                             [ ( "value", True )
                             , ( "highlighted-value", True )
                             ]
+                        , highlightPartAttr
                         ]
                         [ valueLabelHtml (OptionLabel.getLabelString optionLabel) optionValue, removalHtml ]
 
@@ -2045,6 +2064,7 @@ optionToValueHtml enableSingleItemRemoval option =
                 OptionSelected _ ->
                     div
                         [ class "value"
+                        , partAttr
                         , mousedownPreventDefault
                             (ToggleSelectedValueHighlight optionValue)
                         ]
@@ -2056,6 +2076,7 @@ optionToValueHtml enableSingleItemRemoval option =
                             [ ( "value", True )
                             , ( "highlighted-value", True )
                             ]
+                        , highlightPartAttr
                         ]
                         [ valueLabelHtml (OptionLabel.getLabelString optionLabel) optionValue, removalHtml ]
 
@@ -2074,7 +2095,7 @@ optionToValueHtml enableSingleItemRemoval option =
                     text ""
 
                 OptionSelected _ ->
-                    div [ class "value" ] [ text (OptionLabel.getLabelString optionLabel) ]
+                    div [ class "value", partAttr ] [ text (OptionLabel.getLabelString optionLabel) ]
 
                 OptionSelectedHighlighted _ ->
                     text ""
@@ -2168,6 +2189,46 @@ rightSlotHtml rightSlot interactionState selectedIndex =
 defaultLoadingIndicator : Html msg
 defaultLoadingIndicator =
     div [ class "default-loading-indicator" ] []
+
+
+valueCasingPartsAttribute : SelectionMode.SelectionConfig -> Html.Attribute Msg
+valueCasingPartsAttribute selectionConfig =
+    let
+        outputStyleStr =
+            case SelectionMode.getOutputStyle selectionConfig of
+                CustomHtml ->
+                    "output-style-custom-html"
+
+                Datalist ->
+                    "output-style-datalist"
+
+        selectionModeStr =
+            case SelectionMode.getSelectionMode selectionConfig of
+                SelectionMode.SingleSelect ->
+                    "single"
+
+                SelectionMode.MultiSelect ->
+                    "multi"
+
+        interactionStateStr =
+            case SelectionMode.getInteractionState selectionConfig of
+                SelectionMode.Focused ->
+                    "focused"
+
+                SelectionMode.Unfocused ->
+                    "unfocused"
+
+                SelectionMode.Disabled ->
+                    "disabled"
+    in
+    Html.Attributes.attribute "part"
+        (String.join " "
+            [ "value-casing"
+            , outputStyleStr
+            , selectionModeStr
+            , interactionStateStr
+            ]
+        )
 
 
 makeCommandMessagesWhenValuesChanges : List Option -> Maybe OptionValue -> Cmd Msg
