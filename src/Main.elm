@@ -2203,15 +2203,15 @@ rightSlotHtml rightSlot interactionState selectedIndex =
         ShowAddButton ->
             div [ id "add-remove-buttons" ]
                 [ div [ id "add-button-wrapper", onClick (AddMultiSelectValue selectedIndex) ]
-                    [ addButtonSlot ]
+                    [ addButtonSlot selectedIndex ]
                 ]
 
         ShowAddAndRemoveButtons ->
             div [ id "add-remove-buttons" ]
                 [ div [ id "add-button-wrapper", onClick (AddMultiSelectValue selectedIndex) ]
-                    [ addButtonSlot ]
+                    [ addButtonSlot selectedIndex ]
                 , div [ id "remove-button-wrapper", onClick (RemoveMultiSelectValue selectedIndex) ]
-                    [ remoteButtonSlot ]
+                    [ remoteButtonSlot selectedIndex ]
                 ]
 
 
@@ -2220,19 +2220,19 @@ defaultLoadingIndicator =
     div [ class "default-loading-indicator" ] []
 
 
-addButtonSlot : Html msg
-addButtonSlot =
+addButtonSlot : Int -> Html msg
+addButtonSlot index =
     node "slot"
-        [ name "add-value-button"
+        [ name ("add-value-button-" ++ String.fromInt index)
         ]
         [ defaultAddButton
         ]
 
 
-remoteButtonSlot : Html msg
-remoteButtonSlot =
+remoteButtonSlot : Int -> Html msg
+remoteButtonSlot index =
     node "slot"
-        [ name "remove-value-button"
+        [ name ("remove-value-button-" ++ String.fromInt index)
         ]
         [ defaultRemoveButton
         ]
