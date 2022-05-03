@@ -1727,6 +1727,10 @@ class MuchSelect extends HTMLElement {
         font-size: 75%;
       }
 
+      #add-remove-buttons {
+        display: flex;
+      }
+
       .highlight { color: blue }
 
       /* This loading indicator was copied (almost exactly)

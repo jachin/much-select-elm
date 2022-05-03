@@ -2202,19 +2202,50 @@ rightSlotHtml rightSlot interactionState selectedIndex =
 
         ShowAddButton ->
             div [ id "add-remove-buttons" ]
-                [ button [ onClick (AddMultiSelectValue selectedIndex) ] [ text "add" ]
+                [ div [ id "add-button-wrapper", onClick (AddMultiSelectValue selectedIndex) ]
+                    [ addButtonSlot ]
                 ]
 
         ShowAddAndRemoveButtons ->
             div [ id "add-remove-buttons" ]
-                [ button [ onClick (AddMultiSelectValue selectedIndex) ] [ text "add" ]
-                , button [ onClick (RemoveMultiSelectValue selectedIndex) ] [ text "remove" ]
+                [ div [ id "add-button-wrapper", onClick (AddMultiSelectValue selectedIndex) ]
+                    [ addButtonSlot ]
+                , div [ id "remove-button-wrapper", onClick (RemoveMultiSelectValue selectedIndex) ]
+                    [ remoteButtonSlot ]
                 ]
 
 
 defaultLoadingIndicator : Html msg
 defaultLoadingIndicator =
     div [ class "default-loading-indicator" ] []
+
+
+addButtonSlot : Html msg
+addButtonSlot =
+    node "slot"
+        [ name "add-value-button"
+        ]
+        [ defaultAddButton
+        ]
+
+
+remoteButtonSlot : Html msg
+remoteButtonSlot =
+    node "slot"
+        [ name "remove-value-button"
+        ]
+        [ defaultRemoveButton
+        ]
+
+
+defaultAddButton : Html msg
+defaultAddButton =
+    button [] [ text "+" ]
+
+
+defaultRemoveButton : Html msg
+defaultRemoveButton =
+    button [] [ text "✘" ]
 
 
 valueCasingPartsAttribute : SelectionMode.SelectionConfig -> Html.Attribute Msg
