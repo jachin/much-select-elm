@@ -21,6 +21,7 @@ port module Ports exposing
     , optionSortingChangedReceiver
     , optionsReplacedReceiver
     , optionsUpdated
+    , outputStyleChangedReceiver
     , placeholderChangedReceiver
     , removeOptionsReceiver
     , requestAllOptionsReceiver
@@ -173,3 +174,6 @@ port valueCasingDimensionsChangedReceiver : ({ width : Float, height : Float } -
 
 
 port optionSortingChangedReceiver : (String -> msg) -> Sub msg
+
+
+port outputStyleChangedReceiver : (String -> msg) -> Sub msg
