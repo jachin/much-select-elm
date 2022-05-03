@@ -1620,6 +1620,53 @@ class MuchSelect extends HTMLElement {
 
       #wrapper {
         min-width: ${this._minimumWidth}px;
+        margin-top: auto;
+        margin-bottom: auto;
+        position: relative;
+      }
+
+      #value-casing {
+        border: 1px solid black;
+
+        display: flex;
+      }
+
+      #value-casing.output-style-custom-html {
+        cursor: pointer;
+      }
+
+      #value-casing.output-style-custom-html #input-filter {
+        flex-grow: 3;
+        flex-shrink: 0;
+        flex-basis: 10%;
+
+        /* We don't want a border because the value-casing will supply the border for
+          this input.
+        */
+        border: none;
+
+        /*
+        We do not want an outline on the input (filter) because we want everything
+        inside of the #value-casing to (kinda) act like a text input.
+        */
+        outline: none;
+        background: none;
+      }
+
+      #value-casing.output-style-custom-html.multi {
+        /*
+        In multi select mode, let's let the selected values line up on a row and then wrap.
+        */
+        flex-flow: row wrap;
+      }
+
+      #value-casing.output-style-custom-html.multi .value {
+        border: 3px solid black;
+        min-width: 10px;
+
+        flex-grow: 0;
+        flex-shrink: 1;
+        flex-basis: auto;
       }
 
       .value .remove-option::after {
