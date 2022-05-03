@@ -3,7 +3,6 @@ port module Ports exposing
     , allOptions
     , allowCustomOptionsReceiver
     , blurInput
-    , customOptionHintReceiver
     , customOptionSelected
     , deselectOptionReceiver
     , disableChangedReceiver
@@ -22,6 +21,7 @@ port module Ports exposing
     , optionSortingChangedReceiver
     , optionsReplacedReceiver
     , optionsUpdated
+    , outputStyleChangedReceiver
     , placeholderChangedReceiver
     , removeOptionsReceiver
     , requestAllOptionsReceiver
@@ -167,13 +167,13 @@ port maxDropdownItemsChangedReceiver : (Int -> msg) -> Sub msg
 port showDropdownFooterChangedReceiver : (Bool -> msg) -> Sub msg
 
 
-port allowCustomOptionsReceiver : (Bool -> msg) -> Sub msg
-
-
-port customOptionHintReceiver : (Maybe String -> msg) -> Sub msg
+port allowCustomOptionsReceiver : (( Bool, String ) -> msg) -> Sub msg
 
 
 port valueCasingDimensionsChangedReceiver : ({ width : Float, height : Float } -> msg) -> Sub msg
 
 
 port optionSortingChangedReceiver : (String -> msg) -> Sub msg
+
+
+port outputStyleChangedReceiver : (String -> msg) -> Sub msg

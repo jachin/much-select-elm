@@ -1,15 +1,10 @@
 module Option.Sorting exposing (suite)
 
 import Expect
-import Option
-    exposing
-        ( Option(..)
-        , newOption
-        , optionGroupToString
-        , setGroupWithString
-        )
+import Option exposing (Option(..), newOption, optionGroupToString, setGroupWithString)
 import OptionLabel exposing (optionLabelToString)
 import OptionSorting exposing (OptionSort(..), sortOptions)
+import OptionValue exposing (optionValueToString)
 import OptionsUtilities exposing (findHighestAutoSortRank)
 import SortRank exposing (newMaybeAutoSortRank)
 import Test exposing (Test, describe, test)
@@ -107,6 +102,9 @@ optionToDebuggingString option =
 
         EmptyOption _ optionLabel ->
             optionLabelToString optionLabel
+
+        DatalistOption _ optionValue ->
+            optionValueToString optionValue
 
 
 suite : Test

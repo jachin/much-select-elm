@@ -9,6 +9,7 @@ import Option
         , setDescriptionWithString
         , setLabelWithString
         )
+import OptionValue
 import OptionsUtilities
     exposing
         ( addAdditionalOptionsToOptionList
@@ -16,7 +17,7 @@ import OptionsUtilities
         , addAndSelectOptionsInOptionsListByString
         , mergeTwoListsOfOptionsPreservingSelectedOptions
         )
-import SelectionMode exposing (SelectedItemPlacementMode(..))
+import OutputStyle exposing (SelectedItemPlacementMode(..))
 import SortRank exposing (newMaybeAutoSortRank)
 import Test exposing (Test, describe, test)
 
@@ -41,6 +42,18 @@ wolfClub =
 
 waveshaper =
     newOption "Waveshaper" Nothing
+
+
+theMidnight =
+    Option.newSelectedDatalisOption (OptionValue.stringToOptionValue "The Midnight") 0
+
+
+futureCop =
+    Option.newSelectedDatalisOption (OptionValue.stringToOptionValue "Futurecop!") 1
+
+
+archadeHigh =
+    Option.newSelectedDatalisOption (OptionValue.stringToOptionValue "Arcade High") 2
 
 
 suite : Test
@@ -172,5 +185,30 @@ suite =
                     Expect.equal
                         wolfClub
                         (merge2Options (newOption "Wolf Club" Nothing) wolfClub)
+            ]
+        , describe "to a datalist list of options"
+            [ test "add to the beginning of the selected options" <|
+                \_ ->
+                    Expect.equalLists
+                        ([ theMidnight, futureCop, archadeHigh ] |> OptionsUtilities.addNewEmptyOptionAtIndex 0)
+                        [ Option.newSelectedDatalisOption OptionValue.EmptyOptionValue 0
+                        , Option.selectOption 1 theMidnight
+                        , Option.selectOption 2 futureCop
+                        , Option.selectOption 3 archadeHigh
+                        ]
+            , test "add to the middle of the selected options" <|
+                \_ ->
+                    Expect.equalLists
+                        ([ theMidnight, futureCop, archadeHigh ] |> OptionsUtilities.addNewEmptyOptionAtIndex 1)
+                        [ theMidnight
+                        , Option.newSelectedDatalisOption OptionValue.EmptyOptionValue 1
+                        , Option.selectOption 2 futureCop
+                        , Option.selectOption 3 archadeHigh
+                        ]
+            , test "add to the end of the selected options" <|
+                \_ ->
+                    Expect.equalLists
+                        ([ theMidnight, futureCop, archadeHigh ] |> OptionsUtilities.addNewEmptyOptionAtIndex 3)
+                        [ theMidnight, futureCop, archadeHigh, Option.newSelectedDatalisOption OptionValue.EmptyOptionValue 3 ]
             ]
         ]

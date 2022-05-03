@@ -11,6 +11,7 @@ import Option
         , setGroupWithString
         )
 import OptionLabel exposing (optionLabelToString)
+import OptionValue exposing (optionValueToString)
 import OptionsUtilities exposing (groupOptionsInOrder)
 import Test exposing (Test, describe, test)
 
@@ -83,6 +84,9 @@ optionToDebuggingString option =
 
         EmptyOption _ optionLabel ->
             optionLabelToString optionLabel
+
+        DatalistOption _ optionValue ->
+            optionValueToString optionValue
 
 
 optionGroupToDebuggingString : OptionGroup -> String

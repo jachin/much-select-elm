@@ -275,6 +275,15 @@ class MuchSelect extends HTMLElement {
     this._selectedValueEncoding = "comma";
 
     /**
+     * Specify how the much-select should be rendered. The following styles are all options
+     *  - customHtml (default)
+     *  - datalist
+     * @type {string}
+     * @private
+     */
+    this._outputStyle = "customHtml";
+
+    /**
      * @type {null|object}
      * @private
      */
@@ -365,6 +374,7 @@ class MuchSelect extends HTMLElement {
       "multi-select",
       "multi-select-single-item-removal",
       "option-sorting",
+      "output-style",
       "placeholder",
       "search-string-minimum-length",
       "selected-option-goes-to-top",
@@ -378,8 +388,7 @@ class MuchSelect extends HTMLElement {
   attributeChangedCallback(name, oldValue, newValue) {
     if (name === "allow-custom-options") {
       if (oldValue !== newValue) {
-        this.allowCustomOptions = newValue;
-        this.customOptionHint = newValue;
+        this.updateAllowCustomOptions(newValue);
       }
     } else if (name === "disabled") {
       if (oldValue !== newValue) {
@@ -414,6 +423,10 @@ class MuchSelect extends HTMLElement {
       if (oldValue !== newValue) {
         this.optionSorting = newValue;
       }
+    } else if (name === "output-style") {
+      if (oldValue !== newValue) {
+        this.outputStyle = newValue;
+      }
     } else if (name === "search-string-minimum-length") {
       if (oldValue !== newValue) {
         this.searchStringMinimumLength = newValue;
@@ -444,14 +457,6 @@ class MuchSelect extends HTMLElement {
     this.parentDivPromise.then((parentDiv) => {
       const wrapperDiv = parentDiv.querySelector("#wrapper");
       this._resizeObserver.observe(wrapperDiv);
-
-      parentDiv.addEventListener("mousedown", (evt) => {
-        // This stops the dropdown from flashes when the user clicks
-        //  on an optgroup. And it kinda makes sense. we don't want
-        //  mousedown events escaping and effecting the DOM.
-        evt.stopImmediatePropagation();
-        evt.preventDefault();
-      });
     });
 
     // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
@@ -873,6 +878,15 @@ class MuchSelect extends HTMLElement {
       flags.optionSort = this.getAttribute("option-sorting");
     } else {
       flags.optionSort = "no-sorting";
+    }
+
+    if (
+      this.hasAttribute("output-style") &&
+      MuchSelect.isValidOutputStyle(this.getAttribute("output-style"))
+    ) {
+      flags.outputStyle = this.getAttribute("output-style");
+    } else {
+      flags.outputStyle = this.outputStyle;
     }
 
     flags.disabled = this.disabled;
@@ -1397,6 +1411,19 @@ class MuchSelect extends HTMLElement {
     );
   }
 
+  updateAllowCustomOptions(newValue) {
+    this.allowCustomOptions = newValue;
+    this.customOptionHint = newValue;
+
+    // noinspection JSUnresolvedVariable
+    this.appPromise.then((app) =>
+      app.ports.allowCustomOptionsReceiver.send(
+        this.allowCustomOptions,
+        this.customOptionHint
+      )
+    );
+  }
+
   get allowCustomOptions() {
     return this._allowCustomOptions;
   }
@@ -1409,6 +1436,7 @@ class MuchSelect extends HTMLElement {
     } else {
       this._allowCustomOptions = !!value;
     }
+    // TODO - This is wrong, we need to preserver the custom hit message if it's there.
     if (!this.eventsOnlyMode) {
       if (this._allowCustomOptions) {
         this.setAttribute("allow-custom-options", "true");
@@ -1416,11 +1444,6 @@ class MuchSelect extends HTMLElement {
         this.removeAttribute("allow-custom-options");
       }
     }
-
-    // noinspection JSUnresolvedVariable
-    this.appPromise.then((app) =>
-      app.ports.allowCustomOptionsReceiver.send(this._allowCustomOptions)
-    );
   }
 
   get customOptionHint() {
@@ -1443,11 +1466,6 @@ class MuchSelect extends HTMLElement {
         `Unexpected type for the customOptionHint, it should be a string but instead it is a: ${typeof value}`
       );
     }
-
-    // noinspection JSUnresolvedVariable
-    this.appPromise.then((app) =>
-      app.ports.customOptionHintReceiver.send(this._customOptionHint)
-    );
   }
 
   get selectedItemStaysInPlace() {
@@ -1550,6 +1568,31 @@ class MuchSelect extends HTMLElement {
     );
   }
 
+  /**
+   * @param {string} outputStyle
+   * @return boolean
+   * */
+  static isValidOutputStyle(outputStyle) {
+    return ["customHtml", "datalist"].includes(outputStyle);
+  }
+
+  get outputStyle() {
+    return this._outputStyle;
+  }
+
+  set outputStyle(value) {
+    if (MuchSelect.isValidOutputStyle(value)) {
+      this._outputStyle = value;
+
+      // noinspection JSUnresolvedVariable
+      this.appPromise.then((app) =>
+        app.ports.outputStyleChangedReceiver.send(this._outputStyle)
+      );
+    } else {
+      throw new Error(`Invalid output style: ${value}`);
+    }
+  }
+
   // eslint-disable-next-line class-methods-use-this
   get styleTag() {
     // noinspection CssInvalidPropertyValue
@@ -1576,71 +1619,22 @@ class MuchSelect extends HTMLElement {
       }
 
       #wrapper {
+        min-width: ${this._minimumWidth}px;
         margin-top: auto;
         margin-bottom: auto;
         position: relative;
-        min-width: ${this._minimumWidth}px;
-        font: -moz-field;
-        font: -webkit-small-control;
       }
 
-      /*
-        This value casing (and what's inside of it) is supposed to be the
-        "main event".
-      */
       #value-casing {
-        min-height: 34px;
-        cursor: pointer;
-        -moz-appearance: textfield;
-        -webkit-appearance: textfield;
-        background-color: white;
-        background-color: -moz-field;
-        border: 1px solid darkgray;
-        box-shadow: 1px 1px 1px 0 lightgray inset;
-        padding: 4px 3px 2px 3px;
         display: flex;
-        flex-flow: row nowrap;
       }
 
-      #value-casing:hover, #value-casing:focus {
-        /*
-        TODO: I'm not sure this is the best place or the best way to indicate this
-        "input" is focused.
-        */
-        outline: none;
-        border-color: blue;
-      }
-
-      #value-casing.multi {
-        flex-flow: row wrap;
-      }
-
-      #value-casing.disabled {
-        border: 1px solid lightgray;
+      #value-casing.output-style-custom-html {
+        border: 1px solid black;
         cursor: pointer;
       }
 
-      #value-casing .placeholder {
-        color: silver;
-        font-size: 25px;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        overflow: hidden;
-        flex-basis: auto;
-      }
-
-      #value-casing #input-filter {
-        /*
-        TODO, seems like the height and font-size should not be hardcoded.
-        */
-        height: 36px;
-        font-size: 25px;
-        /* The min-width let's the input shrink down as far as it needs to.
-        The with width lets it grow as much as it can.
-        */
-        min-width: 10px;
-        /* Let's give the input a bit more room than the selected values.
-        */
+      #value-casing.output-style-custom-html #input-filter {
         flex-grow: 3;
         flex-shrink: 0;
         flex-basis: 10%;
@@ -1658,50 +1652,15 @@ class MuchSelect extends HTMLElement {
         background: none;
       }
 
-      #input-filter:hover, #input-filter:focus {
+      #value-casing.output-style-custom-html.multi {
         /*
-        We do not want an outline on the input (filter) because we want everything
-        inside of the #value-casing to (kinda) act like a text input.
+        In multi select mode, let's let the selected values line up on a row and then wrap.
         */
-        outline: none;
-        background: white;
+        flex-flow: row wrap;
       }
 
-      #input-filter:disabled {
-        /*
-        Removing the default background color on the disabled input.
-        We might want to do some additional styling for "disabled"
-        much-selects but that should probably happen on the value-casing
-        div.
-        */
-        background: none;
-      }
-
-      #value-casing.single {
-        background-image: linear-gradient(to bottom, #fefefe, #f2f2f2);
-        background-repeat: repeat-x;
-      }
-
-      #value-casing.single.disabled {
-        background-image: none;
-      }
-
-      #value-casing.single.has-option-selected #selected-value {
-        padding: 3px;
-        font-size: 20px;
-        margin: 2px 2px;
-        min-width: 10px;
-      }
-
-      #value-casing.multi .value {
-        padding: 3px;
-        font-size: 20px;
-        color: white;
-        background-image: linear-gradient(to bottom, #4f6a8f, #88a2bc);
-        background-repeat: repeat-x;
-        margin: 2px 2px;
-        border-radius: 5px;
-        border: 3px solid #d99477;
+      #value-casing.output-style-custom-html.multi .value {
+        border: 3px solid black;
         min-width: 10px;
 
         flex-grow: 0;
@@ -1709,32 +1668,9 @@ class MuchSelect extends HTMLElement {
         flex-basis: auto;
       }
 
-      #value-casing.multi .value.highlighted-value {
-        background-image: linear-gradient(to bottom, #d99477, #efb680);
-        background-repeat: repeat-x;
-      }
-
       .value .remove-option::after {
         content: "x";
         padding-left: 5px;
-      }
-
-      #dropdown-indicator {
-        position: absolute;
-        right: 5px;
-        top: 15px;
-        cursor: pointer;
-        display: block;
-        transition: transform 0.25s;
-        font-family: "Times New Roman" serif;
-      }
-
-      #dropdown-indicator.down {
-        transform: rotate(180deg);
-      }
-
-      #dropdown-indicator.up {
-        transform: rotate(0deg);
       }
 
       slot[name='loading-indicator'] {
@@ -1744,26 +1680,20 @@ class MuchSelect extends HTMLElement {
         top: 10px;
       }
 
-      #clear-button-wrapper {
-        display: block;
-        position: absolute;
-        right: 3px;
-        top: 7px;
-        cursor: pointer;
-      }
-
       #dropdown {
-        background-color: #EEEEEE;
         visibility: hidden;
         position: absolute;
         left: 0;
-        font-size: 20px;
         display: inline-block;
         z-index: 10;
         max-height: 300px;
         overflow-y: auto;
         cursor: default;
+
+        background-color: white;
+        border: 1px solid black;
       }
+
       #dropdown.showing {
         visibility: visible;
       }
@@ -1771,46 +1701,34 @@ class MuchSelect extends HTMLElement {
         visibility: hidden;
       }
 
-      #dropdown-footer {
-        font-size: 50%;
-        text-align: center;
-        color: gray;
-        background-color: lightgray;
-        padding: 5px;
-      }
-
       .optgroup {
         background-color: gray;
-        font-size: 0.85rem;
-        font-weight: 300;
-        padding: 5px;
       }
+
       .option {
-        background-color: silver;
-        padding: 5px;
         cursor: pointer;
       }
 
       .option.selected {
-        background-color: darkslategrey;
-        color: ghostwhite;
-        cursor: pointer;
+        font-weight: bold;
       }
 
       .option.highlighted {
-        background-color: indigo;
-        color: ghostwhite;
+        background-color: black;
+        color: white;
       }
 
       .option.disabled {
-        background-color: LightGray;
-        color: silver;
         cursor: default;
+        color: gray;
       }
 
       .description {
-        font-size: 0.85rem;
-        padding: 3px;
+        font-size: 75%;
+      }
+
+      #add-remove-buttons {
+        display: flex;
       }
 
       .highlight { color: blue }

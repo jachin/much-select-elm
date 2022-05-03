@@ -1,4 +1,4 @@
-module OptionSearcher exposing (doesSearchStringFindNothing, simpleMatch, updateOptionsWithSearchStringAndCustomOption, updateSearchResultInOption)
+module OptionSearcher exposing (doesSearchStringFindNothing, simpleMatch, updateOptionsWithSearchStringAndCustomOption, updateOrAddCustomOption, updateSearchResultInOption)
 
 import Fuzzy exposing (Result, match)
 import Option exposing (Option(..), OptionDisplay(..))
@@ -6,15 +6,17 @@ import OptionLabel exposing (optionLabelToSearchString, optionLabelToString)
 import OptionPresentor exposing (tokenize)
 import OptionSearchFilter exposing (OptionSearchFilter, OptionSearchResult, descriptionHandicap, groupHandicap)
 import OptionsUtilities exposing (prependCustomOption, removeUnselectedCustomOptions)
+import OutputStyle exposing (CustomOptions(..), SearchStringMinimumLength(..))
 import PositiveInt exposing (PositiveInt)
-import SelectionMode exposing (CustomOptions(..), SelectionMode)
+import SearchString exposing (SearchString)
+import SelectionMode exposing (SelectionConfig, getCustomOptionHint, getSearchStringMinimumLength)
 
 
-updateOptionsWithSearchStringAndCustomOption : SelectionMode -> Maybe String -> String -> PositiveInt -> List Option -> List Option
-updateOptionsWithSearchStringAndCustomOption selectionMode maybeCustomOptionHint searchString searchStringMinimumLength options =
+updateOptionsWithSearchStringAndCustomOption : SelectionConfig -> SearchString -> List Option -> List Option
+updateOptionsWithSearchStringAndCustomOption selectionConfig searchString options =
     options
-        |> updateOrAddCustomOption maybeCustomOptionHint searchString selectionMode
-        |> updateOptionsWithSearchString searchString searchStringMinimumLength
+        |> updateOrAddCustomOption searchString selectionConfig
+        |> updateOptionsWithSearchString searchString (selectionConfig |> getSearchStringMinimumLength)
 
 
 simpleMatch : String -> String -> Result
@@ -59,12 +61,12 @@ search string option =
     }
 
 
-updateSearchResultInOption : String -> Option -> Option
+updateSearchResultInOption : SearchString -> Option -> Option
 updateSearchResultInOption searchString option =
     let
         searchResult : OptionSearchResult
         searchResult =
-            search searchString option
+            search (SearchString.toString searchString) option
 
         labelTokens =
             tokenize (option |> Option.getOptionLabel |> optionLabelToString) searchResult.labelMatch
@@ -105,13 +107,13 @@ updateSearchResultInOption searchString option =
         option
 
 
-updateOrAddCustomOption : Maybe String -> String -> SelectionMode -> List Option -> List Option
-updateOrAddCustomOption maybeCustomOptionHint searchString selectionMode options =
+updateOrAddCustomOption : SearchString -> SelectionConfig -> List Option -> List Option
+updateOrAddCustomOption searchString selectionMode options =
     let
         showCustomOption =
-            if String.length searchString > 0 then
+            if SearchString.length searchString > 0 then
                 case SelectionMode.getCustomOptions selectionMode of
-                    AllowCustomOptions ->
+                    AllowCustomOptions _ ->
                         True
 
                     NoCustomOptions ->
@@ -130,14 +132,14 @@ updateOrAddCustomOption maybeCustomOptionHint searchString selectionMode options
                             |> Option.getOptionLabel
                             |> optionLabelToSearchString
                         )
-                            == String.toLower searchString
+                            == SearchString.toLower searchString
                             && not (Option.isCustomOption option_)
                     )
                 |> not
     in
     if showCustomOption && noExactOptionLabelMatch then
         prependCustomOption
-            maybeCustomOptionHint
+            (selectionMode |> getCustomOptionHint)
             searchString
             (removeUnselectedCustomOptions options)
 
@@ -145,11 +147,16 @@ updateOrAddCustomOption maybeCustomOptionHint searchString selectionMode options
         removeUnselectedCustomOptions options
 
 
-updateOptionsWithSearchString : String -> PositiveInt -> List Option -> List Option
+updateOptionsWithSearchString : SearchString -> SearchStringMinimumLength -> List Option -> List Option
 updateOptionsWithSearchString searchString searchStringMinimumLength options =
     let
         doOptionFiltering =
-            PositiveInt.lessThanOrEqualTo searchStringMinimumLength (String.length searchString)
+            case searchStringMinimumLength of
+                FixedSearchStringMinimumLength positiveInt ->
+                    PositiveInt.lessThanOrEqualTo positiveInt (SearchString.length searchString)
+
+                NoMinimumToSearchStringLength ->
+                    True
     in
     if doOptionFiltering then
         options
@@ -166,19 +173,24 @@ updateOptionsWithSearchString searchString searchStringMinimumLength options =
                 )
 
 
-doesSearchStringFindNothing : String -> PositiveInt -> List Option -> Bool
+doesSearchStringFindNothing : SearchString -> SearchStringMinimumLength -> List Option -> Bool
 doesSearchStringFindNothing searchString searchStringMinimumLength options =
-    if String.length searchString <= PositiveInt.toInt searchStringMinimumLength then
-        False
+    case searchStringMinimumLength of
+        NoMinimumToSearchStringLength ->
+            True
 
-    else
-        List.all
-            (\option ->
-                case Option.getMaybeOptionSearchFilter option of
-                    Just optionSearchFilter ->
-                        optionSearchFilter.bestScore > 1000
+        FixedSearchStringMinimumLength num ->
+            if SearchString.length searchString <= PositiveInt.toInt num then
+                False
 
-                    Nothing ->
-                        False
-            )
-            options
+            else
+                List.all
+                    (\option ->
+                        case Option.getMaybeOptionSearchFilter option of
+                            Just optionSearchFilter ->
+                                optionSearchFilter.bestScore > 1000
+
+                            Nothing ->
+                                False
+                    )
+                    options

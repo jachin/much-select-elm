@@ -5,13 +5,17 @@ import Main exposing (figureOutWhichOptionsToShowInTheDropdown)
 import Option
 import OptionSearcher exposing (doesSearchStringFindNothing)
 import OptionSorting exposing (sortOptionsBySearchFilterTotalScore)
+import OutputStyle exposing (MaxDropdownItems(..), SearchStringMinimumLength(..))
 import PositiveInt
+import SearchString
 import SelectionMode
 import Test exposing (Test, describe, test)
 
 
-selectionMode =
-    SelectionMode.SingleSelect SelectionMode.NoCustomOptions SelectionMode.SelectedItemStaysInPlace
+selectionConfig =
+    SelectionMode.defaultSelectionConfig
+        |> SelectionMode.setSearchStringMinimumLength searchStringMinLengthTwo
+        |> SelectionMode.setAllowCustomOptionsWithBool False Nothing
 
 
 minervaryaPentali =
@@ -57,6 +61,10 @@ monnies =
     [ dinar, ouguiya, pound ]
 
 
+searchStringMinLengthTwo =
+    FixedSearchStringMinimumLength (PositiveInt.new 2)
+
+
 suite : Test
 suite =
     describe "Filtering Search Results"
@@ -64,25 +72,31 @@ suite =
             [ test "if some of the search string matches the group" <|
                 \_ ->
                     Expect.equal
-                        (OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionMode Nothing "frog" (PositiveInt.new 2) (frogs ++ monnies)
-                            |> figureOutWhichOptionsToShowInTheDropdown selectionMode (PositiveInt.new 10)
+                        (OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionConfig
+                            (SearchString.new "frog")
+                            (frogs ++ monnies)
+                            |> figureOutWhichOptionsToShowInTheDropdown selectionConfig
                             |> List.length
                         )
                         4
             , test "if some of the search string matches the group we should make sure the dropdown contains just the options that should be there" <|
                 \_ ->
                     Expect.equal
-                        (OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionMode Nothing "frog" (PositiveInt.new 2) (frogs ++ monnies)
-                            |> figureOutWhichOptionsToShowInTheDropdown selectionMode (PositiveInt.new 10)
-                            |> doesSearchStringFindNothing "frog" (PositiveInt.new 10)
+                        (OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionConfig
+                            (SearchString.new "frog")
+                            (frogs ++ monnies)
+                            |> figureOutWhichOptionsToShowInTheDropdown selectionConfig
+                            |> doesSearchStringFindNothing (SearchString.new "frog") searchStringMinLengthTwo
                         )
                         False
             , test "if some of the search string matches a group and a option the option should be first" <|
                 \_ ->
                     Expect.equal
-                        (OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionMode Nothing "frog" (PositiveInt.new 2) (frogs ++ monnies)
+                        (OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionConfig
+                            (SearchString.new "frog")
+                            (frogs ++ monnies)
                             |> sortOptionsBySearchFilterTotalScore
-                            |> figureOutWhichOptionsToShowInTheDropdown selectionMode (PositiveInt.new 10)
+                            |> figureOutWhichOptionsToShowInTheDropdown selectionConfig
                             |> List.head
                             |> Maybe.map Option.getOptionValueAsString
                         )
@@ -90,9 +104,11 @@ suite =
             , test "if some of the search string matches a label that option should be first" <|
                 \_ ->
                     Expect.equal
-                        (OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionMode Nothing "pent" (PositiveInt.new 2) (frogs ++ monnies)
+                        (OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionConfig
+                            (SearchString.new "pent")
+                            (frogs ++ monnies)
                             |> sortOptionsBySearchFilterTotalScore
-                            |> figureOutWhichOptionsToShowInTheDropdown selectionMode (PositiveInt.new 10)
+                            |> figureOutWhichOptionsToShowInTheDropdown selectionConfig
                             |> List.head
                             |> Maybe.map Option.getOptionValueAsString
                         )
@@ -100,9 +116,11 @@ suite =
             , test "if some of the search string matches a label that option should be first even if it's not the first option in the list" <|
                 \_ ->
                     Expect.equal
-                        (OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionMode Nothing "yiya" (PositiveInt.new 2) (frogs ++ monnies)
+                        (OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionConfig
+                            (SearchString.new "yiya")
+                            (frogs ++ monnies)
                             |> sortOptionsBySearchFilterTotalScore
-                            |> figureOutWhichOptionsToShowInTheDropdown selectionMode (PositiveInt.new 10)
+                            |> figureOutWhichOptionsToShowInTheDropdown selectionConfig
                             |> List.head
                             |> Maybe.map Option.getOptionValueAsString
                         )
