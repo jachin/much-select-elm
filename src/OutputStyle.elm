@@ -54,6 +54,17 @@ type alias SingleSelectCustomHtmlFields =
     }
 
 
+defaultSingleSelectCustomHtmlFields : SingleSelectCustomHtmlFields
+defaultSingleSelectCustomHtmlFields =
+    { customOptions = NoCustomOptions
+    , selectedItemPlacementMode = SelectedItemStaysInPlace
+    , maxDropdownItems = NoLimitToDropdownItems
+    , searchStringMinimumLength = FixedSearchStringMinimumLength (PositiveInt.new 2)
+    , dropdownState = Collapsed
+    , dropdownStyle = NoFooter
+    }
+
+
 type alias MultiSelectCustomHtmlFields =
     { customOptions : CustomOptions
     , singleItemRemoval : SingleItemRemoval

@@ -118,6 +118,7 @@ import Ports
         , optionSortingChangedReceiver
         , optionsReplacedReceiver
         , optionsUpdated
+        , outputStyleChangedReceiver
         , placeholderChangedReceiver
         , removeOptionsReceiver
         , requestAllOptionsReceiver
@@ -195,6 +196,7 @@ type Msg
     | MultiSelectSingleItemRemovalAttributeChanged Bool
     | SearchStringMinimumLengthAttributeChanged Int
     | SelectedItemStaysInPlaceChanged Bool
+    | OutputStyleChanged String
     | SelectHighlightedOption
     | DeleteInputForSingleSelect
     | EscapeKeyInInputFilter
@@ -666,6 +668,22 @@ update msg model =
               }
             , Cmd.none
             )
+
+        OutputStyleChanged newOutputStyleString ->
+            case SelectionMode.stringToOutputStyle newOutputStyleString of
+                Ok outputStyle ->
+                    ( { model
+                        | selectionConfig =
+                            SelectionMode.setOutputStyle
+                                outputStyle
+                                model.selectionConfig
+                      }
+                    , Cmd.none
+                    )
+
+                Err _ ->
+                    -- TODO Report Error
+                    ( model, Cmd.none )
 
         MultiSelectSingleItemRemovalAttributeChanged shouldEnableMultiSelectSingleItemRemoval ->
             let
@@ -2201,16 +2219,16 @@ rightSlotHtml rightSlot interactionState selectedIndex =
                 ]
 
         ShowAddButton ->
-            div [ id "add-remove-buttons" ]
-                [ div [ id "add-button-wrapper", onClick (AddMultiSelectValue selectedIndex) ]
+            div [ class "add-remove-buttons" ]
+                [ div [ class "add-button-wrapper", onClick (AddMultiSelectValue selectedIndex) ]
                     [ addButtonSlot selectedIndex ]
                 ]
 
         ShowAddAndRemoveButtons ->
-            div [ id "add-remove-buttons" ]
-                [ div [ id "add-button-wrapper", onClick (AddMultiSelectValue selectedIndex) ]
+            div [ class "add-remove-buttons" ]
+                [ div [ class "add-button-wrapper", onClick (AddMultiSelectValue selectedIndex) ]
                     [ addButtonSlot selectedIndex ]
-                , div [ id "remove-button-wrapper", onClick (RemoveMultiSelectValue selectedIndex) ]
+                , div [ class "remove-button-wrapper", onClick (RemoveMultiSelectValue selectedIndex) ]
                     [ remoteButtonSlot selectedIndex ]
                 ]
 
@@ -2526,6 +2544,7 @@ subscriptions _ =
         , showDropdownFooterChangedReceiver ShowDropdownFooterChanged
         , valueCasingDimensionsChangedReceiver ValueCasingWidthUpdate
         , valueChangedReceiver ValueChanged
+        , outputStyleChangedReceiver OutputStyleChanged
         ]
 
 

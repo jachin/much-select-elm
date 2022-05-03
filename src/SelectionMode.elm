@@ -27,6 +27,7 @@ module SelectionMode exposing
     , setIsFocused
     , setMaxDropdownItems
     , setMultiSelectModeWithBool
+    , setOutputStyle
     , setSearchStringMinimumLength
     , setSelectedItemStaysInPlaceWithBool
     , setSelectionMode
@@ -37,19 +38,7 @@ module SelectionMode exposing
     , stringToOutputStyle
     )
 
-import OutputStyle
-    exposing
-        ( CustomOptionHint
-        , CustomOptions(..)
-        , DropdownState(..)
-        , DropdownStyle(..)
-        , MaxDropdownItems(..)
-        , MultiSelectOutputStyle(..)
-        , SearchStringMinimumLength(..)
-        , SelectedItemPlacementMode(..)
-        , SingleItemRemoval(..)
-        , SingleSelectOutputStyle(..)
-        )
+import OutputStyle exposing (CustomOptionHint, CustomOptions(..), DropdownState(..), DropdownStyle(..), MaxDropdownItems(..), MultiSelectOutputStyle(..), SearchStringMinimumLength(..), SelectedItemPlacementMode(..), SingleItemRemoval(..), SingleSelectOutputStyle(..), defaultSingleSelectCustomHtmlFields)
 import PositiveInt
 
 
@@ -238,6 +227,31 @@ getOutputStyle selectionConfig =
 
                 MultiSelectDataList ->
                     Datalist
+
+
+setOutputStyle : OutputStyle -> SelectionConfig -> SelectionConfig
+setOutputStyle outputStyle selectionConfig =
+    -- TODO when changing output styles we should try to account for as much as we can, including seeing if we can
+    --   - get the options in the right shape
+    --   - any attribute that are set that might be relevant for the new output style
+    case outputStyle of
+        CustomHtml ->
+            case selectionConfig of
+                SingleSelectConfig singleSelectOutputStyle placeholder interactionState ->
+                    case singleSelectOutputStyle of
+                        SingleSelectCustomHtml _ ->
+                            selectionConfig
+
+                        SingleSelectDatalist ->
+                            SingleSelectConfig (SingleSelectCustomHtml defaultSingleSelectCustomHtmlFields) placeholder interactionState
+
+                MultiSelectConfig _ _ _ ->
+                    -- TODO Finish filling this in
+                    selectionConfig
+
+        Datalist ->
+            -- TODO Finish filling this in
+            selectionConfig
 
 
 getCustomOptions : SelectionConfig -> CustomOptions
