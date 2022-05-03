@@ -395,3 +395,78 @@ much-select::part(value highlighted-value) {
     background-image: linear-gradient(to bottom, #d99477, #efb680);
     background-repeat: repeat-x;
 }
+
+much-select::part(dropdown-indicator) {
+    position: absolute;
+    right: 5px;
+    top: 15px;
+    cursor: pointer;
+    display: block;
+    transition: transform 0.25s;
+    font-family: "Times New Roman", serif;
+}
+
+much-select::part(dropdown-indicator up) {
+    transform: rotate(180deg);
+}
+
+much-select::part(dropdown-indicator down) {
+    transform: rotate(0deg);
+}
+
+much-select::part(clear-button-wrapper) {
+    display: block;
+    position: absolute;
+    right: 3px;
+    top: 7px;
+    cursor: pointer;
+}
+
+much-select::part(dropdown) {
+    background-color: #EEEEEE;
+    font-size: 20px;
+    max-height: 300px;
+}
+
+much-select::part(dropdown-optgroup) {
+    background-color: gray;
+    font-size: 0.85rem;
+    font-weight: 300;
+    padding: 5px;
+}
+
+much-select::part(dropdown-option) {
+    background-color: silver;
+    padding: 5px;
+    cursor: pointer;
+}
+
+much-select::part(dropdown-option selected) {
+    background-color: silver;
+    padding: 5px;
+    cursor: pointer;
+}
+
+much-select::part(dropdown-option highlighted) {
+    background-color: indigo;
+    color: ghostwhite;
+}
+
+much-select::part(dropdown-option disabled) {
+    background-color: LightGray;
+    color: silver;
+    cursor: default;
+}
+
+much-select::part(dropdown-option-description) {
+    font-size: 0.85rem;
+    padding: 3px;
+}
+
+much-select::part(dropdown-footer) {
+    font-size: 50%;
+    text-align: center;
+    color: gray;
+    background-color: lightgray;
+    padding: 5px;
+}

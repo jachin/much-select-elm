@@ -1766,9 +1766,21 @@ dropdownIndicator interactionState transitioning =
 
                         SelectionMode.Disabled ->
                             []
+
+                partAttr =
+                    case interactionState of
+                        SelectionMode.Focused ->
+                            Html.Attributes.attribute "part" "dropdown-indicator down"
+
+                        SelectionMode.Unfocused ->
+                            Html.Attributes.attribute "part" "dropdown-indicator up"
+
+                        SelectionMode.Disabled ->
+                            Html.Attributes.attribute "part" "dropdown-indicator"
             in
             div
                 [ id "dropdown-indicator"
+                , partAttr
                 , classList classes
                 , onMouseDownStopPropagationAndPreventDefault action
                 , onMouseUpStopPropagationAndPreventDefault NoOp
@@ -1810,7 +1822,10 @@ dropdown selectionMode options searchString (ValueCasing valueCasingWidth valueC
 
         dropdownFooterHtml =
             if showDropdownFooter selectionMode && List.length optionsForTheDropdown < List.length options then
-                div [ id "dropdown-footer" ]
+                div
+                    [ id "dropdown-footer"
+                    , Html.Attributes.attribute "part" "dropdown-footer"
+                    ]
                     [ text
                         ("showing "
                             ++ (optionsForTheDropdown |> List.length |> String.fromInt)
@@ -1829,6 +1844,7 @@ dropdown selectionMode options searchString (ValueCasing valueCasingWidth valueC
     else
         div
             [ id "dropdown"
+            , Html.Attributes.attribute "part" "dropdown"
             , classList [ ( "showing", showDropdown selectionMode ), ( "hiding", not (showDropdown selectionMode) ) ]
             , style "top"
                 (String.fromFloat valueCasingHeight ++ "px")
@@ -1861,6 +1877,7 @@ optionGroupToHtml dropdownItemEventListeners selectionMode ( optionGroup, option
                         _ ->
                             div
                                 [ class "optgroup"
+                                , Html.Attributes.attribute "part" "dropdown-optgroup"
                                 ]
                                 [ span [ class "optgroup-header" ]
                                     (tokensToHtml optionSearchFilter.groupTokens)
@@ -1874,6 +1891,7 @@ optionGroupToHtml dropdownItemEventListeners selectionMode ( optionGroup, option
                         optionGroupAsString ->
                             div
                                 [ class "optgroup"
+                                , Html.Attributes.attribute "part" "dropdown-optgroup"
                                 ]
                                 [ span [ class "optgroup-header" ]
                                     [ text
@@ -1889,7 +1907,7 @@ optionToDropdownOption :
     -> SelectionConfig
     -> Option
     -> Html Msg
-optionToDropdownOption eventHandlers selectionMode option =
+optionToDropdownOption eventHandlers selectionConfig option =
     let
         descriptionHtml : Html Msg
         descriptionHtml =
@@ -1898,6 +1916,7 @@ optionToDropdownOption eventHandlers selectionMode option =
                     Just optionSearchFilter ->
                         div
                             [ class "description"
+                            , Html.Attributes.attribute "part" "dropdown-option-description"
                             ]
                             [ span [] (tokensToHtml optionSearchFilter.descriptionTokens)
                             ]
@@ -1905,6 +1924,7 @@ optionToDropdownOption eventHandlers selectionMode option =
                     Nothing ->
                         div
                             [ class "description"
+                            , Html.Attributes.attribute "part" "dropdown-option-description"
                             ]
                             [ span []
                                 [ option
@@ -1936,6 +1956,7 @@ optionToDropdownOption eventHandlers selectionMode option =
                 , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
                 , mousedownPreventDefault (option |> Option.getOptionValue |> eventHandlers.clickMsgConstructor)
                 , onClickPreventDefault eventHandlers.noOpMsgConstructor
+                , Html.Attributes.attribute "part" "dropdown-option"
                 , class "option"
                 , valueDataAttribute
                 ]
@@ -1945,28 +1966,30 @@ optionToDropdownOption eventHandlers selectionMode option =
             text ""
 
         OptionSelected _ ->
-            case selectionMode of
-                SingleSelectConfig _ _ _ ->
+            case SelectionMode.getSelectionMode selectionConfig of
+                SelectionMode.SingleSelect ->
                     div
                         [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
                         , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
                         , mousedownPreventDefault (option |> Option.getOptionValue |> eventHandlers.clickMsgConstructor)
+                        , Html.Attributes.attribute "part" "dropdown-option selected"
                         , class "selected"
                         , class "option"
                         , valueDataAttribute
                         ]
                         [ labelHtml, descriptionHtml ]
 
-                MultiSelectConfig _ _ _ ->
+                SelectionMode.MultiSelect ->
                     text ""
 
         OptionSelectedHighlighted _ ->
-            case selectionMode of
+            case selectionConfig of
                 SingleSelectConfig _ _ _ ->
                     div
                         [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
                         , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
                         , mousedownPreventDefault (option |> Option.getOptionValue |> eventHandlers.clickMsgConstructor)
+                        , Html.Attributes.attribute "part" "dropdown-option selected highlighted"
                         , class "selected"
                         , class "highlighted"
                         , class "option"
@@ -1982,6 +2005,7 @@ optionToDropdownOption eventHandlers selectionMode option =
                 [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
                 , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
                 , mousedownPreventDefault (option |> Option.getOptionValue |> eventHandlers.clickMsgConstructor)
+                , Html.Attributes.attribute "part" "dropdown-option highlighted"
                 , class "highlighted"
                 , class "option"
                 , valueDataAttribute
@@ -1990,7 +2014,8 @@ optionToDropdownOption eventHandlers selectionMode option =
 
         OptionDisabled ->
             div
-                [ class "disabled"
+                [ Html.Attributes.attribute "part" "dropdown-option disabled"
+                , class "disabled"
                 , class "option"
                 , valueDataAttribute
                 ]
@@ -2165,6 +2190,7 @@ rightSlotHtml rightSlot interactionState selectedIndex =
         ShowClearButton ->
             div
                 [ id "clear-button-wrapper"
+                , Html.Attributes.attribute "part" "clear-button-wrapper"
                 , onClickPreventDefaultAndStopPropagation ClearAllSelectedOptions
                 ]
                 [ node "slot"

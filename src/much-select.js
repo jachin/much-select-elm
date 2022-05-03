@@ -1626,12 +1626,11 @@ class MuchSelect extends HTMLElement {
       }
 
       #value-casing {
-        border: 1px solid black;
-
         display: flex;
       }
 
       #value-casing.output-style-custom-html {
+        border: 1px solid black;
         cursor: pointer;
       }
 
@@ -1674,24 +1673,6 @@ class MuchSelect extends HTMLElement {
         padding-left: 5px;
       }
 
-      #dropdown-indicator {
-        position: absolute;
-        right: 5px;
-        top: 15px;
-        cursor: pointer;
-        display: block;
-        transition: transform 0.25s;
-        font-family: "Times New Roman" serif;
-      }
-
-      #dropdown-indicator.down {
-        transform: rotate(180deg);
-      }
-
-      #dropdown-indicator.up {
-        transform: rotate(0deg);
-      }
-
       slot[name='loading-indicator'] {
         display: block;
         position: absolute;
@@ -1699,26 +1680,20 @@ class MuchSelect extends HTMLElement {
         top: 10px;
       }
 
-      #clear-button-wrapper {
-        display: block;
-        position: absolute;
-        right: 3px;
-        top: 7px;
-        cursor: pointer;
-      }
-
       #dropdown {
-        background-color: #EEEEEE;
         visibility: hidden;
         position: absolute;
         left: 0;
-        font-size: 20px;
         display: inline-block;
         z-index: 10;
         max-height: 300px;
         overflow-y: auto;
         cursor: default;
+
+        background-color: white;
+        border: 1px solid black;
       }
+
       #dropdown.showing {
         visibility: visible;
       }
@@ -1726,46 +1701,30 @@ class MuchSelect extends HTMLElement {
         visibility: hidden;
       }
 
-      #dropdown-footer {
-        font-size: 50%;
-        text-align: center;
-        color: gray;
-        background-color: lightgray;
-        padding: 5px;
-      }
-
       .optgroup {
         background-color: gray;
-        font-size: 0.85rem;
-        font-weight: 300;
-        padding: 5px;
       }
+
       .option {
-        background-color: silver;
-        padding: 5px;
         cursor: pointer;
       }
 
       .option.selected {
-        background-color: darkslategrey;
-        color: ghostwhite;
-        cursor: pointer;
+        font-weight: bold;
       }
 
       .option.highlighted {
-        background-color: indigo;
-        color: ghostwhite;
+        background-color: black;
+        color: white;
       }
 
       .option.disabled {
-        background-color: LightGray;
-        color: silver;
         cursor: default;
+        color: gray;
       }
 
       .description {
-        font-size: 0.85rem;
-        padding: 3px;
+        font-size: 75%;
       }
 
       .highlight { color: blue }
