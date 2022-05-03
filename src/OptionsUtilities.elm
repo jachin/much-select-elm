@@ -7,7 +7,6 @@ import Option
         ( Option(..)
         , OptionDisplay(..)
         , OptionGroup
-        , OptionValue(..)
         , deselectOption
         , getMaybeOptionSearchFilter
         , getOptionDisplay
@@ -23,23 +22,32 @@ import Option
         , isOptionSelectedHighlighted
         , isOptionValueInListOfStrings
         , merge2Options
+        , newSelectedDatalisOption
         , newSelectedOption
         , optionIsHighlightable
         , optionToValueLabelTuple
-        , optionValueToString
         , optionValuesEqual
         , removeHighlightOption
         , selectOption
         , setLabel
         , setLabelWithString
         , setOptionDisplay
-        , stringToOptionValue
         )
 import OptionLabel exposing (OptionLabel)
 import OptionSearchFilter exposing (OptionSearchResult)
+import OptionValue
+    exposing
+        ( OptionValue(..)
+        , optionValueToString
+        , stringToOptionValue
+        )
 import OutputStyle exposing (SelectedItemPlacementMode(..))
 import SearchString exposing (SearchString)
-import SelectionMode exposing (SelectionConfig(..), getSelectedItemPlacementMode)
+import SelectionMode
+    exposing
+        ( SelectionConfig(..)
+        , getSelectedItemPlacementMode
+        )
 import SortRank exposing (SortRank)
 import ValueString exposing (ValueString)
 
@@ -423,7 +431,7 @@ selectSingleOptionInListByStringOrSelectCustomValue searchString options =
         options
 
     else
-        case selectSingleOptionInListResult (Option.stringToOptionValue (SearchString.toString searchString)) options of
+        case selectSingleOptionInListResult (OptionValue.stringToOptionValue (SearchString.toString searchString)) options of
             Ok newOptions ->
                 newOptions
 
@@ -540,6 +548,12 @@ removeOptionsFromOptionList options optionsToRemove =
     List.filter (\option -> not (optionListContainsOptionWithValue option optionsToRemove)) options
 
 
+removeOptionFromOptionListBySelectedIndex : Int -> List Option -> List Option
+removeOptionFromOptionListBySelectedIndex selectedIndex options =
+    List.filter (\option -> getOptionSelectedIndex option /= selectedIndex) options
+        |> reIndexSelectedOptions
+
+
 unhighlightSelectedOptions : List Option -> List Option
 unhighlightSelectedOptions =
     List.map
@@ -635,6 +649,11 @@ selectedOptions options =
     options
         |> List.filter isOptionSelected
         |> List.sortBy getOptionSelectedIndex
+
+
+findSelectedOption : List Option -> Maybe Option
+findSelectedOption options =
+    options |> selectedOptions |> List.head
 
 
 unselectedOptions : List Option -> List Option
@@ -796,9 +815,64 @@ removeUnselectedCustomOptions options =
     removeOptionsFromOptionList options unselectedCustomOptions
 
 
+{-|
+
+    Clean up options. This function is designed for the datalist mode.
+    The idea is that there should only be at most 1 empty option.
+
+-}
+cleanupEmptySelectedOptions : List Option -> List Option
+cleanupEmptySelectedOptions options =
+    let
+        selectedOptions_ =
+            options
+                |> selectedOptions
+
+        selectedOptionsSansEmptyOptions =
+            options
+                |> selectedOptions
+                |> List.filter (Option.isEmptyOptionOrHasEmptyValue >> not)
+    in
+    if List.length selectedOptions_ > 1 && List.length selectedOptionsSansEmptyOptions > 1 then
+        selectedOptionsSansEmptyOptions
+
+    else if List.length selectedOptions_ > 1 then
+        List.take 1 selectedOptions_
+
+    else
+        options
+
+
+reIndexSelectedOptions : List Option -> List Option
+reIndexSelectedOptions options =
+    let
+        selectedOptions_ =
+            options
+                |> selectedOptions
+
+        nonSelectedOptions =
+            options
+                |> unselectedOptions
+    in
+    List.indexedMap (\index option -> Option.selectOption index option) selectedOptions_
+        ++ nonSelectedOptions
+
+
 customSelectedOptions : List Option -> List Option
 customSelectedOptions =
     customOptions >> selectedOptions
+
+
+organizeNewDatalistOptions : List Option -> List Option
+organizeNewDatalistOptions options =
+    let
+        selectedOptions_ =
+            options |> selectedOptions
+
+        optionsForTheDatasetHints =
+            options |> List.map Option.deselectOption
+    in
+    (selectedOptions_ ++ optionsForTheDatasetHints) |> reIndexSelectedOptions
 
 
 customOptions : List Option -> List Option
@@ -1084,9 +1158,42 @@ findOptionByOptionUsingValueString valueString options =
     findOptionByOptionValue (ValueString.toOptionValue valueString) options
 
 
-updateDatalistOptionsWithValue : ValueString -> List Option -> List Option
-updateDatalistOptionsWithValue valueString options =
-    options
+updateDatalistOptionsWithValue : OptionValue -> Int -> List Option -> List Option
+updateDatalistOptionsWithValue optionValue selectedValueIndex options =
+    if List.any (Option.hasSelctedItemIndex selectedValueIndex) options then
+        updateDatalistOptionWithValueBySelectedValueIndex optionValue selectedValueIndex options
+
+    else
+        newSelectedDatalisOption optionValue selectedValueIndex :: options
+
+
+addNewEmptyOptionAtIndex : Int -> List Option -> List Option
+addNewEmptyOptionAtIndex index options =
+    let
+        firstPart =
+            List.take index options
+
+        secondPart =
+            List.drop index options
+    in
+    (firstPart
+        ++ [ DatalistOption (OptionSelected index) EmptyOptionValue ]
+        ++ secondPart
+    )
+        |> reIndexSelectedOptions
+
+
+updateDatalistOptionWithValueBySelectedValueIndex : OptionValue -> Int -> List Option -> List Option
+updateDatalistOptionWithValueBySelectedValueIndex optionValue selectedIndex options =
+    List.map
+        (\option ->
+            if Option.getOptionSelectedIndex option == selectedIndex then
+                Option.setOptionValue optionValue option
+
+            else
+                option
+        )
+        options
 
 
 deselectAllOptionsInOptionsList : List Option -> List Option

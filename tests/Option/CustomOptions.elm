@@ -7,9 +7,10 @@ import Main
         , updateTheFullListOfOptions
         , updateTheOptionsForTheDropdown
         )
-import Option exposing (newCustomOption, newOption, selectOption, stringToOptionValue)
+import Option exposing (newCustomOption, newOption, selectOption)
 import OptionSearcher
 import OptionSorting
+import OptionValue exposing (stringToOptionValue)
 import OptionsUtilities
     exposing
         ( highlightFirstOptionInList

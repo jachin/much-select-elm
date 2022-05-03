@@ -66,6 +66,8 @@ body {
         --example-background-color: var(--hint-of-pensive);
         --example-border-color: var(--blueberry-soda);
         --example-border-shadow-color: var(--mazarine-blue);
+
+        --much-select-background-color: var(--lynx-white);
     }
 
     body.fun {
@@ -81,6 +83,8 @@ body {
         --example-background-color: var(--yriel-yellow);
         --example-border-color: var(--red-orange);
         --example-border-shadow-color: var(--sunset-orange);
+
+        --much-select-background-color: var(--yriel-yellow);
     }
 }
 
@@ -100,6 +104,8 @@ body {
         --example-background-color: var(--pico-void);
         --example-border-color: var(--blueberry-soda);
         --example-border-shadow-color: var(--chain-gang-grey);
+
+        --much-select-background-color: var(--electromagnetic);
     }
 
     body.fun {
@@ -115,6 +121,8 @@ body {
         --example-background-color: var(--black-pearl);
         --example-border-color: var(--sizeling-red);
         --example-border-shadow-color: var(--highligher-pink);
+
+        --much-select-background-color: var(--good-night);
     }
 
 
@@ -241,4 +249,224 @@ button {
 
 iframe {
     border: none;
+}
+
+
+much-select::part(wrapper) {
+    font: var(--body-font);
+    margin-top: auto;
+    margin-bottom: auto;
+    position: relative;
+}
+
+
+much-select::part(input-wrapper) {
+    display: flex;
+}
+
+much-select::part(value-casing) {
+    display: flex;
+    flex-flow: column;
+    min-height: 34px;
+}
+
+much-select::part(value-casing output-style-custom-html) {
+    background-color: var(--much-select-background-color);
+    box-shadow: 1px 1px 1px 0 lightgray inset;
+    padding: 4px 3px 2px 3px;
+}
+
+much-select::part(value-casing output-style-custom-html) {
+    flex-flow: row;
+    cursor: pointer;
+    border: 1px solid darkgray;
+}
+
+much-select::part(value-casing output-style-custom-html multi) {
+    flex-flow: row wrap;
+}
+
+much-select::part(value-casing output-style-datalist) {
+    flex-flow: column;
+    cursor: pointer;
+}
+
+much-select::part(value-casing output-style-custom-html):hover {
+    outline: none;
+    border-color: var(--example-border-color);
+}
+
+
+much-select::part(value-casing output-style-custom-html):focus {
+    outline: none;
+    border-color: var(--example-border-color);
+}
+
+
+much-select::part(value-casing output-style-custom-html disabled) {
+    border: 1px solid lightgray;
+    cursor: pointer;
+}
+
+much-select::part(value-casing output-style-custom-html single) {
+    background-image: linear-gradient(to bottom, #fefefe, #f2f2f2);
+    background-repeat: repeat-x;
+}
+
+much-select::part(value-casing single disabled) {
+    background-image: none;
+}
+
+much-select::part(input-filter) {
+    /*
+    TODO, seems like the height and font-size should not be hardcoded.
+    */
+    height: 36px;
+    font-size: 25px;
+    /* The min-width let's the input shrink down as far as it needs to.
+    The with width lets it grow as much as it can.
+    */
+    min-width: 10px;
+    /* Let's give the input a bit more room than the selected values.
+    */
+    flex-grow: 3;
+    flex-shrink: 0;
+    flex-basis: 10%;
+
+    /* We don't want a border because the value-casing will supply the border for
+      this input.
+    */
+    border: none;
+
+    /*
+    We do not want an outline on the input (filter) because we want everything
+    inside of the #value-casing to (kinda) act like a text input.
+    */
+    outline: none;
+    background: none;
+}
+
+much-select::part(input-filter):hover, much-select::part(input-filter):focus {
+    /*
+        We do not want an outline on the input (filter) because we want everything
+        inside of the #value-casing to (kinda) act like a text input.
+        */
+    outline: none;
+    background: var(--much-select-background-color);
+}
+
+much-select::part(input-filter):hover, much-select::part(input-filter):focus {
+    /*
+        Removing the default background color on the disabled input.
+        We might want to do some additional styling for "disabled"
+        much-selects but that should probably happen on the value-casing
+        div.
+        */
+    background: none;
+}
+
+much-select::part(input-filter):hover, much-select::part(input-filter):focus {
+    /*
+        Removing the default background color on the disabled input.
+        We might want to do some additional styling for "disabled"
+        much-selects but that should probably happen on the value-casing
+        div.
+        */
+    background: none;
+}
+
+much-select::part(value) {
+    padding: 3px;
+    font-size: 20px;
+    color: white;
+    background-image: linear-gradient(to bottom, #4f6a8f, #88a2bc);
+    background-repeat: repeat-x;
+    margin: 2px 2px;
+    border-radius: 5px;
+    border: 3px solid #d99477;
+    min-width: 10px;
+
+    flex-grow: 0;
+    flex-shrink: 1;
+    flex-basis: auto;
+}
+
+much-select::part(value highlighted-value) {
+    background-image: linear-gradient(to bottom, #d99477, #efb680);
+    background-repeat: repeat-x;
+}
+
+much-select::part(dropdown-indicator) {
+    position: absolute;
+    right: 5px;
+    top: 15px;
+    cursor: pointer;
+    display: block;
+    transition: transform 0.25s;
+    font-family: "Times New Roman", serif;
+}
+
+much-select::part(dropdown-indicator up) {
+    transform: rotate(180deg);
+}
+
+much-select::part(dropdown-indicator down) {
+    transform: rotate(0deg);
+}
+
+much-select::part(clear-button-wrapper) {
+    display: block;
+    position: absolute;
+    right: 3px;
+    top: 7px;
+    cursor: pointer;
+}
+
+much-select::part(dropdown) {
+    background-color: #EEEEEE;
+    font-size: 20px;
+    max-height: 300px;
+}
+
+much-select::part(dropdown-optgroup) {
+    background-color: gray;
+    font-size: 0.85rem;
+    font-weight: 300;
+    padding: 5px;
+}
+
+much-select::part(dropdown-option) {
+    background-color: silver;
+    padding: 5px;
+    cursor: pointer;
+}
+
+much-select::part(dropdown-option selected) {
+    background-color: silver;
+    padding: 5px;
+    cursor: pointer;
+}
+
+much-select::part(dropdown-option highlighted) {
+    background-color: indigo;
+    color: ghostwhite;
+}
+
+much-select::part(dropdown-option disabled) {
+    background-color: LightGray;
+    color: silver;
+    cursor: default;
+}
+
+much-select::part(dropdown-option-description) {
+    font-size: 0.85rem;
+    padding: 3px;
+}
+
+much-select::part(dropdown-footer) {
+    font-size: 50%;
+    text-align: center;
+    color: gray;
+    background-color: lightgray;
+    padding: 5px;
 }

@@ -4,12 +4,11 @@ import Expect
 import Json.Decode
 import Option
     exposing
-        ( decoder
-        , newDisabledOption
+        ( newDisabledOption
         , newOption
         , newSelectedOption
-        , optionsDecoder
         )
+import SelectionMode
 import Test exposing (Test, describe, test)
 
 
@@ -73,6 +72,14 @@ listOfOptionsWithJustValues =
       }
     ]
     """
+
+
+decoder =
+    Option.decoder SelectionMode.CustomHtml
+
+
+optionsDecoder =
+    Option.optionsDecoder SelectionMode.CustomHtml
 
 
 suite : Test

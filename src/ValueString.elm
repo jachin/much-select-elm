@@ -1,6 +1,6 @@
-module ValueString exposing (ValueString, fromOptionValue, length, reset, toOptionValue, toString)
+module ValueString exposing (ValueString, fromOptionValue, fromString, length, reset, toOptionValue, toString)
 
-import Option exposing (OptionValue)
+import OptionValue exposing (OptionValue)
 
 
 type ValueString
@@ -12,9 +12,14 @@ reset =
     ValueString ""
 
 
+fromString : String -> ValueString
+fromString string =
+    ValueString string
+
+
 toOptionValue : ValueString -> OptionValue
 toOptionValue (ValueString str) =
-    Option.stringToOptionValue str
+    OptionValue.stringToOptionValue str
 
 
 length : ValueString -> Int
@@ -29,4 +34,4 @@ toString (ValueString str) =
 
 fromOptionValue : OptionValue -> ValueString
 fromOptionValue optionValue =
-    ValueString (Option.optionValueToString optionValue)
+    ValueString (OptionValue.optionValueToString optionValue)

@@ -3,7 +3,6 @@ module Option exposing
     , OptionDescription
     , OptionDisplay(..)
     , OptionGroup
-    , OptionValue(..)
     , decoder
     , deselectOption
     , encode
@@ -15,9 +14,11 @@ module Option exposing
     , getOptionSelectedIndex
     , getOptionValue
     , getOptionValueAsString
+    , hasSelctedItemIndex
     , highlightOption
     , isCustomOption
     , isEmptyOption
+    , isEmptyOptionOrHasEmptyValue
     , isOptionDisplaySelectedHighlighted
     , isOptionHighlighted
     , isOptionSelected
@@ -25,9 +26,11 @@ module Option exposing
     , isOptionValueInListOfStrings
     , merge2Options
     , newCustomOption
+    , newDatalistOption
     , newDisabledOption
     , newOption
     , newOptionGroup
+    , newSelectedDatalisOption
     , newSelectedOption
     , optionDescriptionToBool
     , optionDescriptionToSearchString
@@ -36,7 +39,6 @@ module Option exposing
     , optionGroupToString
     , optionIsHighlightable
     , optionToValueLabelTuple
-    , optionValueToString
     , optionValuesEqual
     , optionsDecoder
     , removeHighlightOption
@@ -48,14 +50,17 @@ module Option exposing
     , setMaybeSortRank
     , setOptionDisplay
     , setOptionSearchFilter
-    , stringToOptionValue
+    , setOptionValue
     )
 
 import Json.Decode
 import Json.Encode
 import OptionLabel exposing (OptionLabel(..), labelDecoder, optionLabelToString)
 import OptionSearchFilter exposing (OptionSearchFilter, OptionSearchResult)
+import OptionValue exposing (OptionValue(..), optionValueToString, stringToOptionValue)
+import SelectionMode exposing (OutputStyle(..))
 import SortRank exposing (SortRank(..))
+import ValueString exposing (ValueString)
 
 
 type Option
@@ -88,26 +93,6 @@ type OptionDisplay
     | OptionSelectedHighlighted Int
     | OptionHighlighted
     | OptionDisabled
-
-
-type OptionValue
-    = OptionValue String
-    | EmptyOptionValue
-
-
-optionValueToString : OptionValue -> String
-optionValueToString optionValue =
-    case optionValue of
-        OptionValue valueString ->
-            valueString
-
-        EmptyOptionValue ->
-            ""
-
-
-stringToOptionValue : String -> OptionValue
-stringToOptionValue string =
-    OptionValue string
 
 
 type OptionDescription
@@ -203,6 +188,36 @@ newCustomOption value maybeCleanLabel =
         (OptionLabel.newWithCleanLabel value maybeCleanLabel)
         (OptionValue value)
         Nothing
+
+
+newSelectedDatalisOption : OptionValue -> Int -> Option
+newSelectedDatalisOption optionValue selectedIndex =
+    DatalistOption
+        (OptionSelected selectedIndex)
+        optionValue
+
+
+newDatalistOption : OptionValue -> Option
+newDatalistOption optionValue =
+    DatalistOption
+        OptionShown
+        optionValue
+
+
+setOptionValue : OptionValue -> Option -> Option
+setOptionValue optionValue option =
+    case option of
+        Option optionDisplay optionLabel _ optionDescription optionGroup maybeOptionSearchFilter ->
+            Option optionDisplay optionLabel optionValue optionDescription optionGroup maybeOptionSearchFilter
+
+        CustomOption optionDisplay optionLabel _ maybeOptionSearchFilter ->
+            CustomOption optionDisplay optionLabel optionValue maybeOptionSearchFilter
+
+        DatalistOption optionDisplay _ ->
+            DatalistOption optionDisplay optionValue
+
+        EmptyOption optionDisplay optionLabel ->
+            EmptyOption optionDisplay optionLabel
 
 
 setLabelWithString : String -> Maybe String -> Option -> Option
@@ -467,8 +482,8 @@ isOptionSelected option =
         EmptyOption optionDisplay _ ->
             isOptionDisplaySelected optionDisplay
 
-        DatalistOption _ _ ->
-            False
+        DatalistOption optionDisplay _ ->
+            isOptionDisplaySelected optionDisplay
 
 
 getOptionDisplay : Option -> OptionDisplay
@@ -539,6 +554,11 @@ setOptionDisplaySelectedIndex selectedIndex optionDisplay =
 
         OptionDisabled ->
             optionDisplay
+
+
+hasSelctedItemIndex : Int -> Option -> Bool
+hasSelctedItemIndex selectedItemIndex option =
+    getOptionSelectedIndex option == selectedItemIndex
 
 
 optionDisplayToSelectedIndex : OptionDisplay -> Int
@@ -1061,11 +1081,11 @@ selectOption selectionIndex option =
                 OptionHidden ->
                     Option (OptionSelected selectionIndex) label value description group search
 
-                OptionSelected selectedIndex ->
-                    Option (OptionSelected selectedIndex) label value description group search
+                OptionSelected _ ->
+                    Option (OptionSelected selectionIndex) label value description group search
 
-                OptionSelectedHighlighted selectedIndex ->
-                    Option (OptionSelectedHighlighted selectedIndex) label value description group search
+                OptionSelectedHighlighted _ ->
+                    Option (OptionSelectedHighlighted selectionIndex) label value description group search
 
                 OptionHighlighted ->
                     Option (OptionSelected selectionIndex) label value description group search
@@ -1081,11 +1101,11 @@ selectOption selectionIndex option =
                 OptionHidden ->
                     CustomOption OptionHidden label value search
 
-                OptionSelected selectedIndex ->
-                    CustomOption (OptionSelected selectedIndex) label value search
+                OptionSelected _ ->
+                    CustomOption (OptionSelected selectionIndex) label value search
 
-                OptionSelectedHighlighted selectedIndex ->
-                    CustomOption (OptionSelectedHighlighted selectedIndex) label value search
+                OptionSelectedHighlighted _ ->
+                    CustomOption (OptionSelectedHighlighted selectionIndex) label value search
 
                 OptionHighlighted ->
                     CustomOption (OptionSelected selectionIndex) label value search
@@ -1101,11 +1121,11 @@ selectOption selectionIndex option =
                 OptionHidden ->
                     EmptyOption (OptionSelected selectionIndex) label
 
-                OptionSelected selectedIndex ->
-                    EmptyOption (OptionSelected selectedIndex) label
+                OptionSelected _ ->
+                    EmptyOption (OptionSelected selectionIndex) label
 
-                OptionSelectedHighlighted selectedIndex ->
-                    EmptyOption (OptionSelected selectedIndex) label
+                OptionSelectedHighlighted _ ->
+                    EmptyOption (OptionSelected selectionIndex) label
 
                 OptionHighlighted ->
                     EmptyOption (OptionSelected selectionIndex) label
@@ -1121,11 +1141,11 @@ selectOption selectionIndex option =
                 OptionHidden ->
                     option
 
-                OptionSelected selectedIndex ->
-                    DatalistOption (OptionSelected selectedIndex) optionValue
+                OptionSelected _ ->
+                    DatalistOption (OptionSelected selectionIndex) optionValue
 
-                OptionSelectedHighlighted selectedIndex ->
-                    DatalistOption (OptionSelected selectedIndex) optionValue
+                OptionSelectedHighlighted _ ->
+                    DatalistOption (OptionSelected selectionIndex) optionValue
 
                 OptionHighlighted ->
                     option
@@ -1277,6 +1297,11 @@ isEmptyOption option =
             False
 
 
+isEmptyOptionOrHasEmptyValue : Option -> Bool
+isEmptyOptionOrHasEmptyValue option =
+    isEmptyOption option || (getOptionValue option |> OptionValue.isEmpty)
+
+
 optionToValueLabelTuple : Option -> ( String, String )
 optionToValueLabelTuple option =
     ( getOptionValueAsString option, getOptionLabel option |> optionLabelToString )
@@ -1298,17 +1323,22 @@ isCustomOption option =
             False
 
 
-optionsDecoder : Json.Decode.Decoder (List Option)
-optionsDecoder =
-    Json.Decode.list decoder
+optionsDecoder : OutputStyle -> Json.Decode.Decoder (List Option)
+optionsDecoder outputStyle =
+    Json.Decode.list (decoder outputStyle)
 
 
-decoder : Json.Decode.Decoder Option
-decoder =
-    Json.Decode.oneOf
-        [ decodeOptionWithoutAValue
-        , decodeOptionWithAValue
-        ]
+decoder : OutputStyle -> Json.Decode.Decoder Option
+decoder outputStyle =
+    case outputStyle of
+        CustomHtml ->
+            Json.Decode.oneOf
+                [ decodeOptionWithoutAValue
+                , decodeOptionWithAValue
+                ]
+
+        Datalist ->
+            decodeOptionForDatalist
 
 
 decodeOptionWithoutAValue : Json.Decode.Decoder Option
@@ -1342,6 +1372,16 @@ decodeOptionWithAValue =
         descriptionDecoder
         optionGroupDecoder
         (Json.Decode.succeed Nothing)
+
+
+decodeOptionForDatalist : Json.Decode.Decoder Option
+decodeOptionForDatalist =
+    Json.Decode.map2 DatalistOption
+        displayDecoder
+        (Json.Decode.field
+            "value"
+            valueDecoder
+        )
 
 
 displayDecoder : Json.Decode.Decoder OptionDisplay
