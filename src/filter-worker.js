@@ -12,5 +12,15 @@ onmessage = ({ data }) => {
 };
 
 app.ports.sendSearchResults.subscribe((searchResultData) => {
-  console.log("searchResultData", searchResultData);
+  postMessage({
+    messageName: "searchResults",
+    searchResultData,
+  });
+});
+
+app.ports.sendErrorMessage.subscribe((errorMessage) => {
+  postMessage({
+    messageName: "error",
+    errorMessage,
+  });
 });

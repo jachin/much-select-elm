@@ -1,7 +1,7 @@
 // noinspection ES6CheckImport
 import { Elm } from "./Main.elm";
 
-import worker from "./gen/filter-worker-bundle.js";
+import getMuchSelectTemplate from "./gen/much-select-template.js";
 
 import asciiFold from "./ascii-fold.js";
 
@@ -292,10 +292,10 @@ class MuchSelect extends HTMLElement {
     this._app = null;
 
     /**
-     * @type Worker
+     * @type {null|Worker}
      * @private
      */
-    this._filterWorker = worker;
+    this._filterWorker = null;
 
     /**
      * @type {boolean}
@@ -465,6 +465,29 @@ class MuchSelect extends HTMLElement {
     this.parentDivPromise.then((parentDiv) => {
       const wrapperDiv = parentDiv.querySelector("#wrapper");
       this._resizeObserver.observe(wrapperDiv);
+
+      const code = parentDiv.querySelector("#filter-worker").textContent;
+      const blob = new Blob([code], { type: "application/javascript" });
+
+      this._filterWorker = new Worker(URL.createObjectURL(blob));
+
+      this._filterWorker.onmessage = ({ data }) => {
+        const { messageName, searchResultData, errorMessage } = data;
+        if (messageName === "searchResults") {
+          this.appPromise.then((app) => {
+            // noinspection JSUnresolvedVariable
+            app.ports.updateSearchResultDataWithWebWorkerReceiver.send(
+              searchResultData
+            );
+          });
+        } else if (messageName === "errorMessage") {
+          this.errorHandler(errorMessage);
+        } else {
+          this.errorHandler(
+            `Unknown message from filter worker: ${messageName}`
+          );
+        }
+      };
     });
 
     // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
@@ -472,6 +495,8 @@ class MuchSelect extends HTMLElement {
       app.ports.muchSelectIsReady.subscribe(() => {
         this.dispatchEvent(new CustomEvent("ready", { bubbles: true }));
         this.dispatchEvent(new CustomEvent("muchSelectReady"));
+
+        this.updateFilterWorkerOptions();
       })
     );
 
@@ -660,6 +685,15 @@ class MuchSelect extends HTMLElement {
         }
       })
     );
+
+    this.appPromise.then((app) => {
+      app.ports.searchOptionsWithWebWorker.subscribe((searchString) => {
+        this._filterWorker.postMessage({
+          portName: "receiveSearchString",
+          jsonBlob: searchString,
+        });
+      });
+    });
 
     this.startMuchSelectObserver();
 
@@ -1059,7 +1093,9 @@ class MuchSelect extends HTMLElement {
           // User shadow DOM.
           this._parentDiv = this.attachShadow({ mode: "open" });
 
-          const html = this.templateTag.content.cloneNode(true);
+          const html = getMuchSelectTemplate(this.styleTag).content.cloneNode(
+            true
+          );
           this._parentDiv.append(html);
 
           const elmDiv = this._parentDiv.querySelector("#mount-node");
@@ -1765,18 +1801,6 @@ class MuchSelect extends HTMLElement {
     </style>`;
   }
 
-  get templateTag() {
-    const templateTag = document.createElement("template");
-    templateTag.innerHTML = `
-      <div>
-        ${this.styleTag}
-        <slot name="select-input"></slot>
-        <div id="mount-node"></div>
-      </div>
-    `;
-    return templateTag;
-  }
-
   /**
    * This should tell you if a value is selected or not, whether the much-select is in single or multi select mode.
    *
@@ -1847,6 +1871,14 @@ class MuchSelect extends HTMLElement {
         // noinspection JSUnresolvedVariable
         app.ports.requestAllOptionsReceiver.send(null);
       });
+    });
+  }
+
+  async updateFilterWorkerOptions() {
+    const options = await this.getAllOptions();
+    this._filterWorker.postMessage({
+      portName: "receiveOptions",
+      jsonBlob: cleanUpOptions(options),
     });
   }
 }

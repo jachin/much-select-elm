@@ -3,9 +3,11 @@ module Option exposing
     , OptionDescription
     , OptionDisplay(..)
     , OptionGroup
+    , decodeSearchResults
     , decoder
     , deselectOption
     , encode
+    , encodeSearchResults
     , getMaybeOptionSearchFilter
     , getOptionDescription
     , getOptionDisplay
@@ -56,7 +58,7 @@ module Option exposing
 import Json.Decode
 import Json.Encode
 import OptionLabel exposing (OptionLabel(..), labelDecoder, optionLabelToString)
-import OptionSearchFilter exposing (OptionSearchFilter, OptionSearchResult)
+import OptionSearchFilter exposing (OptionSearchFilter, OptionSearchFilterWithValue, OptionSearchResult)
 import OptionValue exposing (OptionValue(..), optionValueToString, stringToOptionValue)
 import SelectionMode exposing (OutputStyle(..))
 import SortRank exposing (SortRank(..))
@@ -1466,3 +1468,30 @@ encode option =
         , ( "description", Json.Encode.string (getOptionDescription option |> optionDescriptionToString) )
         , ( "isSelected", Json.Encode.bool (isOptionSelected option) )
         ]
+
+
+encodeSearchResults : Option -> Json.Encode.Value
+encodeSearchResults option =
+    Json.Encode.object
+        [ ( "value", Json.Encode.string (getOptionValueAsString option) )
+        , ( "searchFilter"
+          , case getMaybeOptionSearchFilter option of
+                Just optionSearchFilter ->
+                    OptionSearchFilter.encode optionSearchFilter
+
+                Nothing ->
+                    Json.Encode.null
+          )
+        ]
+
+
+decodeSearchResults : Json.Decode.Decoder (List OptionSearchFilterWithValue)
+decodeSearchResults =
+    Json.Decode.list
+        (Json.Decode.map2
+            (\value serachFilter ->
+                { value = value, searchFilter = serachFilter }
+            )
+            (Json.Decode.field "value" valueDecoder)
+            (Json.Decode.field "searchFilter" OptionSearchFilter.decode)
+        )

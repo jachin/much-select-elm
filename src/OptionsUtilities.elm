@@ -34,7 +34,7 @@ import Option
         , setOptionDisplay
         )
 import OptionLabel exposing (OptionLabel)
-import OptionSearchFilter exposing (OptionSearchResult)
+import OptionSearchFilter exposing (OptionSearchFilterWithValue, OptionSearchResult)
 import OptionValue
     exposing
         ( OptionValue(..)
@@ -1074,11 +1074,11 @@ findLowestSearchScore options =
         lowSore =
             options
                 |> List.filter (\option -> not (isCustomOption option))
-                |> optionSearchResults
+                |> optionSearchResultsBestScore
                 |> List.foldl
-                    (\searchResult lowScore ->
-                        if OptionSearchFilter.getLowScore searchResult < lowScore then
-                            OptionSearchFilter.getLowScore searchResult
+                    (\optionBestScore lowScore ->
+                        if optionBestScore < lowScore then
+                            optionBestScore
 
                         else
                             lowScore
@@ -1092,19 +1092,19 @@ findLowestSearchScore options =
         Just lowSore
 
 
-optionSearchResults : List Option -> List OptionSearchResult
-optionSearchResults options =
+optionSearchResultsBestScore : List Option -> List Int
+optionSearchResultsBestScore options =
     options
         |> List.map getMaybeOptionSearchFilter
         |> Maybe.Extra.values
-        |> List.map .searchResult
+        |> List.map .bestScore
 
 
 isOptionBelowScore : Int -> Option -> Bool
 isOptionBelowScore score option =
     case getMaybeOptionSearchFilter option of
         Just optionSearchFilter ->
-            score >= OptionSearchFilter.getLowScore optionSearchFilter.searchResult
+            score >= optionSearchFilter.bestScore
 
         Nothing ->
             False
@@ -1372,3 +1372,22 @@ setSelectedOptionInNewOptions oldOptions newOptions =
             List.filter (\newOption_ -> optionListContainsOptionWithValue newOption_ oldSelectedOption) newOptions
     in
     selectOptionsInListWithIndex newSelectedOptions newOptions
+
+
+updateOptionsWithNewSearchResults : List OptionSearchFilterWithValue -> List Option -> List Option
+updateOptionsWithNewSearchResults optionSearchFilterWithValues options =
+    let
+        findNewSearchFilterResult : OptionValue -> List OptionSearchFilterWithValue -> Maybe OptionSearchFilterWithValue
+        findNewSearchFilterResult optionValue results =
+            List.Extra.find (\result -> result.value == optionValue) results
+    in
+    List.map
+        (\option ->
+            case findNewSearchFilterResult (Option.getOptionValue option) optionSearchFilterWithValues of
+                Just result ->
+                    Option.setOptionSearchFilter (Just result.searchFilter) option
+
+                Nothing ->
+                    Option.setOptionSearchFilter Nothing option
+        )
+        options

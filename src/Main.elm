@@ -123,10 +123,12 @@ import Ports
         , removeOptionsReceiver
         , requestAllOptionsReceiver
         , scrollDropdownToElement
+        , searchOptionsWithWebWorker
         , searchStringMinimumLengthChangedReceiver
         , selectOptionReceiver
         , selectedItemStaysInPlaceChangedReceiver
         , showDropdownFooterChangedReceiver
+        , updateSearchResultDataWithWebWorkerReceiver
         , valueCasingDimensionsChangedReceiver
         , valueChanged
         , valueChangedReceiver
@@ -213,6 +215,7 @@ type Msg
     | AddMultiSelectValue Int
     | RemoveMultiSelectValue Int
     | RequestAllOptions
+    | UpdateSearchResultsForOptions Json.Encode.Value
 
 
 type alias Model =
@@ -449,7 +452,7 @@ update msg model =
             )
 
         UpdateOptionsWithSearchString ->
-            ( updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges model, Cmd.none )
+            ( updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges model, searchOptionsWithWebWorker (SearchString.toString model.searchString) )
 
         MsgQuietUpdateOptionsWithSearchString subMsg ->
             Debouncer.Messages.update update updateDebouncer subMsg model
@@ -884,6 +887,25 @@ update msg model =
         RequestAllOptions ->
             ( model, allOptions (Json.Encode.list Option.encode model.options) )
 
+        UpdateSearchResultsForOptions updatedSearchResultsJsonValue ->
+            case Json.Decode.decodeValue Option.decodeSearchResults updatedSearchResultsJsonValue of
+                Ok searchResults ->
+                    let
+                        updatedOptions =
+                            model.options
+                                |> OptionsUtilities.updateOptionsWithNewSearchResults searchResults
+                    in
+                    ( { model
+                        | options =
+                            adjustHighlightedOptionAfterSearch updatedOptions
+                                (figureOutWhichOptionsToShowInTheDropdown model.selectionConfig updatedOptions)
+                      }
+                    , Cmd.none
+                    )
+
+                Err error ->
+                    ( model, errorMessage (Json.Decode.errorToString error) )
+
 
 deselectOption : Model -> Option -> ( Model, Cmd Msg )
 deselectOption model option =
@@ -972,17 +994,8 @@ updateModelWithChangesThatEffectTheOptionsWithSearchString :
     -> { a | options : List Option, rightSlot : RightSlot }
     -> { a | options : List Option, rightSlot : RightSlot }
 updateModelWithChangesThatEffectTheOptionsWithSearchString rightSlot selectionMode searchString options model =
-    let
-        updatedOptions =
-            updateTheFullListOfOptions
-                selectionMode
-                searchString
-                options
-    in
     { model
-        | options =
-            adjustHighlightedOptionAfterSearch updatedOptions (figureOutWhichOptionsToShowInTheDropdown selectionMode updatedOptions)
-        , rightSlot =
+        | rightSlot =
             updateRightSlot
                 rightSlot
                 selectionMode
@@ -999,17 +1012,8 @@ updatePartOfTheModelWithChangesThatEffectTheOptionsWhenTheMouseMoves :
     -> { a | options : List Option, rightSlot : RightSlot }
     -> { a | options : List Option, rightSlot : RightSlot }
 updatePartOfTheModelWithChangesThatEffectTheOptionsWhenTheMouseMoves rightSlot selectionMode searchString options model =
-    let
-        updatedOptions =
-            updateTheFullListOfOptions
-                selectionMode
-                searchString
-                options
-    in
     { model
-        | options =
-            updatedOptions
-        , rightSlot =
+        | rightSlot =
             updateRightSlot
                 rightSlot
                 selectionMode
@@ -2545,6 +2549,7 @@ subscriptions _ =
         , valueCasingDimensionsChangedReceiver ValueCasingWidthUpdate
         , valueChangedReceiver ValueChanged
         , outputStyleChangedReceiver OutputStyleChanged
+        , updateSearchResultDataWithWebWorkerReceiver UpdateSearchResultsForOptions
         ]
 
 

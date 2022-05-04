@@ -98,7 +98,6 @@ updateSearchResultInOption searchString option =
             (OptionSearchFilter.new
                 totalScore
                 bestScore
-                searchResult
                 labelTokens
                 descriptionTokens
                 groupTokens

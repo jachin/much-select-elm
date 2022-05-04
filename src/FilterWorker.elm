@@ -27,13 +27,17 @@ update msg options =
                 Ok newOptions ->
                     ( newOptions, Cmd.none )
 
-                Err _ ->
-                    ( [], Cmd.none )
+                Err error ->
+                    ( [], sendErrorMessage (Json.Decode.errorToString error) )
 
         UpdateSearchString searchString ->
-            ( options
-                |> List.map (OptionSearcher.updateSearchResultInOption (SearchString.new searchString))
-            , Cmd.none
+            let
+                newOptions =
+                    options
+                        |> List.map (OptionSearcher.updateSearchResultInOption (SearchString.new searchString))
+            in
+            ( newOptions
+            , sendSearchResults (Json.Encode.list Option.encodeSearchResults newOptions)
             )
 
 
@@ -57,3 +61,6 @@ port receiveSearchString : (String -> msg) -> Sub msg
 
 
 port sendSearchResults : Json.Encode.Value -> Cmd msg
+
+
+port sendErrorMessage : String -> Cmd msg
