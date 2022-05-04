@@ -1,12 +1,16 @@
 // eslint-disable-next-line no-undef
-importScripts("filter-worker-elm.js");
-
 const app = Elm.FilterWorker.init();
 
-onmessage = function ({ data }) {
-  app.ports.receiveOptions.send(data);
+onmessage = ({ data }) => {
+  const { portName, jsonBlob } = data;
+
+  if (portName === "receiveOptions") {
+    app.ports.receiveOptions.send(jsonBlob);
+  } else if (portName === "receiveSearchString") {
+    app.ports.receiveSearchString.send(jsonBlob);
+  }
 };
 
-app.ports.sendCount.subscribe((int) => {
-  console.log(int);
+app.ports.sendSearchResults.subscribe((searchResultData) => {
+  console.log("searchResultData", searchResultData);
 });

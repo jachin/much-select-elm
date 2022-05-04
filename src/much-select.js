@@ -1,6 +1,8 @@
 // noinspection ES6CheckImport
 import { Elm } from "./Main.elm";
 
+import worker from "./gen/filter-worker-bundle.js";
+
 import asciiFold from "./ascii-fold.js";
 
 const buildOptionsFromSelectElement = (selectElement) => {
@@ -288,6 +290,12 @@ class MuchSelect extends HTMLElement {
      * @private
      */
     this._app = null;
+
+    /**
+     * @type Worker
+     * @private
+     */
+    this._filterWorker = worker;
 
     /**
      * @type {boolean}
@@ -1415,13 +1423,16 @@ class MuchSelect extends HTMLElement {
     this.allowCustomOptions = newValue;
     this.customOptionHint = newValue;
 
-    // noinspection JSUnresolvedVariable
-    this.appPromise.then((app) =>
-      app.ports.allowCustomOptionsReceiver.send(
+    this.appPromise.then((app) => {
+      const customOptionHint =
+        this.customOptionHint === null ? "" : this.customOptionHint;
+
+      // noinspection JSUnresolvedVariable
+      app.ports.allowCustomOptionsReceiver.send([
         this.allowCustomOptions,
-        this.customOptionHint
-      )
-    );
+        customOptionHint,
+      ]);
+    });
   }
 
   get allowCustomOptions() {
