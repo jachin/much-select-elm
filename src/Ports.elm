@@ -31,6 +31,7 @@ port module Ports exposing
     , selectOptionReceiver
     , selectedItemStaysInPlaceChangedReceiver
     , showDropdownFooterChangedReceiver
+    , updateOptionsInWebWorker
     , updateSearchResultDataWithWebWorkerReceiver
     , valueCasingDimensionsChangedReceiver
     , valueChanged
@@ -84,6 +85,9 @@ port allOptions : Json.Decode.Value -> Cmd msg
 
 
 port searchOptionsWithWebWorker : String -> Cmd msg
+
+
+port updateOptionsInWebWorker : () -> Cmd msg
 
 
 port requestAllOptionsReceiver : (() -> msg) -> Sub msg

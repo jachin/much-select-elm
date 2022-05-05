@@ -128,6 +128,7 @@ import Ports
         , selectOptionReceiver
         , selectedItemStaysInPlaceChangedReceiver
         , showDropdownFooterChangedReceiver
+        , updateOptionsInWebWorker
         , updateSearchResultDataWithWebWorkerReceiver
         , valueCasingDimensionsChangedReceiver
         , valueChanged
@@ -321,7 +322,18 @@ update msg model =
                         , rightSlot = updateRightSlotTransitioning NotInFocusTransition model.rightSlot
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-                    , inputBlurred ()
+                    , Cmd.batch
+                        [ inputBlurred ()
+                        , Task.perform
+                            (\_ ->
+                                UpdateOptionsWithSearchString
+                                    |> provideInput
+                                    |> MsgQuietUpdateOptionsWithSearchString
+                            )
+                            (Task.succeed
+                                always
+                            )
+                        ]
                     )
 
                 Datalist ->
@@ -512,7 +524,10 @@ update msg model =
                         | options = newOptionWithOldSelectedOption
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-                    , optionsUpdated True
+                    , Cmd.batch
+                        [ optionsUpdated True
+                        , updateOptionsInWebWorker ()
+                        ]
                     )
 
                 Err error ->
@@ -530,7 +545,10 @@ update msg model =
                         , quietSearchForDynamicInterval = makeDynamicDebouncer (List.length updatedOptions)
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-                    , optionsUpdated False
+                    , Cmd.batch
+                        [ optionsUpdated False
+                        , updateOptionsInWebWorker ()
+                        ]
                     )
 
                 Err error ->
@@ -548,7 +566,10 @@ update msg model =
                         , quietSearchForDynamicInterval = makeDynamicDebouncer (List.length updatedOptions)
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-                    , optionsUpdated True
+                    , Cmd.batch
+                        [ optionsUpdated True
+                        , updateOptionsInWebWorker ()
+                        ]
                     )
 
                 Err error ->
@@ -573,7 +594,19 @@ update msg model =
                         | options = updatedOptions
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-                    , makeCommandMessagesWhenValuesChanges updatedOptions (Just optionValue)
+                    , Cmd.batch
+                        [ makeCommandMessagesWhenValuesChanges updatedOptions (Just optionValue)
+                        , updateOptionsInWebWorker ()
+                        , Task.perform
+                            (\_ ->
+                                UpdateOptionsWithSearchString
+                                    |> provideInput
+                                    |> MsgQuietUpdateOptionsWithSearchString
+                            )
+                            (Task.succeed
+                                always
+                            )
+                        ]
                     )
 
                 Err error ->
@@ -724,7 +757,11 @@ update msg model =
                 , options = updatedOptions
               }
                 |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-            , Cmd.batch [ muchSelectIsReady (), cmd ]
+            , Cmd.batch
+                [ muchSelectIsReady ()
+                , updateOptionsInWebWorker ()
+                , cmd
+                ]
             )
 
         SearchStringMinimumLengthAttributeChanged searchStringMinimumLength ->
@@ -755,6 +792,7 @@ update msg model =
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , Cmd.batch
                         [ makeCommandMessagesWhenValuesChanges updatedOptions maybeHighlightedOptionValue
+                        , updateOptionsInWebWorker ()
                         , blurInput ()
                         ]
                     )
@@ -767,6 +805,7 @@ update msg model =
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , Cmd.batch
                         [ makeCommandMessagesWhenValuesChanges updatedOptions maybeHighlightedOptionValue
+                        , updateOptionsInWebWorker ()
                         , focusInput ()
                         ]
                     )
@@ -920,7 +959,10 @@ deselectOption model option =
         | options = updatedOptions
       }
         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-    , makeCommandMessagesWhenValuesChanges updatedOptions Nothing
+    , Cmd.batch
+        [ makeCommandMessagesWhenValuesChanges updatedOptions Nothing
+        , updateOptionsInWebWorker ()
+        ]
     )
 
 
@@ -2512,6 +2554,7 @@ init flags =
         , initialValueErrCmd
         , muchSelectIsReady ()
         , makeCommandMessageForInitialValue (selectedOptions optionsWithInitialValueSelected)
+        , updateOptionsInWebWorker ()
         ]
     )
 

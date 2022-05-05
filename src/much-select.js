@@ -495,8 +495,6 @@ class MuchSelect extends HTMLElement {
       app.ports.muchSelectIsReady.subscribe(() => {
         this.dispatchEvent(new CustomEvent("ready", { bubbles: true }));
         this.dispatchEvent(new CustomEvent("muchSelectReady"));
-
-        this.updateFilterWorkerOptions();
       })
     );
 
@@ -692,6 +690,12 @@ class MuchSelect extends HTMLElement {
           portName: "receiveSearchString",
           jsonBlob: searchString,
         });
+      });
+    });
+
+    this.appPromise.then((app) => {
+      app.ports.updateOptionsInWebWorker.subscribe(() => {
+        this.updateFilterWorkerOptions();
       });
     });
 
