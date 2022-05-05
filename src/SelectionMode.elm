@@ -87,7 +87,10 @@ makeSelectionConfig : Bool -> Bool -> Bool -> String -> String -> Maybe String -
 makeSelectionConfig disabled allowMultiSelect allowCustomOptions outputStyle placeholder customOptionHint enableMultiSelectSingleItemRemoval maxDropdownItems selectedItemStaysInPlace searchStringMinimumLength shouldShowDropdownFooter =
     let
         outputStyleResult =
-            stringToOutputStyle outputStyle
+            outputStyle
+                |> Debug.log "output style str"
+                |> stringToOutputStyle
+                |> Debug.log "outputStyleResult"
 
         interactionState =
             if disabled then
