@@ -1033,6 +1033,7 @@ updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges model =
     updateModelWithChangesThatEffectTheOptionsWithSearchString
         model.rightSlot
         model.selectionConfig
+        model.searchString
         model.options
         model
 
@@ -1049,15 +1050,17 @@ updateModelWithChangesThatEffectTheOptionsWhenTheMouseMoves model =
 updateModelWithChangesThatEffectTheOptionsWithSearchString :
     RightSlot
     -> SelectionConfig
+    -> SearchString
     -> List Option
     -> { a | options : List Option, rightSlot : RightSlot }
     -> { a | options : List Option, rightSlot : RightSlot }
-updateModelWithChangesThatEffectTheOptionsWithSearchString rightSlot selectionMode options model =
+updateModelWithChangesThatEffectTheOptionsWithSearchString rightSlot selectionConfig searchString options model =
     { model
-        | rightSlot =
+        | options = updateOrAddCustomOption searchString selectionConfig options
+        , rightSlot =
             updateRightSlot
                 rightSlot
-                selectionMode
+                selectionConfig
                 (hasSelectedOption options)
                 (options |> selectedOptions)
     }

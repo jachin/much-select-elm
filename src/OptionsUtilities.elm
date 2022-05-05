@@ -49,7 +49,6 @@ import SelectionMode
         , getSelectedItemPlacementMode
         )
 import SortRank exposing (SortRank)
-import ValueString exposing (ValueString)
 
 
 moveHighlightedOptionDown : List Option -> List Option -> List Option
@@ -418,11 +417,6 @@ selectSingleOptionInListResult optionValue options =
 
     else
         Err "That option is not in this list"
-
-
-selectSingleOptionInListByString : String -> List Option -> List Option
-selectSingleOptionInListByString string options =
-    selectSingleOptionInList (stringToOptionValue string) options
 
 
 selectSingleOptionInListByStringOrSelectCustomValue : SearchString -> List Option -> List Option
@@ -1004,13 +998,13 @@ findHighlightedOrSelectedOptionIndex options =
 
 
 filterOptionsToShowInDropdown : SelectionConfig -> List Option -> List Option
-filterOptionsToShowInDropdown selectionMode =
-    filterOptionsToShowInDropdownByOptionDisplay selectionMode >> filterOptionsToShowInDropdownBySearchScore
+filterOptionsToShowInDropdown selectionConfig =
+    filterOptionsToShowInDropdownByOptionDisplay selectionConfig >> filterOptionsToShowInDropdownBySearchScore
 
 
 filterOptionsToShowInDropdownByOptionDisplay : SelectionConfig -> List Option -> List Option
-filterOptionsToShowInDropdownByOptionDisplay selectionMode =
-    case selectionMode of
+filterOptionsToShowInDropdownByOptionDisplay selectionConfig =
+    case selectionConfig of
         SingleSelectConfig _ _ _ ->
             List.filter
                 (\option ->
@@ -1062,7 +1056,12 @@ filterOptionsToShowInDropdownBySearchScore : List Option -> List Option
 filterOptionsToShowInDropdownBySearchScore options =
     case findLowestSearchScore options of
         Just lowScore ->
-            List.filter (isOptionBelowScore (OptionSearchFilter.lowScoreCutOff lowScore)) options
+            List.filter
+                (\option ->
+                    isOptionBelowScore (OptionSearchFilter.lowScoreCutOff lowScore) option
+                        || isCustomOption option
+                )
+                options
 
         Nothing ->
             options
@@ -1151,11 +1150,6 @@ findOptionByOptionValue optionValue options =
 findOptionByOptionUsingOptionValue : Option -> List Option -> Maybe Option
 findOptionByOptionUsingOptionValue option options =
     findOptionByOptionValue (getOptionValue option) options
-
-
-findOptionByOptionUsingValueString : ValueString -> List Option -> Maybe Option
-findOptionByOptionUsingValueString valueString options =
-    findOptionByOptionValue (ValueString.toOptionValue valueString) options
 
 
 updateDatalistOptionsWithValue : OptionValue -> Int -> List Option -> List Option
