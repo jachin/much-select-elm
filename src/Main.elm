@@ -839,6 +839,7 @@ update msg model =
             ( { model
                 | options = updatedOptions
               }
+              -- TODO This should probably not be "something"
             , scrollDropdownToElement "something"
             )
 
@@ -850,6 +851,7 @@ update msg model =
             ( { model
                 | options = updatedOptions
               }
+              -- TODO This should probably not be "something"
             , scrollDropdownToElement "something"
             )
 
@@ -924,7 +926,20 @@ update msg model =
             )
 
         RequestAllOptions ->
-            ( model, allOptions (Json.Encode.list Option.encode model.options) )
+            ( model
+            , Cmd.batch
+                [ allOptions (Json.Encode.list Option.encode model.options)
+                , Task.perform
+                    (\_ ->
+                        UpdateOptionsWithSearchString
+                            |> provideInput
+                            |> MsgQuietUpdateOptionsWithSearchString
+                    )
+                    (Task.succeed
+                        always
+                    )
+                ]
+            )
 
         UpdateSearchResultsForOptions updatedSearchResultsJsonValue ->
             case Json.Decode.decodeValue Option.decodeSearchResults updatedSearchResultsJsonValue of
@@ -1013,7 +1028,6 @@ updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges model =
     updateModelWithChangesThatEffectTheOptionsWithSearchString
         model.rightSlot
         model.selectionConfig
-        model.searchString
         model.options
         model
 
@@ -1023,7 +1037,6 @@ updateModelWithChangesThatEffectTheOptionsWhenTheMouseMoves model =
     updatePartOfTheModelWithChangesThatEffectTheOptionsWhenTheMouseMoves
         model.rightSlot
         model.selectionConfig
-        model.searchString
         model.options
         model
 
@@ -1031,11 +1044,10 @@ updateModelWithChangesThatEffectTheOptionsWhenTheMouseMoves model =
 updateModelWithChangesThatEffectTheOptionsWithSearchString :
     RightSlot
     -> SelectionConfig
-    -> SearchString
     -> List Option
     -> { a | options : List Option, rightSlot : RightSlot }
     -> { a | options : List Option, rightSlot : RightSlot }
-updateModelWithChangesThatEffectTheOptionsWithSearchString rightSlot selectionMode searchString options model =
+updateModelWithChangesThatEffectTheOptionsWithSearchString rightSlot selectionMode options model =
     { model
         | rightSlot =
             updateRightSlot
@@ -1049,11 +1061,10 @@ updateModelWithChangesThatEffectTheOptionsWithSearchString rightSlot selectionMo
 updatePartOfTheModelWithChangesThatEffectTheOptionsWhenTheMouseMoves :
     RightSlot
     -> SelectionConfig
-    -> SearchString
     -> List Option
     -> { a | options : List Option, rightSlot : RightSlot }
     -> { a | options : List Option, rightSlot : RightSlot }
-updatePartOfTheModelWithChangesThatEffectTheOptionsWhenTheMouseMoves rightSlot selectionMode searchString options model =
+updatePartOfTheModelWithChangesThatEffectTheOptionsWhenTheMouseMoves rightSlot selectionMode options model =
     { model
         | rightSlot =
             updateRightSlot
