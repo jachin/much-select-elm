@@ -4481,7 +4481,7 @@ var $author$project$FilterWorker$update = F2(
 				var newOptions = A3($author$project$OptionSearcher$updateOptionsWithSearchString, searchString, searchStringMinimumLength, options);
 				var optionsToSend = A2(
 					$elm$core$List$take,
-					50,
+					100,
 					$author$project$OptionsUtilities$filterOptionsToShowInDropdownBySearchScore(newOptions));
 				return _Utils_Tuple2(
 					newOptions,
