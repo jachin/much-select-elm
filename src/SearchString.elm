@@ -1,4 +1,7 @@
-module SearchString exposing (SearchString, isEmpty, length, new, reset, toLower, toString)
+module SearchString exposing (SearchString, decode, encode, isEmpty, length, new, reset, toLower, toString)
+
+import Json.Decode
+import Json.Encode
 
 
 type SearchString
@@ -33,3 +36,15 @@ toString (SearchString str) =
 isEmpty : SearchString -> Bool
 isEmpty (SearchString str) =
     String.length str == 0
+
+
+encode : SearchString -> Json.Encode.Value
+encode searchString =
+    Json.Encode.string (toString searchString)
+
+
+decode : Json.Decode.Decoder SearchString
+decode =
+    Json.Decode.map
+        SearchString
+        Json.Decode.string

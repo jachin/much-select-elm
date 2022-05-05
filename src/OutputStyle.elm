@@ -1,5 +1,7 @@
 module OutputStyle exposing (..)
 
+import Json.Decode
+import Json.Encode
 import PositiveInt exposing (PositiveInt)
 
 
@@ -11,6 +13,29 @@ type MaxDropdownItems
 type SearchStringMinimumLength
     = FixedSearchStringMinimumLength PositiveInt
     | NoMinimumToSearchStringLength
+
+
+encodeSearchStringMinimumLength : SearchStringMinimumLength -> Json.Encode.Value
+encodeSearchStringMinimumLength searchStringMinimumLength =
+    case searchStringMinimumLength of
+        FixedSearchStringMinimumLength positiveInt ->
+            PositiveInt.encode positiveInt
+
+        NoMinimumToSearchStringLength ->
+            Json.Encode.int 0
+
+
+decodeSearchStringMinimumLength : Json.Decode.Decoder SearchStringMinimumLength
+decodeSearchStringMinimumLength =
+    PositiveInt.decode
+        |> Json.Decode.andThen
+            (\positiveInt ->
+                if PositiveInt.isZero positiveInt then
+                    Json.Decode.succeed NoMinimumToSearchStringLength
+
+                else
+                    Json.Decode.succeed (FixedSearchStringMinimumLength positiveInt)
+            )
 
 
 type alias CustomOptionHint =

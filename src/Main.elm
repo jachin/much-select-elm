@@ -123,10 +123,13 @@ import Ports
         , removeOptionsReceiver
         , requestAllOptionsReceiver
         , scrollDropdownToElement
+        , searchOptionsWithWebWorker
         , searchStringMinimumLengthChangedReceiver
         , selectOptionReceiver
         , selectedItemStaysInPlaceChangedReceiver
         , showDropdownFooterChangedReceiver
+        , updateOptionsInWebWorker
+        , updateSearchResultDataWithWebWorkerReceiver
         , valueCasingDimensionsChangedReceiver
         , valueChanged
         , valueChangedReceiver
@@ -213,6 +216,7 @@ type Msg
     | AddMultiSelectValue Int
     | RemoveMultiSelectValue Int
     | RequestAllOptions
+    | UpdateSearchResultsForOptions Json.Encode.Value
 
 
 type alias Model =
@@ -226,7 +230,6 @@ type alias Model =
     , focusedIndex : Int
     , rightSlot : RightSlot
     , valueCasing : ValueCasing
-    , deleteKeyPressed : Bool
     }
 
 
@@ -318,7 +321,18 @@ update msg model =
                         , rightSlot = updateRightSlotTransitioning NotInFocusTransition model.rightSlot
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-                    , inputBlurred ()
+                    , Cmd.batch
+                        [ inputBlurred ()
+                        , Task.perform
+                            (\_ ->
+                                UpdateOptionsWithSearchString
+                                    |> provideInput
+                                    |> MsgQuietUpdateOptionsWithSearchString
+                            )
+                            (Task.succeed
+                                always
+                            )
+                        ]
                     )
 
                 Datalist ->
@@ -449,7 +463,13 @@ update msg model =
             )
 
         UpdateOptionsWithSearchString ->
-            ( updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges model, Cmd.none )
+            ( updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges model
+            , searchOptionsWithWebWorker
+                (OptionSearcher.encodeSearchParams
+                    model.searchString
+                    (SelectionMode.getSearchStringMinimumLength model.selectionConfig)
+                )
+            )
 
         MsgQuietUpdateOptionsWithSearchString subMsg ->
             Debouncer.Messages.update update updateDebouncer subMsg model
@@ -509,7 +529,10 @@ update msg model =
                         | options = newOptionWithOldSelectedOption
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-                    , optionsUpdated True
+                    , Cmd.batch
+                        [ optionsUpdated True
+                        , updateOptionsInWebWorker ()
+                        ]
                     )
 
                 Err error ->
@@ -527,7 +550,10 @@ update msg model =
                         , quietSearchForDynamicInterval = makeDynamicDebouncer (List.length updatedOptions)
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-                    , optionsUpdated False
+                    , Cmd.batch
+                        [ optionsUpdated False
+                        , updateOptionsInWebWorker ()
+                        ]
                     )
 
                 Err error ->
@@ -545,7 +571,10 @@ update msg model =
                         , quietSearchForDynamicInterval = makeDynamicDebouncer (List.length updatedOptions)
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-                    , optionsUpdated True
+                    , Cmd.batch
+                        [ optionsUpdated True
+                        , updateOptionsInWebWorker ()
+                        ]
                     )
 
                 Err error ->
@@ -570,7 +599,19 @@ update msg model =
                         | options = updatedOptions
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-                    , makeCommandMessagesWhenValuesChanges updatedOptions (Just optionValue)
+                    , Cmd.batch
+                        [ makeCommandMessagesWhenValuesChanges updatedOptions (Just optionValue)
+                        , updateOptionsInWebWorker ()
+                        , Task.perform
+                            (\_ ->
+                                UpdateOptionsWithSearchString
+                                    |> provideInput
+                                    |> MsgQuietUpdateOptionsWithSearchString
+                            )
+                            (Task.succeed
+                                always
+                            )
+                        ]
                     )
 
                 Err error ->
@@ -721,7 +762,11 @@ update msg model =
                 , options = updatedOptions
               }
                 |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-            , Cmd.batch [ muchSelectIsReady (), cmd ]
+            , Cmd.batch
+                [ muchSelectIsReady ()
+                , updateOptionsInWebWorker ()
+                , cmd
+                ]
             )
 
         SearchStringMinimumLengthAttributeChanged searchStringMinimumLength ->
@@ -752,6 +797,7 @@ update msg model =
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , Cmd.batch
                         [ makeCommandMessagesWhenValuesChanges updatedOptions maybeHighlightedOptionValue
+                        , updateOptionsInWebWorker ()
                         , blurInput ()
                         ]
                     )
@@ -764,6 +810,7 @@ update msg model =
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , Cmd.batch
                         [ makeCommandMessagesWhenValuesChanges updatedOptions maybeHighlightedOptionValue
+                        , updateOptionsInWebWorker ()
                         , focusInput ()
                         ]
                     )
@@ -797,6 +844,7 @@ update msg model =
             ( { model
                 | options = updatedOptions
               }
+              -- TODO This should probably not be "something"
             , scrollDropdownToElement "something"
             )
 
@@ -808,6 +856,7 @@ update msg model =
             ( { model
                 | options = updatedOptions
               }
+              -- TODO This should probably not be "something"
             , scrollDropdownToElement "something"
             )
 
@@ -882,7 +931,39 @@ update msg model =
             )
 
         RequestAllOptions ->
-            ( model, allOptions (Json.Encode.list Option.encode model.options) )
+            ( model
+            , Cmd.batch
+                [ allOptions (Json.Encode.list Option.encode model.options)
+                , Task.perform
+                    (\_ ->
+                        UpdateOptionsWithSearchString
+                            |> provideInput
+                            |> MsgQuietUpdateOptionsWithSearchString
+                    )
+                    (Task.succeed
+                        always
+                    )
+                ]
+            )
+
+        UpdateSearchResultsForOptions updatedSearchResultsJsonValue ->
+            case Json.Decode.decodeValue Option.decodeSearchResults updatedSearchResultsJsonValue of
+                Ok searchResults ->
+                    let
+                        updatedOptions =
+                            model.options
+                                |> OptionsUtilities.updateOptionsWithNewSearchResults searchResults
+                    in
+                    ( { model
+                        | options =
+                            adjustHighlightedOptionAfterSearch updatedOptions
+                                (figureOutWhichOptionsToShowInTheDropdown model.selectionConfig updatedOptions)
+                      }
+                    , Cmd.none
+                    )
+
+                Err error ->
+                    ( model, errorMessage (Json.Decode.errorToString error) )
 
 
 deselectOption : Model -> Option -> ( Model, Cmd Msg )
@@ -898,7 +979,10 @@ deselectOption model option =
         | options = updatedOptions
       }
         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-    , makeCommandMessagesWhenValuesChanges updatedOptions Nothing
+    , Cmd.batch
+        [ makeCommandMessagesWhenValuesChanges updatedOptions Nothing
+        , updateOptionsInWebWorker ()
+        ]
     )
 
 
@@ -959,7 +1043,6 @@ updateModelWithChangesThatEffectTheOptionsWhenTheMouseMoves model =
     updatePartOfTheModelWithChangesThatEffectTheOptionsWhenTheMouseMoves
         model.rightSlot
         model.selectionConfig
-        model.searchString
         model.options
         model
 
@@ -971,21 +1054,13 @@ updateModelWithChangesThatEffectTheOptionsWithSearchString :
     -> List Option
     -> { a | options : List Option, rightSlot : RightSlot }
     -> { a | options : List Option, rightSlot : RightSlot }
-updateModelWithChangesThatEffectTheOptionsWithSearchString rightSlot selectionMode searchString options model =
-    let
-        updatedOptions =
-            updateTheFullListOfOptions
-                selectionMode
-                searchString
-                options
-    in
+updateModelWithChangesThatEffectTheOptionsWithSearchString rightSlot selectionConfig searchString options model =
     { model
-        | options =
-            adjustHighlightedOptionAfterSearch updatedOptions (figureOutWhichOptionsToShowInTheDropdown selectionMode updatedOptions)
+        | options = updateOrAddCustomOption searchString selectionConfig options
         , rightSlot =
             updateRightSlot
                 rightSlot
-                selectionMode
+                selectionConfig
                 (hasSelectedOption options)
                 (options |> selectedOptions)
     }
@@ -994,22 +1069,12 @@ updateModelWithChangesThatEffectTheOptionsWithSearchString rightSlot selectionMo
 updatePartOfTheModelWithChangesThatEffectTheOptionsWhenTheMouseMoves :
     RightSlot
     -> SelectionConfig
-    -> SearchString
     -> List Option
     -> { a | options : List Option, rightSlot : RightSlot }
     -> { a | options : List Option, rightSlot : RightSlot }
-updatePartOfTheModelWithChangesThatEffectTheOptionsWhenTheMouseMoves rightSlot selectionMode searchString options model =
-    let
-        updatedOptions =
-            updateTheFullListOfOptions
-                selectionMode
-                searchString
-                options
-    in
+updatePartOfTheModelWithChangesThatEffectTheOptionsWhenTheMouseMoves rightSlot selectionMode options model =
     { model
-        | options =
-            updatedOptions
-        , rightSlot =
+        | rightSlot =
             updateRightSlot
                 rightSlot
                 selectionMode
@@ -1026,6 +1091,7 @@ updateTheFullListOfOptions selectionMode searchString options =
 
 updateTheOptionsForTheDropdown : SelectionConfig -> List Option -> List Option
 updateTheOptionsForTheDropdown selectionMode options =
+    -- TODO This function can go I think, it just has some tests
     options
         |> sortOptionsBySearchFilterTotalScore
         |> figureOutWhichOptionsToShowInTheDropdown selectionMode
@@ -1819,6 +1885,7 @@ dropdown selectionMode options searchString (ValueCasing valueCasingWidth valueC
     let
         optionsForTheDropdown =
             figureOutWhichOptionsToShowInTheDropdown selectionMode options
+                |> OptionsUtilities.sortOptionsByBestScore
 
         optionsHtml =
             -- TODO We should probably do something different if we are in a loading state
@@ -1925,119 +1992,124 @@ optionToDropdownOption :
     -> SelectionConfig
     -> Option
     -> Html Msg
-optionToDropdownOption eventHandlers selectionConfig option =
-    let
-        descriptionHtml : Html Msg
-        descriptionHtml =
-            if option |> Option.getOptionDescription |> Option.optionDescriptionToBool then
-                case Option.getMaybeOptionSearchFilter option of
-                    Just optionSearchFilter ->
-                        div
-                            [ class "description"
-                            , Html.Attributes.attribute "part" "dropdown-option-description"
-                            ]
-                            [ span [] (tokensToHtml optionSearchFilter.descriptionTokens)
-                            ]
+optionToDropdownOption eventHandlers selectionConfig_ option_ =
+    Html.Lazy.lazy2
+        (\selectionConfig option ->
+            let
+                descriptionHtml : Html Msg
+                descriptionHtml =
+                    if option |> Option.getOptionDescription |> Option.optionDescriptionToBool then
+                        case Option.getMaybeOptionSearchFilter option of
+                            Just optionSearchFilter ->
+                                div
+                                    [ class "description"
+                                    , Html.Attributes.attribute "part" "dropdown-option-description"
+                                    ]
+                                    [ span [] (tokensToHtml optionSearchFilter.descriptionTokens)
+                                    ]
 
-                    Nothing ->
-                        div
-                            [ class "description"
-                            , Html.Attributes.attribute "part" "dropdown-option-description"
-                            ]
-                            [ span []
-                                [ option
-                                    |> Option.getOptionDescription
-                                    |> Option.optionDescriptionToString
-                                    |> text
-                                ]
-                            ]
+                            Nothing ->
+                                div
+                                    [ class "description"
+                                    , Html.Attributes.attribute "part" "dropdown-option-description"
+                                    ]
+                                    [ span []
+                                        [ option
+                                            |> Option.getOptionDescription
+                                            |> Option.optionDescriptionToString
+                                            |> text
+                                        ]
+                                    ]
 
-            else
-                text ""
+                    else
+                        text ""
 
-        labelHtml : Html Msg
-        labelHtml =
-            case Option.getMaybeOptionSearchFilter option of
-                Just optionSearchFilter ->
-                    span [] (tokensToHtml optionSearchFilter.labelTokens)
+                labelHtml : Html Msg
+                labelHtml =
+                    case Option.getMaybeOptionSearchFilter option of
+                        Just optionSearchFilter ->
+                            span [] (tokensToHtml optionSearchFilter.labelTokens)
 
-                Nothing ->
-                    span [] [ Option.getOptionLabel option |> optionLabelToString |> text ]
+                        Nothing ->
+                            span [] [ Option.getOptionLabel option |> optionLabelToString |> text ]
 
-        valueDataAttribute =
-            Html.Attributes.attribute "data-value" (Option.getOptionValueAsString option)
-    in
-    case Option.getOptionDisplay option of
-        OptionShown ->
-            div
-                [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
-                , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
-                , mousedownPreventDefault (option |> Option.getOptionValue |> eventHandlers.clickMsgConstructor)
-                , onClickPreventDefault eventHandlers.noOpMsgConstructor
-                , Html.Attributes.attribute "part" "dropdown-option"
-                , class "option"
-                , valueDataAttribute
-                ]
-                [ labelHtml, descriptionHtml ]
-
-        OptionHidden ->
-            text ""
-
-        OptionSelected _ ->
-            case SelectionMode.getSelectionMode selectionConfig of
-                SelectionMode.SingleSelect ->
+                valueDataAttribute =
+                    Html.Attributes.attribute "data-value" (Option.getOptionValueAsString option)
+            in
+            case Option.getOptionDisplay option of
+                OptionShown ->
                     div
                         [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
                         , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
                         , mousedownPreventDefault (option |> Option.getOptionValue |> eventHandlers.clickMsgConstructor)
-                        , Html.Attributes.attribute "part" "dropdown-option selected"
-                        , class "selected"
+                        , onClickPreventDefault eventHandlers.noOpMsgConstructor
+                        , Html.Attributes.attribute "part" "dropdown-option"
                         , class "option"
                         , valueDataAttribute
                         ]
                         [ labelHtml, descriptionHtml ]
 
-                SelectionMode.MultiSelect ->
+                OptionHidden ->
                     text ""
 
-        OptionSelectedHighlighted _ ->
-            case selectionConfig of
-                SingleSelectConfig _ _ _ ->
+                OptionSelected _ ->
+                    case SelectionMode.getSelectionMode selectionConfig of
+                        SelectionMode.SingleSelect ->
+                            div
+                                [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
+                                , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
+                                , mousedownPreventDefault (option |> Option.getOptionValue |> eventHandlers.clickMsgConstructor)
+                                , Html.Attributes.attribute "part" "dropdown-option selected"
+                                , class "selected"
+                                , class "option"
+                                , valueDataAttribute
+                                ]
+                                [ labelHtml, descriptionHtml ]
+
+                        SelectionMode.MultiSelect ->
+                            text ""
+
+                OptionSelectedHighlighted _ ->
+                    case selectionConfig of
+                        SingleSelectConfig _ _ _ ->
+                            div
+                                [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
+                                , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
+                                , mousedownPreventDefault (option |> Option.getOptionValue |> eventHandlers.clickMsgConstructor)
+                                , Html.Attributes.attribute "part" "dropdown-option selected highlighted"
+                                , class "selected"
+                                , class "highlighted"
+                                , class "option"
+                                , valueDataAttribute
+                                ]
+                                [ labelHtml, descriptionHtml ]
+
+                        MultiSelectConfig _ _ _ ->
+                            text ""
+
+                OptionHighlighted ->
                     div
                         [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
                         , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
                         , mousedownPreventDefault (option |> Option.getOptionValue |> eventHandlers.clickMsgConstructor)
-                        , Html.Attributes.attribute "part" "dropdown-option selected highlighted"
-                        , class "selected"
+                        , Html.Attributes.attribute "part" "dropdown-option highlighted"
                         , class "highlighted"
                         , class "option"
                         , valueDataAttribute
                         ]
                         [ labelHtml, descriptionHtml ]
 
-                MultiSelectConfig _ _ _ ->
-                    text ""
-
-        OptionHighlighted ->
-            div
-                [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
-                , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
-                , mousedownPreventDefault (option |> Option.getOptionValue |> eventHandlers.clickMsgConstructor)
-                , Html.Attributes.attribute "part" "dropdown-option highlighted"
-                , class "highlighted"
-                , class "option"
-                , valueDataAttribute
-                ]
-                [ labelHtml, descriptionHtml ]
-
-        OptionDisabled ->
-            div
-                [ Html.Attributes.attribute "part" "dropdown-option disabled"
-                , class "disabled"
-                , class "option"
-                , valueDataAttribute
-                ]
-                [ labelHtml, descriptionHtml ]
+                OptionDisabled ->
+                    div
+                        [ Html.Attributes.attribute "part" "dropdown-option disabled"
+                        , class "disabled"
+                        , class "option"
+                        , valueDataAttribute
+                        ]
+                        [ labelHtml, descriptionHtml ]
+        )
+        selectionConfig_
+        option_
 
 
 optionsToValuesHtml : List Option -> SingleItemRemoval -> List (Html Msg)
@@ -2399,7 +2471,17 @@ init : Flags -> ( Model, Cmd Msg )
 init flags =
     let
         selectionConfig =
-            makeSelectionConfig flags.disabled flags.allowMultiSelect flags.allowCustomOptions flags.outputStyle flags.placeholder flags.customOptionHint flags.enableMultiSelectSingleItemRemoval flags.maxDropdownItems flags.selectedItemStaysInPlace flags.searchStringMinimumLength flags.showDropdownFooter
+            makeSelectionConfig flags.disabled
+                flags.allowMultiSelect
+                flags.allowCustomOptions
+                flags.outputStyle
+                flags.placeholder
+                flags.customOptionHint
+                flags.enableMultiSelectSingleItemRemoval
+                flags.maxDropdownItems
+                flags.selectedItemStaysInPlace
+                flags.searchStringMinimumLength
+                flags.showDropdownFooter
                 |> Result.withDefault defaultSelectionConfig
 
         optionSort =
@@ -2465,7 +2547,6 @@ init flags =
                     OptionsUtilities.organizeNewDatalistOptions optionsWithInitialValueSelected
     in
     ( { initialValue = initialValues
-      , deleteKeyPressed = False
       , placeholder = flags.placeholder
       , selectionConfig = selectionConfig
       , options = optionsWithInitialValueSelectedSorted
@@ -2508,6 +2589,7 @@ init flags =
         , initialValueErrCmd
         , muchSelectIsReady ()
         , makeCommandMessageForInitialValue (selectedOptions optionsWithInitialValueSelected)
+        , updateOptionsInWebWorker ()
         ]
     )
 
@@ -2545,6 +2627,7 @@ subscriptions _ =
         , valueCasingDimensionsChangedReceiver ValueCasingWidthUpdate
         , valueChangedReceiver ValueChanged
         , outputStyleChangedReceiver OutputStyleChanged
+        , updateSearchResultDataWithWebWorkerReceiver UpdateSearchResultsForOptions
         ]
 
 

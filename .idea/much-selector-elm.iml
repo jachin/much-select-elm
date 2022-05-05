@@ -12,6 +12,7 @@
       <excludeFolder url="file://$MODULE_DIR$/dist" />
       <excludeFolder url="file://$MODULE_DIR$/coverage" />
       <excludeFolder url="file://$MODULE_DIR$/.parcel-cache" />
+      <excludeFolder url="file://$MODULE_DIR$/src/gen" />
       <excludePattern pattern="elm-stuff" />
     </content>
     <orderEntry type="inheritedJdk" />

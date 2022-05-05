@@ -1,6 +1,8 @@
 // noinspection ES6CheckImport
 import { Elm } from "./Main.elm";
 
+import getMuchSelectTemplate from "./gen/much-select-template.js";
+
 import asciiFold from "./ascii-fold.js";
 
 const buildOptionsFromSelectElement = (selectElement) => {
@@ -290,6 +292,12 @@ class MuchSelect extends HTMLElement {
     this._app = null;
 
     /**
+     * @type {null|Worker}
+     * @private
+     */
+    this._filterWorker = null;
+
+    /**
      * @type {boolean}
      * @private
      */
@@ -343,7 +351,7 @@ class MuchSelect extends HTMLElement {
         app.ports.optionsReplacedReceiver.send(optionsJson);
         this.updateDimensions();
       });
-    }, 5);
+    }, 100);
 
     this._callValueChanged = makeDebounceLeadingFunc((newValue) => {
       this.appPromise.then((app) => {
@@ -457,6 +465,29 @@ class MuchSelect extends HTMLElement {
     this.parentDivPromise.then((parentDiv) => {
       const wrapperDiv = parentDiv.querySelector("#wrapper");
       this._resizeObserver.observe(wrapperDiv);
+
+      const code = parentDiv.querySelector("#filter-worker").textContent;
+      const blob = new Blob([code], { type: "application/javascript" });
+
+      this._filterWorker = new Worker(URL.createObjectURL(blob));
+
+      this._filterWorker.onmessage = ({ data }) => {
+        const { messageName, searchResultData, errorMessage } = data;
+        if (messageName === "searchResults") {
+          this.appPromise.then((app) => {
+            // noinspection JSUnresolvedVariable
+            app.ports.updateSearchResultDataWithWebWorkerReceiver.send(
+              searchResultData
+            );
+          });
+        } else if (messageName === "errorMessage") {
+          this.errorHandler(errorMessage);
+        } else {
+          this.errorHandler(
+            `Unknown message from filter worker: ${messageName}`
+          );
+        }
+      };
     });
 
     // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
@@ -653,6 +684,21 @@ class MuchSelect extends HTMLElement {
       })
     );
 
+    this.appPromise.then((app) => {
+      app.ports.searchOptionsWithWebWorker.subscribe((searchString) => {
+        this._filterWorker.postMessage({
+          portName: "receiveSearchString",
+          jsonBlob: searchString,
+        });
+      });
+    });
+
+    this.appPromise.then((app) => {
+      app.ports.updateOptionsInWebWorker.subscribe(() => {
+        this.updateFilterWorkerOptions();
+      });
+    });
+
     this.startMuchSelectObserver();
 
     this.startSelectSlotObserver();
@@ -674,7 +720,7 @@ class MuchSelect extends HTMLElement {
 
     this._muchSelectObserver = new MutationObserver((mutationsList) => {
       mutationsList.forEach(() => {
-        this.updateOptionsFromDom();
+        this._callUpdateOptionsFromDom();
       });
     });
     this._muchSelectObserver.observe(this, muchSelectMutationObserverConfig);
@@ -1051,7 +1097,9 @@ class MuchSelect extends HTMLElement {
           // User shadow DOM.
           this._parentDiv = this.attachShadow({ mode: "open" });
 
-          const html = this.templateTag.content.cloneNode(true);
+          const html = getMuchSelectTemplate(this.styleTag).content.cloneNode(
+            true
+          );
           this._parentDiv.append(html);
 
           const elmDiv = this._parentDiv.querySelector("#mount-node");
@@ -1415,13 +1463,16 @@ class MuchSelect extends HTMLElement {
     this.allowCustomOptions = newValue;
     this.customOptionHint = newValue;
 
-    // noinspection JSUnresolvedVariable
-    this.appPromise.then((app) =>
-      app.ports.allowCustomOptionsReceiver.send(
+    this.appPromise.then((app) => {
+      const customOptionHint =
+        this.customOptionHint === null ? "" : this.customOptionHint;
+
+      // noinspection JSUnresolvedVariable
+      app.ports.allowCustomOptionsReceiver.send([
         this.allowCustomOptions,
-        this.customOptionHint
-      )
-    );
+        customOptionHint,
+      ]);
+    });
   }
 
   get allowCustomOptions() {
@@ -1754,18 +1805,6 @@ class MuchSelect extends HTMLElement {
     </style>`;
   }
 
-  get templateTag() {
-    const templateTag = document.createElement("template");
-    templateTag.innerHTML = `
-      <div>
-        ${this.styleTag}
-        <slot name="select-input"></slot>
-        <div id="mount-node"></div>
-      </div>
-    `;
-    return templateTag;
-  }
-
   /**
    * This should tell you if a value is selected or not, whether the much-select is in single or multi select mode.
    *
@@ -1836,6 +1875,14 @@ class MuchSelect extends HTMLElement {
         // noinspection JSUnresolvedVariable
         app.ports.requestAllOptionsReceiver.send(null);
       });
+    });
+  }
+
+  async updateFilterWorkerOptions() {
+    const options = await this.getAllOptions();
+    this._filterWorker.postMessage({
+      portName: "receiveOptions",
+      jsonBlob: options,
     });
   }
 }

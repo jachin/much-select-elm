@@ -1,4 +1,7 @@
-module PositiveInt exposing (PositiveInt, lessThanOrEqualTo, maybeNew, new, toInt)
+module PositiveInt exposing (PositiveInt, decode, encode, isZero, lessThanOrEqualTo, maybeNew, new, toInt)
+
+import Json.Decode
+import Json.Encode
 
 
 type PositiveInt
@@ -29,3 +32,27 @@ toInt positiveInt =
 lessThanOrEqualTo : PositiveInt -> Int -> Bool
 lessThanOrEqualTo (PositiveInt a) b =
     a <= b
+
+
+isZero : PositiveInt -> Bool
+isZero (PositiveInt positiveInt) =
+    positiveInt == 0
+
+
+encode : PositiveInt -> Json.Encode.Value
+encode (PositiveInt positiveInt) =
+    Json.Encode.int positiveInt
+
+
+decode : Json.Decode.Decoder PositiveInt
+decode =
+    Json.Decode.int
+        |> Json.Decode.andThen
+            (\int ->
+                case maybeNew int of
+                    Just postitiveInt ->
+                        Json.Decode.succeed postitiveInt
+
+                    Nothing ->
+                        Json.Decode.fail ("This is not a positive int " ++ String.fromInt int)
+            )

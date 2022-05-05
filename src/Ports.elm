@@ -26,10 +26,13 @@ port module Ports exposing
     , removeOptionsReceiver
     , requestAllOptionsReceiver
     , scrollDropdownToElement
+    , searchOptionsWithWebWorker
     , searchStringMinimumLengthChangedReceiver
     , selectOptionReceiver
     , selectedItemStaysInPlaceChangedReceiver
     , showDropdownFooterChangedReceiver
+    , updateOptionsInWebWorker
+    , updateSearchResultDataWithWebWorkerReceiver
     , valueCasingDimensionsChangedReceiver
     , valueChanged
     , valueChangedReceiver
@@ -39,6 +42,7 @@ port module Ports exposing
     )
 
 import Json.Decode
+import Json.Encode
 
 
 port muchSelectIsReady : () -> Cmd msg
@@ -78,6 +82,12 @@ port focusInput : () -> Cmd msg
 
 
 port allOptions : Json.Decode.Value -> Cmd msg
+
+
+port searchOptionsWithWebWorker : Json.Decode.Value -> Cmd msg
+
+
+port updateOptionsInWebWorker : () -> Cmd msg
 
 
 port requestAllOptionsReceiver : (() -> msg) -> Sub msg
@@ -177,3 +187,6 @@ port optionSortingChangedReceiver : (String -> msg) -> Sub msg
 
 
 port outputStyleChangedReceiver : (String -> msg) -> Sub msg
+
+
+port updateSearchResultDataWithWebWorkerReceiver : (Json.Encode.Value -> msg) -> Sub msg
