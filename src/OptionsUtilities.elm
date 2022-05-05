@@ -1109,6 +1109,21 @@ isOptionBelowScore score option =
             False
 
 
+sortOptionsByBestScore : List Option -> List Option
+sortOptionsByBestScore options =
+    List.sortBy
+        (\option ->
+            if isCustomOption option then
+                1
+
+            else
+                getMaybeOptionSearchFilter option
+                    |> Maybe.map .bestScore
+                    |> Maybe.withDefault OptionSearchFilter.impossiblyLowScore
+        )
+        options
+
+
 highlightOptionInList : Option -> List Option -> List Option
 highlightOptionInList option options =
     List.map

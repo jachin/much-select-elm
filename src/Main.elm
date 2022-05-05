@@ -1885,6 +1885,7 @@ dropdown selectionMode options searchString (ValueCasing valueCasingWidth valueC
     let
         optionsForTheDropdown =
             figureOutWhichOptionsToShowInTheDropdown selectionMode options
+                |> OptionsUtilities.sortOptionsByBestScore
 
         optionsHtml =
             -- TODO We should probably do something different if we are in a loading state
@@ -2470,7 +2471,17 @@ init : Flags -> ( Model, Cmd Msg )
 init flags =
     let
         selectionConfig =
-            makeSelectionConfig flags.disabled flags.allowMultiSelect flags.allowCustomOptions flags.outputStyle flags.placeholder flags.customOptionHint flags.enableMultiSelectSingleItemRemoval flags.maxDropdownItems flags.selectedItemStaysInPlace flags.searchStringMinimumLength flags.showDropdownFooter
+            makeSelectionConfig flags.disabled
+                flags.allowMultiSelect
+                flags.allowCustomOptions
+                flags.outputStyle
+                flags.placeholder
+                flags.customOptionHint
+                flags.enableMultiSelectSingleItemRemoval
+                flags.maxDropdownItems
+                flags.selectedItemStaysInPlace
+                flags.searchStringMinimumLength
+                flags.showDropdownFooter
                 |> Result.withDefault defaultSelectionConfig
 
         optionSort =
