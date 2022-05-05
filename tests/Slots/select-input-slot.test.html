@@ -4,7 +4,7 @@
 <script type="module">
   import { runTests } from "@web/test-runner-mocha";
   import { expect } from "@esm-bundle/chai";
-  import { html, fixture, nextFrame } from "@open-wc/testing";
+  import { html, fixture, nextFrame, oneEvent } from "@open-wc/testing";
 
   import MuchSelect from "../../dist/much-select-debug.js";
 
@@ -94,7 +94,7 @@
                 <option value="tom's tag">tom's tag</option>
               </select>`);
         el.appendChild(selectEl);
-        await nextFrame();
+        await oneEvent(el, "optionsUpdated");
         const allOptions = await el.getAllOptions();
 
         expect(allOptions).to.have.length(7);
