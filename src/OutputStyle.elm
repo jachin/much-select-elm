@@ -100,6 +100,17 @@ type alias MultiSelectCustomHtmlFields =
     }
 
 
+defaultMultiSelectCustomHtmlFields : MultiSelectCustomHtmlFields
+defaultMultiSelectCustomHtmlFields =
+    { customOptions = NoCustomOptions
+    , singleItemRemoval = EnableSingleItemRemoval
+    , maxDropdownItems = NoLimitToDropdownItems
+    , searchStringMinimumLength = FixedSearchStringMinimumLength (PositiveInt.new 2)
+    , dropdownState = Collapsed
+    , dropdownStyle = NoFooter
+    }
+
+
 type SingleSelectOutputStyle
     = SingleSelectCustomHtml SingleSelectCustomHtmlFields
     | SingleSelectDatalist
