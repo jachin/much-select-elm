@@ -1091,6 +1091,7 @@ updateTheFullListOfOptions selectionMode searchString options =
 
 updateTheOptionsForTheDropdown : SelectionConfig -> List Option -> List Option
 updateTheOptionsForTheDropdown selectionMode options =
+    -- TODO This function can go I think, it just has some tests
     options
         |> sortOptionsBySearchFilterTotalScore
         |> figureOutWhichOptionsToShowInTheDropdown selectionMode
@@ -1990,119 +1991,124 @@ optionToDropdownOption :
     -> SelectionConfig
     -> Option
     -> Html Msg
-optionToDropdownOption eventHandlers selectionConfig option =
-    let
-        descriptionHtml : Html Msg
-        descriptionHtml =
-            if option |> Option.getOptionDescription |> Option.optionDescriptionToBool then
-                case Option.getMaybeOptionSearchFilter option of
-                    Just optionSearchFilter ->
-                        div
-                            [ class "description"
-                            , Html.Attributes.attribute "part" "dropdown-option-description"
-                            ]
-                            [ span [] (tokensToHtml optionSearchFilter.descriptionTokens)
-                            ]
+optionToDropdownOption eventHandlers selectionConfig_ option_ =
+    Html.Lazy.lazy2
+        (\selectionConfig option ->
+            let
+                descriptionHtml : Html Msg
+                descriptionHtml =
+                    if option |> Option.getOptionDescription |> Option.optionDescriptionToBool then
+                        case Option.getMaybeOptionSearchFilter option of
+                            Just optionSearchFilter ->
+                                div
+                                    [ class "description"
+                                    , Html.Attributes.attribute "part" "dropdown-option-description"
+                                    ]
+                                    [ span [] (tokensToHtml optionSearchFilter.descriptionTokens)
+                                    ]
 
-                    Nothing ->
-                        div
-                            [ class "description"
-                            , Html.Attributes.attribute "part" "dropdown-option-description"
-                            ]
-                            [ span []
-                                [ option
-                                    |> Option.getOptionDescription
-                                    |> Option.optionDescriptionToString
-                                    |> text
-                                ]
-                            ]
+                            Nothing ->
+                                div
+                                    [ class "description"
+                                    , Html.Attributes.attribute "part" "dropdown-option-description"
+                                    ]
+                                    [ span []
+                                        [ option
+                                            |> Option.getOptionDescription
+                                            |> Option.optionDescriptionToString
+                                            |> text
+                                        ]
+                                    ]
 
-            else
-                text ""
+                    else
+                        text ""
 
-        labelHtml : Html Msg
-        labelHtml =
-            case Option.getMaybeOptionSearchFilter option of
-                Just optionSearchFilter ->
-                    span [] (tokensToHtml optionSearchFilter.labelTokens)
+                labelHtml : Html Msg
+                labelHtml =
+                    case Option.getMaybeOptionSearchFilter option of
+                        Just optionSearchFilter ->
+                            span [] (tokensToHtml optionSearchFilter.labelTokens)
 
-                Nothing ->
-                    span [] [ Option.getOptionLabel option |> optionLabelToString |> text ]
+                        Nothing ->
+                            span [] [ Option.getOptionLabel option |> optionLabelToString |> text ]
 
-        valueDataAttribute =
-            Html.Attributes.attribute "data-value" (Option.getOptionValueAsString option)
-    in
-    case Option.getOptionDisplay option of
-        OptionShown ->
-            div
-                [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
-                , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
-                , mousedownPreventDefault (option |> Option.getOptionValue |> eventHandlers.clickMsgConstructor)
-                , onClickPreventDefault eventHandlers.noOpMsgConstructor
-                , Html.Attributes.attribute "part" "dropdown-option"
-                , class "option"
-                , valueDataAttribute
-                ]
-                [ labelHtml, descriptionHtml ]
-
-        OptionHidden ->
-            text ""
-
-        OptionSelected _ ->
-            case SelectionMode.getSelectionMode selectionConfig of
-                SelectionMode.SingleSelect ->
+                valueDataAttribute =
+                    Html.Attributes.attribute "data-value" (Option.getOptionValueAsString option)
+            in
+            case Option.getOptionDisplay option of
+                OptionShown ->
                     div
                         [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
                         , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
                         , mousedownPreventDefault (option |> Option.getOptionValue |> eventHandlers.clickMsgConstructor)
-                        , Html.Attributes.attribute "part" "dropdown-option selected"
-                        , class "selected"
+                        , onClickPreventDefault eventHandlers.noOpMsgConstructor
+                        , Html.Attributes.attribute "part" "dropdown-option"
                         , class "option"
                         , valueDataAttribute
                         ]
                         [ labelHtml, descriptionHtml ]
 
-                SelectionMode.MultiSelect ->
+                OptionHidden ->
                     text ""
 
-        OptionSelectedHighlighted _ ->
-            case selectionConfig of
-                SingleSelectConfig _ _ _ ->
+                OptionSelected _ ->
+                    case SelectionMode.getSelectionMode selectionConfig of
+                        SelectionMode.SingleSelect ->
+                            div
+                                [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
+                                , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
+                                , mousedownPreventDefault (option |> Option.getOptionValue |> eventHandlers.clickMsgConstructor)
+                                , Html.Attributes.attribute "part" "dropdown-option selected"
+                                , class "selected"
+                                , class "option"
+                                , valueDataAttribute
+                                ]
+                                [ labelHtml, descriptionHtml ]
+
+                        SelectionMode.MultiSelect ->
+                            text ""
+
+                OptionSelectedHighlighted _ ->
+                    case selectionConfig of
+                        SingleSelectConfig _ _ _ ->
+                            div
+                                [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
+                                , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
+                                , mousedownPreventDefault (option |> Option.getOptionValue |> eventHandlers.clickMsgConstructor)
+                                , Html.Attributes.attribute "part" "dropdown-option selected highlighted"
+                                , class "selected"
+                                , class "highlighted"
+                                , class "option"
+                                , valueDataAttribute
+                                ]
+                                [ labelHtml, descriptionHtml ]
+
+                        MultiSelectConfig _ _ _ ->
+                            text ""
+
+                OptionHighlighted ->
                     div
                         [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
                         , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
                         , mousedownPreventDefault (option |> Option.getOptionValue |> eventHandlers.clickMsgConstructor)
-                        , Html.Attributes.attribute "part" "dropdown-option selected highlighted"
-                        , class "selected"
+                        , Html.Attributes.attribute "part" "dropdown-option highlighted"
                         , class "highlighted"
                         , class "option"
                         , valueDataAttribute
                         ]
                         [ labelHtml, descriptionHtml ]
 
-                MultiSelectConfig _ _ _ ->
-                    text ""
-
-        OptionHighlighted ->
-            div
-                [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
-                , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
-                , mousedownPreventDefault (option |> Option.getOptionValue |> eventHandlers.clickMsgConstructor)
-                , Html.Attributes.attribute "part" "dropdown-option highlighted"
-                , class "highlighted"
-                , class "option"
-                , valueDataAttribute
-                ]
-                [ labelHtml, descriptionHtml ]
-
-        OptionDisabled ->
-            div
-                [ Html.Attributes.attribute "part" "dropdown-option disabled"
-                , class "disabled"
-                , class "option"
-                , valueDataAttribute
-                ]
-                [ labelHtml, descriptionHtml ]
+                OptionDisabled ->
+                    div
+                        [ Html.Attributes.attribute "part" "dropdown-option disabled"
+                        , class "disabled"
+                        , class "option"
+                        , valueDataAttribute
+                        ]
+                        [ labelHtml, descriptionHtml ]
+        )
+        selectionConfig_
+        option_
 
 
 optionsToValuesHtml : List Option -> SingleItemRemoval -> List (Html Msg)

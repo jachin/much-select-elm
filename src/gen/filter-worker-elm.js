@@ -3035,6 +3035,166 @@ var $author$project$Option$encodeSearchResults = function (option) {
 				}())
 			]));
 };
+var $elm$core$List$foldrHelper = F4(
+	function (fn, acc, ctr, ls) {
+		if (!ls.b) {
+			return acc;
+		} else {
+			var a = ls.a;
+			var r1 = ls.b;
+			if (!r1.b) {
+				return A2(fn, a, acc);
+			} else {
+				var b = r1.a;
+				var r2 = r1.b;
+				if (!r2.b) {
+					return A2(
+						fn,
+						a,
+						A2(fn, b, acc));
+				} else {
+					var c = r2.a;
+					var r3 = r2.b;
+					if (!r3.b) {
+						return A2(
+							fn,
+							a,
+							A2(
+								fn,
+								b,
+								A2(fn, c, acc)));
+					} else {
+						var d = r3.a;
+						var r4 = r3.b;
+						var res = (ctr > 500) ? A3(
+							$elm$core$List$foldl,
+							fn,
+							acc,
+							$elm$core$List$reverse(r4)) : A4($elm$core$List$foldrHelper, fn, acc, ctr + 1, r4);
+						return A2(
+							fn,
+							a,
+							A2(
+								fn,
+								b,
+								A2(
+									fn,
+									c,
+									A2(fn, d, res))));
+					}
+				}
+			}
+		}
+	});
+var $elm$core$List$foldr = F3(
+	function (fn, acc, ls) {
+		return A4($elm$core$List$foldrHelper, fn, acc, 0, ls);
+	});
+var $elm$core$List$filter = F2(
+	function (isGood, list) {
+		return A3(
+			$elm$core$List$foldr,
+			F2(
+				function (x, xs) {
+					return isGood(x) ? A2($elm$core$List$cons, x, xs) : xs;
+				}),
+			_List_Nil,
+			list);
+	});
+var $author$project$OptionSearchFilter$impossiblyLowScore = 1000000;
+var $author$project$Option$isCustomOption = function (option) {
+	switch (option.$) {
+		case 0:
+			return false;
+		case 1:
+			return true;
+		case 3:
+			return false;
+		default:
+			return false;
+	}
+};
+var $elm$core$Basics$not = _Basics_not;
+var $elm$core$List$map = F2(
+	function (f, xs) {
+		return A3(
+			$elm$core$List$foldr,
+			F2(
+				function (x, acc) {
+					return A2(
+						$elm$core$List$cons,
+						f(x),
+						acc);
+				}),
+			_List_Nil,
+			xs);
+	});
+var $elm_community$maybe_extra$Maybe$Extra$cons = F2(
+	function (item, list) {
+		if (!item.$) {
+			var v = item.a;
+			return A2($elm$core$List$cons, v, list);
+		} else {
+			return list;
+		}
+	});
+var $elm_community$maybe_extra$Maybe$Extra$values = A2($elm$core$List$foldr, $elm_community$maybe_extra$Maybe$Extra$cons, _List_Nil);
+var $author$project$OptionsUtilities$optionSearchResultsBestScore = function (options) {
+	return A2(
+		$elm$core$List$map,
+		function ($) {
+			return $.aD;
+		},
+		$elm_community$maybe_extra$Maybe$Extra$values(
+			A2($elm$core$List$map, $author$project$Option$getMaybeOptionSearchFilter, options)));
+};
+var $author$project$OptionsUtilities$findLowestSearchScore = function (options) {
+	var lowSore = A3(
+		$elm$core$List$foldl,
+		F2(
+			function (optionBestScore, lowScore) {
+				return (_Utils_cmp(optionBestScore, lowScore) < 0) ? optionBestScore : lowScore;
+			}),
+		$author$project$OptionSearchFilter$impossiblyLowScore,
+		$author$project$OptionsUtilities$optionSearchResultsBestScore(
+			A2(
+				$elm$core$List$filter,
+				function (option) {
+					return !$author$project$Option$isCustomOption(option);
+				},
+				options)));
+	return _Utils_eq(lowSore, $author$project$OptionSearchFilter$impossiblyLowScore) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(lowSore);
+};
+var $author$project$OptionsUtilities$isOptionBelowScore = F2(
+	function (score, option) {
+		var _v0 = $author$project$Option$getMaybeOptionSearchFilter(option);
+		if (!_v0.$) {
+			var optionSearchFilter = _v0.a;
+			return _Utils_cmp(score, optionSearchFilter.aD) > -1;
+		} else {
+			return false;
+		}
+	});
+var $author$project$OptionSearchFilter$lowScoreCutOff = function (score) {
+	return (!score) ? 10 : ((score <= 10) ? 100 : ((score <= 100) ? 1000 : ((score <= 1000) ? 10000 : $author$project$OptionSearchFilter$impossiblyLowScore)));
+};
+var $author$project$OptionsUtilities$filterOptionsToShowInDropdownBySearchScore = function (options) {
+	var _v0 = $author$project$OptionsUtilities$findLowestSearchScore(options);
+	if (!_v0.$) {
+		var lowScore = _v0.a;
+		return A2(
+			$elm$core$List$filter,
+			function (option) {
+				return A2(
+					$author$project$OptionsUtilities$isOptionBelowScore,
+					$author$project$OptionSearchFilter$lowScoreCutOff(lowScore),
+					option) || $author$project$Option$isCustomOption(option);
+			},
+			options);
+	} else {
+		return options;
+	}
+};
 var $author$project$Option$DatalistOption = F2(
 	function (a, b) {
 		return {$: 2, a: a, b: b};
@@ -3233,6 +3393,132 @@ var $author$project$Option$optionsDecoder = function (outputStyle) {
 };
 var $author$project$FilterWorker$sendErrorMessage = _Platform_outgoingPort('sendErrorMessage', $elm$json$Json$Encode$string);
 var $author$project$FilterWorker$sendSearchResults = _Platform_outgoingPort('sendSearchResults', $elm$core$Basics$identity);
+var $elm$core$List$takeReverse = F3(
+	function (n, list, kept) {
+		takeReverse:
+		while (true) {
+			if (n <= 0) {
+				return kept;
+			} else {
+				if (!list.b) {
+					return kept;
+				} else {
+					var x = list.a;
+					var xs = list.b;
+					var $temp$n = n - 1,
+						$temp$list = xs,
+						$temp$kept = A2($elm$core$List$cons, x, kept);
+					n = $temp$n;
+					list = $temp$list;
+					kept = $temp$kept;
+					continue takeReverse;
+				}
+			}
+		}
+	});
+var $elm$core$List$takeTailRec = F2(
+	function (n, list) {
+		return $elm$core$List$reverse(
+			A3($elm$core$List$takeReverse, n, list, _List_Nil));
+	});
+var $elm$core$List$takeFast = F3(
+	function (ctr, n, list) {
+		if (n <= 0) {
+			return _List_Nil;
+		} else {
+			var _v0 = _Utils_Tuple2(n, list);
+			_v0$1:
+			while (true) {
+				_v0$5:
+				while (true) {
+					if (!_v0.b.b) {
+						return list;
+					} else {
+						if (_v0.b.b.b) {
+							switch (_v0.a) {
+								case 1:
+									break _v0$1;
+								case 2:
+									var _v2 = _v0.b;
+									var x = _v2.a;
+									var _v3 = _v2.b;
+									var y = _v3.a;
+									return _List_fromArray(
+										[x, y]);
+								case 3:
+									if (_v0.b.b.b.b) {
+										var _v4 = _v0.b;
+										var x = _v4.a;
+										var _v5 = _v4.b;
+										var y = _v5.a;
+										var _v6 = _v5.b;
+										var z = _v6.a;
+										return _List_fromArray(
+											[x, y, z]);
+									} else {
+										break _v0$5;
+									}
+								default:
+									if (_v0.b.b.b.b && _v0.b.b.b.b.b) {
+										var _v7 = _v0.b;
+										var x = _v7.a;
+										var _v8 = _v7.b;
+										var y = _v8.a;
+										var _v9 = _v8.b;
+										var z = _v9.a;
+										var _v10 = _v9.b;
+										var w = _v10.a;
+										var tl = _v10.b;
+										return (ctr > 1000) ? A2(
+											$elm$core$List$cons,
+											x,
+											A2(
+												$elm$core$List$cons,
+												y,
+												A2(
+													$elm$core$List$cons,
+													z,
+													A2(
+														$elm$core$List$cons,
+														w,
+														A2($elm$core$List$takeTailRec, n - 4, tl))))) : A2(
+											$elm$core$List$cons,
+											x,
+											A2(
+												$elm$core$List$cons,
+												y,
+												A2(
+													$elm$core$List$cons,
+													z,
+													A2(
+														$elm$core$List$cons,
+														w,
+														A3($elm$core$List$takeFast, ctr + 1, n - 4, tl)))));
+									} else {
+										break _v0$5;
+									}
+							}
+						} else {
+							if (_v0.a === 1) {
+								break _v0$1;
+							} else {
+								break _v0$5;
+							}
+						}
+					}
+				}
+				return list;
+			}
+			var _v1 = _v0.b;
+			var x = _v1.a;
+			return _List_fromArray(
+				[x]);
+		}
+	});
+var $elm$core$List$take = F2(
+	function (n, list) {
+		return A3($elm$core$List$takeFast, 0, n, list);
+	});
 var $elm$core$String$length = _String_length;
 var $author$project$SearchString$length = function (_v0) {
 	var str = _v0;
@@ -3242,75 +3528,6 @@ var $author$project$PositiveInt$lessThanOrEqualTo = F2(
 	function (_v0, b) {
 		var a = _v0;
 		return _Utils_cmp(a, b) < 1;
-	});
-var $elm$core$List$foldrHelper = F4(
-	function (fn, acc, ctr, ls) {
-		if (!ls.b) {
-			return acc;
-		} else {
-			var a = ls.a;
-			var r1 = ls.b;
-			if (!r1.b) {
-				return A2(fn, a, acc);
-			} else {
-				var b = r1.a;
-				var r2 = r1.b;
-				if (!r2.b) {
-					return A2(
-						fn,
-						a,
-						A2(fn, b, acc));
-				} else {
-					var c = r2.a;
-					var r3 = r2.b;
-					if (!r3.b) {
-						return A2(
-							fn,
-							a,
-							A2(
-								fn,
-								b,
-								A2(fn, c, acc)));
-					} else {
-						var d = r3.a;
-						var r4 = r3.b;
-						var res = (ctr > 500) ? A3(
-							$elm$core$List$foldl,
-							fn,
-							acc,
-							$elm$core$List$reverse(r4)) : A4($elm$core$List$foldrHelper, fn, acc, ctr + 1, r4);
-						return A2(
-							fn,
-							a,
-							A2(
-								fn,
-								b,
-								A2(
-									fn,
-									c,
-									A2(fn, d, res))));
-					}
-				}
-			}
-		}
-	});
-var $elm$core$List$foldr = F3(
-	function (fn, acc, ls) {
-		return A4($elm$core$List$foldrHelper, fn, acc, 0, ls);
-	});
-var $elm$core$List$map = F2(
-	function (f, xs) {
-		return A3(
-			$elm$core$List$foldr,
-			F2(
-				function (x, acc) {
-					return A2(
-						$elm$core$List$cons,
-						f(x),
-						acc);
-				}),
-			_List_Nil,
-			xs);
 	});
 var $author$project$Option$CustomOption = F4(
 	function (a, b, c, d) {
@@ -3399,7 +3616,6 @@ var $author$project$Option$getOptionLabel = function (option) {
 var $author$project$OptionSearchFilter$groupHandicap = function (score) {
 	return (score < 10) ? 10 : $elm$core$Basics$floor(score * 1.5);
 };
-var $author$project$OptionSearchFilter$impossiblyLowScore = 1000000;
 var $elm$core$Basics$min = F2(
 	function (x, y) {
 		return (_Utils_cmp(x, y) < 0) ? x : y;
@@ -3519,17 +3735,6 @@ var $tripokey$elm_fuzzy$Fuzzy$dissect = F2(
 			}
 		}
 	});
-var $elm$core$List$filter = F2(
-	function (isGood, list) {
-		return A3(
-			$elm$core$List$foldr,
-			F2(
-				function (x, xs) {
-					return isGood(x) ? A2($elm$core$List$cons, x, xs) : xs;
-				}),
-			_List_Nil,
-			list);
-	});
 var $elm$core$String$foldl = _String_foldl;
 var $elm$core$String$cons = _String_cons;
 var $elm$core$String$fromChar = function (_char) {
@@ -3575,7 +3780,6 @@ var $elm$core$List$member = F2(
 			},
 			xs);
 	});
-var $elm$core$Basics$not = _Basics_not;
 var $elm$core$List$isEmpty = function (xs) {
 	if (!xs.b) {
 		return true;
@@ -3734,132 +3938,6 @@ var $elm$core$List$drop = F2(
 				}
 			}
 		}
-	});
-var $elm$core$List$takeReverse = F3(
-	function (n, list, kept) {
-		takeReverse:
-		while (true) {
-			if (n <= 0) {
-				return kept;
-			} else {
-				if (!list.b) {
-					return kept;
-				} else {
-					var x = list.a;
-					var xs = list.b;
-					var $temp$n = n - 1,
-						$temp$list = xs,
-						$temp$kept = A2($elm$core$List$cons, x, kept);
-					n = $temp$n;
-					list = $temp$list;
-					kept = $temp$kept;
-					continue takeReverse;
-				}
-			}
-		}
-	});
-var $elm$core$List$takeTailRec = F2(
-	function (n, list) {
-		return $elm$core$List$reverse(
-			A3($elm$core$List$takeReverse, n, list, _List_Nil));
-	});
-var $elm$core$List$takeFast = F3(
-	function (ctr, n, list) {
-		if (n <= 0) {
-			return _List_Nil;
-		} else {
-			var _v0 = _Utils_Tuple2(n, list);
-			_v0$1:
-			while (true) {
-				_v0$5:
-				while (true) {
-					if (!_v0.b.b) {
-						return list;
-					} else {
-						if (_v0.b.b.b) {
-							switch (_v0.a) {
-								case 1:
-									break _v0$1;
-								case 2:
-									var _v2 = _v0.b;
-									var x = _v2.a;
-									var _v3 = _v2.b;
-									var y = _v3.a;
-									return _List_fromArray(
-										[x, y]);
-								case 3:
-									if (_v0.b.b.b.b) {
-										var _v4 = _v0.b;
-										var x = _v4.a;
-										var _v5 = _v4.b;
-										var y = _v5.a;
-										var _v6 = _v5.b;
-										var z = _v6.a;
-										return _List_fromArray(
-											[x, y, z]);
-									} else {
-										break _v0$5;
-									}
-								default:
-									if (_v0.b.b.b.b && _v0.b.b.b.b.b) {
-										var _v7 = _v0.b;
-										var x = _v7.a;
-										var _v8 = _v7.b;
-										var y = _v8.a;
-										var _v9 = _v8.b;
-										var z = _v9.a;
-										var _v10 = _v9.b;
-										var w = _v10.a;
-										var tl = _v10.b;
-										return (ctr > 1000) ? A2(
-											$elm$core$List$cons,
-											x,
-											A2(
-												$elm$core$List$cons,
-												y,
-												A2(
-													$elm$core$List$cons,
-													z,
-													A2(
-														$elm$core$List$cons,
-														w,
-														A2($elm$core$List$takeTailRec, n - 4, tl))))) : A2(
-											$elm$core$List$cons,
-											x,
-											A2(
-												$elm$core$List$cons,
-												y,
-												A2(
-													$elm$core$List$cons,
-													z,
-													A2(
-														$elm$core$List$cons,
-														w,
-														A3($elm$core$List$takeFast, ctr + 1, n - 4, tl)))));
-									} else {
-										break _v0$5;
-									}
-							}
-						} else {
-							if (_v0.a === 1) {
-								break _v0$1;
-							} else {
-								break _v0$5;
-							}
-						}
-					}
-				}
-				return list;
-			}
-			var _v1 = _v0.b;
-			var x = _v1.a;
-			return _List_fromArray(
-				[x]);
-		}
-	});
-var $elm$core$List$take = F2(
-	function (n, list) {
-		return A3($elm$core$List$takeFast, 0, n, list);
 	});
 var $tripokey$elm_fuzzy$Fuzzy$reduceLeft = F3(
 	function (ns, c, hs) {
@@ -4401,10 +4479,14 @@ var $author$project$FilterWorker$update = F2(
 				var searchString = _v3.a;
 				var searchStringMinimumLength = _v3.b;
 				var newOptions = A3($author$project$OptionSearcher$updateOptionsWithSearchString, searchString, searchStringMinimumLength, options);
+				var optionsToSend = A2(
+					$elm$core$List$take,
+					50,
+					$author$project$OptionsUtilities$filterOptionsToShowInDropdownBySearchScore(newOptions));
 				return _Utils_Tuple2(
 					newOptions,
 					$author$project$FilterWorker$sendSearchResults(
-						A2($elm$json$Json$Encode$list, $author$project$Option$encodeSearchResults, newOptions)));
+						A2($elm$json$Json$Encode$list, $author$project$Option$encodeSearchResults, optionsToSend)));
 			} else {
 				var error = _v2.a;
 				return _Utils_Tuple2(

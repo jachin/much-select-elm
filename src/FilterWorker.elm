@@ -4,6 +4,7 @@ import Json.Decode
 import Json.Encode
 import Option exposing (Option)
 import OptionSearcher exposing (decodeSearchParams)
+import OptionsUtilities exposing (filterOptionsToShowInDropdownBySearchScore)
 import OutputStyle exposing (SearchStringMinimumLength)
 import Platform
 import SearchString exposing (SearchString)
@@ -39,9 +40,14 @@ update msg options =
                             OptionSearcher.updateOptionsWithSearchString searchString
                                 searchStringMinimumLength
                                 options
+
+                        optionsToSend =
+                            filterOptionsToShowInDropdownBySearchScore newOptions
+                                -- TODO this is a little aribrary.
+                                |> List.take 100
                     in
                     ( newOptions
-                    , sendSearchResults (Json.Encode.list Option.encodeSearchResults newOptions)
+                    , sendSearchResults (Json.Encode.list Option.encodeSearchResults optionsToSend)
                     )
 
                 Err error ->
