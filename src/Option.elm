@@ -1465,6 +1465,8 @@ encode option =
     Json.Encode.object
         [ ( "value", Json.Encode.string (getOptionValueAsString option) )
         , ( "label", Json.Encode.string (getOptionLabel option |> optionLabelToString) )
+        , ( "labelClean", Json.Encode.string (getOptionLabel option |> OptionLabel.optionLabelToSearchString) )
+        , ( "group", Json.Encode.string (getOptionGroup option |> optionGroupToString) )
         , ( "description", Json.Encode.string (getOptionDescription option |> optionDescriptionToString) )
         , ( "isSelected", Json.Encode.bool (isOptionSelected option) )
         ]
@@ -1489,9 +1491,11 @@ decodeSearchResults : Json.Decode.Decoder (List OptionSearchFilterWithValue)
 decodeSearchResults =
     Json.Decode.list
         (Json.Decode.map2
-            (\value serachFilter ->
-                { value = value, searchFilter = serachFilter }
+            (\value searchFilter ->
+                { value = value, maybeSearchFilter = searchFilter }
             )
             (Json.Decode.field "value" valueDecoder)
-            (Json.Decode.field "searchFilter" OptionSearchFilter.decode)
+            (Json.Decode.field "searchFilter"
+                (Json.Decode.nullable OptionSearchFilter.decode)
+            )
         )

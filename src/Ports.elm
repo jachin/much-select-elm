@@ -84,7 +84,7 @@ port focusInput : () -> Cmd msg
 port allOptions : Json.Decode.Value -> Cmd msg
 
 
-port searchOptionsWithWebWorker : String -> Cmd msg
+port searchOptionsWithWebWorker : Json.Decode.Value -> Cmd msg
 
 
 port updateOptionsInWebWorker : () -> Cmd msg

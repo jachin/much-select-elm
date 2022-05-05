@@ -1882,7 +1882,7 @@ class MuchSelect extends HTMLElement {
     const options = await this.getAllOptions();
     this._filterWorker.postMessage({
       portName: "receiveOptions",
-      jsonBlob: cleanUpOptions(options),
+      jsonBlob: options,
     });
   }
 }

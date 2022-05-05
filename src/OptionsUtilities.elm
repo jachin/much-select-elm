@@ -1385,7 +1385,7 @@ updateOptionsWithNewSearchResults optionSearchFilterWithValues options =
         (\option ->
             case findNewSearchFilterResult (Option.getOptionValue option) optionSearchFilterWithValues of
                 Just result ->
-                    Option.setOptionSearchFilter (Just result.searchFilter) option
+                    Option.setOptionSearchFilter result.maybeSearchFilter option
 
                 Nothing ->
                     Option.setOptionSearchFilter Nothing option

@@ -1,12 +1,14 @@
-module OptionSearcher exposing (doesSearchStringFindNothing, simpleMatch, updateOptionsWithSearchStringAndCustomOption, updateOrAddCustomOption, updateSearchResultInOption)
+module OptionSearcher exposing (decodeSearchParams, doesSearchStringFindNothing, encodeSearchParams, simpleMatch, updateOptionsWithSearchString, updateOptionsWithSearchStringAndCustomOption, updateOrAddCustomOption, updateSearchResultInOption)
 
 import Fuzzy exposing (Result, match)
+import Json.Decode
+import Json.Encode
 import Option exposing (Option(..), OptionDisplay(..))
 import OptionLabel exposing (optionLabelToSearchString, optionLabelToString)
 import OptionPresentor exposing (tokenize)
 import OptionSearchFilter exposing (OptionSearchFilter, OptionSearchResult, descriptionHandicap, groupHandicap)
 import OptionsUtilities exposing (prependCustomOption, removeUnselectedCustomOptions)
-import OutputStyle exposing (CustomOptions(..), SearchStringMinimumLength(..))
+import OutputStyle exposing (CustomOptions(..), SearchStringMinimumLength(..), decodeSearchStringMinimumLength)
 import PositiveInt exposing (PositiveInt)
 import SearchString exposing (SearchString)
 import SelectionMode exposing (SelectionConfig, getCustomOptionHint, getSearchStringMinimumLength)
@@ -193,3 +195,19 @@ doesSearchStringFindNothing searchString searchStringMinimumLength options =
                                 False
                     )
                     options
+
+
+encodeSearchParams : SearchString -> SearchStringMinimumLength -> Json.Encode.Value
+encodeSearchParams searchString searchStringMinimumLength =
+    Json.Encode.object
+        [ ( "searchString", SearchString.encode searchString )
+        , ( "searchStringMinimumLength", OutputStyle.encodeSearchStringMinimumLength searchStringMinimumLength )
+        ]
+
+
+decodeSearchParams : Json.Decode.Decoder ( SearchString, SearchStringMinimumLength )
+decodeSearchParams =
+    Json.Decode.map2
+        Tuple.pair
+        (Json.Decode.field "searchString" SearchString.decode)
+        (Json.Decode.field "searchStringMinimumLength" decodeSearchStringMinimumLength)

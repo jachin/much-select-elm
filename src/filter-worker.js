@@ -20,7 +20,7 @@ app.ports.sendSearchResults.subscribe((searchResultData) => {
 
 app.ports.sendErrorMessage.subscribe((errorMessage) => {
   postMessage({
-    messageName: "error",
+    messageName: "errorMessage",
     errorMessage,
   });
 });

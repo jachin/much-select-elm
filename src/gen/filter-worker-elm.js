@@ -2845,8 +2845,7 @@ var $author$project$FilterWorker$UpdateSearchString = function (a) {
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$json$Json$Decode$value = _Json_decodeValue;
 var $author$project$FilterWorker$receiveOptions = _Platform_incomingPort('receiveOptions', $elm$json$Json$Decode$value);
-var $elm$json$Json$Decode$string = _Json_decodeString;
-var $author$project$FilterWorker$receiveSearchString = _Platform_incomingPort('receiveSearchString', $elm$json$Json$Decode$string);
+var $author$project$FilterWorker$receiveSearchString = _Platform_incomingPort('receiveSearchString', $elm$json$Json$Decode$value);
 var $author$project$FilterWorker$subscriptions = function (_v0) {
 	return $elm$core$Platform$Sub$batch(
 		_List_fromArray(
@@ -2857,6 +2856,60 @@ var $author$project$FilterWorker$subscriptions = function (_v0) {
 };
 var $elm$json$Json$Decode$succeed = _Json_succeed;
 var $author$project$SelectionMode$CustomHtml = 0;
+var $elm$core$Basics$identity = function (x) {
+	return x;
+};
+var $author$project$SearchString$SearchString = $elm$core$Basics$identity;
+var $elm$json$Json$Decode$map = _Json_map1;
+var $elm$json$Json$Decode$string = _Json_decodeString;
+var $author$project$SearchString$decode = A2($elm$json$Json$Decode$map, $elm$core$Basics$identity, $elm$json$Json$Decode$string);
+var $author$project$OutputStyle$FixedSearchStringMinimumLength = function (a) {
+	return {$: 0, a: a};
+};
+var $author$project$OutputStyle$NoMinimumToSearchStringLength = {$: 1};
+var $elm$json$Json$Decode$andThen = _Json_andThen;
+var $elm$json$Json$Decode$fail = _Json_fail;
+var $elm$json$Json$Decode$int = _Json_decodeInt;
+var $author$project$PositiveInt$PositiveInt = $elm$core$Basics$identity;
+var $elm$core$Basics$ge = _Utils_ge;
+var $author$project$PositiveInt$maybeNew = function (_int) {
+	return (_int >= 0) ? $elm$core$Maybe$Just(_int) : $elm$core$Maybe$Nothing;
+};
+var $author$project$PositiveInt$decode = A2(
+	$elm$json$Json$Decode$andThen,
+	function (_int) {
+		var _v0 = $author$project$PositiveInt$maybeNew(_int);
+		if (!_v0.$) {
+			var postitiveInt = _v0.a;
+			return $elm$json$Json$Decode$succeed(postitiveInt);
+		} else {
+			return $elm$json$Json$Decode$fail(
+				'This is not a positive int ' + $elm$core$String$fromInt(_int));
+		}
+	},
+	$elm$json$Json$Decode$int);
+var $author$project$PositiveInt$isZero = function (_v0) {
+	var positiveInt = _v0;
+	return !positiveInt;
+};
+var $author$project$OutputStyle$decodeSearchStringMinimumLength = A2(
+	$elm$json$Json$Decode$andThen,
+	function (positiveInt) {
+		return $author$project$PositiveInt$isZero(positiveInt) ? $elm$json$Json$Decode$succeed($author$project$OutputStyle$NoMinimumToSearchStringLength) : $elm$json$Json$Decode$succeed(
+			$author$project$OutputStyle$FixedSearchStringMinimumLength(positiveInt));
+	},
+	$author$project$PositiveInt$decode);
+var $elm$json$Json$Decode$field = _Json_decodeField;
+var $elm$json$Json$Decode$map2 = _Json_map2;
+var $elm$core$Tuple$pair = F2(
+	function (a, b) {
+		return _Utils_Tuple2(a, b);
+	});
+var $author$project$OptionSearcher$decodeSearchParams = A3(
+	$elm$json$Json$Decode$map2,
+	$elm$core$Tuple$pair,
+	A2($elm$json$Json$Decode$field, 'searchString', $author$project$SearchString$decode),
+	A2($elm$json$Json$Decode$field, 'searchStringMinimumLength', $author$project$OutputStyle$decodeSearchStringMinimumLength));
 var $elm$json$Json$Decode$decodeValue = _Json_run;
 var $elm$json$Json$Encode$bool = _Json_wrap;
 var $elm$json$Json$Encode$object = function (pairs) {
@@ -2982,82 +3035,6 @@ var $author$project$Option$encodeSearchResults = function (option) {
 				}())
 			]));
 };
-var $elm$core$List$foldrHelper = F4(
-	function (fn, acc, ctr, ls) {
-		if (!ls.b) {
-			return acc;
-		} else {
-			var a = ls.a;
-			var r1 = ls.b;
-			if (!r1.b) {
-				return A2(fn, a, acc);
-			} else {
-				var b = r1.a;
-				var r2 = r1.b;
-				if (!r2.b) {
-					return A2(
-						fn,
-						a,
-						A2(fn, b, acc));
-				} else {
-					var c = r2.a;
-					var r3 = r2.b;
-					if (!r3.b) {
-						return A2(
-							fn,
-							a,
-							A2(
-								fn,
-								b,
-								A2(fn, c, acc)));
-					} else {
-						var d = r3.a;
-						var r4 = r3.b;
-						var res = (ctr > 500) ? A3(
-							$elm$core$List$foldl,
-							fn,
-							acc,
-							$elm$core$List$reverse(r4)) : A4($elm$core$List$foldrHelper, fn, acc, ctr + 1, r4);
-						return A2(
-							fn,
-							a,
-							A2(
-								fn,
-								b,
-								A2(
-									fn,
-									c,
-									A2(fn, d, res))));
-					}
-				}
-			}
-		}
-	});
-var $elm$core$List$foldr = F3(
-	function (fn, acc, ls) {
-		return A4($elm$core$List$foldrHelper, fn, acc, 0, ls);
-	});
-var $elm$core$List$map = F2(
-	function (f, xs) {
-		return A3(
-			$elm$core$List$foldr,
-			F2(
-				function (x, acc) {
-					return A2(
-						$elm$core$List$cons,
-						f(x),
-						acc);
-				}),
-			_List_Nil,
-			xs);
-	});
-var $elm$core$Basics$identity = function (x) {
-	return x;
-};
-var $author$project$SearchString$SearchString = $elm$core$Basics$identity;
-var $author$project$SearchString$new = function (string) {
-	return string;
-};
 var $author$project$Option$DatalistOption = F2(
 	function (a, b) {
 		return {$: 2, a: a, b: b};
@@ -3067,10 +3044,7 @@ var $author$project$Option$OptionSelected = function (a) {
 	return {$: 2, a: a};
 };
 var $author$project$Option$OptionShown = {$: 0};
-var $elm$json$Json$Decode$andThen = _Json_andThen;
 var $elm$json$Json$Decode$bool = _Json_decodeBool;
-var $elm$json$Json$Decode$fail = _Json_fail;
-var $elm$json$Json$Decode$field = _Json_decodeField;
 var $elm$json$Json$Decode$oneOf = _Json_oneOf;
 var $author$project$Option$displayDecoder = $elm$json$Json$Decode$oneOf(
 	_List_fromArray(
@@ -3101,7 +3075,6 @@ var $author$project$Option$displayDecoder = $elm$json$Json$Decode$oneOf(
 			A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool)),
 			$elm$json$Json$Decode$succeed($author$project$Option$OptionShown)
 		]));
-var $elm$json$Json$Decode$map2 = _Json_map2;
 var $author$project$OptionValue$OptionValue = function (a) {
 	return {$: 0, a: a};
 };
@@ -3133,7 +3106,6 @@ var $author$project$Option$OptionDescription = F2(
 	function (a, b) {
 		return {$: 0, a: a, b: b};
 	});
-var $elm$json$Json$Decode$map = _Json_map1;
 var $elm$json$Json$Decode$null = _Json_decodeNull;
 var $elm$json$Json$Decode$nullable = function (decoder) {
 	return $elm$json$Json$Decode$oneOf(
@@ -3168,12 +3140,6 @@ var $author$project$SortRank$Manual = function (a) {
 	return {$: 1, a: a};
 };
 var $author$project$SortRank$NoSortRank = {$: 2};
-var $elm$json$Json$Decode$int = _Json_decodeInt;
-var $author$project$PositiveInt$PositiveInt = $elm$core$Basics$identity;
-var $elm$core$Basics$ge = _Utils_ge;
-var $author$project$PositiveInt$maybeNew = function (_int) {
-	return (_int >= 0) ? $elm$core$Maybe$Just(_int) : $elm$core$Maybe$Nothing;
-};
 var $author$project$SortRank$sortRankDecoder = $elm$json$Json$Decode$oneOf(
 	_List_fromArray(
 		[
@@ -3267,6 +3233,112 @@ var $author$project$Option$optionsDecoder = function (outputStyle) {
 };
 var $author$project$FilterWorker$sendErrorMessage = _Platform_outgoingPort('sendErrorMessage', $elm$json$Json$Encode$string);
 var $author$project$FilterWorker$sendSearchResults = _Platform_outgoingPort('sendSearchResults', $elm$core$Basics$identity);
+var $elm$core$String$length = _String_length;
+var $author$project$SearchString$length = function (_v0) {
+	var str = _v0;
+	return $elm$core$String$length(str);
+};
+var $author$project$PositiveInt$lessThanOrEqualTo = F2(
+	function (_v0, b) {
+		var a = _v0;
+		return _Utils_cmp(a, b) < 1;
+	});
+var $elm$core$List$foldrHelper = F4(
+	function (fn, acc, ctr, ls) {
+		if (!ls.b) {
+			return acc;
+		} else {
+			var a = ls.a;
+			var r1 = ls.b;
+			if (!r1.b) {
+				return A2(fn, a, acc);
+			} else {
+				var b = r1.a;
+				var r2 = r1.b;
+				if (!r2.b) {
+					return A2(
+						fn,
+						a,
+						A2(fn, b, acc));
+				} else {
+					var c = r2.a;
+					var r3 = r2.b;
+					if (!r3.b) {
+						return A2(
+							fn,
+							a,
+							A2(
+								fn,
+								b,
+								A2(fn, c, acc)));
+					} else {
+						var d = r3.a;
+						var r4 = r3.b;
+						var res = (ctr > 500) ? A3(
+							$elm$core$List$foldl,
+							fn,
+							acc,
+							$elm$core$List$reverse(r4)) : A4($elm$core$List$foldrHelper, fn, acc, ctr + 1, r4);
+						return A2(
+							fn,
+							a,
+							A2(
+								fn,
+								b,
+								A2(
+									fn,
+									c,
+									A2(fn, d, res))));
+					}
+				}
+			}
+		}
+	});
+var $elm$core$List$foldr = F3(
+	function (fn, acc, ls) {
+		return A4($elm$core$List$foldrHelper, fn, acc, 0, ls);
+	});
+var $elm$core$List$map = F2(
+	function (f, xs) {
+		return A3(
+			$elm$core$List$foldr,
+			F2(
+				function (x, acc) {
+					return A2(
+						$elm$core$List$cons,
+						f(x),
+						acc);
+				}),
+			_List_Nil,
+			xs);
+	});
+var $author$project$Option$CustomOption = F4(
+	function (a, b, c, d) {
+		return {$: 1, a: a, b: b, c: c, d: d};
+	});
+var $author$project$Option$setOptionSearchFilter = F2(
+	function (maybeOptionSearchFilter, option) {
+		switch (option.$) {
+			case 0:
+				var optionDisplay = option.a;
+				var optionLabel = option.b;
+				var optionValue = option.c;
+				var optionDescription = option.d;
+				var optionGroup = option.e;
+				return A6($author$project$Option$Option, optionDisplay, optionLabel, optionValue, optionDescription, optionGroup, maybeOptionSearchFilter);
+			case 1:
+				var optionDisplay = option.a;
+				var optionLabel = option.b;
+				var optionValue = option.c;
+				return A4($author$project$Option$CustomOption, optionDisplay, optionLabel, optionValue, maybeOptionSearchFilter);
+			case 3:
+				var optionDisplay = option.a;
+				var optionLabel = option.b;
+				return A2($author$project$Option$EmptyOption, optionDisplay, optionLabel);
+			default:
+				return option;
+		}
+	});
 var $author$project$OptionSearchFilter$descriptionHandicap = function (score) {
 	return (score < 5) ? 5 : $elm$core$Basics$floor(score * 1.25);
 };
@@ -3368,7 +3440,7 @@ var $author$project$OptionLabel$optionLabelToString = function (optionLabel) {
 };
 var $tripokey$elm_fuzzy$Fuzzy$Match = F4(
 	function (score, offset, length, keys) {
-		return {cv: keys, cw: length, cL: offset, aX: score};
+		return {cv: keys, cw: length, cM: offset, aX: score};
 	});
 var $tripokey$elm_fuzzy$Fuzzy$Result = F2(
 	function (score, matches) {
@@ -3380,7 +3452,6 @@ var $tripokey$elm_fuzzy$Fuzzy$ConfigModel = F4(
 	});
 var $tripokey$elm_fuzzy$Fuzzy$defaultConfig = A4($tripokey$elm_fuzzy$Fuzzy$ConfigModel, 10, 1000, 10000, 1);
 var $elm$core$String$indexes = _String_indexes;
-var $elm$core$String$length = _String_length;
 var $elm$core$Tuple$second = function (_v0) {
 	var y = _v0.b;
 	return y;
@@ -3875,7 +3946,7 @@ var $tripokey$elm_fuzzy$Fuzzy$match = F4(
 						var eDistance = A3($tripokey$elm_fuzzy$Fuzzy$distance, config, n, e);
 						var newMatch = (_Utils_cmp(eDistance.aX, prev.aX) < 0) ? _Utils_update(
 							eDistance,
-							{cL: prevOffset}) : prev;
+							{cM: prevOffset}) : prev;
 						return _Utils_Tuple2(newMatch, newOffset);
 					});
 				return A3(
@@ -3986,33 +4057,6 @@ var $author$project$OptionSearcher$search = F2(
 					$author$project$Option$getOptionLabel(option)))
 		};
 	});
-var $author$project$Option$CustomOption = F4(
-	function (a, b, c, d) {
-		return {$: 1, a: a, b: b, c: c, d: d};
-	});
-var $author$project$Option$setOptionSearchFilter = F2(
-	function (maybeOptionSearchFilter, option) {
-		switch (option.$) {
-			case 0:
-				var optionDisplay = option.a;
-				var optionLabel = option.b;
-				var optionValue = option.c;
-				var optionDescription = option.d;
-				var optionGroup = option.e;
-				return A6($author$project$Option$Option, optionDisplay, optionLabel, optionValue, optionDescription, optionGroup, maybeOptionSearchFilter);
-			case 1:
-				var optionDisplay = option.a;
-				var optionLabel = option.b;
-				var optionValue = option.c;
-				return A4($author$project$Option$CustomOption, optionDisplay, optionLabel, optionValue, maybeOptionSearchFilter);
-			case 3:
-				var optionDisplay = option.a;
-				var optionLabel = option.b;
-				return A2($author$project$Option$EmptyOption, optionDisplay, optionLabel);
-			default:
-				return option;
-		}
-	});
 var $elm$core$List$sum = function (numbers) {
 	return A3($elm$core$List$foldl, $elm$core$Basics$add, 0, numbers);
 };
@@ -4057,7 +4101,7 @@ var $author$project$OptionPresentor$indexInsideMatch = F2(
 			A2(
 				$elm$core$List$filter,
 				function (match) {
-					var matchIndex = index - match.cL;
+					var matchIndex = index - match.cM;
 					return A2($elm$core$List$member, matchIndex, match.cv);
 				},
 				result.cy));
@@ -4308,6 +4352,29 @@ var $author$project$OptionSearcher$updateSearchResultInOption = F2(
 				A5($author$project$OptionSearchFilter$new, totalScore, bestScore, labelTokens, descriptionTokens, groupTokens)),
 			option);
 	});
+var $author$project$OptionSearcher$updateOptionsWithSearchString = F3(
+	function (searchString, searchStringMinimumLength, options) {
+		var doOptionFiltering = function () {
+			if (!searchStringMinimumLength.$) {
+				var positiveInt = searchStringMinimumLength.a;
+				return A2(
+					$author$project$PositiveInt$lessThanOrEqualTo,
+					positiveInt,
+					$author$project$SearchString$length(searchString));
+			} else {
+				return true;
+			}
+		}();
+		return doOptionFiltering ? A2(
+			$elm$core$List$map,
+			$author$project$OptionSearcher$updateSearchResultInOption(searchString),
+			options) : A2(
+			$elm$core$List$map,
+			function (option) {
+				return A2($author$project$Option$setOptionSearchFilter, $elm$core$Maybe$Nothing, option);
+			},
+			options);
+	});
 var $author$project$FilterWorker$update = F2(
 	function (msg, options) {
 		if (!msg.$) {
@@ -4327,16 +4394,24 @@ var $author$project$FilterWorker$update = F2(
 						$elm$json$Json$Decode$errorToString(error)));
 			}
 		} else {
-			var searchString = msg.a;
-			var newOptions = A2(
-				$elm$core$List$map,
-				$author$project$OptionSearcher$updateSearchResultInOption(
-					$author$project$SearchString$new(searchString)),
-				options);
-			return _Utils_Tuple2(
-				newOptions,
-				$author$project$FilterWorker$sendSearchResults(
-					A2($elm$json$Json$Encode$list, $author$project$Option$encodeSearchResults, newOptions)));
+			var jsonSearchParams = msg.a;
+			var _v2 = A2($elm$json$Json$Decode$decodeValue, $author$project$OptionSearcher$decodeSearchParams, jsonSearchParams);
+			if (!_v2.$) {
+				var _v3 = _v2.a;
+				var searchString = _v3.a;
+				var searchStringMinimumLength = _v3.b;
+				var newOptions = A3($author$project$OptionSearcher$updateOptionsWithSearchString, searchString, searchStringMinimumLength, options);
+				return _Utils_Tuple2(
+					newOptions,
+					$author$project$FilterWorker$sendSearchResults(
+						A2($elm$json$Json$Encode$list, $author$project$Option$encodeSearchResults, newOptions)));
+			} else {
+				var error = _v2.a;
+				return _Utils_Tuple2(
+					options,
+					$author$project$FilterWorker$sendErrorMessage(
+						$elm$json$Json$Decode$errorToString(error)));
+			}
 		}
 	});
 var $elm$core$Platform$worker = _Platform_worker;

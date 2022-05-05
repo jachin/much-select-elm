@@ -1,8 +1,10 @@
 module FilteringOptions.OptionSearcher exposing (suite)
 
 import Expect
+import Json.Decode
 import Main exposing (figureOutWhichOptionsToShowInTheDropdown)
 import Option
+import OptionSearchFilter
 import OptionSearcher exposing (doesSearchStringFindNothing)
 import OptionSorting exposing (sortOptionsBySearchFilterTotalScore)
 import OutputStyle exposing (MaxDropdownItems(..), SearchStringMinimumLength(..))
@@ -125,5 +127,61 @@ suite =
                             |> Maybe.map Option.getOptionValueAsString
                         )
                         (Just "Ougyiya")
+            , test "if the search string is empty we should still have matches for the label" <|
+                \_ ->
+                    Expect.equal
+                        (OptionSearcher.updateOptionsWithSearchStringAndCustomOption
+                            (SelectionMode.setSearchStringMinimumLength NoMinimumToSearchStringLength selectionConfig)
+                            SearchString.reset
+                            [ pound |> Option.setDescriptionWithString "quid" ]
+                            |> List.head
+                            |> Maybe.andThen Option.getMaybeOptionSearchFilter
+                            |> Maybe.map .labelTokens
+                            |> Maybe.map List.length
+                        )
+                        (Just 1)
+            , test "if the search string is empty we should still have matches for the description" <|
+                \_ ->
+                    Expect.equal
+                        (OptionSearcher.updateOptionsWithSearchStringAndCustomOption
+                            (SelectionMode.setSearchStringMinimumLength NoMinimumToSearchStringLength selectionConfig)
+                            SearchString.reset
+                            [ pound |> Option.setDescriptionWithString "quid" ]
+                            |> List.head
+                            |> Maybe.andThen Option.getMaybeOptionSearchFilter
+                            |> Maybe.map .descriptionTokens
+                            |> Maybe.map List.length
+                        )
+                        (Just 1)
+            , test "if the search string is empty we should still have matches for the group" <|
+                \_ ->
+                    Expect.equal
+                        (OptionSearcher.updateOptionsWithSearchStringAndCustomOption
+                            (SelectionMode.setSearchStringMinimumLength NoMinimumToSearchStringLength selectionConfig)
+                            SearchString.reset
+                            [ pound |> Option.setDescriptionWithString "quid" ]
+                            |> List.head
+                            |> Maybe.andThen Option.getMaybeOptionSearchFilter
+                            |> Maybe.map .groupTokens
+                            |> Maybe.map List.length
+                        )
+                        (Just 1)
+            ]
+        , describe "encoders and decoders"
+            [ test "round trip for the serach result encoders and decoders" <|
+                \_ ->
+                    Expect.ok
+                        (OptionSearcher.updateOptionsWithSearchStringAndCustomOption
+                            (SelectionMode.setSearchStringMinimumLength NoMinimumToSearchStringLength selectionConfig)
+                            SearchString.reset
+                            [ pound |> Option.setDescriptionWithString "quid" ]
+                            |> List.head
+                            |> Maybe.andThen Option.getMaybeOptionSearchFilter
+                            |> Maybe.map OptionSearchFilter.encode
+                            |> Maybe.map (Json.Decode.decodeValue OptionSearchFilter.decode)
+                            |> Maybe.map Result.toMaybe
+                            |> Maybe.andThen identity
+                            |> Result.fromMaybe ""
+                        )
             ]
         ]

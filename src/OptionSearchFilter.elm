@@ -29,7 +29,7 @@ type alias OptionSearchFilter =
 
 type alias OptionSearchFilterWithValue =
     { value : OptionValue
-    , searchFilter : OptionSearchFilter
+    , maybeSearchFilter : Maybe OptionSearchFilter
     }
 
 

@@ -3,15 +3,16 @@ port module FilterWorker exposing (..)
 import Json.Decode
 import Json.Encode
 import Option exposing (Option)
-import OptionSearcher
+import OptionSearcher exposing (decodeSearchParams)
+import OutputStyle exposing (SearchStringMinimumLength)
 import Platform
-import SearchString
-import SelectionMode
+import SearchString exposing (SearchString)
+import SelectionMode exposing (SelectionConfig)
 
 
 type Msg
     = UpdateOptions Json.Decode.Value
-    | UpdateSearchString String
+    | UpdateSearchString Json.Decode.Value
 
 
 init : () -> ( List Option, Cmd msg )
@@ -30,15 +31,21 @@ update msg options =
                 Err error ->
                     ( [], sendErrorMessage (Json.Decode.errorToString error) )
 
-        UpdateSearchString searchString ->
-            let
-                newOptions =
-                    options
-                        |> List.map (OptionSearcher.updateSearchResultInOption (SearchString.new searchString))
-            in
-            ( newOptions
-            , sendSearchResults (Json.Encode.list Option.encodeSearchResults newOptions)
-            )
+        UpdateSearchString jsonSearchParams ->
+            case Json.Decode.decodeValue decodeSearchParams jsonSearchParams of
+                Ok ( searchString, searchStringMinimumLength ) ->
+                    let
+                        newOptions =
+                            OptionSearcher.updateOptionsWithSearchString searchString
+                                searchStringMinimumLength
+                                options
+                    in
+                    ( newOptions
+                    , sendSearchResults (Json.Encode.list Option.encodeSearchResults newOptions)
+                    )
+
+                Err error ->
+                    ( options, sendErrorMessage (Json.Decode.errorToString error) )
 
 
 subscriptions : List Option -> Sub Msg
@@ -57,7 +64,7 @@ main =
 port receiveOptions : (Json.Decode.Value -> msg) -> Sub msg
 
 
-port receiveSearchString : (String -> msg) -> Sub msg
+port receiveSearchString : (Json.Decode.Value -> msg) -> Sub msg
 
 
 port sendSearchResults : Json.Encode.Value -> Cmd msg

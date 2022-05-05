@@ -230,7 +230,6 @@ type alias Model =
     , focusedIndex : Int
     , rightSlot : RightSlot
     , valueCasing : ValueCasing
-    , deleteKeyPressed : Bool
     }
 
 
@@ -464,7 +463,13 @@ update msg model =
             )
 
         UpdateOptionsWithSearchString ->
-            ( updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges model, searchOptionsWithWebWorker (SearchString.toString model.searchString) )
+            ( updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges model
+            , searchOptionsWithWebWorker
+                (OptionSearcher.encodeSearchParams
+                    model.searchString
+                    (SelectionMode.getSearchStringMinimumLength model.selectionConfig)
+                )
+            )
 
         MsgQuietUpdateOptionsWithSearchString subMsg ->
             Debouncer.Messages.update update updateDebouncer subMsg model
@@ -2522,7 +2527,6 @@ init flags =
                     OptionsUtilities.organizeNewDatalistOptions optionsWithInitialValueSelected
     in
     ( { initialValue = initialValues
-      , deleteKeyPressed = False
       , placeholder = flags.placeholder
       , selectionConfig = selectionConfig
       , options = optionsWithInitialValueSelectedSorted
