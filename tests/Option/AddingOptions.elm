@@ -18,6 +18,7 @@ import OptionsUtilities
         , mergeTwoListsOfOptionsPreservingSelectedOptions
         )
 import OutputStyle exposing (SelectedItemPlacementMode(..))
+import SelectionMode
 import SortRank exposing (newMaybeAutoSortRank)
 import Test exposing (Test, describe, test)
 
@@ -52,7 +53,7 @@ futureCop =
     Option.newSelectedDatalisOption (OptionValue.stringToOptionValue "Futurecop!") 1
 
 
-archadeHigh =
+arcadeHigh =
     Option.newSelectedDatalisOption (OptionValue.stringToOptionValue "Arcade High") 2
 
 
@@ -102,6 +103,7 @@ suite =
                     Expect.equalLists
                         [ wolfClub |> selectOption 0 ]
                         (mergeTwoListsOfOptionsPreservingSelectedOptions
+                            SelectionMode.SingleSelect
                             SelectedItemStaysInPlace
                             [ newOption "Wolf Club" Nothing |> selectOption 0 ]
                             [ wolfClub ]
@@ -111,6 +113,7 @@ suite =
                     Expect.equalLists
                         [ wolfClub |> selectOption 0, timecop1983, heartBones ]
                         (mergeTwoListsOfOptionsPreservingSelectedOptions
+                            SelectionMode.SingleSelect
                             SelectedItemStaysInPlace
                             [ newOption "Wolf Club" Nothing |> selectOption 0 ]
                             [ wolfClub, timecop1983, heartBones ]
@@ -120,6 +123,7 @@ suite =
                     Expect.equalLists
                         [ timecop1983, heartBones, wolfClub |> selectOption 0 ]
                         (mergeTwoListsOfOptionsPreservingSelectedOptions
+                            SelectionMode.SingleSelect
                             SelectedItemStaysInPlace
                             [ newOption "Wolf Club" Nothing |> selectOption 0 ]
                             [ timecop1983, heartBones, wolfClub ]
@@ -129,6 +133,7 @@ suite =
                     Expect.equalLists
                         [ wolfClub |> selectOption 0, timecop1983, heartBones ]
                         (mergeTwoListsOfOptionsPreservingSelectedOptions
+                            SelectionMode.SingleSelect
                             SelectedItemMovesToTheTop
                             [ newOption "Wolf Club" Nothing |> selectOption 0 ]
                             [ timecop1983, heartBones, wolfClub ]
@@ -168,6 +173,7 @@ suite =
                         [ wolfClub
                         ]
                         (mergeTwoListsOfOptionsPreservingSelectedOptions
+                            SelectionMode.SingleSelect
                             SelectedItemStaysInPlace
                             [ wolfClub
                             ]
@@ -190,25 +196,25 @@ suite =
             [ test "add to the beginning of the selected options" <|
                 \_ ->
                     Expect.equalLists
-                        ([ theMidnight, futureCop, archadeHigh ] |> OptionsUtilities.addNewEmptyOptionAtIndex 0)
+                        ([ theMidnight, futureCop, arcadeHigh ] |> OptionsUtilities.addNewEmptyOptionAtIndex 0)
                         [ Option.newSelectedDatalisOption OptionValue.EmptyOptionValue 0
                         , Option.selectOption 1 theMidnight
                         , Option.selectOption 2 futureCop
-                        , Option.selectOption 3 archadeHigh
+                        , Option.selectOption 3 arcadeHigh
                         ]
             , test "add to the middle of the selected options" <|
                 \_ ->
                     Expect.equalLists
-                        ([ theMidnight, futureCop, archadeHigh ] |> OptionsUtilities.addNewEmptyOptionAtIndex 1)
+                        ([ theMidnight, futureCop, arcadeHigh ] |> OptionsUtilities.addNewEmptyOptionAtIndex 1)
                         [ theMidnight
                         , Option.newSelectedDatalisOption OptionValue.EmptyOptionValue 1
                         , Option.selectOption 2 futureCop
-                        , Option.selectOption 3 archadeHigh
+                        , Option.selectOption 3 arcadeHigh
                         ]
             , test "add to the end of the selected options" <|
                 \_ ->
                     Expect.equalLists
-                        ([ theMidnight, futureCop, archadeHigh ] |> OptionsUtilities.addNewEmptyOptionAtIndex 3)
-                        [ theMidnight, futureCop, archadeHigh, Option.newSelectedDatalisOption OptionValue.EmptyOptionValue 3 ]
+                        ([ theMidnight, futureCop, arcadeHigh ] |> OptionsUtilities.addNewEmptyOptionAtIndex 3)
+                        [ theMidnight, futureCop, arcadeHigh, Option.newSelectedDatalisOption OptionValue.EmptyOptionValue 3 ]
             ]
         ]

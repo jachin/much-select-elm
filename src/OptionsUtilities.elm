@@ -1198,48 +1198,37 @@ deselectAllOptionsInOptionsList options =
 
 
 replaceOptions : SelectionConfig -> List Option -> List Option -> List Option
-replaceOptions selectionMode oldOptions newOptions =
+replaceOptions selectionConfig oldOptions newOptions =
     let
         oldSelectedOptions =
-            selectedOptions oldOptions
+            case SelectionMode.getSelectionMode selectionConfig of
+                SelectionMode.SingleSelect ->
+                    if hasSelectedOption newOptions then
+                        []
+
+                    else
+                        selectedOptions oldOptions
+
+                SelectionMode.MultiSelect ->
+                    selectedOptions oldOptions
     in
-    case selectionMode of
-        SingleSelectConfig _ _ _ ->
-            let
-                maybeSelectedOptionValue =
-                    selectedOptions (newOptions ++ oldOptions)
-                        |> List.head
-                        |> Maybe.map getOptionValue
-
-                selectedItemPlacementMode =
-                    getSelectedItemPlacementMode selectionMode
-            in
-            case maybeSelectedOptionValue of
-                Just selectedOptionValue ->
-                    mergeTwoListsOfOptionsPreservingSelectedOptions
-                        selectedItemPlacementMode
-                        oldSelectedOptions
-                        newOptions
-                        |> selectSingleOptionInList selectedOptionValue
-                        |> List.filter
-                            (\option ->
-                                isOptionSelected option || List.member option newOptions
-                            )
-
-                Nothing ->
-                    mergeTwoListsOfOptionsPreservingSelectedOptions
-                        selectedItemPlacementMode
-                        oldSelectedOptions
-                        newOptions
-
-        MultiSelectConfig _ _ _ ->
+    case SelectionMode.getSelectionMode selectionConfig of
+        SelectionMode.SingleSelect ->
             mergeTwoListsOfOptionsPreservingSelectedOptions
+                (SelectionMode.getSelectionMode selectionConfig)
+                (getSelectedItemPlacementMode selectionConfig)
+                oldSelectedOptions
+                newOptions
+
+        SelectionMode.MultiSelect ->
+            mergeTwoListsOfOptionsPreservingSelectedOptions
+                (SelectionMode.getSelectionMode selectionConfig)
                 SelectedItemStaysInPlace
                 oldSelectedOptions
                 newOptions
 
 
-{-| This function is a little strange but here's what it does. It takes 2 lists of option.
+{-| This function is a little strange but here's what it does. It takes 2 lists of options.
 First it looks to see if any option values the second list match any option values in the first list
 If they do it takes the label, description, and group from the option in second list and uses it to update
 the option in the first list.
@@ -1255,8 +1244,8 @@ comes in, including the extra stuff (like label, description, and group).
 |
 
 -}
-mergeTwoListsOfOptionsPreservingSelectedOptions : SelectedItemPlacementMode -> List Option -> List Option -> List Option
-mergeTwoListsOfOptionsPreservingSelectedOptions selectedItemPlacementMode optionsA optionsB =
+mergeTwoListsOfOptionsPreservingSelectedOptions : SelectionMode.SelectionMode -> SelectedItemPlacementMode -> List Option -> List Option -> List Option
+mergeTwoListsOfOptionsPreservingSelectedOptions selectionMode selectedItemPlacementMode optionsA optionsB =
     let
         updatedOptionsA =
             List.map
@@ -1297,7 +1286,7 @@ mergeTwoListsOfOptionsPreservingSelectedOptions selectedItemPlacementMode option
         newOptions =
             List.Extra.uniqueBy getOptionValueAsString superList
     in
-    setSelectedOptionInNewOptions superList newOptions
+    setSelectedOptionInNewOptions selectionMode superList newOptions
 
 
 selectedOptionsToTuple : List Option -> List ( String, String )
@@ -1354,8 +1343,8 @@ addAndSelectOptionsInOptionsListByString strings options =
     helper 0 strings options
 
 
-setSelectedOptionInNewOptions : List Option -> List Option -> List Option
-setSelectedOptionInNewOptions oldOptions newOptions =
+setSelectedOptionInNewOptions : SelectionMode.SelectionMode -> List Option -> List Option -> List Option
+setSelectedOptionInNewOptions selectionMode oldOptions newOptions =
     let
         oldSelectedOption : List Option
         oldSelectedOption =
@@ -1365,7 +1354,14 @@ setSelectedOptionInNewOptions oldOptions newOptions =
         newSelectedOptions =
             List.filter (\newOption_ -> optionListContainsOptionWithValue newOption_ oldSelectedOption) newOptions
     in
-    selectOptionsInListWithIndex newSelectedOptions newOptions
+    case selectionMode of
+        SelectionMode.SingleSelect ->
+            newOptions
+                |> deselectAllOptionsInOptionsList
+                |> selectOptionsInListWithIndex (List.take 1 newSelectedOptions)
+
+        SelectionMode.MultiSelect ->
+            selectOptionsInListWithIndex newSelectedOptions newOptions
 
 
 updateOptionsWithNewSearchResults : List OptionSearchFilterWithValue -> List Option -> List Option

@@ -351,7 +351,7 @@ class MuchSelect extends HTMLElement {
         app.ports.optionsReplacedReceiver.send(optionsJson);
         this.updateDimensions();
       });
-    }, 5);
+    }, 100);
 
     this._callValueChanged = makeDebounceLeadingFunc((newValue) => {
       this.appPromise.then((app) => {
@@ -720,7 +720,7 @@ class MuchSelect extends HTMLElement {
 
     this._muchSelectObserver = new MutationObserver((mutationsList) => {
       mutationsList.forEach(() => {
-        this.updateOptionsFromDom();
+        this._callUpdateOptionsFromDom();
       });
     });
     this._muchSelectObserver.observe(this, muchSelectMutationObserverConfig);

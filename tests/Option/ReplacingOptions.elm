@@ -19,8 +19,15 @@ thirdEyeBlind =
     Option.newOption "Third Eye Blind" Nothing
 
 
-selectionMode =
+selectionConfig =
     SelectionMode.defaultSelectionConfig
+        |> SelectionMode.setAllowCustomOptionsWithBool False Nothing
+        |> SelectionMode.setSelectedItemStaysInPlaceWithBool True
+
+
+multiSelectSelectionConfig =
+    SelectionMode.defaultSelectionConfig
+        |> SelectionMode.setSelectionMode SelectionMode.MultiSelect
         |> SelectionMode.setAllowCustomOptionsWithBool False Nothing
         |> SelectionMode.setSelectedItemStaysInPlaceWithBool True
 
@@ -34,7 +41,7 @@ suite =
                     Expect.equalLists
                         [ futureCop, theMidnight ]
                         (replaceOptions
-                            selectionMode
+                            multiSelectSelectionConfig
                             [ thirdEyeBlind, futureCop ]
                             [ futureCop, theMidnight ]
                         )
@@ -43,7 +50,7 @@ suite =
                     Expect.equalLists
                         [ futureCop, Option.selectOption 0 theMidnight ]
                         (replaceOptions
-                            selectionMode
+                            multiSelectSelectionConfig
                             [ thirdEyeBlind, futureCop ]
                             [ futureCop, Option.selectOption 0 theMidnight ]
                         )
@@ -51,7 +58,7 @@ suite =
                 \_ ->
                     Expect.equalLists
                         (replaceOptions
-                            selectionMode
+                            multiSelectSelectionConfig
                             [ Option.selectOption 0 thirdEyeBlind, futureCop ]
                             [ futureCop, theMidnight ]
                         )
@@ -62,7 +69,7 @@ suite =
                 \_ ->
                     Expect.equalLists
                         (replaceOptions
-                            selectionMode
+                            selectionConfig
                             [ futureCop, theMidnight ]
                             [ Option.selectOption 0 thirdEyeBlind, futureCop ]
                         )
@@ -71,7 +78,7 @@ suite =
                 \_ ->
                     Expect.equalLists
                         (replaceOptions
-                            selectionMode
+                            selectionConfig
                             [ Option.selectOption 0 thirdEyeBlind, theMidnight ]
                             [ thirdEyeBlind, futureCop ]
                         )
@@ -80,7 +87,7 @@ suite =
                 \_ ->
                     Expect.equalLists
                         (replaceOptions
-                            selectionMode
+                            selectionConfig
                             [ Option.selectOption 0 thirdEyeBlind, theMidnight ]
                             [ Option.selectOption 0 thirdEyeBlind, futureCop ]
                         )
@@ -89,7 +96,7 @@ suite =
                 \_ ->
                     Expect.equalLists
                         (replaceOptions
-                            selectionMode
+                            selectionConfig
                             [ Option.selectOption 0 thirdEyeBlind, theMidnight ]
                             [ futureCop ]
                         )
@@ -98,7 +105,7 @@ suite =
                 \_ ->
                     Expect.equalLists
                         (replaceOptions
-                            selectionMode
+                            selectionConfig
                             [ Option.selectOption 0 thirdEyeBlind, theMidnight ]
                             [ Option.selectOption 0 futureCop ]
                         )
