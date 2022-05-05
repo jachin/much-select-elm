@@ -1468,6 +1468,7 @@ encode option =
         , ( "labelClean", Json.Encode.string (getOptionLabel option |> OptionLabel.optionLabelToSearchString) )
         , ( "group", Json.Encode.string (getOptionGroup option |> optionGroupToString) )
         , ( "description", Json.Encode.string (getOptionDescription option |> optionDescriptionToString) )
+        , ( "descriptionClean", Json.Encode.string (getOptionDescription option |> optionDescriptionToSearchString) )
         , ( "isSelected", Json.Encode.bool (isOptionSelected option) )
         ]
 

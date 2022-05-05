@@ -5,9 +5,7 @@ import Json.Encode
 import Option exposing (Option)
 import OptionSearcher exposing (decodeSearchParams)
 import OptionsUtilities exposing (filterOptionsToShowInDropdownBySearchScore)
-import OutputStyle exposing (SearchStringMinimumLength)
 import Platform
-import SearchString exposing (SearchString)
 import SelectionMode exposing (SelectionConfig)
 
 
