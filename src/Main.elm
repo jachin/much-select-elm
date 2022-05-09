@@ -1141,6 +1141,7 @@ figureOutWhichOptionsToShowInTheDropdown selectionMode options =
     let
         optionsThatCouldBeShown =
             filterOptionsToShowInDropdown selectionMode options
+                |> OptionsUtilities.sortOptionsByBestScore
 
         lastIndexOfOptions =
             List.length optionsThatCouldBeShown - 1
@@ -1924,7 +1925,6 @@ dropdown selectionMode options searchString (ValueCasing valueCasingWidth valueC
     let
         optionsForTheDropdown =
             figureOutWhichOptionsToShowInTheDropdown selectionMode options
-                |> OptionsUtilities.sortOptionsByBestScore
 
         optionsHtml =
             -- TODO We should probably do something different if we are in a loading state
