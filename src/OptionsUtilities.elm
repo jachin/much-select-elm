@@ -1226,6 +1226,7 @@ replaceOptions selectionConfig oldOptions newOptions =
 
                 SelectionMode.MultiSelect ->
                     selectedOptions oldOptions
+                        |> transformOptionsToOutputStyle (SelectionMode.getOutputStyle selectionConfig)
     in
     case SelectionMode.getSelectionMode selectionConfig of
         SelectionMode.SingleSelect ->
@@ -1302,6 +1303,12 @@ mergeTwoListsOfOptionsPreservingSelectedOptions selectionMode selectedItemPlacem
             List.Extra.uniqueBy getOptionValueAsString superList
     in
     setSelectedOptionInNewOptions selectionMode superList newOptions
+
+
+transformOptionsToOutputStyle : SelectionMode.OutputStyle -> List Option -> List Option
+transformOptionsToOutputStyle outputStyle options =
+    List.map (Option.transformOptionForOutputStyle outputStyle) options
+        |> Maybe.Extra.values
 
 
 selectedOptionsToTuple : List Option -> List ( String, String )

@@ -128,6 +128,7 @@ import Ports
         , selectOptionReceiver
         , selectedItemStaysInPlaceChangedReceiver
         , showDropdownFooterChangedReceiver
+        , updateOptionsFromDom
         , updateOptionsInWebWorker
         , updateSearchResultDataWithWebWorkerReceiver
         , valueCasingDimensionsChangedReceiver
@@ -527,6 +528,7 @@ update msg model =
                     in
                     ( { model
                         | options = newOptionWithOldSelectedOption
+                        , rightSlot = updateRightSlot model.rightSlot model.selectionConfig (OptionsUtilities.hasSelectedOption newOptionWithOldSelectedOption) model.options
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , Cmd.batch
@@ -713,13 +715,17 @@ update msg model =
         OutputStyleChanged newOutputStyleString ->
             case SelectionMode.stringToOutputStyle newOutputStyleString of
                 Ok outputStyle ->
-                    ( { model
-                        | selectionConfig =
+                    let
+                        newSelectionConfig =
                             SelectionMode.setOutputStyle
                                 outputStyle
                                 model.selectionConfig
+                    in
+                    ( { model
+                        | selectionConfig = newSelectionConfig
+                        , rightSlot = updateRightSlot model.rightSlot newSelectionConfig True model.options
                       }
-                    , Cmd.none
+                    , updateOptionsFromDom ()
                     )
 
                 Err _ ->
@@ -1197,7 +1203,7 @@ updateRightSlot current selectionMode hasSelectedOption selectedOptions =
                         ShowDropdownIndicator NotInFocusTransition
 
                 _ ->
-                    current
+                    ShowDropdownIndicator NotInFocusTransition
 
         SelectionMode.Datalist ->
             updateRightSlotForDatalist selectedOptions
