@@ -1,7 +1,10 @@
 module OptionSearchFilter exposing
     ( OptionSearchFilter
+    , OptionSearchFilterWithValue
     , OptionSearchResult
+    , decode
     , descriptionHandicap
+    , encode
     , getLowScore
     , groupHandicap
     , impossiblyLowScore
@@ -10,15 +13,23 @@ module OptionSearchFilter exposing
     )
 
 import Fuzzy exposing (Result)
+import Json.Decode
+import Json.Encode
+import OptionValue exposing (OptionValue)
 
 
 type alias OptionSearchFilter =
     { totalScore : Int
     , bestScore : Int
-    , searchResult : OptionSearchResult
     , labelTokens : List ( Bool, String )
     , descriptionTokens : List ( Bool, String )
     , groupTokens : List ( Bool, String )
+    }
+
+
+type alias OptionSearchFilterWithValue =
+    { value : OptionValue
+    , maybeSearchFilter : Maybe OptionSearchFilter
     }
 
 
@@ -34,11 +45,10 @@ impossiblyLowScore =
     1000000
 
 
-new : Int -> Int -> OptionSearchResult -> List ( Bool, String ) -> List ( Bool, String ) -> List ( Bool, String ) -> OptionSearchFilter
-new totalScore bestScore searchResult labelTokens descriptionTokens groupTokens =
+new : Int -> Int -> List ( Bool, String ) -> List ( Bool, String ) -> List ( Bool, String ) -> OptionSearchFilter
+new totalScore bestScore labelTokens descriptionTokens groupTokens =
     { totalScore = totalScore
     , bestScore = bestScore
-    , searchResult = searchResult
     , labelTokens = labelTokens
     , descriptionTokens = descriptionTokens
     , groupTokens = groupTokens
@@ -90,3 +100,51 @@ groupHandicap score =
 
     else
         floor (toFloat score * 1.5)
+
+
+encode : OptionSearchFilter -> Json.Encode.Value
+encode optionSearchFilter =
+    Json.Encode.object
+        [ ( "totalScore", Json.Encode.int optionSearchFilter.totalScore )
+        , ( "bestScore", Json.Encode.int optionSearchFilter.bestScore )
+        , ( "labelTokens", encodeTokens optionSearchFilter.labelTokens )
+        , ( "descriptionTokens", encodeTokens optionSearchFilter.descriptionTokens )
+        , ( "groupTokens", encodeTokens optionSearchFilter.groupTokens )
+        ]
+
+
+encodeTokens : List ( Bool, String ) -> Json.Encode.Value
+encodeTokens tokens =
+    Json.Encode.list encodeToken tokens
+
+
+encodeToken : ( Bool, String ) -> Json.Encode.Value
+encodeToken ( isHighlighted, stringChuck ) =
+    Json.Encode.object
+        [ ( "isHighlighted", Json.Encode.bool isHighlighted )
+        , ( "stringChunk", Json.Encode.string stringChuck )
+        ]
+
+
+decode : Json.Decode.Decoder OptionSearchFilter
+decode =
+    Json.Decode.map5
+        OptionSearchFilter
+        (Json.Decode.field "totalScore" Json.Decode.int)
+        (Json.Decode.field "bestScore" Json.Decode.int)
+        (Json.Decode.field "labelTokens" decodeTokens)
+        (Json.Decode.field "descriptionTokens" decodeTokens)
+        (Json.Decode.field "groupTokens" decodeTokens)
+
+
+decodeTokens : Json.Decode.Decoder (List ( Bool, String ))
+decodeTokens =
+    Json.Decode.list decodeToken
+
+
+decodeToken : Json.Decode.Decoder ( Bool, String )
+decodeToken =
+    Json.Decode.map2
+        Tuple.pair
+        (Json.Decode.field "isHighlighted" Json.Decode.bool)
+        (Json.Decode.field "stringChunk" Json.Decode.string)

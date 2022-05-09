@@ -34,7 +34,7 @@ import Option
         , setOptionDisplay
         )
 import OptionLabel exposing (OptionLabel)
-import OptionSearchFilter exposing (OptionSearchResult)
+import OptionSearchFilter exposing (OptionSearchFilterWithValue, OptionSearchResult)
 import OptionValue
     exposing
         ( OptionValue(..)
@@ -49,7 +49,6 @@ import SelectionMode
         , getSelectedItemPlacementMode
         )
 import SortRank exposing (SortRank)
-import ValueString exposing (ValueString)
 
 
 moveHighlightedOptionDown : List Option -> List Option -> List Option
@@ -418,11 +417,6 @@ selectSingleOptionInListResult optionValue options =
 
     else
         Err "That option is not in this list"
-
-
-selectSingleOptionInListByString : String -> List Option -> List Option
-selectSingleOptionInListByString string options =
-    selectSingleOptionInList (stringToOptionValue string) options
 
 
 selectSingleOptionInListByStringOrSelectCustomValue : SearchString -> List Option -> List Option
@@ -843,6 +837,11 @@ cleanupEmptySelectedOptions options =
         options
 
 
+removeEmptyOptions : List Option -> List Option
+removeEmptyOptions options =
+    List.filter (Option.isEmptyOption >> not) options
+
+
 reIndexSelectedOptions : List Option -> List Option
 reIndexSelectedOptions options =
     let
@@ -870,9 +869,44 @@ organizeNewDatalistOptions options =
             options |> selectedOptions
 
         optionsForTheDatasetHints =
-            options |> List.map Option.deselectOption
+            options
+                |> List.filter (Option.isOptionSelected >> not)
+                |> List.map Option.deselectOption
+                |> List.Extra.uniqueBy Option.getOptionValue
+                |> removeEmptyOptions
     in
     (selectedOptions_ ++ optionsForTheDatasetHints) |> reIndexSelectedOptions
+
+
+updatedDatalistSelectedOptions : List OptionValue -> List Option -> List Option
+updatedDatalistSelectedOptions selectedValues options =
+    let
+        newSelectedOptions =
+            List.indexedMap (\i selectedValue -> newSelectedDatalisOption selectedValue i) selectedValues
+
+        oldSelectedOptions =
+            options
+                |> selectedOptions
+
+        oldSelectedOptionsCleanedUp =
+            oldSelectedOptions
+                |> cleanupEmptySelectedOptions
+
+        selectedOptions_ =
+            if equal newSelectedOptions oldSelectedOptionsCleanedUp then
+                oldSelectedOptions
+
+            else
+                newSelectedOptions
+
+        optionsForTheDatasetHints =
+            options
+                |> List.filter (Option.isOptionSelected >> not)
+                |> List.map Option.deselectOption
+                |> List.Extra.uniqueBy Option.getOptionValue
+                |> removeEmptyOptions
+    in
+    selectedOptions_ ++ optionsForTheDatasetHints
 
 
 customOptions : List Option -> List Option
@@ -1004,13 +1038,13 @@ findHighlightedOrSelectedOptionIndex options =
 
 
 filterOptionsToShowInDropdown : SelectionConfig -> List Option -> List Option
-filterOptionsToShowInDropdown selectionMode =
-    filterOptionsToShowInDropdownByOptionDisplay selectionMode >> filterOptionsToShowInDropdownBySearchScore
+filterOptionsToShowInDropdown selectionConfig =
+    filterOptionsToShowInDropdownByOptionDisplay selectionConfig >> filterOptionsToShowInDropdownBySearchScore
 
 
 filterOptionsToShowInDropdownByOptionDisplay : SelectionConfig -> List Option -> List Option
-filterOptionsToShowInDropdownByOptionDisplay selectionMode =
-    case selectionMode of
+filterOptionsToShowInDropdownByOptionDisplay selectionConfig =
+    case selectionConfig of
         SingleSelectConfig _ _ _ ->
             List.filter
                 (\option ->
@@ -1062,7 +1096,12 @@ filterOptionsToShowInDropdownBySearchScore : List Option -> List Option
 filterOptionsToShowInDropdownBySearchScore options =
     case findLowestSearchScore options of
         Just lowScore ->
-            List.filter (isOptionBelowScore (OptionSearchFilter.lowScoreCutOff lowScore)) options
+            List.filter
+                (\option ->
+                    isOptionBelowScore (OptionSearchFilter.lowScoreCutOff lowScore) option
+                        || isCustomOption option
+                )
+                options
 
         Nothing ->
             options
@@ -1074,11 +1113,11 @@ findLowestSearchScore options =
         lowSore =
             options
                 |> List.filter (\option -> not (isCustomOption option))
-                |> optionSearchResults
+                |> optionSearchResultsBestScore
                 |> List.foldl
-                    (\searchResult lowScore ->
-                        if OptionSearchFilter.getLowScore searchResult < lowScore then
-                            OptionSearchFilter.getLowScore searchResult
+                    (\optionBestScore lowScore ->
+                        if optionBestScore < lowScore then
+                            optionBestScore
 
                         else
                             lowScore
@@ -1092,22 +1131,37 @@ findLowestSearchScore options =
         Just lowSore
 
 
-optionSearchResults : List Option -> List OptionSearchResult
-optionSearchResults options =
+optionSearchResultsBestScore : List Option -> List Int
+optionSearchResultsBestScore options =
     options
         |> List.map getMaybeOptionSearchFilter
         |> Maybe.Extra.values
-        |> List.map .searchResult
+        |> List.map .bestScore
 
 
 isOptionBelowScore : Int -> Option -> Bool
 isOptionBelowScore score option =
     case getMaybeOptionSearchFilter option of
         Just optionSearchFilter ->
-            score >= OptionSearchFilter.getLowScore optionSearchFilter.searchResult
+            score >= optionSearchFilter.bestScore
 
         Nothing ->
             False
+
+
+sortOptionsByBestScore : List Option -> List Option
+sortOptionsByBestScore options =
+    List.sortBy
+        (\option ->
+            if isCustomOption option then
+                1
+
+            else
+                getMaybeOptionSearchFilter option
+                    |> Maybe.map .bestScore
+                    |> Maybe.withDefault OptionSearchFilter.impossiblyLowScore
+        )
+        options
 
 
 highlightOptionInList : Option -> List Option -> List Option
@@ -1151,11 +1205,6 @@ findOptionByOptionValue optionValue options =
 findOptionByOptionUsingOptionValue : Option -> List Option -> Maybe Option
 findOptionByOptionUsingOptionValue option options =
     findOptionByOptionValue (getOptionValue option) options
-
-
-findOptionByOptionUsingValueString : ValueString -> List Option -> Maybe Option
-findOptionByOptionUsingValueString valueString options =
-    findOptionByOptionValue (ValueString.toOptionValue valueString) options
 
 
 updateDatalistOptionsWithValue : OptionValue -> Int -> List Option -> List Option
@@ -1204,48 +1253,56 @@ deselectAllOptionsInOptionsList options =
 
 
 replaceOptions : SelectionConfig -> List Option -> List Option -> List Option
-replaceOptions selectionMode oldOptions newOptions =
+replaceOptions selectionConfig oldOptions newOptions =
     let
         oldSelectedOptions =
-            selectedOptions oldOptions
+            case SelectionMode.getSelectionMode selectionConfig of
+                SelectionMode.SingleSelect ->
+                    if hasSelectedOption newOptions then
+                        []
+
+                    else
+                        selectedOptions oldOptions
+
+                SelectionMode.MultiSelect ->
+                    selectedOptions oldOptions
+                        |> transformOptionsToOutputStyle (SelectionMode.getOutputStyle selectionConfig)
     in
-    case selectionMode of
-        SingleSelectConfig _ _ _ ->
+    case SelectionMode.getOutputStyle selectionConfig of
+        SelectionMode.CustomHtml ->
+            case SelectionMode.getSelectionMode selectionConfig of
+                SelectionMode.SingleSelect ->
+                    mergeTwoListsOfOptionsPreservingSelectedOptions
+                        (SelectionMode.getSelectionMode selectionConfig)
+                        (getSelectedItemPlacementMode selectionConfig)
+                        oldSelectedOptions
+                        newOptions
+
+                SelectionMode.MultiSelect ->
+                    mergeTwoListsOfOptionsPreservingSelectedOptions
+                        (SelectionMode.getSelectionMode selectionConfig)
+                        SelectedItemStaysInPlace
+                        oldSelectedOptions
+                        newOptions
+
+        SelectionMode.Datalist ->
             let
-                maybeSelectedOptionValue =
-                    selectedOptions (newOptions ++ oldOptions)
-                        |> List.head
-                        |> Maybe.map getOptionValue
+                optionsForTheDatasetHints =
+                    newOptions
+                        |> List.filter (Option.isOptionSelected >> not)
+                        |> List.map Option.deselectOption
+                        |> List.Extra.uniqueBy Option.getOptionValue
+                        |> removeEmptyOptions
 
-                selectedItemPlacementMode =
-                    getSelectedItemPlacementMode selectionMode
+                --TODO add any new selected options from the new options.
+                -- This is only going to be helpful when changing the selected attribute options in the DOM
+                newSelectedOptions =
+                    oldSelectedOptions
             in
-            case maybeSelectedOptionValue of
-                Just selectedOptionValue ->
-                    mergeTwoListsOfOptionsPreservingSelectedOptions
-                        selectedItemPlacementMode
-                        oldSelectedOptions
-                        newOptions
-                        |> selectSingleOptionInList selectedOptionValue
-                        |> List.filter
-                            (\option ->
-                                isOptionSelected option || List.member option newOptions
-                            )
-
-                Nothing ->
-                    mergeTwoListsOfOptionsPreservingSelectedOptions
-                        selectedItemPlacementMode
-                        oldSelectedOptions
-                        newOptions
-
-        MultiSelectConfig _ _ _ ->
-            mergeTwoListsOfOptionsPreservingSelectedOptions
-                SelectedItemStaysInPlace
-                oldSelectedOptions
-                newOptions
+            newSelectedOptions ++ optionsForTheDatasetHints
 
 
-{-| This function is a little strange but here's what it does. It takes 2 lists of option.
+{-| This function is a little strange but here's what it does. It takes 2 lists of options.
 First it looks to see if any option values the second list match any option values in the first list
 If they do it takes the label, description, and group from the option in second list and uses it to update
 the option in the first list.
@@ -1261,8 +1318,8 @@ comes in, including the extra stuff (like label, description, and group).
 |
 
 -}
-mergeTwoListsOfOptionsPreservingSelectedOptions : SelectedItemPlacementMode -> List Option -> List Option -> List Option
-mergeTwoListsOfOptionsPreservingSelectedOptions selectedItemPlacementMode optionsA optionsB =
+mergeTwoListsOfOptionsPreservingSelectedOptions : SelectionMode.SelectionMode -> SelectedItemPlacementMode -> List Option -> List Option -> List Option
+mergeTwoListsOfOptionsPreservingSelectedOptions selectionMode selectedItemPlacementMode optionsA optionsB =
     let
         updatedOptionsA =
             List.map
@@ -1303,7 +1360,13 @@ mergeTwoListsOfOptionsPreservingSelectedOptions selectedItemPlacementMode option
         newOptions =
             List.Extra.uniqueBy getOptionValueAsString superList
     in
-    setSelectedOptionInNewOptions superList newOptions
+    setSelectedOptionInNewOptions selectionMode superList newOptions
+
+
+transformOptionsToOutputStyle : SelectionMode.OutputStyle -> List Option -> List Option
+transformOptionsToOutputStyle outputStyle options =
+    List.map (Option.transformOptionForOutputStyle outputStyle) options
+        |> Maybe.Extra.values
 
 
 selectedOptionsToTuple : List Option -> List ( String, String )
@@ -1360,8 +1423,8 @@ addAndSelectOptionsInOptionsListByString strings options =
     helper 0 strings options
 
 
-setSelectedOptionInNewOptions : List Option -> List Option -> List Option
-setSelectedOptionInNewOptions oldOptions newOptions =
+setSelectedOptionInNewOptions : SelectionMode.SelectionMode -> List Option -> List Option -> List Option
+setSelectedOptionInNewOptions selectionMode oldOptions newOptions =
     let
         oldSelectedOption : List Option
         oldSelectedOption =
@@ -1371,4 +1434,45 @@ setSelectedOptionInNewOptions oldOptions newOptions =
         newSelectedOptions =
             List.filter (\newOption_ -> optionListContainsOptionWithValue newOption_ oldSelectedOption) newOptions
     in
-    selectOptionsInListWithIndex newSelectedOptions newOptions
+    case selectionMode of
+        SelectionMode.SingleSelect ->
+            newOptions
+                |> deselectAllOptionsInOptionsList
+                |> selectOptionsInListWithIndex (List.take 1 newSelectedOptions)
+
+        SelectionMode.MultiSelect ->
+            selectOptionsInListWithIndex newSelectedOptions newOptions
+
+
+updateOptionsWithNewSearchResults : List OptionSearchFilterWithValue -> List Option -> List Option
+updateOptionsWithNewSearchResults optionSearchFilterWithValues options =
+    let
+        findNewSearchFilterResult : OptionValue -> List OptionSearchFilterWithValue -> Maybe OptionSearchFilterWithValue
+        findNewSearchFilterResult optionValue results =
+            List.Extra.find (\result -> result.value == optionValue) results
+    in
+    List.map
+        (\option ->
+            case findNewSearchFilterResult (Option.getOptionValue option) optionSearchFilterWithValues of
+                Just result ->
+                    Option.setOptionSearchFilter result.maybeSearchFilter option
+
+                Nothing ->
+                    Option.setOptionSearchFilter Nothing option
+        )
+        options
+
+
+equal : List Option -> List Option -> Bool
+equal optionsA optionsB =
+    if List.length optionsA == List.length optionsB then
+        List.map2
+            (\optionA optionB ->
+                Option.equal optionA optionB
+            )
+            optionsA
+            optionsB
+            |> List.all identity
+
+    else
+        False

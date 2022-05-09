@@ -3,9 +3,12 @@ module Option exposing
     , OptionDescription
     , OptionDisplay(..)
     , OptionGroup
+    , decodeSearchResults
     , decoder
     , deselectOption
     , encode
+    , encodeSearchResults
+    , equal
     , getMaybeOptionSearchFilter
     , getOptionDescription
     , getOptionDisplay
@@ -51,16 +54,16 @@ module Option exposing
     , setOptionDisplay
     , setOptionSearchFilter
     , setOptionValue
+    , transformOptionForOutputStyle
     )
 
 import Json.Decode
 import Json.Encode
 import OptionLabel exposing (OptionLabel(..), labelDecoder, optionLabelToString)
-import OptionSearchFilter exposing (OptionSearchFilter, OptionSearchResult)
+import OptionSearchFilter exposing (OptionSearchFilter, OptionSearchFilterWithValue, OptionSearchResult)
 import OptionValue exposing (OptionValue(..), optionValueToString, stringToOptionValue)
 import SelectionMode exposing (OutputStyle(..))
 import SortRank exposing (SortRank(..))
-import ValueString exposing (ValueString)
 
 
 type Option
@@ -1293,8 +1296,13 @@ isEmptyOption option =
         EmptyOption _ _ ->
             True
 
-        DatalistOption _ _ ->
-            False
+        DatalistOption _ optionValue ->
+            case optionValue of
+                OptionValue _ ->
+                    False
+
+                EmptyOptionValue ->
+                    True
 
 
 isEmptyOptionOrHasEmptyValue : Option -> Bool
@@ -1463,6 +1471,84 @@ encode option =
     Json.Encode.object
         [ ( "value", Json.Encode.string (getOptionValueAsString option) )
         , ( "label", Json.Encode.string (getOptionLabel option |> optionLabelToString) )
+        , ( "labelClean", Json.Encode.string (getOptionLabel option |> OptionLabel.optionLabelToSearchString) )
+        , ( "group", Json.Encode.string (getOptionGroup option |> optionGroupToString) )
         , ( "description", Json.Encode.string (getOptionDescription option |> optionDescriptionToString) )
+        , ( "descriptionClean", Json.Encode.string (getOptionDescription option |> optionDescriptionToSearchString) )
         , ( "isSelected", Json.Encode.bool (isOptionSelected option) )
         ]
+
+
+encodeSearchResults : Option -> Json.Encode.Value
+encodeSearchResults option =
+    Json.Encode.object
+        [ ( "value", Json.Encode.string (getOptionValueAsString option) )
+        , ( "searchFilter"
+          , case getMaybeOptionSearchFilter option of
+                Just optionSearchFilter ->
+                    OptionSearchFilter.encode optionSearchFilter
+
+                Nothing ->
+                    Json.Encode.null
+          )
+        ]
+
+
+decodeSearchResults : Json.Decode.Decoder (List OptionSearchFilterWithValue)
+decodeSearchResults =
+    Json.Decode.list
+        (Json.Decode.map2
+            (\value searchFilter ->
+                { value = value, maybeSearchFilter = searchFilter }
+            )
+            (Json.Decode.field "value" valueDecoder)
+            (Json.Decode.field "searchFilter"
+                (Json.Decode.nullable OptionSearchFilter.decode)
+            )
+        )
+
+
+transformOptionForOutputStyle : OutputStyle -> Option -> Maybe Option
+transformOptionForOutputStyle outputStyle option =
+    case outputStyle of
+        SelectionMode.CustomHtml ->
+            case option of
+                Option _ _ _ _ _ _ ->
+                    Just option
+
+                CustomOption _ _ _ _ ->
+                    Just option
+
+                DatalistOption optionDisplay optionValue ->
+                    Just
+                        (Option optionDisplay
+                            (OptionLabel.new
+                                (OptionValue.optionValueToString optionValue)
+                            )
+                            optionValue
+                            NoDescription
+                            NoOptionGroup
+                            Nothing
+                        )
+
+                EmptyOption _ _ ->
+                    Just option
+
+        SelectionMode.Datalist ->
+            case option of
+                Option optionDisplay _ optionValue _ _ _ ->
+                    Just (DatalistOption optionDisplay optionValue)
+
+                CustomOption optionDisplay _ optionValue _ ->
+                    Just (DatalistOption optionDisplay optionValue)
+
+                DatalistOption _ _ ->
+                    Just option
+
+                EmptyOption _ _ ->
+                    Nothing
+
+
+equal : Option -> Option -> Bool
+equal optionA optionB =
+    optionA == optionB

@@ -1,4 +1,15 @@
-module OptionLabel exposing (OptionLabel, getLabelString, getSortRank, labelDecoder, new, newWithCleanLabel, newWithSortRank, optionLabelToSearchString, optionLabelToString, setMaybeSortRank, setSortRank)
+module OptionLabel exposing
+    ( OptionLabel
+    , getLabelString
+    , getSortRank
+    , labelDecoder
+    , new
+    , newWithCleanLabel
+    , optionLabelToSearchString
+    , optionLabelToString
+    , setMaybeSortRank
+    , setSortRank
+    )
 
 import Json.Decode
 import SortRank exposing (SortRank(..), sortRankDecoder)
@@ -16,11 +27,6 @@ new string =
 newWithCleanLabel : String -> Maybe String -> OptionLabel
 newWithCleanLabel string maybeString =
     OptionLabel string maybeString NoSortRank
-
-
-newWithSortRank : String -> Maybe String -> SortRank -> OptionLabel
-newWithSortRank string maybeString sortRank =
-    OptionLabel string maybeString sortRank
 
 
 getLabelString : OptionLabel -> String
