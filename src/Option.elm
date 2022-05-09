@@ -8,6 +8,7 @@ module Option exposing
     , deselectOption
     , encode
     , encodeSearchResults
+    , equal
     , getMaybeOptionSearchFilter
     , getOptionDescription
     , getOptionDisplay
@@ -1295,8 +1296,13 @@ isEmptyOption option =
         EmptyOption _ _ ->
             True
 
-        DatalistOption _ _ ->
-            False
+        DatalistOption _ optionValue ->
+            case optionValue of
+                OptionValue _ ->
+                    False
+
+                EmptyOptionValue ->
+                    True
 
 
 isEmptyOptionOrHasEmptyValue : Option -> Bool
@@ -1541,3 +1547,8 @@ transformOptionForOutputStyle outputStyle option =
 
                 EmptyOption _ _ ->
                     Nothing
+
+
+equal : Option -> Option -> Bool
+equal optionA optionB =
+    optionA == optionB

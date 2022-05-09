@@ -837,6 +837,11 @@ cleanupEmptySelectedOptions options =
         options
 
 
+removeEmptyOptions : List Option -> List Option
+removeEmptyOptions options =
+    List.filter (Option.isEmptyOption >> not) options
+
+
 reIndexSelectedOptions : List Option -> List Option
 reIndexSelectedOptions options =
     let
@@ -867,6 +872,36 @@ organizeNewDatalistOptions options =
             options |> List.map Option.deselectOption
     in
     (selectedOptions_ ++ optionsForTheDatasetHints) |> reIndexSelectedOptions
+
+
+updatedDatalistSelectedOptions : List OptionValue -> List Option -> List Option
+updatedDatalistSelectedOptions selectedValues options =
+    let
+        newSelectedOptions =
+            List.indexedMap (\i selectedValue -> newSelectedDatalisOption selectedValue i) selectedValues
+
+        oldSelectedOptions =
+            options
+                |> selectedOptions
+
+        oldSelectedOptionsCleanedUp =
+            oldSelectedOptions
+                |> cleanupEmptySelectedOptions
+
+        selectedOptions_ =
+            if equal newSelectedOptions oldSelectedOptionsCleanedUp then
+                oldSelectedOptions
+
+            else
+                newSelectedOptions
+
+        optionsForTheDatasetHints =
+            (options ++ selectedOptions_)
+                |> List.map Option.deselectOption
+                |> List.Extra.uniqueBy Option.getOptionValue
+                |> removeEmptyOptions
+    in
+    selectedOptions_ ++ optionsForTheDatasetHints
 
 
 customOptions : List Option -> List Option
@@ -1403,3 +1438,18 @@ updateOptionsWithNewSearchResults optionSearchFilterWithValues options =
                     Option.setOptionSearchFilter Nothing option
         )
         options
+
+
+equal : List Option -> List Option -> Bool
+equal optionsA optionsB =
+    if List.length optionsA == List.length optionsB then
+        List.map2
+            (\optionA optionB ->
+                Option.equal optionA optionB
+            )
+            optionsA
+            optionsB
+            |> List.all identity
+
+    else
+        False
