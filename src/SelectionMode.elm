@@ -38,7 +38,7 @@ module SelectionMode exposing
     , stringToOutputStyle
     )
 
-import OutputStyle exposing (CustomOptionHint, CustomOptions(..), DropdownState(..), DropdownStyle(..), MaxDropdownItems(..), MultiSelectOutputStyle(..), SearchStringMinimumLength(..), SelectedItemPlacementMode(..), SingleItemRemoval(..), SingleSelectOutputStyle(..), defaultSingleSelectCustomHtmlFields)
+import OutputStyle exposing (CustomOptionHint, CustomOptions(..), DropdownState(..), DropdownStyle(..), MaxDropdownItems(..), MultiSelectOutputStyle(..), SearchStringMinimumLength(..), SelectedItemPlacementMode(..), SingleItemRemoval(..), SingleSelectOutputStyle(..), defaultMultiSelectCustomHtmlFields, defaultSingleSelectCustomHtmlFields)
 import PositiveInt
 
 
@@ -87,7 +87,8 @@ makeSelectionConfig : Bool -> Bool -> Bool -> String -> String -> Maybe String -
 makeSelectionConfig disabled allowMultiSelect allowCustomOptions outputStyle placeholder customOptionHint enableMultiSelectSingleItemRemoval maxDropdownItems selectedItemStaysInPlace searchStringMinimumLength shouldShowDropdownFooter =
     let
         outputStyleResult =
-            stringToOutputStyle outputStyle
+            outputStyle
+                |> stringToOutputStyle
 
         interactionState =
             if disabled then
@@ -245,13 +246,31 @@ setOutputStyle outputStyle selectionConfig =
                         SingleSelectDatalist ->
                             SingleSelectConfig (SingleSelectCustomHtml defaultSingleSelectCustomHtmlFields) placeholder interactionState
 
-                MultiSelectConfig _ _ _ ->
-                    -- TODO Finish filling this in
-                    selectionConfig
+                MultiSelectConfig multiSelectOutputStyle placeholder interactionState ->
+                    case multiSelectOutputStyle of
+                        MultiSelectCustomHtml _ ->
+                            selectionConfig
+
+                        MultiSelectDataList ->
+                            MultiSelectConfig (MultiSelectCustomHtml defaultMultiSelectCustomHtmlFields) placeholder interactionState
 
         Datalist ->
-            -- TODO Finish filling this in
-            selectionConfig
+            case selectionConfig of
+                SingleSelectConfig singleSelectOutputStyle placeholder interactionState ->
+                    case singleSelectOutputStyle of
+                        SingleSelectCustomHtml _ ->
+                            SingleSelectConfig SingleSelectDatalist placeholder interactionState
+
+                        SingleSelectDatalist ->
+                            selectionConfig
+
+                MultiSelectConfig multiSelectOutputStyle placeholder interactionState ->
+                    case multiSelectOutputStyle of
+                        MultiSelectCustomHtml _ ->
+                            MultiSelectConfig MultiSelectDataList placeholder interactionState
+
+                        MultiSelectDataList ->
+                            selectionConfig
 
 
 getCustomOptions : SelectionConfig -> CustomOptions
@@ -408,10 +427,10 @@ setMultiSelectModeWithBool isInMultiSelectMode selectionConfig =
 getSelectionMode : SelectionConfig -> SelectionMode
 getSelectionMode selectionConfig =
     case selectionConfig of
-        SingleSelectConfig singleSelectOutputStyle placeholder interactionState ->
+        SingleSelectConfig _ _ _ ->
             SingleSelect
 
-        MultiSelectConfig multiSelectOutputStyle placeholder interactionState ->
+        MultiSelectConfig _ _ _ ->
             MultiSelect
 
 
@@ -439,6 +458,9 @@ stringToOutputStyle : String -> Result String OutputStyle
 stringToOutputStyle string =
     case string of
         "customHtml" ->
+            Ok CustomHtml
+
+        "custom-html" ->
             Ok CustomHtml
 
         "datalist" ->

@@ -128,6 +128,7 @@ import Ports
         , selectOptionReceiver
         , selectedItemStaysInPlaceChangedReceiver
         , showDropdownFooterChangedReceiver
+        , updateOptionsFromDom
         , updateOptionsInWebWorker
         , updateSearchResultDataWithWebWorkerReceiver
         , valueCasingDimensionsChangedReceiver
@@ -510,7 +511,18 @@ update msg model =
                             )
 
                         Datalist ->
-                            ( model, Cmd.none )
+                            let
+                                newOptions =
+                                    OptionsUtilities.updatedDatalistSelectedOptions
+                                        (List.map OptionValue.stringToOptionValue values)
+                                        model.options
+                            in
+                            ( { model
+                                | options = newOptions
+                              }
+                                |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
+                            , Cmd.none
+                            )
 
                 Err error ->
                     ( model, errorMessage (Json.Decode.errorToString error) )
@@ -518,22 +530,45 @@ update msg model =
         OptionsReplaced newOptionsJson ->
             case Json.Decode.decodeValue (Option.optionsDecoder (SelectionMode.getOutputStyle model.selectionConfig)) newOptionsJson of
                 Ok newOptions ->
-                    let
-                        newOptionWithOldSelectedOption =
-                            replaceOptions
-                                model.selectionConfig
-                                model.options
-                                newOptions
-                    in
-                    ( { model
-                        | options = newOptionWithOldSelectedOption
-                      }
-                        |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-                    , Cmd.batch
-                        [ optionsUpdated True
-                        , updateOptionsInWebWorker ()
-                        ]
-                    )
+                    case SelectionMode.getOutputStyle model.selectionConfig of
+                        CustomHtml ->
+                            let
+                                newOptionWithOldSelectedOption =
+                                    replaceOptions
+                                        model.selectionConfig
+                                        model.options
+                                        newOptions
+                            in
+                            ( { model
+                                | options = newOptionWithOldSelectedOption
+                                , rightSlot = updateRightSlot model.rightSlot model.selectionConfig (OptionsUtilities.hasSelectedOption newOptionWithOldSelectedOption) model.options
+                              }
+                                |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
+                            , Cmd.batch
+                                [ optionsUpdated True
+                                , updateOptionsInWebWorker ()
+                                ]
+                            )
+
+                        Datalist ->
+                            let
+                                newOptionWithOldSelectedOption =
+                                    replaceOptions
+                                        model.selectionConfig
+                                        model.options
+                                        newOptions
+                                        |> OptionsUtilities.organizeNewDatalistOptions
+                            in
+                            ( { model
+                                | options = newOptionWithOldSelectedOption
+                                , rightSlot = updateRightSlot model.rightSlot model.selectionConfig (OptionsUtilities.hasSelectedOption newOptionWithOldSelectedOption) model.options
+                              }
+                                |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
+                            , Cmd.batch
+                                [ optionsUpdated True
+                                , updateOptionsInWebWorker ()
+                                ]
+                            )
 
                 Err error ->
                     ( model, errorMessage (Json.Decode.errorToString error) )
@@ -713,13 +748,17 @@ update msg model =
         OutputStyleChanged newOutputStyleString ->
             case SelectionMode.stringToOutputStyle newOutputStyleString of
                 Ok outputStyle ->
-                    ( { model
-                        | selectionConfig =
+                    let
+                        newSelectionConfig =
                             SelectionMode.setOutputStyle
                                 outputStyle
                                 model.selectionConfig
+                    in
+                    ( { model
+                        | selectionConfig = newSelectionConfig
+                        , rightSlot = updateRightSlot model.rightSlot newSelectionConfig True model.options
                       }
-                    , Cmd.none
+                    , updateOptionsFromDom ()
                     )
 
                 Err _ ->
@@ -1197,7 +1236,7 @@ updateRightSlot current selectionMode hasSelectedOption selectedOptions =
                         ShowDropdownIndicator NotInFocusTransition
 
                 _ ->
-                    current
+                    ShowDropdownIndicator NotInFocusTransition
 
         SelectionMode.Datalist ->
             updateRightSlotForDatalist selectedOptions

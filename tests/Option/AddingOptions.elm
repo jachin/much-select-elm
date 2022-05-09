@@ -45,16 +45,40 @@ waveshaper =
     newOption "Waveshaper" Nothing
 
 
+theMidnightOptionValue =
+    OptionValue.stringToOptionValue "The Midnight"
+
+
+theMidnightSelected =
+    Option.newSelectedDatalisOption theMidnightOptionValue 0
+
+
 theMidnight =
-    Option.newSelectedDatalisOption (OptionValue.stringToOptionValue "The Midnight") 0
+    Option.newDatalistOption theMidnightOptionValue
+
+
+futureCopOptionValue =
+    OptionValue.stringToOptionValue "Futurecop!"
 
 
 futureCop =
-    Option.newSelectedDatalisOption (OptionValue.stringToOptionValue "Futurecop!") 1
+    Option.newDatalistOption futureCopOptionValue
 
 
-arcadeHigh =
-    Option.newSelectedDatalisOption (OptionValue.stringToOptionValue "Arcade High") 2
+futureCopSelected =
+    Option.newSelectedDatalisOption futureCopOptionValue 1
+
+
+arcadeHighOptionValue =
+    OptionValue.stringToOptionValue "Arcade High"
+
+
+archadeHigh =
+    Option.newDatalistOption arcadeHighOptionValue
+
+
+arcadeHighSelected =
+    Option.newSelectedDatalisOption arcadeHighOptionValue 2
 
 
 suite : Test
@@ -196,25 +220,56 @@ suite =
             [ test "add to the beginning of the selected options" <|
                 \_ ->
                     Expect.equalLists
-                        ([ theMidnight, futureCop, arcadeHigh ] |> OptionsUtilities.addNewEmptyOptionAtIndex 0)
+                        ([ theMidnightSelected, futureCopSelected, arcadeHighSelected ] |> OptionsUtilities.addNewEmptyOptionAtIndex 0)
                         [ Option.newSelectedDatalisOption OptionValue.EmptyOptionValue 0
                         , Option.selectOption 1 theMidnight
                         , Option.selectOption 2 futureCop
-                        , Option.selectOption 3 arcadeHigh
+                        , Option.selectOption 3 archadeHigh
                         ]
             , test "add to the middle of the selected options" <|
                 \_ ->
                     Expect.equalLists
-                        ([ theMidnight, futureCop, arcadeHigh ] |> OptionsUtilities.addNewEmptyOptionAtIndex 1)
-                        [ theMidnight
+                        ([ theMidnightSelected, futureCopSelected, arcadeHighSelected ] |> OptionsUtilities.addNewEmptyOptionAtIndex 1)
+                        [ theMidnightSelected
                         , Option.newSelectedDatalisOption OptionValue.EmptyOptionValue 1
                         , Option.selectOption 2 futureCop
-                        , Option.selectOption 3 arcadeHigh
+                        , Option.selectOption 3 archadeHigh
                         ]
             , test "add to the end of the selected options" <|
                 \_ ->
                     Expect.equalLists
-                        ([ theMidnight, futureCop, arcadeHigh ] |> OptionsUtilities.addNewEmptyOptionAtIndex 3)
-                        [ theMidnight, futureCop, arcadeHigh, Option.newSelectedDatalisOption OptionValue.EmptyOptionValue 3 ]
+                        ([ theMidnightSelected
+                         , futureCopSelected
+                         , arcadeHighSelected
+                         ]
+                            |> OptionsUtilities.addNewEmptyOptionAtIndex 3
+                        )
+                        [ theMidnightSelected
+                        , futureCopSelected
+                        , arcadeHighSelected
+                        , Option.newSelectedDatalisOption OptionValue.EmptyOptionValue 3
+                        ]
+            , test "preserver the empty selected options" <|
+                \_ ->
+                    Expect.equalLists
+                        (OptionsUtilities.updatedDatalistSelectedOptions
+                            [ theMidnightOptionValue, futureCopOptionValue, arcadeHighOptionValue ]
+                            [ theMidnightSelected
+                            , futureCopSelected
+                            , arcadeHighSelected
+                            , Option.newSelectedDatalisOption OptionValue.EmptyOptionValue 3
+                            , theMidnight
+                            , futureCop
+                            , archadeHigh
+                            ]
+                        )
+                        [ theMidnightSelected
+                        , futureCopSelected
+                        , arcadeHighSelected
+                        , Option.newSelectedDatalisOption OptionValue.EmptyOptionValue 3
+                        , theMidnight
+                        , futureCop
+                        , archadeHigh
+                        ]
             ]
         ]

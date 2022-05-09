@@ -837,6 +837,11 @@ cleanupEmptySelectedOptions options =
         options
 
 
+removeEmptyOptions : List Option -> List Option
+removeEmptyOptions options =
+    List.filter (Option.isEmptyOption >> not) options
+
+
 reIndexSelectedOptions : List Option -> List Option
 reIndexSelectedOptions options =
     let
@@ -864,9 +869,44 @@ organizeNewDatalistOptions options =
             options |> selectedOptions
 
         optionsForTheDatasetHints =
-            options |> List.map Option.deselectOption
+            options
+                |> List.filter (Option.isOptionSelected >> not)
+                |> List.map Option.deselectOption
+                |> List.Extra.uniqueBy Option.getOptionValue
+                |> removeEmptyOptions
     in
     (selectedOptions_ ++ optionsForTheDatasetHints) |> reIndexSelectedOptions
+
+
+updatedDatalistSelectedOptions : List OptionValue -> List Option -> List Option
+updatedDatalistSelectedOptions selectedValues options =
+    let
+        newSelectedOptions =
+            List.indexedMap (\i selectedValue -> newSelectedDatalisOption selectedValue i) selectedValues
+
+        oldSelectedOptions =
+            options
+                |> selectedOptions
+
+        oldSelectedOptionsCleanedUp =
+            oldSelectedOptions
+                |> cleanupEmptySelectedOptions
+
+        selectedOptions_ =
+            if equal newSelectedOptions oldSelectedOptionsCleanedUp then
+                oldSelectedOptions
+
+            else
+                newSelectedOptions
+
+        optionsForTheDatasetHints =
+            options
+                |> List.filter (Option.isOptionSelected >> not)
+                |> List.map Option.deselectOption
+                |> List.Extra.uniqueBy Option.getOptionValue
+                |> removeEmptyOptions
+    in
+    selectedOptions_ ++ optionsForTheDatasetHints
 
 
 customOptions : List Option -> List Option
@@ -1226,21 +1266,40 @@ replaceOptions selectionConfig oldOptions newOptions =
 
                 SelectionMode.MultiSelect ->
                     selectedOptions oldOptions
+                        |> transformOptionsToOutputStyle (SelectionMode.getOutputStyle selectionConfig)
     in
-    case SelectionMode.getSelectionMode selectionConfig of
-        SelectionMode.SingleSelect ->
-            mergeTwoListsOfOptionsPreservingSelectedOptions
-                (SelectionMode.getSelectionMode selectionConfig)
-                (getSelectedItemPlacementMode selectionConfig)
-                oldSelectedOptions
-                newOptions
+    case SelectionMode.getOutputStyle selectionConfig of
+        SelectionMode.CustomHtml ->
+            case SelectionMode.getSelectionMode selectionConfig of
+                SelectionMode.SingleSelect ->
+                    mergeTwoListsOfOptionsPreservingSelectedOptions
+                        (SelectionMode.getSelectionMode selectionConfig)
+                        (getSelectedItemPlacementMode selectionConfig)
+                        oldSelectedOptions
+                        newOptions
 
-        SelectionMode.MultiSelect ->
-            mergeTwoListsOfOptionsPreservingSelectedOptions
-                (SelectionMode.getSelectionMode selectionConfig)
-                SelectedItemStaysInPlace
-                oldSelectedOptions
-                newOptions
+                SelectionMode.MultiSelect ->
+                    mergeTwoListsOfOptionsPreservingSelectedOptions
+                        (SelectionMode.getSelectionMode selectionConfig)
+                        SelectedItemStaysInPlace
+                        oldSelectedOptions
+                        newOptions
+
+        SelectionMode.Datalist ->
+            let
+                optionsForTheDatasetHints =
+                    newOptions
+                        |> List.filter (Option.isOptionSelected >> not)
+                        |> List.map Option.deselectOption
+                        |> List.Extra.uniqueBy Option.getOptionValue
+                        |> removeEmptyOptions
+
+                --TODO add any new selected options from the new options.
+                -- This is only going to be helpful when changing the selected attribute options in the DOM
+                newSelectedOptions =
+                    oldSelectedOptions
+            in
+            newSelectedOptions ++ optionsForTheDatasetHints
 
 
 {-| This function is a little strange but here's what it does. It takes 2 lists of options.
@@ -1302,6 +1361,12 @@ mergeTwoListsOfOptionsPreservingSelectedOptions selectionMode selectedItemPlacem
             List.Extra.uniqueBy getOptionValueAsString superList
     in
     setSelectedOptionInNewOptions selectionMode superList newOptions
+
+
+transformOptionsToOutputStyle : SelectionMode.OutputStyle -> List Option -> List Option
+transformOptionsToOutputStyle outputStyle options =
+    List.map (Option.transformOptionForOutputStyle outputStyle) options
+        |> Maybe.Extra.values
 
 
 selectedOptionsToTuple : List Option -> List ( String, String )
@@ -1396,3 +1461,18 @@ updateOptionsWithNewSearchResults optionSearchFilterWithValues options =
                     Option.setOptionSearchFilter Nothing option
         )
         options
+
+
+equal : List Option -> List Option -> Bool
+equal optionsA optionsB =
+    if List.length optionsA == List.length optionsB then
+        List.map2
+            (\optionA optionB ->
+                Option.equal optionA optionB
+            )
+            optionsA
+            optionsB
+            |> List.all identity
+
+    else
+        False

@@ -8,6 +8,7 @@ module Option exposing
     , deselectOption
     , encode
     , encodeSearchResults
+    , equal
     , getMaybeOptionSearchFilter
     , getOptionDescription
     , getOptionDisplay
@@ -53,6 +54,7 @@ module Option exposing
     , setOptionDisplay
     , setOptionSearchFilter
     , setOptionValue
+    , transformOptionForOutputStyle
     )
 
 import Json.Decode
@@ -62,7 +64,6 @@ import OptionSearchFilter exposing (OptionSearchFilter, OptionSearchFilterWithVa
 import OptionValue exposing (OptionValue(..), optionValueToString, stringToOptionValue)
 import SelectionMode exposing (OutputStyle(..))
 import SortRank exposing (SortRank(..))
-import ValueString exposing (ValueString)
 
 
 type Option
@@ -1295,8 +1296,13 @@ isEmptyOption option =
         EmptyOption _ _ ->
             True
 
-        DatalistOption _ _ ->
-            False
+        DatalistOption _ optionValue ->
+            case optionValue of
+                OptionValue _ ->
+                    False
+
+                EmptyOptionValue ->
+                    True
 
 
 isEmptyOptionOrHasEmptyValue : Option -> Bool
@@ -1500,3 +1506,49 @@ decodeSearchResults =
                 (Json.Decode.nullable OptionSearchFilter.decode)
             )
         )
+
+
+transformOptionForOutputStyle : OutputStyle -> Option -> Maybe Option
+transformOptionForOutputStyle outputStyle option =
+    case outputStyle of
+        SelectionMode.CustomHtml ->
+            case option of
+                Option _ _ _ _ _ _ ->
+                    Just option
+
+                CustomOption _ _ _ _ ->
+                    Just option
+
+                DatalistOption optionDisplay optionValue ->
+                    Just
+                        (Option optionDisplay
+                            (OptionLabel.new
+                                (OptionValue.optionValueToString optionValue)
+                            )
+                            optionValue
+                            NoDescription
+                            NoOptionGroup
+                            Nothing
+                        )
+
+                EmptyOption _ _ ->
+                    Just option
+
+        SelectionMode.Datalist ->
+            case option of
+                Option optionDisplay _ optionValue _ _ _ ->
+                    Just (DatalistOption optionDisplay optionValue)
+
+                CustomOption optionDisplay _ optionValue _ ->
+                    Just (DatalistOption optionDisplay optionValue)
+
+                DatalistOption _ _ ->
+                    Just option
+
+                EmptyOption _ _ ->
+                    Nothing
+
+
+equal : Option -> Option -> Bool
+equal optionA optionB =
+    optionA == optionB

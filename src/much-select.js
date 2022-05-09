@@ -685,6 +685,7 @@ class MuchSelect extends HTMLElement {
     );
 
     this.appPromise.then((app) => {
+      // noinspection JSUnresolvedVariable
       app.ports.searchOptionsWithWebWorker.subscribe((searchString) => {
         this._filterWorker.postMessage({
           portName: "receiveSearchString",
@@ -694,8 +695,16 @@ class MuchSelect extends HTMLElement {
     });
 
     this.appPromise.then((app) => {
+      // noinspection JSUnresolvedVariable
       app.ports.updateOptionsInWebWorker.subscribe(() => {
+        // noinspection JSIgnoredPromiseFromCall
         this.updateFilterWorkerOptions();
+      });
+    });
+
+    this.appPromise.then((app) => {
+      app.ports.updateOptionsFromDom.subscribe(() => {
+        this.updateOptionsFromDom();
       });
     });
 
@@ -811,7 +820,7 @@ class MuchSelect extends HTMLElement {
    * responsibility to them.
    *
    * One important thing that happens here is we need to pause the mutation observers so
-   *  that we do not feed bad data back into the Elm app. Then when we are done changing
+   *  that we do not feed bad data back into the Elm app. Then, when we are done changing
    *  the DOM, turn the mutation observers back on.
    */
   updateSelectInputSlot() {
@@ -1624,7 +1633,7 @@ class MuchSelect extends HTMLElement {
    * @return boolean
    * */
   static isValidOutputStyle(outputStyle) {
-    return ["customHtml", "datalist"].includes(outputStyle);
+    return ["customHtml", "custom-html", "datalist"].includes(outputStyle);
   }
 
   get outputStyle() {
@@ -1634,6 +1643,10 @@ class MuchSelect extends HTMLElement {
   set outputStyle(value) {
     if (MuchSelect.isValidOutputStyle(value)) {
       this._outputStyle = value;
+
+      if (!this.eventsOnlyMode) {
+        this.setAttribute("output-style", this._outputStyle);
+      }
 
       // noinspection JSUnresolvedVariable
       this.appPromise.then((app) =>
@@ -1829,18 +1842,6 @@ class MuchSelect extends HTMLElement {
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
       app.ports.addOptionsReceiver.send(cleanUpOptions(options))
-    );
-    this.updateDimensions();
-  }
-
-  removeOption(option) {
-    this.removeOptions([option]);
-  }
-
-  removeOptions(options) {
-    // noinspection JSUnresolvedVariable
-    this.appPromise.then((app) =>
-      app.ports.removeOptionsReceiver.send(cleanUpOptions(options))
     );
     this.updateDimensions();
   }

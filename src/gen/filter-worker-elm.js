@@ -2959,7 +2959,7 @@ var $author$project$OptionSearchFilter$encode = function (optionSearchFilter) {
 			[
 				_Utils_Tuple2(
 				'totalScore',
-				$elm$json$Json$Encode$int(optionSearchFilter.a1)),
+				$elm$json$Json$Encode$int(optionSearchFilter.a2)),
 				_Utils_Tuple2(
 				'bestScore',
 				$elm$json$Json$Encode$int(optionSearchFilter.aD)),
@@ -3632,7 +3632,7 @@ var $elm$core$List$minimum = function (list) {
 };
 var $author$project$OptionSearchFilter$new = F5(
 	function (totalScore, bestScore, labelTokens, descriptionTokens, groupTokens) {
-		return {aD: bestScore, aH: descriptionTokens, aL: groupTokens, aN: labelTokens, a1: totalScore};
+		return {aD: bestScore, aH: descriptionTokens, aL: groupTokens, aN: labelTokens, a2: totalScore};
 	});
 var $author$project$Option$optionDescriptionToString = function (optionDescription) {
 	if (!optionDescription.$) {
@@ -4118,17 +4118,17 @@ var $author$project$OptionSearcher$simpleMatch = F2(
 var $author$project$OptionSearcher$search = F2(
 	function (string, option) {
 		return {
-			be: A2(
+			bf: A2(
 				$author$project$OptionSearcher$simpleMatch,
 				$elm$core$String$toLower(string),
 				$author$project$Option$optionDescriptionToSearchString(
 					$author$project$Option$getOptionDescription(option))),
-			bm: A2(
+			bn: A2(
 				$author$project$OptionSearcher$groupMatch,
 				$elm$core$String$toLower(string),
 				$author$project$Option$optionGroupToSearchString(
 					$author$project$Option$getOptionGroup(option))),
-			bu: A2(
+			bv: A2(
 				$author$project$OptionSearcher$simpleMatch,
 				$elm$core$String$toLower(string),
 				$author$project$OptionLabel$optionLabelToSearchString(
@@ -4395,34 +4395,34 @@ var $author$project$OptionSearcher$updateSearchResultInOption = F2(
 		var totalScore = $elm$core$List$sum(
 			_List_fromArray(
 				[
-					searchResult.bu.aX,
-					$author$project$OptionSearchFilter$descriptionHandicap(searchResult.be.aX),
-					$author$project$OptionSearchFilter$groupHandicap(searchResult.bm.aX)
+					searchResult.bv.aX,
+					$author$project$OptionSearchFilter$descriptionHandicap(searchResult.bf.aX),
+					$author$project$OptionSearchFilter$groupHandicap(searchResult.bn.aX)
 				]));
 		var labelTokens = A2(
 			$author$project$OptionPresentor$tokenize,
 			$author$project$OptionLabel$optionLabelToString(
 				$author$project$Option$getOptionLabel(option)),
-			searchResult.bu);
+			searchResult.bv);
 		var groupTokens = A2(
 			$author$project$OptionPresentor$tokenize,
 			$author$project$Option$optionGroupToString(
 				$author$project$Option$getOptionGroup(option)),
-			searchResult.bm);
+			searchResult.bn);
 		var descriptionTokens = A2(
 			$author$project$OptionPresentor$tokenize,
 			$author$project$Option$optionDescriptionToString(
 				$author$project$Option$getOptionDescription(option)),
-			searchResult.be);
+			searchResult.bf);
 		var bestScore = A2(
 			$elm$core$Maybe$withDefault,
 			$author$project$OptionSearchFilter$impossiblyLowScore,
 			$elm$core$List$minimum(
 				_List_fromArray(
 					[
-						searchResult.bu.aX,
-						$author$project$OptionSearchFilter$descriptionHandicap(searchResult.be.aX),
-						$author$project$OptionSearchFilter$groupHandicap(searchResult.bm.aX)
+						searchResult.bv.aX,
+						$author$project$OptionSearchFilter$descriptionHandicap(searchResult.bf.aX),
+						$author$project$OptionSearchFilter$groupHandicap(searchResult.bn.aX)
 					])));
 		return A2(
 			$author$project$Option$setOptionSearchFilter,
