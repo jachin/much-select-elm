@@ -869,7 +869,11 @@ organizeNewDatalistOptions options =
             options |> selectedOptions
 
         optionsForTheDatasetHints =
-            options |> List.map Option.deselectOption
+            options
+                |> List.filter (Option.isOptionSelected >> not)
+                |> List.map Option.deselectOption
+                |> List.Extra.uniqueBy Option.getOptionValue
+                |> removeEmptyOptions
     in
     (selectedOptions_ ++ optionsForTheDatasetHints) |> reIndexSelectedOptions
 
@@ -1285,6 +1289,7 @@ replaceOptions selectionConfig oldOptions newOptions =
             let
                 optionsForTheDatasetHints =
                     newOptions
+                        |> List.filter (Option.isOptionSelected >> not)
                         |> List.map Option.deselectOption
                         |> List.Extra.uniqueBy Option.getOptionValue
                         |> removeEmptyOptions
