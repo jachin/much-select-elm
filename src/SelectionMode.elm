@@ -88,9 +88,7 @@ makeSelectionConfig disabled allowMultiSelect allowCustomOptions outputStyle pla
     let
         outputStyleResult =
             outputStyle
-                |> Debug.log "output style str"
                 |> stringToOutputStyle
-                |> Debug.log "outputStyleResult"
 
         interactionState =
             if disabled then
