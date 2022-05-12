@@ -145,21 +145,21 @@ validatorDecoder =
 
 noWhiteSpaceDecoder : Json.Decode.Decoder Validator
 noWhiteSpaceDecoder =
+    Json.Decode.map2
+        NoWhiteSpace
+        (Json.Decode.field "level" validationReportLevelDecoder)
+        (Json.Decode.field "message" validationErrorMessageDecoder)
+        |> Json.Decode.Extra.when (Json.Decode.field "name" Json.Decode.string) (is "no-white-space")
+
+
+minimumLengthDecoder : Json.Decode.Decoder Validator
+minimumLengthDecoder =
     Json.Decode.map3
         MinimumLength
         (Json.Decode.field "level" validationReportLevelDecoder)
         (Json.Decode.field "message" validationErrorMessageDecoder)
         (Json.Decode.field "minimum-length" Json.Decode.int)
         |> Json.Decode.Extra.when (Json.Decode.field "name" Json.Decode.string) (is "minimum-length")
-
-
-minimumLengthDecoder : Json.Decode.Decoder Validator
-minimumLengthDecoder =
-    Json.Decode.map2
-        NoWhiteSpace
-        (Json.Decode.field "level" validationReportLevelDecoder)
-        (Json.Decode.field "message" validationErrorMessageDecoder)
-        |> Json.Decode.Extra.when (Json.Decode.field "name" Json.Decode.string) (is "no-white-space")
 
 
 validationReportLevelDecoder : Json.Decode.Decoder ValidationReportLevel
