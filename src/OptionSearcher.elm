@@ -114,7 +114,7 @@ updateOrAddCustomOption searchString selectionMode options =
         showCustomOption =
             if SearchString.length searchString > 0 then
                 case SelectionMode.getCustomOptions selectionMode of
-                    AllowCustomOptions _ ->
+                    AllowCustomOptions _ _ ->
                         True
 
                     NoCustomOptions ->

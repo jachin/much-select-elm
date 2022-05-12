@@ -6,12 +6,12 @@ import List.Extra
 import Result.Extra
 
 
-type ValueValidate
-    = ValueValidate (List Transformer) (List Validator)
+type ValueTransformAndValidate
+    = ValueTransformAndValidate (List Transformer) (List Validator)
 
 
 empty =
-    ValueValidate [] []
+    ValueTransformAndValidate [] []
 
 
 type Transformer
@@ -66,8 +66,8 @@ validate validator string =
                 Err validationErrorMessage
 
 
-transformAndValidate : ValueValidate -> String -> ValidationResult
-transformAndValidate (ValueValidate transformers validators) string =
+transformAndValidate : ValueTransformAndValidate -> String -> ValidationResult
+transformAndValidate (ValueTransformAndValidate transformers validators) string =
     let
         transformedString =
             List.Extra.mapAccuml
@@ -105,7 +105,7 @@ is a b =
     a == b
 
 
-decode : String -> Result Json.Decode.Error ValueValidate
+decode : String -> Result Json.Decode.Error ValueTransformAndValidate
 decode jsonString =
     if String.length jsonString > 1 then
         Json.Decode.decodeString decoder jsonString
@@ -114,10 +114,10 @@ decode jsonString =
         Ok empty
 
 
-decoder : Json.Decode.Decoder ValueValidate
+decoder : Json.Decode.Decoder ValueTransformAndValidate
 decoder =
     Json.Decode.map2
-        ValueValidate
+        ValueTransformAndValidate
         (Json.Decode.field "transformers" (Json.Decode.list transformerDecoder))
         (Json.Decode.field "validators" (Json.Decode.list validatorDecoder))
 

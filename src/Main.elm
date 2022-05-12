@@ -166,7 +166,7 @@ import SelectionMode
         , showDropdownFooter
         )
 import Task
-import TransformAndValidate exposing (ValueValidate)
+import TransformAndValidate exposing (ValueTransformAndValidate)
 
 
 type Msg
@@ -232,7 +232,6 @@ type alias Model =
     , focusedIndex : Int
     , rightSlot : RightSlot
     , valueCasing : ValueCasing
-    , transfromAndValidate : ValueValidate
     }
 
 
@@ -2512,6 +2511,14 @@ makeDynamicDebouncer numberOfOptions =
 init : Flags -> ( Model, Cmd Msg )
 init flags =
     let
+        ( valueTransformationAndValidation, valueTransformationAndValidationErrorCmd ) =
+            case TransformAndValidate.decode flags.transformationAndValidationJson of
+                Ok value ->
+                    ( value, Cmd.none )
+
+                Err error ->
+                    ( TransformAndValidate.empty, errorMessage (Json.Decode.errorToString error) )
+
         selectionConfig =
             makeSelectionConfig flags.disabled
                 flags.allowMultiSelect
@@ -2524,6 +2531,7 @@ init flags =
                 flags.selectedItemStaysInPlace
                 flags.searchStringMinimumLength
                 flags.showDropdownFooter
+                valueTransformationAndValidation
                 |> Result.withDefault defaultSelectionConfig
 
         optionSort =
@@ -2587,14 +2595,6 @@ init flags =
 
                 Datalist ->
                     OptionsUtilities.organizeNewDatalistOptions optionsWithInitialValueSelected
-
-        ( valueTransformationAndValidation, valueTransformationAndValidationErrorCmd ) =
-            case TransformAndValidate.decode flags.transformationAndValidationJson of
-                Ok value ->
-                    ( value, Cmd.none )
-
-                Err error ->
-                    ( TransformAndValidate.empty, errorMessage (Json.Decode.errorToString error) )
     in
     ( { initialValue = initialValues
       , placeholder = flags.placeholder
@@ -2633,7 +2633,6 @@ init flags =
 
       -- TODO Should these be passed as flags?
       , valueCasing = ValueCasing 100 45
-      , transfromAndValidate = valueTransformationAndValidation
       }
     , Cmd.batch
         [ errorCmd

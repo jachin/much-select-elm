@@ -3,6 +3,7 @@ module OutputStyle exposing (..)
 import Json.Decode
 import Json.Encode
 import PositiveInt exposing (PositiveInt)
+import TransformAndValidate exposing (ValueTransformAndValidate)
 
 
 type MaxDropdownItems
@@ -54,7 +55,7 @@ type DropdownStyle
 
 
 type CustomOptions
-    = AllowCustomOptions CustomOptionHint
+    = AllowCustomOptions CustomOptionHint ValueTransformAndValidate
     | NoCustomOptions
 
 
@@ -113,12 +114,12 @@ defaultMultiSelectCustomHtmlFields =
 
 type SingleSelectOutputStyle
     = SingleSelectCustomHtml SingleSelectCustomHtmlFields
-    | SingleSelectDatalist
+    | SingleSelectDatalist ValueTransformAndValidate
 
 
 type MultiSelectOutputStyle
     = MultiSelectCustomHtml MultiSelectCustomHtmlFields
-    | MultiSelectDataList
+    | MultiSelectDataList ValueTransformAndValidate
 
 
 singleToMulti : SingleSelectOutputStyle -> MultiSelectOutputStyle
@@ -134,8 +135,8 @@ singleToMulti singleSelectOutputStyle =
                 , dropdownStyle = singleSelectCustomHtmlFields.dropdownStyle
                 }
 
-        SingleSelectDatalist ->
-            MultiSelectDataList
+        SingleSelectDatalist transformAndValidate ->
+            MultiSelectDataList transformAndValidate
 
 
 multiToSingle : MultiSelectOutputStyle -> SingleSelectOutputStyle
@@ -151,5 +152,15 @@ multiToSingle multiSelectOutputStyle =
                 , dropdownStyle = multiSelectCustomHtmlFields.dropdownStyle
                 }
 
-        MultiSelectDataList ->
-            SingleSelectDatalist
+        MultiSelectDataList transformAndValidate ->
+            SingleSelectDatalist transformAndValidate
+
+
+getTransformAndValidateFromCustomOptions : CustomOptions -> ValueTransformAndValidate
+getTransformAndValidateFromCustomOptions customOptions =
+    case customOptions of
+        AllowCustomOptions _ valueTransformAndValidate ->
+            valueTransformAndValidate
+
+        NoCustomOptions ->
+            TransformAndValidate.empty
