@@ -32,4 +32,28 @@ suite =
                         )
                         (ValidationFailed [ ValidationErrorMessage "No white space allowed" ])
             ]
+        , describe "the string is longer than a minium length"
+            [ test "and it's long enough" <|
+                \_ ->
+                    Expect.equal
+                        (transformAndValidate
+                            (ValueValidate []
+                                [ MinimumLength ShowError (ValidationErrorMessage "The value is too short") 3
+                                ]
+                            )
+                            "Sheep"
+                        )
+                        (ValidationPass "Sheep")
+            , test "and it's not long enough" <|
+                \_ ->
+                    Expect.equal
+                        (transformAndValidate
+                            (ValueValidate []
+                                [ MinimumLength ShowError (ValidationErrorMessage "The value is too short") 20
+                                ]
+                            )
+                            "Sheep"
+                        )
+                        (ValidationFailed [ ValidationErrorMessage "The value is too short" ])
+            ]
         ]
