@@ -12,6 +12,7 @@ import OutputStyle exposing (CustomOptions(..), SearchStringMinimumLength(..), d
 import PositiveInt exposing (PositiveInt)
 import SearchString exposing (SearchString)
 import SelectionMode exposing (SelectionConfig, getCustomOptionHint, getSearchStringMinimumLength)
+import TransformAndValidate
 
 
 updateOptionsWithSearchStringAndCustomOption : SelectionConfig -> SearchString -> List Option -> List Option
@@ -111,17 +112,22 @@ updateSearchResultInOption searchString option =
 updateOrAddCustomOption : SearchString -> SelectionConfig -> List Option -> List Option
 updateOrAddCustomOption searchString selectionMode options =
     let
-        showCustomOption =
+        ( showCustomOption, newSearchString ) =
             if SearchString.length searchString > 0 then
                 case SelectionMode.getCustomOptions selectionMode of
-                    AllowCustomOptions _ _ ->
-                        True
+                    AllowCustomOptions _ transformAndValidate ->
+                        case TransformAndValidate.transformAndValidateSearchString transformAndValidate searchString of
+                            TransformAndValidate.ValidationPass str ->
+                                ( True, SearchString.new str )
+
+                            TransformAndValidate.ValidationFailed _ ->
+                                ( False, searchString )
 
                     NoCustomOptions ->
-                        False
+                        ( False, searchString )
 
             else
-                False
+                ( False, searchString )
 
         -- If we have an exact match with an existing option don't show the custom
         --  option.
@@ -141,7 +147,7 @@ updateOrAddCustomOption searchString selectionMode options =
     if showCustomOption && noExactOptionLabelMatch then
         prependCustomOption
             (selectionMode |> getCustomOptionHint)
-            searchString
+            newSearchString
             (removeUnselectedCustomOptions options)
 
     else

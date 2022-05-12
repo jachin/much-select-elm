@@ -4,6 +4,7 @@ import Json.Decode
 import Json.Decode.Extra
 import List.Extra
 import Result.Extra
+import SearchString exposing (SearchString)
 
 
 type ValueTransformAndValidate
@@ -73,6 +74,20 @@ transformAndValidate (ValueTransformAndValidate transformers validators) string 
             List.Extra.mapAccuml
                 (\str t -> ( transform t str, t ))
                 string
+                transformers
+                |> Tuple.first
+    in
+    List.map (\validator -> validate validator transformedString) validators
+        |> rollUpErrors transformedString
+
+
+transformAndValidateSearchString : ValueTransformAndValidate -> SearchString -> ValidationResult
+transformAndValidateSearchString (ValueTransformAndValidate transformers validators) searchString =
+    let
+        transformedString =
+            List.Extra.mapAccuml
+                (\str t -> ( transform t str, t ))
+                (SearchString.toString searchString)
                 transformers
                 |> Tuple.first
     in
