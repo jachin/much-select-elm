@@ -944,6 +944,17 @@ class MuchSelect extends HTMLElement {
       flags.outputStyle = this.outputStyle;
     }
 
+    const transformationAndValidationSlot = this.querySelector(
+      "[slot='transformation-validation']"
+    );
+
+    if (transformationAndValidationSlot) {
+      flags.transformationAndValidationJson =
+        transformationAndValidationSlot.textContent;
+    } else {
+      flags.transformationAndValidationJson = "";
+    }
+
     flags.disabled = this.disabled;
     flags.loading = this.loading;
     flags.selectedItemStaysInPlace = this.selectedItemStaysInPlace;

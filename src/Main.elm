@@ -166,6 +166,7 @@ import SelectionMode
         , showDropdownFooter
         )
 import Task
+import TransformAndValidate exposing (ValueValidate)
 
 
 type Msg
@@ -231,6 +232,7 @@ type alias Model =
     , focusedIndex : Int
     , rightSlot : RightSlot
     , valueCasing : ValueCasing
+    , transfromAndValidate : ValueValidate
     }
 
 
@@ -2485,6 +2487,7 @@ type alias Flags =
     , selectedItemStaysInPlace : Bool
     , searchStringMinimumLength : Int
     , showDropdownFooter : Bool
+    , transformationAndValidationJson : String
     }
 
 
@@ -2584,6 +2587,14 @@ init flags =
 
                 Datalist ->
                     OptionsUtilities.organizeNewDatalistOptions optionsWithInitialValueSelected
+
+        ( valueTransformationAndValidation, valueTransformationAndValidationErrorCmd ) =
+            case TransformAndValidate.decode flags.transformationAndValidationJson of
+                Ok value ->
+                    ( value, Cmd.none )
+
+                Err error ->
+                    ( TransformAndValidate.empty, errorMessage (Json.Decode.errorToString error) )
     in
     ( { initialValue = initialValues
       , placeholder = flags.placeholder
@@ -2622,6 +2633,7 @@ init flags =
 
       -- TODO Should these be passed as flags?
       , valueCasing = ValueCasing 100 45
+      , transfromAndValidate = valueTransformationAndValidation
       }
     , Cmd.batch
         [ errorCmd
@@ -2629,6 +2641,7 @@ init flags =
         , muchSelectIsReady ()
         , makeCommandMessageForInitialValue (selectedOptions optionsWithInitialValueSelected)
         , updateOptionsInWebWorker ()
+        , valueTransformationAndValidationErrorCmd
         ]
     )
 
