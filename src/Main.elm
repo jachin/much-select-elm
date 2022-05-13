@@ -86,6 +86,7 @@ import OptionsUtilities
         , toggleSelectedHighlightByOptionValue
         , unhighlightSelectedOptions
         , updateDatalistOptionsWithValue
+        , updateDatalistOptionsWithValueAndErrors
         )
 import OutputStyle
     exposing
@@ -166,7 +167,7 @@ import SelectionMode
         , showDropdownFooter
         )
 import Task
-import TransformAndValidate exposing (ValueTransformAndValidate)
+import TransformAndValidate exposing (ValueTransformAndValidate, transformAndValidate)
 
 
 type Msg
@@ -445,24 +446,47 @@ update msg model =
             )
 
         UpdateOptionValueValue selectedValueIndex valueString ->
-            let
-                updatedOptions =
-                    updateDatalistOptionsWithValue
-                        (OptionValue.stringToOptionValue valueString)
-                        selectedValueIndex
-                        model.options
+            case transformAndValidate (SelectionMode.getTransformAndValidate model.selectionConfig) valueString of
+                TransformAndValidate.ValidationPass _ ->
+                    let
+                        updatedOptions =
+                            updateDatalistOptionsWithValue
+                                (OptionValue.stringToOptionValue valueString)
+                                selectedValueIndex
+                                model.options
 
-                maybeSelectedOptionValue =
-                    Just (OptionValue.stringToOptionValue valueString)
-            in
-            ( { model
-                | options = updatedOptions
-                , rightSlot = updateRightSlot model.rightSlot model.selectionConfig True (updatedOptions |> selectedOptions)
-              }
-            , makeCommandMessagesWhenValuesChanges
-                (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
-                maybeSelectedOptionValue
-            )
+                        maybeSelectedOptionValue =
+                            Just (OptionValue.stringToOptionValue valueString)
+                    in
+                    ( { model
+                        | options = updatedOptions
+                        , rightSlot = updateRightSlot model.rightSlot model.selectionConfig True (updatedOptions |> selectedOptions)
+                      }
+                    , makeCommandMessagesWhenValuesChanges
+                        (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
+                        maybeSelectedOptionValue
+                    )
+
+                TransformAndValidate.ValidationFailed validationErrorMessages ->
+                    let
+                        updatedOptions =
+                            updateDatalistOptionsWithValueAndErrors
+                                validationErrorMessages
+                                (OptionValue.stringToOptionValue valueString)
+                                selectedValueIndex
+                                model.options
+
+                        maybeSelectedOptionValue =
+                            Just (OptionValue.stringToOptionValue valueString)
+                    in
+                    ( { model
+                        | options = updatedOptions
+                        , rightSlot = updateRightSlot model.rightSlot model.selectionConfig True (updatedOptions |> selectedOptions)
+                      }
+                    , makeCommandMessagesWhenValuesChanges
+                        (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
+                        maybeSelectedOptionValue
+                    )
 
         UpdateOptionsWithSearchString ->
             ( updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges model
@@ -974,15 +998,16 @@ update msg model =
             ( model
             , Cmd.batch
                 [ allOptions (Json.Encode.list Option.encode model.options)
-                , Task.perform
-                    (\_ ->
-                        UpdateOptionsWithSearchString
-                            |> provideInput
-                            |> MsgQuietUpdateOptionsWithSearchString
-                    )
-                    (Task.succeed
-                        always
-                    )
+
+                --, Task.perform
+                --    (\_ ->
+                --        UpdateOptionsWithSearchString
+                --            |> provideInput
+                --            |> MsgQuietUpdateOptionsWithSearchString
+                --    )
+                --    (Task.succeed
+                --        always
+                --    )
                 ]
             )
 
@@ -2109,6 +2134,9 @@ optionToDropdownOption eventHandlers selectionConfig_ option_ =
                         SelectionMode.MultiSelect ->
                             text ""
 
+                OptionSelectedAndInvalid _ _ ->
+                    text ""
+
                 OptionSelectedHighlighted _ ->
                     case selectionConfig of
                         SingleSelectConfig _ _ _ ->
@@ -2192,6 +2220,9 @@ optionToValueHtml enableSingleItemRemoval option =
                         ]
                         [ valueLabelHtml (OptionLabel.getLabelString optionLabel) optionValue, removalHtml ]
 
+                OptionSelectedAndInvalid _ _ ->
+                    text ""
+
                 OptionSelectedHighlighted _ ->
                     div
                         [ classList
@@ -2225,6 +2256,9 @@ optionToValueHtml enableSingleItemRemoval option =
                         ]
                         [ valueLabelHtml (OptionLabel.getLabelString optionLabel) optionValue, removalHtml ]
 
+                OptionSelectedAndInvalid _ _ ->
+                    text ""
+
                 OptionSelectedHighlighted _ ->
                     div
                         [ classList
@@ -2251,6 +2285,9 @@ optionToValueHtml enableSingleItemRemoval option =
 
                 OptionSelected _ ->
                     div [ class "value", partAttr ] [ text (OptionLabel.getLabelString optionLabel) ]
+
+                OptionSelectedAndInvalid _ _ ->
+                    text ""
 
                 OptionSelectedHighlighted _ ->
                     text ""

@@ -3199,7 +3199,7 @@ var $author$project$Option$DatalistOption = F2(
 	function (a, b) {
 		return {$: 2, a: a, b: b};
 	});
-var $author$project$Option$OptionDisabled = {$: 5};
+var $author$project$Option$OptionDisabled = {$: 6};
 var $author$project$Option$OptionSelected = function (a) {
 	return {$: 2, a: a};
 };

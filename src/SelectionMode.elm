@@ -16,6 +16,7 @@ module SelectionMode exposing
     , getSelectedItemPlacementMode
     , getSelectionMode
     , getSingleItemRemoval
+    , getTransformAndValidate
     , isDisabled
     , isFocused
     , isSingleSelect
