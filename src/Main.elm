@@ -571,7 +571,7 @@ update msg model =
                                 |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                             , Cmd.batch
                                 [ optionsUpdated True
-                                , updateOptionsInWebWorker ()
+                                , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchString
                                 ]
                             )
 
@@ -591,7 +591,7 @@ update msg model =
                                 |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                             , Cmd.batch
                                 [ optionsUpdated True
-                                , updateOptionsInWebWorker ()
+                                , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchString
                                 ]
                             )
 
@@ -612,7 +612,7 @@ update msg model =
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , Cmd.batch
                         [ optionsUpdated False
-                        , updateOptionsInWebWorker ()
+                        , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchString
                         ]
                     )
 
@@ -633,7 +633,7 @@ update msg model =
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , Cmd.batch
                         [ optionsUpdated True
-                        , updateOptionsInWebWorker ()
+                        , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchString
                         ]
                     )
 
@@ -661,7 +661,7 @@ update msg model =
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , Cmd.batch
                         [ makeCommandMessagesWhenValuesChanges updatedOptions (Just optionValue)
-                        , updateOptionsInWebWorker ()
+                        , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchString
                         , Task.perform
                             (\_ ->
                                 UpdateOptionsWithSearchString
@@ -828,7 +828,7 @@ update msg model =
                 |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
             , Cmd.batch
                 [ muchSelectIsReady ()
-                , updateOptionsInWebWorker ()
+                , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchString
                 , cmd
                 ]
             )
@@ -861,7 +861,7 @@ update msg model =
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , Cmd.batch
                         [ makeCommandMessagesWhenValuesChanges updatedOptions maybeHighlightedOptionValue
-                        , updateOptionsInWebWorker ()
+                        , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchString
                         , blurInput ()
                         ]
                     )
@@ -874,7 +874,7 @@ update msg model =
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , Cmd.batch
                         [ makeCommandMessagesWhenValuesChanges updatedOptions maybeHighlightedOptionValue
-                        , updateOptionsInWebWorker ()
+                        , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchString
                         , focusInput ()
                         ]
                     )
@@ -996,19 +996,7 @@ update msg model =
 
         RequestAllOptions ->
             ( model
-            , Cmd.batch
-                [ allOptions (Json.Encode.list Option.encode model.options)
-
-                --, Task.perform
-                --    (\_ ->
-                --        UpdateOptionsWithSearchString
-                --            |> provideInput
-                --            |> MsgQuietUpdateOptionsWithSearchString
-                --    )
-                --    (Task.succeed
-                --        always
-                --    )
-                ]
+            , allOptions (Json.Encode.list Option.encode model.options)
             )
 
         UpdateSearchResultsForOptions updatedSearchResultsJsonValue ->
@@ -1046,7 +1034,7 @@ deselectOption model option =
         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
     , Cmd.batch
         [ makeCommandMessagesWhenValuesChanges updatedOptions Nothing
-        , updateOptionsInWebWorker ()
+        , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchString
         ]
     )
 
@@ -2495,6 +2483,29 @@ makeCommandMessagesWhenValuesChanges selectedOptions maybeSelectedValue =
         , clearCmd
         , optionSelectedCmd
         ]
+
+
+makeCommandMessagesForUpdatingOptionsInTheWebWorker : SearchString -> Cmd Msg
+makeCommandMessagesForUpdatingOptionsInTheWebWorker searchString =
+    let
+        searchStringUpdateCmd =
+            if SearchString.isEmpty searchString then
+                Cmd.none
+
+            else
+                -- This task is important because after we get new options (like from an API call or something)
+                --  we need to update the new options we've just added with the current search string.
+                Task.perform
+                    (\_ ->
+                        UpdateOptionsWithSearchString
+                            |> provideInput
+                            |> MsgQuietUpdateOptionsWithSearchString
+                    )
+                    (Task.succeed
+                        always
+                    )
+    in
+    Cmd.batch [ updateOptionsInWebWorker (), searchStringUpdateCmd ]
 
 
 makeCommandMessageForInitialValue : List Option -> Cmd Msg
