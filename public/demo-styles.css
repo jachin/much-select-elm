@@ -174,7 +174,8 @@ h3 {
 .container {
     display: flex;
     flex-flow: row wrap;
-    justify-content: space-evenly;
+    justify-content: flex-start;
+    align-items: start;
 }
 
 .container > .example {
@@ -185,7 +186,7 @@ h3 {
     border-radius: 12px;
     max-width: 400px;
     background-color: var(--example-background-color);
-    flex: 0 1 300px;
+    flex: 0 1 400px;
 }
 
 nav {
@@ -245,10 +246,6 @@ much-select {
 
 button {
     font-family: "Comic Sans MS", "Comic Sans", cursive;
-}
-
-iframe {
-    border: none;
 }
 
 
