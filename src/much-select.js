@@ -121,6 +121,20 @@ const cleanUpOption = (option) => {
 
 const cleanUpOptions = (options) => options.map(cleanUpOption);
 
+const cleanUpSelectedValue = (selectedValue) => {
+  let newSelectedValue;
+  if (selectedValue === null) {
+    newSelectedValue = null;
+  } else if (selectedValue === undefined) {
+    newSelectedValue = null;
+  } else if (selectedValue === "") {
+    newSelectedValue = "";
+  } else {
+    newSelectedValue = selectedValue;
+  }
+  return newSelectedValue;
+};
+
 const makeDebouncedFunc = (func, timeout = 500) => {
   let timer;
   return (...args) => {
@@ -355,6 +369,7 @@ class MuchSelect extends HTMLElement {
 
     this._callValueChanged = makeDebounceLeadingFunc((newValue) => {
       this.appPromise.then((app) => {
+        // console.trace("this._callValueChanged");
         // noinspection JSUnresolvedVariable
         app.ports.valueChangedReceiver.send(newValue);
       });
@@ -986,13 +1001,15 @@ class MuchSelect extends HTMLElement {
    */
   valueChangedHandler(valuesTuple, isInitialValueChange = false) {
     if (this.isInMultiSelectMode) {
-      this.parsedSelectedValue = valuesTuple.map((valueTuple) => valueTuple[0]);
+      const tempSelectedValue = valuesTuple.map((valueTuple) => valueTuple[0]);
+      this._syncParseSelectedValue(tempSelectedValue);
     } else {
       const valueAsArray = valuesTuple.map((valueTuple) => valueTuple[0]);
       if (valueAsArray.length === 0) {
-        this.parsedSelectedValue = "";
+        this._syncParseSelectedValue("");
       } else if (valueAsArray.length > 0) {
-        [this.parsedSelectedValue] = valueAsArray;
+        const [tempSelectedValue] = valueAsArray;
+        this._syncParseSelectedValue(tempSelectedValue);
       }
     }
 
@@ -1148,15 +1165,14 @@ class MuchSelect extends HTMLElement {
   }
 
   set selectedValue(value) {
-    if (value === null) {
-      this._selectedValue = null;
-    } else if (value === undefined) {
-      this._selectedValue = null;
-    } else if (value === "") {
-      this._selectedValue = "";
-    } else {
-      this._selectedValue = value;
+    const newSelectedValue = cleanUpSelectedValue(value);
+
+    if (newSelectedValue === this._selectedValue) {
+      // No actual change happening here, we can skip all this other stuff.
+      return;
     }
+
+    this._selectedValue = newSelectedValue;
 
     if (!this.eventsOnlyMode) {
       this.setAttribute("selected-value", this._selectedValue);
@@ -1180,6 +1196,28 @@ class MuchSelect extends HTMLElement {
     }
 
     this.updateHiddenInputValueSlot();
+  }
+
+  /**
+   * This is a "sync" function, so this is kinda like a "set" function but the
+   *  selected value(s) are coming from Elm. So we do not need to tell Elm about
+   *  them.
+   *
+   * @param value
+   * @private
+   */
+  _syncSelectedValue(value) {
+    const newSelectedValue = cleanUpSelectedValue(value);
+
+    if (newSelectedValue === this._selectedValue) {
+      return;
+    }
+
+    this._selectedValue = newSelectedValue;
+
+    if (!this.eventsOnlyMode) {
+      this.setAttribute("selected-value", this._selectedValue);
+    }
   }
 
   get parsedSelectedValue() {
@@ -1216,21 +1254,45 @@ class MuchSelect extends HTMLElement {
   }
 
   set parsedSelectedValue(values) {
+    this.selectedValue = this._makeSelectedValue(values);
+  }
+
+  /**
+   * This method takes a selected value, and it returns a string of the "parsed"
+   *  selected value.
+   *
+   * @param values
+   * @returns {string|*}
+   * @private
+   */
+  _makeSelectedValue(values) {
     if (this.selectedValueEncoding === "comma") {
       if (Array.isArray(values)) {
-        this.selectedValue = values.join(",");
-      } else {
-        // This should be a string or possibly a null.
-        this.selectedValue = values;
+        return values.join(",");
       }
-    } else if (this.selectedValueEncoding === "json") {
+      // This should be a string or possibly a null.
+      return values;
+    }
+    if (this.selectedValueEncoding === "json") {
       if (values === "") {
         // The empty string here is a special case because we don't want to encode an empty string.
-        this.selectedValue = "";
-      } else {
-        this.selectedValue = encodeURIComponent(JSON.stringify(values));
+        return "";
       }
+      return encodeURIComponent(JSON.stringify(values));
     }
+    return "";
+  }
+
+  /**
+   * This is a "sync" function, so this is kinda like a "set" function but the
+   *  selected value(s) are coming from Elm. So we do not need to tell Elm about
+   *  them.
+   *
+   * @param values
+   * @private
+   */
+  _syncParseSelectedValue(values) {
+    this._syncSelectedValue(this._makeSelectedValue(values));
   }
 
   get placeholder() {
