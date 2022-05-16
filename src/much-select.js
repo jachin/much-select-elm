@@ -508,8 +508,10 @@ class MuchSelect extends HTMLElement {
     // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
     this.appPromise.then((app) =>
       app.ports.muchSelectIsReady.subscribe(() => {
-        this.dispatchEvent(new CustomEvent("ready", { bubbles: true }));
-        this.dispatchEvent(new CustomEvent("muchSelectReady"));
+        window.requestAnimationFrame(() => {
+          this.dispatchEvent(new CustomEvent("ready", { bubbles: true }));
+          this.dispatchEvent(new CustomEvent("muchSelectReady"));
+        });
       })
     );
 
@@ -635,18 +637,42 @@ class MuchSelect extends HTMLElement {
             })
           );
         }
+        window.requestAnimationFrame(() => {
+          this.dispatchEvent(
+            new CustomEvent("muchSelectBlurred", {
+              bubbles: true,
+            })
+          );
+        });
       })
     );
 
     // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
     this.appPromise.then((app) =>
       app.ports.focusInput.subscribe(() => {
+        // This port is here because we need to be able to call the focus method
+        //  which is something we can not do from inside Elm.
         window.requestAnimationFrame(() => {
           const inputFilterElement =
             this.shadowRoot.getElementById("input-filter");
           if (inputFilterElement) {
             this.shadowRoot.getElementById("input-filter").focus();
           }
+        });
+      })
+    );
+
+    // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
+    this.appPromise.then((app) =>
+      app.ports.inputFocused.subscribe(() => {
+        // Emit an even once the input has been focused. This might have other
+        //  uses but this is helpful for writing automated tests.
+        window.requestAnimationFrame(() => {
+          this.dispatchEvent(
+            new CustomEvent("muchSelectFocused", {
+              bubbles: false,
+            })
+          );
         });
       })
     );

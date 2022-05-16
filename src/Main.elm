@@ -108,6 +108,7 @@ import Ports
         , focusInput
         , initialValueSet
         , inputBlurred
+        , inputFocused
         , inputKeyUp
         , loadingChangedReceiver
         , maxDropdownItemsChangedReceiver
@@ -357,14 +358,14 @@ update msg model =
                                 |> setIsFocused True
                         , rightSlot = updateRightSlotTransitioning NotInFocusTransition model.rightSlot
                       }
-                    , Cmd.none
+                    , inputFocused ()
                     )
 
                 Datalist ->
                     ( { model
                         | selectionConfig = setIsFocused True model.selectionConfig
                       }
-                    , Cmd.none
+                    , inputFocused ()
                     )
 
         DropdownMouseOverOption optionValue ->

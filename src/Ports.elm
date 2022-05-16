@@ -10,6 +10,7 @@ port module Ports exposing
     , focusInput
     , initialValueSet
     , inputBlurred
+    , inputFocused
     , inputKeyUp
     , loadingChangedReceiver
     , maxDropdownItemsChangedReceiver
@@ -73,13 +74,24 @@ port optionDeselected : List ( String, String ) -> Cmd msg
 port inputKeyUp : String -> Cmd msg
 
 
+{-| This port is involved in caring out the blurring process.
+-}
 port blurInput : () -> Cmd msg
 
 
+{-| This port is called after this much select has been blurred.
+-}
 port inputBlurred : () -> Cmd msg
 
 
+{-| This port is involved in caring out the focusing process.
+-}
 port focusInput : () -> Cmd msg
+
+
+{-| This port is called after this much select has been focused
+-}
+port inputFocused : () -> Cmd msg
 
 
 port allOptions : Json.Decode.Value -> Cmd msg
