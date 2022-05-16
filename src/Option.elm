@@ -45,7 +45,7 @@ module Option exposing
     , optionToValueLabelTuple
     , optionValuesEqual
     , optionsDecoder
-    , removeHighlightOption
+    , removeHighlightFromOption
     , selectOption
     , setDescriptionWithString
     , setGroupWithString
@@ -64,7 +64,7 @@ import Json.Encode
 import OptionLabel exposing (OptionLabel(..), labelDecoder, optionLabelToString)
 import OptionSearchFilter exposing (OptionSearchFilter, OptionSearchFilterWithValue, OptionSearchResult)
 import OptionValue exposing (OptionValue(..), optionValueToString, stringToOptionValue)
-import SelectionMode exposing (OutputStyle(..))
+import SelectionMode exposing (OutputStyle(..), SelectionConfig)
 import SortRank exposing (SortRank(..))
 import TransformAndValidate exposing (ValidationErrorMessage)
 
@@ -877,8 +877,8 @@ highlightOption option =
             option
 
 
-removeHighlightOption : Option -> Option
-removeHighlightOption option =
+removeHighlightFromOption : Option -> Option
+removeHighlightFromOption option =
     case option of
         Option display label value description group search ->
             case display of
@@ -910,7 +910,7 @@ removeHighlightOption option =
                     option
 
                 OptionSelectedHighlighted selectedIndex ->
-                    Option (OptionSelectedHighlighted selectedIndex)
+                    Option (OptionSelected selectedIndex)
                         label
                         value
                         description
@@ -939,7 +939,7 @@ removeHighlightOption option =
 
                 OptionSelectedHighlighted selectedIndex ->
                     CustomOption
-                        (OptionSelectedHighlighted selectedIndex)
+                        (OptionSelected selectedIndex)
                         label
                         value
                         search
@@ -1053,79 +1053,49 @@ isOptionHighlighted option =
             False
 
 
-optionIsHighlightable : Option -> Bool
-optionIsHighlightable option =
+optionIsHighlightable : SelectionConfig -> Option -> Bool
+optionIsHighlightable selectionConfig option =
     case option of
         Option display _ _ _ _ _ ->
-            case display of
-                OptionShown ->
-                    True
-
-                OptionHidden ->
-                    False
-
-                OptionSelected _ ->
-                    False
-
-                OptionSelectedAndInvalid _ _ ->
-                    False
-
-                OptionSelectedHighlighted _ ->
-                    False
-
-                OptionHighlighted ->
-                    False
-
-                OptionDisabled ->
-                    False
+            isOptionDisplayHighlightable selectionConfig display
 
         CustomOption display _ _ _ ->
-            case display of
-                OptionShown ->
-                    True
-
-                OptionHidden ->
-                    False
-
-                OptionSelected _ ->
-                    False
-
-                OptionSelectedAndInvalid _ _ ->
-                    False
-
-                OptionSelectedHighlighted _ ->
-                    False
-
-                OptionHighlighted ->
-                    False
-
-                OptionDisabled ->
-                    False
+            isOptionDisplayHighlightable selectionConfig display
 
         EmptyOption display _ ->
-            case display of
-                OptionShown ->
-                    True
-
-                OptionHidden ->
-                    False
-
-                OptionSelected _ ->
-                    False
-
-                OptionSelectedAndInvalid _ _ ->
-                    False
-
-                OptionSelectedHighlighted _ ->
-                    False
-
-                OptionHighlighted ->
-                    False
-
-                OptionDisabled ->
-                    False
+            isOptionDisplayHighlightable selectionConfig display
 
         DatalistOption _ _ ->
+            False
+
+
+isOptionDisplayHighlightable : SelectionConfig -> OptionDisplay -> Bool
+isOptionDisplayHighlightable selectionConfig optionDisplay =
+    case optionDisplay of
+        OptionShown ->
+            True
+
+        OptionHidden ->
+            False
+
+        OptionSelected _ ->
+            case SelectionMode.getSelectionMode selectionConfig of
+                SelectionMode.SingleSelect ->
+                    True
+
+                SelectionMode.MultiSelect ->
+                    False
+
+        OptionSelectedAndInvalid _ _ ->
+            False
+
+        OptionSelectedHighlighted _ ->
+            False
+
+        OptionHighlighted ->
+            False
+
+        OptionDisabled ->
             False
 
 
@@ -1669,9 +1639,9 @@ setOptionDisplayErrors validationErrorMessages optionDisplay =
 setOptionValueErrors : List ValidationErrorMessage -> Option -> Option
 setOptionValueErrors validationErrorMessages option =
     let
-        newOptionDispaly =
+        newOptionDisplay =
             option
                 |> getOptionDisplay
                 |> setOptionDisplayErrors validationErrorMessages
     in
-    setOptionDisplay newOptionDispaly option
+    setOptionDisplay newOptionDisplay option

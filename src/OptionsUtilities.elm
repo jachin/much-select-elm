@@ -28,7 +28,7 @@ import Option
         , optionIsHighlightable
         , optionToValueLabelTuple
         , optionValuesEqual
-        , removeHighlightOption
+        , removeHighlightFromOption
         , selectOption
         , setLabel
         , setLabelWithString
@@ -53,13 +53,13 @@ import SortRank exposing (SortRank)
 import TransformAndValidate exposing (ValidationErrorMessage)
 
 
-moveHighlightedOptionDown : List Option -> List Option -> List Option
-moveHighlightedOptionDown allOptions visibleOptions =
+moveHighlightedOptionDown : SelectionConfig -> List Option -> List Option -> List Option
+moveHighlightedOptionDown selectionConfig allOptions visibleOptions =
     let
         maybeLowerSibling =
             visibleOptions
                 |> findHighlightedOrSelectedOptionIndex
-                |> Maybe.andThen (\index -> findClosestHighlightableOptionGoingDown index visibleOptions)
+                |> Maybe.andThen (\index -> findClosestHighlightableOptionGoingDown selectionConfig index visibleOptions)
     in
     case maybeLowerSibling of
         Just option ->
@@ -74,21 +74,21 @@ moveHighlightedOptionDown allOptions visibleOptions =
                     allOptions
 
 
-findClosestHighlightableOptionGoingUp : Int -> List Option -> Maybe Option
-findClosestHighlightableOptionGoingUp index options =
+findClosestHighlightableOptionGoingUp : SelectionConfig -> Int -> List Option -> Maybe Option
+findClosestHighlightableOptionGoingUp selectionConfig index options =
     List.Extra.splitAt index options
         |> Tuple.first
         |> List.reverse
-        |> List.Extra.find optionIsHighlightable
+        |> List.Extra.find (optionIsHighlightable selectionConfig)
 
 
-moveHighlightedOptionUp : List Option -> List Option -> List Option
-moveHighlightedOptionUp allOptions visibleOptions =
+moveHighlightedOptionUp : SelectionConfig -> List Option -> List Option -> List Option
+moveHighlightedOptionUp selectionConfig allOptions visibleOptions =
     let
         maybeHigherSibling =
             visibleOptions
                 |> findHighlightedOrSelectedOptionIndex
-                |> Maybe.andThen (\index -> findClosestHighlightableOptionGoingUp index visibleOptions)
+                |> Maybe.andThen (\index -> findClosestHighlightableOptionGoingUp selectionConfig index visibleOptions)
     in
     case maybeHigherSibling of
         Just option ->
@@ -103,11 +103,11 @@ moveHighlightedOptionUp allOptions visibleOptions =
                     allOptions
 
 
-findClosestHighlightableOptionGoingDown : Int -> List Option -> Maybe Option
-findClosestHighlightableOptionGoingDown index options =
+findClosestHighlightableOptionGoingDown : SelectionConfig -> Int -> List Option -> Maybe Option
+findClosestHighlightableOptionGoingDown selectionConfig index options =
     List.Extra.splitAt index options
         |> Tuple.second
-        |> List.Extra.find optionIsHighlightable
+        |> List.Extra.find (optionIsHighlightable selectionConfig)
 
 
 adjustHighlightedOptionAfterSearch : List Option -> List Option -> List Option
@@ -256,7 +256,7 @@ selectOptionInListByOptionValue value options =
                 option_
 
             else
-                removeHighlightOption option_
+                removeHighlightFromOption option_
         )
         options
 
@@ -289,7 +289,7 @@ selectOptionInListByOptionValueWithIndex index value options =
                 option_
 
             else
-                removeHighlightOption option_
+                removeHighlightFromOption option_
         )
         options
 
@@ -985,7 +985,7 @@ highlightOptionInListByValue value options =
                 highlightOption option_
 
             else
-                removeHighlightOption option_
+                removeHighlightFromOption option_
         )
         options
 
@@ -995,7 +995,7 @@ removeHighlightOptionInList value options =
     List.map
         (\option_ ->
             if optionValuesEqual option_ value then
-                removeHighlightOption option_
+                removeHighlightFromOption option_
 
             else
                 option_
@@ -1201,7 +1201,7 @@ highlightOptionInList option options =
                 highlightOption option_
 
             else
-                removeHighlightOption option_
+                removeHighlightFromOption option_
         )
         options
 

@@ -116,7 +116,7 @@
         ).to.have.text("Coffee");
       });
 
-      it("when the dropdown is opened pressing the down arrow should highlight the first option after a selected value", async () => {
+      it("when the dropdown is opened pressing the down arrow should highlight the selected value", async () => {
         const el = /** @type {MuchSelect} */ await fixture(
           html` <much-select option-sorting="no-sorting">
             <select slot="select-input">
@@ -134,13 +134,11 @@
         });
 
         // Focus on the input filter so the dropdown opens.
-        // el.shadowRoot.querySelector("#input-filter").focus();
-
         const { x, y } = getMiddleOfElement(el);
-
         await sendMouse({ type: "click", position: [x, y] });
 
         await oneEvent(el, "muchSelectFocused");
+
         await sendKeys({ press: "ArrowDown" });
 
         await nextFrame();
@@ -150,8 +148,57 @@
         ).to.equal(1);
 
         expect(
-          el.shadowRoot.querySelector("#dropdown .option.highlighted").textContent
-        ).to.equal("Soda");
+          el.shadowRoot.querySelector("#dropdown .option.highlighted")
+        ).to.have.text("Water");
+      });
+
+      it("when the dropdown is opened pressing the arrows keys should only result in 1 highlighted option", async () => {
+        const el = /** @type {MuchSelect} */ await fixture(
+          html` <much-select option-sorting="no-sorting">
+            <select slot="select-input">
+              <option value="Coffee">Coffee</option>
+              <option value="Tea">Tea</option>
+              <option selected value="Water">Water</option>
+              <option value="Soda">Soda</option>
+            </select>
+          </much-select>`
+        );
+        await oneEvent(el, "muchSelectReady");
+
+        await sendKeys({
+          press: "Escape",
+        });
+
+        // Focus on the input filter so the dropdown opens.
+        const { x, y } = getMiddleOfElement(el);
+        await sendMouse({ type: "click", position: [x, y] });
+
+        await oneEvent(el, "muchSelectFocused");
+
+        await sendKeys({ press: "ArrowDown" });
+
+        await nextFrame();
+
+        expect(
+          el.shadowRoot.querySelectorAll("#dropdown .option.selected.highlighted")
+            .length
+        ).to.equal(1);
+
+        await sendKeys({ press: "ArrowUp" });
+
+        await nextFrame();
+
+        expect(
+          el.shadowRoot.querySelectorAll("#dropdown .option.highlighted").length
+        ).to.equal(1);
+
+        await sendKeys({ press: "ArrowUp" });
+
+        await nextFrame();
+
+        expect(
+          el.shadowRoot.querySelectorAll("#dropdown .option.selected").length
+        ).to.equal(1);
       });
     });
   });
