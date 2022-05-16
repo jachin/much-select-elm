@@ -10,7 +10,7 @@ import Debouncer.Messages
         , settleWhenQuietFor
         , toDebouncer
         )
-import Html exposing (Html, button, div, input, node, optgroup, span, text)
+import Html exposing (Html, button, div, input, li, node, optgroup, span, text, ul)
 import Html.Attributes
     exposing
         ( class
@@ -1544,15 +1544,14 @@ multiSelectViewDataset selectionConfig options rightSlot =
         makeInputs selectedOptions_ =
             case List.length selectedOptions_ of
                 0 ->
-                    [ multiSelectDatasetInputField
+                    multiSelectDatasetInputField
                         Nothing
                         selectionConfig
                         rightSlot
                         0
-                    ]
 
                 _ ->
-                    List.map
+                    List.concatMap
                         (\selectedOption ->
                             multiSelectDatasetInputField
                                 (Just selectedOption)
@@ -1761,14 +1760,22 @@ singleSelectViewDatalistHtml selectionConfig options =
         ]
 
 
-multiSelectDatasetInputField : Maybe Option -> SelectionConfig -> RightSlot -> Int -> Html Msg
+multiSelectDatasetInputField : Maybe Option -> SelectionConfig -> RightSlot -> Int -> List (Html Msg)
 multiSelectDatasetInputField maybeOption selectionConfig rightSlot index =
     let
         idAttr =
             id ("input-value-" ++ String.fromInt index)
 
+        errorIdAttr =
+            id ("error-input-value-" ++ String.fromInt index)
+
+        isOptionInvalid =
+            Maybe.map Option.isInvalid maybeOption
+                |> Maybe.withDefault False
+
         classes =
             [ ( "input-value", True )
+            , ( "invalid", isOptionInvalid )
             ]
 
         typeAttr =
@@ -1808,11 +1815,32 @@ multiSelectDatasetInputField maybeOption selectionConfig rightSlot index =
                     , Html.Attributes.list "datalist-options"
                     ]
                     []
+
+        makeValidationErrorMessage : TransformAndValidate.ValidationErrorMessage -> Html msg
+        makeValidationErrorMessage validationErrorMessage =
+            case validationErrorMessage of
+                TransformAndValidate.ValidationErrorMessage validationMessage ->
+                    li [] [ text validationMessage ]
+
+        errorMessage =
+            if isOptionInvalid then
+                div [ errorIdAttr, class "error-message" ]
+                    [ ul []
+                        (Maybe.map Option.getOptionValidationErrors maybeOption
+                            |> Maybe.withDefault []
+                            |> List.map makeValidationErrorMessage
+                        )
+                    ]
+
+            else
+                text ""
     in
-    div [ class "input-wrapper", Html.Attributes.attribute "part" "input-wrapper" ]
+    [ div [ class "input-wrapper", Html.Attributes.attribute "part" "input-wrapper" ]
         [ inputHtml
         , rightSlotHtml rightSlot (SelectionMode.getInteractionState selectionConfig) index
         ]
+    , errorMessage
+    ]
 
 
 singleSelectDatasetInputField : Maybe Option -> SelectionConfig -> Bool -> Html Msg

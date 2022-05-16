@@ -15,6 +15,7 @@ module Option exposing
     , getOptionGroup
     , getOptionLabel
     , getOptionSelectedIndex
+    , getOptionValidationErrors
     , getOptionValue
     , getOptionValueAsString
     , hasSelectedItemIndex
@@ -22,6 +23,7 @@ module Option exposing
     , isCustomOption
     , isEmptyOption
     , isEmptyOptionOrHasEmptyValue
+    , isInvalid
     , isOptionDisplaySelectedHighlighted
     , isOptionHighlighted
     , isOptionSelected
@@ -1645,3 +1647,63 @@ setOptionValueErrors validationErrorMessages option =
                 |> setOptionDisplayErrors validationErrorMessages
     in
     setOptionDisplay newOptionDisplay option
+
+
+getOptionValidationErrors : Option -> List ValidationErrorMessage
+getOptionValidationErrors option =
+    getOptionDisplayValidationMessages (getOptionDisplay option)
+
+
+getOptionDisplayValidationMessages : OptionDisplay -> List ValidationErrorMessage
+getOptionDisplayValidationMessages optionDisplay =
+    case optionDisplay of
+        OptionShown ->
+            []
+
+        OptionHidden ->
+            []
+
+        OptionSelected _ ->
+            []
+
+        OptionSelectedAndInvalid _ validationErrorMessages ->
+            validationErrorMessages
+
+        OptionSelectedHighlighted _ ->
+            []
+
+        OptionHighlighted ->
+            []
+
+        OptionDisabled ->
+            []
+
+
+isInvalid : Option -> Bool
+isInvalid option =
+    isOptionDisplayInvalid (getOptionDisplay option)
+
+
+isOptionDisplayInvalid : OptionDisplay -> Bool
+isOptionDisplayInvalid optionDisplay =
+    case optionDisplay of
+        OptionShown ->
+            False
+
+        OptionHidden ->
+            False
+
+        OptionSelected _ ->
+            False
+
+        OptionSelectedAndInvalid _ _ ->
+            True
+
+        OptionSelectedHighlighted _ ->
+            False
+
+        OptionHighlighted ->
+            False
+
+        OptionDisabled ->
+            False
