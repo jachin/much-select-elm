@@ -1816,11 +1816,18 @@ multiSelectDatasetInputField maybeOption selectionConfig rightSlot index =
                     ]
                     []
 
-        makeValidationErrorMessage : TransformAndValidate.ValidationErrorMessage -> Html msg
-        makeValidationErrorMessage validationErrorMessage =
-            case validationErrorMessage of
-                TransformAndValidate.ValidationErrorMessage validationMessage ->
-                    li [] [ text validationMessage ]
+        makeValidationErrorMessage : TransformAndValidate.ValidationFailure -> Html msg
+        makeValidationErrorMessage validationFailure =
+            case validationFailure of
+                TransformAndValidate.ValidationFailure validationReportLevel validationErrorMessage ->
+                    case validationReportLevel of
+                        TransformAndValidate.SilentError ->
+                            text ""
+
+                        TransformAndValidate.ShowError ->
+                            case validationErrorMessage of
+                                TransformAndValidate.ValidationErrorMessage string ->
+                                    li [] [ text string ]
 
         errorMessage =
             if isOptionInvalid then

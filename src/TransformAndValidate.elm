@@ -35,7 +35,11 @@ type ValidationErrorMessage
 
 type ValidationResult
     = ValidationPass String
-    | ValidationFailed (List ValidationErrorMessage)
+    | ValidationFailed (List ValidationFailure)
+
+
+type ValidationFailure
+    = ValidationFailure ValidationReportLevel ValidationErrorMessage
 
 
 transform : Transformer -> String -> String
@@ -45,10 +49,10 @@ transform transformer string =
             String.toLower string
 
 
-validate : Validator -> String -> Result ValidationErrorMessage String
+validate : Validator -> String -> Result ValidationFailure String
 validate validator string =
     case validator of
-        NoWhiteSpace _ validationErrorMessage ->
+        NoWhiteSpace level validationErrorMessage ->
             let
                 stringWithNoWhiteSpace =
                     String.replace " " "" string
@@ -57,14 +61,14 @@ validate validator string =
                 Ok string
 
             else
-                Err validationErrorMessage
+                Err (ValidationFailure level validationErrorMessage)
 
-        MinimumLength _ validationErrorMessage int ->
+        MinimumLength level validationErrorMessage int ->
             if String.length string >= int then
                 Ok string
 
             else
-                Err validationErrorMessage
+                Err (ValidationFailure level validationErrorMessage)
 
 
 transformAndValidate : ValueTransformAndValidate -> String -> ValidationResult
@@ -95,7 +99,7 @@ transformAndValidateSearchString (ValueTransformAndValidate transformers validat
         |> rollUpErrors transformedString
 
 
-rollUpErrors : String -> List (Result ValidationErrorMessage String) -> ValidationResult
+rollUpErrors : String -> List (Result ValidationFailure String) -> ValidationResult
 rollUpErrors transformedString results =
     if List.any Result.Extra.isErr results then
         List.foldl
@@ -104,8 +108,8 @@ rollUpErrors transformedString results =
                     Ok _ ->
                         l
 
-                    Err errorMessage ->
-                        errorMessage :: l
+                    Err validationFailure ->
+                        validationFailure :: l
             )
             []
             results

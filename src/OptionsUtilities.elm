@@ -50,7 +50,7 @@ import SelectionMode
         , getSelectedItemPlacementMode
         )
 import SortRank exposing (SortRank)
-import TransformAndValidate exposing (ValidationErrorMessage)
+import TransformAndValidate exposing (ValidationErrorMessage, ValidationFailure)
 
 
 moveHighlightedOptionDown : SelectionConfig -> List Option -> List Option -> List Option
@@ -1245,7 +1245,7 @@ updateDatalistOptionsWithValue optionValue selectedValueIndex options =
         newSelectedDatalistOption optionValue selectedValueIndex :: options
 
 
-updateDatalistOptionsWithValueAndErrors : List ValidationErrorMessage -> OptionValue -> Int -> List Option -> List Option
+updateDatalistOptionsWithValueAndErrors : List ValidationFailure -> OptionValue -> Int -> List Option -> List Option
 updateDatalistOptionsWithValueAndErrors errors optionValue selectedValueIndex options =
     if List.any (Option.hasSelectedItemIndex selectedValueIndex) options then
         updateDatalistOptionWithValueBySelectedValueIndex errors optionValue selectedValueIndex options
@@ -1270,7 +1270,7 @@ addNewEmptyOptionAtIndex index options =
         |> reIndexSelectedOptions
 
 
-updateDatalistOptionWithValueBySelectedValueIndex : List ValidationErrorMessage -> OptionValue -> Int -> List Option -> List Option
+updateDatalistOptionWithValueBySelectedValueIndex : List ValidationFailure -> OptionValue -> Int -> List Option -> List Option
 updateDatalistOptionWithValueBySelectedValueIndex errors optionValue selectedIndex options =
     if List.isEmpty errors then
         List.map
