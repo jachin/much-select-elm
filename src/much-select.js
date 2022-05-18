@@ -756,6 +756,7 @@ class MuchSelect extends HTMLElement {
     });
 
     this.appPromise.then((app) => {
+      // noinspection JSUnresolvedVariable
       app.ports.sendCustomValidationRequest.subscribe((valueData) => {
         const [stringToValidate, selectedValueIndex] = valueData;
         this.dispatchEvent(

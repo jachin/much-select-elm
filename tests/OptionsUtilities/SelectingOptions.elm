@@ -17,7 +17,7 @@ import OptionsUtilities
         )
 import SearchString
 import Test exposing (Test, describe, test)
-import TransformAndValidate exposing (ValidationErrorMessage(..))
+import TransformAndValidate exposing (ValidationErrorMessage(..), ValidationFailureMessage(..), ValidationReportLevel(..))
 
 
 slaveShip =
@@ -79,18 +79,22 @@ suite =
                         ((newCustomOption "boot hill" Nothing |> selectOption 0) :: options)
             ]
         , describe "when there are validation errors"
-            [ test "should update a selected value with errors, when there are erros" <|
+            [ test "should update a selected value with errors, when there are errors" <|
                 \_ ->
+                    let
+                        failureMessage =
+                            ValidationFailureMessage ShowError (ValidationErrorMessage "An error!")
+                    in
                     Expect.equalLists
                         (updateDatalistOptionsWithValueAndErrors
-                            [ ValidationErrorMessage "An error!"
+                            [ failureMessage
                             ]
                             (OptionValue.stringToOptionValue "Pew Pew")
                             0
                             [ wolfHouse, dinoBar, danceFloor ]
                         )
                         [ newSelectedDatalistOptionWithErrors
-                            [ ValidationErrorMessage "An error!"
+                            [ failureMessage
                             ]
                             (OptionValue.stringToOptionValue "Pew Pew")
                             0

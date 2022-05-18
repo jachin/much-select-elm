@@ -2,7 +2,7 @@ module TransformAndValidate.Validations exposing (suite)
 
 import Expect
 import Test exposing (Test, describe, test)
-import TransformAndValidate exposing (ValidationErrorMessage(..), ValidationReportLevel(..), ValidationResult(..), Validator(..), ValueTransformAndValidate(..), transformAndValidateFirstPass)
+import TransformAndValidate exposing (ValidationErrorMessage(..), ValidationFailureMessage(..), ValidationReportLevel(..), ValidationResult(..), Validator(..), ValueTransformAndValidate(..), transformAndValidateFirstPass)
 
 
 suite : Test
@@ -18,8 +18,9 @@ suite =
                                 ]
                             )
                             "Wolf"
+                            0
                         )
-                        (ValidationPass "Wolf")
+                        (ValidationPass "Wolf" 0)
             , test "the string has white space so it should not pass" <|
                 \_ ->
                     Expect.equal
@@ -29,8 +30,15 @@ suite =
                                 ]
                             )
                             "I'm starting to worry about you Ed."
+                            0
                         )
-                        (ValidationFailed [ ValidationErrorMessage "No white space allowed" ])
+                        (ValidationFailed
+                            "I'm starting to worry about you Ed."
+                            0
+                            [ ValidationFailureMessage ShowError
+                                (ValidationErrorMessage "No white space allowed")
+                            ]
+                        )
             ]
         , describe "the string is longer than a minium length"
             [ test "and it's long enough" <|
@@ -42,8 +50,9 @@ suite =
                                 ]
                             )
                             "Sheep"
+                            0
                         )
-                        (ValidationPass "Sheep")
+                        (ValidationPass "Sheep" 0)
             , test "and it's not long enough" <|
                 \_ ->
                     Expect.equal
@@ -53,7 +62,12 @@ suite =
                                 ]
                             )
                             "Sheep"
+                            0
                         )
-                        (ValidationFailed [ ValidationErrorMessage "The value is too short" ])
+                        (ValidationFailed "Sheep"
+                            0
+                            [ ValidationFailureMessage ShowError (ValidationErrorMessage "The value is too short")
+                            ]
+                        )
             ]
         ]
