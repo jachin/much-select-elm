@@ -1707,6 +1707,8 @@ class MuchSelect extends HTMLElement {
         this.allowCustomOptions,
         customOptionHint,
       ]);
+
+      this._updateTransformationValidationFromTheDom();
     });
   }
 
