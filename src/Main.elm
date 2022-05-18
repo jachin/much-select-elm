@@ -130,7 +130,6 @@ import Ports
         , searchStringMinimumLengthChangedReceiver
         , selectOptionReceiver
         , selectedItemStaysInPlaceChangedReceiver
-        , sendCustomValidationRequest
         , showDropdownFooterChangedReceiver
         , updateOptionsFromDom
         , updateOptionsInWebWorker
@@ -508,12 +507,9 @@ update msg model =
                         | options = updatedOptions
                         , rightSlot = updateRightSlot model.rightSlot model.selectionConfig True (updatedOptions |> selectedOptions)
                       }
-                    , Cmd.batch
-                        [ makeCommandMessagesWhenValuesChanges
-                            (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
-                            maybeSelectedOptionValue
-                        , sendCustomValidationRequest ( valueString, selectedValueIndex )
-                        ]
+                    , makeCommandMessagesWhenValuesChanges
+                        (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
+                        maybeSelectedOptionValue
                     )
 
         UpdateOptionsWithSearchString ->
@@ -2236,6 +2232,15 @@ optionToDropdownOption eventHandlers selectionConfig_ option_ =
                         SelectionMode.MultiSelect ->
                             text ""
 
+                OptionSelectedPendingValidation _ ->
+                    div
+                        [ Html.Attributes.attribute "part" "dropdown-option disabled"
+                        , class "disabled"
+                        , class "option"
+                        , valueDataAttribute
+                        ]
+                        [ labelHtml, descriptionHtml ]
+
                 OptionSelectedAndInvalid _ _ ->
                     text ""
 
@@ -2322,6 +2327,9 @@ optionToValueHtml enableSingleItemRemoval option =
                         ]
                         [ valueLabelHtml (OptionLabel.getLabelString optionLabel) optionValue, removalHtml ]
 
+                OptionSelectedPendingValidation _ ->
+                    text ""
+
                 OptionSelectedAndInvalid _ _ ->
                     text ""
 
@@ -2358,6 +2366,9 @@ optionToValueHtml enableSingleItemRemoval option =
                         ]
                         [ valueLabelHtml (OptionLabel.getLabelString optionLabel) optionValue, removalHtml ]
 
+                OptionSelectedPendingValidation _ ->
+                    text ""
+
                 OptionSelectedAndInvalid _ _ ->
                     text ""
 
@@ -2387,6 +2398,9 @@ optionToValueHtml enableSingleItemRemoval option =
 
                 OptionSelected _ ->
                     div [ class "value", partAttr ] [ text (OptionLabel.getLabelString optionLabel) ]
+
+                OptionSelectedPendingValidation _ ->
+                    text ""
 
                 OptionSelectedAndInvalid _ _ ->
                     text ""
@@ -2560,6 +2574,13 @@ valueCasingPartsAttribute selectionConfig =
 makeCommandMessagesWhenValuesChanges : List Option -> Maybe OptionValue -> Cmd Msg
 makeCommandMessagesWhenValuesChanges selectedOptions maybeSelectedValue =
     let
+        valueChangeCmd =
+            if OptionsUtilities.allOptionsAreValid selectedOptions then
+                valueChanged (selectedOptionsToTuple selectedOptions)
+
+            else
+                Cmd.none
+
         selectedCustomOptions =
             customSelectedOptions selectedOptions
 
@@ -2574,8 +2595,11 @@ makeCommandMessagesWhenValuesChanges selectedOptions maybeSelectedValue =
             if List.isEmpty selectedCustomOptions then
                 Cmd.none
 
-            else
+            else if OptionsUtilities.allOptionsAreValid selectedCustomOptions then
                 customOptionSelected (optionsValues selectedCustomOptions)
+
+            else
+                Cmd.none
 
         -- Any time we select a new value we need to emit an `optionSelected` event.
         optionSelectedCmd =
@@ -2583,7 +2607,11 @@ makeCommandMessagesWhenValuesChanges selectedOptions maybeSelectedValue =
                 Just selectedValue ->
                     case findOptionByOptionValue selectedValue selectedOptions of
                         Just option ->
-                            optionSelected (Option.optionToValueLabelTuple option)
+                            if Option.isValid option then
+                                optionSelected (Option.optionToValueLabelTuple option)
+
+                            else
+                                Cmd.none
 
                         Nothing ->
                             Cmd.none
@@ -2592,7 +2620,7 @@ makeCommandMessagesWhenValuesChanges selectedOptions maybeSelectedValue =
                     Cmd.none
     in
     Cmd.batch
-        [ valueChanged (selectedOptionsToTuple selectedOptions)
+        [ valueChangeCmd
         , customOptionCmd
         , clearCmd
         , optionSelectedCmd

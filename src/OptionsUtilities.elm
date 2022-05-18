@@ -566,6 +566,9 @@ unhighlightSelectedOptions =
                         OptionSelected _ ->
                             option
 
+                        OptionSelectedPendingValidation _ ->
+                            option
+
                         OptionSelectedAndInvalid _ _ ->
                             option
 
@@ -589,6 +592,9 @@ unhighlightSelectedOptions =
                         OptionSelected _ ->
                             option
 
+                        OptionSelectedPendingValidation _ ->
+                            option
+
                         OptionSelectedAndInvalid _ _ ->
                             option
 
@@ -610,6 +616,9 @@ unhighlightSelectedOptions =
                             option
 
                         OptionSelected _ ->
+                            option
+
+                        OptionSelectedPendingValidation _ ->
                             option
 
                         OptionSelectedAndInvalid _ _ ->
@@ -685,6 +694,9 @@ toggleSelectedHighlightByOptionValue options optionValue =
                                 OptionSelected selectedIndex ->
                                     option_ |> setOptionDisplay (OptionSelectedHighlighted selectedIndex)
 
+                                OptionSelectedPendingValidation _ ->
+                                    option_
+
                                 OptionSelectedAndInvalid _ _ ->
                                     option_
 
@@ -711,6 +723,9 @@ toggleSelectedHighlightByOptionValue options optionValue =
 
                                 OptionSelected selectedIndex ->
                                     option_ |> setOptionDisplay (OptionSelectedHighlighted selectedIndex)
+
+                                OptionSelectedPendingValidation _ ->
+                                    option_
 
                                 OptionSelectedAndInvalid _ _ ->
                                     option_
@@ -752,6 +767,9 @@ deselectAllSelectedHighlightedOptions options =
                             OptionSelected _ ->
                                 option_
 
+                            OptionSelectedPendingValidation _ ->
+                                option_
+
                             OptionSelectedAndInvalid _ _ ->
                                 option_
 
@@ -773,6 +791,9 @@ deselectAllSelectedHighlightedOptions options =
                                 option_
 
                             OptionSelected _ ->
+                                option_
+
+                            OptionSelectedPendingValidation _ ->
                                 option_
 
                             OptionSelectedAndInvalid _ _ ->
@@ -1081,6 +1102,9 @@ filterOptionsToShowInDropdownByOptionDisplay selectionConfig =
                         OptionSelected _ ->
                             True
 
+                        OptionSelectedPendingValidation _ ->
+                            True
+
                         OptionSelectedAndInvalid _ _ ->
                             False
 
@@ -1106,6 +1130,9 @@ filterOptionsToShowInDropdownByOptionDisplay selectionConfig =
 
                         OptionSelected _ ->
                             False
+
+                        OptionSelectedPendingValidation _ ->
+                            True
 
                         OptionSelectedAndInvalid _ _ ->
                             False
@@ -1529,3 +1556,8 @@ equal optionsA optionsB =
 
     else
         False
+
+
+allOptionsAreValid : List Option -> Bool
+allOptionsAreValid options =
+    List.any Option.isValid options
