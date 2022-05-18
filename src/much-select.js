@@ -337,6 +337,12 @@ class MuchSelect extends HTMLElement {
      */
     this._selectSlotObserver = null;
 
+    /**
+     * @type {null|MutationObserver}
+     * @private
+     */
+    this._customValidationResultSlotObserver = null;
+
     this._inputKeypressDebounceHandler = makeDebouncedFunc((searchString) => {
       this.dispatchEvent(
         new CustomEvent("inputKeyUpDebounced", {
@@ -749,9 +755,26 @@ class MuchSelect extends HTMLElement {
       });
     });
 
+    this.appPromise.then((app) => {
+      app.ports.sendCustomValidationRequest.subscribe((valueData) => {
+        const [stringToValidate, selectedValueIndex] = valueData;
+        this.dispatchEvent(
+          new CustomEvent("customValidateRequest", {
+            bubbles: true,
+            detail: {
+              stringToValidate,
+              selectedValueIndex,
+            },
+          })
+        );
+      });
+    });
+
     this.startMuchSelectObserver();
 
     this.startSelectSlotObserver();
+
+    this.startCustomValidationSlotObserver();
 
     // Set up the hidden input slot (if it exists) with any initial values
     this.updateHiddenInputValueSlot();
@@ -820,6 +843,49 @@ class MuchSelect extends HTMLElement {
     }
   }
 
+  startCustomValidationSlotObserver() {
+    // Options for the observer (which mutations to observe)
+    const customValidationResultSlotConfig = {
+      attributes: true,
+      childList: true,
+      subtree: true,
+      characterData: true,
+    };
+
+    this._customValidationResultSlotObserver = new MutationObserver(
+      (mutationsList) => {
+        mutationsList.forEach((mutation) => {
+          if (mutation.type === "childList") {
+            const jsonData = JSON.parse(mutation.target.textContent);
+            this.appPromise.then((app) => {
+              // noinspection JSUnresolvedVariable
+              app.ports.customValidationReceiver.send(jsonData);
+            });
+          }
+        });
+      }
+    );
+
+    const customValidationResultElement = this.querySelector(
+      "[slot='custom-validation-result']"
+    );
+
+    if (customValidationResultElement) {
+      this._customValidationResultSlotObserver.observe(
+        this.querySelector("[slot='custom-validation-result']"),
+        customValidationResultSlotConfig
+      );
+    }
+  }
+
+  stopCustomValidationSlotObserver() {
+    if (this._customValidationResultSlotObserver) {
+      if (this._customValidationResultSlotObserver.disconnect) {
+        this._customValidationResultSlotObserver.disconnect();
+      }
+    }
+  }
+
   updateOptionsFromDom() {
     const selectElement = this.querySelector("select[slot='select-input']");
     if (selectElement) {
@@ -834,6 +900,8 @@ class MuchSelect extends HTMLElement {
     if (this._selectSlotObserver) {
       this._selectSlotObserver.disconnect();
     }
+
+    this.stopCustomValidationSlotObserver();
 
     this._connected = false;
   }

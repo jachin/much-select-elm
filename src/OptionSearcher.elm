@@ -117,10 +117,13 @@ updateOrAddCustomOption searchString selectionMode options =
                 case SelectionMode.getCustomOptions selectionMode of
                     AllowCustomOptions _ transformAndValidate ->
                         case TransformAndValidate.transformAndValidateSearchString transformAndValidate searchString of
-                            TransformAndValidate.ValidationPass str ->
+                            TransformAndValidate.ValidationPass str _ ->
                                 ( True, SearchString.new str )
 
-                            TransformAndValidate.ValidationFailed _ ->
+                            TransformAndValidate.ValidationFailed _ _ _ ->
+                                ( False, searchString )
+
+                            TransformAndValidate.ValidationPending string _ ->
                                 ( False, searchString )
 
                     NoCustomOptions ->

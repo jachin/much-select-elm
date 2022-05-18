@@ -2,7 +2,7 @@ module TransformAndValidate.Validations exposing (suite)
 
 import Expect
 import Test exposing (Test, describe, test)
-import TransformAndValidate exposing (ValidationErrorMessage(..), ValidationReportLevel(..), ValidationResult(..), Validator(..), ValueTransformAndValidate(..), transformAndValidate)
+import TransformAndValidate exposing (ValidationErrorMessage(..), ValidationReportLevel(..), ValidationResult(..), Validator(..), ValueTransformAndValidate(..), transformAndValidateFirstPass)
 
 
 suite : Test
@@ -12,7 +12,7 @@ suite =
             [ test "the string has no white space so it should pass" <|
                 \_ ->
                     Expect.equal
-                        (transformAndValidate
+                        (transformAndValidateFirstPass
                             (ValueTransformAndValidate []
                                 [ NoWhiteSpace ShowError (ValidationErrorMessage "No white space allowed")
                                 ]
@@ -23,7 +23,7 @@ suite =
             , test "the string has white space so it should not pass" <|
                 \_ ->
                     Expect.equal
-                        (transformAndValidate
+                        (transformAndValidateFirstPass
                             (ValueTransformAndValidate []
                                 [ NoWhiteSpace ShowError (ValidationErrorMessage "No white space allowed")
                                 ]
@@ -36,7 +36,7 @@ suite =
             [ test "and it's long enough" <|
                 \_ ->
                     Expect.equal
-                        (transformAndValidate
+                        (transformAndValidateFirstPass
                             (ValueTransformAndValidate []
                                 [ MinimumLength ShowError (ValidationErrorMessage "The value is too short") 3
                                 ]
@@ -47,7 +47,7 @@ suite =
             , test "and it's not long enough" <|
                 \_ ->
                     Expect.equal
-                        (transformAndValidate
+                        (transformAndValidateFirstPass
                             (ValueTransformAndValidate []
                                 [ MinimumLength ShowError (ValidationErrorMessage "The value is too short") 20
                                 ]

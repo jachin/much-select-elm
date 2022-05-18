@@ -4,6 +4,7 @@ port module Ports exposing
     , allowCustomOptionsReceiver
     , blurInput
     , customOptionSelected
+    , customValidationReceiver
     , deselectOptionReceiver
     , disableChangedReceiver
     , errorMessage
@@ -31,6 +32,7 @@ port module Ports exposing
     , searchStringMinimumLengthChangedReceiver
     , selectOptionReceiver
     , selectedItemStaysInPlaceChangedReceiver
+    , sendCustomValidationRequest
     , showDropdownFooterChangedReceiver
     , updateOptionsFromDom
     , updateOptionsInWebWorker
@@ -104,6 +106,12 @@ port searchOptionsWithWebWorker : Json.Decode.Value -> Cmd msg
 
 
 port updateOptionsInWebWorker : () -> Cmd msg
+
+
+port sendCustomValidationRequest : ( String, Int ) -> Cmd msg
+
+
+port customValidationReceiver : (Json.Decode.Value -> msg) -> Sub msg
 
 
 port requestAllOptionsReceiver : (() -> msg) -> Sub msg

@@ -102,6 +102,7 @@ import Ports
         , allowCustomOptionsReceiver
         , blurInput
         , customOptionSelected
+        , customValidationReceiver
         , deselectOptionReceiver
         , disableChangedReceiver
         , errorMessage
@@ -129,6 +130,7 @@ import Ports
         , searchStringMinimumLengthChangedReceiver
         , selectOptionReceiver
         , selectedItemStaysInPlaceChangedReceiver
+        , sendCustomValidationRequest
         , showDropdownFooterChangedReceiver
         , updateOptionsFromDom
         , updateOptionsInWebWorker
@@ -168,7 +170,7 @@ import SelectionMode
         , showDropdownFooter
         )
 import Task
-import TransformAndValidate exposing (ValueTransformAndValidate, transformAndValidate)
+import TransformAndValidate exposing (ValueTransformAndValidate, transformAndValidateFirstPass)
 
 
 type Msg
@@ -221,6 +223,7 @@ type Msg
     | RemoveMultiSelectValue Int
     | RequestAllOptions
     | UpdateSearchResultsForOptions Json.Encode.Value
+    | CustomValidationResponse Json.Encode.Value
 
 
 type alias Model =
@@ -447,8 +450,8 @@ update msg model =
             )
 
         UpdateOptionValueValue selectedValueIndex valueString ->
-            case transformAndValidate (SelectionMode.getTransformAndValidate model.selectionConfig) valueString of
-                TransformAndValidate.ValidationPass _ ->
+            case transformAndValidateFirstPass (SelectionMode.getTransformAndValidate model.selectionConfig) valueString selectedValueIndex of
+                TransformAndValidate.ValidationPass _ _ ->
                     let
                         updatedOptions =
                             updateDatalistOptionsWithValue
@@ -468,7 +471,7 @@ update msg model =
                         maybeSelectedOptionValue
                     )
 
-                TransformAndValidate.ValidationFailed validationErrorMessages ->
+                TransformAndValidate.ValidationFailed _ _ validationErrorMessages ->
                     let
                         updatedOptions =
                             updateDatalistOptionsWithValueAndErrors
@@ -487,6 +490,30 @@ update msg model =
                     , makeCommandMessagesWhenValuesChanges
                         (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
                         maybeSelectedOptionValue
+                    )
+
+                TransformAndValidate.ValidationPending _ _ ->
+                    let
+                        updatedOptions =
+                            updateDatalistOptionsWithValueAndErrors
+                                []
+                                (OptionValue.stringToOptionValue valueString)
+                                selectedValueIndex
+                                model.options
+
+                        maybeSelectedOptionValue =
+                            Just (OptionValue.stringToOptionValue valueString)
+                    in
+                    ( { model
+                        | options = updatedOptions
+                        , rightSlot = updateRightSlot model.rightSlot model.selectionConfig True (updatedOptions |> selectedOptions)
+                      }
+                    , Cmd.batch
+                        [ makeCommandMessagesWhenValuesChanges
+                            (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
+                            maybeSelectedOptionValue
+                        , sendCustomValidationRequest ( valueString, selectedValueIndex )
+                        ]
                     )
 
         UpdateOptionsWithSearchString ->
@@ -1015,6 +1042,57 @@ update msg model =
                       }
                     , Cmd.none
                     )
+
+                Err error ->
+                    ( model, errorMessage (Json.Decode.errorToString error) )
+
+        CustomValidationResponse customValidationResultJson ->
+            case Json.Decode.decodeValue TransformAndValidate.customValidationResultDecoder customValidationResultJson of
+                Ok customValidationResult ->
+                    case TransformAndValidate.transformAndValidateSecondPass (SelectionMode.getTransformAndValidate model.selectionConfig) customValidationResult of
+                        TransformAndValidate.ValidationPass valueString selectedValueIndex ->
+                            let
+                                updatedOptions =
+                                    updateDatalistOptionsWithValue
+                                        (OptionValue.stringToOptionValue valueString)
+                                        selectedValueIndex
+                                        model.options
+
+                                maybeSelectedOptionValue =
+                                    Just (OptionValue.stringToOptionValue valueString)
+                            in
+                            ( { model
+                                | options = updatedOptions
+                                , rightSlot = updateRightSlot model.rightSlot model.selectionConfig True (updatedOptions |> selectedOptions)
+                              }
+                            , makeCommandMessagesWhenValuesChanges
+                                (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
+                                maybeSelectedOptionValue
+                            )
+
+                        TransformAndValidate.ValidationFailed valueString selectedValueIndex validationFailureMessages ->
+                            let
+                                updatedOptions =
+                                    updateDatalistOptionsWithValueAndErrors
+                                        validationFailureMessages
+                                        (OptionValue.stringToOptionValue valueString)
+                                        selectedValueIndex
+                                        model.options
+
+                                maybeSelectedOptionValue =
+                                    Just (OptionValue.stringToOptionValue valueString)
+                            in
+                            ( { model
+                                | options = updatedOptions
+                                , rightSlot = updateRightSlot model.rightSlot model.selectionConfig True (updatedOptions |> selectedOptions)
+                              }
+                            , makeCommandMessagesWhenValuesChanges
+                                (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
+                                maybeSelectedOptionValue
+                            )
+
+                        TransformAndValidate.ValidationPending _ _ ->
+                            ( model, errorMessage "We should not end up with a validation pending state on a second pass." )
 
                 Err error ->
                     ( model, errorMessage (Json.Decode.errorToString error) )
@@ -1816,10 +1894,10 @@ multiSelectDatasetInputField maybeOption selectionConfig rightSlot index =
                     ]
                     []
 
-        makeValidationErrorMessage : TransformAndValidate.ValidationFailure -> Html msg
+        makeValidationErrorMessage : TransformAndValidate.ValidationFailureMessage -> Html msg
         makeValidationErrorMessage validationFailure =
             case validationFailure of
-                TransformAndValidate.ValidationFailure validationReportLevel validationErrorMessage ->
+                TransformAndValidate.ValidationFailureMessage validationReportLevel validationErrorMessage ->
                     case validationReportLevel of
                         TransformAndValidate.SilentError ->
                             text ""
@@ -2763,6 +2841,7 @@ subscriptions _ =
         , valueChangedReceiver ValueChanged
         , outputStyleChangedReceiver OutputStyleChanged
         , updateSearchResultDataWithWebWorkerReceiver UpdateSearchResultsForOptions
+        , customValidationReceiver CustomValidationResponse
         ]
 
 

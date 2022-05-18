@@ -68,7 +68,7 @@ import OptionSearchFilter exposing (OptionSearchFilter, OptionSearchFilterWithVa
 import OptionValue exposing (OptionValue(..), optionValueToString, stringToOptionValue)
 import SelectionMode exposing (OutputStyle(..), SelectionConfig)
 import SortRank exposing (SortRank(..))
-import TransformAndValidate exposing (ValidationErrorMessage, ValidationFailure)
+import TransformAndValidate exposing (ValidationErrorMessage, ValidationFailureMessage)
 
 
 type Option
@@ -98,7 +98,7 @@ type OptionDisplay
     = OptionShown
     | OptionHidden
     | OptionSelected Int
-    | OptionSelectedAndInvalid Int (List ValidationFailure)
+    | OptionSelectedAndInvalid Int (List ValidationFailureMessage)
     | OptionSelectedHighlighted Int
     | OptionHighlighted
     | OptionDisabled
@@ -206,7 +206,7 @@ newSelectedDatalistOption optionValue selectedIndex =
         optionValue
 
 
-newSelectedDatalistOptionWithErrors : List ValidationFailure -> OptionValue -> Int -> Option
+newSelectedDatalistOptionWithErrors : List ValidationFailureMessage -> OptionValue -> Int -> Option
 newSelectedDatalistOptionWithErrors errors optionValue selectedIndex =
     DatalistOption
         (OptionSelectedAndInvalid selectedIndex errors)
@@ -1609,7 +1609,7 @@ equal optionA optionB =
     optionA == optionB
 
 
-setOptionDisplayErrors : List ValidationFailure -> OptionDisplay -> OptionDisplay
+setOptionDisplayErrors : List ValidationFailureMessage -> OptionDisplay -> OptionDisplay
 setOptionDisplayErrors validationErrorMessages optionDisplay =
     case optionDisplay of
         OptionShown ->
@@ -1638,7 +1638,7 @@ setOptionDisplayErrors validationErrorMessages optionDisplay =
             optionDisplay
 
 
-setOptionValueErrors : List ValidationFailure -> Option -> Option
+setOptionValueErrors : List ValidationFailureMessage -> Option -> Option
 setOptionValueErrors validationFailures option =
     let
         newOptionDisplay =
@@ -1649,12 +1649,12 @@ setOptionValueErrors validationFailures option =
     setOptionDisplay newOptionDisplay option
 
 
-getOptionValidationErrors : Option -> List ValidationFailure
+getOptionValidationErrors : Option -> List ValidationFailureMessage
 getOptionValidationErrors option =
     getOptionDisplayValidationMessages (getOptionDisplay option)
 
 
-getOptionDisplayValidationMessages : OptionDisplay -> List ValidationFailure
+getOptionDisplayValidationMessages : OptionDisplay -> List ValidationFailureMessage
 getOptionDisplayValidationMessages optionDisplay =
     case optionDisplay of
         OptionShown ->
