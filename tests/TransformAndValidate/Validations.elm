@@ -2,7 +2,16 @@ module TransformAndValidate.Validations exposing (suite)
 
 import Expect
 import Test exposing (Test, describe, test)
-import TransformAndValidate exposing (ValidationErrorMessage(..), ValidationFailureMessage(..), ValidationReportLevel(..), ValidationResult(..), Validator(..), ValueTransformAndValidate(..), transformAndValidateFirstPass)
+import TransformAndValidate
+    exposing
+        ( ValidationErrorMessage(..)
+        , ValidationFailureMessage(..)
+        , ValidationReportLevel(..)
+        , ValidationResult(..)
+        , Validator(..)
+        , ValueTransformAndValidate(..)
+        , transformAndValidateFirstPass
+        )
 
 
 suite : Test
@@ -40,7 +49,7 @@ suite =
                             ]
                         )
             ]
-        , describe "the string is longer than a minium length"
+        , describe "the string is longer than a minimum length"
             [ test "and it's long enough" <|
                 \_ ->
                     Expect.equal

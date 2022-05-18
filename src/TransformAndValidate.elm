@@ -10,20 +10,6 @@ type ValueTransformAndValidate
     = ValueTransformAndValidate (List Transformer) (List Validator)
 
 
-hasCustomValidation : ValueTransformAndValidate -> Bool
-hasCustomValidation (ValueTransformAndValidate _ validators) =
-    List.any
-        (\validator ->
-            case validator of
-                Custom ->
-                    True
-
-                _ ->
-                    False
-        )
-        validators
-
-
 empty =
     ValueTransformAndValidate [] []
 
