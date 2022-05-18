@@ -3,7 +3,6 @@ module SelectionMode exposing
     , OutputStyle(..)
     , SelectionConfig(..)
     , SelectionMode(..)
-    , canDoSingleItemRemoval
     , defaultSelectionConfig
     , getCustomOptionHint
     , getCustomOptions
@@ -34,12 +33,13 @@ module SelectionMode exposing
     , setSelectionMode
     , setShowDropdown
     , setSingleItemRemoval
+    , setTransformAndValidate
     , showDropdown
     , showDropdownFooter
     , stringToOutputStyle
     )
 
-import OutputStyle exposing (CustomOptionHint, CustomOptions(..), DropdownState(..), DropdownStyle(..), MaxDropdownItems(..), MultiSelectOutputStyle(..), SearchStringMinimumLength(..), SelectedItemPlacementMode(..), SingleItemRemoval(..), SingleSelectOutputStyle(..), defaultMultiSelectCustomHtmlFields, defaultSingleSelectCustomHtmlFields, getTransformAndValidateFromCustomOptions)
+import OutputStyle exposing (CustomOptionHint, CustomOptions(..), DropdownState(..), DropdownStyle(..), MaxDropdownItems(..), MultiSelectOutputStyle(..), SearchStringMinimumLength(..), SelectedItemPlacementMode(..), SingleItemRemoval(..), SingleSelectOutputStyle(..), defaultMultiSelectCustomHtmlFields, defaultSingleSelectCustomHtmlFields, getTransformAndValidateFromCustomOptions, setTransformAndValidateFromCustomOptions)
 import PositiveInt
 import TransformAndValidate exposing (ValueTransformAndValidate)
 
@@ -797,16 +797,6 @@ getSingleItemRemoval selectionConfig =
                     EnableSingleItemRemoval
 
 
-canDoSingleItemRemoval : SelectionConfig -> Bool
-canDoSingleItemRemoval selectionConfig =
-    case getSingleItemRemoval selectionConfig of
-        EnableSingleItemRemoval ->
-            True
-
-        DisableSingleItemRemoval ->
-            False
-
-
 getDropdownStyle : SelectionConfig -> DropdownStyle
 getDropdownStyle selectionConfig =
     case selectionConfig of
@@ -888,3 +878,41 @@ getTransformAndValidate selectionConfig =
 
                 MultiSelectDataList valueTransformAndValidate ->
                     valueTransformAndValidate
+
+
+setTransformAndValidate : ValueTransformAndValidate -> SelectionConfig -> SelectionConfig
+setTransformAndValidate newTransformAndValidate selectionConfig =
+    case selectionConfig of
+        SingleSelectConfig singleSelectOutputStyle placeholder interactionState ->
+            case singleSelectOutputStyle of
+                SingleSelectCustomHtml singleSelectCustomHtmlFields ->
+                    let
+                        newSingleSelectCustomFields =
+                            { singleSelectCustomHtmlFields
+                                | customOptions =
+                                    setTransformAndValidateFromCustomOptions
+                                        newTransformAndValidate
+                                        singleSelectCustomHtmlFields.customOptions
+                            }
+                    in
+                    SingleSelectConfig (SingleSelectCustomHtml newSingleSelectCustomFields) placeholder interactionState
+
+                SingleSelectDatalist _ ->
+                    SingleSelectConfig (SingleSelectDatalist newTransformAndValidate) placeholder interactionState
+
+        MultiSelectConfig multiSelectOutputStyle placeholder interactionState ->
+            case multiSelectOutputStyle of
+                MultiSelectCustomHtml multiSelectCustomHtmlFields ->
+                    let
+                        newMultiSelectCustomHtmlFields =
+                            { multiSelectCustomHtmlFields
+                                | customOptions =
+                                    setTransformAndValidateFromCustomOptions
+                                        newTransformAndValidate
+                                        multiSelectCustomHtmlFields.customOptions
+                            }
+                    in
+                    MultiSelectConfig (MultiSelectCustomHtml newMultiSelectCustomHtmlFields) placeholder interactionState
+
+                MultiSelectDataList _ ->
+                    MultiSelectConfig (MultiSelectDataList newTransformAndValidate) placeholder interactionState

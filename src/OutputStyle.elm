@@ -164,3 +164,13 @@ getTransformAndValidateFromCustomOptions customOptions =
 
         NoCustomOptions ->
             TransformAndValidate.empty
+
+
+setTransformAndValidateFromCustomOptions : ValueTransformAndValidate -> CustomOptions -> CustomOptions
+setTransformAndValidateFromCustomOptions newTransformAndValidate customOptions =
+    case customOptions of
+        AllowCustomOptions hint _ ->
+            AllowCustomOptions hint newTransformAndValidate
+
+        NoCustomOptions ->
+            customOptions

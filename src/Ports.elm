@@ -34,6 +34,7 @@ port module Ports exposing
     , selectedItemStaysInPlaceChangedReceiver
     , sendCustomValidationRequest
     , showDropdownFooterChangedReceiver
+    , transformationAndValidationReceiver
     , updateOptionsFromDom
     , updateOptionsInWebWorker
     , updateSearchResultDataWithWebWorkerReceiver
@@ -112,6 +113,9 @@ port sendCustomValidationRequest : ( String, Int ) -> Cmd msg
 
 
 port customValidationReceiver : (Json.Decode.Value -> msg) -> Sub msg
+
+
+port transformationAndValidationReceiver : (Json.Decode.Value -> msg) -> Sub msg
 
 
 port requestAllOptionsReceiver : (() -> msg) -> Sub msg

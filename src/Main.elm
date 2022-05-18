@@ -26,7 +26,16 @@ import Html.Attributes
         , value
         )
 import Html.Attributes.Extra exposing (attributeIf)
-import Html.Events exposing (onBlur, onClick, onFocus, onInput, onMouseDown, onMouseEnter, onMouseLeave)
+import Html.Events
+    exposing
+        ( onBlur
+        , onClick
+        , onFocus
+        , onInput
+        , onMouseDown
+        , onMouseEnter
+        , onMouseLeave
+        )
 import Html.Lazy
 import Json.Decode
 import Json.Encode
@@ -130,7 +139,9 @@ import Ports
         , searchStringMinimumLengthChangedReceiver
         , selectOptionReceiver
         , selectedItemStaysInPlaceChangedReceiver
+        , sendCustomValidationRequest
         , showDropdownFooterChangedReceiver
+        , transformationAndValidationReceiver
         , updateOptionsFromDom
         , updateOptionsInWebWorker
         , updateSearchResultDataWithWebWorkerReceiver
@@ -223,6 +234,7 @@ type Msg
     | RequestAllOptions
     | UpdateSearchResultsForOptions Json.Encode.Value
     | CustomValidationResponse Json.Encode.Value
+    | UpdateTransformationAndValidation Json.Encode.Value
 
 
 type alias Model =
@@ -1089,6 +1101,21 @@ update msg model =
 
                         TransformAndValidate.ValidationPending _ _ ->
                             ( model, errorMessage "We should not end up with a validation pending state on a second pass." )
+
+                Err error ->
+                    ( model, errorMessage (Json.Decode.errorToString error) )
+
+        UpdateTransformationAndValidation transformationAndValidationJson ->
+            case Json.Decode.decodeValue TransformAndValidate.decoder transformationAndValidationJson of
+                Ok newTransformationAndValidation ->
+                    ( { model
+                        | selectionConfig =
+                            SelectionMode.setTransformAndValidate
+                                newTransformationAndValidation
+                                model.selectionConfig
+                      }
+                    , Cmd.none
+                    )
 
                 Err error ->
                     ( model, errorMessage (Json.Decode.errorToString error) )
@@ -2618,12 +2645,23 @@ makeCommandMessagesWhenValuesChanges selectedOptions maybeSelectedValue =
 
                 Nothing ->
                     Cmd.none
+
+        customValidationCmd =
+            if OptionsUtilities.hasAnyPendingValidation selectedOptions then
+                selectedOptions
+                    |> List.filter Option.isPendingValidation
+                    |> List.map (\option -> sendCustomValidationRequest ( Option.getOptionValueAsString option, Option.getOptionSelectedIndex option ))
+                    |> Cmd.batch
+
+            else
+                Cmd.none
     in
     Cmd.batch
         [ valueChangeCmd
         , customOptionCmd
         , clearCmd
         , optionSelectedCmd
+        , customValidationCmd
         ]
 
 
@@ -2870,6 +2908,7 @@ subscriptions _ =
         , outputStyleChangedReceiver OutputStyleChanged
         , updateSearchResultDataWithWebWorkerReceiver UpdateSearchResultsForOptions
         , customValidationReceiver CustomValidationResponse
+        , transformationAndValidationReceiver UpdateTransformationAndValidation
         ]
 
 

@@ -343,6 +343,12 @@ class MuchSelect extends HTMLElement {
      */
     this._customValidationResultSlotObserver = null;
 
+    /**
+     * @type {null|MutationObserver}
+     * @private
+     */
+    this._transformationValidationSlotObserver = null;
+
     this._inputKeypressDebounceHandler = makeDebouncedFunc((searchString) => {
       this.dispatchEvent(
         new CustomEvent("inputKeyUpDebounced", {
@@ -375,7 +381,6 @@ class MuchSelect extends HTMLElement {
 
     this._callValueChanged = makeDebounceLeadingFunc((newValue) => {
       this.appPromise.then((app) => {
-        // console.trace("this._callValueChanged");
         // noinspection JSUnresolvedVariable
         app.ports.valueChangedReceiver.send(newValue);
       });
@@ -777,6 +782,8 @@ class MuchSelect extends HTMLElement {
 
     this.startCustomValidationSlotObserver();
 
+    this.startTransformationValidationSlotObserver();
+
     // Set up the hidden input slot (if it exists) with any initial values
     this.updateHiddenInputValueSlot();
 
@@ -887,6 +894,55 @@ class MuchSelect extends HTMLElement {
     }
   }
 
+  startTransformationValidationSlotObserver() {
+    // Options for the observer (which mutations to observe)
+    const slotConfig = {
+      attributes: false,
+      childList: true,
+      subtree: true,
+      characterData: true,
+    };
+
+    this._transformationValidationSlotObserver = new MutationObserver(
+      (mutationsList) => {
+        mutationsList.forEach((mutation) => {
+          if (mutation.type === "childList") {
+            this._updateTransformationValidationFromTheDom();
+          }
+        });
+      }
+    );
+
+    const element = this.querySelector("[slot='transformation-validation']");
+    if (element) {
+      this._customValidationResultSlotObserver.observe(
+        this.querySelector("[slot='transformation-validation']"),
+        slotConfig
+      );
+
+      this._updateTransformationValidationFromTheDom();
+    }
+  }
+
+  stopTransformationValidationSlotObserver() {
+    if (this._transformationValidationSlotObserver) {
+      if (this._transformationValidationSlotObserver.disconnect) {
+        this._transformationValidationSlotObserver.disconnect();
+      }
+    }
+  }
+
+  _updateTransformationValidationFromTheDom() {
+    const element = this.querySelector("[slot='transformation-validation']");
+    if (element) {
+      const jsonData = JSON.parse(element.textContent);
+      this.appPromise.then((app) => {
+        // noinspection JSUnresolvedVariable
+        app.ports.transformationAndValidationReceiver.send(jsonData);
+      });
+    }
+  }
+
   updateOptionsFromDom() {
     const selectElement = this.querySelector("select[slot='select-input']");
     if (selectElement) {
@@ -903,6 +959,8 @@ class MuchSelect extends HTMLElement {
     }
 
     this.stopCustomValidationSlotObserver();
+
+    this.stopTransformationValidationSlotObserver();
 
     this._connected = false;
   }
