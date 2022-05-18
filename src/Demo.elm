@@ -4,7 +4,8 @@ import Browser
 import Html exposing (Attribute, Html, button, div, option, select, text)
 import Html.Attributes exposing (attribute, type_)
 import Html.Attributes.Extra
-import Html.Events exposing (onClick)
+import Html.Events exposing (on, onClick)
+import Json.Decode
 import Json.Encode
 
 
@@ -17,7 +18,8 @@ type alias Model =
 
 
 type Msg
-    = ValueChanged (List String)
+    = ValueChanged MuchSelectValue
+    | InputKeyUpDebounced String
     | ToggleAllowCustomValues
 
 
@@ -45,6 +47,9 @@ update msg model =
         ToggleAllowCustomValues ->
             ( { model | allowCustomOptions = not model.allowCustomOptions }, Cmd.none )
 
+        InputKeyUpDebounced string ->
+            ( model, Cmd.none )
+
 
 subscriptions : Model -> Sub Msg
 subscriptions _ =
@@ -65,6 +70,33 @@ allowCustomOptionsAttribute bool =
         Html.Attributes.Extra.empty
 
 
+type alias MuchSelectValue =
+    { value : String, label : String }
+
+
+valueDecoder : Json.Decode.Decoder MuchSelectValue
+valueDecoder =
+    Json.Decode.map2
+        MuchSelectValue
+        (Json.Decode.field "value" Json.Decode.string)
+        (Json.Decode.field "label" Json.Decode.string)
+
+
+singleValueChangedAttribute : Attribute Msg
+singleValueChangedAttribute =
+    on "valueChanged" (Json.Decode.map ValueChanged (Json.Decode.at [ "detail", "value" ] valueDecoder))
+
+
+maybeInputKeyupMsgToAttribute : Attribute Msg
+maybeInputKeyupMsgToAttribute =
+    on "inputKeyUpDebounced"
+        (Json.Decode.at
+            [ "detail", "searchString" ]
+            Json.Decode.string
+            |> Json.Decode.map InputKeyUpDebounced
+        )
+
+
 view : Model -> Html Msg
 view model =
     let
@@ -76,7 +108,11 @@ view model =
     in
     div []
         [ Html.node "much-select"
-            [ allowCustomOptionsAttribute model.allowCustomOptions ]
+            [ attribute "events-only" ""
+            , allowCustomOptionsAttribute model.allowCustomOptions
+            , singleValueChangedAttribute
+            , maybeInputKeyupMsgToAttribute
+            ]
             [ select [ slot "select-input" ]
                 [ option [] [ text "tom" ]
                 , option [] [ text "bert" ]
