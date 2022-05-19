@@ -87,12 +87,16 @@
           // Focus on the input filter so the dropdown opens.
           el.shadowRoot.querySelector("#input-filter").focus();
 
+          await oneEvent(el, "muchSelectFocused");
+
+          await nextFrame();
+
           // Ensure the selected option is in the right spot.
           const secondOption = el.shadowRoot.querySelector(
             "#dropdown .option:nth-child(2)"
           );
 
-          expect(secondOption.classList.contains("selected")).to.be.true;
+          expect(secondOption).to.have.class("selected");
         });
       });
     });

@@ -32,6 +32,7 @@ flagsEmptyOptionsWithOrangeSelected =
     , selectedItemStaysInPlace = True
     , searchStringMinimumLength = 2
     , showDropdownFooter = False
+    , transformationAndValidationJson = ""
     }
 
 
@@ -111,6 +112,7 @@ flagsBookOptions =
     , selectedItemStaysInPlace = True
     , searchStringMinimumLength = 2
     , showDropdownFooter = False
+    , transformationAndValidationJson = ""
     }
 
 
@@ -131,6 +133,7 @@ flagsBookOptionsWithValue =
     , selectedItemStaysInPlace = True
     , searchStringMinimumLength = 2
     , showDropdownFooter = False
+    , transformationAndValidationJson = ""
     }
 
 
@@ -151,6 +154,7 @@ flagsBookOptionsWithSelected =
     , selectedItemStaysInPlace = True
     , searchStringMinimumLength = 2
     , showDropdownFooter = False
+    , transformationAndValidationJson = ""
     }
 
 

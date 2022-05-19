@@ -121,6 +121,20 @@ const cleanUpOption = (option) => {
 
 const cleanUpOptions = (options) => options.map(cleanUpOption);
 
+const cleanUpSelectedValue = (selectedValue) => {
+  let newSelectedValue;
+  if (selectedValue === null) {
+    newSelectedValue = null;
+  } else if (selectedValue === undefined) {
+    newSelectedValue = null;
+  } else if (selectedValue === "") {
+    newSelectedValue = "";
+  } else {
+    newSelectedValue = selectedValue;
+  }
+  return newSelectedValue;
+};
+
 const makeDebouncedFunc = (func, timeout = 500) => {
   let timer;
   return (...args) => {
@@ -323,6 +337,18 @@ class MuchSelect extends HTMLElement {
      */
     this._selectSlotObserver = null;
 
+    /**
+     * @type {null|MutationObserver}
+     * @private
+     */
+    this._customValidationResultSlotObserver = null;
+
+    /**
+     * @type {null|MutationObserver}
+     * @private
+     */
+    this._transformationValidationSlotObserver = null;
+
     this._inputKeypressDebounceHandler = makeDebouncedFunc((searchString) => {
       this.dispatchEvent(
         new CustomEvent("inputKeyUpDebounced", {
@@ -493,8 +519,10 @@ class MuchSelect extends HTMLElement {
     // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
     this.appPromise.then((app) =>
       app.ports.muchSelectIsReady.subscribe(() => {
-        this.dispatchEvent(new CustomEvent("ready", { bubbles: true }));
-        this.dispatchEvent(new CustomEvent("muchSelectReady"));
+        window.requestAnimationFrame(() => {
+          this.dispatchEvent(new CustomEvent("ready", { bubbles: true }));
+          this.dispatchEvent(new CustomEvent("muchSelectReady"));
+        });
       })
     );
 
@@ -620,18 +648,42 @@ class MuchSelect extends HTMLElement {
             })
           );
         }
+        window.requestAnimationFrame(() => {
+          this.dispatchEvent(
+            new CustomEvent("muchSelectBlurred", {
+              bubbles: true,
+            })
+          );
+        });
       })
     );
 
     // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
     this.appPromise.then((app) =>
       app.ports.focusInput.subscribe(() => {
+        // This port is here because we need to be able to call the focus method
+        //  which is something we can not do from inside Elm.
         window.requestAnimationFrame(() => {
           const inputFilterElement =
             this.shadowRoot.getElementById("input-filter");
           if (inputFilterElement) {
             this.shadowRoot.getElementById("input-filter").focus();
           }
+        });
+      })
+    );
+
+    // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
+    this.appPromise.then((app) =>
+      app.ports.inputFocused.subscribe(() => {
+        // Emit an even once the input has been focused. This might have other
+        //  uses but this is helpful for writing automated tests.
+        window.requestAnimationFrame(() => {
+          this.dispatchEvent(
+            new CustomEvent("muchSelectFocused", {
+              bubbles: false,
+            })
+          );
         });
       })
     );
@@ -708,9 +760,29 @@ class MuchSelect extends HTMLElement {
       });
     });
 
+    this.appPromise.then((app) => {
+      // noinspection JSUnresolvedVariable
+      app.ports.sendCustomValidationRequest.subscribe((valueData) => {
+        const [stringToValidate, selectedValueIndex] = valueData;
+        this.dispatchEvent(
+          new CustomEvent("customValidateRequest", {
+            bubbles: true,
+            detail: {
+              stringToValidate,
+              selectedValueIndex,
+            },
+          })
+        );
+      });
+    });
+
     this.startMuchSelectObserver();
 
     this.startSelectSlotObserver();
+
+    this.startCustomValidationSlotObserver();
+
+    this.startTransformationValidationSlotObserver();
 
     // Set up the hidden input slot (if it exists) with any initial values
     this.updateHiddenInputValueSlot();
@@ -779,6 +851,101 @@ class MuchSelect extends HTMLElement {
     }
   }
 
+  startCustomValidationSlotObserver() {
+    // Options for the observer (which mutations to observe)
+    const customValidationResultSlotConfig = {
+      attributes: true,
+      childList: true,
+      subtree: true,
+      characterData: true,
+    };
+
+    this._customValidationResultSlotObserver = new MutationObserver(
+      (mutationsList) => {
+        mutationsList.forEach((mutation) => {
+          if (
+            mutation.type === "childList" ||
+            mutation.type === "characterData"
+          ) {
+            const jsonData = JSON.parse(mutation.target.textContent);
+            this.appPromise.then((app) => {
+              // noinspection JSUnresolvedVariable
+              app.ports.customValidationReceiver.send(jsonData);
+            });
+          }
+        });
+      }
+    );
+
+    const customValidationResultElement = this.querySelector(
+      "[slot='custom-validation-result']"
+    );
+
+    if (customValidationResultElement) {
+      this._customValidationResultSlotObserver.observe(
+        this.querySelector("[slot='custom-validation-result']"),
+        customValidationResultSlotConfig
+      );
+    }
+  }
+
+  stopCustomValidationSlotObserver() {
+    if (this._customValidationResultSlotObserver) {
+      if (this._customValidationResultSlotObserver.disconnect) {
+        this._customValidationResultSlotObserver.disconnect();
+      }
+    }
+  }
+
+  startTransformationValidationSlotObserver() {
+    // Options for the observer (which mutations to observe)
+    const slotConfig = {
+      attributes: false,
+      childList: true,
+      subtree: true,
+      characterData: true,
+    };
+
+    this._transformationValidationSlotObserver = new MutationObserver(
+      (mutationsList) => {
+        mutationsList.forEach((mutation) => {
+          if (mutation.type === "childList") {
+            this._updateTransformationValidationFromTheDom();
+          }
+        });
+      }
+    );
+
+    const element = this.querySelector("[slot='transformation-validation']");
+    if (element) {
+      this._customValidationResultSlotObserver.observe(
+        this.querySelector("[slot='transformation-validation']"),
+        slotConfig
+      );
+
+      this._updateTransformationValidationFromTheDom();
+    }
+  }
+
+  stopTransformationValidationSlotObserver() {
+    if (this._transformationValidationSlotObserver) {
+      if (this._transformationValidationSlotObserver.disconnect) {
+        this._transformationValidationSlotObserver.disconnect();
+      }
+    }
+  }
+
+  _updateTransformationValidationFromTheDom() {
+    const element = this.querySelector("[slot='transformation-validation']");
+    if (element) {
+      const jsonData = JSON.parse(element.textContent);
+      this.appPromise.then((app) => {
+        // noinspection JSUnresolvedVariable
+        app.ports.transformationAndValidationReceiver.send(jsonData);
+      });
+    }
+  }
+
   updateOptionsFromDom() {
     const selectElement = this.querySelector("select[slot='select-input']");
     if (selectElement) {
@@ -793,6 +960,10 @@ class MuchSelect extends HTMLElement {
     if (this._selectSlotObserver) {
       this._selectSlotObserver.disconnect();
     }
+
+    this.stopCustomValidationSlotObserver();
+
+    this.stopTransformationValidationSlotObserver();
 
     this._connected = false;
   }
@@ -944,6 +1115,17 @@ class MuchSelect extends HTMLElement {
       flags.outputStyle = this.outputStyle;
     }
 
+    const transformationAndValidationSlot = this.querySelector(
+      "[slot='transformation-validation']"
+    );
+
+    if (transformationAndValidationSlot) {
+      flags.transformationAndValidationJson =
+        transformationAndValidationSlot.textContent;
+    } else {
+      flags.transformationAndValidationJson = "";
+    }
+
     flags.disabled = this.disabled;
     flags.loading = this.loading;
     flags.selectedItemStaysInPlace = this.selectedItemStaysInPlace;
@@ -975,13 +1157,15 @@ class MuchSelect extends HTMLElement {
    */
   valueChangedHandler(valuesTuple, isInitialValueChange = false) {
     if (this.isInMultiSelectMode) {
-      this.parsedSelectedValue = valuesTuple.map((valueTuple) => valueTuple[0]);
+      const tempSelectedValue = valuesTuple.map((valueTuple) => valueTuple[0]);
+      this._syncParseSelectedValue(tempSelectedValue);
     } else {
       const valueAsArray = valuesTuple.map((valueTuple) => valueTuple[0]);
       if (valueAsArray.length === 0) {
-        this.parsedSelectedValue = "";
+        this._syncParseSelectedValue("");
       } else if (valueAsArray.length > 0) {
-        [this.parsedSelectedValue] = valueAsArray;
+        const [tempSelectedValue] = valueAsArray;
+        this._syncParseSelectedValue(tempSelectedValue);
       }
     }
 
@@ -1137,15 +1321,14 @@ class MuchSelect extends HTMLElement {
   }
 
   set selectedValue(value) {
-    if (value === null) {
-      this._selectedValue = null;
-    } else if (value === undefined) {
-      this._selectedValue = null;
-    } else if (value === "") {
-      this._selectedValue = "";
-    } else {
-      this._selectedValue = value;
+    const newSelectedValue = cleanUpSelectedValue(value);
+
+    if (newSelectedValue === this._selectedValue) {
+      // No actual change happening here, we can skip all this other stuff.
+      return;
     }
+
+    this._selectedValue = newSelectedValue;
 
     if (!this.eventsOnlyMode) {
       this.setAttribute("selected-value", this._selectedValue);
@@ -1169,6 +1352,28 @@ class MuchSelect extends HTMLElement {
     }
 
     this.updateHiddenInputValueSlot();
+  }
+
+  /**
+   * This is a "sync" function, so this is kinda like a "set" function but the
+   *  selected value(s) are coming from Elm. So we do not need to tell Elm about
+   *  them.
+   *
+   * @param value
+   * @private
+   */
+  _syncSelectedValue(value) {
+    const newSelectedValue = cleanUpSelectedValue(value);
+
+    if (newSelectedValue === this._selectedValue) {
+      return;
+    }
+
+    this._selectedValue = newSelectedValue;
+
+    if (!this.eventsOnlyMode) {
+      this.setAttribute("selected-value", this._selectedValue);
+    }
   }
 
   get parsedSelectedValue() {
@@ -1205,21 +1410,45 @@ class MuchSelect extends HTMLElement {
   }
 
   set parsedSelectedValue(values) {
+    this.selectedValue = this._makeSelectedValue(values);
+  }
+
+  /**
+   * This method takes a selected value, and it returns a string of the "parsed"
+   *  selected value.
+   *
+   * @param values
+   * @returns {string|*}
+   * @private
+   */
+  _makeSelectedValue(values) {
     if (this.selectedValueEncoding === "comma") {
       if (Array.isArray(values)) {
-        this.selectedValue = values.join(",");
-      } else {
-        // This should be a string or possibly a null.
-        this.selectedValue = values;
+        return values.join(",");
       }
-    } else if (this.selectedValueEncoding === "json") {
+      // This should be a string or possibly a null.
+      return values;
+    }
+    if (this.selectedValueEncoding === "json") {
       if (values === "") {
         // The empty string here is a special case because we don't want to encode an empty string.
-        this.selectedValue = "";
-      } else {
-        this.selectedValue = encodeURIComponent(JSON.stringify(values));
+        return "";
       }
+      return encodeURIComponent(JSON.stringify(values));
     }
+    return "";
+  }
+
+  /**
+   * This is a "sync" function, so this is kinda like a "set" function but the
+   *  selected value(s) are coming from Elm. So we do not need to tell Elm about
+   *  them.
+   *
+   * @param values
+   * @private
+   */
+  _syncParseSelectedValue(values) {
+    this._syncSelectedValue(this._makeSelectedValue(values));
   }
 
   get placeholder() {
@@ -1481,6 +1710,8 @@ class MuchSelect extends HTMLElement {
         this.allowCustomOptions,
         customOptionHint,
       ]);
+
+      this._updateTransformationValidationFromTheDom();
     });
   }
 
@@ -1649,9 +1880,10 @@ class MuchSelect extends HTMLElement {
       }
 
       // noinspection JSUnresolvedVariable
-      this.appPromise.then((app) =>
-        app.ports.outputStyleChangedReceiver.send(this._outputStyle)
-      );
+      this.appPromise.then((app) => {
+        app.ports.outputStyleChangedReceiver.send(this._outputStyle);
+        this._updateTransformationValidationFromTheDom();
+      });
     } else {
       throw new Error(`Invalid output style: ${value}`);
     }

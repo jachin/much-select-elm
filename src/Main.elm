@@ -10,7 +10,7 @@ import Debouncer.Messages
         , settleWhenQuietFor
         , toDebouncer
         )
-import Html exposing (Html, button, div, input, node, optgroup, span, text)
+import Html exposing (Html, button, div, input, li, node, optgroup, span, text, ul)
 import Html.Attributes
     exposing
         ( class
@@ -26,7 +26,16 @@ import Html.Attributes
         , value
         )
 import Html.Attributes.Extra exposing (attributeIf)
-import Html.Events exposing (onBlur, onClick, onFocus, onInput, onMouseDown, onMouseEnter, onMouseLeave)
+import Html.Events
+    exposing
+        ( onBlur
+        , onClick
+        , onFocus
+        , onInput
+        , onMouseDown
+        , onMouseEnter
+        , onMouseLeave
+        )
 import Html.Lazy
 import Json.Decode
 import Json.Encode
@@ -85,7 +94,9 @@ import OptionsUtilities
         , selectedOptionsToTuple
         , toggleSelectedHighlightByOptionValue
         , unhighlightSelectedOptions
+        , updateDatalistOptionsWithPendingValidation
         , updateDatalistOptionsWithValue
+        , updateDatalistOptionsWithValueAndErrors
         )
 import OutputStyle
     exposing
@@ -101,12 +112,14 @@ import Ports
         , allowCustomOptionsReceiver
         , blurInput
         , customOptionSelected
+        , customValidationReceiver
         , deselectOptionReceiver
         , disableChangedReceiver
         , errorMessage
         , focusInput
         , initialValueSet
         , inputBlurred
+        , inputFocused
         , inputKeyUp
         , loadingChangedReceiver
         , maxDropdownItemsChangedReceiver
@@ -127,7 +140,9 @@ import Ports
         , searchStringMinimumLengthChangedReceiver
         , selectOptionReceiver
         , selectedItemStaysInPlaceChangedReceiver
+        , sendCustomValidationRequest
         , showDropdownFooterChangedReceiver
+        , transformationAndValidationReceiver
         , updateOptionsFromDom
         , updateOptionsInWebWorker
         , updateSearchResultDataWithWebWorkerReceiver
@@ -166,6 +181,7 @@ import SelectionMode
         , showDropdownFooter
         )
 import Task
+import TransformAndValidate exposing (ValueTransformAndValidate, transformAndValidateFirstPass)
 
 
 type Msg
@@ -218,6 +234,8 @@ type Msg
     | RemoveMultiSelectValue Int
     | RequestAllOptions
     | UpdateSearchResultsForOptions Json.Encode.Value
+    | CustomValidationResponse Json.Encode.Value
+    | UpdateTransformationAndValidation Json.Encode.Value
 
 
 type alias Model =
@@ -355,14 +373,14 @@ update msg model =
                                 |> setIsFocused True
                         , rightSlot = updateRightSlotTransitioning NotInFocusTransition model.rightSlot
                       }
-                    , Cmd.none
+                    , inputFocused ()
                     )
 
                 Datalist ->
                     ( { model
                         | selectionConfig = setIsFocused True model.selectionConfig
                       }
-                    , Cmd.none
+                    , inputFocused ()
                     )
 
         DropdownMouseOverOption optionValue ->
@@ -444,24 +462,77 @@ update msg model =
             )
 
         UpdateOptionValueValue selectedValueIndex valueString ->
-            let
-                updatedOptions =
-                    updateDatalistOptionsWithValue
-                        (OptionValue.stringToOptionValue valueString)
-                        selectedValueIndex
-                        model.options
+            case transformAndValidateFirstPass (SelectionMode.getTransformAndValidate model.selectionConfig) valueString selectedValueIndex of
+                TransformAndValidate.ValidationPass _ _ ->
+                    let
+                        updatedOptions =
+                            updateDatalistOptionsWithValue
+                                (OptionValue.stringToOptionValue valueString)
+                                selectedValueIndex
+                                model.options
 
-                maybeSelectedOptionValue =
-                    Just (OptionValue.stringToOptionValue valueString)
-            in
-            ( { model
-                | options = updatedOptions
-                , rightSlot = updateRightSlot model.rightSlot model.selectionConfig True (updatedOptions |> selectedOptions)
-              }
-            , makeCommandMessagesWhenValuesChanges
-                (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
-                maybeSelectedOptionValue
-            )
+                        maybeSelectedOptionValue =
+                            Just (OptionValue.stringToOptionValue valueString)
+                    in
+                    ( { model
+                        | options = updatedOptions
+                        , rightSlot = updateRightSlot model.rightSlot model.selectionConfig True (updatedOptions |> selectedOptions)
+                      }
+                    , makeCommandMessagesWhenValuesChanges
+                        (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
+                        maybeSelectedOptionValue
+                    )
+
+                TransformAndValidate.ValidationFailed _ _ validationErrorMessages ->
+                    let
+                        updatedOptions =
+                            updateDatalistOptionsWithValueAndErrors
+                                validationErrorMessages
+                                (OptionValue.stringToOptionValue valueString)
+                                selectedValueIndex
+                                model.options
+
+                        maybeSelectedOptionValue =
+                            Just (OptionValue.stringToOptionValue valueString)
+                    in
+                    ( { model
+                        | options = updatedOptions
+                        , rightSlot =
+                            updateRightSlot
+                                model.rightSlot
+                                model.selectionConfig
+                                True
+                                (updatedOptions |> selectedOptions)
+                      }
+                    , makeCommandMessagesWhenValuesChanges
+                        (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
+                        maybeSelectedOptionValue
+                    )
+
+                TransformAndValidate.ValidationPending _ _ ->
+                    let
+                        updatedOptions =
+                            updateDatalistOptionsWithPendingValidation
+                                (OptionValue.stringToOptionValue valueString)
+                                selectedValueIndex
+                                model.options
+
+                        maybeSelectedOptionValue =
+                            Just (OptionValue.stringToOptionValue valueString)
+                    in
+                    ( { model
+                        | options = updatedOptions
+                        , rightSlot =
+                            updateRightSlot
+                                model.rightSlot
+                                model.selectionConfig
+                                True
+                                (updatedOptions |> selectedOptions)
+                      }
+                    , makeCommandMessagesWhenValuesChanges
+                        (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
+                        maybeSelectedOptionValue
+                    )
 
         UpdateOptionsWithSearchString ->
             ( updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges model
@@ -546,7 +617,7 @@ update msg model =
                                 |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                             , Cmd.batch
                                 [ optionsUpdated True
-                                , updateOptionsInWebWorker ()
+                                , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchString
                                 ]
                             )
 
@@ -566,7 +637,7 @@ update msg model =
                                 |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                             , Cmd.batch
                                 [ optionsUpdated True
-                                , updateOptionsInWebWorker ()
+                                , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchString
                                 ]
                             )
 
@@ -587,7 +658,7 @@ update msg model =
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , Cmd.batch
                         [ optionsUpdated False
-                        , updateOptionsInWebWorker ()
+                        , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchString
                         ]
                     )
 
@@ -608,7 +679,7 @@ update msg model =
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , Cmd.batch
                         [ optionsUpdated True
-                        , updateOptionsInWebWorker ()
+                        , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchString
                         ]
                     )
 
@@ -636,7 +707,7 @@ update msg model =
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , Cmd.batch
                         [ makeCommandMessagesWhenValuesChanges updatedOptions (Just optionValue)
-                        , updateOptionsInWebWorker ()
+                        , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchString
                         , Task.perform
                             (\_ ->
                                 UpdateOptionsWithSearchString
@@ -803,7 +874,7 @@ update msg model =
                 |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
             , Cmd.batch
                 [ muchSelectIsReady ()
-                , updateOptionsInWebWorker ()
+                , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchString
                 , cmd
                 ]
             )
@@ -836,7 +907,7 @@ update msg model =
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , Cmd.batch
                         [ makeCommandMessagesWhenValuesChanges updatedOptions maybeHighlightedOptionValue
-                        , updateOptionsInWebWorker ()
+                        , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchString
                         , blurInput ()
                         ]
                     )
@@ -849,7 +920,7 @@ update msg model =
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , Cmd.batch
                         [ makeCommandMessagesWhenValuesChanges updatedOptions maybeHighlightedOptionValue
-                        , updateOptionsInWebWorker ()
+                        , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchString
                         , focusInput ()
                         ]
                     )
@@ -878,7 +949,7 @@ update msg model =
         MoveHighlightedOptionUp ->
             let
                 updatedOptions =
-                    moveHighlightedOptionUp model.options (figureOutWhichOptionsToShowInTheDropdown model.selectionConfig model.options)
+                    moveHighlightedOptionUp model.selectionConfig model.options (figureOutWhichOptionsToShowInTheDropdown model.selectionConfig model.options)
             in
             ( { model
                 | options = updatedOptions
@@ -890,7 +961,7 @@ update msg model =
         MoveHighlightedOptionDown ->
             let
                 updatedOptions =
-                    moveHighlightedOptionDown model.options (figureOutWhichOptionsToShowInTheDropdown model.selectionConfig model.options)
+                    moveHighlightedOptionDown model.selectionConfig model.options (figureOutWhichOptionsToShowInTheDropdown model.selectionConfig model.options)
             in
             ( { model
                 | options = updatedOptions
@@ -971,18 +1042,7 @@ update msg model =
 
         RequestAllOptions ->
             ( model
-            , Cmd.batch
-                [ allOptions (Json.Encode.list Option.encode model.options)
-                , Task.perform
-                    (\_ ->
-                        UpdateOptionsWithSearchString
-                            |> provideInput
-                            |> MsgQuietUpdateOptionsWithSearchString
-                    )
-                    (Task.succeed
-                        always
-                    )
-                ]
+            , allOptions (Json.Encode.list Option.encode model.options)
             )
 
         UpdateSearchResultsForOptions updatedSearchResultsJsonValue ->
@@ -997,6 +1057,72 @@ update msg model =
                         | options =
                             adjustHighlightedOptionAfterSearch updatedOptions
                                 (figureOutWhichOptionsToShowInTheDropdown model.selectionConfig updatedOptions)
+                      }
+                    , Cmd.none
+                    )
+
+                Err error ->
+                    ( model, errorMessage (Json.Decode.errorToString error) )
+
+        CustomValidationResponse customValidationResultJson ->
+            case Json.Decode.decodeValue TransformAndValidate.customValidationResultDecoder customValidationResultJson of
+                Ok customValidationResult ->
+                    case TransformAndValidate.transformAndValidateSecondPass (SelectionMode.getTransformAndValidate model.selectionConfig) customValidationResult of
+                        TransformAndValidate.ValidationPass valueString selectedValueIndex ->
+                            let
+                                updatedOptions =
+                                    updateDatalistOptionsWithValue
+                                        (OptionValue.stringToOptionValue valueString)
+                                        selectedValueIndex
+                                        model.options
+
+                                maybeSelectedOptionValue =
+                                    Just (OptionValue.stringToOptionValue valueString)
+                            in
+                            ( { model
+                                | options = updatedOptions
+                                , rightSlot = updateRightSlot model.rightSlot model.selectionConfig True (updatedOptions |> selectedOptions)
+                              }
+                            , makeCommandMessagesWhenValuesChanges
+                                (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
+                                maybeSelectedOptionValue
+                            )
+
+                        TransformAndValidate.ValidationFailed valueString selectedValueIndex validationFailureMessages ->
+                            let
+                                updatedOptions =
+                                    updateDatalistOptionsWithValueAndErrors
+                                        validationFailureMessages
+                                        (OptionValue.stringToOptionValue valueString)
+                                        selectedValueIndex
+                                        model.options
+
+                                maybeSelectedOptionValue =
+                                    Just (OptionValue.stringToOptionValue valueString)
+                            in
+                            ( { model
+                                | options = updatedOptions
+                                , rightSlot = updateRightSlot model.rightSlot model.selectionConfig True (updatedOptions |> selectedOptions)
+                              }
+                            , makeCommandMessagesWhenValuesChanges
+                                (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
+                                maybeSelectedOptionValue
+                            )
+
+                        TransformAndValidate.ValidationPending _ _ ->
+                            ( model, errorMessage "We should not end up with a validation pending state on a second pass." )
+
+                Err error ->
+                    ( model, errorMessage (Json.Decode.errorToString error) )
+
+        UpdateTransformationAndValidation transformationAndValidationJson ->
+            case Json.Decode.decodeValue TransformAndValidate.decoder transformationAndValidationJson of
+                Ok newTransformationAndValidation ->
+                    ( { model
+                        | selectionConfig =
+                            SelectionMode.setTransformAndValidate
+                                newTransformationAndValidation
+                                model.selectionConfig
                       }
                     , Cmd.none
                     )
@@ -1020,7 +1146,7 @@ deselectOption model option =
         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
     , Cmd.batch
         [ makeCommandMessagesWhenValuesChanges updatedOptions Nothing
-        , updateOptionsInWebWorker ()
+        , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchString
         ]
     )
 
@@ -1384,6 +1510,12 @@ singleSelectViewCustomHtml valueCasing selectionConfig options searchString righ
 
             else
                 ""
+
+        hasErrors =
+            OptionsUtilities.hasAnyValidationErrors options
+
+        hasPendingValidation =
+            OptionsUtilities.hasAnyPendingValidation options
     in
     div
         [ id "wrapper"
@@ -1396,12 +1528,12 @@ singleSelectViewCustomHtml valueCasing selectionConfig options searchString righ
         ]
         [ div
             [ id "value-casing"
-            , valueCasingPartsAttribute selectionConfig
+            , valueCasingPartsAttribute selectionConfig hasErrors hasPendingValidation
             , attributeIf (not (isFocused selectionConfig)) (onMouseDown BringInputInFocus)
             , attributeIf (not (isFocused selectionConfig)) (onFocus BringInputInFocus)
             , tabIndexAttribute (isDisabled selectionConfig)
             , classList
-                (valueCasingClassList selectionConfig hasOptionSelected)
+                (valueCasingClassList selectionConfig hasOptionSelected False)
             ]
             [ span
                 [ id "selected-value" ]
@@ -1455,6 +1587,12 @@ multiSelectViewCustomHtml selectionConfig options searchString rightSlot valueCa
             else
                 Html.Attributes.classList []
 
+        hasErrors =
+            OptionsUtilities.hasAnyValidationErrors options
+
+        hasPendingValidation =
+            OptionsUtilities.hasAnyPendingValidation options
+
         inputFilter =
             input
                 [ type_ "text"
@@ -1489,7 +1627,7 @@ multiSelectViewCustomHtml selectionConfig options searchString rightSlot valueCa
         ]
         [ div
             [ id "value-casing"
-            , valueCasingPartsAttribute selectionConfig
+            , valueCasingPartsAttribute selectionConfig hasErrors hasPendingValidation
             , onMouseDown BringInputInFocus
             , onFocus BringInputInFocus
             , Keyboard.on Keyboard.Keydown
@@ -1498,7 +1636,7 @@ multiSelectViewCustomHtml selectionConfig options searchString rightSlot valueCa
                 ]
             , tabIndexAttribute (isDisabled selectionConfig)
             , classList
-                (valueCasingClassList selectionConfig hasOptionSelected)
+                (valueCasingClassList selectionConfig hasOptionSelected False)
             ]
             (optionsToValuesHtml options (getSingleItemRemoval selectionConfig)
                 ++ [ inputFilter
@@ -1525,19 +1663,24 @@ multiSelectViewDataset selectionConfig options rightSlot =
         selectedOptions =
             options |> OptionsUtilities.selectedOptions
 
+        hasAnError =
+            not (OptionsUtilities.allOptionsAreValid selectedOptions)
+
+        hasPendingValidation =
+            OptionsUtilities.hasAnyPendingValidation selectedOptions
+
         makeInputs : List Option -> List (Html Msg)
         makeInputs selectedOptions_ =
             case List.length selectedOptions_ of
                 0 ->
-                    [ multiSelectDatasetInputField
+                    multiSelectDatasetInputField
                         Nothing
                         selectionConfig
                         rightSlot
                         0
-                    ]
 
                 _ ->
-                    List.map
+                    List.concatMap
                         (\selectedOption ->
                             multiSelectDatasetInputField
                                 (Just selectedOption)
@@ -1550,17 +1693,20 @@ multiSelectViewDataset selectionConfig options rightSlot =
     div [ id "wrapper", Html.Attributes.attribute "part" "wrapper" ]
         [ div
             [ id "value-casing"
-            , valueCasingPartsAttribute selectionConfig
+            , valueCasingPartsAttribute selectionConfig hasAnError hasPendingValidation
             , classList
-                (valueCasingClassList selectionConfig hasOptionSelected)
+                (valueCasingClassList selectionConfig
+                    hasOptionSelected
+                    hasAnError
+                )
             ]
             (makeInputs selectedOptions)
         , datalist options
         ]
 
 
-valueCasingClassList : SelectionConfig -> Bool -> List ( String, Bool )
-valueCasingClassList selectionConfig hasOptionSelected =
+valueCasingClassList : SelectionConfig -> Bool -> Bool -> List ( String, Bool )
+valueCasingClassList selectionConfig hasOptionSelected hasAnError =
     let
         isFocused_ =
             isFocused selectionConfig
@@ -1597,6 +1743,7 @@ valueCasingClassList selectionConfig hasOptionSelected =
     , ( "focused", isFocused_ )
     , ( "not-focused", not isFocused_ )
     , ( "show-placeholder", showPlaceholder )
+    , ( "error", hasAnError )
     ]
 
 
@@ -1728,14 +1875,24 @@ singleSelectViewDatalistHtml selectionConfig options =
 
         hasOptionSelected =
             hasSelectedOption options
+
+        hasAnError =
+            maybeSelectedOption
+                |> Maybe.map Option.getOptionValidationErrors
+                |> Maybe.map List.isEmpty
+                |> Maybe.map not
+                |> Maybe.withDefault False
+
+        hasPendingValidation =
+            OptionsUtilities.hasAnyPendingValidation options
     in
     div [ id "wrapper", Html.Attributes.attribute "part" "wrapper" ]
         [ div
             [ id "value-casing"
-            , valueCasingPartsAttribute selectionConfig
+            , valueCasingPartsAttribute selectionConfig hasAnError hasPendingValidation
             , tabIndexAttribute (isDisabled selectionConfig)
             , classList
-                (valueCasingClassList selectionConfig hasOptionSelected)
+                (valueCasingClassList selectionConfig hasOptionSelected hasAnError)
             ]
             [ singleSelectDatasetInputField
                 maybeSelectedOption
@@ -1746,14 +1903,22 @@ singleSelectViewDatalistHtml selectionConfig options =
         ]
 
 
-multiSelectDatasetInputField : Maybe Option -> SelectionConfig -> RightSlot -> Int -> Html Msg
+multiSelectDatasetInputField : Maybe Option -> SelectionConfig -> RightSlot -> Int -> List (Html Msg)
 multiSelectDatasetInputField maybeOption selectionConfig rightSlot index =
     let
         idAttr =
             id ("input-value-" ++ String.fromInt index)
 
+        errorIdAttr =
+            id ("error-input-value-" ++ String.fromInt index)
+
+        isOptionInvalid =
+            Maybe.map Option.isInvalid maybeOption
+                |> Maybe.withDefault False
+
         classes =
             [ ( "input-value", True )
+            , ( "invalid", isOptionInvalid )
             ]
 
         typeAttr =
@@ -1793,11 +1958,39 @@ multiSelectDatasetInputField maybeOption selectionConfig rightSlot index =
                     , Html.Attributes.list "datalist-options"
                     ]
                     []
+
+        makeValidationErrorMessage : TransformAndValidate.ValidationFailureMessage -> Html msg
+        makeValidationErrorMessage validationFailure =
+            case validationFailure of
+                TransformAndValidate.ValidationFailureMessage validationReportLevel validationErrorMessage ->
+                    case validationReportLevel of
+                        TransformAndValidate.SilentError ->
+                            text ""
+
+                        TransformAndValidate.ShowError ->
+                            case validationErrorMessage of
+                                TransformAndValidate.ValidationErrorMessage string ->
+                                    li [] [ text string ]
+
+        errorMessage =
+            if isOptionInvalid then
+                div [ errorIdAttr, class "error-message" ]
+                    [ ul []
+                        (Maybe.map Option.getOptionValidationErrors maybeOption
+                            |> Maybe.withDefault []
+                            |> List.map makeValidationErrorMessage
+                        )
+                    ]
+
+            else
+                text ""
     in
-    div [ class "input-wrapper", Html.Attributes.attribute "part" "input-wrapper" ]
+    [ div [ class "input-wrapper", Html.Attributes.attribute "part" "input-wrapper" ]
         [ inputHtml
         , rightSlotHtml rightSlot (SelectionMode.getInteractionState selectionConfig) index
         ]
+    , errorMessage
+    ]
 
 
 singleSelectDatasetInputField : Maybe Option -> SelectionConfig -> Bool -> Html Msg
@@ -2108,6 +2301,18 @@ optionToDropdownOption eventHandlers selectionConfig_ option_ =
                         SelectionMode.MultiSelect ->
                             text ""
 
+                OptionSelectedPendingValidation _ ->
+                    div
+                        [ Html.Attributes.attribute "part" "dropdown-option disabled"
+                        , class "disabled"
+                        , class "option"
+                        , valueDataAttribute
+                        ]
+                        [ labelHtml, descriptionHtml ]
+
+                OptionSelectedAndInvalid _ _ ->
+                    text ""
+
                 OptionSelectedHighlighted _ ->
                     case selectionConfig of
                         SingleSelectConfig _ _ _ ->
@@ -2191,6 +2396,12 @@ optionToValueHtml enableSingleItemRemoval option =
                         ]
                         [ valueLabelHtml (OptionLabel.getLabelString optionLabel) optionValue, removalHtml ]
 
+                OptionSelectedPendingValidation _ ->
+                    text ""
+
+                OptionSelectedAndInvalid _ _ ->
+                    text ""
+
                 OptionSelectedHighlighted _ ->
                     div
                         [ classList
@@ -2224,6 +2435,12 @@ optionToValueHtml enableSingleItemRemoval option =
                         ]
                         [ valueLabelHtml (OptionLabel.getLabelString optionLabel) optionValue, removalHtml ]
 
+                OptionSelectedPendingValidation _ ->
+                    text ""
+
+                OptionSelectedAndInvalid _ _ ->
+                    text ""
+
                 OptionSelectedHighlighted _ ->
                     div
                         [ classList
@@ -2250,6 +2467,12 @@ optionToValueHtml enableSingleItemRemoval option =
 
                 OptionSelected _ ->
                     div [ class "value", partAttr ] [ text (OptionLabel.getLabelString optionLabel) ]
+
+                OptionSelectedPendingValidation _ ->
+                    text ""
+
+                OptionSelectedAndInvalid _ _ ->
+                    text ""
 
                 OptionSelectedHighlighted _ ->
                     text ""
@@ -2377,8 +2600,8 @@ defaultRemoveButton =
     button [] [ text "✘" ]
 
 
-valueCasingPartsAttribute : SelectionMode.SelectionConfig -> Html.Attribute Msg
-valueCasingPartsAttribute selectionConfig =
+valueCasingPartsAttribute : SelectionMode.SelectionConfig -> Bool -> Bool -> Html.Attribute Msg
+valueCasingPartsAttribute selectionConfig hasError hasPendingValidation =
     let
         outputStyleStr =
             case SelectionMode.getOutputStyle selectionConfig of
@@ -2406,6 +2629,20 @@ valueCasingPartsAttribute selectionConfig =
 
                 SelectionMode.Disabled ->
                     "disabled"
+
+        hasErrorStr =
+            if hasError then
+                "error"
+
+            else
+                ""
+
+        hasPendingValidationStr =
+            if hasPendingValidation then
+                "pending-validation"
+
+            else
+                ""
     in
     Html.Attributes.attribute "part"
         (String.join " "
@@ -2413,6 +2650,8 @@ valueCasingPartsAttribute selectionConfig =
             , outputStyleStr
             , selectionModeStr
             , interactionStateStr
+            , hasErrorStr
+            , hasPendingValidationStr
             ]
         )
 
@@ -2420,6 +2659,13 @@ valueCasingPartsAttribute selectionConfig =
 makeCommandMessagesWhenValuesChanges : List Option -> Maybe OptionValue -> Cmd Msg
 makeCommandMessagesWhenValuesChanges selectedOptions maybeSelectedValue =
     let
+        valueChangeCmd =
+            if OptionsUtilities.allOptionsAreValid selectedOptions then
+                valueChanged (selectedOptionsToTuple selectedOptions)
+
+            else
+                Cmd.none
+
         selectedCustomOptions =
             customSelectedOptions selectedOptions
 
@@ -2434,8 +2680,11 @@ makeCommandMessagesWhenValuesChanges selectedOptions maybeSelectedValue =
             if List.isEmpty selectedCustomOptions then
                 Cmd.none
 
-            else
+            else if OptionsUtilities.allOptionsAreValid selectedCustomOptions then
                 customOptionSelected (optionsValues selectedCustomOptions)
+
+            else
+                Cmd.none
 
         -- Any time we select a new value we need to emit an `optionSelected` event.
         optionSelectedCmd =
@@ -2443,20 +2692,58 @@ makeCommandMessagesWhenValuesChanges selectedOptions maybeSelectedValue =
                 Just selectedValue ->
                     case findOptionByOptionValue selectedValue selectedOptions of
                         Just option ->
-                            optionSelected (Option.optionToValueLabelTuple option)
+                            if Option.isValid option then
+                                optionSelected (Option.optionToValueLabelTuple option)
+
+                            else
+                                Cmd.none
 
                         Nothing ->
                             Cmd.none
 
                 Nothing ->
                     Cmd.none
+
+        customValidationCmd =
+            if OptionsUtilities.hasAnyPendingValidation selectedOptions then
+                selectedOptions
+                    |> List.filter Option.isPendingValidation
+                    |> List.map (\option -> sendCustomValidationRequest ( Option.getOptionValueAsString option, Option.getOptionSelectedIndex option ))
+                    |> Cmd.batch
+
+            else
+                Cmd.none
     in
     Cmd.batch
-        [ valueChanged (selectedOptionsToTuple selectedOptions)
+        [ valueChangeCmd
         , customOptionCmd
         , clearCmd
         , optionSelectedCmd
+        , customValidationCmd
         ]
+
+
+makeCommandMessagesForUpdatingOptionsInTheWebWorker : SearchString -> Cmd Msg
+makeCommandMessagesForUpdatingOptionsInTheWebWorker searchString =
+    let
+        searchStringUpdateCmd =
+            if SearchString.isEmpty searchString then
+                Cmd.none
+
+            else
+                -- This task is important because after we get new options (like from an API call or something)
+                --  we need to update the new options we've just added with the current search string.
+                Task.perform
+                    (\_ ->
+                        UpdateOptionsWithSearchString
+                            |> provideInput
+                            |> MsgQuietUpdateOptionsWithSearchString
+                    )
+                    (Task.succeed
+                        always
+                    )
+    in
+    Cmd.batch [ updateOptionsInWebWorker (), searchStringUpdateCmd ]
 
 
 makeCommandMessageForInitialValue : List Option -> Cmd Msg
@@ -2485,6 +2772,7 @@ type alias Flags =
     , selectedItemStaysInPlace : Bool
     , searchStringMinimumLength : Int
     , showDropdownFooter : Bool
+    , transformationAndValidationJson : String
     }
 
 
@@ -2509,6 +2797,14 @@ makeDynamicDebouncer numberOfOptions =
 init : Flags -> ( Model, Cmd Msg )
 init flags =
     let
+        ( valueTransformationAndValidation, valueTransformationAndValidationErrorCmd ) =
+            case TransformAndValidate.decode flags.transformationAndValidationJson of
+                Ok value ->
+                    ( value, Cmd.none )
+
+                Err error ->
+                    ( TransformAndValidate.empty, errorMessage (Json.Decode.errorToString error) )
+
         selectionConfig =
             makeSelectionConfig flags.disabled
                 flags.allowMultiSelect
@@ -2521,6 +2817,7 @@ init flags =
                 flags.selectedItemStaysInPlace
                 flags.searchStringMinimumLength
                 flags.showDropdownFooter
+                valueTransformationAndValidation
                 |> Result.withDefault defaultSelectionConfig
 
         optionSort =
@@ -2629,6 +2926,7 @@ init flags =
         , muchSelectIsReady ()
         , makeCommandMessageForInitialValue (selectedOptions optionsWithInitialValueSelected)
         , updateOptionsInWebWorker ()
+        , valueTransformationAndValidationErrorCmd
         ]
     )
 
@@ -2667,6 +2965,8 @@ subscriptions _ =
         , valueChangedReceiver ValueChanged
         , outputStyleChangedReceiver OutputStyleChanged
         , updateSearchResultDataWithWebWorkerReceiver UpdateSearchResultsForOptions
+        , customValidationReceiver CustomValidationResponse
+        , transformationAndValidationReceiver UpdateTransformationAndValidation
         ]
 
 

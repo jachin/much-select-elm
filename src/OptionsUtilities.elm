@@ -22,12 +22,14 @@ import Option
         , isOptionSelectedHighlighted
         , isOptionValueInListOfStrings
         , merge2Options
-        , newSelectedDatalisOption
+        , newSelectedDatalistOption
+        , newSelectedDatalistOptionPendingValidation
+        , newSelectedDatalistOptionWithErrors
         , newSelectedOption
         , optionIsHighlightable
         , optionToValueLabelTuple
         , optionValuesEqual
-        , removeHighlightOption
+        , removeHighlightFromOption
         , selectOption
         , setLabel
         , setLabelWithString
@@ -49,15 +51,16 @@ import SelectionMode
         , getSelectedItemPlacementMode
         )
 import SortRank exposing (SortRank)
+import TransformAndValidate exposing (ValidationErrorMessage, ValidationFailureMessage)
 
 
-moveHighlightedOptionDown : List Option -> List Option -> List Option
-moveHighlightedOptionDown allOptions visibleOptions =
+moveHighlightedOptionDown : SelectionConfig -> List Option -> List Option -> List Option
+moveHighlightedOptionDown selectionConfig allOptions visibleOptions =
     let
         maybeLowerSibling =
             visibleOptions
                 |> findHighlightedOrSelectedOptionIndex
-                |> Maybe.andThen (\index -> findClosestHighlightableOptionGoingDown index visibleOptions)
+                |> Maybe.andThen (\index -> findClosestHighlightableOptionGoingDown selectionConfig index visibleOptions)
     in
     case maybeLowerSibling of
         Just option ->
@@ -72,21 +75,21 @@ moveHighlightedOptionDown allOptions visibleOptions =
                     allOptions
 
 
-findClosestHighlightableOptionGoingUp : Int -> List Option -> Maybe Option
-findClosestHighlightableOptionGoingUp index options =
+findClosestHighlightableOptionGoingUp : SelectionConfig -> Int -> List Option -> Maybe Option
+findClosestHighlightableOptionGoingUp selectionConfig index options =
     List.Extra.splitAt index options
         |> Tuple.first
         |> List.reverse
-        |> List.Extra.find optionIsHighlightable
+        |> List.Extra.find (optionIsHighlightable selectionConfig)
 
 
-moveHighlightedOptionUp : List Option -> List Option -> List Option
-moveHighlightedOptionUp allOptions visibleOptions =
+moveHighlightedOptionUp : SelectionConfig -> List Option -> List Option -> List Option
+moveHighlightedOptionUp selectionConfig allOptions visibleOptions =
     let
         maybeHigherSibling =
             visibleOptions
                 |> findHighlightedOrSelectedOptionIndex
-                |> Maybe.andThen (\index -> findClosestHighlightableOptionGoingUp index visibleOptions)
+                |> Maybe.andThen (\index -> findClosestHighlightableOptionGoingUp selectionConfig index visibleOptions)
     in
     case maybeHigherSibling of
         Just option ->
@@ -101,11 +104,11 @@ moveHighlightedOptionUp allOptions visibleOptions =
                     allOptions
 
 
-findClosestHighlightableOptionGoingDown : Int -> List Option -> Maybe Option
-findClosestHighlightableOptionGoingDown index options =
+findClosestHighlightableOptionGoingDown : SelectionConfig -> Int -> List Option -> Maybe Option
+findClosestHighlightableOptionGoingDown selectionConfig index options =
     List.Extra.splitAt index options
         |> Tuple.second
-        |> List.Extra.find optionIsHighlightable
+        |> List.Extra.find (optionIsHighlightable selectionConfig)
 
 
 adjustHighlightedOptionAfterSearch : List Option -> List Option -> List Option
@@ -254,7 +257,7 @@ selectOptionInListByOptionValue value options =
                 option_
 
             else
-                removeHighlightOption option_
+                removeHighlightFromOption option_
         )
         options
 
@@ -287,7 +290,7 @@ selectOptionInListByOptionValueWithIndex index value options =
                 option_
 
             else
-                removeHighlightOption option_
+                removeHighlightFromOption option_
         )
         options
 
@@ -564,6 +567,12 @@ unhighlightSelectedOptions =
                         OptionSelected _ ->
                             option
 
+                        OptionSelectedPendingValidation _ ->
+                            option
+
+                        OptionSelectedAndInvalid _ _ ->
+                            option
+
                         OptionSelectedHighlighted selectedIndex ->
                             setOptionDisplay (OptionSelected selectedIndex) option
 
@@ -584,6 +593,12 @@ unhighlightSelectedOptions =
                         OptionSelected _ ->
                             option
 
+                        OptionSelectedPendingValidation _ ->
+                            option
+
+                        OptionSelectedAndInvalid _ _ ->
+                            option
+
                         OptionSelectedHighlighted selectedIndex ->
                             setOptionDisplay (OptionSelected selectedIndex) option
 
@@ -602,6 +617,12 @@ unhighlightSelectedOptions =
                             option
 
                         OptionSelected _ ->
+                            option
+
+                        OptionSelectedPendingValidation _ ->
+                            option
+
+                        OptionSelectedAndInvalid _ _ ->
                             option
 
                         OptionSelectedHighlighted selectedIndex ->
@@ -674,6 +695,12 @@ toggleSelectedHighlightByOptionValue options optionValue =
                                 OptionSelected selectedIndex ->
                                     option_ |> setOptionDisplay (OptionSelectedHighlighted selectedIndex)
 
+                                OptionSelectedPendingValidation _ ->
+                                    option_
+
+                                OptionSelectedAndInvalid _ _ ->
+                                    option_
+
                                 OptionSelectedHighlighted selectedIndex ->
                                     option_ |> setOptionDisplay (OptionSelected selectedIndex)
 
@@ -697,6 +724,12 @@ toggleSelectedHighlightByOptionValue options optionValue =
 
                                 OptionSelected selectedIndex ->
                                     option_ |> setOptionDisplay (OptionSelectedHighlighted selectedIndex)
+
+                                OptionSelectedPendingValidation _ ->
+                                    option_
+
+                                OptionSelectedAndInvalid _ _ ->
+                                    option_
 
                                 OptionSelectedHighlighted selectedIndex ->
                                     option_ |> setOptionDisplay (OptionSelected selectedIndex)
@@ -735,6 +768,12 @@ deselectAllSelectedHighlightedOptions options =
                             OptionSelected _ ->
                                 option_
 
+                            OptionSelectedPendingValidation _ ->
+                                option_
+
+                            OptionSelectedAndInvalid _ _ ->
+                                option_
+
                             OptionSelectedHighlighted _ ->
                                 option_ |> setOptionDisplay OptionShown
 
@@ -753,6 +792,12 @@ deselectAllSelectedHighlightedOptions options =
                                 option_
 
                             OptionSelected _ ->
+                                option_
+
+                            OptionSelectedPendingValidation _ ->
+                                option_
+
+                            OptionSelectedAndInvalid _ _ ->
                                 option_
 
                             OptionSelectedHighlighted _ ->
@@ -882,7 +927,7 @@ updatedDatalistSelectedOptions : List OptionValue -> List Option -> List Option
 updatedDatalistSelectedOptions selectedValues options =
     let
         newSelectedOptions =
-            List.indexedMap (\i selectedValue -> newSelectedDatalisOption selectedValue i) selectedValues
+            List.indexedMap (\i selectedValue -> newSelectedDatalistOption selectedValue i) selectedValues
 
         oldSelectedOptions =
             options
@@ -962,7 +1007,7 @@ highlightOptionInListByValue value options =
                 highlightOption option_
 
             else
-                removeHighlightOption option_
+                removeHighlightFromOption option_
         )
         options
 
@@ -972,7 +1017,7 @@ removeHighlightOptionInList value options =
     List.map
         (\option_ ->
             if optionValuesEqual option_ value then
-                removeHighlightOption option_
+                removeHighlightFromOption option_
 
             else
                 option_
@@ -1058,6 +1103,12 @@ filterOptionsToShowInDropdownByOptionDisplay selectionConfig =
                         OptionSelected _ ->
                             True
 
+                        OptionSelectedPendingValidation _ ->
+                            True
+
+                        OptionSelectedAndInvalid _ _ ->
+                            False
+
                         OptionSelectedHighlighted _ ->
                             True
 
@@ -1079,6 +1130,12 @@ filterOptionsToShowInDropdownByOptionDisplay selectionConfig =
                             False
 
                         OptionSelected _ ->
+                            False
+
+                        OptionSelectedPendingValidation _ ->
+                            True
+
+                        OptionSelectedAndInvalid _ _ ->
                             False
 
                         OptionSelectedHighlighted _ ->
@@ -1172,7 +1229,7 @@ highlightOptionInList option options =
                 highlightOption option_
 
             else
-                removeHighlightOption option_
+                removeHighlightFromOption option_
         )
         options
 
@@ -1209,11 +1266,29 @@ findOptionByOptionUsingOptionValue option options =
 
 updateDatalistOptionsWithValue : OptionValue -> Int -> List Option -> List Option
 updateDatalistOptionsWithValue optionValue selectedValueIndex options =
-    if List.any (Option.hasSelctedItemIndex selectedValueIndex) options then
-        updateDatalistOptionWithValueBySelectedValueIndex optionValue selectedValueIndex options
+    if List.any (Option.hasSelectedItemIndex selectedValueIndex) options then
+        updateDatalistOptionWithValueBySelectedValueIndex [] optionValue selectedValueIndex options
 
     else
-        newSelectedDatalisOption optionValue selectedValueIndex :: options
+        newSelectedDatalistOption optionValue selectedValueIndex :: options
+
+
+updateDatalistOptionsWithValueAndErrors : List ValidationFailureMessage -> OptionValue -> Int -> List Option -> List Option
+updateDatalistOptionsWithValueAndErrors errors optionValue selectedValueIndex options =
+    if List.any (Option.hasSelectedItemIndex selectedValueIndex) options then
+        updateDatalistOptionWithValueBySelectedValueIndex errors optionValue selectedValueIndex options
+
+    else
+        newSelectedDatalistOptionWithErrors errors optionValue selectedValueIndex :: options
+
+
+updateDatalistOptionsWithPendingValidation : OptionValue -> Int -> List Option -> List Option
+updateDatalistOptionsWithPendingValidation optionValue selectedValueIndex options =
+    if List.any (Option.hasSelectedItemIndex selectedValueIndex) options then
+        updateDatalistOptionWithValueBySelectedValueIndexPendingValidation optionValue selectedValueIndex options
+
+    else
+        newSelectedDatalistOptionPendingValidation optionValue selectedValueIndex :: options
 
 
 addNewEmptyOptionAtIndex : Int -> List Option -> List Option
@@ -1232,12 +1307,41 @@ addNewEmptyOptionAtIndex index options =
         |> reIndexSelectedOptions
 
 
-updateDatalistOptionWithValueBySelectedValueIndex : OptionValue -> Int -> List Option -> List Option
-updateDatalistOptionWithValueBySelectedValueIndex optionValue selectedIndex options =
+updateDatalistOptionWithValueBySelectedValueIndex : List ValidationFailureMessage -> OptionValue -> Int -> List Option -> List Option
+updateDatalistOptionWithValueBySelectedValueIndex errors optionValue selectedIndex options =
+    if List.isEmpty errors then
+        List.map
+            (\option ->
+                if Option.getOptionSelectedIndex option == selectedIndex then
+                    Option.setOptionValue optionValue option
+                        |> Option.setOptionDisplay (OptionSelected selectedIndex)
+
+                else
+                    option
+            )
+            options
+
+    else
+        List.map
+            (\option ->
+                if Option.getOptionSelectedIndex option == selectedIndex then
+                    option
+                        |> Option.setOptionValue optionValue
+                        |> Option.setOptionValueErrors errors
+
+                else
+                    option
+            )
+            options
+
+
+updateDatalistOptionWithValueBySelectedValueIndexPendingValidation : OptionValue -> Int -> List Option -> List Option
+updateDatalistOptionWithValueBySelectedValueIndexPendingValidation optionValue selectedIndex options =
     List.map
         (\option ->
             if Option.getOptionSelectedIndex option == selectedIndex then
                 Option.setOptionValue optionValue option
+                    |> Option.setOptionDisplay (OptionSelectedPendingValidation selectedIndex)
 
             else
                 option
@@ -1476,3 +1580,18 @@ equal optionsA optionsB =
 
     else
         False
+
+
+allOptionsAreValid : List Option -> Bool
+allOptionsAreValid options =
+    List.any Option.isValid options
+
+
+hasAnyPendingValidation : List Option -> Bool
+hasAnyPendingValidation options =
+    List.any Option.isPendingValidation options
+
+
+hasAnyValidationErrors : List Option -> Bool
+hasAnyValidationErrors options =
+    List.any Option.isInvalid options
