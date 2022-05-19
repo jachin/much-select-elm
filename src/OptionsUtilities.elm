@@ -1590,3 +1590,8 @@ allOptionsAreValid options =
 hasAnyPendingValidation : List Option -> Bool
 hasAnyPendingValidation options =
     List.any Option.isPendingValidation options
+
+
+hasAnyValidationErrors : List Option -> Bool
+hasAnyValidationErrors options =
+    List.any Option.isInvalid options
