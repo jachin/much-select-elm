@@ -68,6 +68,8 @@ body {
         --example-border-shadow-color: var(--mazarine-blue);
 
         --much-select-background-color: var(--lynx-white);
+        --much-select-border-color: var(--matt-purple);
+        --much-select-border-color-error: var(--nasturcian-flower)
     }
 
     body.fun {
@@ -85,6 +87,7 @@ body {
         --example-border-shadow-color: var(--sunset-orange);
 
         --much-select-background-color: var(--yriel-yellow);
+        --much-select-border-color: var(--jade-dust)
     }
 }
 
@@ -106,6 +109,8 @@ body {
         --example-border-shadow-color: var(--chain-gang-grey);
 
         --much-select-background-color: var(--electromagnetic);
+        --much-select-border-color: var(--matt-purple);
+        --much-select-border-color-error: var(--harley-davidson-orange);
     }
 
     body.fun {
@@ -123,6 +128,8 @@ body {
         --example-border-shadow-color: var(--highligher-pink);
 
         --much-select-background-color: var(--good-night);
+        --much-select-border-color: var(--jade-dust);
+        --much-select-border-color-error: var(--sunset-orange);
     }
 
 
@@ -276,7 +283,11 @@ much-select::part(value-casing output-style-custom-html) {
 much-select::part(value-casing output-style-custom-html) {
     flex-flow: row;
     cursor: pointer;
-    border: 1px solid darkgray;
+    border: 1px solid var(--much-select-border-color);
+}
+
+much-select::part(value-casing output-style-custom-html error) {
+    border: 1px solid var(--much-select-border-color-error);
 }
 
 much-select::part(value-casing output-style-custom-html multi) {
@@ -286,6 +297,11 @@ much-select::part(value-casing output-style-custom-html multi) {
 much-select::part(value-casing output-style-datalist) {
     flex-flow: column;
     cursor: pointer;
+    border: 1px solid var(--much-select-border-color);
+}
+
+much-select::part(value-casing output-style-datalist error) {
+    border: 1px solid var(--much-select-border-color-error);
 }
 
 much-select::part(value-casing output-style-custom-html):hover {
