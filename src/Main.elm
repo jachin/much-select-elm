@@ -512,11 +512,10 @@ update msg model =
                 TransformAndValidate.ValidationPending _ _ ->
                     let
                         updatedOptions =
-                            Debug.log "updated option" <|
-                                updateDatalistOptionsWithPendingValidation
-                                    (OptionValue.stringToOptionValue valueString)
-                                    selectedValueIndex
-                                    model.options
+                            updateDatalistOptionsWithPendingValidation
+                                (OptionValue.stringToOptionValue valueString)
+                                selectedValueIndex
+                                model.options
 
                         maybeSelectedOptionValue =
                             Just (OptionValue.stringToOptionValue valueString)
@@ -1511,6 +1510,12 @@ singleSelectViewCustomHtml valueCasing selectionConfig options searchString righ
 
             else
                 ""
+
+        hasErrors =
+            OptionsUtilities.hasAnyValidationErrors options
+
+        hasPendingValidation =
+            OptionsUtilities.hasAnyPendingValidation options
     in
     div
         [ id "wrapper"
@@ -1523,7 +1528,7 @@ singleSelectViewCustomHtml valueCasing selectionConfig options searchString righ
         ]
         [ div
             [ id "value-casing"
-            , valueCasingPartsAttribute selectionConfig
+            , valueCasingPartsAttribute selectionConfig hasErrors hasPendingValidation
             , attributeIf (not (isFocused selectionConfig)) (onMouseDown BringInputInFocus)
             , attributeIf (not (isFocused selectionConfig)) (onFocus BringInputInFocus)
             , tabIndexAttribute (isDisabled selectionConfig)
@@ -1582,6 +1587,12 @@ multiSelectViewCustomHtml selectionConfig options searchString rightSlot valueCa
             else
                 Html.Attributes.classList []
 
+        hasErrors =
+            OptionsUtilities.hasAnyValidationErrors options
+
+        hasPendingValidation =
+            OptionsUtilities.hasAnyPendingValidation options
+
         inputFilter =
             input
                 [ type_ "text"
@@ -1616,7 +1627,7 @@ multiSelectViewCustomHtml selectionConfig options searchString rightSlot valueCa
         ]
         [ div
             [ id "value-casing"
-            , valueCasingPartsAttribute selectionConfig
+            , valueCasingPartsAttribute selectionConfig hasErrors hasPendingValidation
             , onMouseDown BringInputInFocus
             , onFocus BringInputInFocus
             , Keyboard.on Keyboard.Keydown
@@ -1655,6 +1666,9 @@ multiSelectViewDataset selectionConfig options rightSlot =
         hasAnError =
             not (OptionsUtilities.allOptionsAreValid selectedOptions)
 
+        hasPendingValidation =
+            OptionsUtilities.hasAnyPendingValidation selectedOptions
+
         makeInputs : List Option -> List (Html Msg)
         makeInputs selectedOptions_ =
             case List.length selectedOptions_ of
@@ -1679,7 +1693,7 @@ multiSelectViewDataset selectionConfig options rightSlot =
     div [ id "wrapper", Html.Attributes.attribute "part" "wrapper" ]
         [ div
             [ id "value-casing"
-            , valueCasingPartsAttribute selectionConfig
+            , valueCasingPartsAttribute selectionConfig hasAnError hasPendingValidation
             , classList
                 (valueCasingClassList selectionConfig
                     hasOptionSelected
@@ -1868,11 +1882,14 @@ singleSelectViewDatalistHtml selectionConfig options =
                 |> Maybe.map List.isEmpty
                 |> Maybe.map not
                 |> Maybe.withDefault False
+
+        hasPendingValidation =
+            OptionsUtilities.hasAnyPendingValidation options
     in
     div [ id "wrapper", Html.Attributes.attribute "part" "wrapper" ]
         [ div
             [ id "value-casing"
-            , valueCasingPartsAttribute selectionConfig
+            , valueCasingPartsAttribute selectionConfig hasAnError hasPendingValidation
             , tabIndexAttribute (isDisabled selectionConfig)
             , classList
                 (valueCasingClassList selectionConfig hasOptionSelected hasAnError)
@@ -2583,8 +2600,8 @@ defaultRemoveButton =
     button [] [ text "✘" ]
 
 
-valueCasingPartsAttribute : SelectionMode.SelectionConfig -> Html.Attribute Msg
-valueCasingPartsAttribute selectionConfig =
+valueCasingPartsAttribute : SelectionMode.SelectionConfig -> Bool -> Bool -> Html.Attribute Msg
+valueCasingPartsAttribute selectionConfig hasError hasPendingValidation =
     let
         outputStyleStr =
             case SelectionMode.getOutputStyle selectionConfig of
@@ -2612,6 +2629,20 @@ valueCasingPartsAttribute selectionConfig =
 
                 SelectionMode.Disabled ->
                     "disabled"
+
+        hasErrorStr =
+            if hasError then
+                "error"
+
+            else
+                ""
+
+        hasPendingValidationStr =
+            if hasPendingValidation then
+                "pending-validation"
+
+            else
+                ""
     in
     Html.Attributes.attribute "part"
         (String.join " "
@@ -2619,6 +2650,8 @@ valueCasingPartsAttribute selectionConfig =
             , outputStyleStr
             , selectionModeStr
             , interactionStateStr
+            , hasErrorStr
+            , hasPendingValidationStr
             ]
         )
 
