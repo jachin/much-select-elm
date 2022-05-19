@@ -3,6 +3,7 @@ Fun colors https://flatuicolors.com/palette/se
 Boring colors https://flatuicolors.com/palette/gb
 */
 
+@import url('https://fonts.googleapis.com/css2?family=Dosis&display=swap');
 
 body {
     /* Fun colors */
@@ -48,6 +49,8 @@ body {
     --chain-gang-grey: #718093;
     --pico-void: #192a56;
     --electromagnetic: #2f3640;
+
+    --much-select-height: 36px;
 }
 
 @media (prefers-color-scheme: light) {
@@ -60,6 +63,7 @@ body {
         --nav-link-text-hover-background-color: var(--vanadyl-blue);
         --header-font: "Andale Mono";
         --body-font: "Times New Roman";
+        --form-font: "Andale Mono";
         --site-nav-background-color: var(--hint-of-pensive);
         --offsite-nav-background-color: var(--matt-purple);
 
@@ -69,7 +73,7 @@ body {
 
         --much-select-background-color: var(--lynx-white);
         --much-select-border-color: var(--matt-purple);
-        --much-select-border-color-error: var(--nasturcian-flower)
+        --much-select-error-border-color: var(--nasturcian-flower);
     }
 
     body.fun {
@@ -78,7 +82,8 @@ body {
         --link-text-color: var(--free-speech-blue);
         --nav-link-text-color: var(--free-speech-blue);
         --header-font: "Comic Sans MS";
-        --body-font: "Times New Roman";
+        --body-font: 'Dosis', sans-serif;
+        --form-font: 'Dosis', sans-serif;
         --site-nav-background-color: var(--megaman);
         --offsite-nav-background-color: var(--fresh-turquoise);
 
@@ -86,8 +91,13 @@ body {
         --example-border-color: var(--red-orange);
         --example-border-shadow-color: var(--sunset-orange);
 
-        --much-select-background-color: var(--yriel-yellow);
-        --much-select-border-color: var(--jade-dust)
+        --much-select-background-color: var(--hint-of-elusive-blue);
+        --much-select-disabled-background-color: var(--london-square);
+        --much-select-error-background-color: var(--yriel-yellow);
+        --much-select-border-color: var(--jade-dust);
+        --much-select-hover-border-color: var(--spirio-disco-ball);
+        --much-select-error-border-color: var(--nasturcian-flower);
+        --much-select-disabled-border-color: var(--hint-of-elusive-blue);
     }
 }
 
@@ -101,6 +111,7 @@ body {
         --nav-link-text-hover-background-color: var(--sea-brook);
         --header-font: "Andale Mono";
         --body-font: "Times New Roman";
+        --form-font: "Andale Mono";
         --site-nav-background-color: var(--matt-purple);
         --offsite-nav-background-color: var(--vanadyl-blue);
 
@@ -110,7 +121,7 @@ body {
 
         --much-select-background-color: var(--electromagnetic);
         --much-select-border-color: var(--matt-purple);
-        --much-select-border-color-error: var(--harley-davidson-orange);
+        --much-select-error-border-color: var(--harley-davidson-orange);
     }
 
     body.fun {
@@ -119,7 +130,8 @@ body {
         --link-text-color: var(--minty-green);
         --nav-link-text-color: var(--green-teal);
         --header-font: "Comic Sans MS";
-        --body-font: "Times New Roman";
+        --body-font: 'Dosis', sans-serif;
+        --form-font: 'Dosis', sans-serif;
         --site-nav-background-color: var(--dark-periwinkle);
         --offsite-nav-background-color: var(--free-speech-blue);
 
@@ -129,7 +141,7 @@ body {
 
         --much-select-background-color: var(--good-night);
         --much-select-border-color: var(--jade-dust);
-        --much-select-border-color-error: var(--sunset-orange);
+        --much-select-error-border-color: var(--sunset-orange);
     }
 
 
@@ -252,7 +264,7 @@ much-select {
 }
 
 button {
-    font-family: "Comic Sans MS", "Comic Sans", cursive;
+    font-family: var(--form-font);
 }
 
 
@@ -271,7 +283,7 @@ much-select::part(input-wrapper) {
 much-select::part(value-casing) {
     display: flex;
     flex-flow: column;
-    min-height: 34px;
+    min-height: var(--much-select-height);
 }
 
 much-select::part(value-casing output-style-custom-html) {
@@ -287,7 +299,7 @@ much-select::part(value-casing output-style-custom-html) {
 }
 
 much-select::part(value-casing output-style-custom-html error) {
-    border: 1px solid var(--much-select-border-color-error);
+    border: 1px solid var(--much-select-error-border-color);
 }
 
 much-select::part(value-casing output-style-custom-html multi) {
@@ -300,13 +312,18 @@ much-select::part(value-casing output-style-datalist) {
     border: 1px solid var(--much-select-border-color);
 }
 
+much-select::part(input-value) {
+    min-height: var(--much-select-height);
+}
+
+
 much-select::part(value-casing output-style-datalist error) {
-    border: 1px solid var(--much-select-border-color-error);
+    border: 1px solid var(--much-select-error-border-color);
 }
 
 much-select::part(value-casing output-style-custom-html):hover {
     outline: none;
-    border-color: var(--example-border-color);
+    border-color: var(--much-select-hover-border-color);
 }
 
 
@@ -317,7 +334,7 @@ much-select::part(value-casing output-style-custom-html):focus {
 
 
 much-select::part(value-casing output-style-custom-html disabled) {
-    border: 1px solid lightgray;
+    border: 1px solid var(--much-select-disabled-border-color);
     cursor: pointer;
 }
 
@@ -328,6 +345,7 @@ much-select::part(value-casing output-style-custom-html single) {
 
 much-select::part(value-casing single disabled) {
     background-image: none;
+    background-color: var(--much-select-disabled-background-color);
 }
 
 much-select::part(input-filter) {
