@@ -18,12 +18,22 @@ type alias Model =
     { allowCustomOptions : Bool
     , allowMultiSelect : Bool
     , outputStyle : String
+    , customValidationResult : ValidationResult
     }
 
 
 type Msg
-    = ValueChanged MuchSelectValue
+    = MuchSelectReady
+    | ValueChanged MuchSelectValue
+    | ValueCleared
+    | OptionSelected
+    | BlurOrUnfocusedValueChanged String
     | InputKeyUpDebounced String
+    | InputKeyUp String
+    | OptionsUpdated
+    | OptionDeselected
+    | CustomValueSelected String
+    | CustomValidationRequest String Int
     | ToggleAllowCustomValues
     | ToggleMultiSelect
     | ChangeOutputStyle String
@@ -44,6 +54,7 @@ init _ =
     ( { allowCustomOptions = False
       , allowMultiSelect = False
       , outputStyle = "custom-html"
+      , customValidationResult = NothingToValidate
       }
     , Cmd.none
     )
@@ -53,6 +64,12 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         ValueChanged _ ->
+            ( model, Cmd.none )
+
+        ValueCleared ->
+            ( model, Cmd.none )
+
+        BlurOrUnfocusedValueChanged _ ->
             ( model, Cmd.none )
 
         InputKeyUpDebounced _ ->
@@ -67,6 +84,38 @@ update msg model =
         ChangeOutputStyle string ->
             ( { model | outputStyle = string }, Cmd.none )
 
+        MuchSelectReady ->
+            ( model, Cmd.none )
+
+        OptionSelected ->
+            ( model, Cmd.none )
+
+        OptionDeselected ->
+            ( model, Cmd.none )
+
+        OptionsUpdated ->
+            ( model, Cmd.none )
+
+        InputKeyUp _ ->
+            ( model, Cmd.none )
+
+        CustomValueSelected _ ->
+            ( model, Cmd.none )
+
+        CustomValidationRequest string int ->
+            let
+                isValid =
+                    not (String.startsWith "asdf" string)
+
+                customValidationResult =
+                    if isValid then
+                        ValidationPass string int
+
+                    else
+                        ValidationFailed string int [ ( "Come on, you can do better than asdf", "error" ) ]
+            in
+            ( { model | customValidationResult = customValidationResult }, Cmd.none )
+
 
 subscriptions : Model -> Sub Msg
 subscriptions _ =
@@ -76,6 +125,79 @@ subscriptions _ =
 slot : String -> Attribute msg
 slot string =
     attribute "slot" string
+
+
+onInputKeyupDebounced : Attribute Msg
+onInputKeyupDebounced =
+    on "inputKeyUpDebounced"
+        (Json.Decode.at
+            [ "detail", "searchString" ]
+            Json.Decode.string
+            |> Json.Decode.map InputKeyUpDebounced
+        )
+
+
+onInputKeyUp : Attribute Msg
+onInputKeyUp =
+    on "inputKeyUpDebounced"
+        (Json.Decode.at
+            [ "detail", "searchString" ]
+            Json.Decode.string
+            |> Json.Decode.map InputKeyUp
+        )
+
+
+onReady : Attribute Msg
+onReady =
+    on "muchSelectReady" (Json.Decode.succeed MuchSelectReady)
+
+
+onOptionSelected : Attribute Msg
+onOptionSelected =
+    on "optionSelected" (Json.Decode.succeed OptionSelected)
+
+
+onCustomValueSelected : Attribute Msg
+onCustomValueSelected =
+    on "customValueSelected"
+        (Json.Decode.at
+            [ "detail", "value" ]
+            Json.Decode.string
+            |> Json.Decode.map CustomValueSelected
+        )
+
+
+onOptionDeselected : Attribute Msg
+onOptionDeselected =
+    on "optionDeselected" (Json.Decode.succeed OptionDeselected)
+
+
+onBlurOrUnfocusedValueChanged : Attribute Msg
+onBlurOrUnfocusedValueChanged =
+    on "blurOrUnfocusedValueChanged"
+        (Json.Decode.map BlurOrUnfocusedValueChanged
+            (Json.Decode.at [ "detail", "value" ]
+                Json.Decode.string
+            )
+        )
+
+
+onOptionsUpdated : Attribute Msg
+onOptionsUpdated =
+    on "optionsUpdated" (Json.Decode.succeed OptionsUpdated)
+
+
+onCustomValidationRequest : Attribute Msg
+onCustomValidationRequest =
+    on "customValidateRequest"
+        (Json.Decode.map2 CustomValidationRequest
+            (Json.Decode.at [ "detail", "stringToValidate" ]
+                Json.Decode.string
+            )
+            (Json.Decode.at [ "detail", "selectedValueIndex" ]
+                Json.Decode.int
+            )
+        )
 
 
 allowCustomOptionsAttribute : Bool -> Attribute msg
@@ -118,14 +240,9 @@ singleValueChangedAttribute =
     on "valueChanged" (Json.Decode.map ValueChanged (Json.Decode.at [ "detail", "value" ] valueDecoder))
 
 
-inputKeyupAttribute : Attribute Msg
-inputKeyupAttribute =
-    on "inputKeyUpDebounced"
-        (Json.Decode.at
-            [ "detail", "searchString" ]
-            Json.Decode.string
-            |> Json.Decode.map InputKeyUpDebounced
-        )
+onValueCleared : Attribute Msg
+onValueCleared =
+    on "valueCleared" (Json.Decode.succeed ValueCleared)
 
 
 view : Model -> Html Msg
@@ -135,7 +252,9 @@ view model =
             [ Lowercase ]
 
         validators =
-            [ NoWhiteSpace ShowError "No white space allowed" ]
+            [ NoWhiteSpace ShowError "No white space allowed"
+            , Custom
+            ]
     in
     div []
         [ Html.node "much-select"
@@ -144,7 +263,16 @@ view model =
             , multiSelectAttribute model.allowMultiSelect
             , outputStyleAttribute model.outputStyle
             , singleValueChangedAttribute
-            , inputKeyupAttribute
+            , onCustomValidationRequest
+            , onCustomValueSelected
+            , onBlurOrUnfocusedValueChanged
+            , onValueCleared
+            , onInputKeyupDebounced
+            , onInputKeyUp
+            , onReady
+            , onOptionSelected
+            , onOptionDeselected
+            , onOptionsUpdated
             ]
             [ select [ slot "select-input" ]
                 [ option [] [ text "tom" ]
@@ -156,6 +284,11 @@ view model =
                 , type_ "application/json"
                 ]
                 [ text (Json.Encode.encode 0 (encode transformers validators)) ]
+            , Html.node "script"
+                [ slot "custom-validation-result"
+                , type_ "application/json"
+                ]
+                [ text (Json.Encode.encode 0 (encodeCustomValidateResult model.customValidationResult)) ]
             ]
         , form []
             [ fieldset []
@@ -197,11 +330,18 @@ type Transformer
 type Validator
     = NoWhiteSpace ValidatorLevel String
     | MinimumLength ValidatorLevel String Int
+    | Custom
 
 
 type ValidatorLevel
     = ShowError
     | Silent
+
+
+type ValidationResult
+    = NothingToValidate
+    | ValidationPass String Int
+    | ValidationFailed String Int (List ( String, String ))
 
 
 encode : List Transformer -> List Validator -> Json.Encode.Value
@@ -237,6 +377,11 @@ encodeValidator validator =
                 , ( "minimum-length", Json.Encode.int int )
                 ]
 
+        Custom ->
+            Json.Encode.object
+                [ ( "name", Json.Encode.string "custom" )
+                ]
+
 
 encodeValidatorLevel : ValidatorLevel -> Json.Encode.Value
 encodeValidatorLevel validatorLevel =
@@ -246,3 +391,32 @@ encodeValidatorLevel validatorLevel =
 
         Silent ->
             Json.Encode.string "silent"
+
+
+encodeCustomValidateResult : ValidationResult -> Json.Encode.Value
+encodeCustomValidateResult validationResult =
+    case validationResult of
+        NothingToValidate ->
+            Json.Encode.string ""
+
+        ValidationPass string int ->
+            Json.Encode.object
+                [ ( "isValid", Json.Encode.bool True )
+                , ( "value", Json.Encode.string string )
+                , ( "selectedValueIndex", Json.Encode.int int )
+                ]
+
+        ValidationFailed string int errorMessages ->
+            let
+                encodeErrorMessage ( errorMessage, errorLevel ) =
+                    Json.Encode.object
+                        [ ( "errorMessage", Json.Encode.string errorMessage )
+                        , ( "level", Json.Encode.string errorLevel )
+                        ]
+            in
+            Json.Encode.object
+                [ ( "isValid", Json.Encode.bool False )
+                , ( "value", Json.Encode.string string )
+                , ( "selectedValueIndex", Json.Encode.int int )
+                , ( "errorMessages", Json.Encode.list encodeErrorMessage errorMessages )
+                ]

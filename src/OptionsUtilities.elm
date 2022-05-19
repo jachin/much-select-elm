@@ -23,6 +23,7 @@ import Option
         , isOptionValueInListOfStrings
         , merge2Options
         , newSelectedDatalistOption
+        , newSelectedDatalistOptionPendingValidation
         , newSelectedDatalistOptionWithErrors
         , newSelectedOption
         , optionIsHighlightable
@@ -1281,6 +1282,15 @@ updateDatalistOptionsWithValueAndErrors errors optionValue selectedValueIndex op
         newSelectedDatalistOptionWithErrors errors optionValue selectedValueIndex :: options
 
 
+updateDatalistOptionsWithPendingValidation : OptionValue -> Int -> List Option -> List Option
+updateDatalistOptionsWithPendingValidation optionValue selectedValueIndex options =
+    if List.any (Option.hasSelectedItemIndex selectedValueIndex) options then
+        updateDatalistOptionWithValueBySelectedValueIndexPendingValidation optionValue selectedValueIndex options
+
+    else
+        newSelectedDatalistOptionPendingValidation optionValue selectedValueIndex :: options
+
+
 addNewEmptyOptionAtIndex : Int -> List Option -> List Option
 addNewEmptyOptionAtIndex index options =
     let
@@ -1323,6 +1333,20 @@ updateDatalistOptionWithValueBySelectedValueIndex errors optionValue selectedInd
                     option
             )
             options
+
+
+updateDatalistOptionWithValueBySelectedValueIndexPendingValidation : OptionValue -> Int -> List Option -> List Option
+updateDatalistOptionWithValueBySelectedValueIndexPendingValidation optionValue selectedIndex options =
+    List.map
+        (\option ->
+            if Option.getOptionSelectedIndex option == selectedIndex then
+                Option.setOptionValue optionValue option
+                    |> Option.setOptionDisplay (OptionSelectedPendingValidation selectedIndex)
+
+            else
+                option
+        )
+        options
 
 
 deselectAllOptionsInOptionsList : List Option -> List Option

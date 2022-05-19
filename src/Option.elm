@@ -38,6 +38,7 @@ module Option exposing
     , newOption
     , newOptionGroup
     , newSelectedDatalistOption
+    , newSelectedDatalistOptionPendingValidation
     , newSelectedDatalistOptionWithErrors
     , newSelectedOption
     , optionDescriptionToBool
@@ -213,6 +214,13 @@ newSelectedDatalistOptionWithErrors : List ValidationFailureMessage -> OptionVal
 newSelectedDatalistOptionWithErrors errors optionValue selectedIndex =
     DatalistOption
         (OptionSelectedAndInvalid selectedIndex errors)
+        optionValue
+
+
+newSelectedDatalistOptionPendingValidation : OptionValue -> Int -> Option
+newSelectedDatalistOptionPendingValidation optionValue selectedIndex =
+    DatalistOption
+        (OptionSelectedPendingValidation selectedIndex)
         optionValue
 
 

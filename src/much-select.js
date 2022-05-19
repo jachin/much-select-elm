@@ -863,7 +863,10 @@ class MuchSelect extends HTMLElement {
     this._customValidationResultSlotObserver = new MutationObserver(
       (mutationsList) => {
         mutationsList.forEach((mutation) => {
-          if (mutation.type === "childList") {
+          if (
+            mutation.type === "childList" ||
+            mutation.type === "characterData"
+          ) {
             const jsonData = JSON.parse(mutation.target.textContent);
             this.appPromise.then((app) => {
               // noinspection JSUnresolvedVariable
@@ -1877,9 +1880,10 @@ class MuchSelect extends HTMLElement {
       }
 
       // noinspection JSUnresolvedVariable
-      this.appPromise.then((app) =>
-        app.ports.outputStyleChangedReceiver.send(this._outputStyle)
-      );
+      this.appPromise.then((app) => {
+        app.ports.outputStyleChangedReceiver.send(this._outputStyle);
+        this._updateTransformationValidationFromTheDom();
+      });
     } else {
       throw new Error(`Invalid output style: ${value}`);
     }

@@ -94,6 +94,7 @@ import OptionsUtilities
         , selectedOptionsToTuple
         , toggleSelectedHighlightByOptionValue
         , unhighlightSelectedOptions
+        , updateDatalistOptionsWithPendingValidation
         , updateDatalistOptionsWithValue
         , updateDatalistOptionsWithValueAndErrors
         )
@@ -496,7 +497,12 @@ update msg model =
                     in
                     ( { model
                         | options = updatedOptions
-                        , rightSlot = updateRightSlot model.rightSlot model.selectionConfig True (updatedOptions |> selectedOptions)
+                        , rightSlot =
+                            updateRightSlot
+                                model.rightSlot
+                                model.selectionConfig
+                                True
+                                (updatedOptions |> selectedOptions)
                       }
                     , makeCommandMessagesWhenValuesChanges
                         (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
@@ -506,18 +512,23 @@ update msg model =
                 TransformAndValidate.ValidationPending _ _ ->
                     let
                         updatedOptions =
-                            updateDatalistOptionsWithValueAndErrors
-                                []
-                                (OptionValue.stringToOptionValue valueString)
-                                selectedValueIndex
-                                model.options
+                            Debug.log "updated option" <|
+                                updateDatalistOptionsWithPendingValidation
+                                    (OptionValue.stringToOptionValue valueString)
+                                    selectedValueIndex
+                                    model.options
 
                         maybeSelectedOptionValue =
                             Just (OptionValue.stringToOptionValue valueString)
                     in
                     ( { model
                         | options = updatedOptions
-                        , rightSlot = updateRightSlot model.rightSlot model.selectionConfig True (updatedOptions |> selectedOptions)
+                        , rightSlot =
+                            updateRightSlot
+                                model.rightSlot
+                                model.selectionConfig
+                                True
+                                (updatedOptions |> selectedOptions)
                       }
                     , makeCommandMessagesWhenValuesChanges
                         (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
