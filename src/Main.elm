@@ -1528,7 +1528,7 @@ singleSelectViewCustomHtml valueCasing selectionConfig options searchString righ
             , attributeIf (not (isFocused selectionConfig)) (onFocus BringInputInFocus)
             , tabIndexAttribute (isDisabled selectionConfig)
             , classList
-                (valueCasingClassList selectionConfig hasOptionSelected)
+                (valueCasingClassList selectionConfig hasOptionSelected False)
             ]
             [ span
                 [ id "selected-value" ]
@@ -1625,7 +1625,7 @@ multiSelectViewCustomHtml selectionConfig options searchString rightSlot valueCa
                 ]
             , tabIndexAttribute (isDisabled selectionConfig)
             , classList
-                (valueCasingClassList selectionConfig hasOptionSelected)
+                (valueCasingClassList selectionConfig hasOptionSelected False)
             ]
             (optionsToValuesHtml options (getSingleItemRemoval selectionConfig)
                 ++ [ inputFilter
@@ -1651,6 +1651,9 @@ multiSelectViewDataset selectionConfig options rightSlot =
 
         selectedOptions =
             options |> OptionsUtilities.selectedOptions
+
+        hasAnError =
+            not (OptionsUtilities.allOptionsAreValid selectedOptions)
 
         makeInputs : List Option -> List (Html Msg)
         makeInputs selectedOptions_ =
@@ -1678,15 +1681,18 @@ multiSelectViewDataset selectionConfig options rightSlot =
             [ id "value-casing"
             , valueCasingPartsAttribute selectionConfig
             , classList
-                (valueCasingClassList selectionConfig hasOptionSelected)
+                (valueCasingClassList selectionConfig
+                    hasOptionSelected
+                    hasAnError
+                )
             ]
             (makeInputs selectedOptions)
         , datalist options
         ]
 
 
-valueCasingClassList : SelectionConfig -> Bool -> List ( String, Bool )
-valueCasingClassList selectionConfig hasOptionSelected =
+valueCasingClassList : SelectionConfig -> Bool -> Bool -> List ( String, Bool )
+valueCasingClassList selectionConfig hasOptionSelected hasAnError =
     let
         isFocused_ =
             isFocused selectionConfig
@@ -1723,6 +1729,7 @@ valueCasingClassList selectionConfig hasOptionSelected =
     , ( "focused", isFocused_ )
     , ( "not-focused", not isFocused_ )
     , ( "show-placeholder", showPlaceholder )
+    , ( "error", hasAnError )
     ]
 
 
@@ -1854,6 +1861,13 @@ singleSelectViewDatalistHtml selectionConfig options =
 
         hasOptionSelected =
             hasSelectedOption options
+
+        hasAnError =
+            maybeSelectedOption
+                |> Maybe.map Option.getOptionValidationErrors
+                |> Maybe.map List.isEmpty
+                |> Maybe.map not
+                |> Maybe.withDefault False
     in
     div [ id "wrapper", Html.Attributes.attribute "part" "wrapper" ]
         [ div
@@ -1861,7 +1875,7 @@ singleSelectViewDatalistHtml selectionConfig options =
             , valueCasingPartsAttribute selectionConfig
             , tabIndexAttribute (isDisabled selectionConfig)
             , classList
-                (valueCasingClassList selectionConfig hasOptionSelected)
+                (valueCasingClassList selectionConfig hasOptionSelected hasAnError)
             ]
             [ singleSelectDatasetInputField
                 maybeSelectedOption
