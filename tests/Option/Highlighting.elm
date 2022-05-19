@@ -3,6 +3,7 @@ module Option.Highlighting exposing (suite)
 import Expect
 import Option
 import OptionsUtilities exposing (moveHighlightedOptionDown, moveHighlightedOptionUp)
+import SelectionMode
 import Test exposing (Test, describe, test)
 
 
@@ -20,12 +21,12 @@ suite =
                             ]
                     in
                     Expect.equal
-                        (moveHighlightedOptionDown options options)
+                        (moveHighlightedOptionDown SelectionMode.defaultSelectionConfig options options)
                         [ Option.newOption "one" Nothing |> Option.highlightOption
                         , Option.newOption "two" Nothing
                         , Option.newOption "three" Nothing
                         ]
-            , test "highlight the next highlightable option, skipping over the selected option" <|
+            , test "highlight the next highlightable option, not skipping over the selected option" <|
                 \_ ->
                     let
                         options =
@@ -35,10 +36,10 @@ suite =
                             ]
                     in
                     Expect.equal
-                        (moveHighlightedOptionDown options options)
+                        (moveHighlightedOptionDown SelectionMode.defaultSelectionConfig options options)
                         [ Option.newOption "one" Nothing
-                        , Option.newOption "two" Nothing |> Option.selectOption 0
-                        , Option.newOption "three" Nothing |> Option.highlightOption
+                        , Option.newOption "two" Nothing |> Option.selectOption 0 |> Option.highlightOption
+                        , Option.newOption "three" Nothing
                         ]
             , test "highlight the next highlightable option, skipping over disabled options" <|
                 \_ ->
@@ -51,7 +52,7 @@ suite =
                             ]
                     in
                     Expect.equal
-                        (moveHighlightedOptionDown options options)
+                        (moveHighlightedOptionDown SelectionMode.defaultSelectionConfig options options)
                         [ Option.newOption "one" Nothing
                         , Option.newDisabledOption "two" Nothing
                         , Option.newDisabledOption "three" Nothing
@@ -69,12 +70,12 @@ suite =
                             ]
                     in
                     Expect.equal
-                        (moveHighlightedOptionUp options options)
+                        (moveHighlightedOptionUp SelectionMode.defaultSelectionConfig options options)
                         [ Option.newOption "one" Nothing |> Option.highlightOption
                         , Option.newOption "two" Nothing
                         , Option.newOption "three" Nothing
                         ]
-            , test "highlight the previous highlightable option, skipping over the selected option" <|
+            , test "highlight the previous highlightable option, not skipping over the selected option" <|
                 \_ ->
                     let
                         options =
@@ -84,9 +85,9 @@ suite =
                             ]
                     in
                     Expect.equal
-                        (moveHighlightedOptionUp options options)
-                        [ Option.newOption "one" Nothing |> Option.highlightOption
-                        , Option.newOption "two" Nothing |> Option.selectOption 0
+                        (moveHighlightedOptionUp SelectionMode.defaultSelectionConfig options options)
+                        [ Option.newOption "one" Nothing
+                        , Option.newOption "two" Nothing |> Option.selectOption 0 |> Option.highlightOption
                         , Option.newOption "three" Nothing
                         ]
             , test "highlight the previous highlightable option, skipping over disabled options" <|
@@ -100,7 +101,7 @@ suite =
                             ]
                     in
                     Expect.equal
-                        (moveHighlightedOptionUp options options)
+                        (moveHighlightedOptionUp SelectionMode.defaultSelectionConfig options options)
                         [ Option.newOption "one" Nothing |> Option.highlightOption
                         , Option.newDisabledOption "two" Nothing
                         , Option.newDisabledOption "three" Nothing
@@ -118,7 +119,7 @@ suite =
                             ]
                     in
                     Expect.equal
-                        (moveHighlightedOptionUp options options)
+                        (moveHighlightedOptionUp SelectionMode.defaultSelectionConfig options options)
                         [ Option.newOption "one" Nothing
                         , Option.newOption "two" Nothing |> Option.highlightOption
                         , Option.newOption "three" Nothing

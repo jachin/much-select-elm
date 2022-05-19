@@ -4,12 +4,14 @@ port module Ports exposing
     , allowCustomOptionsReceiver
     , blurInput
     , customOptionSelected
+    , customValidationReceiver
     , deselectOptionReceiver
     , disableChangedReceiver
     , errorMessage
     , focusInput
     , initialValueSet
     , inputBlurred
+    , inputFocused
     , inputKeyUp
     , loadingChangedReceiver
     , maxDropdownItemsChangedReceiver
@@ -30,7 +32,9 @@ port module Ports exposing
     , searchStringMinimumLengthChangedReceiver
     , selectOptionReceiver
     , selectedItemStaysInPlaceChangedReceiver
+    , sendCustomValidationRequest
     , showDropdownFooterChangedReceiver
+    , transformationAndValidationReceiver
     , updateOptionsFromDom
     , updateOptionsInWebWorker
     , updateSearchResultDataWithWebWorkerReceiver
@@ -73,13 +77,24 @@ port optionDeselected : List ( String, String ) -> Cmd msg
 port inputKeyUp : String -> Cmd msg
 
 
+{-| This port is involved in caring out the blurring process.
+-}
 port blurInput : () -> Cmd msg
 
 
+{-| This port is called after this much select has been blurred.
+-}
 port inputBlurred : () -> Cmd msg
 
 
+{-| This port is involved in caring out the focusing process.
+-}
 port focusInput : () -> Cmd msg
+
+
+{-| This port is called after this much select has been focused
+-}
+port inputFocused : () -> Cmd msg
 
 
 port allOptions : Json.Decode.Value -> Cmd msg
@@ -92,6 +107,15 @@ port searchOptionsWithWebWorker : Json.Decode.Value -> Cmd msg
 
 
 port updateOptionsInWebWorker : () -> Cmd msg
+
+
+port sendCustomValidationRequest : ( String, Int ) -> Cmd msg
+
+
+port customValidationReceiver : (Json.Decode.Value -> msg) -> Sub msg
+
+
+port transformationAndValidationReceiver : (Json.Decode.Value -> msg) -> Sub msg
 
 
 port requestAllOptionsReceiver : (() -> msg) -> Sub msg

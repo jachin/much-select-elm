@@ -98,9 +98,9 @@ suite =
                 \_ ->
                     let
                         optionsWithThreeSelections =
-                            [ Option.newSelectedDatalisOption (OptionValue.stringToOptionValue "Left-Mart") 0
-                            , Option.newSelectedDatalisOption (OptionValue.stringToOptionValue "Powersause") 1
-                            , Option.newSelectedDatalisOption (OptionValue.stringToOptionValue "Skybucks") 2
+                            [ Option.newSelectedDatalistOption (OptionValue.stringToOptionValue "Left-Mart") 0
+                            , Option.newSelectedDatalistOption (OptionValue.stringToOptionValue "Powersause") 1
+                            , Option.newSelectedDatalistOption (OptionValue.stringToOptionValue "Skybucks") 2
                             ]
                                 ++ datalistOption
                     in
@@ -108,8 +108,8 @@ suite =
                         (optionsWithThreeSelections
                             |> OptionsUtilities.removeOptionFromOptionListBySelectedIndex 0
                         )
-                        ([ Option.newSelectedDatalisOption (OptionValue.stringToOptionValue "Powersause") 0
-                         , Option.newSelectedDatalisOption (OptionValue.stringToOptionValue "Skybucks") 1
+                        ([ Option.newSelectedDatalistOption (OptionValue.stringToOptionValue "Powersause") 0
+                         , Option.newSelectedDatalistOption (OptionValue.stringToOptionValue "Skybucks") 1
                          ]
                             ++ datalistOption
                         )
@@ -117,9 +117,9 @@ suite =
                 \_ ->
                     let
                         optionsWithThreeSelections =
-                            [ Option.newSelectedDatalisOption (OptionValue.stringToOptionValue "Left-Mart") 0
-                            , Option.newSelectedDatalisOption (OptionValue.stringToOptionValue "Powersause") 1
-                            , Option.newSelectedDatalisOption (OptionValue.stringToOptionValue "Skybucks") 2
+                            [ Option.newSelectedDatalistOption (OptionValue.stringToOptionValue "Left-Mart") 0
+                            , Option.newSelectedDatalistOption (OptionValue.stringToOptionValue "Powersause") 1
+                            , Option.newSelectedDatalistOption (OptionValue.stringToOptionValue "Skybucks") 2
                             ]
                                 ++ datalistOption
                     in
@@ -127,8 +127,8 @@ suite =
                         (optionsWithThreeSelections
                             |> OptionsUtilities.removeOptionFromOptionListBySelectedIndex 1
                         )
-                        ([ Option.newSelectedDatalisOption (OptionValue.stringToOptionValue "Left-Mart") 0
-                         , Option.newSelectedDatalisOption (OptionValue.stringToOptionValue "Skybucks") 1
+                        ([ Option.newSelectedDatalistOption (OptionValue.stringToOptionValue "Left-Mart") 0
+                         , Option.newSelectedDatalistOption (OptionValue.stringToOptionValue "Skybucks") 1
                          ]
                             ++ datalistOption
                         )
@@ -136,9 +136,9 @@ suite =
                 \_ ->
                     let
                         optionsWithThreeSelections =
-                            [ Option.newSelectedDatalisOption (OptionValue.stringToOptionValue "Left-Mart") 0
-                            , Option.newSelectedDatalisOption (OptionValue.stringToOptionValue "Powersause") 1
-                            , Option.newSelectedDatalisOption (OptionValue.stringToOptionValue "Skybucks") 2
+                            [ Option.newSelectedDatalistOption (OptionValue.stringToOptionValue "Left-Mart") 0
+                            , Option.newSelectedDatalistOption (OptionValue.stringToOptionValue "Powersause") 1
+                            , Option.newSelectedDatalistOption (OptionValue.stringToOptionValue "Skybucks") 2
                             ]
                                 ++ datalistOption
                     in
@@ -146,8 +146,8 @@ suite =
                         (optionsWithThreeSelections
                             |> OptionsUtilities.removeOptionFromOptionListBySelectedIndex 2
                         )
-                        ([ Option.newSelectedDatalisOption (OptionValue.stringToOptionValue "Left-Mart") 0
-                         , Option.newSelectedDatalisOption (OptionValue.stringToOptionValue "Powersause") 1
+                        ([ Option.newSelectedDatalistOption (OptionValue.stringToOptionValue "Left-Mart") 0
+                         , Option.newSelectedDatalistOption (OptionValue.stringToOptionValue "Powersause") 1
                          ]
                             ++ datalistOption
                         )

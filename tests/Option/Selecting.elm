@@ -55,7 +55,7 @@ leviticus =
 
 
 numbers =
-    Option.newSelectedDatalisOption (OptionValue.stringToOptionValue "Numbers") 0
+    Option.newSelectedDatalistOption (OptionValue.stringToOptionValue "Numbers") 0
 
 
 firstBooks =
@@ -159,30 +159,30 @@ suite =
             [ test "allow one empty option" <|
                 \_ ->
                     Expect.equalLists
-                        ([ Option.newSelectedDatalisOption OptionValue.EmptyOptionValue 0
+                        ([ Option.newSelectedDatalistOption OptionValue.EmptyOptionValue 0
                          ]
                             |> OptionsUtilities.cleanupEmptySelectedOptions
                         )
-                        [ Option.newSelectedDatalisOption OptionValue.EmptyOptionValue 0
+                        [ Option.newSelectedDatalistOption OptionValue.EmptyOptionValue 0
                         ]
             , test "allow only one empty option" <|
                 \_ ->
                     Expect.equalLists
-                        ([ Option.newSelectedDatalisOption OptionValue.EmptyOptionValue 0
-                         , Option.newSelectedDatalisOption OptionValue.EmptyOptionValue 1
-                         , Option.newSelectedDatalisOption OptionValue.EmptyOptionValue 2
+                        ([ Option.newSelectedDatalistOption OptionValue.EmptyOptionValue 0
+                         , Option.newSelectedDatalistOption OptionValue.EmptyOptionValue 1
+                         , Option.newSelectedDatalistOption OptionValue.EmptyOptionValue 2
                          ]
                             |> OptionsUtilities.cleanupEmptySelectedOptions
                         )
-                        [ Option.newSelectedDatalisOption OptionValue.EmptyOptionValue 0
+                        [ Option.newSelectedDatalistOption OptionValue.EmptyOptionValue 0
                         ]
             , test "allow no empty options is there is at least one non empty option" <|
                 \_ ->
                     Expect.equalLists
                         ([ numbers
-                         , Option.newSelectedDatalisOption OptionValue.EmptyOptionValue 1
-                         , Option.newSelectedDatalisOption OptionValue.EmptyOptionValue 2
-                         , Option.newSelectedDatalisOption OptionValue.EmptyOptionValue 3
+                         , Option.newSelectedDatalistOption OptionValue.EmptyOptionValue 1
+                         , Option.newSelectedDatalistOption OptionValue.EmptyOptionValue 2
+                         , Option.newSelectedDatalistOption OptionValue.EmptyOptionValue 3
                          ]
                             |> OptionsUtilities.cleanupEmptySelectedOptions
                         )

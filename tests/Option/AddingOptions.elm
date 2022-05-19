@@ -50,7 +50,7 @@ theMidnightOptionValue =
 
 
 theMidnightSelected =
-    Option.newSelectedDatalisOption theMidnightOptionValue 0
+    Option.newSelectedDatalistOption theMidnightOptionValue 0
 
 
 theMidnight =
@@ -66,7 +66,7 @@ futureCop =
 
 
 futureCopSelected =
-    Option.newSelectedDatalisOption futureCopOptionValue 1
+    Option.newSelectedDatalistOption futureCopOptionValue 1
 
 
 arcadeHighOptionValue =
@@ -78,7 +78,7 @@ archadeHigh =
 
 
 arcadeHighSelected =
-    Option.newSelectedDatalisOption arcadeHighOptionValue 2
+    Option.newSelectedDatalistOption arcadeHighOptionValue 2
 
 
 suite : Test
@@ -221,7 +221,7 @@ suite =
                 \_ ->
                     Expect.equalLists
                         ([ theMidnightSelected, futureCopSelected, arcadeHighSelected ] |> OptionsUtilities.addNewEmptyOptionAtIndex 0)
-                        [ Option.newSelectedDatalisOption OptionValue.EmptyOptionValue 0
+                        [ Option.newSelectedDatalistOption OptionValue.EmptyOptionValue 0
                         , Option.selectOption 1 theMidnight
                         , Option.selectOption 2 futureCop
                         , Option.selectOption 3 archadeHigh
@@ -231,7 +231,7 @@ suite =
                     Expect.equalLists
                         ([ theMidnightSelected, futureCopSelected, arcadeHighSelected ] |> OptionsUtilities.addNewEmptyOptionAtIndex 1)
                         [ theMidnightSelected
-                        , Option.newSelectedDatalisOption OptionValue.EmptyOptionValue 1
+                        , Option.newSelectedDatalistOption OptionValue.EmptyOptionValue 1
                         , Option.selectOption 2 futureCop
                         , Option.selectOption 3 archadeHigh
                         ]
@@ -247,7 +247,7 @@ suite =
                         [ theMidnightSelected
                         , futureCopSelected
                         , arcadeHighSelected
-                        , Option.newSelectedDatalisOption OptionValue.EmptyOptionValue 3
+                        , Option.newSelectedDatalistOption OptionValue.EmptyOptionValue 3
                         ]
             , test "preserver the empty selected options" <|
                 \_ ->
@@ -257,7 +257,7 @@ suite =
                             [ theMidnightSelected
                             , futureCopSelected
                             , arcadeHighSelected
-                            , Option.newSelectedDatalisOption OptionValue.EmptyOptionValue 3
+                            , Option.newSelectedDatalistOption OptionValue.EmptyOptionValue 3
                             , theMidnight
                             , futureCop
                             , archadeHigh
@@ -266,7 +266,7 @@ suite =
                         [ theMidnightSelected
                         , futureCopSelected
                         , arcadeHighSelected
-                        , Option.newSelectedDatalisOption OptionValue.EmptyOptionValue 3
+                        , Option.newSelectedDatalistOption OptionValue.EmptyOptionValue 3
                         , theMidnight
                         , futureCop
                         , archadeHigh
