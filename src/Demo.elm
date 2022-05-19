@@ -1,10 +1,11 @@
 module Demo exposing (main)
 
 import Browser
-import Html exposing (Attribute, Html, button, div, option, select, text)
-import Html.Attributes exposing (attribute, type_)
+import Html exposing (Attribute, Html, button, div, fieldset, form, input, label, legend, option, select, text)
+import Html.Attributes exposing (attribute, for, id, name, type_, value)
 import Html.Attributes.Extra
 import Html.Events exposing (on, onClick)
+import Html.Events.Extra exposing (onChange)
 import Json.Decode
 import Json.Encode
 
@@ -14,13 +15,18 @@ type alias Flags =
 
 
 type alias Model =
-    { allowCustomOptions : Bool }
+    { allowCustomOptions : Bool
+    , allowMultiSelect : Bool
+    , outputStyle : String
+    }
 
 
 type Msg
     = ValueChanged MuchSelectValue
     | InputKeyUpDebounced String
     | ToggleAllowCustomValues
+    | ToggleMultiSelect
+    | ChangeOutputStyle String
 
 
 main : Program Flags Model Msg
@@ -35,20 +41,31 @@ main =
 
 init : Flags -> ( Model, Cmd Msg )
 init _ =
-    ( { allowCustomOptions = False }, Cmd.none )
+    ( { allowCustomOptions = False
+      , allowMultiSelect = False
+      , outputStyle = "custom-html"
+      }
+    , Cmd.none
+    )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        ValueChanged strings ->
+        ValueChanged _ ->
+            ( model, Cmd.none )
+
+        InputKeyUpDebounced _ ->
             ( model, Cmd.none )
 
         ToggleAllowCustomValues ->
             ( { model | allowCustomOptions = not model.allowCustomOptions }, Cmd.none )
 
-        InputKeyUpDebounced string ->
-            ( model, Cmd.none )
+        ToggleMultiSelect ->
+            ( { model | allowMultiSelect = not model.allowMultiSelect }, Cmd.none )
+
+        ChangeOutputStyle string ->
+            ( { model | outputStyle = string }, Cmd.none )
 
 
 subscriptions : Model -> Sub Msg
@@ -70,6 +87,20 @@ allowCustomOptionsAttribute bool =
         Html.Attributes.Extra.empty
 
 
+multiSelectAttribute : Bool -> Attribute msg
+multiSelectAttribute bool =
+    if bool then
+        attribute "multi-select" ""
+
+    else
+        Html.Attributes.Extra.empty
+
+
+outputStyleAttribute : String -> Attribute msg
+outputStyleAttribute string =
+    attribute "output-style" string
+
+
 type alias MuchSelectValue =
     { value : String, label : String }
 
@@ -87,8 +118,8 @@ singleValueChangedAttribute =
     on "valueChanged" (Json.Decode.map ValueChanged (Json.Decode.at [ "detail", "value" ] valueDecoder))
 
 
-maybeInputKeyupMsgToAttribute : Attribute Msg
-maybeInputKeyupMsgToAttribute =
+inputKeyupAttribute : Attribute Msg
+inputKeyupAttribute =
     on "inputKeyUpDebounced"
         (Json.Decode.at
             [ "detail", "searchString" ]
@@ -104,14 +135,16 @@ view model =
             [ Lowercase ]
 
         validators =
-            [ NoWhiteSpace ShowError "No white space allowd" ]
+            [ NoWhiteSpace ShowError "No white space allowed" ]
     in
     div []
         [ Html.node "much-select"
             [ attribute "events-only" ""
             , allowCustomOptionsAttribute model.allowCustomOptions
+            , multiSelectAttribute model.allowMultiSelect
+            , outputStyleAttribute model.outputStyle
             , singleValueChangedAttribute
-            , maybeInputKeyupMsgToAttribute
+            , inputKeyupAttribute
             ]
             [ select [ slot "select-input" ]
                 [ option [] [ text "tom" ]
@@ -124,7 +157,36 @@ view model =
                 ]
                 [ text (Json.Encode.encode 0 (encode transformers validators)) ]
             ]
-        , button [ onClick ToggleAllowCustomValues ] [ text "toggle allow custom values" ]
+        , form []
+            [ fieldset []
+                [ legend [] [ text "Input Methods" ]
+                , button [ onClick ToggleAllowCustomValues, type_ "button" ] [ text "toggle allow custom values" ]
+                , button [ onClick ToggleMultiSelect, type_ "button" ] [ text "toggle multi select" ]
+                ]
+            , fieldset []
+                [ legend []
+                    [ text "Output Style"
+                    ]
+                , input
+                    [ type_ "radio"
+                    , name "output-style"
+                    , id "output-style-custom-html"
+                    , value "custom-html"
+                    , onChange ChangeOutputStyle
+                    ]
+                    []
+                , label [ for "output-style-custom-html" ] [ text "Custom HTML" ]
+                , input
+                    [ type_ "radio"
+                    , name "output-style"
+                    , id "output-style-datalist"
+                    , value "datalist"
+                    , onChange ChangeOutputStyle
+                    ]
+                    []
+                , label [ for "output-style-datalist" ] [ text "datalist" ]
+                ]
+            ]
         ]
 
 
