@@ -1,8 +1,25 @@
 module Demo exposing (main)
 
 import Browser
-import Html exposing (Attribute, Html, button, div, fieldset, form, input, label, legend, option, select, text)
-import Html.Attributes exposing (attribute, for, id, name, type_, value)
+import Html
+    exposing
+        ( Attribute
+        , Html
+        , button
+        , div
+        , fieldset
+        , form
+        , input
+        , label
+        , legend
+        , option
+        , select
+        , table
+        , td
+        , text
+        , tr
+        )
+import Html.Attributes exposing (attribute, checked, for, id, name, type_, value)
 import Html.Attributes.Extra
 import Html.Events exposing (on, onClick)
 import Html.Events.Extra exposing (onChange)
@@ -112,7 +129,7 @@ update msg model =
                         ValidationPass string int
 
                     else
-                        ValidationFailed string int [ ( "Come on, you can do better than asdf", "error" ) ]
+                        ValidationFailed string int [ ( "Come on, you can do better than 'asdf'", "error" ) ]
             in
             ( { model | customValidationResult = customValidationResult }, Cmd.none )
 
@@ -293,8 +310,34 @@ view model =
         , form []
             [ fieldset []
                 [ legend [] [ text "Input Methods" ]
-                , button [ onClick ToggleAllowCustomValues, type_ "button" ] [ text "toggle allow custom values" ]
-                , button [ onClick ToggleMultiSelect, type_ "button" ] [ text "toggle multi select" ]
+                , table []
+                    [ tr []
+                        [ td [] [ text "Allow Custom Options" ]
+                        , td []
+                            [ if model.allowCustomOptions then
+                                text "ON"
+
+                              else
+                                text "OFF"
+                            ]
+                        , td []
+                            [ button [ onClick ToggleAllowCustomValues, type_ "button" ] [ text "toggle" ]
+                            ]
+                        ]
+                    , tr []
+                        [ td [] [ text "Multi Select" ]
+                        , td []
+                            [ if model.allowMultiSelect then
+                                text "ON"
+
+                              else
+                                text "OFF"
+                            ]
+                        , td []
+                            [ button [ onClick ToggleMultiSelect, type_ "button" ] [ text "toggle" ]
+                            ]
+                        ]
+                    ]
                 ]
             , fieldset []
                 [ legend []
@@ -305,6 +348,7 @@ view model =
                     , name "output-style"
                     , id "output-style-custom-html"
                     , value "custom-html"
+                    , checked (model.outputStyle == "custom-html")
                     , onChange ChangeOutputStyle
                     ]
                     []
@@ -314,6 +358,7 @@ view model =
                     , name "output-style"
                     , id "output-style-datalist"
                     , value "datalist"
+                    , checked (model.outputStyle == "datalist")
                     , onChange ChangeOutputStyle
                     ]
                     []
