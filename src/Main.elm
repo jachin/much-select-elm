@@ -1957,6 +1957,7 @@ multiSelectDatasetInputField maybeOption selectionConfig rightSlot index =
                     , Html.Attributes.attribute "part" "input-value"
                     , classList classes
                     , onInput (UpdateOptionValueValue index)
+                    , onBlur InputBlur
                     , value valueString
                     , placeholderAttribute
                     , Html.Attributes.list "datalist-options"
@@ -2666,6 +2667,9 @@ makeCommandMessagesWhenValuesChanges selectedOptions maybeSelectedValue =
         valueChangeCmd =
             if OptionsUtilities.allOptionsAreValid selectedOptions then
                 valueChanged (Ports.optionsEncoder selectedOptions)
+
+            else if OptionsUtilities.hasAnyPendingValidation selectedOptions then
+                Cmd.none
 
             else
                 invalidValue (Ports.optionsEncoder selectedOptions)

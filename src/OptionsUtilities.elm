@@ -1584,7 +1584,7 @@ equal optionsA optionsB =
 
 allOptionsAreValid : List Option -> Bool
 allOptionsAreValid options =
-    List.any Option.isValid options
+    List.all Option.isValid options
 
 
 hasAnyPendingValidation : List Option -> Bool

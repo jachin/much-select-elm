@@ -42,6 +42,7 @@ type alias Model =
 type Msg
     = MuchSelectReady
     | ValueChanged (List MuchSelectValue)
+    | InvalidValueChanged (List MuchSelectValue)
     | ValueCleared
     | OptionSelected
     | BlurOrUnfocusedValueChanged String
@@ -81,6 +82,9 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         ValueChanged _ ->
+            ( model, Cmd.none )
+
+        InvalidValueChanged _ ->
             ( model, Cmd.none )
 
         ValueCleared ->
@@ -186,6 +190,11 @@ onValueChanged =
     on "valueChanged" (Json.Decode.map ValueChanged (Json.Decode.at [ "detail", "values" ] (Json.Decode.list valueDecoder)))
 
 
+onInvalidValueChanged : Attribute Msg
+onInvalidValueChanged =
+    on "invalidValueChange" (Json.Decode.map InvalidValueChanged (Json.Decode.at [ "detail", "values" ] (Json.Decode.list valueDecoder)))
+
+
 onValueCleared : Attribute Msg
 onValueCleared =
     on "valueCleared" (Json.Decode.succeed ValueCleared)
@@ -280,6 +289,7 @@ view model =
             , multiSelectAttribute model.allowMultiSelect
             , outputStyleAttribute model.outputStyle
             , onValueChanged
+            , onInvalidValueChanged
             , onCustomValidationRequest
             , onCustomValueSelected
             , onBlurOrUnfocusedValueChanged
