@@ -25,6 +25,7 @@ import Html.Events exposing (on, onClick)
 import Html.Events.Extra exposing (onChange)
 import Json.Decode
 import Json.Encode
+import Url
 
 
 type alias Flags =
@@ -36,6 +37,8 @@ type alias Model =
     , allowMultiSelect : Bool
     , outputStyle : String
     , customValidationResult : ValidationResult
+    , selectedValueEncoding : String
+    , selectedValues : List MuchSelectValue
     }
 
 
@@ -55,6 +58,7 @@ type Msg
     | ToggleAllowCustomValues
     | ToggleMultiSelect
     | ChangeOutputStyle String
+    | ChangeSelectedValueEncoding String
 
 
 main : Program Flags Model Msg
@@ -73,6 +77,8 @@ init _ =
       , allowMultiSelect = False
       , outputStyle = "custom-html"
       , customValidationResult = NothingToValidate
+      , selectedValueEncoding = "json"
+      , selectedValues = []
       }
     , Cmd.none
     )
@@ -81,8 +87,8 @@ init _ =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        ValueChanged _ ->
-            ( model, Cmd.none )
+        ValueChanged selectedValues ->
+            ( { model | selectedValues = selectedValues }, Cmd.none )
 
         InvalidValueChanged _ ->
             ( model, Cmd.none )
@@ -136,6 +142,9 @@ update msg model =
                         ValidationFailed string int [ ( "Come on, you can do better than 'asdf'", "error" ) ]
             in
             ( { model | customValidationResult = customValidationResult }, Cmd.none )
+
+        ChangeSelectedValueEncoding string ->
+            ( { model | selectedValueEncoding = string }, Cmd.none )
 
 
 subscriptions : Model -> Sub Msg
@@ -271,6 +280,30 @@ outputStyleAttribute string =
     attribute "output-style" string
 
 
+selectedValueEncodingAttribute : String -> Attribute msg
+selectedValueEncodingAttribute encoding =
+    attribute "selected-value-encoding" encoding
+
+
+selectedValueAttribute : String -> List MuchSelectValue -> Attribute msg
+selectedValueAttribute encoding muchSelectValues =
+    let
+        selectedValueStr =
+            if encoding == "json" then
+                muchSelectValues
+                    |> List.map .value
+                    |> Json.Encode.list Json.Encode.string
+                    |> Json.Encode.encode 0
+                    |> Url.percentEncode
+
+            else
+                muchSelectValues
+                    |> List.map .value
+                    |> String.join ","
+    in
+    attribute "selected-value" selectedValueStr
+
+
 view : Model -> Html Msg
 view model =
     let
@@ -285,9 +318,11 @@ view model =
     div []
         [ Html.node "much-select"
             [ attribute "events-only" ""
+            , selectedValueEncodingAttribute model.selectedValueEncoding
             , allowCustomOptionsAttribute model.allowCustomOptions
             , multiSelectAttribute model.allowMultiSelect
             , outputStyleAttribute model.outputStyle
+            , selectedValueAttribute model.selectedValueEncoding model.selectedValues
             , onValueChanged
             , onInvalidValueChanged
             , onCustomValidationRequest
@@ -373,6 +408,31 @@ view model =
                     ]
                     []
                 , label [ for "output-style-datalist" ] [ text "datalist" ]
+                ]
+            , fieldset []
+                [ legend []
+                    [ text "Selected Value Encodeing"
+                    ]
+                , input
+                    [ type_ "radio"
+                    , name "selected-value-encoding"
+                    , id "selected-value-encoding-comma"
+                    , value "comma"
+                    , checked (model.selectedValueEncoding == "comma")
+                    , onChange ChangeSelectedValueEncoding
+                    ]
+                    []
+                , label [ for "selected-value-encoding-comma" ] [ text "Commas" ]
+                , input
+                    [ type_ "radio"
+                    , name "selected-value-encoding"
+                    , id "selected-value-encoding-json"
+                    , value "json"
+                    , checked (model.selectedValueEncoding == "json")
+                    , onChange ChangeSelectedValueEncoding
+                    ]
+                    []
+                , label [ for "selected-value-encoding-json" ] [ text "JSON" ]
                 ]
             ]
         ]
