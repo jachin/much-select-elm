@@ -1,13 +1,31 @@
 module Demo exposing (main)
 
 import Browser
-import Html exposing (Attribute, Html, button, div, fieldset, form, input, label, legend, option, select, text)
-import Html.Attributes exposing (attribute, for, id, name, type_, value)
+import Html
+    exposing
+        ( Attribute
+        , Html
+        , button
+        , div
+        , fieldset
+        , form
+        , input
+        , label
+        , legend
+        , option
+        , select
+        , table
+        , td
+        , text
+        , tr
+        )
+import Html.Attributes exposing (attribute, checked, for, id, name, type_, value)
 import Html.Attributes.Extra
 import Html.Events exposing (on, onClick)
 import Html.Events.Extra exposing (onChange)
 import Json.Decode
 import Json.Encode
+import Url
 
 
 type alias Flags =
@@ -19,12 +37,15 @@ type alias Model =
     , allowMultiSelect : Bool
     , outputStyle : String
     , customValidationResult : ValidationResult
+    , selectedValueEncoding : String
+    , selectedValues : List MuchSelectValue
     }
 
 
 type Msg
     = MuchSelectReady
-    | ValueChanged MuchSelectValue
+    | ValueChanged (List MuchSelectValue)
+    | InvalidValueChanged (List MuchSelectValue)
     | ValueCleared
     | OptionSelected
     | BlurOrUnfocusedValueChanged String
@@ -37,6 +58,7 @@ type Msg
     | ToggleAllowCustomValues
     | ToggleMultiSelect
     | ChangeOutputStyle String
+    | ChangeSelectedValueEncoding String
 
 
 main : Program Flags Model Msg
@@ -55,6 +77,8 @@ init _ =
       , allowMultiSelect = False
       , outputStyle = "custom-html"
       , customValidationResult = NothingToValidate
+      , selectedValueEncoding = "json"
+      , selectedValues = []
       }
     , Cmd.none
     )
@@ -63,7 +87,10 @@ init _ =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        ValueChanged _ ->
+        ValueChanged selectedValues ->
+            ( { model | selectedValues = selectedValues }, Cmd.none )
+
+        InvalidValueChanged _ ->
             ( model, Cmd.none )
 
         ValueCleared ->
@@ -112,9 +139,12 @@ update msg model =
                         ValidationPass string int
 
                     else
-                        ValidationFailed string int [ ( "Come on, you can do better than asdf", "error" ) ]
+                        ValidationFailed string int [ ( "Come on, you can do better than 'asdf'", "error" ) ]
             in
             ( { model | customValidationResult = customValidationResult }, Cmd.none )
+
+        ChangeSelectedValueEncoding string ->
+            ( { model | selectedValueEncoding = string }, Cmd.none )
 
 
 subscriptions : Model -> Sub Msg
@@ -150,6 +180,33 @@ onInputKeyUp =
 onReady : Attribute Msg
 onReady =
     on "muchSelectReady" (Json.Decode.succeed MuchSelectReady)
+
+
+type alias MuchSelectValue =
+    { value : String, label : String }
+
+
+valueDecoder : Json.Decode.Decoder MuchSelectValue
+valueDecoder =
+    Json.Decode.map2
+        MuchSelectValue
+        (Json.Decode.field "value" Json.Decode.string)
+        (Json.Decode.field "label" Json.Decode.string)
+
+
+onValueChanged : Attribute Msg
+onValueChanged =
+    on "valueChanged" (Json.Decode.map ValueChanged (Json.Decode.at [ "detail", "values" ] (Json.Decode.list valueDecoder)))
+
+
+onInvalidValueChanged : Attribute Msg
+onInvalidValueChanged =
+    on "invalidValueChange" (Json.Decode.map InvalidValueChanged (Json.Decode.at [ "detail", "values" ] (Json.Decode.list valueDecoder)))
+
+
+onValueCleared : Attribute Msg
+onValueCleared =
+    on "valueCleared" (Json.Decode.succeed ValueCleared)
 
 
 onOptionSelected : Attribute Msg
@@ -223,26 +280,28 @@ outputStyleAttribute string =
     attribute "output-style" string
 
 
-type alias MuchSelectValue =
-    { value : String, label : String }
+selectedValueEncodingAttribute : String -> Attribute msg
+selectedValueEncodingAttribute encoding =
+    attribute "selected-value-encoding" encoding
 
 
-valueDecoder : Json.Decode.Decoder MuchSelectValue
-valueDecoder =
-    Json.Decode.map2
-        MuchSelectValue
-        (Json.Decode.field "value" Json.Decode.string)
-        (Json.Decode.field "label" Json.Decode.string)
+selectedValueAttribute : String -> List MuchSelectValue -> Attribute msg
+selectedValueAttribute encoding muchSelectValues =
+    let
+        selectedValueStr =
+            if encoding == "json" then
+                muchSelectValues
+                    |> List.map .value
+                    |> Json.Encode.list Json.Encode.string
+                    |> Json.Encode.encode 0
+                    |> Url.percentEncode
 
-
-singleValueChangedAttribute : Attribute Msg
-singleValueChangedAttribute =
-    on "valueChanged" (Json.Decode.map ValueChanged (Json.Decode.at [ "detail", "value" ] valueDecoder))
-
-
-onValueCleared : Attribute Msg
-onValueCleared =
-    on "valueCleared" (Json.Decode.succeed ValueCleared)
+            else
+                muchSelectValues
+                    |> List.map .value
+                    |> String.join ","
+    in
+    attribute "selected-value" selectedValueStr
 
 
 view : Model -> Html Msg
@@ -259,10 +318,13 @@ view model =
     div []
         [ Html.node "much-select"
             [ attribute "events-only" ""
+            , selectedValueEncodingAttribute model.selectedValueEncoding
             , allowCustomOptionsAttribute model.allowCustomOptions
             , multiSelectAttribute model.allowMultiSelect
             , outputStyleAttribute model.outputStyle
-            , singleValueChangedAttribute
+            , selectedValueAttribute model.selectedValueEncoding model.selectedValues
+            , onValueChanged
+            , onInvalidValueChanged
             , onCustomValidationRequest
             , onCustomValueSelected
             , onBlurOrUnfocusedValueChanged
@@ -293,8 +355,34 @@ view model =
         , form []
             [ fieldset []
                 [ legend [] [ text "Input Methods" ]
-                , button [ onClick ToggleAllowCustomValues, type_ "button" ] [ text "toggle allow custom values" ]
-                , button [ onClick ToggleMultiSelect, type_ "button" ] [ text "toggle multi select" ]
+                , table []
+                    [ tr []
+                        [ td [] [ text "Allow Custom Options" ]
+                        , td []
+                            [ if model.allowCustomOptions then
+                                text "ON"
+
+                              else
+                                text "OFF"
+                            ]
+                        , td []
+                            [ button [ onClick ToggleAllowCustomValues, type_ "button" ] [ text "toggle" ]
+                            ]
+                        ]
+                    , tr []
+                        [ td [] [ text "Multi Select" ]
+                        , td []
+                            [ if model.allowMultiSelect then
+                                text "ON"
+
+                              else
+                                text "OFF"
+                            ]
+                        , td []
+                            [ button [ onClick ToggleMultiSelect, type_ "button" ] [ text "toggle" ]
+                            ]
+                        ]
+                    ]
                 ]
             , fieldset []
                 [ legend []
@@ -305,6 +393,7 @@ view model =
                     , name "output-style"
                     , id "output-style-custom-html"
                     , value "custom-html"
+                    , checked (model.outputStyle == "custom-html")
                     , onChange ChangeOutputStyle
                     ]
                     []
@@ -314,10 +403,36 @@ view model =
                     , name "output-style"
                     , id "output-style-datalist"
                     , value "datalist"
+                    , checked (model.outputStyle == "datalist")
                     , onChange ChangeOutputStyle
                     ]
                     []
                 , label [ for "output-style-datalist" ] [ text "datalist" ]
+                ]
+            , fieldset []
+                [ legend []
+                    [ text "Selected Value Encodeing"
+                    ]
+                , input
+                    [ type_ "radio"
+                    , name "selected-value-encoding"
+                    , id "selected-value-encoding-comma"
+                    , value "comma"
+                    , checked (model.selectedValueEncoding == "comma")
+                    , onChange ChangeSelectedValueEncoding
+                    ]
+                    []
+                , label [ for "selected-value-encoding-comma" ] [ text "Commas" ]
+                , input
+                    [ type_ "radio"
+                    , name "selected-value-encoding"
+                    , id "selected-value-encoding-json"
+                    , value "json"
+                    , checked (model.selectedValueEncoding == "json")
+                    , onChange ChangeSelectedValueEncoding
+                    ]
+                    []
+                , label [ for "selected-value-encoding-json" ] [ text "JSON" ]
                 ]
             ]
         ]

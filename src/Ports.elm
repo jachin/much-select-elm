@@ -13,14 +13,17 @@ port module Ports exposing
     , inputBlurred
     , inputFocused
     , inputKeyUp
+    , invalidValue
     , loadingChangedReceiver
     , maxDropdownItemsChangedReceiver
     , muchSelectIsReady
     , multiSelectChangedReceiver
     , multiSelectSingleItemRemovalChangedReceiver
     , optionDeselected
+    , optionEncoder
     , optionSelected
     , optionSortingChangedReceiver
+    , optionsEncoder
     , optionsReplacedReceiver
     , optionsUpdated
     , outputStyleChangedReceiver
@@ -48,6 +51,8 @@ port module Ports exposing
 
 import Json.Decode
 import Json.Encode
+import Option exposing (Option)
+import OptionLabel
 
 
 port muchSelectIsReady : () -> Cmd msg
@@ -56,10 +61,13 @@ port muchSelectIsReady : () -> Cmd msg
 port errorMessage : String -> Cmd msg
 
 
-port valueChanged : List ( String, String ) -> Cmd msg
+port valueChanged : Json.Encode.Value -> Cmd msg
 
 
-port initialValueSet : List ( String, String ) -> Cmd msg
+port invalidValue : Json.Encode.Value -> Cmd msg
+
+
+port initialValueSet : Json.Encode.Value -> Cmd msg
 
 
 port customOptionSelected : List String -> Cmd msg
@@ -68,10 +76,24 @@ port customOptionSelected : List String -> Cmd msg
 port valueCleared : () -> Cmd msg
 
 
-port optionSelected : ( String, String ) -> Cmd msg
+port optionSelected : Json.Encode.Value -> Cmd msg
 
 
-port optionDeselected : List ( String, String ) -> Cmd msg
+port optionDeselected : Json.Encode.Value -> Cmd msg
+
+
+optionsEncoder : List Option -> Json.Encode.Value
+optionsEncoder options =
+    Json.Encode.list optionEncoder options
+
+
+optionEncoder : Option -> Json.Encode.Value
+optionEncoder option =
+    Json.Encode.object
+        [ ( "value", Json.Encode.string (Option.getOptionValueAsString option) )
+        , ( "label", Json.Encode.string (Option.getOptionLabel option |> OptionLabel.optionLabelToString) )
+        , ( "isValid", Json.Encode.bool (Option.isValid option) )
+        ]
 
 
 port inputKeyUp : String -> Cmd msg
