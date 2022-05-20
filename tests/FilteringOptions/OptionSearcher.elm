@@ -7,6 +7,7 @@ import Option
 import OptionSearchFilter
 import OptionSearcher exposing (doesSearchStringFindNothing)
 import OptionSorting exposing (sortOptionsBySearchFilterTotalScore)
+import OptionsUtilities
 import OutputStyle exposing (MaxDropdownItems(..), SearchStringMinimumLength(..))
 import PositiveInt
 import SearchString
@@ -166,9 +167,23 @@ suite =
                             |> Maybe.map List.length
                         )
                         (Just 1)
+            , test "if the search string is 'win' and there's an option with 'winners' and another with 'webinars' in the label the winners should win" <|
+                \_ ->
+                    Expect.equal
+                        (OptionSearcher.updateOptionsWithSearchStringAndCustomOption
+                            (SelectionMode.setSearchStringMinimumLength NoMinimumToSearchStringLength selectionConfig)
+                            (SearchString.new "win")
+                            [ Option.newOption "LevelUp2021_SwagWinnersFinal" Nothing
+                            , Option.newOption "Q2 2021 Webinar Registrants" Nothing
+                            ]
+                            |> OptionsUtilities.sortOptionsByBestScore
+                            |> List.head
+                            |> Maybe.map Option.getOptionValueAsString
+                        )
+                        (Just "LevelUp2021_SwagWinnersFinal")
             ]
         , describe "encoders and decoders"
-            [ test "round trip for the serach result encoders and decoders" <|
+            [ test "round trip for the search result encoders and decoders" <|
                 \_ ->
                     Expect.ok
                         (OptionSearcher.updateOptionsWithSearchStringAndCustomOption

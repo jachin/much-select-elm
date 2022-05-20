@@ -3556,6 +3556,7 @@ var $author$project$Option$setOptionSearchFilter = F2(
 				return option;
 		}
 	});
+var $elm$core$String$contains = _String_contains;
 var $author$project$OptionSearchFilter$descriptionHandicap = function (score) {
 	return (score < 5) ? 5 : $elm$core$Basics$floor(score * 1.25);
 };
@@ -3648,6 +3649,17 @@ var $author$project$Option$optionGroupToString = function (optionGroup) {
 		return string;
 	} else {
 		return '';
+	}
+};
+var $elm$core$String$toLower = _String_toLower;
+var $author$project$OptionLabel$optionLabelToSearchString = function (optionLabel) {
+	var string = optionLabel.a;
+	var maybeCleanString = optionLabel.b;
+	if (!maybeCleanString.$) {
+		var cleanString = maybeCleanString.a;
+		return cleanString;
+	} else {
+		return $elm$core$String$toLower(string);
 	}
 };
 var $author$project$OptionLabel$optionLabelToString = function (optionLabel) {
@@ -4072,7 +4084,6 @@ var $author$project$OptionSearcher$groupMatch = F2(
 			needle,
 			hay);
 	});
-var $elm$core$String$toLower = _String_toLower;
 var $author$project$Option$optionDescriptionToSearchString = function (optionDescription) {
 	if (!optionDescription.$) {
 		var description = optionDescription.a;
@@ -4093,16 +4104,6 @@ var $author$project$Option$optionGroupToSearchString = function (optionGroup) {
 		return $elm$core$String$toLower(string);
 	} else {
 		return '';
-	}
-};
-var $author$project$OptionLabel$optionLabelToSearchString = function (optionLabel) {
-	var string = optionLabel.a;
-	var maybeCleanString = optionLabel.b;
-	if (!maybeCleanString.$) {
-		var cleanString = maybeCleanString.a;
-		return cleanString;
-	} else {
-		return $elm$core$String$toLower(string);
 	}
 };
 var $author$project$OptionSearcher$simpleMatch = F2(
@@ -4424,10 +4425,21 @@ var $author$project$OptionSearcher$updateSearchResultInOption = F2(
 						$author$project$OptionSearchFilter$descriptionHandicap(searchResult.bf.aX),
 						$author$project$OptionSearchFilter$groupHandicap(searchResult.bn.aX)
 					])));
+		var cappedBestScore = (bestScore > 100) ? (A2(
+			$elm$core$String$contains,
+			$elm$core$String$toLower(
+				$author$project$SearchString$toString(searchString)),
+			$elm$core$String$toLower(
+				$author$project$OptionLabel$optionLabelToSearchString(
+					$author$project$Option$getOptionLabel(option)))) ? (($elm$core$String$length(
+			$author$project$SearchString$toString(searchString)) < 3) ? bestScore : (($elm$core$String$length(
+			$author$project$SearchString$toString(searchString)) < 4) ? 20 : (($elm$core$String$length(
+			$author$project$SearchString$toString(searchString)) < 5) ? 15 : (($elm$core$String$length(
+			$author$project$SearchString$toString(searchString)) < 6) ? 10 : bestScore)))) : bestScore) : bestScore;
 		return A2(
 			$author$project$Option$setOptionSearchFilter,
 			$elm$core$Maybe$Just(
-				A5($author$project$OptionSearchFilter$new, totalScore, bestScore, labelTokens, descriptionTokens, groupTokens)),
+				A5($author$project$OptionSearchFilter$new, totalScore, cappedBestScore, labelTokens, descriptionTokens, groupTokens)),
 			option);
 	});
 var $author$project$OptionSearcher$updateOptionsWithSearchString = F3(

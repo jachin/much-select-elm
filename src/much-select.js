@@ -543,6 +543,20 @@ class MuchSelect extends HTMLElement {
       app.ports.valueChanged.subscribe(this.valueChangedHandler.bind(this))
     );
 
+    // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
+    this.appPromise.then((app) =>
+      app.ports.invalidValue.subscribe((values) => {
+        this.dispatchEvent(
+          new CustomEvent("invalidValueChange", {
+            bubbles: true,
+            detail: {
+              values,
+            },
+          })
+        );
+      })
+    );
+
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
       app.ports.optionSelected.subscribe((valueLabelPair) => {
@@ -1152,15 +1166,21 @@ class MuchSelect extends HTMLElement {
    * The selected values always come in an array of tuples, the first part of the tuple
    * being the value, and the second part being the label.
    *
-   * @param {array} valuesTuple
+   * @param {array} valuesObjects
    * @param {boolean} isInitialValueChange - This prevents events from being emitted while things are getting setup.
    */
-  valueChangedHandler(valuesTuple, isInitialValueChange = false) {
+  valueChangedHandler(valuesObjects, isInitialValueChange = false) {
+    const isValid = valuesObjects.filter((v) => !v.isValid).length === 0;
+
     if (this.isInMultiSelectMode) {
-      const tempSelectedValue = valuesTuple.map((valueTuple) => valueTuple[0]);
+      const tempSelectedValue = valuesObjects.map(
+        (valueObject) => valueObject.value
+      );
       this._syncParseSelectedValue(tempSelectedValue);
     } else {
-      const valueAsArray = valuesTuple.map((valueTuple) => valueTuple[0]);
+      const valueAsArray = valuesObjects.map(
+        (valueObject) => valueObject.value
+      );
       if (valueAsArray.length === 0) {
         this._syncParseSelectedValue("");
       } else if (valueAsArray.length > 0) {
@@ -1169,72 +1189,68 @@ class MuchSelect extends HTMLElement {
       }
     }
 
-    this._emitBlurOrUnfocusedValueChanged = true;
+    if (isValid) {
+      this._emitBlurOrUnfocusedValueChanged = true;
+    }
 
     this.updateDimensions();
     if (
       this.hasAttribute("multi-select") &&
       this.getAttribute("multi-select") !== "false"
     ) {
-      // If we are in multi select mode put the list of values in the event.
-      const valuesObj = valuesTuple.map((valueTuple) => ({
-        value: valueTuple[0],
-        label: valueTuple[1],
-      }));
       if (!isInitialValueChange) {
         this.dispatchEvent(
           new CustomEvent("valueChanged", {
             bubbles: true,
-            detail: { values: valuesObj },
+            detail: { values: valuesObjects, isValid },
           })
         );
         // The change event is for backwards compatibility.
         this.dispatchEvent(
           new CustomEvent("change", {
             bubbles: true,
-            detail: { values: valuesObj },
+            detail: { values: valuesObjects, isValid },
           })
         );
       }
-    } else if (valuesTuple.length === 0) {
+    } else if (valuesObjects.length === 0) {
       if (!isInitialValueChange) {
         // If we are in single select mode and the value is empty.
         this.dispatchEvent(
           new CustomEvent("valueChanged", {
             bubbles: true,
-            detail: { value: null },
+            detail: { value: null, values: [], isValid },
           })
         );
         // The change event is for backwards compatibility.
         this.dispatchEvent(
           new CustomEvent("change", {
             bubbles: true,
-            detail: { value: null },
+            detail: { value: null, values: [], isValid },
           })
         );
       }
-    } else if (valuesTuple.length === 1) {
+    } else if (valuesObjects.length === 1) {
       if (!isInitialValueChange) {
         // If we are in single select mode put the list of values in the event.
-        const valueObj = { value: valuesTuple[0][0], label: valuesTuple[0][1] };
         this.dispatchEvent(
           new CustomEvent("valueChanged", {
             bubbles: true,
-            detail: { value: valueObj },
+            detail: { value: valuesObjects[0], values: valuesObjects, isValid },
           })
         );
         // The change event is for backwards compatibility.
         this.dispatchEvent(
           new CustomEvent("changed", {
             bubbles: true,
-            detail: { value: valueObj },
+            detail: { value: valuesObjects, isValid },
           })
         );
       }
     } else {
       // If we are in single select mode and there is more than one value then something is wrong.
       throw new TypeError(
-        `In single select mode we are expecting a single value, instead we got ${valuesTuple.length}`
+        `In single select mode we are expecting a single value, instead we got ${valuesObjects.length}`
       );
     }
 
