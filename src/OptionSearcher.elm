@@ -95,12 +95,37 @@ updateSearchResultInOption searchString option =
                 , descriptionHandicap searchResult.descriptionMatch.score
                 , groupHandicap searchResult.groupMatch.score
                 ]
+
+        cappedBestScore =
+            -- Just putting our thumb on the scale here for the sake of substring matches
+            if bestScore > 100 then
+                if String.contains (SearchString.toString searchString |> String.toLower) (option |> Option.getOptionLabel |> OptionLabel.optionLabelToSearchString |> String.toLower) then
+                    if String.length (SearchString.toString searchString) < 3 then
+                        bestScore
+
+                    else if String.length (SearchString.toString searchString) < 4 then
+                        20
+
+                    else if String.length (SearchString.toString searchString) < 5 then
+                        15
+
+                    else if String.length (SearchString.toString searchString) < 6 then
+                        10
+
+                    else
+                        bestScore
+
+                else
+                    bestScore
+
+            else
+                bestScore
     in
     Option.setOptionSearchFilter
         (Just
             (OptionSearchFilter.new
                 totalScore
-                bestScore
+                cappedBestScore
                 labelTokens
                 descriptionTokens
                 groupTokens
@@ -123,7 +148,7 @@ updateOrAddCustomOption searchString selectionMode options =
                             TransformAndValidate.ValidationFailed _ _ _ ->
                                 ( False, searchString )
 
-                            TransformAndValidate.ValidationPending string _ ->
+                            TransformAndValidate.ValidationPending _ _ ->
                                 ( False, searchString )
 
                     NoCustomOptions ->
