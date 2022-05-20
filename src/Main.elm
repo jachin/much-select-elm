@@ -121,6 +121,7 @@ import Ports
         , inputBlurred
         , inputFocused
         , inputKeyUp
+        , invalidValue
         , loadingChangedReceiver
         , maxDropdownItemsChangedReceiver
         , muchSelectIsReady
@@ -426,7 +427,7 @@ update msg model =
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , Cmd.batch
-                        [ makeCommandMessagesWhenValuesChanges updatedOptions (Just optionValue)
+                        [ makeCommandMessagesWhenValuesChanges (selectedOptions updatedOptions) (Just optionValue)
                         , blurInput ()
                         ]
                     )
@@ -438,7 +439,7 @@ update msg model =
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , Cmd.batch
-                        [ makeCommandMessagesWhenValuesChanges updatedOptions (Just optionValue)
+                        [ makeCommandMessagesWhenValuesChanges (selectedOptions updatedOptions) (Just optionValue)
                         , focusInput ()
                         ]
                     )
@@ -706,7 +707,7 @@ update msg model =
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , Cmd.batch
-                        [ makeCommandMessagesWhenValuesChanges updatedOptions (Just optionValue)
+                        [ makeCommandMessagesWhenValuesChanges (selectedOptions updatedOptions) (Just optionValue)
                         , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchString
                         , Task.perform
                             (\_ ->
@@ -906,7 +907,7 @@ update msg model =
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , Cmd.batch
-                        [ makeCommandMessagesWhenValuesChanges updatedOptions maybeHighlightedOptionValue
+                        [ makeCommandMessagesWhenValuesChanges (selectedOptions updatedOptions) maybeHighlightedOptionValue
                         , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchString
                         , blurInput ()
                         ]
@@ -919,7 +920,7 @@ update msg model =
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , Cmd.batch
-                        [ makeCommandMessagesWhenValuesChanges updatedOptions maybeHighlightedOptionValue
+                        [ makeCommandMessagesWhenValuesChanges (selectedOptions updatedOptions) maybeHighlightedOptionValue
                         , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchString
                         , focusInput ()
                         ]
@@ -1006,7 +1007,9 @@ update msg model =
                   }
                     |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                 , Cmd.batch
-                    [ valueChanged (selectedOptionsToTuple updatedOptions)
+                    [ valueChanged (updatedOptions |> selectedOptions |> Ports.optionsEncoder)
+
+                    -- todo optionDeselected
                     , focusInput ()
                     ]
                 )
@@ -1145,7 +1148,7 @@ deselectOption model option =
       }
         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
     , Cmd.batch
-        [ makeCommandMessagesWhenValuesChanges updatedOptions Nothing
+        [ makeCommandMessagesWhenValuesChanges (selectedOptions updatedOptions) Nothing
         , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchString
         ]
     )
@@ -1154,21 +1157,22 @@ deselectOption model option =
 clearAllSelectedOption : Model -> ( Model, Cmd Msg )
 clearAllSelectedOption model =
     let
-        deselectedItems =
+        deselectedOptions : List Option
+        deselectedOptions =
             if List.isEmpty <| selectedOptionsToTuple model.options then
                 -- no deselected options
                 []
 
             else
                 -- an option has been deselected. return the deselected value as a tuple.
-                selectedOptionsToTuple model.options
+                model.options
 
         deselectEventCmdMsg =
-            if List.isEmpty deselectedItems then
+            if List.isEmpty deselectedOptions then
                 Cmd.none
 
             else
-                optionDeselected deselectedItems
+                optionDeselected (Ports.optionsEncoder deselectedOptions)
 
         newOptions =
             deselectAllOptionsInOptionsList model.options
@@ -2661,10 +2665,10 @@ makeCommandMessagesWhenValuesChanges selectedOptions maybeSelectedValue =
     let
         valueChangeCmd =
             if OptionsUtilities.allOptionsAreValid selectedOptions then
-                valueChanged (selectedOptionsToTuple selectedOptions)
+                valueChanged (Ports.optionsEncoder selectedOptions)
 
             else
-                Cmd.none
+                invalidValue (Ports.optionsEncoder selectedOptions)
 
         selectedCustomOptions =
             customSelectedOptions selectedOptions
@@ -2693,7 +2697,7 @@ makeCommandMessagesWhenValuesChanges selectedOptions maybeSelectedValue =
                     case findOptionByOptionValue selectedValue selectedOptions of
                         Just option ->
                             if Option.isValid option then
-                                optionSelected (Option.optionToValueLabelTuple option)
+                                optionSelected (Ports.optionEncoder option)
 
                             else
                                 Cmd.none
@@ -2753,7 +2757,7 @@ makeCommandMessageForInitialValue selectedOptions =
             Cmd.none
 
         selectionOptions_ ->
-            initialValueSet (selectedOptionsToTuple selectionOptions_)
+            initialValueSet (Ports.optionsEncoder selectionOptions_)
 
 
 type alias Flags =

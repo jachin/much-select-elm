@@ -41,7 +41,7 @@ type alias Model =
 
 type Msg
     = MuchSelectReady
-    | ValueChanged MuchSelectValue
+    | ValueChanged (List MuchSelectValue)
     | ValueCleared
     | OptionSelected
     | BlurOrUnfocusedValueChanged String
@@ -169,6 +169,28 @@ onReady =
     on "muchSelectReady" (Json.Decode.succeed MuchSelectReady)
 
 
+type alias MuchSelectValue =
+    { value : String, label : String }
+
+
+valueDecoder : Json.Decode.Decoder MuchSelectValue
+valueDecoder =
+    Json.Decode.map2
+        MuchSelectValue
+        (Json.Decode.field "value" Json.Decode.string)
+        (Json.Decode.field "label" Json.Decode.string)
+
+
+onValueChanged : Attribute Msg
+onValueChanged =
+    on "valueChanged" (Json.Decode.map ValueChanged (Json.Decode.at [ "detail", "values" ] (Json.Decode.list valueDecoder)))
+
+
+onValueCleared : Attribute Msg
+onValueCleared =
+    on "valueCleared" (Json.Decode.succeed ValueCleared)
+
+
 onOptionSelected : Attribute Msg
 onOptionSelected =
     on "optionSelected" (Json.Decode.succeed OptionSelected)
@@ -240,28 +262,6 @@ outputStyleAttribute string =
     attribute "output-style" string
 
 
-type alias MuchSelectValue =
-    { value : String, label : String }
-
-
-valueDecoder : Json.Decode.Decoder MuchSelectValue
-valueDecoder =
-    Json.Decode.map2
-        MuchSelectValue
-        (Json.Decode.field "value" Json.Decode.string)
-        (Json.Decode.field "label" Json.Decode.string)
-
-
-singleValueChangedAttribute : Attribute Msg
-singleValueChangedAttribute =
-    on "valueChanged" (Json.Decode.map ValueChanged (Json.Decode.at [ "detail", "value" ] valueDecoder))
-
-
-onValueCleared : Attribute Msg
-onValueCleared =
-    on "valueCleared" (Json.Decode.succeed ValueCleared)
-
-
 view : Model -> Html Msg
 view model =
     let
@@ -279,7 +279,7 @@ view model =
             , allowCustomOptionsAttribute model.allowCustomOptions
             , multiSelectAttribute model.allowMultiSelect
             , outputStyleAttribute model.outputStyle
-            , singleValueChangedAttribute
+            , onValueChanged
             , onCustomValidationRequest
             , onCustomValueSelected
             , onBlurOrUnfocusedValueChanged
