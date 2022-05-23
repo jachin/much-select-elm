@@ -1270,7 +1270,8 @@ figureOutWhichOptionsToShowInTheDropdown : SelectionConfig -> List Option -> Lis
 figureOutWhichOptionsToShowInTheDropdown selectionMode options =
     let
         optionsThatCouldBeShown =
-            filterOptionsToShowInDropdown selectionMode options
+            options
+                |> filterOptionsToShowInDropdown selectionMode
                 |> OptionsUtilities.sortOptionsByBestScore
 
         lastIndexOfOptions =
