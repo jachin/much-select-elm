@@ -4436,7 +4436,8 @@ var $author$project$OptionSearcher$updateSearchResultInOption = F2(
 			$author$project$SearchString$toString(searchString)) < 3) ? 50 : (($elm$core$String$length(
 			$author$project$SearchString$toString(searchString)) < 4) ? 20 : (($elm$core$String$length(
 			$author$project$SearchString$toString(searchString)) < 5) ? 15 : (($elm$core$String$length(
-			$author$project$SearchString$toString(searchString)) < 6) ? 10 : bestScore))))) : bestScore) : bestScore;
+			$author$project$SearchString$toString(searchString)) < 6) ? 10 : (($elm$core$String$length(
+			$author$project$SearchString$toString(searchString)) >= 6) ? 10 : bestScore)))))) : bestScore) : bestScore;
 		return A2(
 			$author$project$Option$setOptionSearchFilter,
 			$elm$core$Maybe$Just(

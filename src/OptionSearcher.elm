@@ -115,6 +115,9 @@ updateSearchResultInOption searchString option =
                     else if String.length (SearchString.toString searchString) < 6 then
                         10
 
+                    else if String.length (SearchString.toString searchString) >= 6 then
+                        10
+
                     else
                         bestScore
 
