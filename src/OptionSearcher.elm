@@ -100,8 +100,11 @@ updateSearchResultInOption searchString option =
             -- Just putting our thumb on the scale here for the sake of substring matches
             if bestScore > 100 then
                 if String.contains (SearchString.toString searchString |> String.toLower) (option |> Option.getOptionLabel |> OptionLabel.optionLabelToSearchString |> String.toLower) then
-                    if String.length (SearchString.toString searchString) < 3 then
+                    if String.length (SearchString.toString searchString) < 2 then
                         bestScore
+
+                    else if String.length (SearchString.toString searchString) < 3 then
+                        50
 
                     else if String.length (SearchString.toString searchString) < 4 then
                         20

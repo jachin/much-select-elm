@@ -69,7 +69,7 @@ getLowScore optionSearchResult =
 lowScoreCutOff : Int -> Int
 lowScoreCutOff score =
     if score == 0 then
-        10
+        51
 
     else if score <= 10 then
         100
