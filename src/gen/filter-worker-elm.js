@@ -3176,7 +3176,7 @@ var $author$project$OptionsUtilities$isOptionBelowScore = F2(
 		}
 	});
 var $author$project$OptionSearchFilter$lowScoreCutOff = function (score) {
-	return (!score) ? 10 : ((score <= 10) ? 100 : ((score <= 100) ? 1000 : ((score <= 1000) ? 10000 : $author$project$OptionSearchFilter$impossiblyLowScore)));
+	return (!score) ? 51 : ((score <= 10) ? 100 : ((score <= 100) ? 1000 : ((score <= 1000) ? 10000 : $author$project$OptionSearchFilter$impossiblyLowScore)));
 };
 var $author$project$OptionsUtilities$filterOptionsToShowInDropdownBySearchScore = function (options) {
 	var _v0 = $author$project$OptionsUtilities$findLowestSearchScore(options);
@@ -4432,10 +4432,11 @@ var $author$project$OptionSearcher$updateSearchResultInOption = F2(
 			$elm$core$String$toLower(
 				$author$project$OptionLabel$optionLabelToSearchString(
 					$author$project$Option$getOptionLabel(option)))) ? (($elm$core$String$length(
-			$author$project$SearchString$toString(searchString)) < 3) ? bestScore : (($elm$core$String$length(
+			$author$project$SearchString$toString(searchString)) < 2) ? bestScore : (($elm$core$String$length(
+			$author$project$SearchString$toString(searchString)) < 3) ? 50 : (($elm$core$String$length(
 			$author$project$SearchString$toString(searchString)) < 4) ? 20 : (($elm$core$String$length(
 			$author$project$SearchString$toString(searchString)) < 5) ? 15 : (($elm$core$String$length(
-			$author$project$SearchString$toString(searchString)) < 6) ? 10 : bestScore)))) : bestScore) : bestScore;
+			$author$project$SearchString$toString(searchString)) < 6) ? 10 : bestScore))))) : bestScore) : bestScore;
 		return A2(
 			$author$project$Option$setOptionSearchFilter,
 			$elm$core$Maybe$Just(
