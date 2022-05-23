@@ -3176,7 +3176,7 @@ var $author$project$OptionsUtilities$isOptionBelowScore = F2(
 		}
 	});
 var $author$project$OptionSearchFilter$lowScoreCutOff = function (score) {
-	return (!score) ? 100 : ((score <= 10) ? 1000 : ((score <= 100) ? 10000 : ((score <= 1000) ? 100000 : $author$project$OptionSearchFilter$impossiblyLowScore)));
+	return (!score) ? 51 : ((score <= 10) ? 100 : ((score <= 100) ? 1000 : ((score <= 1000) ? 10000 : $author$project$OptionSearchFilter$impossiblyLowScore)));
 };
 var $author$project$OptionsUtilities$filterOptionsToShowInDropdownBySearchScore = function (options) {
 	var _v0 = $author$project$OptionsUtilities$findLowestSearchScore(options);
@@ -3393,42 +3393,6 @@ var $author$project$Option$optionsDecoder = function (outputStyle) {
 };
 var $author$project$FilterWorker$sendErrorMessage = _Platform_outgoingPort('sendErrorMessage', $elm$json$Json$Encode$string);
 var $author$project$FilterWorker$sendSearchResults = _Platform_outgoingPort('sendSearchResults', $elm$core$Basics$identity);
-var $elm$core$Maybe$map = F2(
-	function (f, maybe) {
-		if (!maybe.$) {
-			var value = maybe.a;
-			return $elm$core$Maybe$Just(
-				f(value));
-		} else {
-			return $elm$core$Maybe$Nothing;
-		}
-	});
-var $elm$core$List$sortBy = _List_sortBy;
-var $elm$core$Maybe$withDefault = F2(
-	function (_default, maybe) {
-		if (!maybe.$) {
-			var value = maybe.a;
-			return value;
-		} else {
-			return _default;
-		}
-	});
-var $author$project$OptionsUtilities$sortOptionsByBestScore = function (options) {
-	return A2(
-		$elm$core$List$sortBy,
-		function (option) {
-			return $author$project$Option$isCustomOption(option) ? 1 : A2(
-				$elm$core$Maybe$withDefault,
-				$author$project$OptionSearchFilter$impossiblyLowScore,
-				A2(
-					$elm$core$Maybe$map,
-					function ($) {
-						return $.aD;
-					},
-					$author$project$Option$getMaybeOptionSearchFilter(option)));
-		},
-		options);
-};
 var $elm$core$List$takeReverse = F3(
 	function (n, list, kept) {
 		takeReverse:
@@ -4414,6 +4378,15 @@ var $author$project$OptionPresentor$tokenize = F2(
 			{aM: hay, o: $mhoare$elm_stack$Stack$initialise, t: $mhoare$elm_stack$Stack$initialise, aW: result, m: _List_Nil},
 			$elm$core$String$toList(hay)).m;
 	});
+var $elm$core$Maybe$withDefault = F2(
+	function (_default, maybe) {
+		if (!maybe.$) {
+			var value = maybe.a;
+			return value;
+		} else {
+			return _default;
+		}
+	});
 var $author$project$OptionSearcher$updateSearchResultInOption = F2(
 	function (searchString, option) {
 		var searchResult = A2(
@@ -4459,10 +4432,11 @@ var $author$project$OptionSearcher$updateSearchResultInOption = F2(
 			$elm$core$String$toLower(
 				$author$project$OptionLabel$optionLabelToSearchString(
 					$author$project$Option$getOptionLabel(option)))) ? (($elm$core$String$length(
-			$author$project$SearchString$toString(searchString)) < 3) ? bestScore : (($elm$core$String$length(
+			$author$project$SearchString$toString(searchString)) < 2) ? bestScore : (($elm$core$String$length(
+			$author$project$SearchString$toString(searchString)) < 3) ? 50 : (($elm$core$String$length(
 			$author$project$SearchString$toString(searchString)) < 4) ? 20 : (($elm$core$String$length(
 			$author$project$SearchString$toString(searchString)) < 5) ? 15 : (($elm$core$String$length(
-			$author$project$SearchString$toString(searchString)) < 6) ? 10 : bestScore)))) : bestScore) : bestScore;
+			$author$project$SearchString$toString(searchString)) < 6) ? 10 : bestScore))))) : bestScore) : bestScore;
 		return A2(
 			$author$project$Option$setOptionSearchFilter,
 			$elm$core$Maybe$Just(
@@ -4521,8 +4495,7 @@ var $author$project$FilterWorker$update = F2(
 				var optionsToSend = A2(
 					$elm$core$List$take,
 					100,
-					$author$project$OptionsUtilities$sortOptionsByBestScore(
-						$author$project$OptionsUtilities$filterOptionsToShowInDropdownBySearchScore(newOptions)));
+					$author$project$OptionsUtilities$filterOptionsToShowInDropdownBySearchScore(newOptions));
 				return _Utils_Tuple2(
 					newOptions,
 					$author$project$FilterWorker$sendSearchResults(
