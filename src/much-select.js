@@ -1895,8 +1895,8 @@ class MuchSelect extends HTMLElement {
         this.setAttribute("output-style", this._outputStyle);
       }
 
-      // noinspection JSUnresolvedVariable
       this.appPromise.then((app) => {
+        // noinspection JSUnresolvedVariable
         app.ports.outputStyleChangedReceiver.send(this._outputStyle);
         this._updateTransformationValidationFromTheDom();
       });
