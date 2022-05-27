@@ -5,6 +5,7 @@ import Html
     exposing
         ( Attribute
         , Html
+        , br
         , button
         , div
         , fieldset
@@ -19,9 +20,19 @@ import Html
         , text
         , tr
         )
-import Html.Attributes exposing (attribute, checked, for, id, name, type_, value)
+import Html.Attributes
+    exposing
+        ( attribute
+        , checked
+        , disabled
+        , for
+        , id
+        , name
+        , type_
+        , value
+        )
 import Html.Attributes.Extra
-import Html.Events exposing (on, onClick)
+import Html.Events exposing (on, onCheck, onClick, onInput)
 import Html.Events.Extra exposing (onChange)
 import Json.Decode
 import Json.Encode
@@ -39,6 +50,7 @@ type alias Model =
     , customValidationResult : ValidationResult
     , selectedValueEncoding : String
     , selectedValues : List MuchSelectValue
+    , placeholder : ( String, Bool )
     }
 
 
@@ -59,6 +71,8 @@ type Msg
     | ToggleMultiSelect
     | ChangeOutputStyle String
     | ChangeSelectedValueEncoding String
+    | TogglePlaceholder Bool
+    | UpdatePlaceholderString String
 
 
 main : Program Flags Model Msg
@@ -79,6 +93,7 @@ init _ =
       , customValidationResult = NothingToValidate
       , selectedValueEncoding = "json"
       , selectedValues = []
+      , placeholder = ( "Enter a value", False )
       }
     , Cmd.none
     )
@@ -145,6 +160,12 @@ update msg model =
 
         ChangeSelectedValueEncoding string ->
             ( { model | selectedValueEncoding = string }, Cmd.none )
+
+        TogglePlaceholder showPlaceholder ->
+            ( { model | placeholder = Tuple.mapSecond (always showPlaceholder) model.placeholder }, Cmd.none )
+
+        UpdatePlaceholderString str ->
+            ( { model | placeholder = Tuple.mapFirst (always str) model.placeholder }, Cmd.none )
 
 
 subscriptions : Model -> Sub Msg
@@ -304,6 +325,15 @@ selectedValueAttribute encoding muchSelectValues =
     attribute "selected-value" selectedValueStr
 
 
+placeholderAttribute : ( String, Bool ) -> Attribute msg
+placeholderAttribute ( placeholderString, isShown ) =
+    if isShown then
+        attribute "placeholder" placeholderString
+
+    else
+        Html.Attributes.Extra.empty
+
+
 view : Model -> Html Msg
 view model =
     let
@@ -323,6 +353,7 @@ view model =
             , multiSelectAttribute model.allowMultiSelect
             , outputStyleAttribute model.outputStyle
             , selectedValueAttribute model.selectedValueEncoding model.selectedValues
+            , placeholderAttribute model.placeholder
             , onValueChanged
             , onInvalidValueChanged
             , onCustomValidationRequest
@@ -411,7 +442,7 @@ view model =
                 ]
             , fieldset []
                 [ legend []
-                    [ text "Selected Value Encodeing"
+                    [ text "Selected Value Encoding"
                     ]
                 , input
                     [ type_ "radio"
@@ -433,6 +464,42 @@ view model =
                     ]
                     []
                 , label [ for "selected-value-encoding-json" ] [ text "JSON" ]
+                ]
+            , fieldset []
+                [ legend []
+                    [ text "Placeholder"
+                    ]
+                , input
+                    [ type_ "radio"
+                    , name "placeholder-is-set"
+                    , id "placeholder-is-set-false"
+                    , value "false"
+                    , checked (not (Tuple.second model.placeholder))
+                    , onCheck (\_ -> TogglePlaceholder False)
+                    ]
+                    []
+                , label [ for "placeholder-is-set-false" ] [ text "Hide" ]
+                , input
+                    [ type_ "radio"
+                    , name "placeholder-is-set"
+                    , id "placeholder-is-set-true"
+                    , value "true"
+                    , checked (Tuple.second model.placeholder)
+                    , onChange (\_ -> TogglePlaceholder True)
+                    ]
+                    []
+                , label [ for "placeholder-is-set-true" ] [ text "Show" ]
+                , br [] []
+                , label [ for "placeholder-input" ] [ text "Placeholder copy: " ]
+                , input
+                    [ type_ "text"
+                    , name "placeholder"
+                    , id "placeholder-input"
+                    , value (Tuple.first model.placeholder)
+                    , onInput UpdatePlaceholderString
+                    , disabled (not (Tuple.second model.placeholder))
+                    ]
+                    []
                 ]
             ]
         ]
