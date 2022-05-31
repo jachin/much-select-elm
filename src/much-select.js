@@ -814,7 +814,14 @@ class MuchSelect extends HTMLElement {
     };
 
     this._muchSelectObserver = new MutationObserver((mutationsList) => {
-      mutationsList.forEach(() => {
+      mutationsList.forEach((mutation) => {
+        if (
+          mutation.type === "attributes" &&
+          mutation.attributeName === "placeholder"
+        ) {
+          // We do no need to update the options if we are updating the placeholder.
+          return;
+        }
         this._callUpdateOptionsFromDom();
       });
     });
