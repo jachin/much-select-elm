@@ -200,7 +200,7 @@ port selectOptionReceiver : (Json.Decode.Value -> msg) -> Sub msg
 port deselectOptionReceiver : (Json.Decode.Value -> msg) -> Sub msg
 
 
-port placeholderChangedReceiver : (String -> msg) -> Sub msg
+port placeholderChangedReceiver : (( Bool, String ) -> msg) -> Sub msg
 
 
 port loadingChangedReceiver : (Bool -> msg) -> Sub msg

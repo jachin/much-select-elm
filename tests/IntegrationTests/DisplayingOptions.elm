@@ -18,7 +18,7 @@ import Test.Html.Selector exposing (classes, text)
 flagsEmptyOptionsWithOrangeSelected : Flags
 flagsEmptyOptionsWithOrangeSelected =
     { value = Json.Encode.list Json.Encode.string [ "Orange" ]
-    , placeholder = "What is your favorite color"
+    , placeholder = ( True, "What is your favorite color" )
     , customOptionHint = Nothing
     , allowMultiSelect = False
     , outputStyle = "customHtml"
@@ -98,7 +98,7 @@ booksJsonWithIndexesAndWithSelected =
 flagsBookOptions : Flags
 flagsBookOptions =
     { value = Json.Encode.object []
-    , placeholder = "A book"
+    , placeholder = ( True, "A book" )
     , customOptionHint = Nothing
     , allowMultiSelect = False
     , outputStyle = "customHtml"
@@ -119,7 +119,7 @@ flagsBookOptions =
 flagsBookOptionsWithValue : Flags
 flagsBookOptionsWithValue =
     { value = Json.Encode.list Json.Encode.string [ "Matilda" ]
-    , placeholder = "A book"
+    , placeholder = ( True, "A book" )
     , customOptionHint = Nothing
     , allowMultiSelect = False
     , outputStyle = "customHtml"
@@ -140,7 +140,7 @@ flagsBookOptionsWithValue =
 flagsBookOptionsWithSelected : Flags
 flagsBookOptionsWithSelected =
     { value = Json.Encode.object []
-    , placeholder = "A book"
+    , placeholder = ( True, "A book" )
     , customOptionHint = Nothing
     , allowMultiSelect = False
     , outputStyle = "customHtml"

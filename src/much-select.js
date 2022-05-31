@@ -1086,9 +1086,9 @@ class MuchSelect extends HTMLElement {
     flags.value = this.parsedSelectedValue;
 
     if (this.hasAttribute("placeholder")) {
-      flags.placeholder = this.getAttribute("placeholder").trim();
+      flags.placeholder = [true, this.getAttribute("placeholder").trim()];
     } else {
-      flags.placeholder = "";
+      flags.placeholder = [false, ""];
     }
 
     if (this.hasAttribute("size")) {
@@ -1476,10 +1476,15 @@ class MuchSelect extends HTMLElement {
       this.setAttribute("placeholder", placeholder);
     }
 
-    // noinspection JSUnresolvedVariable
-    this.appPromise.then((app) =>
-      app.ports.placeholderChangedReceiver.send(placeholder)
-    );
+    this.appPromise.then((app) => {
+      if (placeholder === null) {
+        // noinspection JSUnresolvedVariable
+        app.ports.placeholderChangedReceiver.send([false, ""]);
+      } else {
+        // noinspection JSUnresolvedVariable
+        app.ports.placeholderChangedReceiver.send([true, placeholder]);
+      }
+    });
 
     this._placeholder = placeholder;
   }
