@@ -163,7 +163,6 @@ import SelectionMode
         , defaultSelectionConfig
         , getMaxDropdownItems
         , getOutputStyle
-        , getPlaceholder
         , getSearchStringMinimumLength
         , getSingleItemRemoval
         , isDisabled
@@ -207,7 +206,7 @@ type Msg
     | SelectOption Json.Decode.Value
     | DeselectOption Json.Decode.Value
     | DeselectOptionInternal Option
-    | PlaceholderAttributeChanged String
+    | PlaceholderAttributeChanged ( Bool, String )
     | LoadingAttributeChanged Bool
     | MaxDropdownItemsChanged Int
     | ShowDropdownFooterChanged Bool
@@ -241,7 +240,6 @@ type Msg
 
 type alias Model =
     { initialValue : List String
-    , placeholder : String
     , selectionConfig : SelectionConfig
     , options : List Option
     , optionSort : OptionSort
@@ -744,7 +742,9 @@ update msg model =
                     ( model, errorMessage error )
 
         PlaceholderAttributeChanged newPlaceholder ->
-            ( { model | placeholder = newPlaceholder }, Cmd.none )
+            ( { model | selectionConfig = SelectionMode.setPlaceholder newPlaceholder model.selectionConfig }
+            , Cmd.none
+            )
 
         LoadingAttributeChanged bool ->
             ( { model
@@ -1547,7 +1547,7 @@ singleSelectViewCustomHtml valueCasing selectionConfig options searchString righ
                 searchString
                 (isDisabled selectionConfig)
                 (isFocused selectionConfig)
-                (getPlaceholder selectionConfig)
+                (SelectionMode.getPlaceholder selectionConfig)
                 hasOptionSelected
             , case rightSlot of
                 ShowNothing ->
@@ -1587,7 +1587,7 @@ multiSelectViewCustomHtml selectionConfig options searchString rightSlot valueCa
 
         placeholderAttribute =
             if showPlaceholder then
-                placeholder (getPlaceholder selectionConfig)
+                placeholder (SelectionMode.getPlaceholderString selectionConfig)
 
             else
                 Html.Attributes.classList []
@@ -1760,8 +1760,8 @@ tabIndexAttribute disabled =
         tabindex 0
 
 
-singleSelectCustomHtmlInputField : SearchString -> Bool -> Bool -> String -> Bool -> Html Msg
-singleSelectCustomHtmlInputField searchString isDisabled focused placeholder_ hasSelectedOption =
+singleSelectCustomHtmlInputField : SearchString -> Bool -> Bool -> ( Bool, String ) -> Bool -> Html Msg
+singleSelectCustomHtmlInputField searchString isDisabled focused placeholderTuple hasSelectedOption =
     let
         keyboardEvents =
             Keyboard.customPerKey Keyboard.Keydown
@@ -1823,11 +1823,11 @@ singleSelectCustomHtmlInputField searchString isDisabled focused placeholder_ ha
             onFocus InputFocus
 
         showPlaceholder =
-            not hasSelectedOption && not focused
+            not hasSelectedOption && not focused && Tuple.first placeholderTuple
 
         placeholderAttribute =
             if showPlaceholder then
-                placeholder placeholder_
+                placeholder (Tuple.second placeholderTuple)
 
             else
                 style "" ""
@@ -1930,7 +1930,11 @@ multiSelectDatasetInputField maybeOption selectionConfig rightSlot index =
             type_ "text"
 
         placeholderAttribute =
-            placeholder (getPlaceholder selectionConfig)
+            if SelectionMode.hasPlaceholder selectionConfig then
+                placeholder (SelectionMode.getPlaceholderString selectionConfig)
+
+            else
+                Html.Attributes.Extra.empty
 
         valueString =
             case maybeOption of
@@ -2022,10 +2026,10 @@ singleSelectDatasetInputField maybeOption selectionMode hasSelectedOption =
 
         placeholderAttribute =
             if showPlaceholder then
-                placeholder (getPlaceholder selectionMode)
+                placeholder (SelectionMode.getPlaceholderString selectionMode)
 
             else
-                style "" ""
+                Html.Attributes.Extra.empty
 
         valueString =
             case maybeOption of
@@ -2767,7 +2771,7 @@ makeCommandMessageForInitialValue selectedOptions =
 
 type alias Flags =
     { value : Json.Decode.Value
-    , placeholder : String
+    , placeholder : ( Bool, String )
     , customOptionHint : Maybe String
     , allowMultiSelect : Bool
     , outputStyle : String
@@ -2892,7 +2896,6 @@ init flags =
                     OptionsUtilities.organizeNewDatalistOptions optionsWithInitialValueSelected
     in
     ( { initialValue = initialValues
-      , placeholder = flags.placeholder
       , selectionConfig = selectionConfig
       , options = optionsWithInitialValueSelectedSorted
       , optionSort = stringToOptionSort flags.optionSort |> Result.withDefault NoSorting
