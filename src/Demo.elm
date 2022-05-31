@@ -31,7 +31,7 @@ import Html.Attributes
         , type_
         , value
         )
-import Html.Attributes.Extra
+import Html.Attributes.Extra exposing (attributeIf)
 import Html.Events exposing (on, onCheck, onClick, onInput)
 import Html.Events.Extra exposing (onChange)
 import Json.Decode
@@ -51,6 +51,7 @@ type alias Model =
     , selectedValueEncoding : String
     , selectedValues : List MuchSelectValue
     , placeholder : ( String, Bool )
+    , showLoadingIndicator : Bool
     }
 
 
@@ -73,6 +74,7 @@ type Msg
     | ChangeSelectedValueEncoding String
     | TogglePlaceholder Bool
     | UpdatePlaceholderString String
+    | ToggleLoadingIndicator Bool
 
 
 main : Program Flags Model Msg
@@ -94,6 +96,7 @@ init _ =
       , selectedValueEncoding = "json"
       , selectedValues = []
       , placeholder = ( "Enter a value", False )
+      , showLoadingIndicator = False
       }
     , Cmd.none
     )
@@ -166,6 +169,9 @@ update msg model =
 
         UpdatePlaceholderString str ->
             ( { model | placeholder = Tuple.mapFirst (always str) model.placeholder }, Cmd.none )
+
+        ToggleLoadingIndicator showLoadingIndicator ->
+            ( { model | showLoadingIndicator = showLoadingIndicator }, Cmd.none )
 
 
 subscriptions : Model -> Sub Msg
@@ -334,6 +340,11 @@ placeholderAttribute ( placeholderString, isShown ) =
         Html.Attributes.Extra.empty
 
 
+loadingAttribute : Bool -> Attribute msg
+loadingAttribute bool =
+    attributeIf bool (attribute "loading" "")
+
+
 view : Model -> Html Msg
 view model =
     let
@@ -354,6 +365,7 @@ view model =
             , outputStyleAttribute model.outputStyle
             , selectedValueAttribute model.selectedValueEncoding model.selectedValues
             , placeholderAttribute model.placeholder
+            , loadingAttribute model.showLoadingIndicator
             , onValueChanged
             , onInvalidValueChanged
             , onCustomValidationRequest
@@ -500,6 +512,31 @@ view model =
                     , disabled (not (Tuple.second model.placeholder))
                     ]
                     []
+                ]
+            , fieldset []
+                [ legend []
+                    [ text "Loading"
+                    ]
+                , input
+                    [ type_ "radio"
+                    , name "loading-indicator"
+                    , id "loading-indicator-is-off"
+                    , value "false"
+                    , checked (not model.showLoadingIndicator)
+                    , onChange (\_ -> ToggleLoadingIndicator False)
+                    ]
+                    []
+                , label [ for "loading-indicator-is-off" ] [ text "Hide" ]
+                , input
+                    [ type_ "radio"
+                    , name "loading-indicator"
+                    , id "loading-indicator-is-on"
+                    , value "true"
+                    , checked model.showLoadingIndicator
+                    , onCheck (\_ -> ToggleLoadingIndicator True)
+                    ]
+                    []
+                , label [ for "loading-indicator-is-on" ] [ text "Show" ]
                 ]
             ]
         ]
