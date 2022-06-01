@@ -1,6 +1,7 @@
 module Demo exposing (main)
 
 import Browser
+import DemoData exposing (wizards)
 import Html
     exposing
         ( Attribute
@@ -13,7 +14,6 @@ import Html
         , input
         , label
         , legend
-        , option
         , select
         , table
         , td
@@ -48,11 +48,16 @@ type alias Model =
     , allowMultiSelect : Bool
     , outputStyle : String
     , customValidationResult : ValidationResult
+    , optionDemo : OptionDemo
     , selectedValueEncoding : String
     , selectedValues : List MuchSelectValue
     , placeholder : ( String, Bool )
     , showLoadingIndicator : Bool
     }
+
+
+type OptionDemo
+    = StaticOptions
 
 
 type Msg
@@ -93,6 +98,7 @@ init _ =
       , allowMultiSelect = False
       , outputStyle = "custom-html"
       , customValidationResult = NothingToValidate
+      , optionDemo = StaticOptions
       , selectedValueEncoding = "json"
       , selectedValues = []
       , placeholder = ( "Enter a value", False )
@@ -380,10 +386,7 @@ view model =
             , onOptionsUpdated
             ]
             [ select [ slot "select-input" ]
-                [ option [] [ text "tom" ]
-                , option [] [ text "bert" ]
-                , option [] [ text "william" ]
-                ]
+                (optionsHtml model.optionDemo)
             , Html.node "script"
                 [ slot "transformation-validation"
                 , type_ "application/json"
@@ -540,6 +543,13 @@ view model =
                 ]
             ]
         ]
+
+
+optionsHtml : OptionDemo -> List (Html Msg)
+optionsHtml optionDemo =
+    case optionDemo of
+        StaticOptions ->
+            wizards
 
 
 type Transformer
