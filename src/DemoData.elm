@@ -682,7 +682,33 @@ makeOptionElement label valueStr maybeDescription =
 
 filteredOptions : String -> Int -> List LordOfTheRingsCharacter
 filteredOptions searchString maxNumberOfResults =
-    characters |> List.take maxNumberOfResults
+    if (searchString |> String.trim |> String.length) > 2 then
+        characters
+            |> List.map (\c -> calculateCharacterSearchWeight searchString c)
+            |> List.sortBy Tuple.first
+            |> List.reverse
+            |> List.take maxNumberOfResults
+            |> List.map Tuple.second
+
+    else
+        List.take maxNumberOfResults characters
+
+
+calculateCharacterSearchWeight : String -> LordOfTheRingsCharacter -> ( Int, LordOfTheRingsCharacter )
+calculateCharacterSearchWeight searchString lordOfTheRingsCharacter =
+    let
+        normalizedSearchString =
+            searchString |> String.trim |> String.toLower
+    in
+    case lordOfTheRingsCharacter of
+        LordOfTheRingsCharacter name description lordOfTheRingsRace ->
+            let
+                weight =
+                    List.length (String.indexes normalizedSearchString (name |> String.trim |> String.toLower))
+                        + List.length (String.indexes normalizedSearchString (description |> String.trim |> String.toLower))
+                        + List.length (String.indexes normalizedSearchString (raceToString lordOfTheRingsRace |> String.trim |> String.toLower))
+            in
+            ( weight, lordOfTheRingsCharacter )
 
 
 getRace : LordOfTheRingsCharacter -> LordOfTheRingsRace

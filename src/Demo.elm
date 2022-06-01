@@ -1,7 +1,15 @@
 module Demo exposing (main)
 
 import Browser
-import DemoData exposing (allOptions, makeOptionElement, wizards)
+import DemoData
+    exposing
+        ( LordOfTheRingsCharacter(..)
+        , allOptions
+        , filteredOptions
+        , makeOptionElement
+        , raceToString
+        , wizards
+        )
 import Html
     exposing
         ( Attribute
@@ -55,7 +63,7 @@ type alias Model =
     , selectedValues : List MuchSelectValue
     , placeholder : ( String, Bool )
     , showLoadingIndicator : Bool
-    , filteredOptions : List DemoOption
+    , filteredOptions : ( String, List DemoOption )
     }
 
 
@@ -148,7 +156,11 @@ init _ =
       , selectedValues = []
       , placeholder = ( "Enter a value", False )
       , showLoadingIndicator = False
-      , filteredOptions = []
+      , filteredOptions =
+            ( ""
+            , filteredOptions "" 10
+                |> List.map lordOfTheRingsCharacterToDemoOption
+            )
       }
     , Cmd.none
     )
@@ -244,7 +256,32 @@ update msg model =
             ( { model | optionDemo = optionDemo }, Cmd.none )
 
         FilterOptions searchString ->
-            ( { model | showLoadingIndicator = False }, Cmd.none )
+            let
+                newFilteredOptions =
+                    filteredOptions searchString 10
+                        |> List.map lordOfTheRingsCharacterToDemoOption
+            in
+            ( { model
+                | showLoadingIndicator = False
+                , filteredOptions = ( searchString, newFilteredOptions )
+              }
+            , Cmd.none
+            )
+
+
+lordOfTheRingsCharacterToDemoOption : LordOfTheRingsCharacter -> DemoOption
+lordOfTheRingsCharacterToDemoOption character =
+    case character of
+        LordOfTheRingsCharacter name description race ->
+            let
+                maybeDescription =
+                    if String.length description > 0 then
+                        Just description
+
+                    else
+                        Nothing
+            in
+            DemoOption name name maybeDescription (race |> raceToString |> Just)
 
 
 subscriptions : Model -> Sub Msg
@@ -453,7 +490,7 @@ view model =
             , onOptionsUpdated
             ]
             [ select [ slot "select-input" ]
-                (optionsHtml model.optionDemo model.filteredOptions)
+                (optionsHtml model.optionDemo (Tuple.second model.filteredOptions))
             , Html.node "script"
                 [ slot "transformation-validation"
                 , type_ "application/json"
