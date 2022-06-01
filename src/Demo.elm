@@ -269,7 +269,7 @@ onInputKeyupDebounced =
 
 onInputKeyUp : Attribute Msg
 onInputKeyUp =
-    on "inputKeyUpDebounced"
+    on "inputKeyUp"
         (Json.Decode.at
             [ "detail", "searchString" ]
             Json.Decode.string
