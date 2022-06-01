@@ -32,7 +32,7 @@ import Html.Attributes
         , value
         )
 import Html.Attributes.Extra exposing (attributeIf)
-import Html.Events exposing (on, onCheck, onClick, onInput)
+import Html.Events exposing (on, onCheck, onClick, onInput, targetValue)
 import Html.Events.Extra exposing (onChange)
 import Json.Decode
 import Json.Encode
@@ -60,6 +60,30 @@ type OptionDemo
     = StaticOptions
 
 
+stringToMaybeOptionDemo : String -> Maybe OptionDemo
+stringToMaybeOptionDemo string =
+    case string of
+        "static-options" ->
+            Just StaticOptions
+
+        _ ->
+            Nothing
+
+
+optionDemoDecoder : Json.Decode.Decoder OptionDemo
+optionDemoDecoder =
+    targetValue
+        |> Json.Decode.andThen
+            (\str ->
+                case stringToMaybeOptionDemo str of
+                    Just optionDemo ->
+                        Json.Decode.succeed optionDemo
+
+                    Nothing ->
+                        Json.Decode.fail ("Unable to figure out an option demo to match: " ++ str)
+            )
+
+
 type Msg
     = MuchSelectReady
     | ValueChanged (List MuchSelectValue)
@@ -80,6 +104,7 @@ type Msg
     | TogglePlaceholder Bool
     | UpdatePlaceholderString String
     | ToggleLoadingIndicator Bool
+    | ChangeOptionDemo OptionDemo
 
 
 main : Program Flags Model Msg
@@ -178,6 +203,9 @@ update msg model =
 
         ToggleLoadingIndicator showLoadingIndicator ->
             ( { model | showLoadingIndicator = showLoadingIndicator }, Cmd.none )
+
+        ChangeOptionDemo optionDemo ->
+            ( { model | optionDemo = optionDemo }, Cmd.none )
 
 
 subscriptions : Model -> Sub Msg
@@ -454,6 +482,21 @@ view model =
                     ]
                     []
                 , label [ for "output-style-datalist" ] [ text "datalist" ]
+                ]
+            , fieldset []
+                [ legend []
+                    [ text "Option Demos"
+                    ]
+                , input
+                    [ type_ "radio"
+                    , name "option-demos"
+                    , id "option-demos-static"
+                    , value "static"
+                    , checked (model.optionDemo == StaticOptions)
+                    , on "change" <| Json.Decode.map ChangeOptionDemo optionDemoDecoder
+                    ]
+                    []
+                , label [ for "option-demos-static" ] [ text "Static Options (Wizards)" ]
                 ]
             , fieldset []
                 [ legend []
