@@ -1,8 +1,9 @@
 module DemoData exposing (..)
 
-import Html exposing (option, text)
+import Html exposing (Html, optgroup, option, text)
 import Html.Attributes exposing (attribute)
 import Html.Attributes.Extra
+import List.Extra exposing (groupWhile)
 
 
 type alias Name =
@@ -33,7 +34,7 @@ characters =
     , LordOfTheRingsCharacter "Bofur" "" Dwarf
     , LordOfTheRingsCharacter "Bombur" "" Dwarf
     , LordOfTheRingsCharacter "Borin" "" Dwarf
-    , LordOfTheRingsCharacter "User:Deathshriek" "" Dwarf
+    , LordOfTheRingsCharacter "Deathshriek" "" Dwarf
     , LordOfTheRingsCharacter "Dori" "" Dwarf
     , LordOfTheRingsCharacter "Durin VII" "" Dwarf
     , LordOfTheRingsCharacter "Dwalin" "" Dwarf
@@ -292,7 +293,7 @@ characters =
     , LordOfTheRingsCharacter "Ted Sandyman" "" Hobbit
     , LordOfTheRingsCharacter "Saradas Brandybuck" "" Hobbit
     , LordOfTheRingsCharacter "Robin Smallburrow" "" Hobbit
-    , LordOfTheRingsCharacter "User:Technobliterator/Showcase" "" Hobbit
+    , LordOfTheRingsCharacter "Technobliterator" "" Hobbit
     , LordOfTheRingsCharacter "Faramir Took I" "" Hobbit
     , LordOfTheRingsCharacter "Isumbras Took I" "" Hobbit
     , LordOfTheRingsCharacter "Fortinbras Took II" "" Hobbit
@@ -619,7 +620,7 @@ wizards =
     List.filter
         (\c ->
             case c of
-                LordOfTheRingsCharacter name description race ->
+                LordOfTheRingsCharacter _ _ race ->
                     race == Maiar
         )
         characters
@@ -637,3 +638,64 @@ wizards =
                         in
                         option [ descriptionAttr ] [ text name ]
             )
+
+
+groupOptionsInOrder : List LordOfTheRingsCharacter -> List ( LordOfTheRingsRace, List LordOfTheRingsCharacter )
+groupOptionsInOrder options =
+    let
+        helper : LordOfTheRingsCharacter -> LordOfTheRingsCharacter -> Bool
+        helper optionA optionB =
+            getRace optionA == getRace optionB
+    in
+    groupWhile helper options
+        |> List.map (\( first, rest ) -> ( getRace first, first :: rest ))
+
+
+allOptions =
+    characters
+        |> groupOptionsInOrder
+        |> List.map
+            (\( race, characters_ ) ->
+                optgroup [ attribute "label" (raceToString race) ] (List.map characterToOption characters_)
+            )
+
+
+getRace : LordOfTheRingsCharacter -> LordOfTheRingsRace
+getRace lordOfTheRingsCharacter =
+    case lordOfTheRingsCharacter of
+        LordOfTheRingsCharacter _ _ lordOfTheRingsRace ->
+            lordOfTheRingsRace
+
+
+raceToString : LordOfTheRingsRace -> String
+raceToString lordOfTheRingsRace =
+    case lordOfTheRingsRace of
+        Dwarf ->
+            "Dwarf"
+
+        Elf ->
+            "Elf"
+
+        Hobbit ->
+            "Hobbit"
+
+        Human ->
+            "Human"
+
+        Maiar ->
+            "Maiar"
+
+
+characterToOption : LordOfTheRingsCharacter -> Html msg
+characterToOption lordOfTheRingsCharacter =
+    case lordOfTheRingsCharacter of
+        LordOfTheRingsCharacter name description _ ->
+            let
+                descriptionAttr =
+                    if String.length description > 0 then
+                        attribute "data-description" description
+
+                    else
+                        Html.Attributes.Extra.empty
+            in
+            option [ descriptionAttr ] [ text name ]

@@ -1,7 +1,7 @@
 module Demo exposing (main)
 
 import Browser
-import DemoData exposing (wizards)
+import DemoData exposing (allOptions, wizards)
 import Html
     exposing
         ( Attribute
@@ -58,6 +58,7 @@ type alias Model =
 
 type OptionDemo
     = StaticOptions
+    | AllOptions
 
 
 stringToMaybeOptionDemo : String -> Maybe OptionDemo
@@ -65,6 +66,9 @@ stringToMaybeOptionDemo string =
     case string of
         "static-options" ->
             Just StaticOptions
+
+        "all-options" ->
+            Just AllOptions
 
         _ ->
             Nothing
@@ -496,7 +500,17 @@ view model =
                     , on "change" <| Json.Decode.map ChangeOptionDemo optionDemoDecoder
                     ]
                     []
-                , label [ for "option-demos-static" ] [ text "Static Options (Wizards)" ]
+                , label [ for "option-demos-static" ] [ text "Static Options (Wizards) " ]
+                , input
+                    [ type_ "radio"
+                    , name "option-demos"
+                    , id "option-demos-all"
+                    , value "all-options"
+                    , checked (model.optionDemo == AllOptions)
+                    , on "change" <| Json.Decode.map ChangeOptionDemo optionDemoDecoder
+                    ]
+                    []
+                , label [ for "option-demos-all" ] [ text "All Options with Groups" ]
                 ]
             , fieldset []
                 [ legend []
@@ -593,6 +607,9 @@ optionsHtml optionDemo =
     case optionDemo of
         StaticOptions ->
             wizards
+
+        AllOptions ->
+            allOptions
 
 
 type Transformer
