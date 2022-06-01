@@ -1,6 +1,15 @@
 module Demo exposing (main)
 
 import Browser
+import DemoData
+    exposing
+        ( LordOfTheRingsCharacter(..)
+        , allOptions
+        , filteredOptions
+        , makeOptionElement
+        , raceToString
+        , wizards
+        )
 import Html
     exposing
         ( Attribute
@@ -13,7 +22,6 @@ import Html
         , input
         , label
         , legend
-        , option
         , select
         , table
         , td
@@ -32,10 +40,12 @@ import Html.Attributes
         , value
         )
 import Html.Attributes.Extra exposing (attributeIf)
-import Html.Events exposing (on, onCheck, onClick, onInput)
+import Html.Events exposing (on, onCheck, onClick, onInput, targetValue)
 import Html.Events.Extra exposing (onChange)
 import Json.Decode
 import Json.Encode
+import Process
+import Task
 import Url
 
 
@@ -48,10 +58,56 @@ type alias Model =
     , allowMultiSelect : Bool
     , outputStyle : String
     , customValidationResult : ValidationResult
+    , optionDemo : OptionDemo
     , selectedValueEncoding : String
     , selectedValues : List MuchSelectValue
     , placeholder : ( String, Bool )
     , showLoadingIndicator : Bool
+    , filteredOptions : ( String, List DemoOption )
+    }
+
+
+type OptionDemo
+    = StaticOptions
+    | AllOptions
+    | FilteredOptions
+
+
+stringToMaybeOptionDemo : String -> Maybe OptionDemo
+stringToMaybeOptionDemo string =
+    case string of
+        "static-options" ->
+            Just StaticOptions
+
+        "all-options" ->
+            Just AllOptions
+
+        "filtered-options" ->
+            Just FilteredOptions
+
+        _ ->
+            Nothing
+
+
+optionDemoDecoder : Json.Decode.Decoder OptionDemo
+optionDemoDecoder =
+    targetValue
+        |> Json.Decode.andThen
+            (\str ->
+                case stringToMaybeOptionDemo str of
+                    Just optionDemo ->
+                        Json.Decode.succeed optionDemo
+
+                    Nothing ->
+                        Json.Decode.fail ("Unable to figure out an option demo to match: " ++ str)
+            )
+
+
+type alias DemoOption =
+    { label : String
+    , value : String
+    , description : Maybe String
+    , optGroup : Maybe String
     }
 
 
@@ -75,6 +131,8 @@ type Msg
     | TogglePlaceholder Bool
     | UpdatePlaceholderString String
     | ToggleLoadingIndicator Bool
+    | ChangeOptionDemo OptionDemo
+    | FilterOptions String
 
 
 main : Program Flags Model Msg
@@ -93,10 +151,16 @@ init _ =
       , allowMultiSelect = False
       , outputStyle = "custom-html"
       , customValidationResult = NothingToValidate
+      , optionDemo = StaticOptions
       , selectedValueEncoding = "json"
       , selectedValues = []
       , placeholder = ( "Enter a value", False )
       , showLoadingIndicator = False
+      , filteredOptions =
+            ( ""
+            , filteredOptions "" 10
+                |> List.map lordOfTheRingsCharacterToDemoOption
+            )
       }
     , Cmd.none
     )
@@ -117,8 +181,23 @@ update msg model =
         BlurOrUnfocusedValueChanged _ ->
             ( model, Cmd.none )
 
-        InputKeyUpDebounced _ ->
-            ( model, Cmd.none )
+        InputKeyUpDebounced searchString ->
+            case model.optionDemo of
+                StaticOptions ->
+                    ( model, Cmd.none )
+
+                AllOptions ->
+                    ( model, Cmd.none )
+
+                FilteredOptions ->
+                    if (searchString |> String.trim |> String.length) > 2 then
+                        ( { model | showLoadingIndicator = True }
+                        , Process.sleep 2000
+                            |> Task.perform (always (FilterOptions searchString))
+                        )
+
+                    else
+                        ( model, Cmd.none )
 
         ToggleAllowCustomValues ->
             ( { model | allowCustomOptions = not model.allowCustomOptions }, Cmd.none )
@@ -173,6 +252,37 @@ update msg model =
         ToggleLoadingIndicator showLoadingIndicator ->
             ( { model | showLoadingIndicator = showLoadingIndicator }, Cmd.none )
 
+        ChangeOptionDemo optionDemo ->
+            ( { model | optionDemo = optionDemo }, Cmd.none )
+
+        FilterOptions searchString ->
+            let
+                newFilteredOptions =
+                    filteredOptions searchString 10
+                        |> List.map lordOfTheRingsCharacterToDemoOption
+            in
+            ( { model
+                | showLoadingIndicator = False
+                , filteredOptions = ( searchString, newFilteredOptions )
+              }
+            , Cmd.none
+            )
+
+
+lordOfTheRingsCharacterToDemoOption : LordOfTheRingsCharacter -> DemoOption
+lordOfTheRingsCharacterToDemoOption character =
+    case character of
+        LordOfTheRingsCharacter name description race ->
+            let
+                maybeDescription =
+                    if String.length description > 0 then
+                        Just description
+
+                    else
+                        Nothing
+            in
+            DemoOption name name maybeDescription (race |> raceToString |> Just)
+
 
 subscriptions : Model -> Sub Msg
 subscriptions _ =
@@ -196,7 +306,7 @@ onInputKeyupDebounced =
 
 onInputKeyUp : Attribute Msg
 onInputKeyUp =
-    on "inputKeyUpDebounced"
+    on "inputKeyUp"
         (Json.Decode.at
             [ "detail", "searchString" ]
             Json.Decode.string
@@ -380,10 +490,7 @@ view model =
             , onOptionsUpdated
             ]
             [ select [ slot "select-input" ]
-                [ option [] [ text "tom" ]
-                , option [] [ text "bert" ]
-                , option [] [ text "william" ]
-                ]
+                (optionsHtml model.optionDemo (Tuple.second model.filteredOptions))
             , Html.node "script"
                 [ slot "transformation-validation"
                 , type_ "application/json"
@@ -451,6 +558,43 @@ view model =
                     ]
                     []
                 , label [ for "output-style-datalist" ] [ text "datalist" ]
+                ]
+            , fieldset []
+                [ legend []
+                    [ text "Option Demos"
+                    ]
+                , input
+                    [ type_ "radio"
+                    , name "option-demos"
+                    , id "option-demos-static"
+                    , value "static"
+                    , checked (model.optionDemo == StaticOptions)
+                    , on "change" <| Json.Decode.map ChangeOptionDemo optionDemoDecoder
+                    ]
+                    []
+                , label [ for "option-demos-static" ] [ text "Static Options (Wizards) " ]
+                , br [] []
+                , input
+                    [ type_ "radio"
+                    , name "option-demos"
+                    , id "option-demos-all"
+                    , value "all-options"
+                    , checked (model.optionDemo == AllOptions)
+                    , on "change" <| Json.Decode.map ChangeOptionDemo optionDemoDecoder
+                    ]
+                    []
+                , label [ for "option-demos-all" ] [ text "All Options with Groups" ]
+                , br [] []
+                , input
+                    [ type_ "radio"
+                    , name "option-demos"
+                    , id "option-demos-filtered"
+                    , value "filtered-options"
+                    , checked (model.optionDemo == FilteredOptions)
+                    , on "change" <| Json.Decode.map ChangeOptionDemo optionDemoDecoder
+                    ]
+                    []
+                , label [ for "option-demos-filtered" ] [ text "Filtered Options" ]
                 ]
             , fieldset []
                 [ legend []
@@ -540,6 +684,26 @@ view model =
                 ]
             ]
         ]
+
+
+optionsHtml : OptionDemo -> List DemoOption -> List (Html Msg)
+optionsHtml optionDemo knownOptions =
+    case optionDemo of
+        StaticOptions ->
+            wizards
+
+        AllOptions ->
+            allOptions
+
+        FilteredOptions ->
+            List.map
+                (\knownOption ->
+                    makeOptionElement
+                        knownOption.label
+                        knownOption.value
+                        knownOption.description
+                )
+                knownOptions
 
 
 type Transformer
