@@ -1,7 +1,7 @@
 module DemoData exposing (..)
 
 import Html exposing (Html, optgroup, option, text)
-import Html.Attributes exposing (attribute)
+import Html.Attributes exposing (attribute, value)
 import Html.Attributes.Extra
 import List.Extra exposing (groupWhile)
 
@@ -651,13 +651,38 @@ groupOptionsInOrder options =
         |> List.map (\( first, rest ) -> ( getRace first, first :: rest ))
 
 
+allOptions : List (Html msg)
 allOptions =
-    characters
+    charactersToHtmlWithOptgroups characters
+
+
+charactersToHtmlWithOptgroups : List LordOfTheRingsCharacter -> List (Html msg)
+charactersToHtmlWithOptgroups lordOfTheRingsCharacters =
+    lordOfTheRingsCharacters
         |> groupOptionsInOrder
         |> List.map
             (\( race, characters_ ) ->
                 optgroup [ attribute "label" (raceToString race) ] (List.map characterToOption characters_)
             )
+
+
+makeOptionElement : String -> String -> Maybe String -> Html msg
+makeOptionElement label valueStr maybeDescription =
+    let
+        descriptionAttr =
+            case maybeDescription of
+                Just description ->
+                    attribute "data-description" description
+
+                Nothing ->
+                    Html.Attributes.Extra.empty
+    in
+    option [ descriptionAttr, value valueStr ] [ text label ]
+
+
+filteredOptions : String -> Int -> List LordOfTheRingsCharacter
+filteredOptions searchString maxNumberOfResults =
+    characters |> List.take maxNumberOfResults
 
 
 getRace : LordOfTheRingsCharacter -> LordOfTheRingsRace
@@ -691,11 +716,11 @@ characterToOption lordOfTheRingsCharacter =
     case lordOfTheRingsCharacter of
         LordOfTheRingsCharacter name description _ ->
             let
-                descriptionAttr =
+                maybeDescription =
                     if String.length description > 0 then
-                        attribute "data-description" description
+                        Just description
 
                     else
-                        Html.Attributes.Extra.empty
+                        Nothing
             in
-            option [ descriptionAttr ] [ text name ]
+            makeOptionElement name name maybeDescription

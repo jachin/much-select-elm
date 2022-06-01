@@ -1,7 +1,7 @@
 module Demo exposing (main)
 
 import Browser
-import DemoData exposing (allOptions, wizards)
+import DemoData exposing (allOptions, makeOptionElement, wizards)
 import Html
     exposing
         ( Attribute
@@ -53,12 +53,14 @@ type alias Model =
     , selectedValues : List MuchSelectValue
     , placeholder : ( String, Bool )
     , showLoadingIndicator : Bool
+    , filteredOptions : List DemoOption
     }
 
 
 type OptionDemo
     = StaticOptions
     | AllOptions
+    | FilteredOptions
 
 
 stringToMaybeOptionDemo : String -> Maybe OptionDemo
@@ -69,6 +71,9 @@ stringToMaybeOptionDemo string =
 
         "all-options" ->
             Just AllOptions
+
+        "filtering" ->
+            Just FilteredOptions
 
         _ ->
             Nothing
@@ -86,6 +91,14 @@ optionDemoDecoder =
                     Nothing ->
                         Json.Decode.fail ("Unable to figure out an option demo to match: " ++ str)
             )
+
+
+type alias DemoOption =
+    { label : String
+    , value : String
+    , description : Maybe String
+    , optGroup : Maybe String
+    }
 
 
 type Msg
@@ -132,6 +145,7 @@ init _ =
       , selectedValues = []
       , placeholder = ( "Enter a value", False )
       , showLoadingIndicator = False
+      , filteredOptions = []
       }
     , Cmd.none
     )
@@ -418,7 +432,7 @@ view model =
             , onOptionsUpdated
             ]
             [ select [ slot "select-input" ]
-                (optionsHtml model.optionDemo)
+                (optionsHtml model.optionDemo model.filteredOptions)
             , Html.node "script"
                 [ slot "transformation-validation"
                 , type_ "application/json"
@@ -501,6 +515,7 @@ view model =
                     ]
                     []
                 , label [ for "option-demos-static" ] [ text "Static Options (Wizards) " ]
+                , br [] []
                 , input
                     [ type_ "radio"
                     , name "option-demos"
@@ -511,6 +526,17 @@ view model =
                     ]
                     []
                 , label [ for "option-demos-all" ] [ text "All Options with Groups" ]
+                , br [] []
+                , input
+                    [ type_ "radio"
+                    , name "option-demos"
+                    , id "option-demos-filtered"
+                    , value "filtered-options"
+                    , checked (model.optionDemo == FilteredOptions)
+                    , on "change" <| Json.Decode.map ChangeOptionDemo optionDemoDecoder
+                    ]
+                    []
+                , label [ for "option-demos-filtered" ] [ text "Filtered Options" ]
                 ]
             , fieldset []
                 [ legend []
@@ -602,14 +628,24 @@ view model =
         ]
 
 
-optionsHtml : OptionDemo -> List (Html Msg)
-optionsHtml optionDemo =
+optionsHtml : OptionDemo -> List DemoOption -> List (Html Msg)
+optionsHtml optionDemo knownOptions =
     case optionDemo of
         StaticOptions ->
             wizards
 
         AllOptions ->
             allOptions
+
+        FilteredOptions ->
+            List.map
+                (\knownOption ->
+                    makeOptionElement
+                        knownOption.label
+                        knownOption.value
+                        knownOption.description
+                )
+                knownOptions
 
 
 type Transformer
