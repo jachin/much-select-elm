@@ -36,6 +36,8 @@ import Html.Events exposing (on, onCheck, onClick, onInput, targetValue)
 import Html.Events.Extra exposing (onChange)
 import Json.Decode
 import Json.Encode
+import Process
+import Task
 import Url
 
 
@@ -72,7 +74,7 @@ stringToMaybeOptionDemo string =
         "all-options" ->
             Just AllOptions
 
-        "filtering" ->
+        "filtered-options" ->
             Just FilteredOptions
 
         _ ->
@@ -122,6 +124,7 @@ type Msg
     | UpdatePlaceholderString String
     | ToggleLoadingIndicator Bool
     | ChangeOptionDemo OptionDemo
+    | FilterOptions String
 
 
 main : Program Flags Model Msg
@@ -166,8 +169,23 @@ update msg model =
         BlurOrUnfocusedValueChanged _ ->
             ( model, Cmd.none )
 
-        InputKeyUpDebounced _ ->
-            ( model, Cmd.none )
+        InputKeyUpDebounced searchString ->
+            case model.optionDemo of
+                StaticOptions ->
+                    ( model, Cmd.none )
+
+                AllOptions ->
+                    ( model, Cmd.none )
+
+                FilteredOptions ->
+                    if (searchString |> String.trim |> String.length) > 2 then
+                        ( { model | showLoadingIndicator = True }
+                        , Process.sleep 2000
+                            |> Task.perform (always (FilterOptions searchString))
+                        )
+
+                    else
+                        ( model, Cmd.none )
 
         ToggleAllowCustomValues ->
             ( { model | allowCustomOptions = not model.allowCustomOptions }, Cmd.none )
@@ -224,6 +242,9 @@ update msg model =
 
         ChangeOptionDemo optionDemo ->
             ( { model | optionDemo = optionDemo }, Cmd.none )
+
+        FilterOptions searchString ->
+            ( { model | showLoadingIndicator = False }, Cmd.none )
 
 
 subscriptions : Model -> Sub Msg
