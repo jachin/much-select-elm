@@ -822,6 +822,13 @@ class MuchSelect extends HTMLElement {
           // We do no need to update the options if we are updating the placeholder.
           return;
         }
+        if (
+          mutation.type === "attributes" &&
+          mutation.attributeName === "loading"
+        ) {
+          // We do no need to update the options if we are updating the loading attribute.
+          return;
+        }
         this._callUpdateOptionsFromDom();
       });
     });
