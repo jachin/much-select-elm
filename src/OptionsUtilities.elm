@@ -5,7 +5,6 @@ import Maybe.Extra
 import Option
     exposing
         ( Option(..)
-        , OptionDisplay(..)
         , OptionGroup
         , deselectOption
         , getMaybeOptionSearchFilter
@@ -35,6 +34,7 @@ import Option
         , setLabelWithString
         , setOptionDisplay
         )
+import OptionDisplay exposing (OptionDisplay(..))
 import OptionLabel exposing (OptionLabel)
 import OptionSearchFilter exposing (OptionSearchFilterWithValue, OptionSearchResult)
 import OptionValue
@@ -553,90 +553,7 @@ removeOptionFromOptionListBySelectedIndex selectedIndex options =
 
 unhighlightSelectedOptions : List Option -> List Option
 unhighlightSelectedOptions =
-    List.map
-        (\option ->
-            case option of
-                Option optionDisplay _ _ _ _ _ ->
-                    case optionDisplay of
-                        OptionShown ->
-                            option
-
-                        OptionHidden ->
-                            option
-
-                        OptionSelected _ ->
-                            option
-
-                        OptionSelectedPendingValidation _ ->
-                            option
-
-                        OptionSelectedAndInvalid _ _ ->
-                            option
-
-                        OptionSelectedHighlighted selectedIndex ->
-                            setOptionDisplay (OptionSelected selectedIndex) option
-
-                        OptionHighlighted ->
-                            option
-
-                        OptionDisabled ->
-                            option
-
-                CustomOption optionDisplay _ _ _ ->
-                    case optionDisplay of
-                        OptionShown ->
-                            option
-
-                        OptionHidden ->
-                            option
-
-                        OptionSelected _ ->
-                            option
-
-                        OptionSelectedPendingValidation _ ->
-                            option
-
-                        OptionSelectedAndInvalid _ _ ->
-                            option
-
-                        OptionSelectedHighlighted selectedIndex ->
-                            setOptionDisplay (OptionSelected selectedIndex) option
-
-                        OptionHighlighted ->
-                            option
-
-                        OptionDisabled ->
-                            option
-
-                EmptyOption optionDisplay _ ->
-                    case optionDisplay of
-                        OptionShown ->
-                            option
-
-                        OptionHidden ->
-                            option
-
-                        OptionSelected _ ->
-                            option
-
-                        OptionSelectedPendingValidation _ ->
-                            option
-
-                        OptionSelectedAndInvalid _ _ ->
-                            option
-
-                        OptionSelectedHighlighted selectedIndex ->
-                            setOptionDisplay (OptionSelected selectedIndex) option
-
-                        OptionHighlighted ->
-                            option
-
-                        OptionDisabled ->
-                            option
-
-                DatalistOption _ _ ->
-                    option
-        )
+    List.map removeHighlightFromOption
 
 
 deselectOptions : List Option -> List Option -> List Option
@@ -710,6 +627,9 @@ toggleSelectedHighlightByOptionValue options optionValue =
                                 OptionDisabled ->
                                     option_
 
+                                OptionNew ->
+                                    option_
+
                         else
                             option_
 
@@ -738,6 +658,9 @@ toggleSelectedHighlightByOptionValue options optionValue =
                                     option_
 
                                 OptionDisabled ->
+                                    option_
+
+                                OptionNew ->
                                     option_
 
                         else
@@ -783,6 +706,9 @@ deselectAllSelectedHighlightedOptions options =
                             OptionDisabled ->
                                 option_
 
+                            OptionNew ->
+                                option_
+
                     CustomOption optionDisplay _ _ _ ->
                         case optionDisplay of
                             OptionShown ->
@@ -807,6 +733,9 @@ deselectAllSelectedHighlightedOptions options =
                                 option_
 
                             OptionDisabled ->
+                                option_
+
+                            OptionNew ->
                                 option_
 
                     EmptyOption _ _ ->
@@ -1117,6 +1046,9 @@ filterOptionsToShowInDropdownByOptionDisplay selectionConfig =
 
                         OptionDisabled ->
                             True
+
+                        OptionNew ->
+                            False
                 )
 
         MultiSelectConfig _ _ _ ->
@@ -1146,6 +1078,9 @@ filterOptionsToShowInDropdownByOptionDisplay selectionConfig =
 
                         OptionDisabled ->
                             True
+
+                        OptionNew ->
+                            False
                 )
 
 

@@ -45,9 +45,9 @@ import List.Extra
 import Option
     exposing
         ( Option(..)
-        , OptionDisplay(..)
         , OptionGroup
         )
+import OptionDisplay exposing (OptionDisplay(..))
 import OptionLabel exposing (OptionLabel(..), optionLabelToString)
 import OptionPresentor exposing (tokensToHtml)
 import OptionSearcher exposing (doesSearchStringFindNothing, updateOrAddCustomOption)
@@ -2361,6 +2361,9 @@ optionToDropdownOption eventHandlers selectionConfig_ option_ =
                         , valueDataAttribute
                         ]
                         [ labelHtml, descriptionHtml ]
+
+                OptionNew ->
+                    text ""
         )
         selectionConfig_
         option_
@@ -2428,6 +2431,9 @@ optionToValueHtml enableSingleItemRemoval option =
                 OptionDisabled ->
                     text ""
 
+                OptionNew ->
+                    text ""
+
         CustomOption display optionLabel optionValue _ ->
             case display of
                 OptionShown ->
@@ -2467,6 +2473,9 @@ optionToValueHtml enableSingleItemRemoval option =
                 OptionDisabled ->
                     text ""
 
+                OptionNew ->
+                    text ""
+
         EmptyOption display optionLabel ->
             case display of
                 OptionShown ->
@@ -2491,6 +2500,9 @@ optionToValueHtml enableSingleItemRemoval option =
                     text ""
 
                 OptionDisabled ->
+                    text ""
+
+                OptionNew ->
                     text ""
 
         DatalistOption _ _ ->

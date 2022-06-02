@@ -1,7 +1,6 @@
 module Option exposing
     ( Option(..)
     , OptionDescription
-    , OptionDisplay(..)
     , OptionGroup
     , decodeSearchResults
     , decoder
@@ -24,7 +23,6 @@ module Option exposing
     , isEmptyOption
     , isEmptyOptionOrHasEmptyValue
     , isInvalid
-    , isOptionDisplaySelectedHighlighted
     , isOptionHighlighted
     , isOptionSelected
     , isOptionSelectedHighlighted
@@ -66,6 +64,7 @@ module Option exposing
 
 import Json.Decode
 import Json.Encode
+import OptionDisplay exposing (OptionDisplay)
 import OptionLabel exposing (OptionLabel(..), labelDecoder, optionLabelToString)
 import OptionSearchFilter exposing (OptionSearchFilter, OptionSearchFilterWithValue, OptionSearchResult)
 import OptionValue exposing (OptionValue(..), optionValueToString, stringToOptionValue)
@@ -95,17 +94,6 @@ getOptionLabel option =
 
         DatalistOption _ optionValue ->
             optionValue |> optionValueToString |> OptionLabel.new
-
-
-type OptionDisplay
-    = OptionShown
-    | OptionHidden
-    | OptionSelected Int
-    | OptionSelectedAndInvalid Int (List ValidationFailureMessage)
-    | OptionSelectedPendingValidation Int
-    | OptionSelectedHighlighted Int
-    | OptionHighlighted
-    | OptionDisabled
 
 
 type OptionDescription
@@ -182,11 +170,11 @@ newOption : String -> Maybe String -> Option
 newOption value maybeCleanLabel =
     case value of
         "" ->
-            EmptyOption OptionShown (OptionLabel.newWithCleanLabel "" maybeCleanLabel)
+            EmptyOption OptionDisplay.default (OptionLabel.newWithCleanLabel "" maybeCleanLabel)
 
         _ ->
             Option
-                OptionShown
+                OptionDisplay.default
                 (OptionLabel.newWithCleanLabel value maybeCleanLabel)
                 (OptionValue value)
                 NoDescription
@@ -197,7 +185,7 @@ newOption value maybeCleanLabel =
 newCustomOption : String -> Maybe String -> Option
 newCustomOption value maybeCleanLabel =
     CustomOption
-        OptionShown
+        OptionDisplay.default
         (OptionLabel.newWithCleanLabel value maybeCleanLabel)
         (OptionValue value)
         Nothing
@@ -206,28 +194,28 @@ newCustomOption value maybeCleanLabel =
 newSelectedDatalistOption : OptionValue -> Int -> Option
 newSelectedDatalistOption optionValue selectedIndex =
     DatalistOption
-        (OptionSelected selectedIndex)
+        (OptionDisplay.selected selectedIndex)
         optionValue
 
 
 newSelectedDatalistOptionWithErrors : List ValidationFailureMessage -> OptionValue -> Int -> Option
 newSelectedDatalistOptionWithErrors errors optionValue selectedIndex =
     DatalistOption
-        (OptionSelectedAndInvalid selectedIndex errors)
+        (OptionDisplay.selectedAndInvalid selectedIndex errors)
         optionValue
 
 
 newSelectedDatalistOptionPendingValidation : OptionValue -> Int -> Option
 newSelectedDatalistOptionPendingValidation optionValue selectedIndex =
     DatalistOption
-        (OptionSelectedPendingValidation selectedIndex)
+        (OptionDisplay.selectedAndPendingValidation selectedIndex)
         optionValue
 
 
 newDatalistOption : OptionValue -> Option
 newDatalistOption optionValue =
     DatalistOption
-        OptionShown
+        OptionDisplay.default
         optionValue
 
 
@@ -458,7 +446,7 @@ setMaybeSortRank maybeSortRank option =
 
 newSelectedOption : Int -> String -> Maybe String -> Option
 newSelectedOption index string maybeCleanLabel =
-    Option (OptionSelected index)
+    Option (OptionDisplay.selected index)
         (OptionLabel.newWithCleanLabel string maybeCleanLabel)
         (OptionValue string)
         NoDescription
@@ -468,7 +456,7 @@ newSelectedOption index string maybeCleanLabel =
 
 newDisabledOption : String -> Maybe String -> Option
 newDisabledOption string maybeCleanLabel =
-    Option OptionDisabled
+    Option OptionDisplay.disabled
         (OptionLabel.newWithCleanLabel string maybeCleanLabel)
         (OptionValue string)
         NoDescription
@@ -478,45 +466,18 @@ newDisabledOption string maybeCleanLabel =
 
 isOptionSelected : Option -> Bool
 isOptionSelected option =
-    let
-        isOptionDisplaySelected optionDisplay =
-            case optionDisplay of
-                OptionShown ->
-                    False
-
-                OptionHidden ->
-                    False
-
-                OptionSelected _ ->
-                    True
-
-                OptionSelectedPendingValidation _ ->
-                    True
-
-                OptionSelectedAndInvalid _ _ ->
-                    True
-
-                OptionSelectedHighlighted _ ->
-                    True
-
-                OptionHighlighted ->
-                    False
-
-                OptionDisabled ->
-                    False
-    in
     case option of
         Option optionDisplay _ _ _ _ _ ->
-            isOptionDisplaySelected optionDisplay
+            OptionDisplay.isSelected optionDisplay
 
         CustomOption optionDisplay _ _ _ ->
-            isOptionDisplaySelected optionDisplay
+            OptionDisplay.isSelected optionDisplay
 
         EmptyOption optionDisplay _ ->
-            isOptionDisplaySelected optionDisplay
+            OptionDisplay.isSelected optionDisplay
 
         DatalistOption optionDisplay _ ->
-            isOptionDisplaySelected optionDisplay
+            OptionDisplay.isSelected optionDisplay
 
 
 getOptionDisplay : Option -> OptionDisplay
@@ -539,93 +500,37 @@ getOptionSelectedIndex : Option -> Int
 getOptionSelectedIndex option =
     case option of
         Option optionDisplay _ _ _ _ _ ->
-            optionDisplayToSelectedIndex optionDisplay
+            OptionDisplay.getSelectedIndex optionDisplay
 
         CustomOption optionDisplay _ _ _ ->
-            optionDisplayToSelectedIndex optionDisplay
+            OptionDisplay.getSelectedIndex optionDisplay
 
         EmptyOption optionDisplay _ ->
-            optionDisplayToSelectedIndex optionDisplay
+            OptionDisplay.getSelectedIndex optionDisplay
 
         DatalistOption optionDisplay _ ->
-            optionDisplayToSelectedIndex optionDisplay
+            OptionDisplay.getSelectedIndex optionDisplay
 
 
 setOptionSelectedIndex : Int -> Option -> Option
 setOptionSelectedIndex selectedIndex option =
     case option of
         Option optionDisplay _ _ _ _ _ ->
-            setOptionDisplay (setOptionDisplaySelectedIndex selectedIndex optionDisplay) option
+            setOptionDisplay (OptionDisplay.setSelectedIndex selectedIndex optionDisplay) option
 
         CustomOption optionDisplay _ _ _ ->
-            setOptionDisplay (setOptionDisplaySelectedIndex selectedIndex optionDisplay) option
+            setOptionDisplay (OptionDisplay.setSelectedIndex selectedIndex optionDisplay) option
 
         EmptyOption optionDisplay _ ->
-            setOptionDisplay (setOptionDisplaySelectedIndex selectedIndex optionDisplay) option
+            setOptionDisplay (OptionDisplay.setSelectedIndex selectedIndex optionDisplay) option
 
         DatalistOption optionDisplay _ ->
-            setOptionDisplay (setOptionDisplaySelectedIndex selectedIndex optionDisplay) option
-
-
-setOptionDisplaySelectedIndex : Int -> OptionDisplay -> OptionDisplay
-setOptionDisplaySelectedIndex selectedIndex optionDisplay =
-    case optionDisplay of
-        OptionShown ->
-            optionDisplay
-
-        OptionHidden ->
-            optionDisplay
-
-        OptionSelected _ ->
-            OptionSelected selectedIndex
-
-        OptionSelectedPendingValidation _ ->
-            OptionSelectedPendingValidation selectedIndex
-
-        OptionSelectedAndInvalid _ errors ->
-            OptionSelectedAndInvalid selectedIndex errors
-
-        OptionSelectedHighlighted _ ->
-            OptionSelectedHighlighted selectedIndex
-
-        OptionHighlighted ->
-            optionDisplay
-
-        OptionDisabled ->
-            optionDisplay
+            setOptionDisplay (OptionDisplay.setSelectedIndex selectedIndex optionDisplay) option
 
 
 hasSelectedItemIndex : Int -> Option -> Bool
 hasSelectedItemIndex selectedItemIndex option =
     getOptionSelectedIndex option == selectedItemIndex
-
-
-optionDisplayToSelectedIndex : OptionDisplay -> Int
-optionDisplayToSelectedIndex optionDisplay =
-    case optionDisplay of
-        OptionShown ->
-            -1
-
-        OptionHidden ->
-            -1
-
-        OptionSelected int ->
-            int
-
-        OptionSelectedPendingValidation int ->
-            int
-
-        OptionSelectedAndInvalid int _ ->
-            int
-
-        OptionSelectedHighlighted int ->
-            int
-
-        OptionHighlighted ->
-            -1
-
-        OptionDisabled ->
-            -1
 
 
 getOptionValue : Option -> OptionValue
@@ -826,83 +731,14 @@ optionValuesEqual option optionValue =
 highlightOption : Option -> Option
 highlightOption option =
     case option of
-        Option display label value description group search ->
-            case display of
-                OptionShown ->
-                    Option OptionHighlighted label value description group search
+        Option display _ _ _ _ _ ->
+            setOptionDisplay (OptionDisplay.addHighlight display) option
 
-                OptionHidden ->
-                    Option OptionHidden label value description group search
+        CustomOption display _ _ _ ->
+            setOptionDisplay (OptionDisplay.addHighlight display) option
 
-                OptionSelected selectedIndex ->
-                    Option (OptionSelectedHighlighted selectedIndex) label value description group search
-
-                OptionSelectedPendingValidation _ ->
-                    option
-
-                OptionSelectedAndInvalid _ _ ->
-                    option
-
-                OptionSelectedHighlighted selectedIndex ->
-                    Option (OptionSelectedHighlighted selectedIndex) label value description group search
-
-                OptionHighlighted ->
-                    Option OptionHighlighted label value description group search
-
-                OptionDisabled ->
-                    Option OptionDisabled label value description group search
-
-        CustomOption display label value search ->
-            case display of
-                OptionShown ->
-                    CustomOption OptionHighlighted label value search
-
-                OptionHidden ->
-                    CustomOption OptionHidden label value search
-
-                OptionSelected selectedIndex ->
-                    CustomOption (OptionSelectedHighlighted selectedIndex) label value search
-
-                OptionSelectedPendingValidation _ ->
-                    option
-
-                OptionSelectedAndInvalid _ _ ->
-                    option
-
-                OptionSelectedHighlighted selectedIndex ->
-                    CustomOption (OptionSelectedHighlighted selectedIndex) label value search
-
-                OptionHighlighted ->
-                    CustomOption OptionHighlighted label value search
-
-                OptionDisabled ->
-                    CustomOption OptionDisabled label value search
-
-        EmptyOption display label ->
-            case display of
-                OptionShown ->
-                    EmptyOption OptionHighlighted label
-
-                OptionHidden ->
-                    EmptyOption OptionHidden label
-
-                OptionSelected selectedIndex ->
-                    EmptyOption (OptionSelectedHighlighted selectedIndex) label
-
-                OptionSelectedPendingValidation _ ->
-                    option
-
-                OptionSelectedAndInvalid _ _ ->
-                    option
-
-                OptionSelectedHighlighted selectedIndex ->
-                    EmptyOption (OptionSelectedHighlighted selectedIndex) label
-
-                OptionHighlighted ->
-                    EmptyOption OptionHighlighted label
-
-                OptionDisabled ->
-                    EmptyOption OptionDisabled label
+        EmptyOption display _ ->
+            setOptionDisplay (OptionDisplay.addHighlight display) option
 
         DatalistOption _ _ ->
             option
@@ -911,107 +747,14 @@ highlightOption option =
 removeHighlightFromOption : Option -> Option
 removeHighlightFromOption option =
     case option of
-        Option display label value description group search ->
-            case display of
-                OptionShown ->
-                    Option OptionShown
-                        label
-                        value
-                        description
-                        group
-                        search
+        Option display _ _ _ _ _ ->
+            setOptionDisplay (OptionDisplay.removeHighlight display) option
 
-                OptionHidden ->
-                    Option OptionHidden
-                        label
-                        value
-                        description
-                        group
-                        search
+        CustomOption display _ _ _ ->
+            setOptionDisplay (OptionDisplay.removeHighlight display) option
 
-                OptionSelected selectedIndex ->
-                    Option (OptionSelected selectedIndex)
-                        label
-                        value
-                        description
-                        group
-                        search
-
-                OptionSelectedPendingValidation _ ->
-                    option
-
-                OptionSelectedAndInvalid _ _ ->
-                    option
-
-                OptionSelectedHighlighted selectedIndex ->
-                    Option (OptionSelected selectedIndex)
-                        label
-                        value
-                        description
-                        group
-                        search
-
-                OptionHighlighted ->
-                    Option OptionShown label value description group search
-
-                OptionDisabled ->
-                    Option OptionDisabled label value description group search
-
-        CustomOption display label value search ->
-            case display of
-                OptionShown ->
-                    CustomOption OptionShown label value search
-
-                OptionHidden ->
-                    CustomOption OptionHidden label value search
-
-                OptionSelected selectedIndex ->
-                    CustomOption (OptionSelected selectedIndex) label value search
-
-                OptionSelectedPendingValidation _ ->
-                    option
-
-                OptionSelectedAndInvalid _ _ ->
-                    option
-
-                OptionSelectedHighlighted selectedIndex ->
-                    CustomOption
-                        (OptionSelected selectedIndex)
-                        label
-                        value
-                        search
-
-                OptionHighlighted ->
-                    CustomOption OptionShown label value search
-
-                OptionDisabled ->
-                    CustomOption OptionDisabled label value search
-
-        EmptyOption display label ->
-            case display of
-                OptionShown ->
-                    EmptyOption OptionShown label
-
-                OptionHidden ->
-                    EmptyOption OptionHidden label
-
-                OptionSelected selectedIndex ->
-                    EmptyOption (OptionSelected selectedIndex) label
-
-                OptionSelectedPendingValidation _ ->
-                    option
-
-                OptionSelectedAndInvalid _ _ ->
-                    option
-
-                OptionHighlighted ->
-                    EmptyOption OptionShown label
-
-                OptionDisabled ->
-                    EmptyOption OptionDisabled label
-
-                OptionSelectedHighlighted selectedIndex ->
-                    EmptyOption (OptionSelectedHighlighted selectedIndex) label
+        EmptyOption display _ ->
+            setOptionDisplay (OptionDisplay.removeHighlight display) option
 
         DatalistOption _ _ ->
             option
@@ -1021,43 +764,15 @@ isOptionHighlighted : Option -> Bool
 isOptionHighlighted option =
     case option of
         Option display _ _ _ _ _ ->
-            isOptionDisplayHighlighted display
+            OptionDisplay.isHighlighted display
 
         CustomOption display _ _ _ ->
-            isOptionDisplayHighlighted display
+            OptionDisplay.isHighlighted display
 
         EmptyOption display _ ->
-            isOptionDisplayHighlighted display
+            OptionDisplay.isHighlighted display
 
         DatalistOption _ _ ->
-            False
-
-
-isOptionDisplayHighlighted : OptionDisplay -> Bool
-isOptionDisplayHighlighted optionDisplay =
-    case optionDisplay of
-        OptionShown ->
-            False
-
-        OptionHidden ->
-            False
-
-        OptionSelected _ ->
-            False
-
-        OptionSelectedAndInvalid _ _ ->
-            False
-
-        OptionSelectedPendingValidation _ ->
-            False
-
-        OptionSelectedHighlighted _ ->
-            False
-
-        OptionHighlighted ->
-            True
-
-        OptionDisabled ->
             False
 
 
@@ -1065,313 +780,41 @@ optionIsHighlightable : SelectionConfig -> Option -> Bool
 optionIsHighlightable selectionConfig option =
     case option of
         Option display _ _ _ _ _ ->
-            isOptionDisplayHighlightable selectionConfig display
+            OptionDisplay.isHighlightable (SelectionMode.getSelectionMode selectionConfig) display
 
         CustomOption display _ _ _ ->
-            isOptionDisplayHighlightable selectionConfig display
+            OptionDisplay.isHighlightable (SelectionMode.getSelectionMode selectionConfig) display
 
         EmptyOption display _ ->
-            isOptionDisplayHighlightable selectionConfig display
+            OptionDisplay.isHighlightable (SelectionMode.getSelectionMode selectionConfig) display
 
         DatalistOption _ _ ->
             False
 
 
-isOptionDisplayHighlightable : SelectionConfig -> OptionDisplay -> Bool
-isOptionDisplayHighlightable selectionConfig optionDisplay =
-    case optionDisplay of
-        OptionShown ->
-            True
-
-        OptionHidden ->
-            False
-
-        OptionSelected _ ->
-            case SelectionMode.getSelectionMode selectionConfig of
-                SelectionMode.SingleSelect ->
-                    True
-
-                SelectionMode.MultiSelect ->
-                    False
-
-        OptionSelectedPendingValidation _ ->
-            False
-
-        OptionSelectedAndInvalid _ _ ->
-            False
-
-        OptionSelectedHighlighted _ ->
-            False
-
-        OptionHighlighted ->
-            False
-
-        OptionDisabled ->
-            False
-
-
 selectOption : Int -> Option -> Option
 selectOption selectionIndex option =
-    case option of
-        Option display label value description group search ->
-            case display of
-                OptionShown ->
-                    Option (OptionSelected selectionIndex) label value description group search
-
-                OptionHidden ->
-                    Option (OptionSelected selectionIndex) label value description group search
-
-                OptionSelected _ ->
-                    Option (OptionSelected selectionIndex) label value description group search
-
-                OptionSelectedPendingValidation _ ->
-                    option
-
-                OptionSelectedAndInvalid _ _ ->
-                    option
-
-                OptionSelectedHighlighted _ ->
-                    Option (OptionSelectedHighlighted selectionIndex) label value description group search
-
-                OptionHighlighted ->
-                    Option (OptionSelected selectionIndex) label value description group search
-
-                OptionDisabled ->
-                    Option OptionDisabled label value description group search
-
-        CustomOption display label value search ->
-            case display of
-                OptionShown ->
-                    CustomOption (OptionSelected selectionIndex) label value search
-
-                OptionHidden ->
-                    CustomOption OptionHidden label value search
-
-                OptionSelected _ ->
-                    CustomOption (OptionSelected selectionIndex) label value search
-
-                OptionSelectedPendingValidation _ ->
-                    option
-
-                OptionSelectedAndInvalid _ _ ->
-                    option
-
-                OptionSelectedHighlighted _ ->
-                    CustomOption (OptionSelectedHighlighted selectionIndex) label value search
-
-                OptionHighlighted ->
-                    CustomOption (OptionSelected selectionIndex) label value search
-
-                OptionDisabled ->
-                    CustomOption OptionDisabled label value search
-
-        EmptyOption display label ->
-            case display of
-                OptionShown ->
-                    EmptyOption (OptionSelected selectionIndex) label
-
-                OptionHidden ->
-                    EmptyOption (OptionSelected selectionIndex) label
-
-                OptionSelected _ ->
-                    EmptyOption (OptionSelected selectionIndex) label
-
-                OptionSelectedPendingValidation _ ->
-                    option
-
-                OptionSelectedAndInvalid _ _ ->
-                    option
-
-                OptionSelectedHighlighted _ ->
-                    EmptyOption (OptionSelected selectionIndex) label
-
-                OptionHighlighted ->
-                    EmptyOption (OptionSelected selectionIndex) label
-
-                OptionDisabled ->
-                    EmptyOption OptionDisabled label
-
-        DatalistOption optionDisplay optionValue ->
-            case optionDisplay of
-                OptionShown ->
-                    DatalistOption (OptionSelected selectionIndex) optionValue
-
-                OptionHidden ->
-                    option
-
-                OptionSelected _ ->
-                    DatalistOption (OptionSelected selectionIndex) optionValue
-
-                OptionSelectedPendingValidation _ ->
-                    option
-
-                OptionSelectedAndInvalid _ _ ->
-                    option
-
-                OptionSelectedHighlighted _ ->
-                    DatalistOption (OptionSelected selectionIndex) optionValue
-
-                OptionHighlighted ->
-                    option
-
-                OptionDisabled ->
-                    DatalistOption OptionDisabled optionValue
+    setOptionDisplay (OptionDisplay.select selectionIndex (getOptionDisplay option)) option
 
 
 deselectOption : Option -> Option
 deselectOption option =
-    case option of
-        Option display label value description group search ->
-            case display of
-                OptionShown ->
-                    Option OptionShown label value description group search
-
-                OptionHidden ->
-                    Option OptionHidden label value description group search
-
-                OptionSelected _ ->
-                    Option OptionShown label value description group search
-
-                OptionSelectedAndInvalid _ _ ->
-                    option
-
-                OptionSelectedPendingValidation _ ->
-                    option
-
-                OptionSelectedHighlighted _ ->
-                    Option OptionShown label value description group search
-
-                OptionHighlighted ->
-                    Option OptionHighlighted
-                        label
-                        value
-                        description
-                        group
-                        search
-
-                OptionDisabled ->
-                    Option OptionDisabled label value description group search
-
-        CustomOption display label value search ->
-            case display of
-                OptionShown ->
-                    CustomOption OptionShown label value search
-
-                OptionHidden ->
-                    CustomOption OptionHidden label value search
-
-                OptionSelected _ ->
-                    CustomOption OptionShown label value search
-
-                OptionSelectedPendingValidation _ ->
-                    option
-
-                OptionSelectedAndInvalid _ _ ->
-                    option
-
-                OptionSelectedHighlighted _ ->
-                    CustomOption OptionShown label value search
-
-                OptionHighlighted ->
-                    CustomOption OptionHighlighted label value search
-
-                OptionDisabled ->
-                    CustomOption OptionDisabled label value search
-
-        EmptyOption display label ->
-            case display of
-                OptionShown ->
-                    EmptyOption OptionShown label
-
-                OptionHidden ->
-                    EmptyOption OptionHidden label
-
-                OptionSelected _ ->
-                    EmptyOption OptionShown label
-
-                OptionSelectedPendingValidation _ ->
-                    option
-
-                OptionSelectedAndInvalid _ _ ->
-                    option
-
-                OptionSelectedHighlighted _ ->
-                    EmptyOption OptionShown label
-
-                OptionHighlighted ->
-                    EmptyOption OptionHighlighted label
-
-                OptionDisabled ->
-                    EmptyOption OptionDisabled label
-
-        DatalistOption optionDisplay optionValue ->
-            case optionDisplay of
-                OptionShown ->
-                    option
-
-                OptionHidden ->
-                    option
-
-                OptionSelected _ ->
-                    DatalistOption OptionShown optionValue
-
-                OptionSelectedPendingValidation _ ->
-                    option
-
-                OptionSelectedAndInvalid _ _ ->
-                    option
-
-                OptionSelectedHighlighted _ ->
-                    DatalistOption OptionShown optionValue
-
-                OptionHighlighted ->
-                    option
-
-                OptionDisabled ->
-                    option
+    setOptionDisplay (OptionDisplay.deselect (getOptionDisplay option)) option
 
 
 isOptionSelectedHighlighted : Option -> Bool
 isOptionSelectedHighlighted option =
     case option of
         Option optionDisplay _ _ _ _ _ ->
-            isOptionDisplaySelectedHighlighted optionDisplay
+            OptionDisplay.isHighlighted optionDisplay
 
         CustomOption optionDisplay _ _ _ ->
-            isOptionDisplaySelectedHighlighted optionDisplay
+            OptionDisplay.isHighlighted optionDisplay
 
         EmptyOption optionDisplay _ ->
-            isOptionDisplaySelectedHighlighted optionDisplay
+            OptionDisplay.isHighlighted optionDisplay
 
         DatalistOption _ _ ->
-            False
-
-
-isOptionDisplaySelectedHighlighted : OptionDisplay -> Bool
-isOptionDisplaySelectedHighlighted optionDisplay =
-    case optionDisplay of
-        OptionShown ->
-            False
-
-        OptionHidden ->
-            False
-
-        OptionSelected _ ->
-            False
-
-        OptionSelectedPendingValidation _ ->
-            False
-
-        OptionSelectedAndInvalid _ _ ->
-            False
-
-        OptionSelectedHighlighted _ ->
-            True
-
-        OptionHighlighted ->
-            False
-
-        OptionDisabled ->
             False
 
 
@@ -1493,7 +936,7 @@ displayDecoder =
                 (\str ->
                     case str of
                         "true" ->
-                            Json.Decode.succeed (OptionSelected 0)
+                            Json.Decode.succeed (OptionDisplay.selected 0)
 
                         _ ->
                             Json.Decode.fail "Option is not selected"
@@ -1504,10 +947,10 @@ displayDecoder =
             |> Json.Decode.andThen
                 (\isSelected ->
                     if isSelected then
-                        Json.Decode.succeed (OptionSelected 0)
+                        Json.Decode.succeed (OptionDisplay.selected 0)
 
                     else
-                        Json.Decode.succeed OptionShown
+                        Json.Decode.succeed OptionDisplay.shown
                 )
         , Json.Decode.field
             "disabled"
@@ -1515,12 +958,12 @@ displayDecoder =
             |> Json.Decode.andThen
                 (\isDisabled ->
                     if isDisabled then
-                        Json.Decode.succeed OptionDisabled
+                        Json.Decode.succeed OptionDisplay.disabled
 
                     else
                         Json.Decode.fail "Option is not disabled"
                 )
-        , Json.Decode.succeed OptionShown
+        , Json.Decode.succeed OptionDisplay.shown
         ]
 
 
@@ -1645,150 +1088,30 @@ equal optionA optionB =
     optionA == optionB
 
 
-setOptionDisplayErrors : List ValidationFailureMessage -> OptionDisplay -> OptionDisplay
-setOptionDisplayErrors validationErrorMessages optionDisplay =
-    case optionDisplay of
-        OptionShown ->
-            optionDisplay
-
-        OptionHidden ->
-            optionDisplay
-
-        OptionSelected selectedIndex ->
-            if List.length validationErrorMessages > 0 then
-                OptionSelectedAndInvalid selectedIndex validationErrorMessages
-
-            else
-                optionDisplay
-
-        OptionSelectedPendingValidation selectedIndex ->
-            if List.length validationErrorMessages > 0 then
-                OptionSelectedAndInvalid selectedIndex validationErrorMessages
-
-            else
-                optionDisplay
-
-        OptionSelectedAndInvalid selectedIndex _ ->
-            OptionSelectedAndInvalid selectedIndex validationErrorMessages
-
-        OptionSelectedHighlighted _ ->
-            optionDisplay
-
-        OptionHighlighted ->
-            optionDisplay
-
-        OptionDisabled ->
-            optionDisplay
-
-
 setOptionValueErrors : List ValidationFailureMessage -> Option -> Option
 setOptionValueErrors validationFailures option =
     let
         newOptionDisplay =
             option
                 |> getOptionDisplay
-                |> setOptionDisplayErrors validationFailures
+                |> OptionDisplay.setErrors validationFailures
     in
     setOptionDisplay newOptionDisplay option
 
 
 getOptionValidationErrors : Option -> List ValidationFailureMessage
 getOptionValidationErrors option =
-    getOptionDisplayValidationMessages (getOptionDisplay option)
-
-
-getOptionDisplayValidationMessages : OptionDisplay -> List ValidationFailureMessage
-getOptionDisplayValidationMessages optionDisplay =
-    case optionDisplay of
-        OptionShown ->
-            []
-
-        OptionHidden ->
-            []
-
-        OptionSelected _ ->
-            []
-
-        OptionSelectedPendingValidation _ ->
-            []
-
-        OptionSelectedAndInvalid _ validationFailures ->
-            validationFailures
-
-        OptionSelectedHighlighted _ ->
-            []
-
-        OptionHighlighted ->
-            []
-
-        OptionDisabled ->
-            []
+    OptionDisplay.getErrors (getOptionDisplay option)
 
 
 isInvalid : Option -> Bool
 isInvalid option =
-    isOptionDisplayInvalid (getOptionDisplay option)
-
-
-isOptionDisplayInvalid : OptionDisplay -> Bool
-isOptionDisplayInvalid optionDisplay =
-    case optionDisplay of
-        OptionShown ->
-            False
-
-        OptionHidden ->
-            False
-
-        OptionSelected _ ->
-            False
-
-        OptionSelectedPendingValidation _ ->
-            False
-
-        OptionSelectedAndInvalid _ _ ->
-            True
-
-        OptionSelectedHighlighted _ ->
-            False
-
-        OptionHighlighted ->
-            False
-
-        OptionDisabled ->
-            False
+    OptionDisplay.isInvalid (getOptionDisplay option)
 
 
 isPendingValidation : Option -> Bool
 isPendingValidation option =
-    isOptionDisplayPendingValidation (getOptionDisplay option)
-
-
-isOptionDisplayPendingValidation : OptionDisplay -> Bool
-isOptionDisplayPendingValidation optionDisplay =
-    case optionDisplay of
-        OptionShown ->
-            False
-
-        OptionHidden ->
-            False
-
-        OptionSelected _ ->
-            False
-
-        OptionSelectedPendingValidation _ ->
-            True
-
-        OptionSelectedAndInvalid _ _ ->
-            False
-
-        OptionSelectedHighlighted _ ->
-            False
-
-        OptionHighlighted ->
-            False
-
-        OptionDisabled ->
-            False
+    OptionDisplay.isPendingValidation (getOptionDisplay option)
 
 
 isValid : Option -> Bool

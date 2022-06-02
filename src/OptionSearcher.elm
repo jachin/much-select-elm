@@ -3,7 +3,7 @@ module OptionSearcher exposing (decodeSearchParams, doesSearchStringFindNothing,
 import Fuzzy exposing (Result, match)
 import Json.Decode
 import Json.Encode
-import Option exposing (Option(..), OptionDisplay(..))
+import Option exposing (Option(..))
 import OptionLabel exposing (optionLabelToSearchString, optionLabelToString)
 import OptionPresentor exposing (tokenize)
 import OptionSearchFilter exposing (OptionSearchFilter, OptionSearchResult, descriptionHandicap, groupHandicap)
