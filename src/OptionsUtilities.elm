@@ -434,7 +434,7 @@ selectSingleOptionInListByStringOrSelectCustomValue searchString options =
 
             Err _ ->
                 CustomOption
-                    (OptionSelected 0)
+                    (OptionSelected 0 OptionDisplay.MatureOption)
                     (OptionLabel.newWithCleanLabel (SearchString.toString searchString) Nothing)
                     (OptionValue (SearchString.toString searchString))
                     Nothing
@@ -603,13 +603,13 @@ toggleSelectedHighlightByOptionValue options optionValue =
                     Option optionDisplay _ optionValue_ _ _ _ ->
                         if optionValue == optionValue_ then
                             case optionDisplay of
-                                OptionShown ->
+                                OptionShown _ ->
                                     option_
 
                                 OptionHidden ->
                                     option_
 
-                                OptionSelected selectedIndex ->
+                                OptionSelected selectedIndex _ ->
                                     option_ |> setOptionDisplay (OptionSelectedHighlighted selectedIndex)
 
                                 OptionSelectedPendingValidation _ ->
@@ -619,15 +619,12 @@ toggleSelectedHighlightByOptionValue options optionValue =
                                     option_
 
                                 OptionSelectedHighlighted selectedIndex ->
-                                    option_ |> setOptionDisplay (OptionSelected selectedIndex)
+                                    option_ |> setOptionDisplay (OptionSelected selectedIndex OptionDisplay.MatureOption)
 
                                 OptionHighlighted ->
                                     option_
 
-                                OptionDisabled ->
-                                    option_
-
-                                OptionNew ->
+                                OptionDisabled _ ->
                                     option_
 
                         else
@@ -636,13 +633,13 @@ toggleSelectedHighlightByOptionValue options optionValue =
                     CustomOption optionDisplay _ optionValue_ _ ->
                         if optionValue == optionValue_ then
                             case optionDisplay of
-                                OptionShown ->
+                                OptionShown _ ->
                                     option_
 
                                 OptionHidden ->
                                     option_
 
-                                OptionSelected selectedIndex ->
+                                OptionSelected selectedIndex _ ->
                                     option_ |> setOptionDisplay (OptionSelectedHighlighted selectedIndex)
 
                                 OptionSelectedPendingValidation _ ->
@@ -652,15 +649,12 @@ toggleSelectedHighlightByOptionValue options optionValue =
                                     option_
 
                                 OptionSelectedHighlighted selectedIndex ->
-                                    option_ |> setOptionDisplay (OptionSelected selectedIndex)
+                                    option_ |> setOptionDisplay (OptionSelected selectedIndex OptionDisplay.MatureOption)
 
                                 OptionHighlighted ->
                                     option_
 
-                                OptionDisabled ->
-                                    option_
-
-                                OptionNew ->
+                                OptionDisabled _ ->
                                     option_
 
                         else
@@ -682,13 +676,13 @@ deselectAllSelectedHighlightedOptions options =
                 case option_ of
                     Option optionDisplay _ _ _ _ _ ->
                         case optionDisplay of
-                            OptionShown ->
+                            OptionShown _ ->
                                 option_
 
                             OptionHidden ->
                                 option_
 
-                            OptionSelected _ ->
+                            OptionSelected _ _ ->
                                 option_
 
                             OptionSelectedPendingValidation _ ->
@@ -698,26 +692,23 @@ deselectAllSelectedHighlightedOptions options =
                                 option_
 
                             OptionSelectedHighlighted _ ->
-                                option_ |> setOptionDisplay OptionShown
+                                option_ |> setOptionDisplay (OptionShown OptionDisplay.MatureOption)
 
                             OptionHighlighted ->
                                 option_
 
-                            OptionDisabled ->
-                                option_
-
-                            OptionNew ->
+                            OptionDisabled _ ->
                                 option_
 
                     CustomOption optionDisplay _ _ _ ->
                         case optionDisplay of
-                            OptionShown ->
+                            OptionShown _ ->
                                 option_
 
                             OptionHidden ->
                                 option_
 
-                            OptionSelected _ ->
+                            OptionSelected _ _ ->
                                 option_
 
                             OptionSelectedPendingValidation _ ->
@@ -727,15 +718,12 @@ deselectAllSelectedHighlightedOptions options =
                                 option_
 
                             OptionSelectedHighlighted _ ->
-                                option_ |> setOptionDisplay OptionShown
+                                option_ |> setOptionDisplay (OptionShown OptionDisplay.MatureOption)
 
                             OptionHighlighted ->
                                 option_
 
-                            OptionDisabled ->
-                                option_
-
-                            OptionNew ->
+                            OptionDisabled _ ->
                                 option_
 
                     EmptyOption _ _ ->
@@ -978,7 +966,7 @@ prependCustomOption maybeCustomOptionHint searchString options =
                     "Add " ++ SearchString.toString searchString ++ "…"
     in
     [ CustomOption
-        OptionShown
+        (OptionShown OptionDisplay.MatureOption)
         (OptionLabel.newWithCleanLabel label Nothing)
         (OptionValue (SearchString.toString searchString))
         Nothing
@@ -1023,14 +1011,24 @@ filterOptionsToShowInDropdownByOptionDisplay selectionConfig =
             List.filter
                 (\option ->
                     case getOptionDisplay option of
-                        OptionShown ->
-                            True
+                        OptionShown age ->
+                            case age of
+                                OptionDisplay.NewOption ->
+                                    False
+
+                                OptionDisplay.MatureOption ->
+                                    True
 
                         OptionHidden ->
                             False
 
-                        OptionSelected _ ->
-                            True
+                        OptionSelected _ age ->
+                            case age of
+                                OptionDisplay.NewOption ->
+                                    False
+
+                                OptionDisplay.MatureOption ->
+                                    True
 
                         OptionSelectedPendingValidation _ ->
                             True
@@ -1044,25 +1042,37 @@ filterOptionsToShowInDropdownByOptionDisplay selectionConfig =
                         OptionHighlighted ->
                             True
 
-                        OptionDisabled ->
-                            True
+                        OptionDisabled age ->
+                            case age of
+                                OptionDisplay.NewOption ->
+                                    False
 
-                        OptionNew ->
-                            False
+                                OptionDisplay.MatureOption ->
+                                    True
                 )
 
         MultiSelectConfig _ _ _ ->
             List.filter
                 (\option ->
                     case getOptionDisplay option of
-                        OptionShown ->
-                            True
+                        OptionShown age ->
+                            case age of
+                                OptionDisplay.NewOption ->
+                                    False
+
+                                OptionDisplay.MatureOption ->
+                                    True
 
                         OptionHidden ->
                             False
 
-                        OptionSelected _ ->
-                            False
+                        OptionSelected _ age ->
+                            case age of
+                                OptionDisplay.NewOption ->
+                                    False
+
+                                OptionDisplay.MatureOption ->
+                                    True
 
                         OptionSelectedPendingValidation _ ->
                             True
@@ -1076,11 +1086,13 @@ filterOptionsToShowInDropdownByOptionDisplay selectionConfig =
                         OptionHighlighted ->
                             True
 
-                        OptionDisabled ->
-                            True
+                        OptionDisabled age ->
+                            case age of
+                                OptionDisplay.NewOption ->
+                                    False
 
-                        OptionNew ->
-                            False
+                                OptionDisplay.MatureOption ->
+                                    True
                 )
 
 
@@ -1236,7 +1248,7 @@ addNewEmptyOptionAtIndex index options =
             List.drop index options
     in
     (firstPart
-        ++ [ DatalistOption (OptionSelected index) EmptyOptionValue ]
+        ++ [ DatalistOption (OptionSelected index OptionDisplay.MatureOption) EmptyOptionValue ]
         ++ secondPart
     )
         |> reIndexSelectedOptions
@@ -1249,7 +1261,7 @@ updateDatalistOptionWithValueBySelectedValueIndex errors optionValue selectedInd
             (\option ->
                 if Option.getOptionSelectedIndex option == selectedIndex then
                     Option.setOptionValue optionValue option
-                        |> Option.setOptionDisplay (OptionSelected selectedIndex)
+                        |> Option.setOptionDisplay (OptionSelected selectedIndex OptionDisplay.MatureOption)
 
                 else
                     option

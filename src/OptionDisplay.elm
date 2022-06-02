@@ -1,34 +1,56 @@
-module OptionDisplay exposing (OptionDisplay(..), addHighlight, default, deselect, disabled, getErrors, getSelectedIndex, isHighlightable, isHighlighted, isInvalid, isPendingValidation, isSelected, removeHighlight, select, selected, selectedAndInvalid, selectedAndPendingValidation, setErrors, setSelectedIndex, shown)
+module OptionDisplay exposing
+    ( OptionAge(..)
+    , OptionDisplay(..)
+    , addHighlight
+    , decoder
+    , default
+    , deselect
+    , disabled
+    , getErrors
+    , getSelectedIndex
+    , isHighlightable
+    , isHighlighted
+    , isInvalid
+    , isPendingValidation
+    , isSelected
+    , removeHighlight
+    , select
+    , selected
+    , selectedAndInvalid
+    , selectedAndPendingValidation
+    , setErrors
+    , setSelectedIndex
+    )
 
+import Json.Decode
 import SelectionMode exposing (SelectionMode)
 import TransformAndValidate exposing (ValidationFailureMessage)
 
 
 type OptionDisplay
-    = OptionShown
+    = OptionShown OptionAge
     | OptionHidden
-    | OptionSelected Int
+    | OptionSelected Int OptionAge
     | OptionSelectedAndInvalid Int (List ValidationFailureMessage)
     | OptionSelectedPendingValidation Int
     | OptionSelectedHighlighted Int
     | OptionHighlighted
-    | OptionDisabled
-    | OptionNew
+    | OptionDisabled OptionAge
+
+
+type OptionAge
+    = NewOption
+    | MatureOption
 
 
 default : OptionDisplay
 default =
-    OptionShown
-
-
-shown : OptionDisplay
-shown =
-    OptionShown
+    OptionShown MatureOption
 
 
 selected : Int -> OptionDisplay
 selected index =
-    OptionSelected index
+    OptionSelected index MatureOption
 
 
 selectedAndInvalid : Int -> List ValidationFailureMessage -> OptionDisplay
@@ -43,19 +65,19 @@ selectedAndPendingValidation index =
 
 disabled : OptionDisplay
 disabled =
-    OptionDisabled
+    OptionDisabled MatureOption
 
 
 isSelected : OptionDisplay -> Bool
 isSelected optionDisplay =
     case optionDisplay of
-        OptionShown ->
+        OptionShown _ ->
             False
 
         OptionHidden ->
             False
 
-        OptionSelected _ ->
+        OptionSelected _ _ ->
             True
 
         OptionSelectedPendingValidation _ ->
@@ -70,24 +92,21 @@ isSelected optionDisplay =
         OptionHighlighted ->
             False
 
-        OptionDisabled ->
-            False
-
-        OptionNew ->
+        OptionDisabled _ ->
             False
 
 
 setSelectedIndex : Int -> OptionDisplay -> OptionDisplay
 setSelectedIndex selectedIndex optionDisplay =
     case optionDisplay of
-        OptionShown ->
+        OptionShown _ ->
             optionDisplay
 
         OptionHidden ->
             optionDisplay
 
-        OptionSelected _ ->
-            OptionSelected selectedIndex
+        OptionSelected _ age ->
+            OptionSelected selectedIndex age
 
         OptionSelectedPendingValidation _ ->
             OptionSelectedPendingValidation selectedIndex
@@ -101,23 +120,20 @@ setSelectedIndex selectedIndex optionDisplay =
         OptionHighlighted ->
             optionDisplay
 
-        OptionDisabled ->
-            optionDisplay
-
-        OptionNew ->
+        OptionDisabled _ ->
             optionDisplay
 
 
 getSelectedIndex : OptionDisplay -> Int
 getSelectedIndex optionDisplay =
     case optionDisplay of
-        OptionShown ->
+        OptionShown _ ->
             -1
 
         OptionHidden ->
             -1
 
-        OptionSelected int ->
+        OptionSelected int _ ->
             int
 
         OptionSelectedPendingValidation int ->
@@ -132,24 +148,21 @@ getSelectedIndex optionDisplay =
         OptionHighlighted ->
             -1
 
-        OptionDisabled ->
-            -1
-
-        OptionNew ->
+        OptionDisabled _ ->
             -1
 
 
 select : Int -> OptionDisplay -> OptionDisplay
 select selectedIndex optionDisplay =
     case optionDisplay of
-        OptionShown ->
-            OptionSelected selectedIndex
+        OptionShown age ->
+            OptionSelected selectedIndex age
 
         OptionHidden ->
-            OptionSelected selectedIndex
+            OptionSelected selectedIndex MatureOption
 
-        OptionSelected _ ->
-            OptionSelected selectedIndex
+        OptionSelected _ _ ->
+            optionDisplay
 
         OptionSelectedPendingValidation _ ->
             optionDisplay
@@ -161,56 +174,50 @@ select selectedIndex optionDisplay =
             OptionSelectedHighlighted selectedIndex
 
         OptionHighlighted ->
-            OptionSelected selectedIndex
+            OptionSelected selectedIndex MatureOption
 
-        OptionDisabled ->
-            optionDisplay
-
-        OptionNew ->
+        OptionDisabled _ ->
             optionDisplay
 
 
 deselect : OptionDisplay -> OptionDisplay
 deselect optionDisplay =
     case optionDisplay of
-        OptionShown ->
+        OptionShown _ ->
             optionDisplay
 
         OptionHidden ->
             optionDisplay
 
-        OptionSelected _ ->
-            OptionShown
+        OptionSelected _ age ->
+            OptionShown age
 
         OptionSelectedPendingValidation _ ->
-            OptionShown
+            OptionShown MatureOption
 
         OptionSelectedAndInvalid _ _ ->
-            OptionShown
+            OptionShown MatureOption
 
         OptionSelectedHighlighted _ ->
-            OptionShown
+            OptionShown MatureOption
 
         OptionHighlighted ->
             optionDisplay
 
-        OptionDisabled ->
-            optionDisplay
-
-        OptionNew ->
+        OptionDisabled _ ->
             optionDisplay
 
 
 addHighlight : OptionDisplay -> OptionDisplay
 addHighlight optionDisplay =
     case optionDisplay of
-        OptionShown ->
+        OptionShown _ ->
             OptionHighlighted
 
         OptionHidden ->
             optionDisplay
 
-        OptionSelected selectedIndex ->
+        OptionSelected selectedIndex _ ->
             OptionSelectedHighlighted selectedIndex
 
         OptionSelectedPendingValidation _ ->
@@ -225,23 +232,20 @@ addHighlight optionDisplay =
         OptionHighlighted ->
             optionDisplay
 
-        OptionDisabled ->
-            optionDisplay
-
-        OptionNew ->
+        OptionDisabled _ ->
             optionDisplay
 
 
 removeHighlight : OptionDisplay -> OptionDisplay
 removeHighlight optionDisplay =
     case optionDisplay of
-        OptionShown ->
+        OptionShown _ ->
             optionDisplay
 
         OptionHidden ->
             optionDisplay
 
-        OptionSelected _ ->
+        OptionSelected _ _ ->
             optionDisplay
 
         OptionSelectedPendingValidation _ ->
@@ -251,28 +255,25 @@ removeHighlight optionDisplay =
             optionDisplay
 
         OptionSelectedHighlighted selectedIndex ->
-            OptionSelected selectedIndex
+            OptionSelected selectedIndex MatureOption
 
         OptionHighlighted ->
-            OptionShown
+            OptionShown MatureOption
 
-        OptionDisabled ->
-            optionDisplay
-
-        OptionNew ->
+        OptionDisabled _ ->
             optionDisplay
 
 
 isHighlighted : OptionDisplay -> Bool
 isHighlighted optionDisplay =
     case optionDisplay of
-        OptionShown ->
+        OptionShown _ ->
             False
 
         OptionHidden ->
             False
 
-        OptionSelected _ ->
+        OptionSelected _ _ ->
             False
 
         OptionSelectedAndInvalid _ _ ->
@@ -287,23 +288,20 @@ isHighlighted optionDisplay =
         OptionHighlighted ->
             True
 
-        OptionDisabled ->
-            False
-
-        OptionNew ->
+        OptionDisabled _ ->
             False
 
 
 isHighlightable : SelectionMode -> OptionDisplay -> Bool
 isHighlightable selectionMode optionDisplay =
     case optionDisplay of
-        OptionShown ->
+        OptionShown _ ->
             True
 
         OptionHidden ->
             False
 
-        OptionSelected _ ->
+        OptionSelected _ _ ->
             case selectionMode of
                 SelectionMode.SingleSelect ->
                     True
@@ -323,23 +321,20 @@ isHighlightable selectionMode optionDisplay =
         OptionHighlighted ->
             False
 
-        OptionDisabled ->
-            False
-
-        OptionNew ->
+        OptionDisabled _ ->
             False
 
 
 setErrors : List ValidationFailureMessage -> OptionDisplay -> OptionDisplay
 setErrors validationErrorMessages optionDisplay =
     case optionDisplay of
-        OptionShown ->
+        OptionShown _ ->
             optionDisplay
 
         OptionHidden ->
             optionDisplay
 
-        OptionSelected selectedIndex ->
+        OptionSelected selectedIndex _ ->
             if List.length validationErrorMessages > 0 then
                 OptionSelectedAndInvalid selectedIndex validationErrorMessages
 
@@ -362,23 +357,20 @@ setErrors validationErrorMessages optionDisplay =
         OptionHighlighted ->
             optionDisplay
 
-        OptionDisabled ->
-            optionDisplay
-
-        OptionNew ->
+        OptionDisabled _ ->
             optionDisplay
 
 
 getErrors : OptionDisplay -> List ValidationFailureMessage
 getErrors optionDisplay =
     case optionDisplay of
-        OptionShown ->
+        OptionShown _ ->
             []
 
         OptionHidden ->
             []
 
-        OptionSelected _ ->
+        OptionSelected _ _ ->
             []
 
         OptionSelectedPendingValidation _ ->
@@ -393,23 +385,20 @@ getErrors optionDisplay =
         OptionHighlighted ->
             []
 
-        OptionDisabled ->
-            []
-
-        OptionNew ->
+        OptionDisabled _ ->
             []
 
 
 isInvalid : OptionDisplay -> Bool
 isInvalid optionDisplay =
     case optionDisplay of
-        OptionShown ->
+        OptionShown _ ->
             False
 
         OptionHidden ->
             False
 
-        OptionSelected _ ->
+        OptionSelected _ _ ->
             False
 
         OptionSelectedPendingValidation _ ->
@@ -424,24 +413,20 @@ isInvalid optionDisplay =
         OptionHighlighted ->
             False
 
-        OptionDisabled ->
-            False
-
-        OptionNew ->
-            -- TODO ???
+        OptionDisabled _ ->
             False
 
 
 isPendingValidation : OptionDisplay -> Bool
 isPendingValidation optionDisplay =
     case optionDisplay of
-        OptionShown ->
+        OptionShown _ ->
             False
 
         OptionHidden ->
             False
 
-        OptionSelected _ ->
+        OptionSelected _ _ ->
             False
 
         OptionSelectedPendingValidation _ ->
@@ -456,9 +441,46 @@ isPendingValidation optionDisplay =
         OptionHighlighted ->
             False
 
-        OptionDisabled ->
+        OptionDisabled _ ->
             False
 
-        OptionNew ->
-            -- TODO ???
-            False
+
+decoder : OptionAge -> Json.Decode.Decoder OptionDisplay
+decoder age =
+    Json.Decode.oneOf
+        [ Json.Decode.field
+            "selected"
+            Json.Decode.string
+            |> Json.Decode.andThen
+                (\str ->
+                    case str of
+                        "true" ->
+                            Json.Decode.succeed (OptionSelected 0 age)
+
+                        _ ->
+                            Json.Decode.fail "Option is not selected"
+                )
+        , Json.Decode.field
+            "selected"
+            Json.Decode.bool
+            |> Json.Decode.andThen
+                (\isSelected_ ->
+                    if isSelected_ then
+                        Json.Decode.succeed (OptionSelected 0 age)
+
+                    else
+                        Json.Decode.succeed (OptionShown age)
+                )
+        , Json.Decode.field
+            "disabled"
+            Json.Decode.bool
+            |> Json.Decode.andThen
+                (\isDisabled ->
+                    if isDisabled then
+                        Json.Decode.succeed (OptionDisabled age)
+
+                    else
+                        Json.Decode.fail "Option is not disabled"
+                )
+        , Json.Decode.succeed (OptionShown age)
+        ]

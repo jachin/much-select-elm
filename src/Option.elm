@@ -865,26 +865,26 @@ isCustomOption option =
             False
 
 
-optionsDecoder : OutputStyle -> Json.Decode.Decoder (List Option)
-optionsDecoder outputStyle =
-    Json.Decode.list (decoder outputStyle)
+optionsDecoder : OptionDisplay.OptionAge -> OutputStyle -> Json.Decode.Decoder (List Option)
+optionsDecoder age outputStyle =
+    Json.Decode.list (decoder age outputStyle)
 
 
-decoder : OutputStyle -> Json.Decode.Decoder Option
-decoder outputStyle =
+decoder : OptionDisplay.OptionAge -> OutputStyle -> Json.Decode.Decoder Option
+decoder age outputStyle =
     case outputStyle of
         CustomHtml ->
             Json.Decode.oneOf
-                [ decodeOptionWithoutAValue
-                , decodeOptionWithAValue
+                [ decodeOptionWithoutAValue age
+                , decodeOptionWithAValue age
                 ]
 
         Datalist ->
             decodeOptionForDatalist
 
 
-decodeOptionWithoutAValue : Json.Decode.Decoder Option
-decodeOptionWithoutAValue =
+decodeOptionWithoutAValue : OptionDisplay.OptionAge -> Json.Decode.Decoder Option
+decodeOptionWithoutAValue age =
     Json.Decode.field
         "value"
         valueDecoder
@@ -897,15 +897,15 @@ decodeOptionWithoutAValue =
                     EmptyOptionValue ->
                         Json.Decode.map2
                             EmptyOption
-                            displayDecoder
+                            (OptionDisplay.decoder age)
                             labelDecoder
             )
 
 
-decodeOptionWithAValue : Json.Decode.Decoder Option
-decodeOptionWithAValue =
+decodeOptionWithAValue : OptionDisplay.OptionAge -> Json.Decode.Decoder Option
+decodeOptionWithAValue age =
     Json.Decode.map6 Option
-        displayDecoder
+        (OptionDisplay.decoder age)
         labelDecoder
         (Json.Decode.field
             "value"
@@ -919,52 +919,11 @@ decodeOptionWithAValue =
 decodeOptionForDatalist : Json.Decode.Decoder Option
 decodeOptionForDatalist =
     Json.Decode.map2 DatalistOption
-        displayDecoder
+        (OptionDisplay.decoder OptionDisplay.MatureOption)
         (Json.Decode.field
             "value"
             valueDecoder
         )
-
-
-displayDecoder : Json.Decode.Decoder OptionDisplay
-displayDecoder =
-    Json.Decode.oneOf
-        [ Json.Decode.field
-            "selected"
-            Json.Decode.string
-            |> Json.Decode.andThen
-                (\str ->
-                    case str of
-                        "true" ->
-                            Json.Decode.succeed (OptionDisplay.selected 0)
-
-                        _ ->
-                            Json.Decode.fail "Option is not selected"
-                )
-        , Json.Decode.field
-            "selected"
-            Json.Decode.bool
-            |> Json.Decode.andThen
-                (\isSelected ->
-                    if isSelected then
-                        Json.Decode.succeed (OptionDisplay.selected 0)
-
-                    else
-                        Json.Decode.succeed OptionDisplay.shown
-                )
-        , Json.Decode.field
-            "disabled"
-            Json.Decode.bool
-            |> Json.Decode.andThen
-                (\isDisabled ->
-                    if isDisabled then
-                        Json.Decode.succeed OptionDisplay.disabled
-
-                    else
-                        Json.Decode.fail "Option is not disabled"
-                )
-        , Json.Decode.succeed OptionDisplay.shown
-        ]
 
 
 valueDecoder : Json.Decode.Decoder OptionValue
