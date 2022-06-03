@@ -740,6 +740,7 @@ view model =
                     ]
                     []
                 , label [ for "no-white-space-checkbox" ] [ text "No White Space" ]
+                , br [] []
                 , input
                     [ type_ "checkbox"
                     , name "minimum-length"
