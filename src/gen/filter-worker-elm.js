@@ -2856,6 +2856,7 @@ var $author$project$FilterWorker$subscriptions = function (_v0) {
 };
 var $elm$json$Json$Decode$succeed = _Json_succeed;
 var $author$project$SelectionMode$CustomHtml = 0;
+var $author$project$OptionDisplay$MatureOption = 1;
 var $elm$core$Basics$identity = function (x) {
 	return x;
 };
@@ -3199,42 +3200,52 @@ var $author$project$Option$DatalistOption = F2(
 	function (a, b) {
 		return {$: 2, a: a, b: b};
 	});
-var $author$project$Option$OptionDisabled = {$: 7};
-var $author$project$Option$OptionSelected = function (a) {
-	return {$: 2, a: a};
+var $author$project$OptionDisplay$OptionDisabled = function (a) {
+	return {$: 7, a: a};
 };
-var $author$project$Option$OptionShown = {$: 0};
+var $author$project$OptionDisplay$OptionSelected = F2(
+	function (a, b) {
+		return {$: 2, a: a, b: b};
+	});
+var $author$project$OptionDisplay$OptionShown = function (a) {
+	return {$: 0, a: a};
+};
 var $elm$json$Json$Decode$bool = _Json_decodeBool;
 var $elm$json$Json$Decode$oneOf = _Json_oneOf;
-var $author$project$Option$displayDecoder = $elm$json$Json$Decode$oneOf(
-	_List_fromArray(
-		[
-			A2(
-			$elm$json$Json$Decode$andThen,
-			function (str) {
-				if (str === 'true') {
-					return $elm$json$Json$Decode$succeed(
-						$author$project$Option$OptionSelected(0));
-				} else {
-					return $elm$json$Json$Decode$fail('Option is not selected');
-				}
-			},
-			A2($elm$json$Json$Decode$field, 'selected', $elm$json$Json$Decode$string)),
-			A2(
-			$elm$json$Json$Decode$andThen,
-			function (isSelected) {
-				return isSelected ? $elm$json$Json$Decode$succeed(
-					$author$project$Option$OptionSelected(0)) : $elm$json$Json$Decode$succeed($author$project$Option$OptionShown);
-			},
-			A2($elm$json$Json$Decode$field, 'selected', $elm$json$Json$Decode$bool)),
-			A2(
-			$elm$json$Json$Decode$andThen,
-			function (isDisabled) {
-				return isDisabled ? $elm$json$Json$Decode$succeed($author$project$Option$OptionDisabled) : $elm$json$Json$Decode$fail('Option is not disabled');
-			},
-			A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool)),
-			$elm$json$Json$Decode$succeed($author$project$Option$OptionShown)
-		]));
+var $author$project$OptionDisplay$decoder = function (age) {
+	return $elm$json$Json$Decode$oneOf(
+		_List_fromArray(
+			[
+				A2(
+				$elm$json$Json$Decode$andThen,
+				function (str) {
+					if (str === 'true') {
+						return $elm$json$Json$Decode$succeed(
+							A2($author$project$OptionDisplay$OptionSelected, 0, age));
+					} else {
+						return $elm$json$Json$Decode$fail('Option is not selected');
+					}
+				},
+				A2($elm$json$Json$Decode$field, 'selected', $elm$json$Json$Decode$string)),
+				A2(
+				$elm$json$Json$Decode$andThen,
+				function (isSelected_) {
+					return isSelected_ ? $elm$json$Json$Decode$succeed(
+						A2($author$project$OptionDisplay$OptionSelected, 0, age)) : $elm$json$Json$Decode$succeed(
+						$author$project$OptionDisplay$OptionShown(age));
+				},
+				A2($elm$json$Json$Decode$field, 'selected', $elm$json$Json$Decode$bool)),
+				A2(
+				$elm$json$Json$Decode$andThen,
+				function (isDisabled) {
+					return isDisabled ? $elm$json$Json$Decode$succeed(
+						$author$project$OptionDisplay$OptionDisabled(age)) : $elm$json$Json$Decode$fail('Option is not disabled');
+				},
+				A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool)),
+				$elm$json$Json$Decode$succeed(
+				$author$project$OptionDisplay$OptionShown(age))
+			]));
+};
 var $author$project$OptionValue$OptionValue = function (a) {
 	return {$: 0, a: a};
 };
@@ -3255,7 +3266,7 @@ var $author$project$Option$valueDecoder = A2(
 var $author$project$Option$decodeOptionForDatalist = A3(
 	$elm$json$Json$Decode$map2,
 	$author$project$Option$DatalistOption,
-	$author$project$Option$displayDecoder,
+	$author$project$OptionDisplay$decoder(1),
 	A2($elm$json$Json$Decode$field, 'value', $author$project$Option$valueDecoder));
 var $author$project$Option$Option = F6(
 	function (a, b, c, d, e, f) {
@@ -3354,43 +3365,56 @@ var $author$project$Option$optionGroupDecoder = $elm$json$Json$Decode$oneOf(
 			A2($elm$json$Json$Decode$field, 'group', $elm$json$Json$Decode$string)),
 			$elm$json$Json$Decode$succeed($author$project$Option$NoOptionGroup)
 		]));
-var $author$project$Option$decodeOptionWithAValue = A7(
-	$elm$json$Json$Decode$map6,
-	$author$project$Option$Option,
-	$author$project$Option$displayDecoder,
-	$author$project$OptionLabel$labelDecoder,
-	A2($elm$json$Json$Decode$field, 'value', $author$project$Option$valueDecoder),
-	$author$project$Option$descriptionDecoder,
-	$author$project$Option$optionGroupDecoder,
-	$elm$json$Json$Decode$succeed($elm$core$Maybe$Nothing));
+var $author$project$Option$decodeOptionWithAValue = function (age) {
+	return A7(
+		$elm$json$Json$Decode$map6,
+		$author$project$Option$Option,
+		$author$project$OptionDisplay$decoder(age),
+		$author$project$OptionLabel$labelDecoder,
+		A2($elm$json$Json$Decode$field, 'value', $author$project$Option$valueDecoder),
+		$author$project$Option$descriptionDecoder,
+		$author$project$Option$optionGroupDecoder,
+		$elm$json$Json$Decode$succeed($elm$core$Maybe$Nothing));
+};
 var $author$project$Option$EmptyOption = F2(
 	function (a, b) {
 		return {$: 3, a: a, b: b};
 	});
-var $author$project$Option$decodeOptionWithoutAValue = A2(
-	$elm$json$Json$Decode$andThen,
-	function (value) {
-		if (!value.$) {
-			return $elm$json$Json$Decode$fail('It can not be an option without a value because it has a value.');
+var $author$project$Option$decodeOptionWithoutAValue = function (age) {
+	return A2(
+		$elm$json$Json$Decode$andThen,
+		function (value) {
+			if (!value.$) {
+				return $elm$json$Json$Decode$fail('It can not be an option without a value because it has a value.');
+			} else {
+				return A3(
+					$elm$json$Json$Decode$map2,
+					$author$project$Option$EmptyOption,
+					$author$project$OptionDisplay$decoder(age),
+					$author$project$OptionLabel$labelDecoder);
+			}
+		},
+		A2($elm$json$Json$Decode$field, 'value', $author$project$Option$valueDecoder));
+};
+var $author$project$Option$decoder = F2(
+	function (age, outputStyle) {
+		if (!outputStyle) {
+			return $elm$json$Json$Decode$oneOf(
+				_List_fromArray(
+					[
+						$author$project$Option$decodeOptionWithoutAValue(age),
+						$author$project$Option$decodeOptionWithAValue(age)
+					]));
 		} else {
-			return A3($elm$json$Json$Decode$map2, $author$project$Option$EmptyOption, $author$project$Option$displayDecoder, $author$project$OptionLabel$labelDecoder);
+			return $author$project$Option$decodeOptionForDatalist;
 		}
-	},
-	A2($elm$json$Json$Decode$field, 'value', $author$project$Option$valueDecoder));
-var $author$project$Option$decoder = function (outputStyle) {
-	if (!outputStyle) {
-		return $elm$json$Json$Decode$oneOf(
-			_List_fromArray(
-				[$author$project$Option$decodeOptionWithoutAValue, $author$project$Option$decodeOptionWithAValue]));
-	} else {
-		return $author$project$Option$decodeOptionForDatalist;
-	}
-};
+	});
 var $elm$json$Json$Decode$list = _Json_decodeList;
-var $author$project$Option$optionsDecoder = function (outputStyle) {
-	return $elm$json$Json$Decode$list(
-		$author$project$Option$decoder(outputStyle));
-};
+var $author$project$Option$optionsDecoder = F2(
+	function (age, outputStyle) {
+		return $elm$json$Json$Decode$list(
+			A2($author$project$Option$decoder, age, outputStyle));
+	});
 var $author$project$FilterWorker$sendErrorMessage = _Platform_outgoingPort('sendErrorMessage', $elm$json$Json$Encode$string);
 var $author$project$FilterWorker$sendSearchResults = _Platform_outgoingPort('sendSearchResults', $elm$core$Basics$identity);
 var $elm$core$List$takeReverse = F3(
@@ -4473,7 +4497,7 @@ var $author$project$FilterWorker$update = F2(
 			var optionsJson = msg.a;
 			var _v1 = A2(
 				$elm$json$Json$Decode$decodeValue,
-				$author$project$Option$optionsDecoder(0),
+				A2($author$project$Option$optionsDecoder, 1, 0),
 				optionsJson);
 			if (!_v1.$) {
 				var newOptions = _v1.a;

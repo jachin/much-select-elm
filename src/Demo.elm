@@ -44,6 +44,7 @@ import Html.Events exposing (on, onCheck, onClick, onInput, targetValue)
 import Html.Events.Extra exposing (onChange)
 import Json.Decode
 import Json.Encode
+import List.Extra
 import Process
 import Task
 import Url
@@ -64,6 +65,7 @@ type alias Model =
     , placeholder : ( String, Bool )
     , showLoadingIndicator : Bool
     , filteredOptions : ( String, List DemoOption )
+    , validators : List ( Bool, Validator )
     }
 
 
@@ -133,6 +135,7 @@ type Msg
     | ToggleLoadingIndicator Bool
     | ChangeOptionDemo OptionDemo
     | FilterOptions String
+    | ToggleValidation Validator Bool
 
 
 main : Program Flags Model Msg
@@ -161,6 +164,10 @@ init _ =
             , filteredOptions "" 10
                 |> List.map lordOfTheRingsCharacterToDemoOption
             )
+      , validators =
+            [ ( False, defaultNoWhitespaceValidator )
+            , ( False, defaultMinimumLengthValidator )
+            ]
       }
     , Cmd.none
     )
@@ -267,6 +274,33 @@ update msg model =
               }
             , Cmd.none
             )
+
+        ToggleValidation validator bool ->
+            let
+                maybeIndexToUpdate : Maybe Int
+                maybeIndexToUpdate =
+                    case validator of
+                        NoWhiteSpace _ _ ->
+                            model.validators
+                                |> List.map Tuple.second
+                                |> List.Extra.findIndex isNoWhiteSpaceValidator
+
+                        MinimumLength _ _ _ ->
+                            model.validators
+                                |> List.map Tuple.second
+                                |> List.Extra.findIndex isMinimumLengthValidator
+
+                        Custom ->
+                            Nothing
+            in
+            case maybeIndexToUpdate of
+                Just indexToUpdate ->
+                    ( { model | validators = List.Extra.setAt indexToUpdate ( bool, validator ) model.validators }
+                    , Cmd.none
+                    )
+
+                Nothing ->
+                    ( model, Cmd.none )
 
 
 lordOfTheRingsCharacterToDemoOption : LordOfTheRingsCharacter -> DemoOption
@@ -462,9 +496,15 @@ view model =
             [ Lowercase ]
 
         validators =
-            [ NoWhiteSpace ShowError "No white space allowed"
-            , Custom
-            ]
+            List.filterMap
+                (\( shouldInclude, validator ) ->
+                    if shouldInclude then
+                        Just validator
+
+                    else
+                        Nothing
+                )
+                model.validators
     in
     div []
         [ Html.node "much-select"
@@ -496,11 +536,16 @@ view model =
                 , type_ "application/json"
                 ]
                 [ text (Json.Encode.encode 0 (encode transformers validators)) ]
-            , Html.node "script"
-                [ slot "custom-validation-result"
-                , type_ "application/json"
-                ]
-                [ text (Json.Encode.encode 0 (encodeCustomValidateResult model.customValidationResult)) ]
+            , case model.customValidationResult of
+                NothingToValidate ->
+                    text ""
+
+                _ ->
+                    Html.node "script"
+                        [ slot "custom-validation-result"
+                        , type_ "application/json"
+                        ]
+                        [ text (Json.Encode.encode 0 (encodeCustomValidateResult model.customValidationResult)) ]
             ]
         , form []
             [ fieldset []
@@ -682,8 +727,128 @@ view model =
                     []
                 , label [ for "loading-indicator-is-on" ] [ text "Show" ]
                 ]
+            , fieldset []
+                [ legend []
+                    [ text "Validation"
+                    ]
+                , input
+                    [ type_ "checkbox"
+                    , name "no-white-space"
+                    , id "no-white-space-checkbox"
+                    , checked (isNoWhiteSpaceValidatorActive model)
+                    , onCheck (ToggleValidation (getNoWhiteSpaceValidator model))
+                    ]
+                    []
+                , label [ for "no-white-space-checkbox" ] [ text "No White Space" ]
+                , br [] []
+                , input
+                    [ type_ "checkbox"
+                    , name "minimum-length"
+                    , id "minimum-length-checkbox"
+                    , checked (isMinimumLengthValidatorActive model)
+                    , onCheck (ToggleValidation (getMinimumLengthValidator model))
+                    ]
+                    []
+                , label [ for "minimum-length-checkbox" ] [ text "Minimum Length" ]
+                ]
             ]
         ]
+
+
+getNoWhiteSpaceValidator : Model -> Validator
+getNoWhiteSpaceValidator model =
+    model.validators
+        |> List.map Tuple.second
+        |> List.Extra.find isNoWhiteSpaceValidator
+        |> Maybe.withDefault defaultNoWhitespaceValidator
+
+
+isNoWhiteSpaceValidatorActive : Model -> Bool
+isNoWhiteSpaceValidatorActive model =
+    let
+        maybeIndex =
+            getNoWhiteSpaceValidatorIndex model
+    in
+    case maybeIndex of
+        Just index ->
+            List.Extra.getAt index model.validators
+                |> Maybe.map Tuple.first
+                |> Maybe.withDefault False
+
+        Nothing ->
+            False
+
+
+isNoWhiteSpaceValidator : Validator -> Bool
+isNoWhiteSpaceValidator validator =
+    case validator of
+        NoWhiteSpace _ _ ->
+            True
+
+        MinimumLength _ _ _ ->
+            False
+
+        Custom ->
+            False
+
+
+getNoWhiteSpaceValidatorIndex : Model -> Maybe Int
+getNoWhiteSpaceValidatorIndex model =
+    model.validators
+        |> List.map Tuple.second
+        |> List.Extra.findIndex isNoWhiteSpaceValidator
+
+
+defaultNoWhitespaceValidator =
+    NoWhiteSpace ShowError "White space is not allowed"
+
+
+getMinimumLengthValidator : Model -> Validator
+getMinimumLengthValidator model =
+    model.validators
+        |> List.map Tuple.second
+        |> List.Extra.find isMinimumLengthValidator
+        |> Maybe.withDefault defaultMinimumLengthValidator
+
+
+isMinimumLengthValidatorActive : Model -> Bool
+isMinimumLengthValidatorActive model =
+    let
+        maybeIndex =
+            getMinimumLengthValidatorIndex model
+    in
+    case maybeIndex of
+        Just index ->
+            List.Extra.getAt index model.validators
+                |> Maybe.map Tuple.first
+                |> Maybe.withDefault False
+
+        Nothing ->
+            False
+
+
+isMinimumLengthValidator : Validator -> Bool
+isMinimumLengthValidator validator =
+    case validator of
+        NoWhiteSpace _ _ ->
+            False
+
+        MinimumLength _ _ _ ->
+            True
+
+        Custom ->
+            False
+
+
+getMinimumLengthValidatorIndex : Model -> Maybe Int
+getMinimumLengthValidatorIndex model =
+    model.validators
+        |> List.map Tuple.second
+        |> List.Extra.findIndex isMinimumLengthValidator
+
+
+defaultMinimumLengthValidator =
+    MinimumLength ShowError "The value is too short" 4
 
 
 optionsHtml : OptionDemo -> List DemoOption -> List (Html Msg)
