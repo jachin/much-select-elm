@@ -536,11 +536,16 @@ view model =
                 , type_ "application/json"
                 ]
                 [ text (Json.Encode.encode 0 (encode transformers validators)) ]
-            , Html.node "script"
-                [ slot "custom-validation-result"
-                , type_ "application/json"
-                ]
-                [ text (Json.Encode.encode 0 (encodeCustomValidateResult model.customValidationResult)) ]
+            , case model.customValidationResult of
+                NothingToValidate ->
+                    text ""
+
+                _ ->
+                    Html.node "script"
+                        [ slot "custom-validation-result"
+                        , type_ "application/json"
+                        ]
+                        [ text (Json.Encode.encode 0 (encodeCustomValidateResult model.customValidationResult)) ]
             ]
         , form []
             [ fieldset []

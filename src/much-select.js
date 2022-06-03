@@ -911,7 +911,7 @@ class MuchSelect extends HTMLElement {
 
     if (customValidationResultElement) {
       this._customValidationResultSlotObserver.observe(
-        this.querySelector("[slot='custom-validation-result']"),
+        customValidationResultElement,
         customValidationResultSlotConfig
       );
     }
@@ -937,7 +937,7 @@ class MuchSelect extends HTMLElement {
     this._transformationValidationSlotObserver = new MutationObserver(
       (mutationsList) => {
         mutationsList.forEach((mutation) => {
-          if (mutation.type === "childList") {
+          if (mutation.type === "characterData") {
             this._updateTransformationValidationFromTheDom();
           }
         });
@@ -946,7 +946,7 @@ class MuchSelect extends HTMLElement {
 
     const element = this.querySelector("[slot='transformation-validation']");
     if (element) {
-      this._customValidationResultSlotObserver.observe(
+      this._transformationValidationSlotObserver.observe(
         this.querySelector("[slot='transformation-validation']"),
         slotConfig
       );
