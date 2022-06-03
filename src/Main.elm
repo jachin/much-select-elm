@@ -45,9 +45,9 @@ import List.Extra
 import Option
     exposing
         ( Option(..)
-        , OptionDisplay(..)
         , OptionGroup
         )
+import OptionDisplay exposing (OptionDisplay(..))
 import OptionLabel exposing (OptionLabel(..), optionLabelToString)
 import OptionPresentor exposing (tokensToHtml)
 import OptionSearcher exposing (doesSearchStringFindNothing, updateOrAddCustomOption)
@@ -163,7 +163,6 @@ import SelectionMode
         , defaultSelectionConfig
         , getMaxDropdownItems
         , getOutputStyle
-        , getPlaceholder
         , getSearchStringMinimumLength
         , getSingleItemRemoval
         , isDisabled
@@ -207,7 +206,7 @@ type Msg
     | SelectOption Json.Decode.Value
     | DeselectOption Json.Decode.Value
     | DeselectOptionInternal Option
-    | PlaceholderAttributeChanged String
+    | PlaceholderAttributeChanged ( Bool, String )
     | LoadingAttributeChanged Bool
     | MaxDropdownItemsChanged Int
     | ShowDropdownFooterChanged Bool
@@ -241,7 +240,6 @@ type Msg
 
 type alias Model =
     { initialValue : List String
-    , placeholder : String
     , selectionConfig : SelectionConfig
     , options : List Option
     , optionSort : OptionSort
@@ -600,7 +598,7 @@ update msg model =
                     ( model, errorMessage (Json.Decode.errorToString error) )
 
         OptionsReplaced newOptionsJson ->
-            case Json.Decode.decodeValue (Option.optionsDecoder (SelectionMode.getOutputStyle model.selectionConfig)) newOptionsJson of
+            case Json.Decode.decodeValue (Option.optionsDecoder OptionDisplay.NewOption (SelectionMode.getOutputStyle model.selectionConfig)) newOptionsJson of
                 Ok newOptions ->
                     case SelectionMode.getOutputStyle model.selectionConfig of
                         CustomHtml ->
@@ -612,7 +610,12 @@ update msg model =
                                         newOptions
                             in
                             ( { model
-                                | options = newOptionWithOldSelectedOption
+                                | options =
+                                    newOptionWithOldSelectedOption
+                                        |> OptionsUtilities.updateAge
+                                            CustomHtml
+                                            model.searchString
+                                            (SelectionMode.getSearchStringMinimumLength model.selectionConfig)
                                 , rightSlot = updateRightSlot model.rightSlot model.selectionConfig (OptionsUtilities.hasSelectedOption newOptionWithOldSelectedOption) model.options
                               }
                                 |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
@@ -630,6 +633,10 @@ update msg model =
                                         model.options
                                         newOptions
                                         |> OptionsUtilities.organizeNewDatalistOptions
+                                        |> OptionsUtilities.updateAge
+                                            Datalist
+                                            model.searchString
+                                            (SelectionMode.getSearchStringMinimumLength model.selectionConfig)
                             in
                             ( { model
                                 | options = newOptionWithOldSelectedOption
@@ -646,11 +653,15 @@ update msg model =
                     ( model, errorMessage (Json.Decode.errorToString error) )
 
         AddOptions optionsJson ->
-            case Json.Decode.decodeValue (Option.optionsDecoder (SelectionMode.getOutputStyle model.selectionConfig)) optionsJson of
+            case Json.Decode.decodeValue (Option.optionsDecoder OptionDisplay.NewOption (SelectionMode.getOutputStyle model.selectionConfig)) optionsJson of
                 Ok newOptions ->
                     let
                         updatedOptions =
                             addAdditionalOptionsToOptionList model.options newOptions
+                                |> OptionsUtilities.updateAge
+                                    (SelectionMode.getOutputStyle model.selectionConfig)
+                                    model.searchString
+                                    (SelectionMode.getSearchStringMinimumLength model.selectionConfig)
                     in
                     ( { model
                         | options = updatedOptions
@@ -667,7 +678,7 @@ update msg model =
                     ( model, errorMessage (Json.Decode.errorToString error) )
 
         RemoveOptions optionsJson ->
-            case Json.Decode.decodeValue (Option.optionsDecoder (SelectionMode.getOutputStyle model.selectionConfig)) optionsJson of
+            case Json.Decode.decodeValue (Option.optionsDecoder OptionDisplay.MatureOption (SelectionMode.getOutputStyle model.selectionConfig)) optionsJson of
                 Ok optionsToRemove ->
                     let
                         updatedOptions =
@@ -688,7 +699,7 @@ update msg model =
                     ( model, errorMessage (Json.Decode.errorToString error) )
 
         SelectOption optionJson ->
-            case Json.Decode.decodeValue (Option.decoder (SelectionMode.getOutputStyle model.selectionConfig)) optionJson of
+            case Json.Decode.decodeValue (Option.decoder OptionDisplay.MatureOption (SelectionMode.getOutputStyle model.selectionConfig)) optionJson of
                 Ok option ->
                     let
                         optionValue =
@@ -728,7 +739,7 @@ update msg model =
             deselectOption model optionToDeselect
 
         DeselectOption optionJson ->
-            case Json.Decode.decodeValue (Option.decoder (SelectionMode.getOutputStyle model.selectionConfig)) optionJson of
+            case Json.Decode.decodeValue (Option.decoder OptionDisplay.MatureOption (SelectionMode.getOutputStyle model.selectionConfig)) optionJson of
                 Ok option ->
                     deselectOption model option
 
@@ -744,7 +755,9 @@ update msg model =
                     ( model, errorMessage error )
 
         PlaceholderAttributeChanged newPlaceholder ->
-            ( { model | placeholder = newPlaceholder }, Cmd.none )
+            ( { model | selectionConfig = SelectionMode.setPlaceholder newPlaceholder model.selectionConfig }
+            , Cmd.none
+            )
 
         LoadingAttributeChanged bool ->
             ( { model
@@ -1055,6 +1068,7 @@ update msg model =
                         updatedOptions =
                             model.options
                                 |> OptionsUtilities.updateOptionsWithNewSearchResults searchResults
+                                |> OptionsUtilities.setAge OptionDisplay.MatureOption
                     in
                     ( { model
                         | options =
@@ -1547,7 +1561,7 @@ singleSelectViewCustomHtml valueCasing selectionConfig options searchString righ
                 searchString
                 (isDisabled selectionConfig)
                 (isFocused selectionConfig)
-                (getPlaceholder selectionConfig)
+                (SelectionMode.getPlaceholder selectionConfig)
                 hasOptionSelected
             , case rightSlot of
                 ShowNothing ->
@@ -1587,7 +1601,7 @@ multiSelectViewCustomHtml selectionConfig options searchString rightSlot valueCa
 
         placeholderAttribute =
             if showPlaceholder then
-                placeholder (getPlaceholder selectionConfig)
+                placeholder (SelectionMode.getPlaceholderString selectionConfig)
 
             else
                 Html.Attributes.classList []
@@ -1760,8 +1774,8 @@ tabIndexAttribute disabled =
         tabindex 0
 
 
-singleSelectCustomHtmlInputField : SearchString -> Bool -> Bool -> String -> Bool -> Html Msg
-singleSelectCustomHtmlInputField searchString isDisabled focused placeholder_ hasSelectedOption =
+singleSelectCustomHtmlInputField : SearchString -> Bool -> Bool -> ( Bool, String ) -> Bool -> Html Msg
+singleSelectCustomHtmlInputField searchString isDisabled focused placeholderTuple hasSelectedOption =
     let
         keyboardEvents =
             Keyboard.customPerKey Keyboard.Keydown
@@ -1823,11 +1837,11 @@ singleSelectCustomHtmlInputField searchString isDisabled focused placeholder_ ha
             onFocus InputFocus
 
         showPlaceholder =
-            not hasSelectedOption && not focused
+            not hasSelectedOption && not focused && Tuple.first placeholderTuple
 
         placeholderAttribute =
             if showPlaceholder then
-                placeholder placeholder_
+                placeholder (Tuple.second placeholderTuple)
 
             else
                 style "" ""
@@ -1930,7 +1944,11 @@ multiSelectDatasetInputField maybeOption selectionConfig rightSlot index =
             type_ "text"
 
         placeholderAttribute =
-            placeholder (getPlaceholder selectionConfig)
+            if SelectionMode.hasPlaceholder selectionConfig then
+                placeholder (SelectionMode.getPlaceholderString selectionConfig)
+
+            else
+                Html.Attributes.Extra.empty
 
         valueString =
             case maybeOption of
@@ -2022,10 +2040,10 @@ singleSelectDatasetInputField maybeOption selectionMode hasSelectedOption =
 
         placeholderAttribute =
             if showPlaceholder then
-                placeholder (getPlaceholder selectionMode)
+                placeholder (SelectionMode.getPlaceholderString selectionMode)
 
             else
-                style "" ""
+                Html.Attributes.Extra.empty
 
         valueString =
             case maybeOption of
@@ -2275,7 +2293,7 @@ optionToDropdownOption eventHandlers selectionConfig_ option_ =
                     Html.Attributes.attribute "data-value" (Option.getOptionValueAsString option)
             in
             case Option.getOptionDisplay option of
-                OptionShown ->
+                OptionShown _ ->
                     div
                         [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
                         , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
@@ -2290,7 +2308,7 @@ optionToDropdownOption eventHandlers selectionConfig_ option_ =
                 OptionHidden ->
                     text ""
 
-                OptionSelected _ ->
+                OptionSelected _ _ ->
                     case SelectionMode.getSelectionMode selectionConfig of
                         SelectionMode.SingleSelect ->
                             div
@@ -2349,7 +2367,7 @@ optionToDropdownOption eventHandlers selectionConfig_ option_ =
                         ]
                         [ labelHtml, descriptionHtml ]
 
-                OptionDisabled ->
+                OptionDisabled _ ->
                     div
                         [ Html.Attributes.attribute "part" "dropdown-option disabled"
                         , class "disabled"
@@ -2389,13 +2407,13 @@ optionToValueHtml enableSingleItemRemoval option =
     case option of
         Option display optionLabel optionValue _ _ _ ->
             case display of
-                OptionShown ->
+                OptionShown _ ->
                     text ""
 
                 OptionHidden ->
                     text ""
 
-                OptionSelected _ ->
+                OptionSelected _ _ ->
                     div
                         [ class "value"
                         , partAttr
@@ -2421,18 +2439,18 @@ optionToValueHtml enableSingleItemRemoval option =
                 OptionHighlighted ->
                     text ""
 
-                OptionDisabled ->
+                OptionDisabled _ ->
                     text ""
 
         CustomOption display optionLabel optionValue _ ->
             case display of
-                OptionShown ->
+                OptionShown _ ->
                     text ""
 
                 OptionHidden ->
                     text ""
 
-                OptionSelected _ ->
+                OptionSelected _ _ ->
                     div
                         [ class "value"
                         , partAttr
@@ -2460,18 +2478,18 @@ optionToValueHtml enableSingleItemRemoval option =
                 OptionHighlighted ->
                     text ""
 
-                OptionDisabled ->
+                OptionDisabled _ ->
                     text ""
 
         EmptyOption display optionLabel ->
             case display of
-                OptionShown ->
+                OptionShown _ ->
                     text ""
 
                 OptionHidden ->
                     text ""
 
-                OptionSelected _ ->
+                OptionSelected _ _ ->
                     div [ class "value", partAttr ] [ text (OptionLabel.getLabelString optionLabel) ]
 
                 OptionSelectedPendingValidation _ ->
@@ -2486,7 +2504,7 @@ optionToValueHtml enableSingleItemRemoval option =
                 OptionHighlighted ->
                     text ""
 
-                OptionDisabled ->
+                OptionDisabled _ ->
                     text ""
 
         DatalistOption _ _ ->
@@ -2767,7 +2785,7 @@ makeCommandMessageForInitialValue selectedOptions =
 
 type alias Flags =
     { value : Json.Decode.Value
-    , placeholder : String
+    , placeholder : ( Bool, String )
     , customOptionHint : Maybe String
     , allowMultiSelect : Bool
     , outputStyle : String
@@ -2842,7 +2860,7 @@ init flags =
                     ( [], errorMessage (Json.Decode.errorToString error) )
 
         ( optionsWithInitialValueSelected, errorCmd ) =
-            case Json.Decode.decodeString (Option.optionsDecoder (SelectionMode.getOutputStyle selectionConfig)) flags.optionsJson of
+            case Json.Decode.decodeString (Option.optionsDecoder OptionDisplay.MatureOption (SelectionMode.getOutputStyle selectionConfig)) flags.optionsJson of
                 Ok options ->
                     case selectionConfig of
                         SingleSelectConfig _ _ _ ->
@@ -2892,7 +2910,6 @@ init flags =
                     OptionsUtilities.organizeNewDatalistOptions optionsWithInitialValueSelected
     in
     ( { initialValue = initialValues
-      , placeholder = flags.placeholder
       , selectionConfig = selectionConfig
       , options = optionsWithInitialValueSelectedSorted
       , optionSort = stringToOptionSort flags.optionSort |> Result.withDefault NoSorting

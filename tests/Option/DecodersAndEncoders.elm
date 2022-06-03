@@ -8,6 +8,7 @@ import Option
         , newOption
         , newSelectedOption
         )
+import OptionDisplay
 import SelectionMode
 import Test exposing (Test, describe, test)
 
@@ -75,11 +76,11 @@ listOfOptionsWithJustValues =
 
 
 decoder =
-    Option.decoder SelectionMode.CustomHtml
+    Option.decoder OptionDisplay.MatureOption SelectionMode.CustomHtml
 
 
 optionsDecoder =
-    Option.optionsDecoder SelectionMode.CustomHtml
+    Option.optionsDecoder OptionDisplay.MatureOption SelectionMode.CustomHtml
 
 
 suite : Test

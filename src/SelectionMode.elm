@@ -11,11 +11,13 @@ module SelectionMode exposing
     , getMaxDropdownItems
     , getOutputStyle
     , getPlaceholder
+    , getPlaceholderString
     , getSearchStringMinimumLength
     , getSelectedItemPlacementMode
     , getSelectionMode
     , getSingleItemRemoval
     , getTransformAndValidate
+    , hasPlaceholder
     , isDisabled
     , isFocused
     , isSingleSelect
@@ -28,6 +30,7 @@ module SelectionMode exposing
     , setMaxDropdownItems
     , setMultiSelectModeWithBool
     , setOutputStyle
+    , setPlaceholder
     , setSearchStringMinimumLength
     , setSelectedItemStaysInPlaceWithBool
     , setSelectionMode
@@ -45,7 +48,7 @@ import TransformAndValidate exposing (ValueTransformAndValidate)
 
 
 type alias Placeholder =
-    String
+    ( Bool, String )
 
 
 type InteractionState
@@ -81,7 +84,7 @@ defaultSelectionConfig =
             , dropdownStyle = NoFooter
             }
         )
-        ""
+        ( False, "" )
         Unfocused
 
 
@@ -90,7 +93,7 @@ makeSelectionConfig :
     -> Bool
     -> Bool
     -> String
-    -> String
+    -> ( Bool, String )
     -> Maybe String
     -> Bool
     -> Int
@@ -780,6 +783,26 @@ getPlaceholder selectionConfig =
 
         MultiSelectConfig _ placeholder _ ->
             placeholder
+
+
+hasPlaceholder : SelectionConfig -> Bool
+hasPlaceholder selectionConfig =
+    getPlaceholder selectionConfig |> Tuple.first
+
+
+getPlaceholderString : SelectionConfig -> String
+getPlaceholderString selectionConfig =
+    getPlaceholder selectionConfig |> Tuple.second
+
+
+setPlaceholder : Placeholder -> SelectionConfig -> SelectionConfig
+setPlaceholder placeholder selectionConfig =
+    case selectionConfig of
+        SingleSelectConfig singleSelectOutputStyle _ interactionState ->
+            SingleSelectConfig singleSelectOutputStyle placeholder interactionState
+
+        MultiSelectConfig multiSelectOutputStyle _ interactionState ->
+            MultiSelectConfig multiSelectOutputStyle placeholder interactionState
 
 
 getSingleItemRemoval : SelectionConfig -> SingleItemRemoval

@@ -1,10 +1,20 @@
 module Demo exposing (main)
 
 import Browser
+import DemoData
+    exposing
+        ( LordOfTheRingsCharacter(..)
+        , allOptions
+        , filteredOptions
+        , makeOptionElement
+        , raceToString
+        , wizards
+        )
 import Html
     exposing
         ( Attribute
         , Html
+        , br
         , button
         , div
         , fieldset
@@ -12,19 +22,31 @@ import Html
         , input
         , label
         , legend
-        , option
         , select
         , table
         , td
         , text
         , tr
         )
-import Html.Attributes exposing (attribute, checked, for, id, name, type_, value)
-import Html.Attributes.Extra
-import Html.Events exposing (on, onClick)
+import Html.Attributes
+    exposing
+        ( attribute
+        , checked
+        , disabled
+        , for
+        , id
+        , name
+        , type_
+        , value
+        )
+import Html.Attributes.Extra exposing (attributeIf)
+import Html.Events exposing (on, onCheck, onClick, onInput, targetValue)
 import Html.Events.Extra exposing (onChange)
 import Json.Decode
 import Json.Encode
+import List.Extra
+import Process
+import Task
 import Url
 
 
@@ -37,8 +59,57 @@ type alias Model =
     , allowMultiSelect : Bool
     , outputStyle : String
     , customValidationResult : ValidationResult
+    , optionDemo : OptionDemo
     , selectedValueEncoding : String
     , selectedValues : List MuchSelectValue
+    , placeholder : ( String, Bool )
+    , showLoadingIndicator : Bool
+    , filteredOptions : ( String, List DemoOption )
+    , validators : List ( Bool, Validator )
+    }
+
+
+type OptionDemo
+    = StaticOptions
+    | AllOptions
+    | FilteredOptions
+
+
+stringToMaybeOptionDemo : String -> Maybe OptionDemo
+stringToMaybeOptionDemo string =
+    case string of
+        "static-options" ->
+            Just StaticOptions
+
+        "all-options" ->
+            Just AllOptions
+
+        "filtered-options" ->
+            Just FilteredOptions
+
+        _ ->
+            Nothing
+
+
+optionDemoDecoder : Json.Decode.Decoder OptionDemo
+optionDemoDecoder =
+    targetValue
+        |> Json.Decode.andThen
+            (\str ->
+                case stringToMaybeOptionDemo str of
+                    Just optionDemo ->
+                        Json.Decode.succeed optionDemo
+
+                    Nothing ->
+                        Json.Decode.fail ("Unable to figure out an option demo to match: " ++ str)
+            )
+
+
+type alias DemoOption =
+    { label : String
+    , value : String
+    , description : Maybe String
+    , optGroup : Maybe String
     }
 
 
@@ -59,6 +130,12 @@ type Msg
     | ToggleMultiSelect
     | ChangeOutputStyle String
     | ChangeSelectedValueEncoding String
+    | TogglePlaceholder Bool
+    | UpdatePlaceholderString String
+    | ToggleLoadingIndicator Bool
+    | ChangeOptionDemo OptionDemo
+    | FilterOptions String
+    | ToggleValidation Validator Bool
 
 
 main : Program Flags Model Msg
@@ -77,8 +154,20 @@ init _ =
       , allowMultiSelect = False
       , outputStyle = "custom-html"
       , customValidationResult = NothingToValidate
+      , optionDemo = StaticOptions
       , selectedValueEncoding = "json"
       , selectedValues = []
+      , placeholder = ( "Enter a value", False )
+      , showLoadingIndicator = False
+      , filteredOptions =
+            ( ""
+            , filteredOptions "" 10
+                |> List.map lordOfTheRingsCharacterToDemoOption
+            )
+      , validators =
+            [ ( False, defaultNoWhitespaceValidator )
+            , ( False, defaultMinimumLengthValidator )
+            ]
       }
     , Cmd.none
     )
@@ -99,8 +188,23 @@ update msg model =
         BlurOrUnfocusedValueChanged _ ->
             ( model, Cmd.none )
 
-        InputKeyUpDebounced _ ->
-            ( model, Cmd.none )
+        InputKeyUpDebounced searchString ->
+            case model.optionDemo of
+                StaticOptions ->
+                    ( model, Cmd.none )
+
+                AllOptions ->
+                    ( model, Cmd.none )
+
+                FilteredOptions ->
+                    if (searchString |> String.trim |> String.length) > 2 then
+                        ( { model | showLoadingIndicator = True }
+                        , Process.sleep 2000
+                            |> Task.perform (always (FilterOptions searchString))
+                        )
+
+                    else
+                        ( model, Cmd.none )
 
         ToggleAllowCustomValues ->
             ( { model | allowCustomOptions = not model.allowCustomOptions }, Cmd.none )
@@ -146,6 +250,73 @@ update msg model =
         ChangeSelectedValueEncoding string ->
             ( { model | selectedValueEncoding = string }, Cmd.none )
 
+        TogglePlaceholder showPlaceholder ->
+            ( { model | placeholder = Tuple.mapSecond (always showPlaceholder) model.placeholder }, Cmd.none )
+
+        UpdatePlaceholderString str ->
+            ( { model | placeholder = Tuple.mapFirst (always str) model.placeholder }, Cmd.none )
+
+        ToggleLoadingIndicator showLoadingIndicator ->
+            ( { model | showLoadingIndicator = showLoadingIndicator }, Cmd.none )
+
+        ChangeOptionDemo optionDemo ->
+            ( { model | optionDemo = optionDemo }, Cmd.none )
+
+        FilterOptions searchString ->
+            let
+                newFilteredOptions =
+                    filteredOptions searchString 10
+                        |> List.map lordOfTheRingsCharacterToDemoOption
+            in
+            ( { model
+                | showLoadingIndicator = False
+                , filteredOptions = ( searchString, newFilteredOptions )
+              }
+            , Cmd.none
+            )
+
+        ToggleValidation validator bool ->
+            let
+                maybeIndexToUpdate : Maybe Int
+                maybeIndexToUpdate =
+                    case validator of
+                        NoWhiteSpace _ _ ->
+                            model.validators
+                                |> List.map Tuple.second
+                                |> List.Extra.findIndex isNoWhiteSpaceValidator
+
+                        MinimumLength _ _ _ ->
+                            model.validators
+                                |> List.map Tuple.second
+                                |> List.Extra.findIndex isMinimumLengthValidator
+
+                        Custom ->
+                            Nothing
+            in
+            case maybeIndexToUpdate of
+                Just indexToUpdate ->
+                    ( { model | validators = List.Extra.setAt indexToUpdate ( bool, validator ) model.validators }
+                    , Cmd.none
+                    )
+
+                Nothing ->
+                    ( model, Cmd.none )
+
+
+lordOfTheRingsCharacterToDemoOption : LordOfTheRingsCharacter -> DemoOption
+lordOfTheRingsCharacterToDemoOption character =
+    case character of
+        LordOfTheRingsCharacter name description race ->
+            let
+                maybeDescription =
+                    if String.length description > 0 then
+                        Just description
+
+                    else
+                        Nothing
+            in
+            DemoOption name name maybeDescription (race |> raceToString |> Just)
+
 
 subscriptions : Model -> Sub Msg
 subscriptions _ =
@@ -169,7 +340,7 @@ onInputKeyupDebounced =
 
 onInputKeyUp : Attribute Msg
 onInputKeyUp =
-    on "inputKeyUpDebounced"
+    on "inputKeyUp"
         (Json.Decode.at
             [ "detail", "searchString" ]
             Json.Decode.string
@@ -304,6 +475,20 @@ selectedValueAttribute encoding muchSelectValues =
     attribute "selected-value" selectedValueStr
 
 
+placeholderAttribute : ( String, Bool ) -> Attribute msg
+placeholderAttribute ( placeholderString, isShown ) =
+    if isShown then
+        attribute "placeholder" placeholderString
+
+    else
+        Html.Attributes.Extra.empty
+
+
+loadingAttribute : Bool -> Attribute msg
+loadingAttribute bool =
+    attributeIf bool (attribute "loading" "")
+
+
 view : Model -> Html Msg
 view model =
     let
@@ -311,9 +496,15 @@ view model =
             [ Lowercase ]
 
         validators =
-            [ NoWhiteSpace ShowError "No white space allowed"
-            , Custom
-            ]
+            List.filterMap
+                (\( shouldInclude, validator ) ->
+                    if shouldInclude then
+                        Just validator
+
+                    else
+                        Nothing
+                )
+                model.validators
     in
     div []
         [ Html.node "much-select"
@@ -323,6 +514,8 @@ view model =
             , multiSelectAttribute model.allowMultiSelect
             , outputStyleAttribute model.outputStyle
             , selectedValueAttribute model.selectedValueEncoding model.selectedValues
+            , placeholderAttribute model.placeholder
+            , loadingAttribute model.showLoadingIndicator
             , onValueChanged
             , onInvalidValueChanged
             , onCustomValidationRequest
@@ -337,20 +530,22 @@ view model =
             , onOptionsUpdated
             ]
             [ select [ slot "select-input" ]
-                [ option [] [ text "tom" ]
-                , option [] [ text "bert" ]
-                , option [] [ text "william" ]
-                ]
+                (optionsHtml model.optionDemo (Tuple.second model.filteredOptions))
             , Html.node "script"
                 [ slot "transformation-validation"
                 , type_ "application/json"
                 ]
                 [ text (Json.Encode.encode 0 (encode transformers validators)) ]
-            , Html.node "script"
-                [ slot "custom-validation-result"
-                , type_ "application/json"
-                ]
-                [ text (Json.Encode.encode 0 (encodeCustomValidateResult model.customValidationResult)) ]
+            , case model.customValidationResult of
+                NothingToValidate ->
+                    text ""
+
+                _ ->
+                    Html.node "script"
+                        [ slot "custom-validation-result"
+                        , type_ "application/json"
+                        ]
+                        [ text (Json.Encode.encode 0 (encodeCustomValidateResult model.customValidationResult)) ]
             ]
         , form []
             [ fieldset []
@@ -411,7 +606,44 @@ view model =
                 ]
             , fieldset []
                 [ legend []
-                    [ text "Selected Value Encodeing"
+                    [ text "Option Demos"
+                    ]
+                , input
+                    [ type_ "radio"
+                    , name "option-demos"
+                    , id "option-demos-static"
+                    , value "static"
+                    , checked (model.optionDemo == StaticOptions)
+                    , on "change" <| Json.Decode.map ChangeOptionDemo optionDemoDecoder
+                    ]
+                    []
+                , label [ for "option-demos-static" ] [ text "Static Options (Wizards) " ]
+                , br [] []
+                , input
+                    [ type_ "radio"
+                    , name "option-demos"
+                    , id "option-demos-all"
+                    , value "all-options"
+                    , checked (model.optionDemo == AllOptions)
+                    , on "change" <| Json.Decode.map ChangeOptionDemo optionDemoDecoder
+                    ]
+                    []
+                , label [ for "option-demos-all" ] [ text "All Options with Groups" ]
+                , br [] []
+                , input
+                    [ type_ "radio"
+                    , name "option-demos"
+                    , id "option-demos-filtered"
+                    , value "filtered-options"
+                    , checked (model.optionDemo == FilteredOptions)
+                    , on "change" <| Json.Decode.map ChangeOptionDemo optionDemoDecoder
+                    ]
+                    []
+                , label [ for "option-demos-filtered" ] [ text "Filtered Options" ]
+                ]
+            , fieldset []
+                [ legend []
+                    [ text "Selected Value Encoding"
                     ]
                 , input
                     [ type_ "radio"
@@ -434,8 +666,209 @@ view model =
                     []
                 , label [ for "selected-value-encoding-json" ] [ text "JSON" ]
                 ]
+            , fieldset []
+                [ legend []
+                    [ text "Placeholder"
+                    ]
+                , input
+                    [ type_ "radio"
+                    , name "placeholder-is-set"
+                    , id "placeholder-is-set-false"
+                    , value "false"
+                    , checked (not (Tuple.second model.placeholder))
+                    , onCheck (\_ -> TogglePlaceholder False)
+                    ]
+                    []
+                , label [ for "placeholder-is-set-false" ] [ text "Hide" ]
+                , input
+                    [ type_ "radio"
+                    , name "placeholder-is-set"
+                    , id "placeholder-is-set-true"
+                    , value "true"
+                    , checked (Tuple.second model.placeholder)
+                    , onChange (\_ -> TogglePlaceholder True)
+                    ]
+                    []
+                , label [ for "placeholder-is-set-true" ] [ text "Show" ]
+                , br [] []
+                , label [ for "placeholder-input" ] [ text "Placeholder copy: " ]
+                , input
+                    [ type_ "text"
+                    , name "placeholder"
+                    , id "placeholder-input"
+                    , value (Tuple.first model.placeholder)
+                    , onInput UpdatePlaceholderString
+                    , disabled (not (Tuple.second model.placeholder))
+                    ]
+                    []
+                ]
+            , fieldset []
+                [ legend []
+                    [ text "Loading"
+                    ]
+                , input
+                    [ type_ "radio"
+                    , name "loading-indicator"
+                    , id "loading-indicator-is-off"
+                    , value "false"
+                    , checked (not model.showLoadingIndicator)
+                    , onChange (\_ -> ToggleLoadingIndicator False)
+                    ]
+                    []
+                , label [ for "loading-indicator-is-off" ] [ text "Hide" ]
+                , input
+                    [ type_ "radio"
+                    , name "loading-indicator"
+                    , id "loading-indicator-is-on"
+                    , value "true"
+                    , checked model.showLoadingIndicator
+                    , onCheck (\_ -> ToggleLoadingIndicator True)
+                    ]
+                    []
+                , label [ for "loading-indicator-is-on" ] [ text "Show" ]
+                ]
+            , fieldset []
+                [ legend []
+                    [ text "Validation"
+                    ]
+                , input
+                    [ type_ "checkbox"
+                    , name "no-white-space"
+                    , id "no-white-space-checkbox"
+                    , checked (isNoWhiteSpaceValidatorActive model)
+                    , onCheck (ToggleValidation (getNoWhiteSpaceValidator model))
+                    ]
+                    []
+                , label [ for "no-white-space-checkbox" ] [ text "No White Space" ]
+                , br [] []
+                , input
+                    [ type_ "checkbox"
+                    , name "minimum-length"
+                    , id "minimum-length-checkbox"
+                    , checked (isMinimumLengthValidatorActive model)
+                    , onCheck (ToggleValidation (getMinimumLengthValidator model))
+                    ]
+                    []
+                , label [ for "minimum-length-checkbox" ] [ text "Minimum Length" ]
+                ]
             ]
         ]
+
+
+getNoWhiteSpaceValidator : Model -> Validator
+getNoWhiteSpaceValidator model =
+    model.validators
+        |> List.map Tuple.second
+        |> List.Extra.find isNoWhiteSpaceValidator
+        |> Maybe.withDefault defaultNoWhitespaceValidator
+
+
+isNoWhiteSpaceValidatorActive : Model -> Bool
+isNoWhiteSpaceValidatorActive model =
+    let
+        maybeIndex =
+            getNoWhiteSpaceValidatorIndex model
+    in
+    case maybeIndex of
+        Just index ->
+            List.Extra.getAt index model.validators
+                |> Maybe.map Tuple.first
+                |> Maybe.withDefault False
+
+        Nothing ->
+            False
+
+
+isNoWhiteSpaceValidator : Validator -> Bool
+isNoWhiteSpaceValidator validator =
+    case validator of
+        NoWhiteSpace _ _ ->
+            True
+
+        MinimumLength _ _ _ ->
+            False
+
+        Custom ->
+            False
+
+
+getNoWhiteSpaceValidatorIndex : Model -> Maybe Int
+getNoWhiteSpaceValidatorIndex model =
+    model.validators
+        |> List.map Tuple.second
+        |> List.Extra.findIndex isNoWhiteSpaceValidator
+
+
+defaultNoWhitespaceValidator =
+    NoWhiteSpace ShowError "White space is not allowed"
+
+
+getMinimumLengthValidator : Model -> Validator
+getMinimumLengthValidator model =
+    model.validators
+        |> List.map Tuple.second
+        |> List.Extra.find isMinimumLengthValidator
+        |> Maybe.withDefault defaultMinimumLengthValidator
+
+
+isMinimumLengthValidatorActive : Model -> Bool
+isMinimumLengthValidatorActive model =
+    let
+        maybeIndex =
+            getMinimumLengthValidatorIndex model
+    in
+    case maybeIndex of
+        Just index ->
+            List.Extra.getAt index model.validators
+                |> Maybe.map Tuple.first
+                |> Maybe.withDefault False
+
+        Nothing ->
+            False
+
+
+isMinimumLengthValidator : Validator -> Bool
+isMinimumLengthValidator validator =
+    case validator of
+        NoWhiteSpace _ _ ->
+            False
+
+        MinimumLength _ _ _ ->
+            True
+
+        Custom ->
+            False
+
+
+getMinimumLengthValidatorIndex : Model -> Maybe Int
+getMinimumLengthValidatorIndex model =
+    model.validators
+        |> List.map Tuple.second
+        |> List.Extra.findIndex isMinimumLengthValidator
+
+
+defaultMinimumLengthValidator =
+    MinimumLength ShowError "The value is too short" 4
+
+
+optionsHtml : OptionDemo -> List DemoOption -> List (Html Msg)
+optionsHtml optionDemo knownOptions =
+    case optionDemo of
+        StaticOptions ->
+            wizards
+
+        AllOptions ->
+            allOptions
+
+        FilteredOptions ->
+            List.map
+                (\knownOption ->
+                    makeOptionElement
+                        knownOption.label
+                        knownOption.value
+                        knownOption.description
+                )
+                knownOptions
 
 
 type Transformer

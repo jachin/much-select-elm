@@ -814,7 +814,21 @@ class MuchSelect extends HTMLElement {
     };
 
     this._muchSelectObserver = new MutationObserver((mutationsList) => {
-      mutationsList.forEach(() => {
+      mutationsList.forEach((mutation) => {
+        if (
+          mutation.type === "attributes" &&
+          mutation.attributeName === "placeholder"
+        ) {
+          // We do no need to update the options if we are updating the placeholder.
+          return;
+        }
+        if (
+          mutation.type === "attributes" &&
+          mutation.attributeName === "loading"
+        ) {
+          // We do no need to update the options if we are updating the loading attribute.
+          return;
+        }
         this._callUpdateOptionsFromDom();
       });
     });
@@ -897,7 +911,7 @@ class MuchSelect extends HTMLElement {
 
     if (customValidationResultElement) {
       this._customValidationResultSlotObserver.observe(
-        this.querySelector("[slot='custom-validation-result']"),
+        customValidationResultElement,
         customValidationResultSlotConfig
       );
     }
@@ -923,7 +937,7 @@ class MuchSelect extends HTMLElement {
     this._transformationValidationSlotObserver = new MutationObserver(
       (mutationsList) => {
         mutationsList.forEach((mutation) => {
-          if (mutation.type === "childList") {
+          if (mutation.type === "characterData") {
             this._updateTransformationValidationFromTheDom();
           }
         });
@@ -932,7 +946,7 @@ class MuchSelect extends HTMLElement {
 
     const element = this.querySelector("[slot='transformation-validation']");
     if (element) {
-      this._customValidationResultSlotObserver.observe(
+      this._transformationValidationSlotObserver.observe(
         this.querySelector("[slot='transformation-validation']"),
         slotConfig
       );
@@ -1086,9 +1100,9 @@ class MuchSelect extends HTMLElement {
     flags.value = this.parsedSelectedValue;
 
     if (this.hasAttribute("placeholder")) {
-      flags.placeholder = this.getAttribute("placeholder").trim();
+      flags.placeholder = [true, this.getAttribute("placeholder").trim()];
     } else {
-      flags.placeholder = "";
+      flags.placeholder = [false, ""];
     }
 
     if (this.hasAttribute("size")) {
@@ -1476,10 +1490,15 @@ class MuchSelect extends HTMLElement {
       this.setAttribute("placeholder", placeholder);
     }
 
-    // noinspection JSUnresolvedVariable
-    this.appPromise.then((app) =>
-      app.ports.placeholderChangedReceiver.send(placeholder)
-    );
+    this.appPromise.then((app) => {
+      if (placeholder === null) {
+        // noinspection JSUnresolvedVariable
+        app.ports.placeholderChangedReceiver.send([false, ""]);
+      } else {
+        // noinspection JSUnresolvedVariable
+        app.ports.placeholderChangedReceiver.send([true, placeholder]);
+      }
+    });
 
     this._placeholder = placeholder;
   }
@@ -1895,8 +1914,8 @@ class MuchSelect extends HTMLElement {
         this.setAttribute("output-style", this._outputStyle);
       }
 
-      // noinspection JSUnresolvedVariable
       this.appPromise.then((app) => {
+        // noinspection JSUnresolvedVariable
         app.ports.outputStyleChangedReceiver.send(this._outputStyle);
         this._updateTransformationValidationFromTheDom();
       });
