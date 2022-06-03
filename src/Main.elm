@@ -658,6 +658,10 @@ update msg model =
                     let
                         updatedOptions =
                             addAdditionalOptionsToOptionList model.options newOptions
+                                |> OptionsUtilities.updateAge
+                                    (SelectionMode.getOutputStyle model.selectionConfig)
+                                    model.searchString
+                                    (SelectionMode.getSearchStringMinimumLength model.selectionConfig)
                     in
                     ( { model
                         | options = updatedOptions
