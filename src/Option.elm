@@ -56,6 +56,7 @@ module Option exposing
     , setLabelWithString
     , setMaybeSortRank
     , setOptionDisplay
+    , setOptionDisplayAge
     , setOptionSearchFilter
     , setOptionValue
     , setOptionValueErrors
@@ -409,6 +410,11 @@ setOptionDisplay optionDisplay option =
 
         DatalistOption _ optionValue ->
             DatalistOption optionDisplay optionValue
+
+
+setOptionDisplayAge : OptionDisplay.OptionAge -> Option -> Option
+setOptionDisplayAge optionAge option =
+    setOptionDisplay (option |> getOptionDisplay |> OptionDisplay.setAge optionAge) option
 
 
 setOptionSearchFilter : Maybe OptionSearchFilter -> Option -> Option

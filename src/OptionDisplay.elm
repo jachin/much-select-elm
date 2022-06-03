@@ -18,6 +18,7 @@ module OptionDisplay exposing
     , selected
     , selectedAndInvalid
     , selectedAndPendingValidation
+    , setAge
     , setErrors
     , setSelectedIndex
     )
@@ -161,8 +162,8 @@ select selectedIndex optionDisplay =
         OptionHidden ->
             OptionSelected selectedIndex MatureOption
 
-        OptionSelected _ _ ->
-            optionDisplay
+        OptionSelected _ age ->
+            OptionSelected selectedIndex age
 
         OptionSelectedPendingValidation _ ->
             optionDisplay
@@ -443,6 +444,34 @@ isPendingValidation optionDisplay =
 
         OptionDisabled _ ->
             False
+
+
+setAge : OptionAge -> OptionDisplay -> OptionDisplay
+setAge optionAge optionDisplay =
+    case optionDisplay of
+        OptionShown _ ->
+            OptionShown optionAge
+
+        OptionHidden ->
+            optionDisplay
+
+        OptionSelected int _ ->
+            OptionSelected int optionAge
+
+        OptionSelectedAndInvalid _ _ ->
+            optionDisplay
+
+        OptionSelectedPendingValidation _ ->
+            optionDisplay
+
+        OptionSelectedHighlighted _ ->
+            optionDisplay
+
+        OptionHighlighted ->
+            optionDisplay
+
+        OptionDisabled _ ->
+            OptionDisabled optionAge
 
 
 decoder : OptionAge -> Json.Decode.Decoder OptionDisplay

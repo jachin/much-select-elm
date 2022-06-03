@@ -610,7 +610,12 @@ update msg model =
                                         newOptions
                             in
                             ( { model
-                                | options = newOptionWithOldSelectedOption
+                                | options =
+                                    newOptionWithOldSelectedOption
+                                        |> OptionsUtilities.updateAge
+                                            CustomHtml
+                                            model.searchString
+                                            (SelectionMode.getSearchStringMinimumLength model.selectionConfig)
                                 , rightSlot = updateRightSlot model.rightSlot model.selectionConfig (OptionsUtilities.hasSelectedOption newOptionWithOldSelectedOption) model.options
                               }
                                 |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
@@ -628,6 +633,10 @@ update msg model =
                                         model.options
                                         newOptions
                                         |> OptionsUtilities.organizeNewDatalistOptions
+                                        |> OptionsUtilities.updateAge
+                                            Datalist
+                                            model.searchString
+                                            (SelectionMode.getSearchStringMinimumLength model.selectionConfig)
                             in
                             ( { model
                                 | options = newOptionWithOldSelectedOption
@@ -1055,6 +1064,7 @@ update msg model =
                         updatedOptions =
                             model.options
                                 |> OptionsUtilities.updateOptionsWithNewSearchResults searchResults
+                                |> OptionsUtilities.setAge OptionDisplay.MatureOption
                     in
                     ( { model
                         | options =

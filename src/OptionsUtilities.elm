@@ -44,6 +44,7 @@ import OptionValue
         , stringToOptionValue
         )
 import OutputStyle exposing (SelectedItemPlacementMode(..))
+import PositiveInt
 import SearchString exposing (SearchString)
 import SelectionMode
     exposing
@@ -1542,3 +1543,27 @@ hasAnyPendingValidation options =
 hasAnyValidationErrors : List Option -> Bool
 hasAnyValidationErrors options =
     List.any Option.isInvalid options
+
+
+setAge : OptionDisplay.OptionAge -> List Option -> List Option
+setAge optionAge options =
+    List.map (Option.setOptionDisplayAge optionAge) options
+
+
+updateAge : SelectionMode.OutputStyle -> SearchString -> OutputStyle.SearchStringMinimumLength -> List Option -> List Option
+updateAge outputStyle searchString searchStringMinimumLength options =
+    case outputStyle of
+        SelectionMode.CustomHtml ->
+            case searchStringMinimumLength of
+                OutputStyle.FixedSearchStringMinimumLength min ->
+                    if SearchString.length searchString > PositiveInt.toInt min then
+                        options
+
+                    else
+                        setAge OptionDisplay.MatureOption options
+
+                OutputStyle.NoMinimumToSearchStringLength ->
+                    options
+
+        SelectionMode.Datalist ->
+            setAge OptionDisplay.MatureOption options

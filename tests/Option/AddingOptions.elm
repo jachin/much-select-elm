@@ -57,6 +57,10 @@ theMidnight =
     Option.newDatalistOption theMidnightOptionValue
 
 
+
+--noinspection SpellCheckingInspection
+
+
 futureCopOptionValue =
     OptionValue.stringToOptionValue "Futurecop!"
 
@@ -73,7 +77,7 @@ arcadeHighOptionValue =
     OptionValue.stringToOptionValue "Arcade High"
 
 
-archadeHigh =
+arcadeHigh =
     Option.newDatalistOption arcadeHighOptionValue
 
 
@@ -224,7 +228,7 @@ suite =
                         [ Option.newSelectedDatalistOption OptionValue.EmptyOptionValue 0
                         , Option.selectOption 1 theMidnight
                         , Option.selectOption 2 futureCop
-                        , Option.selectOption 3 archadeHigh
+                        , Option.selectOption 3 arcadeHigh
                         ]
             , test "add to the middle of the selected options" <|
                 \_ ->
@@ -233,7 +237,7 @@ suite =
                         [ theMidnightSelected
                         , Option.newSelectedDatalistOption OptionValue.EmptyOptionValue 1
                         , Option.selectOption 2 futureCop
-                        , Option.selectOption 3 archadeHigh
+                        , Option.selectOption 3 arcadeHigh
                         ]
             , test "add to the end of the selected options" <|
                 \_ ->
@@ -260,7 +264,7 @@ suite =
                             , Option.newSelectedDatalistOption OptionValue.EmptyOptionValue 3
                             , theMidnight
                             , futureCop
-                            , archadeHigh
+                            , arcadeHigh
                             ]
                         )
                         [ theMidnightSelected
@@ -269,7 +273,7 @@ suite =
                         , Option.newSelectedDatalistOption OptionValue.EmptyOptionValue 3
                         , theMidnight
                         , futureCop
-                        , archadeHigh
+                        , arcadeHigh
                         ]
             ]
         ]

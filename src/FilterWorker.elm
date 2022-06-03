@@ -3,6 +3,7 @@ port module FilterWorker exposing (..)
 import Json.Decode
 import Json.Encode
 import Option exposing (Option)
+import OptionDisplay
 import OptionSearcher exposing (decodeSearchParams)
 import OptionsUtilities exposing (filterOptionsToShowInDropdownBySearchScore)
 import Platform
@@ -23,7 +24,7 @@ update : Msg -> List Option -> ( List Option, Cmd msg )
 update msg options =
     case msg of
         UpdateOptions optionsJson ->
-            case Json.Decode.decodeValue (Option.optionsDecoder SelectionMode.CustomHtml) optionsJson of
+            case Json.Decode.decodeValue (Option.optionsDecoder OptionDisplay.MatureOption SelectionMode.CustomHtml) optionsJson of
                 Ok newOptions ->
                     ( newOptions, Cmd.none )
 
@@ -41,7 +42,7 @@ update msg options =
 
                         optionsToSend =
                             filterOptionsToShowInDropdownBySearchScore newOptions
-                                -- TODO this is a little aribrary.
+                                -- TODO this number is arbitrary.
                                 |> List.take 100
                     in
                     ( newOptions
