@@ -164,7 +164,10 @@ init _ =
             , filteredOptions "" 10
                 |> List.map lordOfTheRingsCharacterToDemoOption
             )
-      , validators = [ ( False, defaultNoWhitespaceValidator ) ]
+      , validators =
+            [ ( False, defaultNoWhitespaceValidator )
+            , ( False, defaultMinimumLengthValidator )
+            ]
       }
     , Cmd.none
     )
@@ -276,13 +279,25 @@ update msg model =
             let
                 maybeIndexToUpdate : Maybe Int
                 maybeIndexToUpdate =
-                    model.validators
-                        |> List.map Tuple.second
-                        |> List.Extra.findIndex isNoWhiteSpaceValidator
+                    case validator of
+                        NoWhiteSpace _ _ ->
+                            model.validators
+                                |> List.map Tuple.second
+                                |> List.Extra.findIndex isNoWhiteSpaceValidator
+
+                        MinimumLength _ _ _ ->
+                            model.validators
+                                |> List.map Tuple.second
+                                |> List.Extra.findIndex isMinimumLengthValidator
+
+                        Custom ->
+                            Nothing
             in
             case maybeIndexToUpdate of
                 Just indexToUpdate ->
-                    ( { model | validators = List.Extra.setAt indexToUpdate ( bool, validator ) model.validators }, Cmd.none )
+                    ( { model | validators = List.Extra.setAt indexToUpdate ( bool, validator ) model.validators }
+                    , Cmd.none
+                    )
 
                 Nothing ->
                     ( model, Cmd.none )
@@ -720,6 +735,15 @@ view model =
                     ]
                     []
                 , label [ for "no-white-space-checkbox" ] [ text "No White Space" ]
+                , input
+                    [ type_ "checkbox"
+                    , name "minimum-length"
+                    , id "minimum-length-checkbox"
+                    , checked (isMinimumLengthValidatorActive model)
+                    , onCheck (ToggleValidation (getMinimumLengthValidator model))
+                    ]
+                    []
+                , label [ for "minimum-length-checkbox" ] [ text "Minimum Length" ]
                 ]
             ]
         ]
@@ -771,6 +795,54 @@ getNoWhiteSpaceValidatorIndex model =
 
 defaultNoWhitespaceValidator =
     NoWhiteSpace ShowError "White space is not allowed"
+
+
+getMinimumLengthValidator : Model -> Validator
+getMinimumLengthValidator model =
+    model.validators
+        |> List.map Tuple.second
+        |> List.Extra.find isMinimumLengthValidator
+        |> Maybe.withDefault defaultMinimumLengthValidator
+
+
+isMinimumLengthValidatorActive : Model -> Bool
+isMinimumLengthValidatorActive model =
+    let
+        maybeIndex =
+            getMinimumLengthValidatorIndex model
+    in
+    case maybeIndex of
+        Just index ->
+            List.Extra.getAt index model.validators
+                |> Maybe.map Tuple.first
+                |> Maybe.withDefault False
+
+        Nothing ->
+            False
+
+
+isMinimumLengthValidator : Validator -> Bool
+isMinimumLengthValidator validator =
+    case validator of
+        NoWhiteSpace _ _ ->
+            False
+
+        MinimumLength _ _ _ ->
+            True
+
+        Custom ->
+            False
+
+
+getMinimumLengthValidatorIndex : Model -> Maybe Int
+getMinimumLengthValidatorIndex model =
+    model.validators
+        |> List.map Tuple.second
+        |> List.Extra.findIndex isMinimumLengthValidator
+
+
+defaultMinimumLengthValidator =
+    MinimumLength ShowError "The value is too short" 4
 
 
 optionsHtml : OptionDemo -> List DemoOption -> List (Html Msg)
