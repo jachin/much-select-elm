@@ -44,6 +44,7 @@ import Html.Events exposing (on, onCheck, onClick, onInput, targetValue)
 import Html.Events.Extra exposing (onChange)
 import Json.Decode
 import Json.Encode
+import List.Extra
 import Process
 import Task
 import Url
@@ -64,6 +65,7 @@ type alias Model =
     , placeholder : ( String, Bool )
     , showLoadingIndicator : Bool
     , filteredOptions : ( String, List DemoOption )
+    , validators : List ( Bool, Validator )
     }
 
 
@@ -133,6 +135,7 @@ type Msg
     | ToggleLoadingIndicator Bool
     | ChangeOptionDemo OptionDemo
     | FilterOptions String
+    | ToggleValidation Validator Bool
 
 
 main : Program Flags Model Msg
@@ -161,6 +164,7 @@ init _ =
             , filteredOptions "" 10
                 |> List.map lordOfTheRingsCharacterToDemoOption
             )
+      , validators = [ ( False, defaultNoWhitespaceValidator ) ]
       }
     , Cmd.none
     )
@@ -267,6 +271,21 @@ update msg model =
               }
             , Cmd.none
             )
+
+        ToggleValidation validator bool ->
+            let
+                maybeIndexToUpdate : Maybe Int
+                maybeIndexToUpdate =
+                    model.validators
+                        |> List.map Tuple.second
+                        |> List.Extra.findIndex isNoWhiteSpaceValidator
+            in
+            case maybeIndexToUpdate of
+                Just indexToUpdate ->
+                    ( { model | validators = List.Extra.setAt indexToUpdate ( bool, validator ) model.validators }, Cmd.none )
+
+                Nothing ->
+                    ( model, Cmd.none )
 
 
 lordOfTheRingsCharacterToDemoOption : LordOfTheRingsCharacter -> DemoOption
@@ -462,9 +481,15 @@ view model =
             [ Lowercase ]
 
         validators =
-            [ NoWhiteSpace ShowError "No white space allowed"
-            , Custom
-            ]
+            List.filterMap
+                (\( shouldInclude, validator ) ->
+                    if shouldInclude then
+                        Just validator
+
+                    else
+                        Nothing
+                )
+                model.validators
     in
     div []
         [ Html.node "much-select"
@@ -682,8 +707,70 @@ view model =
                     []
                 , label [ for "loading-indicator-is-on" ] [ text "Show" ]
                 ]
+            , fieldset []
+                [ legend []
+                    [ text "Validation"
+                    ]
+                , input
+                    [ type_ "checkbox"
+                    , name "no-white-space"
+                    , id "no-white-space-checkbox"
+                    , checked (isNoWhiteSpaceValidatorActive model)
+                    , onCheck (ToggleValidation (getNoWhiteSpaceValidator model))
+                    ]
+                    []
+                , label [ for "no-white-space-checkbox" ] [ text "No White Space" ]
+                ]
             ]
         ]
+
+
+getNoWhiteSpaceValidator : Model -> Validator
+getNoWhiteSpaceValidator model =
+    model.validators
+        |> List.map Tuple.second
+        |> List.Extra.find isNoWhiteSpaceValidator
+        |> Maybe.withDefault defaultNoWhitespaceValidator
+
+
+isNoWhiteSpaceValidatorActive : Model -> Bool
+isNoWhiteSpaceValidatorActive model =
+    let
+        maybeIndex =
+            getNoWhiteSpaceValidatorIndex model
+    in
+    case maybeIndex of
+        Just index ->
+            List.Extra.getAt index model.validators
+                |> Maybe.map Tuple.first
+                |> Maybe.withDefault False
+
+        Nothing ->
+            False
+
+
+isNoWhiteSpaceValidator : Validator -> Bool
+isNoWhiteSpaceValidator validator =
+    case validator of
+        NoWhiteSpace _ _ ->
+            True
+
+        MinimumLength _ _ _ ->
+            False
+
+        Custom ->
+            False
+
+
+getNoWhiteSpaceValidatorIndex : Model -> Maybe Int
+getNoWhiteSpaceValidatorIndex model =
+    model.validators
+        |> List.map Tuple.second
+        |> List.Extra.findIndex isNoWhiteSpaceValidator
+
+
+defaultNoWhitespaceValidator =
+    NoWhiteSpace ShowError "White space is not allowed"
 
 
 optionsHtml : OptionDemo -> List DemoOption -> List (Html Msg)
