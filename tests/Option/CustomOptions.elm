@@ -1,12 +1,7 @@
 module Option.CustomOptions exposing (suite)
 
 import Expect
-import Main
-    exposing
-        ( figureOutWhichOptionsToShowInTheDropdown
-        , updateTheFullListOfOptions
-        , updateTheOptionsForTheDropdown
-        )
+import Main exposing (RightSlot(..), figureOutWhichOptionsToShowInTheDropdown, updateModelWithChangesThatEffectTheOptionsWithSearchString, updateTheFullListOfOptions, updateTheOptionsForTheDropdown)
 import Option exposing (newCustomOption, newOption, selectOption)
 import OptionSearcher
 import OptionSorting
@@ -196,4 +191,26 @@ suite =
                         |> List.map Option.getOptionValueAsString
                     )
                     [ "mil", "Birch Wood" ]
+        , describe "updateModelWithChangesThatEffectTheOptionsWithSearchString"
+            [ test "should show up at the top in the dropdown" <|
+                \_ ->
+                    let
+                        selectionConfig =
+                            defaultSelectionConfig
+                                |> setAllowCustomOptionsWithBool True (Just "{{}}")
+                                |> setSingleItemRemoval EnableSingleItemRemoval
+                                |> SelectionMode.setMaxDropdownItems maxDropdownItemsIsTen
+                    in
+                    Expect.equalLists
+                        (updateModelWithChangesThatEffectTheOptionsWithSearchString
+                            ShowNothing
+                            selectionConfig
+                            (SearchString.new "mil")
+                            [ birchWood ]
+                            { options = [ birchWood ], rightSlot = ShowNothing }
+                            |> .options
+                            |> List.map Option.getOptionValueAsString
+                        )
+                        [ "mil", "Birch Wood" ]
+            ]
         ]
