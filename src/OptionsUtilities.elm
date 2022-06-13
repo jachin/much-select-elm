@@ -46,11 +46,7 @@ import OptionValue
 import OutputStyle exposing (SelectedItemPlacementMode(..))
 import PositiveInt
 import SearchString exposing (SearchString)
-import SelectionMode
-    exposing
-        ( SelectionConfig(..)
-        , getSelectedItemPlacementMode
-        )
+import SelectionMode exposing (SelectionConfig(..), SelectionMode, getSelectedItemPlacementMode)
 import SortRank exposing (SortRank)
 import TransformAndValidate exposing (ValidationErrorMessage, ValidationFailureMessage)
 
@@ -208,14 +204,17 @@ deselectAllButTheFirstSelectedOptionInList options =
             options
 
 
+selectOption : SelectionMode -> OptionValue -> List Option -> List Option
+selectOption selectionMode optionValue options =
+    selectOptionInListByOptionValue optionValue options
 
-{- Look through the list of options, if we find one that matches the given option value
-   then select it and return a new list of options with the found option selected.
 
-   If we do not find the option value return the same list of options.
+{-| Look through the list of options, if we find one that matches the given option value
+then select it and return a new list of options with the found option selected.
+
+If we do not find the option value return the same list of options.
+
 -}
-
-
 selectOptionInListByOptionValue : OptionValue -> List Option -> List Option
 selectOptionInListByOptionValue value options =
     let

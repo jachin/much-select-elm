@@ -155,6 +155,16 @@ import Ports
         , valuesDecoder
         )
 import PositiveInt exposing (PositiveInt)
+import RightSlot
+    exposing
+        ( FocusTransition(..)
+        , RightSlot(..)
+        , isRightSlotTransitioning
+        , updateRightSlot
+        , updateRightSlotForDatalist
+        , updateRightSlotLoading
+        , updateRightSlotTransitioning
+        )
 import SearchString exposing (SearchString)
 import SelectionMode
     exposing
@@ -249,23 +259,6 @@ type alias Model =
     , rightSlot : RightSlot
     , valueCasing : ValueCasing
     }
-
-
-{-| A type for (helping) keeping track of the focus state. While we are losing focus or while we are gaining focus we'll
-be in transition.
--}
-type FocusTransition
-    = InFocusTransition
-    | NotInFocusTransition
-
-
-type RightSlot
-    = ShowNothing
-    | ShowLoadingIndicator
-    | ShowDropdownIndicator FocusTransition
-    | ShowClearButton
-    | ShowAddButton
-    | ShowAddAndRemoveButtons
 
 
 type ValueCasing
@@ -417,8 +410,8 @@ update msg model =
                         SingleSelectConfig _ _ _ ->
                             selectSingleOptionInList optionValue model.options
             in
-            case model.selectionConfig of
-                SingleSelectConfig _ _ _ ->
+            case SelectionMode.getSelectionMode model.selectionConfig of
+                SelectionMode.SingleSelect ->
                     ( { model
                         | options = updatedOptions
                         , searchString = SearchString.reset
@@ -430,7 +423,7 @@ update msg model =
                         ]
                     )
 
-                MultiSelectConfig _ _ _ ->
+                SelectionMode.MultiSelect ->
                     ( { model
                         | options = updatedOptions
                         , searchString = SearchString.reset
@@ -705,12 +698,13 @@ update msg model =
                         optionValue =
                             Option.getOptionValue option
 
+                        updatedOptions : List Option
                         updatedOptions =
-                            case model.selectionConfig of
-                                MultiSelectConfig _ _ _ ->
+                            case SelectionMode.getSelectionMode model.selectionConfig of
+                                SelectionMode.MultiSelect ->
                                     selectOptionInListByOptionValue optionValue model.options
 
-                                SingleSelectConfig _ _ _ ->
+                                SelectionMode.SingleSelect ->
                                     selectSingleOptionInList optionValue model.options
                     in
                     ( { model
@@ -1340,126 +1334,6 @@ figureOutWhichOptionsToShowInTheDropdown selectionMode options =
 
         OutputStyle.NoLimitToDropdownItems ->
             optionsThatCouldBeShown
-
-
-updateRightSlot : RightSlot -> SelectionConfig -> Bool -> List Option -> RightSlot
-updateRightSlot current selectionMode hasSelectedOption selectedOptions =
-    case SelectionMode.getOutputStyle selectionMode of
-        SelectionMode.CustomHtml ->
-            case current of
-                ShowNothing ->
-                    case selectionMode of
-                        SingleSelectConfig _ _ _ ->
-                            ShowDropdownIndicator NotInFocusTransition
-
-                        MultiSelectConfig _ _ _ ->
-                            if hasSelectedOption then
-                                ShowClearButton
-
-                            else
-                                ShowDropdownIndicator NotInFocusTransition
-
-                ShowLoadingIndicator ->
-                    ShowLoadingIndicator
-
-                ShowDropdownIndicator transitioning ->
-                    case selectionMode of
-                        SingleSelectConfig _ _ _ ->
-                            ShowDropdownIndicator transitioning
-
-                        MultiSelectConfig _ _ _ ->
-                            if hasSelectedOption then
-                                ShowClearButton
-
-                            else
-                                ShowDropdownIndicator transitioning
-
-                ShowClearButton ->
-                    if hasSelectedOption then
-                        ShowClearButton
-
-                    else
-                        ShowDropdownIndicator NotInFocusTransition
-
-                _ ->
-                    ShowDropdownIndicator NotInFocusTransition
-
-        SelectionMode.Datalist ->
-            updateRightSlotForDatalist selectedOptions
-
-
-updateRightSlotForDatalist : List Option -> RightSlot
-updateRightSlotForDatalist selectedOptions =
-    let
-        showAddButtons =
-            List.any (\option -> option |> Option.getOptionValue |> OptionValue.isEmpty |> not) selectedOptions
-
-        showRemoveButtons =
-            List.length selectedOptions > 1
-    in
-    if showAddButtons && not showRemoveButtons then
-        ShowAddButton
-
-    else if showAddButtons && showRemoveButtons then
-        ShowAddAndRemoveButtons
-
-    else
-        ShowNothing
-
-
-updateRightSlotLoading : Bool -> SelectionConfig -> Bool -> RightSlot
-updateRightSlotLoading isLoading selectionMode hasSelectedOption =
-    if isLoading then
-        ShowLoadingIndicator
-
-    else
-        case selectionMode of
-            SingleSelectConfig _ _ _ ->
-                ShowDropdownIndicator NotInFocusTransition
-
-            MultiSelectConfig _ _ _ ->
-                if hasSelectedOption then
-                    ShowClearButton
-
-                else
-                    ShowDropdownIndicator NotInFocusTransition
-
-
-updateRightSlotTransitioning : FocusTransition -> RightSlot -> RightSlot
-updateRightSlotTransitioning focusTransition rightSlot =
-    case rightSlot of
-        ShowDropdownIndicator _ ->
-            ShowDropdownIndicator focusTransition
-
-        _ ->
-            rightSlot
-
-
-isRightSlotTransitioning : RightSlot -> Bool
-isRightSlotTransitioning rightSlot =
-    case rightSlot of
-        ShowNothing ->
-            False
-
-        ShowLoadingIndicator ->
-            False
-
-        ShowDropdownIndicator transitioning ->
-            case transitioning of
-                InFocusTransition ->
-                    True
-
-                NotInFocusTransition ->
-                    False
-
-        ShowClearButton ->
-            False
-
-        ShowAddButton ->
-            False
-
-        ShowAddAndRemoveButtons ->
-            False
 
 
 view : Model -> Html Msg
