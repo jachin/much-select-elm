@@ -191,7 +191,39 @@ import SelectionMode
         , showDropdownFooter
         )
 import Task
-import TransformAndValidate exposing (ValueTransformAndValidate, transformAndValidateFirstPass)
+import TransformAndValidate
+    exposing
+        ( ValueTransformAndValidate
+        , transformAndValidateFirstPass
+        )
+
+
+type Effect
+    = NoEffect
+    | Batch (List Effect)
+    | FocusInput
+    | BlurInput
+    | InputHasBeenFocused
+    | InputHasBeenBlurred
+    | InputHasBeenKeyUp String
+    | SearchStringTouched
+    | QuietUpdateOptionsWithSearchString (Debouncer.Messages.Msg Effect)
+    | UpdateOptionsInWebWorker
+    | SearchOptionsWithWebWorker Json.Decode.Value
+    | ReportValueChanged Json.Encode.Value
+    | ValueCleared
+    | InvalidValue Json.Encode.Value
+    | CustomOptionSelected (List String)
+    | ReportOptionSelected Json.Encode.Value
+    | OptionDeselected Json.Encode.Value
+    | OptionsUpdated Bool
+    | SendCustomValidationRequest ( String, Int )
+    | ReportErrorMessage String
+    | ReportReady
+    | ReportInitialValueSet Json.Encode.Value
+    | FetchOptionsFromDom
+    | ScrollDownToElement String
+    | ReportAllOptions Json.Encode.Value
 
 
 type Msg
@@ -253,7 +285,7 @@ type alias Model =
     , selectionConfig : SelectionConfig
     , options : List Option
     , optionSort : OptionSort
-    , quietSearchForDynamicInterval : Debouncer Msg
+    , quietSearchForDynamicInterval : Debouncer Effect
     , searchString : SearchString
     , focusedIndex : Int
     , rightSlot : RightSlot
@@ -265,54 +297,54 @@ type ValueCasing
     = ValueCasing Float Float
 
 
-updateDebouncer : Debouncer.Messages.UpdateConfig Msg Model
+updateDebouncer : Debouncer.Messages.UpdateConfig Effect Model
 updateDebouncer =
-    { mapMsg = MsgQuietUpdateOptionsWithSearchString
+    { mapMsg = QuietUpdateOptionsWithSearchString
     , getDebouncer = .quietSearchForDynamicInterval
     , setDebouncer = \debouncer model -> { model | quietSearchForDynamicInterval = debouncer }
     }
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
+update : Msg -> Model -> ( Model, Effect )
 update msg model =
     case msg of
         NoOp ->
-            ( model, Cmd.none )
+            ( model, NoEffect )
 
         BringInputInFocus ->
             case getOutputStyle model.selectionConfig of
                 CustomHtml ->
                     if isRightSlotTransitioning model.rightSlot then
-                        ( model, Cmd.none )
+                        ( model, NoEffect )
 
                     else if isFocused model.selectionConfig then
-                        ( model, focusInput () )
+                        ( model, FocusInput )
 
                     else
                         ( { model
                             | selectionConfig = setIsFocused True model.selectionConfig
                             , rightSlot = updateRightSlotTransitioning InFocusTransition model.rightSlot
                           }
-                        , focusInput ()
+                        , FocusInput
                         )
 
                 Datalist ->
-                    ( model, focusInput () )
+                    ( model, FocusInput )
 
         BringInputOutOfFocus ->
             if isRightSlotTransitioning model.rightSlot then
-                ( model, Cmd.none )
+                ( model, NoEffect )
 
             else if isFocused model.selectionConfig then
                 ( { model
                     | selectionConfig = setIsFocused False model.selectionConfig
                     , rightSlot = updateRightSlotTransitioning InFocusTransition model.rightSlot
                   }
-                , blurInput ()
+                , BlurInput
                 )
 
             else
-                ( model, blurInput () )
+                ( model, BlurInput )
 
         InputBlur ->
             case getOutputStyle model.selectionConfig of
@@ -332,17 +364,9 @@ update msg model =
                         , rightSlot = updateRightSlotTransitioning NotInFocusTransition model.rightSlot
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-                    , Cmd.batch
-                        [ inputBlurred ()
-                        , Task.perform
-                            (\_ ->
-                                UpdateOptionsWithSearchString
-                                    |> provideInput
-                                    |> MsgQuietUpdateOptionsWithSearchString
-                            )
-                            (Task.succeed
-                                always
-                            )
+                    , batch
+                        [ InputHasBeenBlurred
+                        , SearchStringTouched
                         ]
                     )
 
@@ -350,9 +374,7 @@ update msg model =
                     ( { model
                         | selectionConfig = setIsFocused False model.selectionConfig
                       }
-                    , Cmd.batch
-                        [ inputBlurred ()
-                        ]
+                    , InputHasBeenBlurred
                     )
 
         InputFocus ->
@@ -365,14 +387,14 @@ update msg model =
                                 |> setIsFocused True
                         , rightSlot = updateRightSlotTransitioning NotInFocusTransition model.rightSlot
                       }
-                    , inputFocused ()
+                    , InputHasBeenFocused
                     )
 
                 Datalist ->
                     ( { model
                         | selectionConfig = setIsFocused True model.selectionConfig
                       }
-                    , inputFocused ()
+                    , InputHasBeenFocused
                     )
 
         DropdownMouseOverOption optionValue ->
@@ -385,7 +407,7 @@ update msg model =
                 | options = updatedOptions
               }
                 |> updateModelWithChangesThatEffectTheOptionsWhenTheMouseMoves
-            , Cmd.none
+            , NoEffect
             )
 
         DropdownMouseOutOption optionValue ->
@@ -397,7 +419,7 @@ update msg model =
                 | options = updatedOptions
               }
                 |> updateModelWithChangesThatEffectTheOptionsWhenTheMouseMoves
-            , Cmd.none
+            , NoEffect
             )
 
         DropdownMouseClickOption optionValue ->
@@ -417,9 +439,9 @@ update msg model =
                         , searchString = SearchString.reset
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-                    , Cmd.batch
-                        [ makeCommandMessagesWhenValuesChanges (selectedOptions updatedOptions) (Just optionValue)
-                        , blurInput ()
+                    , batch
+                        [ makeEffectsWhenValuesChanges (selectedOptions updatedOptions) (Just optionValue)
+                        , BlurInput
                         ]
                     )
 
@@ -429,9 +451,9 @@ update msg model =
                         , searchString = SearchString.reset
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-                    , Cmd.batch
-                        [ makeCommandMessagesWhenValuesChanges (selectedOptions updatedOptions) (Just optionValue)
-                        , focusInput ()
+                    , batch
+                        [ makeEffectsWhenValuesChanges (selectedOptions updatedOptions) (Just optionValue)
+                        , FocusInput
                         ]
                     )
 
@@ -439,17 +461,9 @@ update msg model =
             ( { model
                 | searchString = SearchString.new searchString
               }
-            , Cmd.batch
-                [ inputKeyUp searchString
-                , Task.perform
-                    (\_ ->
-                        UpdateOptionsWithSearchString
-                            |> provideInput
-                            |> MsgQuietUpdateOptionsWithSearchString
-                    )
-                    (Task.succeed
-                        always
-                    )
+            , batch
+                [ InputHasBeenKeyUp searchString
+                , SearchStringTouched
                 ]
             )
 
@@ -470,7 +484,7 @@ update msg model =
                         | options = updatedOptions
                         , rightSlot = updateRightSlot model.rightSlot model.selectionConfig True (updatedOptions |> selectedOptions)
                       }
-                    , makeCommandMessagesWhenValuesChanges
+                    , makeEffectsWhenValuesChanges
                         (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
                         maybeSelectedOptionValue
                     )
@@ -496,7 +510,7 @@ update msg model =
                                 True
                                 (updatedOptions |> selectedOptions)
                       }
-                    , makeCommandMessagesWhenValuesChanges
+                    , makeEffectsWhenValuesChanges
                         (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
                         maybeSelectedOptionValue
                     )
@@ -521,14 +535,14 @@ update msg model =
                                 True
                                 (updatedOptions |> selectedOptions)
                       }
-                    , makeCommandMessagesWhenValuesChanges
+                    , makeEffectsWhenValuesChanges
                         (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
                         maybeSelectedOptionValue
                     )
 
         UpdateOptionsWithSearchString ->
             ( updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges model
-            , searchOptionsWithWebWorker
+            , SearchOptionsWithWebWorker
                 (OptionSearcher.encodeSearchParams
                     model.searchString
                     (SelectionMode.getSearchStringMinimumLength model.selectionConfig)
@@ -536,14 +550,15 @@ update msg model =
             )
 
         MsgQuietUpdateOptionsWithSearchString subMsg ->
-            Debouncer.Messages.update update updateDebouncer subMsg model
+            --Debouncer.Messages.update update updateDebouncer subMsg model
+            ( model, QuietUpdateOptionsWithSearchString subMsg )
 
         TextInputOnInput inputString ->
             ( { model
                 | searchString = SearchString.new inputString
                 , options = updateOrAddCustomOption (SearchString.new inputString) model.selectionConfig model.options
               }
-            , inputKeyUp inputString
+            , InputHasBeenKeyUp inputString
             )
 
         ValueChanged valuesJson ->
@@ -570,7 +585,7 @@ update msg model =
                                 | options = newOptions
                               }
                                 |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-                            , Cmd.none
+                            , NoEffect
                             )
 
                         Datalist ->
@@ -584,11 +599,11 @@ update msg model =
                                 | options = newOptions
                               }
                                 |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-                            , Cmd.none
+                            , NoEffect
                             )
 
                 Err error ->
-                    ( model, errorMessage (Json.Decode.errorToString error) )
+                    ( model, ReportErrorMessage (Json.Decode.errorToString error) )
 
         OptionsReplaced newOptionsJson ->
             case Json.Decode.decodeValue (Option.optionsDecoder OptionDisplay.NewOption (SelectionMode.getOutputStyle model.selectionConfig)) newOptionsJson of
@@ -612,8 +627,8 @@ update msg model =
                                 , rightSlot = updateRightSlot model.rightSlot model.selectionConfig (OptionsUtilities.hasSelectedOption newOptionWithOldSelectedOption) model.options
                               }
                                 |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-                            , Cmd.batch
-                                [ optionsUpdated True
+                            , batch
+                                [ OptionsUpdated True
                                 , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchString
                                 ]
                             )
@@ -636,14 +651,14 @@ update msg model =
                                 , rightSlot = updateRightSlot model.rightSlot model.selectionConfig (OptionsUtilities.hasSelectedOption newOptionWithOldSelectedOption) model.options
                               }
                                 |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-                            , Cmd.batch
-                                [ optionsUpdated True
+                            , batch
+                                [ OptionsUpdated True
                                 , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchString
                                 ]
                             )
 
                 Err error ->
-                    ( model, errorMessage (Json.Decode.errorToString error) )
+                    ( model, ReportErrorMessage (Json.Decode.errorToString error) )
 
         AddOptions optionsJson ->
             case Json.Decode.decodeValue (Option.optionsDecoder OptionDisplay.NewOption (SelectionMode.getOutputStyle model.selectionConfig)) optionsJson of
@@ -661,14 +676,14 @@ update msg model =
                         , quietSearchForDynamicInterval = makeDynamicDebouncer (List.length updatedOptions)
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-                    , Cmd.batch
-                        [ optionsUpdated False
+                    , batch
+                        [ OptionsUpdated False
                         , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchString
                         ]
                     )
 
                 Err error ->
-                    ( model, errorMessage (Json.Decode.errorToString error) )
+                    ( model, ReportErrorMessage (Json.Decode.errorToString error) )
 
         RemoveOptions optionsJson ->
             case Json.Decode.decodeValue (Option.optionsDecoder OptionDisplay.MatureOption (SelectionMode.getOutputStyle model.selectionConfig)) optionsJson of
@@ -682,14 +697,14 @@ update msg model =
                         , quietSearchForDynamicInterval = makeDynamicDebouncer (List.length updatedOptions)
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-                    , Cmd.batch
-                        [ optionsUpdated True
+                    , batch
+                        [ OptionsUpdated True
                         , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchString
                         ]
                     )
 
                 Err error ->
-                    ( model, errorMessage (Json.Decode.errorToString error) )
+                    ( model, ReportErrorMessage (Json.Decode.errorToString error) )
 
         SelectOption optionJson ->
             case Json.Decode.decodeValue (Option.decoder OptionDisplay.MatureOption (SelectionMode.getOutputStyle model.selectionConfig)) optionJson of
@@ -711,23 +726,15 @@ update msg model =
                         | options = updatedOptions
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-                    , Cmd.batch
-                        [ makeCommandMessagesWhenValuesChanges (selectedOptions updatedOptions) (Just optionValue)
+                    , batch
+                        [ makeEffectsWhenValuesChanges (selectedOptions updatedOptions) (Just optionValue)
                         , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchString
-                        , Task.perform
-                            (\_ ->
-                                UpdateOptionsWithSearchString
-                                    |> provideInput
-                                    |> MsgQuietUpdateOptionsWithSearchString
-                            )
-                            (Task.succeed
-                                always
-                            )
+                        , SearchStringTouched
                         ]
                     )
 
                 Err error ->
-                    ( model, errorMessage (Json.Decode.errorToString error) )
+                    ( model, ReportErrorMessage (Json.Decode.errorToString error) )
 
         DeselectOptionInternal optionToDeselect ->
             deselectOption model optionToDeselect
@@ -738,19 +745,19 @@ update msg model =
                     deselectOption model option
 
                 Err error ->
-                    ( model, errorMessage (Json.Decode.errorToString error) )
+                    ( model, ReportErrorMessage (Json.Decode.errorToString error) )
 
         OptionSortingChanged sortingString ->
             case stringToOptionSort sortingString of
                 Ok optionSorting ->
-                    ( { model | optionSort = optionSorting }, Cmd.none )
+                    ( { model | optionSort = optionSorting }, NoEffect )
 
                 Err error ->
-                    ( model, errorMessage error )
+                    ( model, ReportErrorMessage error )
 
         PlaceholderAttributeChanged newPlaceholder ->
             ( { model | selectionConfig = SelectionMode.setPlaceholder newPlaceholder model.selectionConfig }
-            , Cmd.none
+            , NoEffect
             )
 
         LoadingAttributeChanged bool ->
@@ -761,7 +768,7 @@ update msg model =
                         model.selectionConfig
                         (hasSelectedOption model.options)
               }
-            , Cmd.none
+            , NoEffect
             )
 
         MaxDropdownItemsChanged int ->
@@ -773,7 +780,7 @@ update msg model =
                 | selectionConfig = setMaxDropdownItems maxDropdownItems model.selectionConfig
               }
                 |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-            , Cmd.none
+            , NoEffect
             )
 
         ShowDropdownFooterChanged bool ->
@@ -788,7 +795,7 @@ update msg model =
             ( { model
                 | selectionConfig = setDropdownStyle newDropdownStyle model.selectionConfig
               }
-            , Cmd.none
+            , NoEffect
             )
 
         AllowCustomOptionsChanged ( canAddCustomOptions, customOptionHint ) ->
@@ -808,11 +815,11 @@ update msg model =
                         maybeCustomOptionHint
                         model.selectionConfig
               }
-            , Cmd.none
+            , NoEffect
             )
 
         DisabledAttributeChanged bool ->
-            ( { model | selectionConfig = setIsDisabled bool model.selectionConfig }, Cmd.none )
+            ( { model | selectionConfig = setIsDisabled bool model.selectionConfig }, NoEffect )
 
         SelectedItemStaysInPlaceChanged selectedItemStaysInPlace ->
             ( { model
@@ -821,7 +828,7 @@ update msg model =
                         selectedItemStaysInPlace
                         model.selectionConfig
               }
-            , Cmd.none
+            , NoEffect
             )
 
         OutputStyleChanged newOutputStyleString ->
@@ -837,12 +844,13 @@ update msg model =
                         | selectionConfig = newSelectionConfig
                         , rightSlot = updateRightSlot model.rightSlot newSelectionConfig True model.options
                       }
-                    , updateOptionsFromDom ()
+                    , --updateOptionsFromDom ()
+                      FetchOptionsFromDom
                     )
 
                 Err _ ->
                     -- TODO Report Error
-                    ( model, Cmd.none )
+                    ( model, NoEffect )
 
         MultiSelectSingleItemRemovalAttributeChanged shouldEnableMultiSelectSingleItemRemoval ->
             let
@@ -856,7 +864,12 @@ update msg model =
             ( { model
                 | selectionConfig = setSingleItemRemoval multiSelectSingleItemRemoval model.selectionConfig
               }
-            , Cmd.batch [ muchSelectIsReady (), Cmd.none ]
+            , batch
+                [ ReportReady
+
+                -- muchSelectIsReady ()
+                , NoEffect
+                ]
             )
 
         MultiSelectAttributeChanged isInMultiSelectMode ->
@@ -870,18 +883,18 @@ update msg model =
 
                 cmd =
                     if isInMultiSelectMode then
-                        Cmd.none
+                        NoEffect
 
                     else
-                        makeCommandMessagesWhenValuesChanges (selectedOptions updatedOptions) Nothing
+                        makeEffectsWhenValuesChanges (selectedOptions updatedOptions) Nothing
             in
             ( { model
                 | selectionConfig = SelectionMode.setMultiSelectModeWithBool isInMultiSelectMode model.selectionConfig
                 , options = updatedOptions
               }
                 |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-            , Cmd.batch
-                [ muchSelectIsReady ()
+            , batch
+                [ ReportReady
                 , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchString
                 , cmd
                 ]
@@ -895,7 +908,7 @@ update msg model =
                         model.selectionConfig
               }
                 |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-            , Cmd.none
+            , NoEffect
             )
 
         SelectHighlightedOption ->
@@ -913,10 +926,10 @@ update msg model =
                         , searchString = SearchString.reset
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-                    , Cmd.batch
-                        [ makeCommandMessagesWhenValuesChanges (selectedOptions updatedOptions) maybeHighlightedOptionValue
+                    , batch
+                        [ makeEffectsWhenValuesChanges (selectedOptions updatedOptions) maybeHighlightedOptionValue
                         , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchString
-                        , blurInput ()
+                        , BlurInput
                         ]
                     )
 
@@ -926,10 +939,10 @@ update msg model =
                         , searchString = SearchString.reset
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-                    , Cmd.batch
-                        [ makeCommandMessagesWhenValuesChanges (selectedOptions updatedOptions) maybeHighlightedOptionValue
+                    , batch
+                        [ makeEffectsWhenValuesChanges (selectedOptions updatedOptions) maybeHighlightedOptionValue
                         , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchString
-                        , focusInput ()
+                        , FocusInput
                         ]
                     )
 
@@ -941,17 +954,17 @@ update msg model =
                         clearAllSelectedOption model
 
                     else
-                        ( model, Cmd.none )
+                        ( model, NoEffect )
 
                 MultiSelectConfig _ _ _ ->
-                    ( model, Cmd.none )
+                    ( model, NoEffect )
 
         EscapeKeyInInputFilter ->
             ( { model
                 | searchString = SearchString.reset
               }
                 |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-            , blurInput ()
+            , BlurInput
             )
 
         MoveHighlightedOptionUp ->
@@ -963,7 +976,7 @@ update msg model =
                 | options = updatedOptions
               }
               -- TODO This should probably not be "something"
-            , scrollDropdownToElement "something"
+            , ScrollDownToElement "something"
             )
 
         MoveHighlightedOptionDown ->
@@ -975,11 +988,11 @@ update msg model =
                 | options = updatedOptions
               }
               -- TODO This should probably not be "something"
-            , scrollDropdownToElement "something"
+            , ScrollDownToElement "something"
             )
 
         ValueCasingWidthUpdate dims ->
-            ( { model | valueCasing = ValueCasing dims.width dims.height }, Cmd.none )
+            ( { model | valueCasing = ValueCasing dims.width dims.height }, NoEffect )
 
         ClearAllSelectedOptions ->
             clearAllSelectedOption model
@@ -993,12 +1006,12 @@ update msg model =
                 | options = updatedOptions
               }
                 |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-            , Cmd.none
+            , NoEffect
             )
 
         DeleteKeydownForMultiSelect ->
             if SearchString.length model.searchString > 0 then
-                ( model, Cmd.none )
+                ( model, NoEffect )
 
             else
                 let
@@ -1013,11 +1026,11 @@ update msg model =
                     | options = updatedOptions
                   }
                     |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-                , Cmd.batch
-                    [ valueChanged (updatedOptions |> selectedOptions |> Ports.optionsEncoder)
+                , batch
+                    [ ReportValueChanged (updatedOptions |> selectedOptions |> Ports.optionsEncoder)
 
                     -- todo optionDeselected
-                    , focusInput ()
+                    , FocusInput
                     ]
                 )
 
@@ -1031,7 +1044,7 @@ update msg model =
                 , options = updatedOptions
                 , rightSlot = updateRightSlot model.rightSlot model.selectionConfig True (updatedOptions |> selectedOptions)
               }
-            , makeCommandMessagesWhenValuesChanges
+            , makeEffectsWhenValuesChanges
                 (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
                 Nothing
             )
@@ -1045,14 +1058,14 @@ update msg model =
                 | options = updatedOptions
                 , rightSlot = updateRightSlot model.rightSlot model.selectionConfig True (updatedOptions |> selectedOptions)
               }
-            , makeCommandMessagesWhenValuesChanges
+            , makeEffectsWhenValuesChanges
                 (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
                 Nothing
             )
 
         RequestAllOptions ->
             ( model
-            , allOptions (Json.Encode.list Option.encode model.options)
+            , ReportAllOptions (Json.Encode.list Option.encode model.options)
             )
 
         UpdateSearchResultsForOptions updatedSearchResultsJsonValue ->
@@ -1069,11 +1082,11 @@ update msg model =
                             adjustHighlightedOptionAfterSearch updatedOptions
                                 (figureOutWhichOptionsToShowInTheDropdown model.selectionConfig updatedOptions)
                       }
-                    , Cmd.none
+                    , NoEffect
                     )
 
                 Err error ->
-                    ( model, errorMessage (Json.Decode.errorToString error) )
+                    ( model, ReportErrorMessage (Json.Decode.errorToString error) )
 
         CustomValidationResponse customValidationResultJson ->
             case Json.Decode.decodeValue TransformAndValidate.customValidationResultDecoder customValidationResultJson of
@@ -1094,7 +1107,7 @@ update msg model =
                                 | options = updatedOptions
                                 , rightSlot = updateRightSlot model.rightSlot model.selectionConfig True (updatedOptions |> selectedOptions)
                               }
-                            , makeCommandMessagesWhenValuesChanges
+                            , makeEffectsWhenValuesChanges
                                 (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
                                 maybeSelectedOptionValue
                             )
@@ -1115,16 +1128,16 @@ update msg model =
                                 | options = updatedOptions
                                 , rightSlot = updateRightSlot model.rightSlot model.selectionConfig True (updatedOptions |> selectedOptions)
                               }
-                            , makeCommandMessagesWhenValuesChanges
+                            , makeEffectsWhenValuesChanges
                                 (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
                                 maybeSelectedOptionValue
                             )
 
                         TransformAndValidate.ValidationPending _ _ ->
-                            ( model, errorMessage "We should not end up with a validation pending state on a second pass." )
+                            ( model, ReportErrorMessage "We should not end up with a validation pending state on a second pass." )
 
                 Err error ->
-                    ( model, errorMessage (Json.Decode.errorToString error) )
+                    ( model, ReportErrorMessage (Json.Decode.errorToString error) )
 
         UpdateTransformationAndValidation transformationAndValidationJson ->
             case Json.Decode.decodeValue TransformAndValidate.decoder transformationAndValidationJson of
@@ -1135,14 +1148,108 @@ update msg model =
                                 newTransformationAndValidation
                                 model.selectionConfig
                       }
-                    , Cmd.none
+                    , NoEffect
                     )
 
                 Err error ->
-                    ( model, errorMessage (Json.Decode.errorToString error) )
+                    ( model, ReportErrorMessage (Json.Decode.errorToString error) )
 
 
-deselectOption : Model -> Option -> ( Model, Cmd Msg )
+perform : Effect -> Cmd Msg
+perform effect =
+    case effect of
+        NoEffect ->
+            Cmd.none
+
+        Batch effects ->
+            effects
+                |> List.map perform
+                |> Cmd.batch
+
+        FocusInput ->
+            focusInput ()
+
+        BlurInput ->
+            blurInput ()
+
+        InputHasBeenBlurred ->
+            inputBlurred ()
+
+        SearchStringTouched ->
+            Task.perform
+                (\_ ->
+                    UpdateOptionsWithSearchString
+                        |> provideInput
+                        |> MsgQuietUpdateOptionsWithSearchString
+                )
+                (Task.succeed
+                    always
+                )
+
+        InputHasBeenFocused ->
+            inputFocused ()
+
+        InputHasBeenKeyUp string ->
+            inputKeyUp string
+
+        QuietUpdateOptionsWithSearchString subMsg ->
+            Debouncer.Messages.update update updateDebouncer subMsg
+
+        UpdateOptionsInWebWorker ->
+            updateOptionsInWebWorker ()
+
+        SearchOptionsWithWebWorker value ->
+            searchOptionsWithWebWorker value
+
+        ReportValueChanged value ->
+            valueChanged value
+
+        ValueCleared ->
+            valueCleared ()
+
+        InvalidValue value ->
+            invalidValue value
+
+        CustomOptionSelected strings ->
+            customOptionSelected strings
+
+        ReportOptionSelected value ->
+            optionSelected value
+
+        OptionDeselected value ->
+            optionDeselected value
+
+        OptionsUpdated bool ->
+            optionsUpdated bool
+
+        SendCustomValidationRequest ( string, int ) ->
+            sendCustomValidationRequest ( string, int )
+
+        ReportErrorMessage string ->
+            errorMessage string
+
+        ReportReady ->
+            muchSelectIsReady ()
+
+        FetchOptionsFromDom ->
+            updateOptionsFromDom ()
+
+        ScrollDownToElement string ->
+            scrollDropdownToElement string
+
+        ReportAllOptions value ->
+            allOptions value
+
+        ReportInitialValueSet value ->
+            initialValueSet value
+
+
+batch : List Effect -> Effect
+batch effects =
+    Batch effects
+
+
+deselectOption : Model -> Option -> ( Model, Effect )
 deselectOption model option =
     let
         optionValue =
@@ -1155,14 +1262,14 @@ deselectOption model option =
         | options = updatedOptions
       }
         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-    , Cmd.batch
-        [ makeCommandMessagesWhenValuesChanges (selectedOptions updatedOptions) Nothing
+    , batch
+        [ makeEffectsWhenValuesChanges (selectedOptions updatedOptions) Nothing
         , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchString
         ]
     )
 
 
-clearAllSelectedOption : Model -> ( Model, Cmd Msg )
+clearAllSelectedOption : Model -> ( Model, Effect )
 clearAllSelectedOption model =
     let
         deselectedOptions : List Option
@@ -1175,32 +1282,32 @@ clearAllSelectedOption model =
                 -- an option has been deselected. return the deselected value as a tuple.
                 model.options
 
-        deselectEventCmdMsg =
+        deselectEventEffect =
             if List.isEmpty deselectedOptions then
-                Cmd.none
+                NoEffect
 
             else
-                optionDeselected (Ports.optionsEncoder deselectedOptions)
+                OptionDeselected (Ports.optionsEncoder deselectedOptions)
 
         newOptions =
             deselectAllOptionsInOptionsList model.options
 
-        focusCmdMsg =
+        focusEffect =
             if isFocused model.selectionConfig then
-                focusInput ()
+                FocusInput
 
             else
-                Cmd.none
+                NoEffect
     in
     ( { model
         | options = deselectAllOptionsInOptionsList newOptions
         , rightSlot = updateRightSlot model.rightSlot model.selectionConfig False []
         , searchString = SearchString.reset
       }
-    , Cmd.batch
-        [ makeCommandMessagesWhenValuesChanges [] Nothing
-        , deselectEventCmdMsg
-        , focusCmdMsg
+    , batch
+        [ makeEffectsWhenValuesChanges [] Nothing
+        , deselectEventEffect
+        , focusEffect
         ]
     )
 
@@ -2554,38 +2661,38 @@ valueCasingPartsAttribute selectionConfig hasError hasPendingValidation =
         )
 
 
-makeCommandMessagesWhenValuesChanges : List Option -> Maybe OptionValue -> Cmd Msg
-makeCommandMessagesWhenValuesChanges selectedOptions maybeSelectedValue =
+makeEffectsWhenValuesChanges : List Option -> Maybe OptionValue -> Effect
+makeEffectsWhenValuesChanges selectedOptions maybeSelectedValue =
     let
         valueChangeCmd =
             if OptionsUtilities.allOptionsAreValid selectedOptions then
-                valueChanged (Ports.optionsEncoder selectedOptions)
+                ReportValueChanged (Ports.optionsEncoder selectedOptions)
 
             else if OptionsUtilities.hasAnyPendingValidation selectedOptions then
-                Cmd.none
+                NoEffect
 
             else
-                invalidValue (Ports.optionsEncoder selectedOptions)
+                InvalidValue (Ports.optionsEncoder selectedOptions)
 
         selectedCustomOptions =
             customSelectedOptions selectedOptions
 
         clearCmd =
             if List.isEmpty selectedOptions then
-                valueCleared ()
+                ValueCleared
 
             else
-                Cmd.none
+                NoEffect
 
         customOptionCmd =
             if List.isEmpty selectedCustomOptions then
-                Cmd.none
+                NoEffect
 
             else if OptionsUtilities.allOptionsAreValid selectedCustomOptions then
-                customOptionSelected (optionsValues selectedCustomOptions)
+                CustomOptionSelected (optionsValues selectedCustomOptions)
 
             else
-                Cmd.none
+                NoEffect
 
         -- Any time we select a new value we need to emit an `optionSelected` event.
         optionSelectedCmd =
@@ -2594,28 +2701,28 @@ makeCommandMessagesWhenValuesChanges selectedOptions maybeSelectedValue =
                     case findOptionByOptionValue selectedValue selectedOptions of
                         Just option ->
                             if Option.isValid option then
-                                optionSelected (Ports.optionEncoder option)
+                                ReportOptionSelected (Ports.optionEncoder option)
 
                             else
-                                Cmd.none
+                                NoEffect
 
                         Nothing ->
-                            Cmd.none
+                            NoEffect
 
                 Nothing ->
-                    Cmd.none
+                    NoEffect
 
         customValidationCmd =
             if OptionsUtilities.hasAnyPendingValidation selectedOptions then
                 selectedOptions
                     |> List.filter Option.isPendingValidation
-                    |> List.map (\option -> sendCustomValidationRequest ( Option.getOptionValueAsString option, Option.getOptionSelectedIndex option ))
-                    |> Cmd.batch
+                    |> List.map (\option -> SendCustomValidationRequest ( Option.getOptionValueAsString option, Option.getOptionSelectedIndex option ))
+                    |> batch
 
             else
-                Cmd.none
+                NoEffect
     in
-    Cmd.batch
+    batch
         [ valueChangeCmd
         , customOptionCmd
         , clearCmd
@@ -2624,37 +2731,38 @@ makeCommandMessagesWhenValuesChanges selectedOptions maybeSelectedValue =
         ]
 
 
-makeCommandMessagesForUpdatingOptionsInTheWebWorker : SearchString -> Cmd Msg
+makeCommandMessagesForUpdatingOptionsInTheWebWorker : SearchString -> Effect
 makeCommandMessagesForUpdatingOptionsInTheWebWorker searchString =
     let
         searchStringUpdateCmd =
             if SearchString.isEmpty searchString then
-                Cmd.none
+                NoEffect
 
             else
                 -- This task is important because after we get new options (like from an API call or something)
                 --  we need to update the new options we've just added with the current search string.
-                Task.perform
-                    (\_ ->
-                        UpdateOptionsWithSearchString
-                            |> provideInput
-                            |> MsgQuietUpdateOptionsWithSearchString
-                    )
-                    (Task.succeed
-                        always
-                    )
+                --Task.perform
+                --    (\_ ->
+                --        UpdateOptionsWithSearchString
+                --            |> provideInput
+                --            |> MsgQuietUpdateOptionsWithSearchString
+                --    )
+                --    (Task.succeed
+                --        always
+                --    )
+                SearchStringTouched
     in
-    Cmd.batch [ updateOptionsInWebWorker (), searchStringUpdateCmd ]
+    batch [ UpdateOptionsInWebWorker, searchStringUpdateCmd ]
 
 
-makeCommandMessageForInitialValue : List Option -> Cmd Msg
+makeCommandMessageForInitialValue : List Option -> Effect
 makeCommandMessageForInitialValue selectedOptions =
     case selectedOptions of
         [] ->
-            Cmd.none
+            NoEffect
 
         selectionOptions_ ->
-            initialValueSet (Ports.optionsEncoder selectionOptions_)
+            ReportInitialValueSet (Ports.optionsEncoder selectionOptions_)
 
 
 type alias Flags =
@@ -2695,16 +2803,16 @@ makeDynamicDebouncer numberOfOptions =
             |> toDebouncer
 
 
-init : Flags -> ( Model, Cmd Msg )
+init : Flags -> ( Model, Effect )
 init flags =
     let
-        ( valueTransformationAndValidation, valueTransformationAndValidationErrorCmd ) =
+        ( valueTransformationAndValidation, valueTransformationAndValidationErrorEffect ) =
             case TransformAndValidate.decode flags.transformationAndValidationJson of
                 Ok value ->
-                    ( value, Cmd.none )
+                    ( value, NoEffect )
 
                 Err error ->
-                    ( TransformAndValidate.empty, errorMessage (Json.Decode.errorToString error) )
+                    ( TransformAndValidate.empty, ReportErrorMessage (Json.Decode.errorToString error) )
 
         selectionConfig =
             makeSelectionConfig flags.disabled
@@ -2725,15 +2833,15 @@ init flags =
             stringToOptionSort flags.optionSort
                 |> Result.withDefault NoSorting
 
-        ( initialValues, initialValueErrCmd ) =
+        ( initialValues, initialValueErrEffect ) =
             case Json.Decode.decodeValue (Json.Decode.oneOf [ valuesDecoder, valueDecoder ]) flags.value of
                 Ok values ->
-                    ( values, Cmd.none )
+                    ( values, NoEffect )
 
                 Err error ->
-                    ( [], errorMessage (Json.Decode.errorToString error) )
+                    ( [], ReportErrorMessage (Json.Decode.errorToString error) )
 
-        ( optionsWithInitialValueSelected, errorCmd ) =
+        ( optionsWithInitialValueSelected, errorEffect ) =
             case Json.Decode.decodeString (Option.optionsDecoder OptionDisplay.MatureOption (SelectionMode.getOutputStyle selectionConfig)) flags.optionsJson of
                 Ok options ->
                     case selectionConfig of
@@ -2748,19 +2856,19 @@ init flags =
                                         ( selectOptionsInOptionsListByString
                                             initialValues
                                             optionsWithUniqueValues
-                                        , Cmd.none
+                                        , NoEffect
                                         )
 
                                     else
                                         -- TODO Perhaps we should call a helper function instead of calling selectOption here
-                                        ( (Option.newOption initialValueStr_ Nothing |> Option.selectOption 0) :: options, Cmd.none )
+                                        ( (Option.newOption initialValueStr_ Nothing |> Option.selectOption 0) :: options, NoEffect )
 
                                 Nothing ->
                                     let
                                         optionsWithUniqueValues =
                                             options |> List.Extra.uniqueBy Option.getOptionValueAsString
                                     in
-                                    ( optionsWithUniqueValues, Cmd.none )
+                                    ( optionsWithUniqueValues, NoEffect )
 
                         MultiSelectConfig _ _ _ ->
                             let
@@ -2770,10 +2878,10 @@ init flags =
                                         |> List.filter (not << Option.isEmptyOption)
                                         |> addAndSelectOptionsInOptionsListByString initialValues
                             in
-                            ( optionsWithInitialValues, Cmd.none )
+                            ( optionsWithInitialValues, NoEffect )
 
                 Err error ->
-                    ( [], errorMessage (Json.Decode.errorToString error) )
+                    ( [], ReportErrorMessage (Json.Decode.errorToString error) )
 
         optionsWithInitialValueSelectedSorted =
             case SelectionMode.getOutputStyle selectionConfig of
@@ -2820,13 +2928,13 @@ init flags =
       -- TODO Should these be passed as flags?
       , valueCasing = ValueCasing 100 45
       }
-    , Cmd.batch
-        [ errorCmd
-        , initialValueErrCmd
-        , muchSelectIsReady ()
+    , batch
+        [ errorEffect
+        , initialValueErrEffect
+        , ReportReady
         , makeCommandMessageForInitialValue (selectedOptions optionsWithInitialValueSelected)
-        , updateOptionsInWebWorker ()
-        , valueTransformationAndValidationErrorCmd
+        , UpdateOptionsInWebWorker
+        , valueTransformationAndValidationErrorEffect
         ]
     )
 
@@ -2834,8 +2942,14 @@ init flags =
 main : Program Flags Model Msg
 main =
     Browser.element
-        { init = init
-        , update = update
+        { init =
+            \flags ->
+                init flags
+                    |> Tuple.mapSecond perform
+        , update =
+            \msg model ->
+                update msg model
+                    |> Tuple.mapSecond perform
         , subscriptions = subscriptions
         , view = view
         }
@@ -2862,7 +2976,7 @@ subscriptions _ =
         , selectedItemStaysInPlaceChangedReceiver SelectedItemStaysInPlaceChanged
         , showDropdownFooterChangedReceiver ShowDropdownFooterChanged
         , valueCasingDimensionsChangedReceiver ValueCasingWidthUpdate
-        , valueChangedReceiver ValueChanged
+        , valueChangedReceiver ReportValueChanged
         , outputStyleChangedReceiver OutputStyleChanged
         , updateSearchResultDataWithWebWorkerReceiver UpdateSearchResultsForOptions
         , customValidationReceiver CustomValidationResponse
