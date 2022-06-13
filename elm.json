@@ -18,6 +18,7 @@
             "elm-community/maybe-extra": "5.3.0",
             "elm-community/result-extra": "2.4.0",
             "elm-community/string-extra": "4.0.1",
+            "grotsev/elm-debouncer": "1.0.0",
             "mhoare/elm-stack": "3.1.2",
             "ohanhi/keyboard": "2.0.1",
             "robinheghan/keyboard-events": "1.0.0",

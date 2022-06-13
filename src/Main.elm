@@ -1,15 +1,7 @@
 module Main exposing (..)
 
+import Bounce exposing (Bounce)
 import Browser
-import Debouncer.Messages
-    exposing
-        ( Debouncer
-        , Milliseconds
-        , fromSeconds
-        , provideInput
-        , settleWhenQuietFor
-        , toDebouncer
-        )
 import Html exposing (Html, button, div, input, li, node, optgroup, span, text, ul)
 import Html.Attributes
     exposing
@@ -190,7 +182,6 @@ import SelectionMode
         , showDropdown
         , showDropdownFooter
         )
-import Task
 import TransformAndValidate
     exposing
         ( ValueTransformAndValidate
@@ -207,7 +198,6 @@ type Effect
     | InputHasBeenBlurred
     | InputHasBeenKeyUp String
     | SearchStringTouched
-    | QuietUpdateOptionsWithSearchString (Debouncer.Messages.Msg Effect)
     | UpdateOptionsInWebWorker
     | SearchOptionsWithWebWorker Json.Decode.Value
     | ReportValueChanged Json.Encode.Value
@@ -236,9 +226,9 @@ type Msg
     | DropdownMouseOutOption OptionValue
     | DropdownMouseClickOption OptionValue
     | UpdateSearchString String
+    | SearchStringSteady
     | UpdateOptionValueValue Int String
     | UpdateOptionsWithSearchString
-    | MsgQuietUpdateOptionsWithSearchString (Debouncer.Messages.Msg Msg)
     | TextInputOnInput String
     | ValueChanged Json.Decode.Value
     | OptionsReplaced Json.Decode.Value
@@ -285,7 +275,7 @@ type alias Model =
     , selectionConfig : SelectionConfig
     , options : List Option
     , optionSort : OptionSort
-    , quietSearchForDynamicInterval : Debouncer Effect
+    , quietSearchForDynamicInterval : Bounce
     , searchString : SearchString
     , focusedIndex : Int
     , rightSlot : RightSlot
@@ -297,16 +287,14 @@ type ValueCasing
     = ValueCasing Float Float
 
 
-updateDebouncer : Debouncer.Messages.UpdateConfig Effect Model
-updateDebouncer =
-    { mapMsg = QuietUpdateOptionsWithSearchString
-    , getDebouncer = .quietSearchForDynamicInterval
-    , setDebouncer = \debouncer model -> { model | quietSearchForDynamicInterval = debouncer }
-    }
-
-
-update : Msg -> Model -> ( Model, Effect )
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
+    updateForEffect msg model
+        |> Tuple.mapSecond perform
+
+
+updateForEffect : Msg -> Model -> ( Model, Effect )
+updateForEffect msg model =
     case msg of
         NoOp ->
             ( model, NoEffect )
@@ -467,6 +455,9 @@ update msg model =
                 ]
             )
 
+        SearchStringSteady ->
+            ( model, NoEffect )
+
         UpdateOptionValueValue selectedValueIndex valueString ->
             case transformAndValidateFirstPass (SelectionMode.getTransformAndValidate model.selectionConfig) valueString selectedValueIndex of
                 TransformAndValidate.ValidationPass _ _ ->
@@ -548,10 +539,6 @@ update msg model =
                     (SelectionMode.getSearchStringMinimumLength model.selectionConfig)
                 )
             )
-
-        MsgQuietUpdateOptionsWithSearchString subMsg ->
-            --Debouncer.Messages.update update updateDebouncer subMsg model
-            ( model, QuietUpdateOptionsWithSearchString subMsg )
 
         TextInputOnInput inputString ->
             ( { model
@@ -673,7 +660,8 @@ update msg model =
                     in
                     ( { model
                         | options = updatedOptions
-                        , quietSearchForDynamicInterval = makeDynamicDebouncer (List.length updatedOptions)
+
+                        --, quietSearchForDynamicInterval = makeDynamicDebouncer (List.length updatedOptions)
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , batch
@@ -694,7 +682,8 @@ update msg model =
                     in
                     ( { model
                         | options = updatedOptions
-                        , quietSearchForDynamicInterval = makeDynamicDebouncer (List.length updatedOptions)
+
+                        --, quietSearchForDynamicInterval = makeDynamicDebouncer (List.length updatedOptions)
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , batch
@@ -1176,24 +1165,13 @@ perform effect =
             inputBlurred ()
 
         SearchStringTouched ->
-            Task.perform
-                (\_ ->
-                    UpdateOptionsWithSearchString
-                        |> provideInput
-                        |> MsgQuietUpdateOptionsWithSearchString
-                )
-                (Task.succeed
-                    always
-                )
+            Bounce.delay 1000 SearchStringSteady
 
         InputHasBeenFocused ->
             inputFocused ()
 
         InputHasBeenKeyUp string ->
             inputKeyUp string
-
-        QuietUpdateOptionsWithSearchString subMsg ->
-            Debouncer.Messages.update update updateDebouncer subMsg
 
         UpdateOptionsInWebWorker ->
             updateOptionsInWebWorker ()
@@ -2785,24 +2763,6 @@ type alias Flags =
     }
 
 
-makeDynamicDebouncer : Int -> Debouncer msg
-makeDynamicDebouncer numberOfOptions =
-    if numberOfOptions < 100 then
-        Debouncer.Messages.manual
-            |> settleWhenQuietFor (Just <| fromSeconds 0.001)
-            |> toDebouncer
-
-    else if numberOfOptions < 1000 then
-        Debouncer.Messages.manual
-            |> settleWhenQuietFor (Just <| fromSeconds 0.1)
-            |> toDebouncer
-
-    else
-        Debouncer.Messages.manual
-            |> settleWhenQuietFor (Just <| fromSeconds 1)
-            |> toDebouncer
-
-
 init : Flags -> ( Model, Effect )
 init flags =
     let
@@ -2895,8 +2855,7 @@ init flags =
       , selectionConfig = selectionConfig
       , options = optionsWithInitialValueSelectedSorted
       , optionSort = stringToOptionSort flags.optionSort |> Result.withDefault NoSorting
-      , quietSearchForDynamicInterval =
-            makeDynamicDebouncer (List.length optionsWithInitialValueSelectedSorted)
+      , quietSearchForDynamicInterval = Bounce.init
       , searchString = SearchString.reset
       , focusedIndex = 0
       , rightSlot =
@@ -2946,10 +2905,7 @@ main =
             \flags ->
                 init flags
                     |> Tuple.mapSecond perform
-        , update =
-            \msg model ->
-                update msg model
-                    |> Tuple.mapSecond perform
+        , update = update
         , subscriptions = subscriptions
         , view = view
         }
@@ -2976,7 +2932,7 @@ subscriptions _ =
         , selectedItemStaysInPlaceChangedReceiver SelectedItemStaysInPlaceChanged
         , showDropdownFooterChangedReceiver ShowDropdownFooterChanged
         , valueCasingDimensionsChangedReceiver ValueCasingWidthUpdate
-        , valueChangedReceiver ReportValueChanged
+        , valueChangedReceiver ValueChanged
         , outputStyleChangedReceiver OutputStyleChanged
         , updateSearchResultDataWithWebWorkerReceiver UpdateSearchResultsForOptions
         , customValidationReceiver CustomValidationResponse

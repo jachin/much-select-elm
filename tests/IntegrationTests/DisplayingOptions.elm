@@ -161,12 +161,12 @@ flagsBookOptionsWithSelected =
 element =
     ProgramTest.createElement
         { init = Main.init
-        , update = Main.update
+        , update = Main.updateForEffect
         , view = Main.view
         }
 
 
-start : Flags -> ProgramTest Main.Model Main.Msg (Cmd Main.Msg)
+start : Flags -> ProgramTest Main.Model Main.Msg Main.Effect
 start flags =
     element
         |> ProgramTest.start
