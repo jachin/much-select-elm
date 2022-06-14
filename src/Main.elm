@@ -275,7 +275,7 @@ type alias Model =
     , selectionConfig : SelectionConfig
     , options : List Option
     , optionSort : OptionSort
-    , quietSearchForDynamicInterval : Bounce
+    , searchStringBounce : Bounce
     , searchString : SearchString
     , focusedIndex : Int
     , rightSlot : RightSlot
@@ -350,6 +350,7 @@ updateForEffect msg model =
                                 |> setShowDropdown False
                                 |> setIsFocused False
                         , rightSlot = updateRightSlotTransitioning NotInFocusTransition model.rightSlot
+                        , searchStringBounce = Bounce.push model.searchStringBounce
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , batch
@@ -448,6 +449,7 @@ updateForEffect msg model =
         UpdateSearchString searchString ->
             ( { model
                 | searchString = SearchString.new searchString
+                , searchStringBounce = Bounce.push model.searchStringBounce
               }
             , batch
                 [ InputHasBeenKeyUp searchString
@@ -456,7 +458,13 @@ updateForEffect msg model =
             )
 
         SearchStringSteady ->
-            ( model, NoEffect )
+            ( updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges model
+            , SearchOptionsWithWebWorker
+                (OptionSearcher.encodeSearchParams
+                    model.searchString
+                    (SelectionMode.getSearchStringMinimumLength model.selectionConfig)
+                )
+            )
 
         UpdateOptionValueValue selectedValueIndex valueString ->
             case transformAndValidateFirstPass (SelectionMode.getTransformAndValidate model.selectionConfig) valueString selectedValueIndex of
@@ -612,6 +620,7 @@ updateForEffect msg model =
                                             model.searchString
                                             (SelectionMode.getSearchStringMinimumLength model.selectionConfig)
                                 , rightSlot = updateRightSlot model.rightSlot model.selectionConfig (OptionsUtilities.hasSelectedOption newOptionWithOldSelectedOption) model.options
+                                , searchStringBounce = Bounce.push model.searchStringBounce
                               }
                                 |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                             , batch
@@ -636,6 +645,7 @@ updateForEffect msg model =
                             ( { model
                                 | options = newOptionWithOldSelectedOption
                                 , rightSlot = updateRightSlot model.rightSlot model.selectionConfig (OptionsUtilities.hasSelectedOption newOptionWithOldSelectedOption) model.options
+                                , searchStringBounce = Bounce.push model.searchStringBounce
                               }
                                 |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                             , batch
@@ -660,6 +670,7 @@ updateForEffect msg model =
                     in
                     ( { model
                         | options = updatedOptions
+                        , searchStringBounce = Bounce.push model.searchStringBounce
 
                         --, quietSearchForDynamicInterval = makeDynamicDebouncer (List.length updatedOptions)
                       }
@@ -682,6 +693,7 @@ updateForEffect msg model =
                     in
                     ( { model
                         | options = updatedOptions
+                        , searchStringBounce = Bounce.push model.searchStringBounce
 
                         --, quietSearchForDynamicInterval = makeDynamicDebouncer (List.length updatedOptions)
                       }
@@ -713,6 +725,7 @@ updateForEffect msg model =
                     in
                     ( { model
                         | options = updatedOptions
+                        , searchStringBounce = Bounce.push model.searchStringBounce
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , batch
@@ -2855,7 +2868,7 @@ init flags =
       , selectionConfig = selectionConfig
       , options = optionsWithInitialValueSelectedSorted
       , optionSort = stringToOptionSort flags.optionSort |> Result.withDefault NoSorting
-      , quietSearchForDynamicInterval = Bounce.init
+      , searchStringBounce = Bounce.init
       , searchString = SearchString.reset
       , focusedIndex = 0
       , rightSlot =
