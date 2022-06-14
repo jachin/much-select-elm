@@ -197,7 +197,7 @@ type Effect
     | InputHasBeenFocused
     | InputHasBeenBlurred
     | InputHasBeenKeyUp String
-    | SearchStringTouched
+    | SearchStringTouched Float
     | UpdateOptionsInWebWorker
     | SearchOptionsWithWebWorker Json.Decode.Value
     | ReportValueChanged Json.Encode.Value
@@ -276,6 +276,7 @@ type alias Model =
     , options : List Option
     , optionSort : OptionSort
     , searchStringBounce : Bounce
+    , searchStringDebounceLength : Float
     , searchString : SearchString
     , focusedIndex : Int
     , rightSlot : RightSlot
@@ -287,14 +288,14 @@ type ValueCasing
     = ValueCasing Float Float
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
-    updateForEffect msg model
+updateWrapper : Msg -> Model -> ( Model, Cmd Msg )
+updateWrapper msg model =
+    update msg model
         |> Tuple.mapSecond perform
 
 
-updateForEffect : Msg -> Model -> ( Model, Effect )
-updateForEffect msg model =
+update : Msg -> Model -> ( Model, Effect )
+update msg model =
     case msg of
         NoOp ->
             ( model, NoEffect )
@@ -355,7 +356,7 @@ updateForEffect msg model =
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , batch
                         [ InputHasBeenBlurred
-                        , SearchStringTouched
+                        , SearchStringTouched model.searchStringDebounceLength
                         ]
                     )
 
@@ -453,7 +454,7 @@ updateForEffect msg model =
               }
             , batch
                 [ InputHasBeenKeyUp searchString
-                , SearchStringTouched
+                , SearchStringTouched model.searchStringDebounceLength
                 ]
             )
 
@@ -625,7 +626,7 @@ updateForEffect msg model =
                                 |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                             , batch
                                 [ OptionsUpdated True
-                                , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchString
+                                , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
                                 ]
                             )
 
@@ -650,7 +651,7 @@ updateForEffect msg model =
                                 |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                             , batch
                                 [ OptionsUpdated True
-                                , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchString
+                                , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
                                 ]
                             )
 
@@ -671,13 +672,14 @@ updateForEffect msg model =
                     ( { model
                         | options = updatedOptions
                         , searchStringBounce = Bounce.push model.searchStringBounce
+                        , searchStringDebounceLength = getDebouceDelayForSearch (List.length updatedOptions)
 
                         --, quietSearchForDynamicInterval = makeDynamicDebouncer (List.length updatedOptions)
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , batch
                         [ OptionsUpdated False
-                        , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchString
+                        , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
                         ]
                     )
 
@@ -694,13 +696,12 @@ updateForEffect msg model =
                     ( { model
                         | options = updatedOptions
                         , searchStringBounce = Bounce.push model.searchStringBounce
-
-                        --, quietSearchForDynamicInterval = makeDynamicDebouncer (List.length updatedOptions)
+                        , searchStringDebounceLength = getDebouceDelayForSearch (List.length updatedOptions)
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , batch
                         [ OptionsUpdated True
-                        , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchString
+                        , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
                         ]
                     )
 
@@ -730,8 +731,8 @@ updateForEffect msg model =
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , batch
                         [ makeEffectsWhenValuesChanges (selectedOptions updatedOptions) (Just optionValue)
-                        , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchString
-                        , SearchStringTouched
+                        , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
+                        , SearchStringTouched model.searchStringDebounceLength
                         ]
                     )
 
@@ -897,7 +898,7 @@ updateForEffect msg model =
                 |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
             , batch
                 [ ReportReady
-                , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchString
+                , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
                 , cmd
                 ]
             )
@@ -930,7 +931,7 @@ updateForEffect msg model =
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , batch
                         [ makeEffectsWhenValuesChanges (selectedOptions updatedOptions) maybeHighlightedOptionValue
-                        , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchString
+                        , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
                         , BlurInput
                         ]
                     )
@@ -943,7 +944,7 @@ updateForEffect msg model =
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , batch
                         [ makeEffectsWhenValuesChanges (selectedOptions updatedOptions) maybeHighlightedOptionValue
-                        , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchString
+                        , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
                         , FocusInput
                         ]
                     )
@@ -1177,8 +1178,8 @@ perform effect =
         InputHasBeenBlurred ->
             inputBlurred ()
 
-        SearchStringTouched ->
-            Bounce.delay 1000 SearchStringSteady
+        SearchStringTouched milSeconds ->
+            Bounce.delay milSeconds SearchStringSteady
 
         InputHasBeenFocused ->
             inputFocused ()
@@ -1255,7 +1256,7 @@ deselectOption model option =
         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
     , batch
         [ makeEffectsWhenValuesChanges (selectedOptions updatedOptions) Nothing
-        , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchString
+        , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
         ]
     )
 
@@ -2722,26 +2723,15 @@ makeEffectsWhenValuesChanges selectedOptions maybeSelectedValue =
         ]
 
 
-makeCommandMessagesForUpdatingOptionsInTheWebWorker : SearchString -> Effect
-makeCommandMessagesForUpdatingOptionsInTheWebWorker searchString =
+makeCommandMessagesForUpdatingOptionsInTheWebWorker : Float -> SearchString -> Effect
+makeCommandMessagesForUpdatingOptionsInTheWebWorker searchStringDebounceLength searchString =
     let
         searchStringUpdateCmd =
             if SearchString.isEmpty searchString then
                 NoEffect
 
             else
-                -- This task is important because after we get new options (like from an API call or something)
-                --  we need to update the new options we've just added with the current search string.
-                --Task.perform
-                --    (\_ ->
-                --        UpdateOptionsWithSearchString
-                --            |> provideInput
-                --            |> MsgQuietUpdateOptionsWithSearchString
-                --    )
-                --    (Task.succeed
-                --        always
-                --    )
-                SearchStringTouched
+                SearchStringTouched searchStringDebounceLength
     in
     batch [ UpdateOptionsInWebWorker, searchStringUpdateCmd ]
 
@@ -2869,6 +2859,7 @@ init flags =
       , options = optionsWithInitialValueSelectedSorted
       , optionSort = stringToOptionSort flags.optionSort |> Result.withDefault NoSorting
       , searchStringBounce = Bounce.init
+      , searchStringDebounceLength = getDebouceDelayForSearch (List.length optionsWithInitialValueSelectedSorted)
       , searchString = SearchString.reset
       , focusedIndex = 0
       , rightSlot =
@@ -2911,6 +2902,18 @@ init flags =
     )
 
 
+getDebouceDelayForSearch : Int -> Float
+getDebouceDelayForSearch numberOfOptions =
+    if numberOfOptions < 100 then
+        1
+
+    else if numberOfOptions < 1000 then
+        100
+
+    else
+        1000
+
+
 main : Program Flags Model Msg
 main =
     Browser.element
@@ -2918,7 +2921,7 @@ main =
             \flags ->
                 init flags
                     |> Tuple.mapSecond perform
-        , update = update
+        , update = updateWrapper
         , subscriptions = subscriptions
         , view = view
         }

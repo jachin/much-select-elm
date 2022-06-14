@@ -161,7 +161,7 @@ flagsBookOptionsWithSelected =
 element =
     ProgramTest.createElement
         { init = Main.init
-        , update = Main.updateForEffect
+        , update = Main.update
         , view = Main.view
         }
 
