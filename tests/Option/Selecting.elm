@@ -42,24 +42,8 @@ gospels =
     ]
 
 
-genesis =
-    Option.newDatalistOption (OptionValue.stringToOptionValue "Genesis")
-
-
-exodus =
-    Option.newDatalistOption (OptionValue.stringToOptionValue "Exodus")
-
-
-leviticus =
-    Option.newDatalistOption (OptionValue.stringToOptionValue "Leviticus")
-
-
 numbers =
     Option.newSelectedDatalistOption (OptionValue.stringToOptionValue "Numbers") 0
-
-
-firstBooks =
-    [ genesis, exodus, leviticus, numbers ]
 
 
 suite : Test
