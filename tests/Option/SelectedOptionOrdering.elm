@@ -84,56 +84,61 @@ simulatedEffects effect =
         Main.InputHasBeenKeyUp string ->
             SimulatedEffect.Ports.send "inputKeyUp" (Json.Encode.string string)
 
-        Main.SearchStringTouched float ->
+        Main.SearchStringTouched _ ->
             SimulatedEffect.Cmd.none
 
         Main.UpdateOptionsInWebWorker ->
-            SimulatedEffect.Cmd.none
+            SimulatedEffect.Ports.send "updateOptionsInWebWorker" (Json.Encode.object [])
 
         Main.SearchOptionsWithWebWorker value ->
-            SimulatedEffect.Cmd.none
+            SimulatedEffect.Ports.send "searchOptionsWithWebWorker" value
 
         Main.ReportValueChanged value ->
-            SimulatedEffect.Cmd.none
+            SimulatedEffect.Ports.send "valueChanged" value
 
         Main.ValueCleared ->
-            SimulatedEffect.Cmd.none
+            SimulatedEffect.Ports.send "valueCleared" (Json.Encode.object [])
 
         Main.InvalidValue value ->
-            SimulatedEffect.Cmd.none
+            SimulatedEffect.Ports.send "invalidValue" value
 
         Main.CustomOptionSelected strings ->
-            SimulatedEffect.Cmd.none
+            SimulatedEffect.Ports.send "invalidValue" (Json.Encode.list Json.Encode.string strings)
 
         Main.ReportOptionSelected value ->
-            SimulatedEffect.Cmd.none
+            SimulatedEffect.Ports.send "optionSelected" value
 
         Main.OptionDeselected value ->
-            SimulatedEffect.Cmd.none
+            SimulatedEffect.Ports.send "optionDeselected" value
 
         Main.OptionsUpdated bool ->
-            SimulatedEffect.Cmd.none
+            SimulatedEffect.Ports.send "optionDeselected" (Json.Encode.bool bool)
 
         Main.SendCustomValidationRequest ( string, int ) ->
-            SimulatedEffect.Cmd.none
+            SimulatedEffect.Ports.send "sendCustomValidationRequest"
+                (Json.Encode.list identity
+                    [ Json.Encode.string string
+                    , Json.Encode.int int
+                    ]
+                )
 
         Main.ReportErrorMessage string ->
-            SimulatedEffect.Cmd.none
+            SimulatedEffect.Ports.send "errorMessage" (Json.Encode.string string)
 
         Main.ReportReady ->
-            SimulatedEffect.Cmd.none
+            SimulatedEffect.Ports.send "ready" (Json.Encode.object [])
 
         Main.ReportInitialValueSet value ->
-            SimulatedEffect.Cmd.none
+            SimulatedEffect.Ports.send "initialValueSet" value
 
         Main.FetchOptionsFromDom ->
-            SimulatedEffect.Cmd.none
+            SimulatedEffect.Ports.send "ready" (Json.Encode.object [])
 
         Main.ScrollDownToElement string ->
-            SimulatedEffect.Cmd.none
+            SimulatedEffect.Ports.send "scrollDropdownToElement" (Json.Encode.string string)
 
         Main.ReportAllOptions value ->
-            SimulatedEffect.Cmd.none
+            SimulatedEffect.Ports.send "allOptions" value
 
 
 simulateSubscriptions : Main.Model -> ProgramTest.SimulatedSub Main.Msg
