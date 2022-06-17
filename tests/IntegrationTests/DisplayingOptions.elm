@@ -166,7 +166,7 @@ element =
         }
 
 
-start : Flags -> ProgramTest Main.Model Main.Msg (Cmd Main.Msg)
+start : Flags -> ProgramTest Main.Model Main.Msg Main.Effect
 start flags =
     element
         |> ProgramTest.start
