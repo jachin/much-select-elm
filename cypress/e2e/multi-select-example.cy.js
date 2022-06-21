@@ -23,8 +23,9 @@ describe("the multi select example", () => {
       .children()
       .should("have.attr", "data-value", "Java");
   });
-  it("the first item in the dropdown should be highlights", () => {
+  it("the first item in the dropdown should be highlighted", () => {
     cy.visit("/multi-select-example.html");
+    cy.get("much-select").click();
     cy.get("much-select").shadow().find("#input-filter").click().type("al");
     cy.get("much-select")
       .shadow()
