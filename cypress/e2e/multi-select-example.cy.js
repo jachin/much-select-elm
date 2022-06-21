@@ -16,6 +16,7 @@ describe("the multi select example", () => {
   });
   it("filters the dropdown based on what the user types", () => {
     cy.visit("/multi-select-example.html");
+    cy.get("much-select").click();
     cy.get("much-select").shadow().find("#input-filter").click().type("jav");
     cy.get("much-select")
       .shadow()
