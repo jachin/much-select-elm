@@ -429,20 +429,19 @@ much-select::part(value highlighted-value) {
 
 much-select::part(dropdown-indicator) {
     position: absolute;
-    right: 5px;
+    right: 8px;
     top: 15px;
     cursor: pointer;
     display: block;
     transition: transform 0.25s;
-    font-family: "Times New Roman", serif;
 }
 
 much-select::part(dropdown-indicator up) {
-    transform: rotate(180deg);
+    transform: rotate(270deg);
 }
 
 much-select::part(dropdown-indicator down) {
-    transform: rotate(0deg);
+    transform: rotate(90deg);
 }
 
 much-select::part(clear-button-wrapper) {
