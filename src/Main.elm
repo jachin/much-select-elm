@@ -1437,28 +1437,51 @@ figureOutWhichOptionsToShowInTheDropdown selectionMode options =
 
 view : Model -> Html Msg
 view model =
-    if isSingleSelect model.selectionConfig then
-        singleSelectView
-            model.valueCasing
-            model.selectionConfig
-            model.options
-            model.searchString
-            model.rightSlot
+    div
+        [ id "wrapper"
+        , Html.Attributes.attribute "part" "wrapper"
+        , case getOutputStyle model.selectionConfig of
+            CustomHtml ->
+                -- This stops the dropdown from flashes when the user clicks
+                -- on an optgroup. And it kinda makes sense. we don't want
+                --  mousedown events escaping and effecting the DOM.
+                onMouseDownStopPropagationAndPreventDefault NoOp
 
-    else
-        multiSelectView model.valueCasing
-            model.selectionConfig
-            model.options
-            model.searchString
-            model.rightSlot
+            Datalist ->
+                Html.Attributes.Extra.empty
+        , classList [ ( "disabled", isDisabled model.selectionConfig ) ]
+        ]
+        [ if isSingleSelect model.selectionConfig then
+            singleSelectView
+                model.selectionConfig
+                model.options
+                model.searchString
+                model.rightSlot
+
+          else
+            multiSelectView
+                model.selectionConfig
+                model.options
+                model.searchString
+                model.rightSlot
+        , case getOutputStyle model.selectionConfig of
+            CustomHtml ->
+                dropdown
+                    model.selectionConfig
+                    model.options
+                    model.searchString
+                    model.valueCasing
+
+            Datalist ->
+                datalist model.options
+        ]
 
 
-singleSelectView : ValueCasing -> SelectionConfig -> List Option -> SearchString -> RightSlot -> Html Msg
-singleSelectView valueCasing selectionMode options searchString rightSlot =
+singleSelectView : SelectionConfig -> List Option -> SearchString -> RightSlot -> Html Msg
+singleSelectView selectionMode options searchString rightSlot =
     case getOutputStyle selectionMode of
         CustomHtml ->
             singleSelectViewCustomHtml
-                valueCasing
                 selectionMode
                 options
                 searchString
@@ -1468,8 +1491,8 @@ singleSelectView valueCasing selectionMode options searchString rightSlot =
             singleSelectViewDatalistHtml selectionMode options
 
 
-multiSelectView : ValueCasing -> SelectionConfig -> List Option -> SearchString -> RightSlot -> Html Msg
-multiSelectView valueCasing selectionMode options searchString rightSlot =
+multiSelectView : SelectionConfig -> List Option -> SearchString -> RightSlot -> Html Msg
+multiSelectView selectionMode options searchString rightSlot =
     case getOutputStyle selectionMode of
         CustomHtml ->
             multiSelectViewCustomHtml
@@ -1477,7 +1500,6 @@ multiSelectView valueCasing selectionMode options searchString rightSlot =
                 options
                 searchString
                 rightSlot
-                valueCasing
 
         Datalist ->
             multiSelectViewDataset
@@ -1486,8 +1508,8 @@ multiSelectView valueCasing selectionMode options searchString rightSlot =
                 rightSlot
 
 
-singleSelectViewCustomHtml : ValueCasing -> SelectionConfig -> List Option -> SearchString -> RightSlot -> Html Msg
-singleSelectViewCustomHtml valueCasing selectionConfig options searchString rightSlot =
+singleSelectViewCustomHtml : SelectionConfig -> List Option -> SearchString -> RightSlot -> Html Msg
+singleSelectViewCustomHtml selectionConfig options searchString rightSlot =
     let
         hasOptionSelected =
             hasSelectedOption options
@@ -1510,61 +1532,46 @@ singleSelectViewCustomHtml valueCasing selectionConfig options searchString righ
             OptionsUtilities.hasAnyPendingValidation options
     in
     div
-        [ id "wrapper"
-        , Html.Attributes.attribute "part" "wrapper"
-
-        -- This stops the dropdown from flashes when the user clicks
-        -- on an optgroup. And it kinda makes sense. we don't want
-        --  mousedown events escaping and effecting the DOM.
-        , onMouseDownStopPropagationAndPreventDefault NoOp
+        [ id "value-casing"
+        , valueCasingPartsAttribute selectionConfig hasErrors hasPendingValidation
+        , attributeIf (not (isFocused selectionConfig)) (onMouseDown BringInputInFocus)
+        , attributeIf (not (isFocused selectionConfig)) (onFocus BringInputInFocus)
+        , tabIndexAttribute (isDisabled selectionConfig)
+        , classList
+            (valueCasingClassList selectionConfig hasOptionSelected False)
         ]
-        [ div
-            [ id "value-casing"
-            , valueCasingPartsAttribute selectionConfig hasErrors hasPendingValidation
-            , attributeIf (not (isFocused selectionConfig)) (onMouseDown BringInputInFocus)
-            , attributeIf (not (isFocused selectionConfig)) (onFocus BringInputInFocus)
-            , tabIndexAttribute (isDisabled selectionConfig)
-            , classList
-                (valueCasingClassList selectionConfig hasOptionSelected False)
-            ]
-            [ span
-                [ id "selected-value" ]
-                [ text valueStr ]
-            , singleSelectCustomHtmlInputField
-                searchString
-                (isDisabled selectionConfig)
-                (isFocused selectionConfig)
-                (SelectionMode.getPlaceholder selectionConfig)
-                hasOptionSelected
-            , case rightSlot of
-                ShowNothing ->
-                    text ""
-
-                ShowLoadingIndicator ->
-                    node "slot" [ name "loading-indicator" ] [ defaultLoadingIndicator ]
-
-                ShowDropdownIndicator transitioning ->
-                    dropdownIndicator (SelectionMode.getInteractionState selectionConfig) transitioning
-
-                ShowClearButton ->
-                    node "slot" [ name "clear-button" ] []
-
-                ShowAddButton ->
-                    text ""
-
-                ShowAddAndRemoveButtons ->
-                    text ""
-            ]
-        , dropdown
-            selectionConfig
-            options
+        [ span
+            [ id "selected-value" ]
+            [ text valueStr ]
+        , singleSelectCustomHtmlInputField
             searchString
-            valueCasing
+            (isDisabled selectionConfig)
+            (isFocused selectionConfig)
+            (SelectionMode.getPlaceholder selectionConfig)
+            hasOptionSelected
+        , case rightSlot of
+            ShowNothing ->
+                text ""
+
+            ShowLoadingIndicator ->
+                node "slot" [ name "loading-indicator" ] [ defaultLoadingIndicator ]
+
+            ShowDropdownIndicator transitioning ->
+                dropdownIndicator (SelectionMode.getInteractionState selectionConfig) transitioning
+
+            ShowClearButton ->
+                node "slot" [ name "clear-button" ] []
+
+            ShowAddButton ->
+                text ""
+
+            ShowAddAndRemoveButtons ->
+                text ""
         ]
 
 
-multiSelectViewCustomHtml : SelectionConfig -> List Option -> SearchString -> RightSlot -> ValueCasing -> Html Msg
-multiSelectViewCustomHtml selectionConfig options searchString rightSlot valueCasing =
+multiSelectViewCustomHtml : SelectionConfig -> List Option -> SearchString -> RightSlot -> Html Msg
+multiSelectViewCustomHtml selectionConfig options searchString rightSlot =
     let
         hasOptionSelected =
             hasSelectedOption options
@@ -1608,42 +1615,26 @@ multiSelectViewCustomHtml selectionConfig options searchString rightSlot valueCa
                 []
     in
     div
-        [ id "wrapper"
-        , Html.Attributes.attribute "part" "wrapper"
-
-        -- This stops the dropdown from flashes when the user clicks
-        -- on an optgroup. And it kinda makes sense. we don't want
-        --  mousedown events escaping and effecting the DOM.
-        , onMouseDownStopPropagationAndPreventDefault NoOp
-        , classList [ ( "disabled", isDisabled selectionConfig ) ]
-        ]
-        [ div
-            [ id "value-casing"
-            , valueCasingPartsAttribute selectionConfig hasErrors hasPendingValidation
-            , onMouseDown BringInputInFocus
-            , onFocus BringInputInFocus
-            , Keyboard.on Keyboard.Keydown
-                [ ( Delete, DeleteKeydownForMultiSelect )
-                , ( Backspace, DeleteKeydownForMultiSelect )
-                ]
-            , tabIndexAttribute (isDisabled selectionConfig)
-            , classList
-                (valueCasingClassList selectionConfig hasOptionSelected False)
+        [ id "value-casing"
+        , valueCasingPartsAttribute selectionConfig hasErrors hasPendingValidation
+        , onMouseDown BringInputInFocus
+        , onFocus BringInputInFocus
+        , Keyboard.on Keyboard.Keydown
+            [ ( Delete, DeleteKeydownForMultiSelect )
+            , ( Backspace, DeleteKeydownForMultiSelect )
             ]
-            (optionsToValuesHtml options (getSingleItemRemoval selectionConfig)
-                ++ [ inputFilter
-                   , rightSlotHtml
-                        rightSlot
-                        (SelectionMode.getInteractionState selectionConfig)
-                        0
-                   ]
-            )
-        , dropdown
-            selectionConfig
-            options
-            searchString
-            valueCasing
+        , tabIndexAttribute (isDisabled selectionConfig)
+        , classList
+            (valueCasingClassList selectionConfig hasOptionSelected False)
         ]
+        (optionsToValuesHtml options (getSingleItemRemoval selectionConfig)
+            ++ [ inputFilter
+               , rightSlotHtml
+                    rightSlot
+                    (SelectionMode.getInteractionState selectionConfig)
+                    0
+               ]
+        )
 
 
 multiSelectViewDataset : SelectionConfig -> List Option -> RightSlot -> Html Msg
@@ -1682,19 +1673,16 @@ multiSelectViewDataset selectionConfig options rightSlot =
                         )
                         selectedOptions_
     in
-    div [ id "wrapper", Html.Attributes.attribute "part" "wrapper" ]
-        [ div
-            [ id "value-casing"
-            , valueCasingPartsAttribute selectionConfig hasAnError hasPendingValidation
-            , classList
-                (valueCasingClassList selectionConfig
-                    hasOptionSelected
-                    hasAnError
-                )
-            ]
-            (makeInputs selectedOptions)
-        , datalist options
+    div
+        [ id "value-casing"
+        , valueCasingPartsAttribute selectionConfig hasAnError hasPendingValidation
+        , classList
+            (valueCasingClassList selectionConfig
+                hasOptionSelected
+                hasAnError
+            )
         ]
+        (makeInputs selectedOptions)
 
 
 valueCasingClassList : SelectionConfig -> Bool -> Bool -> List ( String, Bool )
@@ -1878,20 +1866,17 @@ singleSelectViewDatalistHtml selectionConfig options =
         hasPendingValidation =
             OptionsUtilities.hasAnyPendingValidation options
     in
-    div [ id "wrapper", Html.Attributes.attribute "part" "wrapper" ]
-        [ div
-            [ id "value-casing"
-            , valueCasingPartsAttribute selectionConfig hasAnError hasPendingValidation
-            , tabIndexAttribute (isDisabled selectionConfig)
-            , classList
-                (valueCasingClassList selectionConfig hasOptionSelected hasAnError)
-            ]
-            [ singleSelectDatasetInputField
-                maybeSelectedOption
-                selectionConfig
-                hasOptionSelected
-            ]
-        , datalist options
+    div
+        [ id "value-casing"
+        , valueCasingPartsAttribute selectionConfig hasAnError hasPendingValidation
+        , tabIndexAttribute (isDisabled selectionConfig)
+        , classList
+            (valueCasingClassList selectionConfig hasOptionSelected hasAnError)
+        ]
+        [ singleSelectDatasetInputField
+            maybeSelectedOption
+            selectionConfig
+            hasOptionSelected
         ]
 
 
