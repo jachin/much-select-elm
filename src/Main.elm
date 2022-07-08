@@ -856,13 +856,11 @@ update msg model =
                         | selectionConfig = newSelectionConfig
                         , rightSlot = updateRightSlot model.rightSlot newSelectionConfig True model.options
                       }
-                    , --updateOptionsFromDom ()
-                      FetchOptionsFromDom
+                    , FetchOptionsFromDom
                     )
 
                 Err _ ->
-                    -- TODO Report Error
-                    ( model, NoEffect )
+                    ( model, ReportErrorMessage ("Invalid output style " ++ newOutputStyleString) )
 
         MultiSelectSingleItemRemovalAttributeChanged shouldEnableMultiSelectSingleItemRemoval ->
             let
@@ -878,8 +876,6 @@ update msg model =
               }
             , batch
                 [ ReportReady
-
-                -- muchSelectIsReady ()
                 , NoEffect
                 ]
             )
