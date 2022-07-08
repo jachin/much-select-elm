@@ -43,7 +43,7 @@ flagsDatalistSingle =
 simulateEffects : Main.Effect -> ProgramTest.SimulatedEffect Main.Msg
 simulateEffects effect =
     case effect of
-        Main.InputHasBeenKeyUp string ->
+        Main.InputHasBeenKeyUp string _ ->
             SimulatedEffect.Ports.send "inputKeyUp" (Json.Encode.string string)
 
         Main.Batch effects ->
