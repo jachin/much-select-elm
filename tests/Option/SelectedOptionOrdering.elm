@@ -7,8 +7,7 @@ import ProgramTest exposing (ProgramTest)
 import SimulatedEffect.Cmd
 import SimulatedEffect.Ports
 import Test exposing (Test, describe, test)
-import Test.Html.Query exposing (find)
-import Test.Html.Selector exposing (all, class, classes, containing, exactClassName, id, text)
+import Test.Html.Selector exposing (all, classes, containing, id, text)
 
 
 booksJsonWithIndexesAndWithSelected =
@@ -81,7 +80,7 @@ simulatedEffects effect =
         Main.InputHasBeenBlurred ->
             SimulatedEffect.Ports.send "inputBlurred" (Json.Encode.object [])
 
-        Main.InputHasBeenKeyUp string ->
+        Main.InputHasBeenKeyUp string _ ->
             SimulatedEffect.Ports.send "inputKeyUp" (Json.Encode.string string)
 
         Main.SearchStringTouched _ ->

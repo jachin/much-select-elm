@@ -39,6 +39,13 @@ type ValidationResult
     | ValidationPending String Int
 
 
+type ValidationStatus
+    = InputHasBeenValidated
+    | InputHasValidationPending
+    | InputHasFailedValidation
+    | InputValidationIsNotHappening
+
+
 getSelectedIndexFromValidationResult : ValidationResult -> Int
 getSelectedIndexFromValidationResult validationResult =
     case validationResult of

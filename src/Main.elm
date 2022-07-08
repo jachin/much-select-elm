@@ -196,7 +196,7 @@ type Effect
     | BlurInput
     | InputHasBeenFocused
     | InputHasBeenBlurred
-    | InputHasBeenKeyUp String
+    | InputHasBeenKeyUp String TransformAndValidate.ValidationStatus
     | SearchStringTouched Float
     | UpdateOptionsInWebWorker
     | SearchOptionsWithWebWorker Json.Decode.Value
@@ -453,7 +453,7 @@ update msg model =
                 , searchStringBounce = Bounce.push model.searchStringBounce
               }
             , batch
-                [ InputHasBeenKeyUp searchString
+                [ InputHasBeenKeyUp searchString TransformAndValidate.InputValidationIsNotHappening
                 , SearchStringTouched model.searchStringDebounceLength
                 ]
             )
@@ -484,9 +484,12 @@ update msg model =
                         | options = updatedOptions
                         , rightSlot = updateRightSlot model.rightSlot model.selectionConfig True (updatedOptions |> selectedOptions)
                       }
-                    , makeEffectsWhenValuesChanges
-                        (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
-                        maybeSelectedOptionValue
+                    , batch
+                        [ makeEffectsWhenValuesChanges
+                            (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
+                            maybeSelectedOptionValue
+                        , InputHasBeenKeyUp valueString TransformAndValidate.InputHasBeenValidated
+                        ]
                     )
 
                 TransformAndValidate.ValidationFailed _ _ validationErrorMessages ->
@@ -510,9 +513,12 @@ update msg model =
                                 True
                                 (updatedOptions |> selectedOptions)
                       }
-                    , makeEffectsWhenValuesChanges
-                        (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
-                        maybeSelectedOptionValue
+                    , batch
+                        [ makeEffectsWhenValuesChanges
+                            (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
+                            maybeSelectedOptionValue
+                        , InputHasBeenKeyUp valueString TransformAndValidate.InputHasFailedValidation
+                        ]
                     )
 
                 TransformAndValidate.ValidationPending _ _ ->
@@ -535,9 +541,12 @@ update msg model =
                                 True
                                 (updatedOptions |> selectedOptions)
                       }
-                    , makeEffectsWhenValuesChanges
-                        (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
-                        maybeSelectedOptionValue
+                    , batch
+                        [ makeEffectsWhenValuesChanges
+                            (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
+                            maybeSelectedOptionValue
+                        , InputHasBeenKeyUp valueString TransformAndValidate.InputHasValidationPending
+                        ]
                     )
 
         UpdateOptionsWithSearchString ->
@@ -554,7 +563,7 @@ update msg model =
                 | searchString = SearchString.new inputString
                 , options = updateOrAddCustomOption (SearchString.new inputString) model.selectionConfig model.options
               }
-            , InputHasBeenKeyUp inputString
+            , InputHasBeenKeyUp inputString TransformAndValidate.InputValidationIsNotHappening
             )
 
         ValueChanged valuesJson ->
@@ -1184,7 +1193,7 @@ perform effect =
         InputHasBeenFocused ->
             inputFocused ()
 
-        InputHasBeenKeyUp string ->
+        InputHasBeenKeyUp string _ ->
             inputKeyUp string
 
         UpdateOptionsInWebWorker ->
@@ -1886,6 +1895,9 @@ multiSelectDatasetInputField maybeOption selectionConfig rightSlot index =
         idAttr =
             id ("input-value-" ++ String.fromInt index)
 
+        ariaLabel =
+            Html.Attributes.attribute "aria-label" "much-select-value"
+
         errorIdAttr =
             id ("error-input-value-" ++ String.fromInt index)
 
@@ -1921,6 +1933,7 @@ multiSelectDatasetInputField maybeOption selectionConfig rightSlot index =
                 input
                     [ disabled True
                     , idAttr
+                    , ariaLabel
                     , Html.Attributes.attribute "part" "input-value"
                     , placeholderAttribute
                     , classList classes
@@ -1931,6 +1944,7 @@ multiSelectDatasetInputField maybeOption selectionConfig rightSlot index =
                 input
                     [ typeAttr
                     , idAttr
+                    , ariaLabel
                     , Html.Attributes.attribute "part" "input-value"
                     , classList classes
                     , onInput (UpdateOptionValueValue index)
@@ -1981,6 +1995,9 @@ singleSelectDatasetInputField maybeOption selectionMode hasSelectedOption =
         idAttr =
             id "input-value"
 
+        ariaLabel =
+            Html.Attributes.attribute "aria-label" "much-select-value"
+
         partAttr =
             Html.Attributes.attribute "part" "input-value"
 
@@ -2015,6 +2032,7 @@ singleSelectDatasetInputField maybeOption selectionMode hasSelectedOption =
         input
             [ disabled True
             , idAttr
+            , ariaLabel
             , partAttr
             , placeholderAttribute
             ]
@@ -2024,6 +2042,7 @@ singleSelectDatasetInputField maybeOption selectionMode hasSelectedOption =
         input
             [ typeAttr
             , idAttr
+            , ariaLabel
             , partAttr
             , onBlurAttr
             , onFocusAttr
