@@ -856,8 +856,7 @@ update msg model =
                         | selectionConfig = newSelectionConfig
                         , rightSlot = updateRightSlot model.rightSlot newSelectionConfig True model.options
                       }
-                    , --updateOptionsFromDom ()
-                      FetchOptionsFromDom
+                    , FetchOptionsFromDom
                     )
 
                 Err _ ->
@@ -878,8 +877,6 @@ update msg model =
               }
             , batch
                 [ ReportReady
-
-                -- muchSelectIsReady ()
                 , NoEffect
                 ]
             )
