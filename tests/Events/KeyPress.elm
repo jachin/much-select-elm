@@ -1,4 +1,4 @@
-module Events.Kepress exposing (suite)
+module Events.KeyPress exposing (suite)
 
 import Expect
 import Json.Decode

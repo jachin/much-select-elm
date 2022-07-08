@@ -860,8 +860,7 @@ update msg model =
                     )
 
                 Err _ ->
-                    -- TODO Report Error
-                    ( model, NoEffect )
+                    ( model, ReportErrorMessage ("Invalid output style " ++ newOutputStyleString) )
 
         MultiSelectSingleItemRemovalAttributeChanged shouldEnableMultiSelectSingleItemRemoval ->
             let
