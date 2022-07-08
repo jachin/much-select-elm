@@ -484,9 +484,12 @@ update msg model =
                         | options = updatedOptions
                         , rightSlot = updateRightSlot model.rightSlot model.selectionConfig True (updatedOptions |> selectedOptions)
                       }
-                    , makeEffectsWhenValuesChanges
-                        (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
-                        maybeSelectedOptionValue
+                    , batch
+                        [ makeEffectsWhenValuesChanges
+                            (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
+                            maybeSelectedOptionValue
+                        , InputHasBeenKeyUp valueString
+                        ]
                     )
 
                 TransformAndValidate.ValidationFailed _ _ validationErrorMessages ->
@@ -510,9 +513,12 @@ update msg model =
                                 True
                                 (updatedOptions |> selectedOptions)
                       }
-                    , makeEffectsWhenValuesChanges
-                        (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
-                        maybeSelectedOptionValue
+                    , batch
+                        [ makeEffectsWhenValuesChanges
+                            (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
+                            maybeSelectedOptionValue
+                        , InputHasBeenKeyUp valueString
+                        ]
                     )
 
                 TransformAndValidate.ValidationPending _ _ ->
@@ -535,9 +541,12 @@ update msg model =
                                 True
                                 (updatedOptions |> selectedOptions)
                       }
-                    , makeEffectsWhenValuesChanges
-                        (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
-                        maybeSelectedOptionValue
+                    , batch
+                        [ makeEffectsWhenValuesChanges
+                            (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
+                            maybeSelectedOptionValue
+                        , InputHasBeenKeyUp valueString
+                        ]
                     )
 
         UpdateOptionsWithSearchString ->
@@ -2033,6 +2042,7 @@ singleSelectDatasetInputField maybeOption selectionMode hasSelectedOption =
         input
             [ typeAttr
             , idAttr
+            , ariaLabel
             , partAttr
             , onBlurAttr
             , onFocusAttr
