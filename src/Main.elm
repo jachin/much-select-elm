@@ -196,7 +196,7 @@ type Effect
     | BlurInput
     | InputHasBeenFocused
     | InputHasBeenBlurred
-    | InputHasBeenKeyUp String
+    | InputHasBeenKeyUp String TransformAndValidate.ValidationStatus
     | SearchStringTouched Float
     | UpdateOptionsInWebWorker
     | SearchOptionsWithWebWorker Json.Decode.Value
@@ -453,7 +453,7 @@ update msg model =
                 , searchStringBounce = Bounce.push model.searchStringBounce
               }
             , batch
-                [ InputHasBeenKeyUp searchString
+                [ InputHasBeenKeyUp searchString TransformAndValidate.InputValidationIsNotHappening
                 , SearchStringTouched model.searchStringDebounceLength
                 ]
             )
@@ -488,7 +488,7 @@ update msg model =
                         [ makeEffectsWhenValuesChanges
                             (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
                             maybeSelectedOptionValue
-                        , InputHasBeenKeyUp valueString
+                        , InputHasBeenKeyUp valueString TransformAndValidate.InputHasBeenValidated
                         ]
                     )
 
@@ -517,7 +517,7 @@ update msg model =
                         [ makeEffectsWhenValuesChanges
                             (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
                             maybeSelectedOptionValue
-                        , InputHasBeenKeyUp valueString
+                        , InputHasBeenKeyUp valueString TransformAndValidate.InputHasFailedValidation
                         ]
                     )
 
@@ -545,7 +545,7 @@ update msg model =
                         [ makeEffectsWhenValuesChanges
                             (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
                             maybeSelectedOptionValue
-                        , InputHasBeenKeyUp valueString
+                        , InputHasBeenKeyUp valueString TransformAndValidate.InputHasValidationPending
                         ]
                     )
 
@@ -563,7 +563,7 @@ update msg model =
                 | searchString = SearchString.new inputString
                 , options = updateOrAddCustomOption (SearchString.new inputString) model.selectionConfig model.options
               }
-            , InputHasBeenKeyUp inputString
+            , InputHasBeenKeyUp inputString TransformAndValidate.InputValidationIsNotHappening
             )
 
         ValueChanged valuesJson ->
@@ -1193,7 +1193,7 @@ perform effect =
         InputHasBeenFocused ->
             inputFocused ()
 
-        InputHasBeenKeyUp string ->
+        InputHasBeenKeyUp string _ ->
             inputKeyUp string
 
         UpdateOptionsInWebWorker ->
