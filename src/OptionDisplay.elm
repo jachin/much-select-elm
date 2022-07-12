@@ -1,6 +1,7 @@
 module OptionDisplay exposing
     ( OptionAge(..)
     , OptionDisplay(..)
+    , activate
     , addHighlight
     , decoder
     , default
@@ -36,6 +37,7 @@ type OptionDisplay
     | OptionSelectedPendingValidation Int
     | OptionSelectedHighlighted Int
     | OptionHighlighted
+    | OptionActivated
     | OptionDisabled OptionAge
 
 
@@ -96,6 +98,9 @@ isSelected optionDisplay =
         OptionDisabled _ ->
             False
 
+        OptionActivated ->
+            False
+
 
 setSelectedIndex : Int -> OptionDisplay -> OptionDisplay
 setSelectedIndex selectedIndex optionDisplay =
@@ -122,6 +127,9 @@ setSelectedIndex selectedIndex optionDisplay =
             optionDisplay
 
         OptionDisabled _ ->
+            optionDisplay
+
+        OptionActivated ->
             optionDisplay
 
 
@@ -152,6 +160,9 @@ getSelectedIndex optionDisplay =
         OptionDisabled _ ->
             -1
 
+        OptionActivated ->
+            -1
+
 
 select : Int -> OptionDisplay -> OptionDisplay
 select selectedIndex optionDisplay =
@@ -179,6 +190,9 @@ select selectedIndex optionDisplay =
 
         OptionDisabled _ ->
             optionDisplay
+
+        OptionActivated ->
+            OptionSelected selectedIndex MatureOption
 
 
 deselect : OptionDisplay -> OptionDisplay
@@ -208,6 +222,9 @@ deselect optionDisplay =
         OptionDisabled _ ->
             optionDisplay
 
+        OptionActivated ->
+            OptionShown MatureOption
+
 
 addHighlight : OptionDisplay -> OptionDisplay
 addHighlight optionDisplay =
@@ -235,6 +252,9 @@ addHighlight optionDisplay =
 
         OptionDisabled _ ->
             optionDisplay
+
+        OptionActivated ->
+            OptionHighlighted
 
 
 removeHighlight : OptionDisplay -> OptionDisplay
@@ -264,6 +284,9 @@ removeHighlight optionDisplay =
         OptionDisabled _ ->
             optionDisplay
 
+        OptionActivated ->
+            optionDisplay
+
 
 isHighlighted : OptionDisplay -> Bool
 isHighlighted optionDisplay =
@@ -290,6 +313,9 @@ isHighlighted optionDisplay =
             True
 
         OptionDisabled _ ->
+            False
+
+        OptionActivated ->
             False
 
 
@@ -324,6 +350,9 @@ isHighlightable selectionMode optionDisplay =
 
         OptionDisabled _ ->
             False
+
+        OptionActivated ->
+            True
 
 
 setErrors : List ValidationFailureMessage -> OptionDisplay -> OptionDisplay
@@ -361,6 +390,9 @@ setErrors validationErrorMessages optionDisplay =
         OptionDisabled _ ->
             optionDisplay
 
+        OptionActivated ->
+            optionDisplay
+
 
 getErrors : OptionDisplay -> List ValidationFailureMessage
 getErrors optionDisplay =
@@ -387,6 +419,9 @@ getErrors optionDisplay =
             []
 
         OptionDisabled _ ->
+            []
+
+        OptionActivated ->
             []
 
 
@@ -417,6 +452,9 @@ isInvalid optionDisplay =
         OptionDisabled _ ->
             False
 
+        OptionActivated ->
+            False
+
 
 isPendingValidation : OptionDisplay -> Bool
 isPendingValidation optionDisplay =
@@ -443,6 +481,9 @@ isPendingValidation optionDisplay =
             False
 
         OptionDisabled _ ->
+            False
+
+        OptionActivated ->
             False
 
 
@@ -472,6 +513,40 @@ setAge optionAge optionDisplay =
 
         OptionDisabled _ ->
             OptionDisabled optionAge
+
+        OptionActivated ->
+            OptionActivated
+
+
+activate : OptionDisplay -> OptionDisplay
+activate optionDisplay =
+    case optionDisplay of
+        OptionShown _ ->
+            optionDisplay
+
+        OptionHidden ->
+            optionDisplay
+
+        OptionSelected _ _ ->
+            optionDisplay
+
+        OptionSelectedAndInvalid _ _ ->
+            optionDisplay
+
+        OptionSelectedPendingValidation _ ->
+            optionDisplay
+
+        OptionSelectedHighlighted _ ->
+            optionDisplay
+
+        OptionHighlighted ->
+            OptionActivated
+
+        OptionActivated ->
+            optionDisplay
+
+        OptionDisabled _ ->
+            optionDisplay
 
 
 decoder : OptionAge -> Json.Decode.Decoder OptionDisplay
