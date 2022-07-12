@@ -29,7 +29,6 @@ import Option
         , optionToValueLabelTuple
         , optionValuesEqual
         , removeHighlightFromOption
-        , selectOption
         , setLabel
         , setLabelWithString
         , setOptionDisplay
@@ -46,11 +45,7 @@ import OptionValue
 import OutputStyle exposing (SelectedItemPlacementMode(..))
 import PositiveInt
 import SearchString exposing (SearchString)
-import SelectionMode
-    exposing
-        ( SelectionConfig(..)
-        , getSelectedItemPlacementMode
-        )
+import SelectionMode exposing (SelectionConfig(..), SelectionMode, getSelectedItemPlacementMode)
 import SortRank exposing (SortRank)
 import TransformAndValidate exposing (ValidationErrorMessage, ValidationFailureMessage)
 
@@ -208,14 +203,17 @@ deselectAllButTheFirstSelectedOptionInList options =
             options
 
 
+selectOption : SelectionMode -> OptionValue -> List Option -> List Option
+selectOption selectionMode optionValue options =
+    selectOptionInListByOptionValue optionValue options
 
-{- Look through the list of options, if we find one that matches the given option value
-   then select it and return a new list of options with the found option selected.
 
-   If we do not find the option value return the same list of options.
+{-| Look through the list of options, if we find one that matches the given option value
+then select it and return a new list of options with the found option selected.
+
+If we do not find the option value return the same list of options.
+
 -}
-
-
 selectOptionInListByOptionValue : OptionValue -> List Option -> List Option
 selectOptionInListByOptionValue value options =
     let
@@ -237,22 +235,22 @@ selectOptionInListByOptionValue value options =
             if optionValuesEqual option_ value then
                 case option_ of
                     Option _ _ _ _ _ _ ->
-                        selectOption nextSelectedIndex option_
+                        Option.selectOption nextSelectedIndex option_
 
                     CustomOption _ _ _ _ ->
                         case value of
                             OptionValue valueStr ->
-                                selectOption nextSelectedIndex option_
+                                Option.selectOption nextSelectedIndex option_
                                     |> setLabelWithString valueStr Nothing
 
                             EmptyOptionValue ->
-                                selectOption nextSelectedIndex option_
+                                Option.selectOption nextSelectedIndex option_
 
                     EmptyOption _ _ ->
-                        selectOption nextSelectedIndex option_
+                        Option.selectOption nextSelectedIndex option_
 
                     DatalistOption _ _ ->
-                        selectOption nextSelectedIndex option_
+                        Option.selectOption nextSelectedIndex option_
 
             else if isOptionSelected option_ then
                 option_
@@ -270,22 +268,22 @@ selectOptionInListByOptionValueWithIndex index value options =
             if optionValuesEqual option_ value then
                 case option_ of
                     Option _ _ _ _ _ _ ->
-                        selectOption index option_
+                        Option.selectOption index option_
 
                     CustomOption _ _ _ _ ->
                         case value of
                             OptionValue valueStr ->
-                                selectOption index option_
+                                Option.selectOption index option_
                                     |> setLabelWithString valueStr Nothing
 
                             EmptyOptionValue ->
-                                selectOption index option_
+                                Option.selectOption index option_
 
                     EmptyOption _ _ ->
-                        selectOption index option_
+                        Option.selectOption index option_
 
                     DatalistOption _ _ ->
-                        selectOption index option_
+                        Option.selectOption index option_
 
             else if isOptionSelected option_ then
                 option_
@@ -367,21 +365,21 @@ selectSingleOptionInList value options =
                 if optionValuesEqual option_ value then
                     case option_ of
                         Option _ _ _ _ _ _ ->
-                            selectOption 0 option_
+                            Option.selectOption 0 option_
 
                         CustomOption _ _ optionValue _ ->
                             case optionValue of
                                 OptionValue valueStr ->
-                                    selectOption 0 option_ |> setLabelWithString valueStr Nothing
+                                    Option.selectOption 0 option_ |> setLabelWithString valueStr Nothing
 
                                 EmptyOptionValue ->
-                                    selectOption 0 option_
+                                    Option.selectOption 0 option_
 
                         EmptyOption _ _ ->
-                            selectOption 0 option_
+                            Option.selectOption 0 option_
 
                         DatalistOption _ _ ->
-                            selectOption 0 option_
+                            Option.selectOption 0 option_
 
                 else
                     deselectOption option_
@@ -397,21 +395,21 @@ selectSingleOptionInListResult optionValue options =
                     if optionValuesEqual option_ optionValue then
                         case option_ of
                             Option _ _ _ _ _ _ ->
-                                selectOption 0 option_
+                                Option.selectOption 0 option_
 
                             CustomOption _ _ optionValue_ _ ->
                                 case optionValue_ of
                                     OptionValue valueStr ->
-                                        selectOption 0 option_ |> setLabelWithString valueStr Nothing
+                                        Option.selectOption 0 option_ |> setLabelWithString valueStr Nothing
 
                                     EmptyOptionValue ->
-                                        selectOption 0 option_
+                                        Option.selectOption 0 option_
 
                             EmptyOption _ _ ->
-                                selectOption 0 option_
+                                Option.selectOption 0 option_
 
                             DatalistOption _ _ ->
-                                selectOption 0 option_
+                                Option.selectOption 0 option_
 
                     else
                         deselectOption option_
@@ -458,7 +456,7 @@ selectEmptyOption options =
                         deselectOption option_
 
                     EmptyOption _ _ ->
-                        selectOption 0 option_
+                        Option.selectOption 0 option_
 
                     DatalistOption _ _ ->
                         deselectOption option_

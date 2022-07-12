@@ -1,7 +1,13 @@
 module Option.CustomOptions exposing (suite)
 
 import Expect
-import Main exposing (RightSlot(..), figureOutWhichOptionsToShowInTheDropdown, updateModelWithChangesThatEffectTheOptionsWithSearchString, updateTheFullListOfOptions, updateTheOptionsForTheDropdown)
+import Main
+    exposing
+        ( figureOutWhichOptionsToShowInTheDropdown
+        , updateModelWithChangesThatEffectTheOptionsWithSearchString
+        , updateTheFullListOfOptions
+        , updateTheOptionsForTheDropdown
+        )
 import Option exposing (newCustomOption, newOption, selectOption)
 import OptionSearcher
 import OptionSorting
@@ -13,8 +19,14 @@ import OptionsUtilities
         , removeUnselectedCustomOptions
         , selectOptionInListByOptionValue
         )
-import OutputStyle exposing (MaxDropdownItems(..), SearchStringMinimumLength(..), SingleItemRemoval(..))
+import OutputStyle
+    exposing
+        ( MaxDropdownItems(..)
+        , SearchStringMinimumLength(..)
+        , SingleItemRemoval(..)
+        )
 import PositiveInt
+import RightSlot exposing (RightSlot(..))
 import SearchString
 import SelectionMode
     exposing

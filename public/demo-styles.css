@@ -6,28 +6,6 @@ Boring colors https://flatuicolors.com/palette/gb
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@500&display=swap');
 
 body {
-    /* Fun colors */
-    --highligher-pink: #ef5777;
-    --dark-periwinkle: #575fcf;
-    --megaman: #4bcffa;
-    --fresh-turquoise: #34e7e4;
-    --minty-green: #0be881;
-    --sizeling-red: #f53b57;
-    --free-speech-blue: #3c40c6;
-    --spirio-disco-ball: #0fbcf9;
-    --jade-dust: #00d8d6;
-    --green-teal: #05c46b;
-    --narenjin-orange: #ffc048;
-    --yriel-yellow: #ffdd59;
-    --sunset-orange: #ff5e57;
-    --hint-of-elusive-blue: #d2dae2;
-    --good-night: #485460;
-    --chrome-yellow: #ffa801;
-    --vibrant-yellow: #ffd32a;
-    --red-orange: #ff3f34;
-    --london-square: #808e9b;
-    --black-pearl: #1e272e;
-
     /* Boring colors */
     --protoss-pylon: #00a8ff;
     --periwinkle: #9c88ff;
@@ -49,6 +27,28 @@ body {
     --chain-gang-grey: #718093;
     --pico-void: #192a56;
     --electromagnetic: #2f3640;
+
+    /* Fun colors */
+    --highligher-pink: #ef5777;
+    --dark-periwinkle: #575fcf;
+    --megaman: #4bcffa;
+    --fresh-turquoise: #34e7e4;
+    --minty-green: #0be881;
+    --sizeling-red: #f53b57;
+    --free-speech-blue: #3c40c6;
+    --spirio-disco-ball: #0fbcf9;
+    --jade-dust: #00d8d6;
+    --green-teal: #05c46b;
+    --narenjin-orange: #ffc048;
+    --yriel-yellow: #ffdd59;
+    --sunset-orange: #ff5e57;
+    --hint-of-elusive-blue: #d2dae2;
+    --good-night: #485460;
+    --chrome-yellow: #ffa801;
+    --vibrant-yellow: #ffd32a;
+    --red-orange: #ff3f34;
+    --london-square: #808e9b;
+    --black-pearl: #1e272e;
 
     --much-select-height: 36px;
 }
@@ -429,20 +429,19 @@ much-select::part(value highlighted-value) {
 
 much-select::part(dropdown-indicator) {
     position: absolute;
-    right: 5px;
+    right: 8px;
     top: 15px;
     cursor: pointer;
     display: block;
     transition: transform 0.25s;
-    font-family: "Times New Roman", serif;
 }
 
 much-select::part(dropdown-indicator up) {
-    transform: rotate(180deg);
+    transform: rotate(270deg);
 }
 
 much-select::part(dropdown-indicator down) {
-    transform: rotate(0deg);
+    transform: rotate(90deg);
 }
 
 much-select::part(clear-button-wrapper) {

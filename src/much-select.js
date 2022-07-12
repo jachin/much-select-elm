@@ -598,16 +598,7 @@ class MuchSelect extends HTMLElement {
 
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
-      app.ports.inputKeyUp.subscribe((searchString) => {
-        this.dispatchEvent(
-          new CustomEvent("inputKeyUp", {
-            bubbles: true,
-            detail: { searchString },
-          })
-        );
-
-        this._inputKeypressDebounceHandler(searchString);
-      })
+      app.ports.inputKeyUp.subscribe(this._handleInputKeyUp.bind(this))
     );
 
     // noinspection JSUnresolvedVariable
@@ -737,6 +728,7 @@ class MuchSelect extends HTMLElement {
         if (highlightedOption) {
           if (dropdown.scrollHeight > dropdown.clientHeight) {
             const optionHeight = highlightedOption.clientHeight;
+            // noinspection JSUnresolvedVariable
             const optionTop = highlightedOption.offsetTop - optionHeight;
             const optionBottom = optionTop + optionHeight + optionHeight;
             const dropdownTop = dropdown.scrollTop;
@@ -1304,6 +1296,17 @@ class MuchSelect extends HTMLElement {
         `In single select mode we are expecting a single custom option, instead we got ${values.length}`
       );
     }
+  }
+
+  _handleInputKeyUp(searchString) {
+    this.dispatchEvent(
+      new CustomEvent("inputKeyUp", {
+        bubbles: true,
+        detail: { searchString },
+      })
+    );
+
+    this._inputKeypressDebounceHandler(searchString);
   }
 
   get appPromise() {
