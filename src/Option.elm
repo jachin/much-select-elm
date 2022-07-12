@@ -2,6 +2,7 @@ module Option exposing
     ( Option(..)
     , OptionDescription
     , OptionGroup
+    , activateOption
     , decodeSearchResults
     , decoder
     , deselectOption
@@ -822,6 +823,11 @@ isOptionSelectedHighlighted option =
 
         DatalistOption _ _ ->
             False
+
+
+activateOption : Option -> Option
+activateOption option =
+    setOptionDisplay (getOptionDisplay option |> OptionDisplay.activate) option
 
 
 isEmptyOption : Option -> Bool

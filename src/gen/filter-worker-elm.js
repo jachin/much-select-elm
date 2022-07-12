@@ -3201,7 +3201,7 @@ var $author$project$Option$DatalistOption = F2(
 		return {$: 2, a: a, b: b};
 	});
 var $author$project$OptionDisplay$OptionDisabled = function (a) {
-	return {$: 7, a: a};
+	return {$: 8, a: a};
 };
 var $author$project$OptionDisplay$OptionSelected = F2(
 	function (a, b) {
