@@ -1037,7 +1037,7 @@ update msg model =
                 , batch
                     [ ReportValueChanged (updatedOptions |> selectedOptions |> Ports.optionsEncoder)
 
-                    -- todo optionDeselected
+                    -- TODO optionDeselected
                     , FocusInput
                     ]
                 )
@@ -2159,7 +2159,10 @@ dropdown selectionMode options searchString (ValueCasing valueCasingWidth valueC
         div
             [ id "dropdown"
             , Html.Attributes.attribute "part" "dropdown"
-            , classList [ ( "showing", showDropdown selectionMode ), ( "hiding", not (showDropdown selectionMode) ) ]
+            , classList
+                [ ( "showing", showDropdown selectionMode )
+                , ( "hiding", not (showDropdown selectionMode) )
+                ]
             , style "top"
                 (String.fromFloat valueCasingHeight ++ "px")
             , style

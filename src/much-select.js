@@ -728,6 +728,7 @@ class MuchSelect extends HTMLElement {
         if (highlightedOption) {
           if (dropdown.scrollHeight > dropdown.clientHeight) {
             const optionHeight = highlightedOption.clientHeight;
+            // noinspection JSUnresolvedVariable
             const optionTop = highlightedOption.offsetTop - optionHeight;
             const optionBottom = optionTop + optionHeight + optionHeight;
             const dropdownTop = dropdown.scrollTop;
