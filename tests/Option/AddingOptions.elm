@@ -122,6 +122,13 @@ suite =
             , test "with the same value of a selected option already in the list preserver the label" <|
                 \_ ->
                     Expect.equalLists
+                        [ wolfClub, selectOption 1 waveshaper, arcadeHigh, selectOption 0 timecop1983 ]
+                        (addAndSelectOptionsInOptionsListByString [ "Timecop1983", "Waveshaper" ]
+                            [ wolfClub, waveshaper, arcadeHigh, timecop1983 ]
+                        )
+            , test "should preserver the order of the selection" <|
+                \_ ->
+                    Expect.equalLists
                         [ selectOption 0 wolfClub ]
                         (addAndSelectOptionsInOptionsListByString [ "Wolf Club" ] [ selectOption 0 wolfClub ])
             ]

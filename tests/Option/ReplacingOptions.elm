@@ -2,7 +2,8 @@ module Option.ReplacingOptions exposing (suite)
 
 import Expect
 import Option
-import OptionsUtilities exposing (replaceOptions)
+import OptionsUtilities exposing (mergeTwoListsOfOptionsPreservingSelectedOptions, replaceOptions)
+import OutputStyle
 import SelectionMode
 import Test exposing (Test, describe, test)
 
@@ -63,6 +64,25 @@ suite =
                             [ futureCop, theMidnight ]
                         )
                         [ futureCop, theMidnight, Option.selectOption 0 thirdEyeBlind ]
+            , test "should preserver selected order of the options" <|
+                \_ ->
+                    Expect.equalLists
+                        (replaceOptions
+                            multiSelectSelectionConfig
+                            [ Option.selectOption 1 thirdEyeBlind, futureCop, Option.selectOption 0 theMidnight ]
+                            [ Option.selectOption 1 thirdEyeBlind, futureCop, Option.selectOption 0 theMidnight ]
+                        )
+                        [ Option.selectOption 1 thirdEyeBlind, futureCop, Option.selectOption 0 theMidnight ]
+            , test "merging the 2 lists of options should preserver selected order of the options" <|
+                \_ ->
+                    Expect.equalLists
+                        (mergeTwoListsOfOptionsPreservingSelectedOptions
+                            SelectionMode.MultiSelect
+                            OutputStyle.SelectedItemStaysInPlace
+                            [ Option.selectOption 1 thirdEyeBlind, futureCop, Option.selectOption 0 theMidnight ]
+                            [ Option.selectOption 1 thirdEyeBlind, futureCop, Option.selectOption 0 theMidnight ]
+                        )
+                        [ Option.selectOption 1 thirdEyeBlind, futureCop, Option.selectOption 0 theMidnight ]
             ]
         , describe "in single select mode"
             [ test "should preserver a single selected item in the new list of options" <|

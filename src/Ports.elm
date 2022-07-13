@@ -93,6 +93,7 @@ optionEncoder option =
         [ ( "value", Json.Encode.string (Option.getOptionValueAsString option) )
         , ( "label", Json.Encode.string (Option.getOptionLabel option |> OptionLabel.optionLabelToString) )
         , ( "isValid", Json.Encode.bool (Option.isValid option) )
+        , ( "selectedIndex", Json.Encode.int (Option.getOptionSelectedIndex option) )
         ]
 
 

@@ -78,6 +78,18 @@ suite =
                         (selectSingleOptionInListByStringOrSelectCustomValue (SearchString.new "boot hill") options)
                         ((newCustomOption "boot hill" Nothing |> selectOption 0) :: options)
             ]
+        , describe "selectOptionInListWithIndex"
+            [ test "keep the selection index" <|
+                \_ ->
+                    Expect.equalLists
+                        (OptionsUtilities.selectOptionInListWithIndex (danceFloor |> selectOption 5) [ danceFloor ])
+                        [ danceFloor |> selectOption 5 ]
+            , test "if no selection index is specifided default to 0" <|
+                \_ ->
+                    Expect.equalLists
+                        (OptionsUtilities.selectOptionInListWithIndex danceFloor [ danceFloor ])
+                        [ danceFloor |> selectOption 0 ]
+            ]
         , describe "when there are validation errors"
             [ test "should update a selected value with errors, when there are errors" <|
                 \_ ->

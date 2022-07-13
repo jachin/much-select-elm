@@ -2390,6 +2390,7 @@ optionsToValuesHtml : List Option -> SingleItemRemoval -> List (Html Msg)
 optionsToValuesHtml options enableSingleItemRemoval =
     options
         |> selectedOptions
+        |> List.sortBy Option.getOptionSelectedIndex
         |> List.map (Html.Lazy.lazy2 optionToValueHtml enableSingleItemRemoval)
 
 

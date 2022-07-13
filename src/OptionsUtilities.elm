@@ -125,12 +125,12 @@ selectOptionInList option options =
 selectOptionInListWithIndex : Option -> List Option -> List Option
 selectOptionInListWithIndex optionToSelect options =
     let
-        notLessThanZero i =
-            if i < 0 then
+        notLessThanZero index =
+            if index < 0 then
                 0
 
             else
-                0
+                index
 
         selectionIndex =
             getOptionSelectedIndex optionToSelect
@@ -201,11 +201,6 @@ deselectAllButTheFirstSelectedOptionInList options =
 
         Nothing ->
             options
-
-
-selectOption : SelectionMode -> OptionValue -> List Option -> List Option
-selectOption selectionMode optionValue options =
-    selectOptionInListByOptionValue optionValue options
 
 
 {-| Look through the list of options, if we find one that matches the given option value
