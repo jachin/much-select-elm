@@ -1097,7 +1097,9 @@ update msg model =
 
                             else
                                 adjustHighlightedOptionAfterSearch updatedOptions
-                                    (figureOutWhichOptionsToShowInTheDropdown model.selectionConfig updatedOptions)
+                                    (figureOutWhichOptionsToShowInTheDropdown model.selectionConfig updatedOptions
+                                        |> OptionsUtilities.notSelectedOptions
+                                    )
                       }
                     , NoEffect
                     )

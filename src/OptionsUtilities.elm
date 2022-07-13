@@ -610,6 +610,13 @@ selectedOptions options =
         |> List.sortBy getOptionSelectedIndex
 
 
+notSelectedOptions : List Option -> List Option
+notSelectedOptions options =
+    options
+        |> List.filter (not << isOptionSelected)
+        |> List.sortBy getOptionSelectedIndex
+
+
 findSelectedOption : List Option -> Maybe Option
 findSelectedOption options =
     options |> selectedOptions |> List.head
