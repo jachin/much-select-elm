@@ -334,7 +334,7 @@ suite =
                             (tools
                                 |> OptionSearcher.updateOptionsWithSearchStringAndCustomOption
                                     multiSelectConfig
-                                    (SearchString.new "wrench")
+                                    (SearchString.update "wrench")
                                 |> highlightOptionInList wrench
                             )
                         )

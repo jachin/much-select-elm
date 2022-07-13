@@ -519,11 +519,11 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.cW.Y === region.b5.Y)
+	if (region.cX.Y === region.b5.Y)
 	{
-		return 'on line ' + region.cW.Y;
+		return 'on line ' + region.cX.Y;
 	}
-	return 'on lines ' + region.cW.Y + ' through ' + region.b5.Y;
+	return 'on lines ' + region.cX.Y + ' through ' + region.b5.Y;
 }
 
 
@@ -1858,8 +1858,8 @@ var _Platform_worker = F4(function(impl, flagDecoder, debugMetadata, args)
 		flagDecoder,
 		args,
 		impl.ch,
-		impl.c3,
-		impl.c_,
+		impl.c4,
+		impl.c$,
 		function() { return function() {} }
 	);
 });
@@ -2859,16 +2859,20 @@ var $author$project$SelectionMode$CustomHtml = 0;
 var $author$project$OptionDisplay$MatureOption = 1;
 var $author$project$OptionSearcher$SearchParams = F4(
 	function (searchString, searchStringMinimumLength, searchNonce, clearingSearch) {
-		return {b$: clearingSearch, cQ: searchNonce, cR: searchString, cS: searchStringMinimumLength};
+		return {b$: clearingSearch, cR: searchNonce, cS: searchString, cT: searchStringMinimumLength};
 	});
 var $elm$json$Json$Decode$bool = _Json_decodeBool;
-var $elm$core$Basics$identity = function (x) {
-	return x;
-};
-var $author$project$SearchString$SearchString = $elm$core$Basics$identity;
-var $elm$json$Json$Decode$map = _Json_map1;
+var $author$project$SearchString$SearchString = F2(
+	function (a, b) {
+		return {$: 0, a: a, b: b};
+	});
+var $elm$json$Json$Decode$map2 = _Json_map2;
 var $elm$json$Json$Decode$string = _Json_decodeString;
-var $author$project$SearchString$decode = A2($elm$json$Json$Decode$map, $elm$core$Basics$identity, $elm$json$Json$Decode$string);
+var $author$project$SearchString$decode = A3(
+	$elm$json$Json$Decode$map2,
+	$author$project$SearchString$SearchString,
+	$elm$json$Json$Decode$string,
+	$elm$json$Json$Decode$succeed(true));
 var $author$project$OutputStyle$FixedSearchStringMinimumLength = function (a) {
 	return {$: 0, a: a};
 };
@@ -2876,6 +2880,9 @@ var $author$project$OutputStyle$NoMinimumToSearchStringLength = {$: 1};
 var $elm$json$Json$Decode$andThen = _Json_andThen;
 var $elm$json$Json$Decode$fail = _Json_fail;
 var $elm$json$Json$Decode$int = _Json_decodeInt;
+var $elm$core$Basics$identity = function (x) {
+	return x;
+};
 var $author$project$PositiveInt$PositiveInt = $elm$core$Basics$identity;
 var $elm$core$Basics$ge = _Utils_ge;
 var $author$project$PositiveInt$maybeNew = function (_int) {
@@ -3040,7 +3047,7 @@ var $author$project$Option$encodeSearchResult = function (option) {
 			]));
 };
 var $author$project$Option$encodeSearchResults = F3(
-	function (options, nonce, isClearningList) {
+	function (options, nonce, isClearingList) {
 		return $elm$json$Json$Encode$object(
 			_List_fromArray(
 				[
@@ -3049,7 +3056,7 @@ var $author$project$Option$encodeSearchResults = F3(
 					$elm$json$Json$Encode$int(nonce)),
 					_Utils_Tuple2(
 					'clearingSearch',
-					$elm$json$Json$Encode$bool(isClearningList)),
+					$elm$json$Json$Encode$bool(isClearingList)),
 					_Utils_Tuple2(
 					'options',
 					A2($elm$json$Json$Encode$list, $author$project$Option$encodeSearchResult, options))
@@ -3264,7 +3271,6 @@ var $author$project$OptionDisplay$decoder = function (age) {
 				$author$project$OptionDisplay$OptionShown(age))
 			]));
 };
-var $elm$json$Json$Decode$map2 = _Json_map2;
 var $author$project$OptionValue$OptionValue = function (a) {
 	return {$: 0, a: a};
 };
@@ -3296,6 +3302,7 @@ var $author$project$Option$OptionDescription = F2(
 	function (a, b) {
 		return {$: 0, a: a, b: b};
 	});
+var $elm$json$Json$Decode$map = _Json_map1;
 var $elm$json$Json$Decode$null = _Json_decodeNull;
 var $elm$json$Json$Decode$nullable = function (decoder) {
 	return $elm$json$Json$Decode$oneOf(
@@ -3564,7 +3571,7 @@ var $elm$core$List$take = F2(
 	});
 var $elm$core$String$length = _String_length;
 var $author$project$SearchString$length = function (_v0) {
-	var str = _v0;
+	var str = _v0.a;
 	return $elm$core$String$length(str);
 };
 var $author$project$PositiveInt$lessThanOrEqualTo = F2(
@@ -3711,11 +3718,11 @@ var $author$project$OptionLabel$optionLabelToString = function (optionLabel) {
 };
 var $tripokey$elm_fuzzy$Fuzzy$Match = F4(
 	function (score, offset, length, keys) {
-		return {ck: keys, cl: length, cB: offset, aO: score};
+		return {cl: keys, cm: length, cC: offset, aO: score};
 	});
 var $tripokey$elm_fuzzy$Fuzzy$Result = F2(
 	function (score, matches) {
-		return {cn: matches, aO: score};
+		return {co: matches, aO: score};
 	});
 var $tripokey$elm_fuzzy$Fuzzy$ConfigModel = F4(
 	function (addPenalty, movePenalty, removePenalty, insertPenalty) {
@@ -4079,7 +4086,7 @@ var $tripokey$elm_fuzzy$Fuzzy$match = F4(
 						var eDistance = A3($tripokey$elm_fuzzy$Fuzzy$distance, config, n, e);
 						var newMatch = (_Utils_cmp(eDistance.aO, prev.aO) < 0) ? _Utils_update(
 							eDistance,
-							{cB: prevOffset}) : prev;
+							{cC: prevOffset}) : prev;
 						return _Utils_Tuple2(newMatch, newOffset);
 					});
 				return A3(
@@ -4103,8 +4110,8 @@ var $tripokey$elm_fuzzy$Fuzzy$match = F4(
 				var newResult = _Utils_update(
 					prev,
 					{
-						cn: _Utils_ap(
-							prev.cn,
+						co: _Utils_ap(
+							prev.co,
 							_List_fromArray(
 								[matchResult])),
 						aO: matchResult.aO + prev.aO
@@ -4183,7 +4190,7 @@ var $elm$core$List$sum = function (numbers) {
 	return A3($elm$core$List$foldl, $elm$core$Basics$add, 0, numbers);
 };
 var $author$project$SearchString$toString = function (_v0) {
-	var str = _v0;
+	var str = _v0.a;
 	return str;
 };
 var $elm_community$list_extra$List$Extra$indexedFoldl = F3(
@@ -4223,10 +4230,10 @@ var $author$project$OptionPresentor$indexInsideMatch = F2(
 			A2(
 				$elm$core$List$filter,
 				function (match) {
-					var matchIndex = index - match.cB;
-					return A2($elm$core$List$member, matchIndex, match.ck);
+					var matchIndex = index - match.cC;
+					return A2($elm$core$List$member, matchIndex, match.cl);
 				},
-				result.cn));
+				result.co));
 	});
 var $zwilias$elm_utf_tools$String$UTF32$foldl = F3(
 	function (op, initial, input) {
@@ -4533,7 +4540,7 @@ var $author$project$FilterWorker$update = F2(
 			var _v2 = A2($elm$json$Json$Decode$decodeValue, $author$project$OptionSearcher$decodeSearchParams, jsonSearchParams);
 			if (!_v2.$) {
 				var searchParams = _v2.a;
-				var newOptions = A3($author$project$OptionSearcher$updateOptionsWithSearchString, searchParams.cR, searchParams.cS, options);
+				var newOptions = A3($author$project$OptionSearcher$updateOptionsWithSearchString, searchParams.cS, searchParams.cT, options);
 				var optionsToSend = A2(
 					$elm$core$List$take,
 					100,
@@ -4541,7 +4548,7 @@ var $author$project$FilterWorker$update = F2(
 				return _Utils_Tuple2(
 					newOptions,
 					$author$project$FilterWorker$sendSearchResults(
-						A3($author$project$Option$encodeSearchResults, optionsToSend, searchParams.cQ, searchParams.b$)));
+						A3($author$project$Option$encodeSearchResults, optionsToSend, searchParams.cR, searchParams.b$)));
 			} else {
 				var error = _v2.a;
 				return _Utils_Tuple2(
@@ -4553,6 +4560,6 @@ var $author$project$FilterWorker$update = F2(
 	});
 var $elm$core$Platform$worker = _Platform_worker;
 var $author$project$FilterWorker$main = $elm$core$Platform$worker(
-	{ch: $author$project$FilterWorker$init, c_: $author$project$FilterWorker$subscriptions, c3: $author$project$FilterWorker$update});
+	{ch: $author$project$FilterWorker$init, c$: $author$project$FilterWorker$subscriptions, c4: $author$project$FilterWorker$update});
 _Platform_export({'FilterWorker':{'init':$author$project$FilterWorker$main(
 	$elm$json$Json$Decode$succeed(0))(0)}});}(this));

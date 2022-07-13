@@ -988,15 +988,15 @@ encode option =
 type alias SearchResults =
     { optionSearchFilters : List OptionSearchFilterWithValue
     , searchNonce : Int
-    , clearingSearch : Bool
+    , isClearingSearch : Bool
     }
 
 
 encodeSearchResults : List Option -> Int -> Bool -> Json.Encode.Value
-encodeSearchResults options nonce isClearningList =
+encodeSearchResults options nonce isClearingList =
     Json.Encode.object
         [ ( "searchNonce", Json.Encode.int nonce )
-        , ( "clearingSearch", Json.Encode.bool isClearningList )
+        , ( "clearingSearch", Json.Encode.bool isClearingList )
         , ( "options", Json.Encode.list encodeSearchResult options )
         ]
 

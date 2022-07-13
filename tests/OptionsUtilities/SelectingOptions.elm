@@ -55,27 +55,27 @@ suite =
             [ test "should do nothing on an empty list of options and an empty string" <|
                 \_ ->
                     Expect.equalLists
-                        (selectSingleOptionInListByStringOrSelectCustomValue (SearchString.new "") [])
+                        (selectSingleOptionInListByStringOrSelectCustomValue SearchString.reset [])
                         []
             , test "should select nothing on an empty string" <|
                 \_ ->
                     Expect.equalLists
-                        (selectSingleOptionInListByStringOrSelectCustomValue (SearchString.new "") [ desertIsland ])
+                        (selectSingleOptionInListByStringOrSelectCustomValue SearchString.reset [ desertIsland ])
                         [ desertIsland ]
             , test "should create a new custom option when the list of option is empty" <|
                 \_ ->
                     Expect.equalLists
-                        (selectSingleOptionInListByStringOrSelectCustomValue (SearchString.new "Moon Lit Street") [])
+                        (selectSingleOptionInListByStringOrSelectCustomValue (SearchString.update "Moon Lit Street") [])
                         [ newCustomOption "Moon Lit Street" Nothing |> selectOption 0 ]
             , test "should selected an existing option if the string matches" <|
                 \_ ->
                     Expect.equalLists
-                        (selectSingleOptionInListByStringOrSelectCustomValue (SearchString.new "Boot Hill") options)
+                        (selectSingleOptionInListByStringOrSelectCustomValue (SearchString.update "Boot Hill") options)
                         [ slaveShip, desertIsland, bootHill |> selectOption 0 ]
             , test "should not selected an existing option if the string has miss matching case" <|
                 \_ ->
                     Expect.equalLists
-                        (selectSingleOptionInListByStringOrSelectCustomValue (SearchString.new "boot hill") options)
+                        (selectSingleOptionInListByStringOrSelectCustomValue (SearchString.update "boot hill") options)
                         ((newCustomOption "boot hill" Nothing |> selectOption 0) :: options)
             ]
         , describe "selectOptionInListWithIndex"
@@ -84,7 +84,7 @@ suite =
                     Expect.equalLists
                         (OptionsUtilities.selectOptionInListWithIndex (danceFloor |> selectOption 5) [ danceFloor ])
                         [ danceFloor |> selectOption 5 ]
-            , test "if no selection index is specifided default to 0" <|
+            , test "if no selection index is specified default to 0" <|
                 \_ ->
                     Expect.equalLists
                         (OptionsUtilities.selectOptionInListWithIndex danceFloor [ danceFloor ])

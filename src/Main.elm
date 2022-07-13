@@ -230,7 +230,6 @@ type Msg
     | UpdateSearchString String
     | SearchStringSteady
     | UpdateOptionValueValue Int String
-    | UpdateOptionsWithSearchString
     | TextInputOnInput String
     | ValueChanged Json.Decode.Value
     | OptionsReplaced Json.Decode.Value
@@ -280,6 +279,7 @@ type alias Model =
     , searchStringBounce : Bounce
     , searchStringDebounceLength : Float
     , searchString : SearchString
+    , searchStringNonce : Int
     , focusedIndex : Int
     , rightSlot : RightSlot
     , valueCasing : ValueCasing
@@ -458,8 +458,9 @@ update msg model =
 
         UpdateSearchString searchString ->
             ( { model
-                | searchString = SearchString.new searchString
+                | searchString = SearchString.update searchString
                 , searchStringBounce = Bounce.push model.searchStringBounce
+                , searchStringNonce = model.searchStringNonce + 1
               }
             , batch
                 [ InputHasBeenKeyUp searchString TransformAndValidate.InputValidationIsNotHappening
@@ -473,8 +474,8 @@ update msg model =
                 (OptionSearcher.encodeSearchParams
                     model.searchString
                     (SelectionMode.getSearchStringMinimumLength model.selectionConfig)
-                    0
-                    False
+                    model.searchStringNonce
+                    (SearchString.isCleared model.searchString)
                 )
             )
 
@@ -560,21 +561,10 @@ update msg model =
                         ]
                     )
 
-        UpdateOptionsWithSearchString ->
-            ( updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges model
-            , SearchOptionsWithWebWorker
-                (OptionSearcher.encodeSearchParams
-                    model.searchString
-                    (SelectionMode.getSearchStringMinimumLength model.selectionConfig)
-                    0
-                    False
-                )
-            )
-
         TextInputOnInput inputString ->
             ( { model
-                | searchString = SearchString.new inputString
-                , options = updateOrAddCustomOption (SearchString.new inputString) model.selectionConfig model.options
+                | searchString = SearchString.update inputString
+                , options = updateOrAddCustomOption (SearchString.update inputString) model.selectionConfig model.options
               }
             , InputHasBeenKeyUp inputString TransformAndValidate.InputValidationIsNotHappening
             )
@@ -1100,8 +1090,14 @@ update msg model =
                     in
                     ( { model
                         | options =
-                            adjustHighlightedOptionAfterSearch updatedOptions
-                                (figureOutWhichOptionsToShowInTheDropdown model.selectionConfig updatedOptions)
+                            if searchResults.isClearingSearch then
+                                -- If we are clearing the search results then we do not want to highlight the first
+                                --  item in the dropdown.
+                                updatedOptions
+
+                            else
+                                adjustHighlightedOptionAfterSearch updatedOptions
+                                    (figureOutWhichOptionsToShowInTheDropdown model.selectionConfig updatedOptions)
                       }
                     , NoEffect
                     )
@@ -2908,6 +2904,7 @@ init flags =
       , searchStringBounce = Bounce.init
       , searchStringDebounceLength = getDebouceDelayForSearch (List.length optionsWithInitialValueSelectedSorted)
       , searchString = SearchString.reset
+      , searchStringNonce = 0
       , focusedIndex = 0
       , rightSlot =
             if flags.loading then

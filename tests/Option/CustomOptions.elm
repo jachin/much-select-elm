@@ -96,7 +96,7 @@ suite =
         , test "should be able to maintain a custom option with an empty hint" <|
             \_ ->
                 Expect.equalLists
-                    (prependCustomOption (Just "{{}}") (SearchString.new "pizza") [])
+                    (prependCustomOption (Just "{{}}") (SearchString.update "pizza") [])
                     [ newCustomOption "pizza" Nothing ]
         , test "should stay in the dropdown if there's only a custom option with an empty hint" <|
             \_ ->
@@ -109,7 +109,7 @@ suite =
                             |> SelectionMode.setMaxDropdownItems maxDropdownItemsIsTen
                 in
                 Expect.equalLists
-                    (OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionConfig (SearchString.new "monkey bread") []
+                    (OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionConfig (SearchString.update "monkey bread") []
                         |> figureOutWhichOptionsToShowInTheDropdown selectionConfig
                         |> List.map Option.getOptionValueAsString
                     )
@@ -133,7 +133,7 @@ suite =
                      ]
                         |> OptionSearcher.updateOptionsWithSearchStringAndCustomOption
                             selectionConfig
-                            (SearchString.new "monkey bread")
+                            (SearchString.update "monkey bread")
                         |> List.map Option.getOptionValueAsString
                     )
                     [ "monkey bread", "Birch Wood", "Cut Copper" ]
@@ -153,7 +153,7 @@ suite =
                      ]
                         |> OptionSearcher.updateOptionsWithSearchStringAndCustomOption
                             selectionConfig
-                            (SearchString.new "cob")
+                            (SearchString.update "cob")
                         |> OptionSorting.sortOptionsBySearchFilterTotalScore
                         |> highlightFirstOptionInList
                         |> figureOutWhichOptionsToShowInTheDropdown selectionConfig
@@ -176,7 +176,7 @@ suite =
                      ]
                         |> OptionSearcher.updateOptionsWithSearchStringAndCustomOption
                             selectionConfig
-                            (SearchString.new "cob")
+                            (SearchString.update "cob")
                         |> OptionSorting.sortOptionsBySearchFilterTotalScore
                         |> highlightFirstOptionInList
                         |> figureOutWhichOptionsToShowInTheDropdown selectionConfig
@@ -197,7 +197,7 @@ suite =
                      ]
                         |> updateTheFullListOfOptions
                             selectionConfig
-                            (SearchString.new "mil")
+                            (SearchString.update "mil")
                         |> updateTheOptionsForTheDropdown
                             selectionConfig
                         |> List.map Option.getOptionValueAsString
@@ -217,7 +217,7 @@ suite =
                         (updateModelWithChangesThatEffectTheOptionsWithSearchString
                             ShowNothing
                             selectionConfig
-                            (SearchString.new "mil")
+                            (SearchString.update "mil")
                             [ birchWood ]
                             { options = [ birchWood ], rightSlot = ShowNothing }
                             |> .options

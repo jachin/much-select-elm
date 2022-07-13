@@ -149,7 +149,7 @@ updateOrAddCustomOption searchString selectionMode options =
                     AllowCustomOptions _ transformAndValidate ->
                         case TransformAndValidate.transformAndValidateSearchString transformAndValidate searchString of
                             TransformAndValidate.ValidationPass str _ ->
-                                ( True, SearchString.new str )
+                                ( True, SearchString.new str False )
 
                             TransformAndValidate.ValidationFailed _ _ _ ->
                                 ( False, searchString )
