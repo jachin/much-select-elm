@@ -11,6 +11,7 @@ module OptionDisplay exposing
     , getSelectedIndex
     , isHighlightable
     , isHighlighted
+    , isHighlightedSelected
     , isInvalid
     , isPendingValidation
     , isSelected
@@ -353,6 +354,37 @@ isHighlightable selectionMode optionDisplay =
 
         OptionActivated ->
             True
+
+
+isHighlightedSelected : OptionDisplay -> Bool
+isHighlightedSelected optionDisplay =
+    case optionDisplay of
+        OptionShown _ ->
+            False
+
+        OptionHidden ->
+            False
+
+        OptionSelected _ _ ->
+            False
+
+        OptionSelectedAndInvalid _ _ ->
+            False
+
+        OptionSelectedPendingValidation _ ->
+            False
+
+        OptionSelectedHighlighted _ ->
+            True
+
+        OptionHighlighted ->
+            False
+
+        OptionDisabled _ ->
+            False
+
+        OptionActivated ->
+            False
 
 
 setErrors : List ValidationFailureMessage -> OptionDisplay -> OptionDisplay

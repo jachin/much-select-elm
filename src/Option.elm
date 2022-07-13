@@ -814,13 +814,13 @@ isOptionSelectedHighlighted : Option -> Bool
 isOptionSelectedHighlighted option =
     case option of
         Option optionDisplay _ _ _ _ _ ->
-            OptionDisplay.isHighlighted optionDisplay
+            OptionDisplay.isHighlightedSelected optionDisplay
 
         CustomOption optionDisplay _ _ _ ->
-            OptionDisplay.isHighlighted optionDisplay
+            OptionDisplay.isHighlightedSelected optionDisplay
 
         EmptyOption optionDisplay _ ->
-            OptionDisplay.isHighlighted optionDisplay
+            OptionDisplay.isHighlightedSelected optionDisplay
 
         DatalistOption _ _ ->
             False
