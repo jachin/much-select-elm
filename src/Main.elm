@@ -473,6 +473,8 @@ update msg model =
                 (OptionSearcher.encodeSearchParams
                     model.searchString
                     (SelectionMode.getSearchStringMinimumLength model.selectionConfig)
+                    0
+                    False
                 )
             )
 
@@ -564,6 +566,8 @@ update msg model =
                 (OptionSearcher.encodeSearchParams
                     model.searchString
                     (SelectionMode.getSearchStringMinimumLength model.selectionConfig)
+                    0
+                    False
                 )
             )
 
@@ -1091,7 +1095,7 @@ update msg model =
                     let
                         updatedOptions =
                             model.options
-                                |> OptionsUtilities.updateOptionsWithNewSearchResults searchResults
+                                |> OptionsUtilities.updateOptionsWithNewSearchResults searchResults.optionSearchFilters
                                 |> OptionsUtilities.setAge OptionDisplay.MatureOption
                     in
                     ( { model

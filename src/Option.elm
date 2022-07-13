@@ -2,6 +2,7 @@ module Option exposing
     ( Option(..)
     , OptionDescription
     , OptionGroup
+    , SearchResults
     , activateOption
     , decodeSearchResults
     , decoder
@@ -984,8 +985,24 @@ encode option =
         ]
 
 
-encodeSearchResults : Option -> Json.Encode.Value
-encodeSearchResults option =
+type alias SearchResults =
+    { optionSearchFilters : List OptionSearchFilterWithValue
+    , searchNonce : Int
+    , clearingSearch : Bool
+    }
+
+
+encodeSearchResults : List Option -> Int -> Bool -> Json.Encode.Value
+encodeSearchResults options nonce isClearningList =
+    Json.Encode.object
+        [ ( "searchNonce", Json.Encode.int nonce )
+        , ( "clearingSearch", Json.Encode.bool isClearningList )
+        , ( "options", Json.Encode.list encodeSearchResult options )
+        ]
+
+
+encodeSearchResult : Option -> Json.Encode.Value
+encodeSearchResult option =
     Json.Encode.object
         [ ( "value", Json.Encode.string (getOptionValueAsString option) )
         , ( "searchFilter"
@@ -999,18 +1016,25 @@ encodeSearchResults option =
         ]
 
 
-decodeSearchResults : Json.Decode.Decoder (List OptionSearchFilterWithValue)
+decodeSearchResults : Json.Decode.Decoder SearchResults
 decodeSearchResults =
-    Json.Decode.list
-        (Json.Decode.map2
-            (\value searchFilter ->
-                { value = value, maybeSearchFilter = searchFilter }
-            )
-            (Json.Decode.field "value" valueDecoder)
-            (Json.Decode.field "searchFilter"
-                (Json.Decode.nullable OptionSearchFilter.decode)
+    Json.Decode.map3
+        SearchResults
+        (Json.Decode.field "options"
+            (Json.Decode.list
+                (Json.Decode.map2
+                    (\value searchFilter ->
+                        { value = value, maybeSearchFilter = searchFilter }
+                    )
+                    (Json.Decode.field "value" valueDecoder)
+                    (Json.Decode.field "searchFilter"
+                        (Json.Decode.nullable OptionSearchFilter.decode)
+                    )
+                )
             )
         )
+        (Json.Decode.field "searchNonce" Json.Decode.int)
+        (Json.Decode.field "clearingSearch" Json.Decode.bool)
 
 
 transformOptionForOutputStyle : OutputStyle -> Option -> Maybe Option

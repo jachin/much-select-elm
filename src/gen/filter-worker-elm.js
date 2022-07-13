@@ -519,11 +519,11 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.cS.Z === region.b5.Z)
+	if (region.cW.Y === region.b5.Y)
 	{
-		return 'on line ' + region.cS.Z;
+		return 'on line ' + region.cW.Y;
 	}
-	return 'on lines ' + region.cS.Z + ' through ' + region.b5.Z;
+	return 'on lines ' + region.cW.Y + ' through ' + region.b5.Y;
 }
 
 
@@ -1858,8 +1858,8 @@ var _Platform_worker = F4(function(impl, flagDecoder, debugMetadata, args)
 		flagDecoder,
 		args,
 		impl.ch,
-		impl.c$,
-		impl.cW,
+		impl.c3,
+		impl.c_,
 		function() { return function() {} }
 	);
 });
@@ -2857,6 +2857,11 @@ var $author$project$FilterWorker$subscriptions = function (_v0) {
 var $elm$json$Json$Decode$succeed = _Json_succeed;
 var $author$project$SelectionMode$CustomHtml = 0;
 var $author$project$OptionDisplay$MatureOption = 1;
+var $author$project$OptionSearcher$SearchParams = F4(
+	function (searchString, searchStringMinimumLength, searchNonce, clearingSearch) {
+		return {b$: clearingSearch, cQ: searchNonce, cR: searchString, cS: searchStringMinimumLength};
+	});
+var $elm$json$Json$Decode$bool = _Json_decodeBool;
 var $elm$core$Basics$identity = function (x) {
 	return x;
 };
@@ -2901,16 +2906,14 @@ var $author$project$OutputStyle$decodeSearchStringMinimumLength = A2(
 	},
 	$author$project$PositiveInt$decode);
 var $elm$json$Json$Decode$field = _Json_decodeField;
-var $elm$json$Json$Decode$map2 = _Json_map2;
-var $elm$core$Tuple$pair = F2(
-	function (a, b) {
-		return _Utils_Tuple2(a, b);
-	});
-var $author$project$OptionSearcher$decodeSearchParams = A3(
-	$elm$json$Json$Decode$map2,
-	$elm$core$Tuple$pair,
+var $elm$json$Json$Decode$map4 = _Json_map4;
+var $author$project$OptionSearcher$decodeSearchParams = A5(
+	$elm$json$Json$Decode$map4,
+	$author$project$OptionSearcher$SearchParams,
 	A2($elm$json$Json$Decode$field, 'searchString', $author$project$SearchString$decode),
-	A2($elm$json$Json$Decode$field, 'searchStringMinimumLength', $author$project$OutputStyle$decodeSearchStringMinimumLength));
+	A2($elm$json$Json$Decode$field, 'searchStringMinimumLength', $author$project$OutputStyle$decodeSearchStringMinimumLength),
+	A2($elm$json$Json$Decode$field, 'searchNonce', $elm$json$Json$Decode$int),
+	A2($elm$json$Json$Decode$field, 'isClearingSearch', $elm$json$Json$Decode$bool));
 var $elm$json$Json$Decode$decodeValue = _Json_run;
 var $elm$json$Json$Encode$bool = _Json_wrap;
 var $elm$json$Json$Encode$object = function (pairs) {
@@ -2960,19 +2963,19 @@ var $author$project$OptionSearchFilter$encode = function (optionSearchFilter) {
 			[
 				_Utils_Tuple2(
 				'totalScore',
-				$elm$json$Json$Encode$int(optionSearchFilter.aW)),
+				$elm$json$Json$Encode$int(optionSearchFilter.aV)),
 				_Utils_Tuple2(
 				'bestScore',
-				$elm$json$Json$Encode$int(optionSearchFilter.av)),
+				$elm$json$Json$Encode$int(optionSearchFilter.au)),
 				_Utils_Tuple2(
 				'labelTokens',
-				$author$project$OptionSearchFilter$encodeTokens(optionSearchFilter.aF)),
+				$author$project$OptionSearchFilter$encodeTokens(optionSearchFilter.aE)),
 				_Utils_Tuple2(
 				'descriptionTokens',
-				$author$project$OptionSearchFilter$encodeTokens(optionSearchFilter.az)),
+				$author$project$OptionSearchFilter$encodeTokens(optionSearchFilter.ay)),
 				_Utils_Tuple2(
 				'groupTokens',
-				$author$project$OptionSearchFilter$encodeTokens(optionSearchFilter.aD))
+				$author$project$OptionSearchFilter$encodeTokens(optionSearchFilter.aC))
 			]));
 };
 var $author$project$Option$getMaybeOptionSearchFilter = function (option) {
@@ -3015,7 +3018,7 @@ var $author$project$Option$getOptionValueAsString = function (option) {
 	}
 };
 var $elm$json$Json$Encode$null = _Json_encodeNull;
-var $author$project$Option$encodeSearchResults = function (option) {
+var $author$project$Option$encodeSearchResult = function (option) {
 	return $elm$json$Json$Encode$object(
 		_List_fromArray(
 			[
@@ -3036,6 +3039,22 @@ var $author$project$Option$encodeSearchResults = function (option) {
 				}())
 			]));
 };
+var $author$project$Option$encodeSearchResults = F3(
+	function (options, nonce, isClearningList) {
+		return $elm$json$Json$Encode$object(
+			_List_fromArray(
+				[
+					_Utils_Tuple2(
+					'searchNonce',
+					$elm$json$Json$Encode$int(nonce)),
+					_Utils_Tuple2(
+					'clearingSearch',
+					$elm$json$Json$Encode$bool(isClearningList)),
+					_Utils_Tuple2(
+					'options',
+					A2($elm$json$Json$Encode$list, $author$project$Option$encodeSearchResult, options))
+				]));
+	});
 var $elm$core$List$foldrHelper = F4(
 	function (fn, acc, ctr, ls) {
 		if (!ls.b) {
@@ -3144,7 +3163,7 @@ var $author$project$OptionsUtilities$optionSearchResultsBestScore = function (op
 	return A2(
 		$elm$core$List$map,
 		function ($) {
-			return $.av;
+			return $.au;
 		},
 		$elm_community$maybe_extra$Maybe$Extra$values(
 			A2($elm$core$List$map, $author$project$Option$getMaybeOptionSearchFilter, options)));
@@ -3171,7 +3190,7 @@ var $author$project$OptionsUtilities$isOptionBelowScore = F2(
 		var _v0 = $author$project$Option$getMaybeOptionSearchFilter(option);
 		if (!_v0.$) {
 			var optionSearchFilter = _v0.a;
-			return _Utils_cmp(score, optionSearchFilter.av) > -1;
+			return _Utils_cmp(score, optionSearchFilter.au) > -1;
 		} else {
 			return false;
 		}
@@ -3210,7 +3229,6 @@ var $author$project$OptionDisplay$OptionSelected = F2(
 var $author$project$OptionDisplay$OptionShown = function (a) {
 	return {$: 0, a: a};
 };
-var $elm$json$Json$Decode$bool = _Json_decodeBool;
 var $elm$json$Json$Decode$oneOf = _Json_oneOf;
 var $author$project$OptionDisplay$decoder = function (age) {
 	return $elm$json$Json$Decode$oneOf(
@@ -3246,6 +3264,7 @@ var $author$project$OptionDisplay$decoder = function (age) {
 				$author$project$OptionDisplay$OptionShown(age))
 			]));
 };
+var $elm$json$Json$Decode$map2 = _Json_map2;
 var $author$project$OptionValue$OptionValue = function (a) {
 	return {$: 0, a: a};
 };
@@ -3657,7 +3676,7 @@ var $elm$core$List$minimum = function (list) {
 };
 var $author$project$OptionSearchFilter$new = F5(
 	function (totalScore, bestScore, labelTokens, descriptionTokens, groupTokens) {
-		return {av: bestScore, az: descriptionTokens, aD: groupTokens, aF: labelTokens, aW: totalScore};
+		return {au: bestScore, ay: descriptionTokens, aC: groupTokens, aE: labelTokens, aV: totalScore};
 	});
 var $author$project$Option$optionDescriptionToString = function (optionDescription) {
 	if (!optionDescription.$) {
@@ -3692,15 +3711,15 @@ var $author$project$OptionLabel$optionLabelToString = function (optionLabel) {
 };
 var $tripokey$elm_fuzzy$Fuzzy$Match = F4(
 	function (score, offset, length, keys) {
-		return {ck: keys, cl: length, cB: offset, aP: score};
+		return {ck: keys, cl: length, cB: offset, aO: score};
 	});
 var $tripokey$elm_fuzzy$Fuzzy$Result = F2(
 	function (score, matches) {
-		return {cn: matches, aP: score};
+		return {cn: matches, aO: score};
 	});
 var $tripokey$elm_fuzzy$Fuzzy$ConfigModel = F4(
 	function (addPenalty, movePenalty, removePenalty, insertPenalty) {
-		return {ag: addPenalty, am: insertPenalty, ao: movePenalty, as: removePenalty};
+		return {af: addPenalty, al: insertPenalty, an: movePenalty, ar: removePenalty};
 	});
 var $tripokey$elm_fuzzy$Fuzzy$defaultConfig = A4($tripokey$elm_fuzzy$Fuzzy$ConfigModel, 10, 1000, 10000, 1);
 var $elm$core$String$indexes = _String_indexes;
@@ -3908,15 +3927,15 @@ var $tripokey$elm_fuzzy$Fuzzy$distance = F3(
 				}
 			});
 		var accumulated = A3($elm$core$String$foldl, accumulate, $tripokey$elm_fuzzy$Fuzzy$initialModel, needle);
-		var hPenalty = ($elm$core$String$length(hay) - $elm$core$List$length(accumulated)) * config.ag;
-		var nPenalty = ($elm$core$String$length(needle) - $elm$core$List$length(accumulated)) * config.as;
+		var hPenalty = ($elm$core$String$length(hay) - $elm$core$List$length(accumulated)) * config.af;
+		var nPenalty = ($elm$core$String$length(needle) - $elm$core$List$length(accumulated)) * config.ar;
 		var sorted = $tripokey$elm_fuzzy$Fuzzy$quickSort(accumulated);
 		var iPenalty = A3(
 			$elm$core$List$foldl,
 			accumulateInsertPenalty,
 			_Utils_Tuple2($elm$core$Maybe$Nothing, 0),
-			sorted.b).b * config.am;
-		var mPenalty = sorted.a * config.ao;
+			sorted.b).b * config.al;
+		var mPenalty = sorted.a * config.an;
 		return A4(
 			$tripokey$elm_fuzzy$Fuzzy$Match,
 			((mPenalty + hPenalty) + nPenalty) + iPenalty,
@@ -4027,22 +4046,22 @@ var $tripokey$elm_fuzzy$Fuzzy$match = F4(
 						var val = c.a;
 						return _Utils_update(
 							sum,
-							{ag: val});
+							{af: val});
 					case 1:
 						var val = c.a;
 						return _Utils_update(
 							sum,
-							{as: val});
+							{ar: val});
 					case 2:
 						var val = c.a;
 						return _Utils_update(
 							sum,
-							{ao: val});
+							{an: val});
 					default:
 						var val = c.a;
 						return _Utils_update(
 							sum,
-							{am: val});
+							{al: val});
 				}
 			});
 		var config = A3($elm$core$List$foldl, accumulateConfig, $tripokey$elm_fuzzy$Fuzzy$defaultConfig, configs);
@@ -4050,7 +4069,7 @@ var $tripokey$elm_fuzzy$Fuzzy$match = F4(
 			function (n, _v2) {
 				var offset = _v2.a;
 				var hs = _v2.b;
-				var initialPenalty = ((($elm$core$String$length(n) * config.as) + ($elm$core$String$length(n) * config.ao)) + ($elm$core$String$length(hay) * config.ag)) + (($elm$core$String$length(hay) * $elm$core$String$length(n)) * config.am);
+				var initialPenalty = ((($elm$core$String$length(n) * config.ar) + ($elm$core$String$length(n) * config.an)) + ($elm$core$String$length(hay) * config.af)) + (($elm$core$String$length(hay) * $elm$core$String$length(n)) * config.al);
 				var initialMatch = A4($tripokey$elm_fuzzy$Fuzzy$Match, initialPenalty, offset, 0, _List_Nil);
 				var accumulateMatch = F2(
 					function (e, _v1) {
@@ -4058,7 +4077,7 @@ var $tripokey$elm_fuzzy$Fuzzy$match = F4(
 						var prevOffset = _v1.b;
 						var newOffset = prevOffset + $elm$core$String$length(e);
 						var eDistance = A3($tripokey$elm_fuzzy$Fuzzy$distance, config, n, e);
-						var newMatch = (_Utils_cmp(eDistance.aP, prev.aP) < 0) ? _Utils_update(
+						var newMatch = (_Utils_cmp(eDistance.aO, prev.aO) < 0) ? _Utils_update(
 							eDistance,
 							{cB: prevOffset}) : prev;
 						return _Utils_Tuple2(newMatch, newOffset);
@@ -4088,7 +4107,7 @@ var $tripokey$elm_fuzzy$Fuzzy$match = F4(
 							prev.cn,
 							_List_fromArray(
 								[matchResult])),
-						aP: matchResult.aP + prev.aP
+						aO: matchResult.aO + prev.aO
 					});
 				return _Utils_Tuple2(newResult, num + 1);
 			});
@@ -4143,17 +4162,17 @@ var $author$project$OptionSearcher$simpleMatch = F2(
 var $author$project$OptionSearcher$search = F2(
 	function (string, option) {
 		return {
-			a7: A2(
+			a6: A2(
 				$author$project$OptionSearcher$simpleMatch,
 				$elm$core$String$toLower(string),
 				$author$project$Option$optionDescriptionToSearchString(
 					$author$project$Option$getOptionDescription(option))),
-			be: A2(
+			bd: A2(
 				$author$project$OptionSearcher$groupMatch,
 				$elm$core$String$toLower(string),
 				$author$project$Option$optionGroupToSearchString(
 					$author$project$Option$getOptionGroup(option))),
-			bm: A2(
+			bl: A2(
 				$author$project$OptionSearcher$simpleMatch,
 				$elm$core$String$toLower(string),
 				$author$project$OptionLabel$optionLabelToSearchString(
@@ -4250,8 +4269,8 @@ var $author$project$OptionPresentor$tokenizeHelper = F3(
 	function (index, _char, highlightResult) {
 		var theEnd = _Utils_eq(
 			index,
-			$zwilias$elm_utf_tools$String$UTF32$length(highlightResult.aE) - 1);
-		if (A2($author$project$OptionPresentor$indexInsideMatch, highlightResult.aO, index)) {
+			$zwilias$elm_utf_tools$String$UTF32$length(highlightResult.aD) - 1);
+		if (A2($author$project$OptionPresentor$indexInsideMatch, highlightResult.aN, index)) {
 			var _v0 = $mhoare$elm_stack$Stack$top(highlightResult.t);
 			if (!_v0.$) {
 				if (theEnd) {
@@ -4399,7 +4418,7 @@ var $author$project$OptionPresentor$tokenize = F2(
 		return A3(
 			$elm_community$list_extra$List$Extra$indexedFoldl,
 			$author$project$OptionPresentor$tokenizeHelper,
-			{aE: hay, o: $mhoare$elm_stack$Stack$initialise, t: $mhoare$elm_stack$Stack$initialise, aO: result, m: _List_Nil},
+			{aD: hay, o: $mhoare$elm_stack$Stack$initialise, t: $mhoare$elm_stack$Stack$initialise, aN: result, m: _List_Nil},
 			$elm$core$String$toList(hay)).m;
 	});
 var $elm$core$Maybe$withDefault = F2(
@@ -4420,34 +4439,34 @@ var $author$project$OptionSearcher$updateSearchResultInOption = F2(
 		var totalScore = $elm$core$List$sum(
 			_List_fromArray(
 				[
-					searchResult.bm.aP,
-					$author$project$OptionSearchFilter$descriptionHandicap(searchResult.a7.aP),
-					$author$project$OptionSearchFilter$groupHandicap(searchResult.be.aP)
+					searchResult.bl.aO,
+					$author$project$OptionSearchFilter$descriptionHandicap(searchResult.a6.aO),
+					$author$project$OptionSearchFilter$groupHandicap(searchResult.bd.aO)
 				]));
 		var labelTokens = A2(
 			$author$project$OptionPresentor$tokenize,
 			$author$project$OptionLabel$optionLabelToString(
 				$author$project$Option$getOptionLabel(option)),
-			searchResult.bm);
+			searchResult.bl);
 		var groupTokens = A2(
 			$author$project$OptionPresentor$tokenize,
 			$author$project$Option$optionGroupToString(
 				$author$project$Option$getOptionGroup(option)),
-			searchResult.be);
+			searchResult.bd);
 		var descriptionTokens = A2(
 			$author$project$OptionPresentor$tokenize,
 			$author$project$Option$optionDescriptionToString(
 				$author$project$Option$getOptionDescription(option)),
-			searchResult.a7);
+			searchResult.a6);
 		var bestScore = A2(
 			$elm$core$Maybe$withDefault,
 			$author$project$OptionSearchFilter$impossiblyLowScore,
 			$elm$core$List$minimum(
 				_List_fromArray(
 					[
-						searchResult.bm.aP,
-						$author$project$OptionSearchFilter$descriptionHandicap(searchResult.a7.aP),
-						$author$project$OptionSearchFilter$groupHandicap(searchResult.be.aP)
+						searchResult.bl.aO,
+						$author$project$OptionSearchFilter$descriptionHandicap(searchResult.a6.aO),
+						$author$project$OptionSearchFilter$groupHandicap(searchResult.bd.aO)
 					])));
 		var cappedBestScore = (bestScore > 100) ? (A2(
 			$elm$core$String$contains,
@@ -4513,10 +4532,8 @@ var $author$project$FilterWorker$update = F2(
 			var jsonSearchParams = msg.a;
 			var _v2 = A2($elm$json$Json$Decode$decodeValue, $author$project$OptionSearcher$decodeSearchParams, jsonSearchParams);
 			if (!_v2.$) {
-				var _v3 = _v2.a;
-				var searchString = _v3.a;
-				var searchStringMinimumLength = _v3.b;
-				var newOptions = A3($author$project$OptionSearcher$updateOptionsWithSearchString, searchString, searchStringMinimumLength, options);
+				var searchParams = _v2.a;
+				var newOptions = A3($author$project$OptionSearcher$updateOptionsWithSearchString, searchParams.cR, searchParams.cS, options);
 				var optionsToSend = A2(
 					$elm$core$List$take,
 					100,
@@ -4524,7 +4541,7 @@ var $author$project$FilterWorker$update = F2(
 				return _Utils_Tuple2(
 					newOptions,
 					$author$project$FilterWorker$sendSearchResults(
-						A2($elm$json$Json$Encode$list, $author$project$Option$encodeSearchResults, optionsToSend)));
+						A3($author$project$Option$encodeSearchResults, optionsToSend, searchParams.cQ, searchParams.b$)));
 			} else {
 				var error = _v2.a;
 				return _Utils_Tuple2(
@@ -4536,6 +4553,6 @@ var $author$project$FilterWorker$update = F2(
 	});
 var $elm$core$Platform$worker = _Platform_worker;
 var $author$project$FilterWorker$main = $elm$core$Platform$worker(
-	{ch: $author$project$FilterWorker$init, cW: $author$project$FilterWorker$subscriptions, c$: $author$project$FilterWorker$update});
+	{ch: $author$project$FilterWorker$init, c_: $author$project$FilterWorker$subscriptions, c3: $author$project$FilterWorker$update});
 _Platform_export({'FilterWorker':{'init':$author$project$FilterWorker$main(
 	$elm$json$Json$Decode$succeed(0))(0)}});}(this));
