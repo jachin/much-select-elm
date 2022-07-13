@@ -2466,8 +2466,6 @@ optionToValueHtml enableSingleItemRemoval option =
                     div
                         [ class "value"
                         , partAttr
-                        , mousedownPreventDefault
-                            (ToggleSelectedValueHighlight optionValue)
                         ]
                         [ valueLabelHtml (OptionLabel.getLabelString optionLabel) optionValue, removalHtml ]
 
@@ -2533,7 +2531,7 @@ valueLabelHtml : String -> OptionValue -> Html Msg
 valueLabelHtml labelText optionValue =
     span
         [ class "value-label"
-        , mousedownPreventDefault
+        , mouseupPreventDefault
             (ToggleSelectedValueHighlight optionValue)
         ]
         [ text labelText ]
