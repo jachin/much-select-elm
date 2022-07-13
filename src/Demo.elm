@@ -499,7 +499,8 @@ view : Model -> Html Msg
 view model =
     let
         transformers =
-            [ Lowercase ]
+            [-- Lowercase
+            ]
 
         validators =
             List.filterMap
