@@ -76,7 +76,7 @@ suite =
                 \_ ->
                     Expect.equal
                         (OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionConfig
-                            (SearchString.new "frog")
+                            (SearchString.update "frog")
                             (frogs ++ monnies)
                             |> figureOutWhichOptionsToShowInTheDropdown selectionConfig
                             |> List.length
@@ -86,17 +86,17 @@ suite =
                 \_ ->
                     Expect.equal
                         (OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionConfig
-                            (SearchString.new "frog")
+                            (SearchString.update "frog")
                             (frogs ++ monnies)
                             |> figureOutWhichOptionsToShowInTheDropdown selectionConfig
-                            |> doesSearchStringFindNothing (SearchString.new "frog") searchStringMinLengthTwo
+                            |> doesSearchStringFindNothing (SearchString.update "frog") searchStringMinLengthTwo
                         )
                         False
             , test "if some of the search string matches a group and a option the option should be first" <|
                 \_ ->
                     Expect.equal
                         (OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionConfig
-                            (SearchString.new "frog")
+                            (SearchString.update "frog")
                             (frogs ++ monnies)
                             |> sortOptionsBySearchFilterTotalScore
                             |> figureOutWhichOptionsToShowInTheDropdown selectionConfig
@@ -108,7 +108,7 @@ suite =
                 \_ ->
                     Expect.equal
                         (OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionConfig
-                            (SearchString.new "pent")
+                            (SearchString.update "pent")
                             (frogs ++ monnies)
                             |> sortOptionsBySearchFilterTotalScore
                             |> figureOutWhichOptionsToShowInTheDropdown selectionConfig
@@ -120,7 +120,7 @@ suite =
                 \_ ->
                     Expect.equal
                         (OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionConfig
-                            (SearchString.new "yiya")
+                            (SearchString.update "yiya")
                             (frogs ++ monnies)
                             |> sortOptionsBySearchFilterTotalScore
                             |> figureOutWhichOptionsToShowInTheDropdown selectionConfig
@@ -172,7 +172,7 @@ suite =
                     Expect.equal
                         (OptionSearcher.updateOptionsWithSearchStringAndCustomOption
                             (SelectionMode.setSearchStringMinimumLength NoMinimumToSearchStringLength selectionConfig)
-                            (SearchString.new "win")
+                            (SearchString.update "win")
                             [ Option.newOption "LevelUp2021_SwagWinnersFinal" Nothing
                             , Option.newOption "Q2 2021 Webinar Registrants" Nothing
                             ]

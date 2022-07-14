@@ -230,7 +230,6 @@ type Msg
     | UpdateSearchString String
     | SearchStringSteady
     | UpdateOptionValueValue Int String
-    | UpdateOptionsWithSearchString
     | TextInputOnInput String
     | ValueChanged Json.Decode.Value
     | OptionsReplaced Json.Decode.Value
@@ -280,6 +279,7 @@ type alias Model =
     , searchStringBounce : Bounce
     , searchStringDebounceLength : Float
     , searchString : SearchString
+    , searchStringNonce : Int
     , focusedIndex : Int
     , rightSlot : RightSlot
     , valueCasing : ValueCasing
@@ -458,8 +458,9 @@ update msg model =
 
         UpdateSearchString searchString ->
             ( { model
-                | searchString = SearchString.new searchString
+                | searchString = SearchString.update searchString
                 , searchStringBounce = Bounce.push model.searchStringBounce
+                , searchStringNonce = model.searchStringNonce + 1
               }
             , batch
                 [ InputHasBeenKeyUp searchString TransformAndValidate.InputValidationIsNotHappening
@@ -473,6 +474,8 @@ update msg model =
                 (OptionSearcher.encodeSearchParams
                     model.searchString
                     (SelectionMode.getSearchStringMinimumLength model.selectionConfig)
+                    model.searchStringNonce
+                    (SearchString.isCleared model.searchString)
                 )
             )
 
@@ -558,19 +561,10 @@ update msg model =
                         ]
                     )
 
-        UpdateOptionsWithSearchString ->
-            ( updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges model
-            , SearchOptionsWithWebWorker
-                (OptionSearcher.encodeSearchParams
-                    model.searchString
-                    (SelectionMode.getSearchStringMinimumLength model.selectionConfig)
-                )
-            )
-
         TextInputOnInput inputString ->
             ( { model
-                | searchString = SearchString.new inputString
-                , options = updateOrAddCustomOption (SearchString.new inputString) model.selectionConfig model.options
+                | searchString = SearchString.update inputString
+                , options = updateOrAddCustomOption (SearchString.update inputString) model.selectionConfig model.options
               }
             , InputHasBeenKeyUp inputString TransformAndValidate.InputValidationIsNotHappening
             )
@@ -1088,19 +1082,31 @@ update msg model =
         UpdateSearchResultsForOptions updatedSearchResultsJsonValue ->
             case Json.Decode.decodeValue Option.decodeSearchResults updatedSearchResultsJsonValue of
                 Ok searchResults ->
-                    let
-                        updatedOptions =
-                            model.options
-                                |> OptionsUtilities.updateOptionsWithNewSearchResults searchResults
-                                |> OptionsUtilities.setAge OptionDisplay.MatureOption
-                    in
-                    ( { model
-                        | options =
-                            adjustHighlightedOptionAfterSearch updatedOptions
-                                (figureOutWhichOptionsToShowInTheDropdown model.selectionConfig updatedOptions)
-                      }
-                    , NoEffect
-                    )
+                    if searchResults.searchNonce == model.searchStringNonce then
+                        let
+                            updatedOptions =
+                                model.options
+                                    |> OptionsUtilities.updateOptionsWithNewSearchResults searchResults.optionSearchFilters
+                                    |> OptionsUtilities.setAge OptionDisplay.MatureOption
+                        in
+                        ( { model
+                            | options =
+                                if searchResults.isClearingSearch then
+                                    -- If we are clearing the search results then we do not want to highlight the first
+                                    --  item in the dropdown.
+                                    updatedOptions
+
+                                else
+                                    adjustHighlightedOptionAfterSearch updatedOptions
+                                        (figureOutWhichOptionsToShowInTheDropdown model.selectionConfig updatedOptions
+                                            |> OptionsUtilities.notSelectedOptions
+                                        )
+                          }
+                        , NoEffect
+                        )
+
+                    else
+                        ( model, NoEffect )
 
                 Err error ->
                     ( model, ReportErrorMessage (Json.Decode.errorToString error) )
@@ -2390,6 +2396,7 @@ optionsToValuesHtml : List Option -> SingleItemRemoval -> List (Html Msg)
 optionsToValuesHtml options enableSingleItemRemoval =
     options
         |> selectedOptions
+        |> List.sortBy Option.getOptionSelectedIndex
         |> List.map (Html.Lazy.lazy2 optionToValueHtml enableSingleItemRemoval)
 
 
@@ -2399,7 +2406,7 @@ optionToValueHtml enableSingleItemRemoval option =
         removalHtml =
             case enableSingleItemRemoval of
                 EnableSingleItemRemoval ->
-                    span [ mousedownPreventDefault <| DeselectOptionInternal option, class "remove-option" ] [ text "" ]
+                    span [ mouseupPreventDefault <| DeselectOptionInternal option, class "remove-option" ] [ text "" ]
 
                 DisableSingleItemRemoval ->
                     text ""
@@ -2463,8 +2470,6 @@ optionToValueHtml enableSingleItemRemoval option =
                     div
                         [ class "value"
                         , partAttr
-                        , mousedownPreventDefault
-                            (ToggleSelectedValueHighlight optionValue)
                         ]
                         [ valueLabelHtml (OptionLabel.getLabelString optionLabel) optionValue, removalHtml ]
 
@@ -2530,7 +2535,7 @@ valueLabelHtml : String -> OptionValue -> Html Msg
 valueLabelHtml labelText optionValue =
     span
         [ class "value-label"
-        , mousedownPreventDefault
+        , mouseupPreventDefault
             (ToggleSelectedValueHighlight optionValue)
         ]
         [ text labelText ]
@@ -2903,6 +2908,7 @@ init flags =
       , searchStringBounce = Bounce.init
       , searchStringDebounceLength = getDebouceDelayForSearch (List.length optionsWithInitialValueSelectedSorted)
       , searchString = SearchString.reset
+      , searchStringNonce = 0
       , focusedIndex = 0
       , rightSlot =
             if flags.loading then

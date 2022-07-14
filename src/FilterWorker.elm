@@ -33,11 +33,11 @@ update msg options =
 
         UpdateSearchString jsonSearchParams ->
             case Json.Decode.decodeValue decodeSearchParams jsonSearchParams of
-                Ok ( searchString, searchStringMinimumLength ) ->
+                Ok searchParams ->
                     let
                         newOptions =
-                            OptionSearcher.updateOptionsWithSearchString searchString
-                                searchStringMinimumLength
+                            OptionSearcher.updateOptionsWithSearchString searchParams.searchString
+                                searchParams.searchStringMinimumLength
                                 options
 
                         optionsToSend =
@@ -46,7 +46,11 @@ update msg options =
                                 |> List.take 100
                     in
                     ( newOptions
-                    , sendSearchResults (Json.Encode.list Option.encodeSearchResults optionsToSend)
+                    , sendSearchResults
+                        (Option.encodeSearchResults optionsToSend
+                            searchParams.searchNonce
+                            searchParams.clearingSearch
+                        )
                     )
 
                 Err error ->
