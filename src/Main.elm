@@ -2402,7 +2402,7 @@ optionToValueHtml enableSingleItemRemoval option =
         removalHtml =
             case enableSingleItemRemoval of
                 EnableSingleItemRemoval ->
-                    span [ mousedownPreventDefault <| DeselectOptionInternal option, class "remove-option" ] [ text "" ]
+                    span [ mouseupPreventDefault <| DeselectOptionInternal option, class "remove-option" ] [ text "" ]
 
                 DisableSingleItemRemoval ->
                     text ""
