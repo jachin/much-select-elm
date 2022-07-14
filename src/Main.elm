@@ -1082,27 +1082,31 @@ update msg model =
         UpdateSearchResultsForOptions updatedSearchResultsJsonValue ->
             case Json.Decode.decodeValue Option.decodeSearchResults updatedSearchResultsJsonValue of
                 Ok searchResults ->
-                    let
-                        updatedOptions =
-                            model.options
-                                |> OptionsUtilities.updateOptionsWithNewSearchResults searchResults.optionSearchFilters
-                                |> OptionsUtilities.setAge OptionDisplay.MatureOption
-                    in
-                    ( { model
-                        | options =
-                            if searchResults.isClearingSearch then
-                                -- If we are clearing the search results then we do not want to highlight the first
-                                --  item in the dropdown.
-                                updatedOptions
+                    if searchResults.searchNonce == model.searchStringNonce then
+                        let
+                            updatedOptions =
+                                model.options
+                                    |> OptionsUtilities.updateOptionsWithNewSearchResults searchResults.optionSearchFilters
+                                    |> OptionsUtilities.setAge OptionDisplay.MatureOption
+                        in
+                        ( { model
+                            | options =
+                                if searchResults.isClearingSearch then
+                                    -- If we are clearing the search results then we do not want to highlight the first
+                                    --  item in the dropdown.
+                                    updatedOptions
 
-                            else
-                                adjustHighlightedOptionAfterSearch updatedOptions
-                                    (figureOutWhichOptionsToShowInTheDropdown model.selectionConfig updatedOptions
-                                        |> OptionsUtilities.notSelectedOptions
-                                    )
-                      }
-                    , NoEffect
-                    )
+                                else
+                                    adjustHighlightedOptionAfterSearch updatedOptions
+                                        (figureOutWhichOptionsToShowInTheDropdown model.selectionConfig updatedOptions
+                                            |> OptionsUtilities.notSelectedOptions
+                                        )
+                          }
+                        , NoEffect
+                        )
+
+                    else
+                        ( model, NoEffect )
 
                 Err error ->
                     ( model, ReportErrorMessage (Json.Decode.errorToString error) )
