@@ -27,6 +27,7 @@ import Html.Events
         , onMouseDown
         , onMouseEnter
         , onMouseLeave
+        , onMouseUp
         )
 import Html.Lazy
 import Json.Decode
@@ -1554,7 +1555,10 @@ singleSelectViewCustomHtml selectionConfig options searchString rightSlot =
     div
         [ id "value-casing"
         , valueCasingPartsAttribute selectionConfig hasErrors hasPendingValidation
-        , attributeIf (not (isFocused selectionConfig)) (onMouseDown BringInputInFocus)
+
+        -- TODO On mouse down do something to provide a bit of feedback
+        , attributeIf (not (isFocused selectionConfig)) (onMouseDown NoOp)
+        , attributeIf (not (isFocused selectionConfig)) (onMouseUp BringInputInFocus)
         , attributeIf (not (isFocused selectionConfig)) (onFocus BringInputInFocus)
         , tabIndexAttribute (isDisabled selectionConfig)
         , classList
@@ -1637,7 +1641,10 @@ multiSelectViewCustomHtml selectionConfig options searchString rightSlot =
     div
         [ id "value-casing"
         , valueCasingPartsAttribute selectionConfig hasErrors hasPendingValidation
-        , onMouseDown BringInputInFocus
+
+        -- TODO On mouse down do something to provide a bit of feedback
+        , onMouseDown NoOp
+        , onMouseUp BringInputInFocus
         , onFocus BringInputInFocus
         , Keyboard.on Keyboard.Keydown
             [ ( Delete, DeleteKeydownForMultiSelect )
