@@ -1,41 +1,51 @@
-module SearchString exposing (SearchString, decode, encode, isEmpty, length, new, reset, toLower, toString)
+module SearchString exposing (SearchString, decode, encode, isCleared, isEmpty, length, new, reset, toLower, toString, update)
 
 import Json.Decode
 import Json.Encode
 
 
 type SearchString
-    = SearchString String
+    = SearchString String Bool
 
 
 reset : SearchString
 reset =
-    SearchString ""
+    SearchString "" True
 
 
-new : String -> SearchString
-new string =
-    SearchString string
+new : String -> Bool -> SearchString
+new string isCleared_ =
+    SearchString string isCleared_
+
+
+update : String -> SearchString
+update string =
+    SearchString string False
 
 
 length : SearchString -> Int
-length (SearchString str) =
+length (SearchString str _) =
     String.length str
 
 
 toLower : SearchString -> String
-toLower (SearchString str) =
+toLower (SearchString str _) =
     String.toLower str
 
 
 toString : SearchString -> String
-toString (SearchString str) =
+toString (SearchString str _) =
     str
 
 
 isEmpty : SearchString -> Bool
-isEmpty (SearchString str) =
+isEmpty (SearchString str _) =
     String.length str == 0
+
+
+isCleared : SearchString -> Bool
+isCleared (SearchString _ isCleared_) =
+    isCleared_
 
 
 encode : SearchString -> Json.Encode.Value
@@ -45,6 +55,7 @@ encode searchString =
 
 decode : Json.Decode.Decoder SearchString
 decode =
-    Json.Decode.map
+    Json.Decode.map2
         SearchString
         Json.Decode.string
+        (Json.Decode.succeed True)

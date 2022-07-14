@@ -125,12 +125,12 @@ selectOptionInList option options =
 selectOptionInListWithIndex : Option -> List Option -> List Option
 selectOptionInListWithIndex optionToSelect options =
     let
-        notLessThanZero i =
-            if i < 0 then
+        notLessThanZero index =
+            if index < 0 then
                 0
 
             else
-                0
+                index
 
         selectionIndex =
             getOptionSelectedIndex optionToSelect
@@ -203,11 +203,6 @@ deselectAllButTheFirstSelectedOptionInList options =
             options
 
 
-selectOption : SelectionMode -> OptionValue -> List Option -> List Option
-selectOption selectionMode optionValue options =
-    selectOptionInListByOptionValue optionValue options
-
-
 {-| Look through the list of options, if we find one that matches the given option value
 then select it and return a new list of options with the found option selected.
 
@@ -251,6 +246,39 @@ selectOptionInListByOptionValue value options =
 
                     DatalistOption _ _ ->
                         Option.selectOption nextSelectedIndex option_
+
+            else if isOptionSelected option_ then
+                option_
+
+            else
+                removeHighlightFromOption option_
+        )
+        options
+
+
+{-| Look through the list of options, if we find one that matches the given option value
+then select it and return a new list of options with the found option selected.
+
+If we do not find the option value return the same list of options.
+
+-}
+activateOptionInListByOptionValue : OptionValue -> List Option -> List Option
+activateOptionInListByOptionValue value options =
+    List.map
+        (\option_ ->
+            if optionValuesEqual option_ value then
+                case option_ of
+                    Option _ _ _ _ _ _ ->
+                        Option.activateOption option_
+
+                    CustomOption _ _ _ _ ->
+                        Option.activateOption option_
+
+                    EmptyOption _ _ ->
+                        Option.activateOption option_
+
+                    DatalistOption _ _ ->
+                        option_
 
             else if isOptionSelected option_ then
                 option_
@@ -582,6 +610,13 @@ selectedOptions options =
         |> List.sortBy getOptionSelectedIndex
 
 
+notSelectedOptions : List Option -> List Option
+notSelectedOptions options =
+    options
+        |> List.filter (not << isOptionSelected)
+        |> List.sortBy getOptionSelectedIndex
+
+
 findSelectedOption : List Option -> Maybe Option
 findSelectedOption options =
     options |> selectedOptions |> List.head
@@ -626,6 +661,9 @@ toggleSelectedHighlightByOptionValue options optionValue =
                                 OptionDisabled _ ->
                                     option_
 
+                                OptionActivated ->
+                                    option_
+
                         else
                             option_
 
@@ -654,6 +692,9 @@ toggleSelectedHighlightByOptionValue options optionValue =
                                     option_
 
                                 OptionDisabled _ ->
+                                    option_
+
+                                OptionActivated ->
                                     option_
 
                         else
@@ -699,6 +740,9 @@ deselectAllSelectedHighlightedOptions options =
                             OptionDisabled _ ->
                                 option_
 
+                            OptionActivated ->
+                                option_
+
                     CustomOption optionDisplay _ _ _ ->
                         case optionDisplay of
                             OptionShown _ ->
@@ -723,6 +767,9 @@ deselectAllSelectedHighlightedOptions options =
                                 option_
 
                             OptionDisabled _ ->
+                                option_
+
+                            OptionActivated ->
                                 option_
 
                     EmptyOption _ _ ->
@@ -1048,6 +1095,9 @@ filterOptionsToShowInDropdownByOptionDisplay selectionConfig =
 
                                 OptionDisplay.MatureOption ->
                                     True
+
+                        OptionActivated ->
+                            True
                 )
 
         MultiSelectConfig _ _ _ ->
@@ -1092,6 +1142,9 @@ filterOptionsToShowInDropdownByOptionDisplay selectionConfig =
 
                                 OptionDisplay.MatureOption ->
                                     True
+
+                        OptionActivated ->
+                            True
                 )
 
 

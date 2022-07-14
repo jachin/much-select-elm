@@ -53,7 +53,8 @@ import OptionSorting
 import OptionValue exposing (OptionValue(..))
 import OptionsUtilities
     exposing
-        ( addAdditionalOptionsToOptionList
+        ( activateOptionInListByOptionValue
+        , addAdditionalOptionsToOptionList
         , addAndSelectOptionsInOptionsListByString
         , adjustHighlightedOptionAfterSearch
         , customSelectedOptions
@@ -224,11 +225,11 @@ type Msg
     | InputFocus
     | DropdownMouseOverOption OptionValue
     | DropdownMouseOutOption OptionValue
-    | DropdownMouseClickOption OptionValue
+    | DropdownMouseDownOption OptionValue
+    | DropdownMouseUpOption OptionValue
     | UpdateSearchString String
     | SearchStringSteady
     | UpdateOptionValueValue Int String
-    | UpdateOptionsWithSearchString
     | TextInputOnInput String
     | ValueChanged Json.Decode.Value
     | OptionsReplaced Json.Decode.Value
@@ -278,6 +279,7 @@ type alias Model =
     , searchStringBounce : Bounce
     , searchStringDebounceLength : Float
     , searchString : SearchString
+    , searchStringNonce : Int
     , focusedIndex : Int
     , rightSlot : RightSlot
     , valueCasing : ValueCasing
@@ -412,7 +414,14 @@ update msg model =
             , NoEffect
             )
 
-        DropdownMouseClickOption optionValue ->
+        DropdownMouseDownOption optionValue ->
+            ( { model
+                | options = activateOptionInListByOptionValue optionValue model.options
+              }
+            , NoEffect
+            )
+
+        DropdownMouseUpOption optionValue ->
             let
                 updatedOptions =
                     case model.selectionConfig of
@@ -449,8 +458,9 @@ update msg model =
 
         UpdateSearchString searchString ->
             ( { model
-                | searchString = SearchString.new searchString
+                | searchString = SearchString.update searchString
                 , searchStringBounce = Bounce.push model.searchStringBounce
+                , searchStringNonce = model.searchStringNonce + 1
               }
             , batch
                 [ InputHasBeenKeyUp searchString TransformAndValidate.InputValidationIsNotHappening
@@ -464,6 +474,8 @@ update msg model =
                 (OptionSearcher.encodeSearchParams
                     model.searchString
                     (SelectionMode.getSearchStringMinimumLength model.selectionConfig)
+                    model.searchStringNonce
+                    (SearchString.isCleared model.searchString)
                 )
             )
 
@@ -549,19 +561,10 @@ update msg model =
                         ]
                     )
 
-        UpdateOptionsWithSearchString ->
-            ( updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges model
-            , SearchOptionsWithWebWorker
-                (OptionSearcher.encodeSearchParams
-                    model.searchString
-                    (SelectionMode.getSearchStringMinimumLength model.selectionConfig)
-                )
-            )
-
         TextInputOnInput inputString ->
             ( { model
-                | searchString = SearchString.new inputString
-                , options = updateOrAddCustomOption (SearchString.new inputString) model.selectionConfig model.options
+                | searchString = SearchString.update inputString
+                , options = updateOrAddCustomOption (SearchString.update inputString) model.selectionConfig model.options
               }
             , InputHasBeenKeyUp inputString TransformAndValidate.InputValidationIsNotHappening
             )
@@ -1079,19 +1082,31 @@ update msg model =
         UpdateSearchResultsForOptions updatedSearchResultsJsonValue ->
             case Json.Decode.decodeValue Option.decodeSearchResults updatedSearchResultsJsonValue of
                 Ok searchResults ->
-                    let
-                        updatedOptions =
-                            model.options
-                                |> OptionsUtilities.updateOptionsWithNewSearchResults searchResults
-                                |> OptionsUtilities.setAge OptionDisplay.MatureOption
-                    in
-                    ( { model
-                        | options =
-                            adjustHighlightedOptionAfterSearch updatedOptions
-                                (figureOutWhichOptionsToShowInTheDropdown model.selectionConfig updatedOptions)
-                      }
-                    , NoEffect
-                    )
+                    if searchResults.searchNonce == model.searchStringNonce then
+                        let
+                            updatedOptions =
+                                model.options
+                                    |> OptionsUtilities.updateOptionsWithNewSearchResults searchResults.optionSearchFilters
+                                    |> OptionsUtilities.setAge OptionDisplay.MatureOption
+                        in
+                        ( { model
+                            | options =
+                                if searchResults.isClearingSearch then
+                                    -- If we are clearing the search results then we do not want to highlight the first
+                                    --  item in the dropdown.
+                                    updatedOptions
+
+                                else
+                                    adjustHighlightedOptionAfterSearch updatedOptions
+                                        (figureOutWhichOptionsToShowInTheDropdown model.selectionConfig updatedOptions
+                                            |> OptionsUtilities.notSelectedOptions
+                                        )
+                          }
+                        , NoEffect
+                        )
+
+                    else
+                        ( model, NoEffect )
 
                 Err error ->
                     ( model, ReportErrorMessage (Json.Decode.errorToString error) )
@@ -2105,7 +2120,8 @@ dropdownIndicator interactionState transitioning =
 type alias DropdownItemEventListeners msg =
     { mouseOverMsgConstructor : OptionValue -> msg
     , mouseOutMsgConstructor : OptionValue -> msg
-    , clickMsgConstructor : OptionValue -> msg
+    , mouseDownMsgConstructor : OptionValue -> msg
+    , mouseUpMsgConstructor : OptionValue -> msg
     , noOpMsgConstructor : msg
     }
 
@@ -2128,7 +2144,8 @@ dropdown selectionMode options searchString (ValueCasing valueCasingWidth valueC
                 optionsToDropdownOptions
                     { mouseOverMsgConstructor = DropdownMouseOverOption
                     , mouseOutMsgConstructor = DropdownMouseOutOption
-                    , clickMsgConstructor = DropdownMouseClickOption
+                    , mouseDownMsgConstructor = DropdownMouseDownOption
+                    , mouseUpMsgConstructor = DropdownMouseUpOption
                     , noOpMsgConstructor = NoOp
                     }
                     selectionMode
@@ -2273,7 +2290,8 @@ optionToDropdownOption eventHandlers selectionConfig_ option_ =
                     div
                         [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
                         , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
-                        , mousedownPreventDefault (option |> Option.getOptionValue |> eventHandlers.clickMsgConstructor)
+                        , mousedownPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseDownMsgConstructor)
+                        , mouseupPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseUpMsgConstructor)
                         , onClickPreventDefault eventHandlers.noOpMsgConstructor
                         , Html.Attributes.attribute "part" "dropdown-option"
                         , class "option"
@@ -2290,7 +2308,8 @@ optionToDropdownOption eventHandlers selectionConfig_ option_ =
                             div
                                 [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
                                 , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
-                                , mousedownPreventDefault (option |> Option.getOptionValue |> eventHandlers.clickMsgConstructor)
+                                , mousedownPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseDownMsgConstructor)
+                                , mouseupPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseUpMsgConstructor)
                                 , Html.Attributes.attribute "part" "dropdown-option selected"
                                 , class "selected"
                                 , class "option"
@@ -2319,7 +2338,8 @@ optionToDropdownOption eventHandlers selectionConfig_ option_ =
                             div
                                 [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
                                 , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
-                                , mousedownPreventDefault (option |> Option.getOptionValue |> eventHandlers.clickMsgConstructor)
+                                , mousedownPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseDownMsgConstructor)
+                                , mouseupPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseUpMsgConstructor)
                                 , Html.Attributes.attribute "part" "dropdown-option selected highlighted"
                                 , class "selected"
                                 , class "highlighted"
@@ -2335,7 +2355,8 @@ optionToDropdownOption eventHandlers selectionConfig_ option_ =
                     div
                         [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
                         , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
-                        , mousedownPreventDefault (option |> Option.getOptionValue |> eventHandlers.clickMsgConstructor)
+                        , mousedownPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseDownMsgConstructor)
+                        , mouseupPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseUpMsgConstructor)
                         , Html.Attributes.attribute "part" "dropdown-option highlighted"
                         , class "highlighted"
                         , class "option"
@@ -2351,6 +2372,21 @@ optionToDropdownOption eventHandlers selectionConfig_ option_ =
                         , valueDataAttribute
                         ]
                         [ labelHtml, descriptionHtml ]
+
+                OptionActivated ->
+                    div
+                        [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
+                        , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
+                        , mousedownPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseDownMsgConstructor)
+                        , mouseupPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseUpMsgConstructor)
+                        , onClickPreventDefault eventHandlers.noOpMsgConstructor
+                        , Html.Attributes.attribute "part" "dropdown-option"
+                        , class "option"
+                        , class "active"
+                        , class "highlighted"
+                        , valueDataAttribute
+                        ]
+                        [ labelHtml, descriptionHtml ]
         )
         selectionConfig_
         option_
@@ -2360,6 +2396,7 @@ optionsToValuesHtml : List Option -> SingleItemRemoval -> List (Html Msg)
 optionsToValuesHtml options enableSingleItemRemoval =
     options
         |> selectedOptions
+        |> List.sortBy Option.getOptionSelectedIndex
         |> List.map (Html.Lazy.lazy2 optionToValueHtml enableSingleItemRemoval)
 
 
@@ -2369,7 +2406,7 @@ optionToValueHtml enableSingleItemRemoval option =
         removalHtml =
             case enableSingleItemRemoval of
                 EnableSingleItemRemoval ->
-                    span [ mousedownPreventDefault <| DeselectOptionInternal option, class "remove-option" ] [ text "" ]
+                    span [ mouseupPreventDefault <| DeselectOptionInternal option, class "remove-option" ] [ text "" ]
 
                 DisableSingleItemRemoval ->
                     text ""
@@ -2418,6 +2455,9 @@ optionToValueHtml enableSingleItemRemoval option =
                 OptionDisabled _ ->
                     text ""
 
+                OptionActivated ->
+                    text ""
+
         CustomOption display optionLabel optionValue _ ->
             case display of
                 OptionShown _ ->
@@ -2430,8 +2470,6 @@ optionToValueHtml enableSingleItemRemoval option =
                     div
                         [ class "value"
                         , partAttr
-                        , mousedownPreventDefault
-                            (ToggleSelectedValueHighlight optionValue)
                         ]
                         [ valueLabelHtml (OptionLabel.getLabelString optionLabel) optionValue, removalHtml ]
 
@@ -2455,6 +2493,9 @@ optionToValueHtml enableSingleItemRemoval option =
                     text ""
 
                 OptionDisabled _ ->
+                    text ""
+
+                OptionActivated ->
                     text ""
 
         EmptyOption display optionLabel ->
@@ -2483,6 +2524,9 @@ optionToValueHtml enableSingleItemRemoval option =
                 OptionDisabled _ ->
                     text ""
 
+                OptionActivated ->
+                    text ""
+
         DatalistOption _ _ ->
             text ""
 
@@ -2491,7 +2535,7 @@ valueLabelHtml : String -> OptionValue -> Html Msg
 valueLabelHtml labelText optionValue =
     span
         [ class "value-label"
-        , mousedownPreventDefault
+        , mouseupPreventDefault
             (ToggleSelectedValueHighlight optionValue)
         ]
         [ text labelText ]
@@ -2864,6 +2908,7 @@ init flags =
       , searchStringBounce = Bounce.init
       , searchStringDebounceLength = getDebouceDelayForSearch (List.length optionsWithInitialValueSelectedSorted)
       , searchString = SearchString.reset
+      , searchStringNonce = 0
       , focusedIndex = 0
       , rightSlot =
             if flags.loading then
@@ -2968,6 +3013,23 @@ default actions from being suppressed (I think).
 mousedownPreventDefault : msg -> Html.Attribute msg
 mousedownPreventDefault message =
     Html.Events.custom "mousedown"
+        (Json.Decode.succeed
+            { message = message
+            , stopPropagation = False
+            , preventDefault = True
+            }
+        )
+
+
+{-| Performs the mousedown event, but also prevent default.
+
+We used to also stop propagation but that is actually a problem because that stops all the click events
+default actions from being suppressed (I think).
+
+-}
+mouseupPreventDefault : msg -> Html.Attribute msg
+mouseupPreventDefault message =
+    Html.Events.custom "mouseup"
         (Json.Decode.succeed
             { message = message
             , stopPropagation = False

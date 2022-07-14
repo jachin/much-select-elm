@@ -149,7 +149,7 @@ updateOrAddCustomOption searchString selectionMode options =
                     AllowCustomOptions _ transformAndValidate ->
                         case TransformAndValidate.transformAndValidateSearchString transformAndValidate searchString of
                             TransformAndValidate.ValidationPass str _ ->
-                                ( True, SearchString.new str )
+                                ( True, SearchString.new str False )
 
                             TransformAndValidate.ValidationFailed _ _ _ ->
                                 ( False, searchString )
@@ -237,17 +237,29 @@ doesSearchStringFindNothing searchString searchStringMinimumLength options =
                     options
 
 
-encodeSearchParams : SearchString -> SearchStringMinimumLength -> Json.Encode.Value
-encodeSearchParams searchString searchStringMinimumLength =
+encodeSearchParams : SearchString -> SearchStringMinimumLength -> Int -> Bool -> Json.Encode.Value
+encodeSearchParams searchString searchStringMinimumLength searchNonce isClearingSearch =
     Json.Encode.object
         [ ( "searchString", SearchString.encode searchString )
         , ( "searchStringMinimumLength", OutputStyle.encodeSearchStringMinimumLength searchStringMinimumLength )
+        , ( "searchNonce", Json.Encode.int searchNonce )
+        , ( "isClearingSearch", Json.Encode.bool isClearingSearch )
         ]
 
 
-decodeSearchParams : Json.Decode.Decoder ( SearchString, SearchStringMinimumLength )
+type alias SearchParams =
+    { searchString : SearchString
+    , searchStringMinimumLength : SearchStringMinimumLength
+    , searchNonce : Int
+    , clearingSearch : Bool
+    }
+
+
+decodeSearchParams : Json.Decode.Decoder SearchParams
 decodeSearchParams =
-    Json.Decode.map2
-        Tuple.pair
+    Json.Decode.map4
+        SearchParams
         (Json.Decode.field "searchString" SearchString.decode)
         (Json.Decode.field "searchStringMinimumLength" decodeSearchStringMinimumLength)
+        (Json.Decode.field "searchNonce" Json.Decode.int)
+        (Json.Decode.field "isClearingSearch" Json.Decode.bool)

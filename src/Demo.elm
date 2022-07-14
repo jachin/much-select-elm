@@ -354,15 +354,19 @@ onReady =
 
 
 type alias MuchSelectValue =
-    { value : String, label : String }
+    { value : String
+    , label : String
+    , selectedIndex : Int
+    }
 
 
 valueDecoder : Json.Decode.Decoder MuchSelectValue
 valueDecoder =
-    Json.Decode.map2
+    Json.Decode.map3
         MuchSelectValue
         (Json.Decode.field "value" Json.Decode.string)
         (Json.Decode.field "label" Json.Decode.string)
+        (Json.Decode.field "selectedIndex" Json.Decode.int)
 
 
 onValueChanged : Attribute Msg
@@ -462,6 +466,7 @@ selectedValueAttribute encoding muchSelectValues =
         selectedValueStr =
             if encoding == "json" then
                 muchSelectValues
+                    |> List.sortBy .selectedIndex
                     |> List.map .value
                     |> Json.Encode.list Json.Encode.string
                     |> Json.Encode.encode 0
@@ -469,6 +474,7 @@ selectedValueAttribute encoding muchSelectValues =
 
             else
                 muchSelectValues
+                    |> List.sortBy .selectedIndex
                     |> List.map .value
                     |> String.join ","
     in
@@ -493,7 +499,8 @@ view : Model -> Html Msg
 view model =
     let
         transformers =
-            [ Lowercase ]
+            [-- Lowercase
+            ]
 
         validators =
             List.filterMap
