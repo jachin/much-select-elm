@@ -1565,7 +1565,9 @@ singleSelectViewCustomHtml selectionConfig options searchString rightSlot =
             (valueCasingClassList selectionConfig hasOptionSelected False)
         ]
         [ span
-            [ id "selected-value" ]
+            [ id "selected-value"
+            , Html.Attributes.attribute "part" "selected-value"
+            ]
             [ text valueStr ]
         , singleSelectCustomHtmlInputField
             searchString
@@ -2387,7 +2389,7 @@ optionToDropdownOption eventHandlers selectionConfig_ option_ =
                         , mousedownPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseDownMsgConstructor)
                         , mouseupPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseUpMsgConstructor)
                         , onClickPreventDefault eventHandlers.noOpMsgConstructor
-                        , Html.Attributes.attribute "part" "dropdown-option"
+                        , Html.Attributes.attribute "part" "dropdown-option active"
                         , class "option"
                         , class "active"
                         , class "highlighted"
