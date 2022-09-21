@@ -360,7 +360,7 @@ class MuchSelect extends HTMLElement {
      * @type {null|string}
      * @private
      */
-    this._optionsCache = null;
+    this._filterWorkerOptionsCache = null;
 
     this._inputKeypressDebounceHandler = makeDebouncedFunc((searchString) => {
       this.dispatchEvent(
@@ -2181,7 +2181,7 @@ class MuchSelect extends HTMLElement {
         });
       });
     } else {
-      this._optionsCache = options;
+      this._filterWorkerOptionsCache = options;
     }
   }
 
@@ -2210,11 +2210,15 @@ class MuchSelect extends HTMLElement {
         }
       };
 
-      if (this._optionsCache) {
+      if (this._filterWorkerOptionsCache) {
         this._filterWorker.postMessage({
           portName: "receiveOptions",
-          jsonBlob: this._optionsCache,
+          jsonBlob: this._filterWorkerOptionsCache,
         });
+
+        // Maybe this can get garbage collected, we should not need it again.
+        //  not that we have a filter worker we don't need any more.
+        this._filterWorkerOptionsCache = null;
       }
     });
   }
