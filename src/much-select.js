@@ -312,6 +312,12 @@ class MuchSelect extends HTMLElement {
     this._filterWorker = null;
 
     /**
+     * @type {null|Promise}
+     * @private
+     */
+    this._filterWorkerPromise = null;
+
+    /**
      * @type {boolean}
      * @private
      */
@@ -348,6 +354,13 @@ class MuchSelect extends HTMLElement {
      * @private
      */
     this._transformationValidationSlotObserver = null;
+
+    /**
+     * See the comment on updateFilterWorkerOptions() for what this is for.
+     * @type {null|string}
+     * @private
+     */
+    this._optionsCache = null;
 
     this._inputKeypressDebounceHandler = makeDebouncedFunc((searchString) => {
       this.dispatchEvent(
@@ -491,29 +504,6 @@ class MuchSelect extends HTMLElement {
     this.parentDivPromise.then((parentDiv) => {
       const wrapperDiv = parentDiv.querySelector("#wrapper");
       this._resizeObserver.observe(wrapperDiv);
-
-      const code = parentDiv.querySelector("#filter-worker").textContent;
-      const blob = new Blob([code], { type: "application/javascript" });
-
-      this._filterWorker = new Worker(URL.createObjectURL(blob));
-
-      this._filterWorker.onmessage = ({ data }) => {
-        const { messageName, searchResultData, errorMessage } = data;
-        if (messageName === "searchResults") {
-          this.appPromise.then((app) => {
-            // noinspection JSUnresolvedVariable
-            app.ports.updateSearchResultDataWithWebWorkerReceiver.send(
-              searchResultData
-            );
-          });
-        } else if (messageName === "errorMessage") {
-          this.errorHandler(errorMessage);
-        } else {
-          this.errorHandler(
-            `Unknown message from filter worker: ${messageName}`
-          );
-        }
-      };
     });
 
     // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
@@ -745,9 +735,11 @@ class MuchSelect extends HTMLElement {
     this.appPromise.then((app) => {
       // noinspection JSUnresolvedVariable
       app.ports.searchOptionsWithWebWorker.subscribe((searchString) => {
-        this._filterWorker.postMessage({
-          portName: "receiveSearchString",
-          jsonBlob: searchString,
+        this.filterWorkerPromise.then((filterWorker) => {
+          filterWorker.postMessage({
+            portName: "receiveSearchString",
+            jsonBlob: searchString,
+          });
         });
       });
     });
@@ -1343,6 +1335,28 @@ class MuchSelect extends HTMLElement {
       }
     });
     return this._appPromise;
+  }
+
+  /**
+   * Allow the lazy setup of the filter worker. Until we actually do
+   *  some filtering, let's just leave it.
+   *
+   * @returns {Promise}
+   */
+  get filterWorkerPromise() {
+    if (this._filterWorkerPromise) {
+      return this._filterWorkerPromise;
+    }
+    this._filterWorkerPromise = new Promise((resolve) => {
+      if (this._filterWorker) {
+        resolve(this._filterWorker);
+      } else {
+        this.setupFilterWorker().then(() => {
+          resolve(this._filterWorker);
+        });
+      }
+    });
+    return this._filterWorkerPromise;
   }
 
   get parentDivPromise() {
@@ -2149,11 +2163,59 @@ class MuchSelect extends HTMLElement {
     });
   }
 
+  /**
+   * We want to lazy load the filter worker because we do not
+   * really need it until the filtering actually happens.
+   * So if the filter worker has not been created, just hang on to
+   * our options for the filter worker until we really need them.
+   *
+   * @returns {Promise<void>}
+   */
   async updateFilterWorkerOptions() {
     const options = await this.getAllOptions();
-    this._filterWorker.postMessage({
-      portName: "receiveOptions",
-      jsonBlob: options,
+    if (this._filterWorker) {
+      this.filterWorkerPromise.then((filterWorker) => {
+        filterWorker.postMessage({
+          portName: "receiveOptions",
+          jsonBlob: options,
+        });
+      });
+    } else {
+      this._optionsCache = options;
+    }
+  }
+
+  setupFilterWorker() {
+    return this.parentDivPromise.then((parentDiv) => {
+      const code = parentDiv.querySelector("#filter-worker").textContent;
+      const blob = new Blob([code], { type: "application/javascript" });
+
+      this._filterWorker = new Worker(URL.createObjectURL(blob));
+
+      this._filterWorker.onmessage = ({ data }) => {
+        const { messageName, searchResultData, errorMessage } = data;
+        if (messageName === "searchResults") {
+          this.appPromise.then((app) => {
+            // noinspection JSUnresolvedVariable
+            app.ports.updateSearchResultDataWithWebWorkerReceiver.send(
+              searchResultData
+            );
+          });
+        } else if (messageName === "errorMessage") {
+          this.errorHandler(errorMessage);
+        } else {
+          this.errorHandler(
+            `Unknown message from filter worker: ${messageName}`
+          );
+        }
+      };
+
+      if (this._optionsCache) {
+        this._filterWorker.postMessage({
+          portName: "receiveOptions",
+          jsonBlob: this._optionsCache,
+        });
+      }
     });
   }
 }
