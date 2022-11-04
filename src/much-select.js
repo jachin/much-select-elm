@@ -137,10 +137,11 @@ const cleanUpSelectedValue = (selectedValue) => {
 
 const makeDebouncedFunc = (func, timeout = 500) => {
   let timer;
+  const myThis = this;
   return (...args) => {
     clearTimeout(timer);
     timer = setTimeout(() => {
-      func.apply(this, args);
+      func.apply(myThis, args);
     }, timeout);
   };
 };
