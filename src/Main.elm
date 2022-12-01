@@ -2055,6 +2055,7 @@ singleSelectDatasetInputField maybeOption selectionMode hasSelectedOption =
             , ariaLabel
             , partAttr
             , placeholderAttribute
+            , value valueString
             ]
             []
 
