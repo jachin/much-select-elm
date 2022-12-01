@@ -1661,6 +1661,7 @@ multiSelectViewCustomHtml selectionConfig options searchString rightSlot =
                , rightSlotHtml
                     rightSlot
                     (SelectionMode.getInteractionState selectionConfig)
+                    (SelectionMode.isDisabled selectionConfig)
                     0
                ]
         )
@@ -1957,6 +1958,7 @@ multiSelectDatasetInputField maybeOption selectionConfig rightSlot index =
                     , Html.Attributes.attribute "part" "input-value"
                     , placeholderAttribute
                     , classList classes
+                    , value valueString
                     ]
                     []
 
@@ -2003,7 +2005,7 @@ multiSelectDatasetInputField maybeOption selectionConfig rightSlot index =
     in
     [ div [ class "input-wrapper", Html.Attributes.attribute "part" "input-wrapper" ]
         [ inputHtml
-        , rightSlotHtml rightSlot (SelectionMode.getInteractionState selectionConfig) index
+        , rightSlotHtml rightSlot (SelectionMode.getInteractionState selectionConfig) (isDisabled selectionConfig) index
         ]
     , errorMessage
     ]
@@ -2055,6 +2057,7 @@ singleSelectDatasetInputField maybeOption selectionMode hasSelectedOption =
             , ariaLabel
             , partAttr
             , placeholderAttribute
+            , value valueString
             ]
             []
 
@@ -2578,8 +2581,8 @@ optionToDatalistOption option =
     Html.option [ Html.Attributes.value (Option.getOptionValueAsString option) ] []
 
 
-rightSlotHtml : RightSlot -> SelectionMode.InteractionState -> Int -> Html Msg
-rightSlotHtml rightSlot interactionState selectedIndex =
+rightSlotHtml : RightSlot -> SelectionMode.InteractionState -> Bool -> Int -> Html Msg
+rightSlotHtml rightSlot interactionState isDisabled selectedIndex =
     case rightSlot of
         ShowNothing ->
             text ""
@@ -2593,31 +2596,43 @@ rightSlotHtml rightSlot interactionState selectedIndex =
             dropdownIndicator interactionState transitioning
 
         ShowClearButton ->
-            div
-                [ id "clear-button-wrapper"
-                , Html.Attributes.attribute "part" "clear-button-wrapper"
-                , onClickPreventDefaultAndStopPropagation ClearAllSelectedOptions
-                ]
-                [ node "slot"
-                    [ name "clear-button"
+            if isDisabled then
+                text ""
+
+            else
+                div
+                    [ id "clear-button-wrapper"
+                    , Html.Attributes.attribute "part" "clear-button-wrapper"
+                    , onClickPreventDefaultAndStopPropagation ClearAllSelectedOptions
                     ]
-                    [ text "✕"
+                    [ node "slot"
+                        [ name "clear-button"
+                        ]
+                        [ text "✕"
+                        ]
                     ]
-                ]
 
         ShowAddButton ->
-            div [ class "add-remove-buttons" ]
-                [ div [ class "add-button-wrapper", onClick (AddMultiSelectValue selectedIndex) ]
-                    [ addButtonSlot selectedIndex ]
-                ]
+            if isDisabled then
+                text ""
+
+            else
+                div [ class "add-remove-buttons" ]
+                    [ div [ class "add-button-wrapper", onClick (AddMultiSelectValue selectedIndex) ]
+                        [ addButtonSlot selectedIndex ]
+                    ]
 
         ShowAddAndRemoveButtons ->
-            div [ class "add-remove-buttons" ]
-                [ div [ class "add-button-wrapper", onClick (AddMultiSelectValue selectedIndex) ]
-                    [ addButtonSlot selectedIndex ]
-                , div [ class "remove-button-wrapper", onClick (RemoveMultiSelectValue selectedIndex) ]
-                    [ remoteButtonSlot selectedIndex ]
-                ]
+            if isDisabled then
+                text ""
+
+            else
+                div [ class "add-remove-buttons" ]
+                    [ div [ class "add-button-wrapper", onClick (AddMultiSelectValue selectedIndex) ]
+                        [ addButtonSlot selectedIndex ]
+                    , div [ class "remove-button-wrapper", onClick (RemoveMultiSelectValue selectedIndex) ]
+                        [ remoteButtonSlot selectedIndex ]
+                    ]
 
 
 defaultLoadingIndicator : Html msg
