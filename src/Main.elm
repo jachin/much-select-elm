@@ -99,7 +99,57 @@ import OutputStyle
         , SearchStringMinimumLength(..)
         , SingleItemRemoval(..)
         )
-import Ports exposing (addOptionsReceiver, allOptions, allowCustomOptionsReceiver, attributeChanged, blurInput, customOptionHintReceiver, customOptionSelected, customValidationReceiver, deselectOptionReceiver, disableChangedReceiver, errorMessage, focusInput, initialValueSet, inputBlurred, inputFocused, inputKeyUp, invalidValue, loadingChangedReceiver, maxDropdownItemsChangedReceiver, muchSelectIsReady, multiSelectChangedReceiver, multiSelectSingleItemRemovalChangedReceiver, optionDeselected, optionSelected, optionSortingChangedReceiver, optionsReplacedReceiver, optionsUpdated, outputStyleChangedReceiver, placeholderChangedReceiver, removeOptionsReceiver, requestAllOptionsReceiver, scrollDropdownToElement, searchOptionsWithWebWorker, searchStringMinimumLengthChangedReceiver, selectOptionReceiver, selectedItemStaysInPlaceChangedReceiver, sendCustomValidationRequest, showDropdownFooterChangedReceiver, transformationAndValidationReceiver, updateOptionsFromDom, updateOptionsInWebWorker, updateSearchResultDataWithWebWorkerReceiver, valueCasingDimensionsChangedReceiver, valueChanged, valueChangedReceiver, valueCleared, valueDecoder, valuesDecoder)
+import Ports
+    exposing
+        ( addOptionsReceiver
+        , allOptions
+        , allowCustomOptionsReceiver
+        , attributeChanged
+        , blurInput
+        , customOptionHintReceiver
+        , customOptionSelected
+        , customValidationReceiver
+        , deselectOptionReceiver
+        , disableChangedReceiver
+        , errorMessage
+        , focusInput
+        , initialValueSet
+        , inputBlurred
+        , inputFocused
+        , inputKeyUp
+        , invalidValue
+        , loadingChangedReceiver
+        , maxDropdownItemsChangedReceiver
+        , muchSelectIsReady
+        , multiSelectChangedReceiver
+        , multiSelectSingleItemRemovalChangedReceiver
+        , optionDeselected
+        , optionSelected
+        , optionSortingChangedReceiver
+        , optionsReplacedReceiver
+        , optionsUpdated
+        , outputStyleChangedReceiver
+        , placeholderChangedReceiver
+        , removeOptionsReceiver
+        , requestAllOptionsReceiver
+        , scrollDropdownToElement
+        , searchOptionsWithWebWorker
+        , searchStringMinimumLengthChangedReceiver
+        , selectOptionReceiver
+        , selectedItemStaysInPlaceChangedReceiver
+        , sendCustomValidationRequest
+        , showDropdownFooterChangedReceiver
+        , transformationAndValidationReceiver
+        , updateOptionsFromDom
+        , updateOptionsInWebWorker
+        , updateSearchResultDataWithWebWorkerReceiver
+        , valueCasingDimensionsChangedReceiver
+        , valueChanged
+        , valueChangedReceiver
+        , valueCleared
+        , valueDecoder
+        , valuesDecoder
+        )
 import PositiveInt exposing (PositiveInt)
 import RightSlot
     exposing
