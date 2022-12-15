@@ -2,7 +2,9 @@ port module Ports exposing
     ( addOptionsReceiver
     , allOptions
     , allowCustomOptionsReceiver
+    , attributeChanged
     , blurInput
+    , customOptionHintReceiver
     , customOptionSelected
     , customValidationReceiver
     , deselectOptionReceiver
@@ -153,6 +155,9 @@ port optionsUpdated : Bool -> Cmd msg
 port scrollDropdownToElement : String -> Cmd msg
 
 
+port attributeChanged : (( String, String ) -> msg) -> Sub msg
+
+
 valuesDecoder : Json.Decode.Decoder (List String)
 valuesDecoder =
     Json.Decode.oneOf
@@ -229,6 +234,9 @@ port showDropdownFooterChangedReceiver : (Bool -> msg) -> Sub msg
 
 
 port allowCustomOptionsReceiver : (( Bool, String ) -> msg) -> Sub msg
+
+
+port customOptionHintReceiver : (String -> msg) -> Sub msg
 
 
 port valueCasingDimensionsChangedReceiver : ({ width : Float, height : Float } -> msg) -> Sub msg

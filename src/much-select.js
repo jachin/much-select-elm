@@ -1795,16 +1795,23 @@ class MuchSelect extends HTMLElement {
   }
 
   set customOptionHint(value) {
-    if (value === "false") {
-      this._customOptionHint = null;
-    } else if (value === "true") {
-      this._customOptionHint = null;
-    } else if (value === null) {
-      this._customOptionHint = null;
-    } else if (value === "") {
-      this._customOptionHint = null;
+    if (
+      value === "false" ||
+      value === "true" ||
+      value === null ||
+      value === ""
+    ) {
+      // noinspection JSUnresolvedVariable
+      this.appPromise.then((app) => {
+        // noinspection JSUnresolvedVariable
+        app.ports.clearCustomOptionHintReceiver.send();
+      });
     } else if (typeof value === "string") {
-      this._customOptionHint = value;
+      // noinspection JSUnresolvedVariable
+      this.appPromise.then((app) => {
+        // noinspection JSUnresolvedVariable
+        app.ports.customOptionHintReceiver.send(value);
+      });
     } else {
       throw new TypeError(
         `Unexpected type for the customOptionHint, it should be a string but instead it is a: ${typeof value}`

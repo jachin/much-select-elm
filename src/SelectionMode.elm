@@ -23,6 +23,7 @@ module SelectionMode exposing
     , isSingleSelect
     , makeSelectionConfig
     , setAllowCustomOptionsWithBool
+    , setCustomOptionHint
     , setDropdownStyle
     , setInteractionState
     , setIsDisabled
@@ -376,6 +377,25 @@ getCustomOptionHint selectionConfig =
 
                 MultiSelectDataList _ ->
                     Nothing
+
+
+setCustomOptionHint : String -> SelectionConfig -> SelectionConfig
+setCustomOptionHint hint selectionConfig =
+    case getCustomOptionHint selectionConfig of
+        Just _ ->
+            let
+                transformAndValidate =
+                    getTransformAndValidate selectionConfig
+
+                newAllowCustomOptions : CustomOptions
+                newAllowCustomOptions =
+                    AllowCustomOptions (Just hint) transformAndValidate
+            in
+            setCustomOptions newAllowCustomOptions selectionConfig
+
+        Nothing ->
+            -- TODO this could return a result that fails if we are not allowing custom options
+            selectionConfig
 
 
 setAllowCustomOptionsWithBool : Bool -> CustomOptionHint -> SelectionConfig -> SelectionConfig

@@ -99,55 +99,7 @@ import OutputStyle
         , SearchStringMinimumLength(..)
         , SingleItemRemoval(..)
         )
-import Ports
-    exposing
-        ( addOptionsReceiver
-        , allOptions
-        , allowCustomOptionsReceiver
-        , blurInput
-        , customOptionSelected
-        , customValidationReceiver
-        , deselectOptionReceiver
-        , disableChangedReceiver
-        , errorMessage
-        , focusInput
-        , initialValueSet
-        , inputBlurred
-        , inputFocused
-        , inputKeyUp
-        , invalidValue
-        , loadingChangedReceiver
-        , maxDropdownItemsChangedReceiver
-        , muchSelectIsReady
-        , multiSelectChangedReceiver
-        , multiSelectSingleItemRemovalChangedReceiver
-        , optionDeselected
-        , optionSelected
-        , optionSortingChangedReceiver
-        , optionsReplacedReceiver
-        , optionsUpdated
-        , outputStyleChangedReceiver
-        , placeholderChangedReceiver
-        , removeOptionsReceiver
-        , requestAllOptionsReceiver
-        , scrollDropdownToElement
-        , searchOptionsWithWebWorker
-        , searchStringMinimumLengthChangedReceiver
-        , selectOptionReceiver
-        , selectedItemStaysInPlaceChangedReceiver
-        , sendCustomValidationRequest
-        , showDropdownFooterChangedReceiver
-        , transformationAndValidationReceiver
-        , updateOptionsFromDom
-        , updateOptionsInWebWorker
-        , updateSearchResultDataWithWebWorkerReceiver
-        , valueCasingDimensionsChangedReceiver
-        , valueChanged
-        , valueChangedReceiver
-        , valueCleared
-        , valueDecoder
-        , valuesDecoder
-        )
+import Ports exposing (addOptionsReceiver, allOptions, allowCustomOptionsReceiver, attributeChanged, blurInput, customOptionHintReceiver, customOptionSelected, customValidationReceiver, deselectOptionReceiver, disableChangedReceiver, errorMessage, focusInput, initialValueSet, inputBlurred, inputFocused, inputKeyUp, invalidValue, loadingChangedReceiver, maxDropdownItemsChangedReceiver, muchSelectIsReady, multiSelectChangedReceiver, multiSelectSingleItemRemovalChangedReceiver, optionDeselected, optionSelected, optionSortingChangedReceiver, optionsReplacedReceiver, optionsUpdated, outputStyleChangedReceiver, placeholderChangedReceiver, removeOptionsReceiver, requestAllOptionsReceiver, scrollDropdownToElement, searchOptionsWithWebWorker, searchStringMinimumLengthChangedReceiver, selectOptionReceiver, selectedItemStaysInPlaceChangedReceiver, sendCustomValidationRequest, showDropdownFooterChangedReceiver, transformationAndValidationReceiver, updateOptionsFromDom, updateOptionsInWebWorker, updateSearchResultDataWithWebWorkerReceiver, valueCasingDimensionsChangedReceiver, valueChanged, valueChangedReceiver, valueCleared, valueDecoder, valuesDecoder)
 import PositiveInt exposing (PositiveInt)
 import RightSlot
     exposing
@@ -270,6 +222,8 @@ type Msg
     | UpdateSearchResultsForOptions Json.Encode.Value
     | CustomValidationResponse Json.Encode.Value
     | UpdateTransformationAndValidation Json.Encode.Value
+    | AttributeChanged ( String, String )
+    | CustomOptionHintChanged String
 
 
 type alias Model =
@@ -1177,6 +1131,98 @@ update msg model =
 
                 Err error ->
                     ( model, ReportErrorMessage (Json.Decode.errorToString error) )
+
+        AttributeChanged ( attributeName, newAttributeValue ) ->
+            case attributeName of
+                "allow-custom-options" ->
+                    case newAttributeValue of
+                        "" ->
+                            ( { model
+                                | selectionConfig =
+                                    SelectionMode.setAllowCustomOptionsWithBool
+                                        True
+                                        Nothing
+                                        model.selectionConfig
+                              }
+                            , NoEffect
+                            )
+
+                        "false" ->
+                            ( { model
+                                | selectionConfig =
+                                    SelectionMode.setAllowCustomOptionsWithBool
+                                        False
+                                        Nothing
+                                        model.selectionConfig
+                              }
+                            , NoEffect
+                            )
+
+                        customOptionHint ->
+                            ( { model
+                                | selectionConfig =
+                                    SelectionMode.setAllowCustomOptionsWithBool
+                                        False
+                                        (Just customOptionHint)
+                                        model.selectionConfig
+                              }
+                            , NoEffect
+                            )
+
+                "disabled" ->
+                    ( model, NoEffect )
+
+                "events-only" ->
+                    ( model, NoEffect )
+
+                "loading" ->
+                    ( model, NoEffect )
+
+                "max-dropdown-items" ->
+                    ( model, NoEffect )
+
+                "multi-select" ->
+                    ( model, NoEffect )
+
+                "multi-select-single-item-removal" ->
+                    ( model, NoEffect )
+
+                "option-sorting" ->
+                    ( model, NoEffect )
+
+                "output-style" ->
+                    ( model, NoEffect )
+
+                "placeholder" ->
+                    ( model, NoEffect )
+
+                "search-string-minimum-length" ->
+                    ( model, NoEffect )
+
+                "selected-option-goes-to-top" ->
+                    ( model, NoEffect )
+
+                "selected-value" ->
+                    ( model, NoEffect )
+
+                "selected-value-encoding" ->
+                    ( model, NoEffect )
+
+                "show-dropdown-footer" ->
+                    ( model, NoEffect )
+
+                unknownAttribute ->
+                    ( model, ReportErrorMessage ("Unknown attribute: " ++ unknownAttribute) )
+
+        CustomOptionHintChanged customOptionHint ->
+            ( { model
+                | selectionConfig =
+                    SelectionMode.setCustomOptionHint
+                        customOptionHint
+                        model.selectionConfig
+              }
+            , NoEffect
+            )
 
 
 perform : Effect -> Cmd Msg
@@ -3025,6 +3071,8 @@ subscriptions _ =
         , updateSearchResultDataWithWebWorkerReceiver UpdateSearchResultsForOptions
         , customValidationReceiver CustomValidationResponse
         , transformationAndValidationReceiver UpdateTransformationAndValidation
+        , attributeChanged AttributeChanged
+        , customOptionHintReceiver CustomOptionHintChanged
         ]
 
 
