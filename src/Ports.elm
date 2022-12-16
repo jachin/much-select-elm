@@ -9,6 +9,7 @@ port module Ports exposing
     , customValidationReceiver
     , deselectOptionReceiver
     , disableChangedReceiver
+    , dumpSelectionConfig
     , errorMessage
     , focusInput
     , initialValueSet
@@ -32,6 +33,7 @@ port module Ports exposing
     , placeholderChangedReceiver
     , removeOptionsReceiver
     , requestAllOptionsReceiver
+    , requestSelectionConfig
     , scrollDropdownToElement
     , searchOptionsWithWebWorker
     , searchStringMinimumLengthChangedReceiver
@@ -123,6 +125,12 @@ port inputFocused : () -> Cmd msg
 
 
 port allOptions : Json.Decode.Value -> Cmd msg
+
+
+port requestSelectionConfig : (() -> msg) -> Sub msg
+
+
+port dumpSelectionConfig : Json.Decode.Value -> Cmd msg
 
 
 port updateOptionsFromDom : () -> Cmd msg

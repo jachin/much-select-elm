@@ -4,6 +4,7 @@ module SelectionMode exposing
     , SelectionConfig(..)
     , SelectionMode(..)
     , defaultSelectionConfig
+    , encodeSelectionConfig
     , getCustomOptionHint
     , getCustomOptions
     , getDropdownStyle
@@ -43,6 +44,7 @@ module SelectionMode exposing
     , stringToOutputStyle
     )
 
+import Json.Encode
 import OutputStyle exposing (CustomOptionHint, CustomOptions(..), DropdownState(..), DropdownStyle(..), MaxDropdownItems(..), MultiSelectOutputStyle(..), SearchStringMinimumLength(..), SelectedItemPlacementMode(..), SingleItemRemoval(..), SingleSelectOutputStyle(..), defaultMultiSelectCustomHtmlFields, defaultSingleSelectCustomHtmlFields, getTransformAndValidateFromCustomOptions, setTransformAndValidateFromCustomOptions)
 import PositiveInt
 import TransformAndValidate exposing (ValueTransformAndValidate)
@@ -959,3 +961,20 @@ setTransformAndValidate newTransformAndValidate selectionConfig =
 
                 MultiSelectDataList _ ->
                     MultiSelectConfig (MultiSelectDataList newTransformAndValidate) placeholder interactionState
+
+
+encodeSelectionConfig : SelectionConfig -> Json.Encode.Value
+encodeSelectionConfig selectionConfig =
+    Json.Encode.object
+        [ ( "disabled", Json.Encode.bool (isDisabled selectionConfig) )
+        , ( "allows-custom-options"
+          , Json.Encode.bool
+                (case getCustomOptions selectionConfig of
+                    AllowCustomOptions _ _ ->
+                        True
+
+                    NoCustomOptions ->
+                        False
+                )
+          )
+        ]

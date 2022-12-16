@@ -111,6 +111,7 @@ import Ports
         , customValidationReceiver
         , deselectOptionReceiver
         , disableChangedReceiver
+        , dumpSelectionConfig
         , errorMessage
         , focusInput
         , initialValueSet
@@ -132,6 +133,7 @@ import Ports
         , placeholderChangedReceiver
         , removeOptionsReceiver
         , requestAllOptionsReceiver
+        , requestSelectionConfig
         , scrollDropdownToElement
         , searchOptionsWithWebWorker
         , searchStringMinimumLengthChangedReceiver
@@ -218,6 +220,7 @@ type Effect
     | FetchOptionsFromDom
     | ScrollDownToElement String
     | ReportAllOptions Json.Encode.Value
+    | DumpSelectionConfig Json.Encode.Value
 
 
 type Msg
@@ -274,6 +277,7 @@ type Msg
     | UpdateTransformationAndValidation Json.Encode.Value
     | AttributeChanged ( String, String )
     | CustomOptionHintChanged String
+    | SelectionConfigRequested
 
 
 type alias Model =
@@ -1274,6 +1278,9 @@ update msg model =
             , NoEffect
             )
 
+        SelectionConfigRequested ->
+            ( model, DumpSelectionConfig (SelectionMode.encodeSelectionConfig model.selectionConfig) )
+
 
 perform : Effect -> Cmd Msg
 perform effect =
@@ -1351,6 +1358,9 @@ perform effect =
 
         ReportInitialValueSet value ->
             initialValueSet value
+
+        DumpSelectionConfig value ->
+            dumpSelectionConfig value
 
 
 batch : List Effect -> Effect
@@ -3123,6 +3133,7 @@ subscriptions _ =
         , transformationAndValidationReceiver UpdateTransformationAndValidation
         , attributeChanged AttributeChanged
         , customOptionHintReceiver CustomOptionHintChanged
+        , requestSelectionConfig (\() -> SelectionConfigRequested)
         ]
 
 

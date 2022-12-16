@@ -519,11 +519,11 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.cX.Y === region.b5.Y)
+	if (region.cW.Z === region.b8.Z)
 	{
-		return 'on line ' + region.cX.Y;
+		return 'on line ' + region.cW.Z;
 	}
-	return 'on lines ' + region.cX.Y + ' through ' + region.b5.Y;
+	return 'on lines ' + region.cW.Z + ' through ' + region.b8.Z;
 }
 
 
@@ -1857,9 +1857,9 @@ var _Platform_worker = F4(function(impl, flagDecoder, debugMetadata, args)
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.ch,
-		impl.c4,
-		impl.c$,
+		impl.cj,
+		impl.c3,
+		impl.c_,
 		function() { return function() {} }
 	);
 });
@@ -2859,7 +2859,7 @@ var $author$project$SelectionMode$CustomHtml = 0;
 var $author$project$OptionDisplay$MatureOption = 1;
 var $author$project$OptionSearcher$SearchParams = F4(
 	function (searchString, searchStringMinimumLength, searchNonce, clearingSearch) {
-		return {b$: clearingSearch, cR: searchNonce, cS: searchString, cT: searchStringMinimumLength};
+		return {b2: clearingSearch, cQ: searchNonce, cR: searchString, cS: searchStringMinimumLength};
 	});
 var $elm$json$Json$Decode$bool = _Json_decodeBool;
 var $author$project$SearchString$SearchString = F2(
@@ -2970,19 +2970,19 @@ var $author$project$OptionSearchFilter$encode = function (optionSearchFilter) {
 			[
 				_Utils_Tuple2(
 				'totalScore',
-				$elm$json$Json$Encode$int(optionSearchFilter.aV)),
+				$elm$json$Json$Encode$int(optionSearchFilter.a_)),
 				_Utils_Tuple2(
 				'bestScore',
-				$elm$json$Json$Encode$int(optionSearchFilter.au)),
+				$elm$json$Json$Encode$int(optionSearchFilter.ax)),
 				_Utils_Tuple2(
 				'labelTokens',
-				$author$project$OptionSearchFilter$encodeTokens(optionSearchFilter.aE)),
+				$author$project$OptionSearchFilter$encodeTokens(optionSearchFilter.aI)),
 				_Utils_Tuple2(
 				'descriptionTokens',
-				$author$project$OptionSearchFilter$encodeTokens(optionSearchFilter.ay)),
+				$author$project$OptionSearchFilter$encodeTokens(optionSearchFilter.aB)),
 				_Utils_Tuple2(
 				'groupTokens',
-				$author$project$OptionSearchFilter$encodeTokens(optionSearchFilter.aC))
+				$author$project$OptionSearchFilter$encodeTokens(optionSearchFilter.aF))
 			]));
 };
 var $author$project$Option$getMaybeOptionSearchFilter = function (option) {
@@ -3170,7 +3170,7 @@ var $author$project$OptionsUtilities$optionSearchResultsBestScore = function (op
 	return A2(
 		$elm$core$List$map,
 		function ($) {
-			return $.au;
+			return $.ax;
 		},
 		$elm_community$maybe_extra$Maybe$Extra$values(
 			A2($elm$core$List$map, $author$project$Option$getMaybeOptionSearchFilter, options)));
@@ -3197,7 +3197,7 @@ var $author$project$OptionsUtilities$isOptionBelowScore = F2(
 		var _v0 = $author$project$Option$getMaybeOptionSearchFilter(option);
 		if (!_v0.$) {
 			var optionSearchFilter = _v0.a;
-			return _Utils_cmp(score, optionSearchFilter.au) > -1;
+			return _Utils_cmp(score, optionSearchFilter.ax) > -1;
 		} else {
 			return false;
 		}
@@ -3683,7 +3683,7 @@ var $elm$core$List$minimum = function (list) {
 };
 var $author$project$OptionSearchFilter$new = F5(
 	function (totalScore, bestScore, labelTokens, descriptionTokens, groupTokens) {
-		return {au: bestScore, ay: descriptionTokens, aC: groupTokens, aE: labelTokens, aV: totalScore};
+		return {ax: bestScore, aB: descriptionTokens, aF: groupTokens, aI: labelTokens, a_: totalScore};
 	});
 var $author$project$Option$optionDescriptionToString = function (optionDescription) {
 	if (!optionDescription.$) {
@@ -3718,15 +3718,15 @@ var $author$project$OptionLabel$optionLabelToString = function (optionLabel) {
 };
 var $tripokey$elm_fuzzy$Fuzzy$Match = F4(
 	function (score, offset, length, keys) {
-		return {cl: keys, cm: length, cC: offset, aO: score};
+		return {cn: keys, co: length, cE: offset, aT: score};
 	});
 var $tripokey$elm_fuzzy$Fuzzy$Result = F2(
 	function (score, matches) {
-		return {co: matches, aO: score};
+		return {cq: matches, aT: score};
 	});
 var $tripokey$elm_fuzzy$Fuzzy$ConfigModel = F4(
 	function (addPenalty, movePenalty, removePenalty, insertPenalty) {
-		return {af: addPenalty, al: insertPenalty, an: movePenalty, ar: removePenalty};
+		return {ag: addPenalty, an: insertPenalty, ap: movePenalty, au: removePenalty};
 	});
 var $tripokey$elm_fuzzy$Fuzzy$defaultConfig = A4($tripokey$elm_fuzzy$Fuzzy$ConfigModel, 10, 1000, 10000, 1);
 var $elm$core$String$indexes = _String_indexes;
@@ -3934,15 +3934,15 @@ var $tripokey$elm_fuzzy$Fuzzy$distance = F3(
 				}
 			});
 		var accumulated = A3($elm$core$String$foldl, accumulate, $tripokey$elm_fuzzy$Fuzzy$initialModel, needle);
-		var hPenalty = ($elm$core$String$length(hay) - $elm$core$List$length(accumulated)) * config.af;
-		var nPenalty = ($elm$core$String$length(needle) - $elm$core$List$length(accumulated)) * config.ar;
+		var hPenalty = ($elm$core$String$length(hay) - $elm$core$List$length(accumulated)) * config.ag;
+		var nPenalty = ($elm$core$String$length(needle) - $elm$core$List$length(accumulated)) * config.au;
 		var sorted = $tripokey$elm_fuzzy$Fuzzy$quickSort(accumulated);
 		var iPenalty = A3(
 			$elm$core$List$foldl,
 			accumulateInsertPenalty,
 			_Utils_Tuple2($elm$core$Maybe$Nothing, 0),
-			sorted.b).b * config.al;
-		var mPenalty = sorted.a * config.an;
+			sorted.b).b * config.an;
+		var mPenalty = sorted.a * config.ap;
 		return A4(
 			$tripokey$elm_fuzzy$Fuzzy$Match,
 			((mPenalty + hPenalty) + nPenalty) + iPenalty,
@@ -4053,22 +4053,22 @@ var $tripokey$elm_fuzzy$Fuzzy$match = F4(
 						var val = c.a;
 						return _Utils_update(
 							sum,
-							{af: val});
+							{ag: val});
 					case 1:
 						var val = c.a;
 						return _Utils_update(
 							sum,
-							{ar: val});
+							{au: val});
 					case 2:
 						var val = c.a;
 						return _Utils_update(
 							sum,
-							{an: val});
+							{ap: val});
 					default:
 						var val = c.a;
 						return _Utils_update(
 							sum,
-							{al: val});
+							{an: val});
 				}
 			});
 		var config = A3($elm$core$List$foldl, accumulateConfig, $tripokey$elm_fuzzy$Fuzzy$defaultConfig, configs);
@@ -4076,7 +4076,7 @@ var $tripokey$elm_fuzzy$Fuzzy$match = F4(
 			function (n, _v2) {
 				var offset = _v2.a;
 				var hs = _v2.b;
-				var initialPenalty = ((($elm$core$String$length(n) * config.ar) + ($elm$core$String$length(n) * config.an)) + ($elm$core$String$length(hay) * config.af)) + (($elm$core$String$length(hay) * $elm$core$String$length(n)) * config.al);
+				var initialPenalty = ((($elm$core$String$length(n) * config.au) + ($elm$core$String$length(n) * config.ap)) + ($elm$core$String$length(hay) * config.ag)) + (($elm$core$String$length(hay) * $elm$core$String$length(n)) * config.an);
 				var initialMatch = A4($tripokey$elm_fuzzy$Fuzzy$Match, initialPenalty, offset, 0, _List_Nil);
 				var accumulateMatch = F2(
 					function (e, _v1) {
@@ -4084,9 +4084,9 @@ var $tripokey$elm_fuzzy$Fuzzy$match = F4(
 						var prevOffset = _v1.b;
 						var newOffset = prevOffset + $elm$core$String$length(e);
 						var eDistance = A3($tripokey$elm_fuzzy$Fuzzy$distance, config, n, e);
-						var newMatch = (_Utils_cmp(eDistance.aO, prev.aO) < 0) ? _Utils_update(
+						var newMatch = (_Utils_cmp(eDistance.aT, prev.aT) < 0) ? _Utils_update(
 							eDistance,
-							{cC: prevOffset}) : prev;
+							{cE: prevOffset}) : prev;
 						return _Utils_Tuple2(newMatch, newOffset);
 					});
 				return A3(
@@ -4110,11 +4110,11 @@ var $tripokey$elm_fuzzy$Fuzzy$match = F4(
 				var newResult = _Utils_update(
 					prev,
 					{
-						co: _Utils_ap(
-							prev.co,
+						cq: _Utils_ap(
+							prev.cq,
 							_List_fromArray(
 								[matchResult])),
-						aO: matchResult.aO + prev.aO
+						aT: matchResult.aT + prev.aT
 					});
 				return _Utils_Tuple2(newResult, num + 1);
 			});
@@ -4169,17 +4169,17 @@ var $author$project$OptionSearcher$simpleMatch = F2(
 var $author$project$OptionSearcher$search = F2(
 	function (string, option) {
 		return {
-			a6: A2(
+			bb: A2(
 				$author$project$OptionSearcher$simpleMatch,
 				$elm$core$String$toLower(string),
 				$author$project$Option$optionDescriptionToSearchString(
 					$author$project$Option$getOptionDescription(option))),
-			bd: A2(
+			bi: A2(
 				$author$project$OptionSearcher$groupMatch,
 				$elm$core$String$toLower(string),
 				$author$project$Option$optionGroupToSearchString(
 					$author$project$Option$getOptionGroup(option))),
-			bl: A2(
+			bp: A2(
 				$author$project$OptionSearcher$simpleMatch,
 				$elm$core$String$toLower(string),
 				$author$project$OptionLabel$optionLabelToSearchString(
@@ -4230,10 +4230,10 @@ var $author$project$OptionPresentor$indexInsideMatch = F2(
 			A2(
 				$elm$core$List$filter,
 				function (match) {
-					var matchIndex = index - match.cC;
-					return A2($elm$core$List$member, matchIndex, match.cl);
+					var matchIndex = index - match.cE;
+					return A2($elm$core$List$member, matchIndex, match.cn);
 				},
-				result.co));
+				result.cq));
 	});
 var $zwilias$elm_utf_tools$String$UTF32$foldl = F3(
 	function (op, initial, input) {
@@ -4276,8 +4276,8 @@ var $author$project$OptionPresentor$tokenizeHelper = F3(
 	function (index, _char, highlightResult) {
 		var theEnd = _Utils_eq(
 			index,
-			$zwilias$elm_utf_tools$String$UTF32$length(highlightResult.aD) - 1);
-		if (A2($author$project$OptionPresentor$indexInsideMatch, highlightResult.aN, index)) {
+			$zwilias$elm_utf_tools$String$UTF32$length(highlightResult.aG) - 1);
+		if (A2($author$project$OptionPresentor$indexInsideMatch, highlightResult.aS, index)) {
 			var _v0 = $mhoare$elm_stack$Stack$top(highlightResult.t);
 			if (!_v0.$) {
 				if (theEnd) {
@@ -4309,7 +4309,7 @@ var $author$project$OptionPresentor$tokenizeHelper = F3(
 					return _Utils_update(
 						highlightResult,
 						{
-							o: A2($mhoare$elm_stack$Stack$push, _char, highlightResult.o),
+							n: A2($mhoare$elm_stack$Stack$push, _char, highlightResult.n),
 							t: $mhoare$elm_stack$Stack$initialise,
 							m: A2(
 								$elm$core$List$append,
@@ -4328,11 +4328,11 @@ var $author$project$OptionPresentor$tokenizeHelper = F3(
 									$elm$core$List$append,
 									_List_fromArray(
 										[_char]),
-									$mhoare$elm_stack$Stack$toList(highlightResult.o)))));
+									$mhoare$elm_stack$Stack$toList(highlightResult.n)))));
 					return _Utils_update(
 						highlightResult,
 						{
-							o: $mhoare$elm_stack$Stack$initialise,
+							n: $mhoare$elm_stack$Stack$initialise,
 							m: A2(
 								$elm$core$List$append,
 								highlightResult.m,
@@ -4343,19 +4343,19 @@ var $author$project$OptionPresentor$tokenizeHelper = F3(
 					return _Utils_update(
 						highlightResult,
 						{
-							o: A2($mhoare$elm_stack$Stack$push, _char, highlightResult.o)
+							n: A2($mhoare$elm_stack$Stack$push, _char, highlightResult.n)
 						});
 				}
 			}
 		} else {
-			var _v1 = $mhoare$elm_stack$Stack$top(highlightResult.o);
+			var _v1 = $mhoare$elm_stack$Stack$top(highlightResult.n);
 			if (!_v1.$) {
 				if (theEnd) {
 					var prevHighlight = _Utils_Tuple2(
 						true,
 						$elm$core$String$fromList(
 							$elm$core$List$reverse(
-								$mhoare$elm_stack$Stack$toList(highlightResult.o))));
+								$mhoare$elm_stack$Stack$toList(highlightResult.n))));
 					return _Utils_update(
 						highlightResult,
 						{
@@ -4375,11 +4375,11 @@ var $author$project$OptionPresentor$tokenizeHelper = F3(
 						true,
 						$elm$core$String$fromList(
 							$elm$core$List$reverse(
-								$mhoare$elm_stack$Stack$toList(highlightResult.o))));
+								$mhoare$elm_stack$Stack$toList(highlightResult.n))));
 					return _Utils_update(
 						highlightResult,
 						{
-							o: $mhoare$elm_stack$Stack$initialise,
+							n: $mhoare$elm_stack$Stack$initialise,
 							t: A2($mhoare$elm_stack$Stack$push, _char, highlightResult.t),
 							m: A2(
 								$elm$core$List$append,
@@ -4413,7 +4413,7 @@ var $author$project$OptionPresentor$tokenizeHelper = F3(
 					return _Utils_update(
 						highlightResult,
 						{
-							o: $mhoare$elm_stack$Stack$initialise,
+							n: $mhoare$elm_stack$Stack$initialise,
 							t: A2($mhoare$elm_stack$Stack$push, _char, highlightResult.t)
 						});
 				}
@@ -4425,7 +4425,7 @@ var $author$project$OptionPresentor$tokenize = F2(
 		return A3(
 			$elm_community$list_extra$List$Extra$indexedFoldl,
 			$author$project$OptionPresentor$tokenizeHelper,
-			{aD: hay, o: $mhoare$elm_stack$Stack$initialise, t: $mhoare$elm_stack$Stack$initialise, aN: result, m: _List_Nil},
+			{aG: hay, n: $mhoare$elm_stack$Stack$initialise, t: $mhoare$elm_stack$Stack$initialise, aS: result, m: _List_Nil},
 			$elm$core$String$toList(hay)).m;
 	});
 var $elm$core$Maybe$withDefault = F2(
@@ -4446,34 +4446,34 @@ var $author$project$OptionSearcher$updateSearchResultInOption = F2(
 		var totalScore = $elm$core$List$sum(
 			_List_fromArray(
 				[
-					searchResult.bl.aO,
-					$author$project$OptionSearchFilter$descriptionHandicap(searchResult.a6.aO),
-					$author$project$OptionSearchFilter$groupHandicap(searchResult.bd.aO)
+					searchResult.bp.aT,
+					$author$project$OptionSearchFilter$descriptionHandicap(searchResult.bb.aT),
+					$author$project$OptionSearchFilter$groupHandicap(searchResult.bi.aT)
 				]));
 		var labelTokens = A2(
 			$author$project$OptionPresentor$tokenize,
 			$author$project$OptionLabel$optionLabelToString(
 				$author$project$Option$getOptionLabel(option)),
-			searchResult.bl);
+			searchResult.bp);
 		var groupTokens = A2(
 			$author$project$OptionPresentor$tokenize,
 			$author$project$Option$optionGroupToString(
 				$author$project$Option$getOptionGroup(option)),
-			searchResult.bd);
+			searchResult.bi);
 		var descriptionTokens = A2(
 			$author$project$OptionPresentor$tokenize,
 			$author$project$Option$optionDescriptionToString(
 				$author$project$Option$getOptionDescription(option)),
-			searchResult.a6);
+			searchResult.bb);
 		var bestScore = A2(
 			$elm$core$Maybe$withDefault,
 			$author$project$OptionSearchFilter$impossiblyLowScore,
 			$elm$core$List$minimum(
 				_List_fromArray(
 					[
-						searchResult.bl.aO,
-						$author$project$OptionSearchFilter$descriptionHandicap(searchResult.a6.aO),
-						$author$project$OptionSearchFilter$groupHandicap(searchResult.bd.aO)
+						searchResult.bp.aT,
+						$author$project$OptionSearchFilter$descriptionHandicap(searchResult.bb.aT),
+						$author$project$OptionSearchFilter$groupHandicap(searchResult.bi.aT)
 					])));
 		var cappedBestScore = (bestScore > 100) ? (A2(
 			$elm$core$String$contains,
@@ -4540,7 +4540,7 @@ var $author$project$FilterWorker$update = F2(
 			var _v2 = A2($elm$json$Json$Decode$decodeValue, $author$project$OptionSearcher$decodeSearchParams, jsonSearchParams);
 			if (!_v2.$) {
 				var searchParams = _v2.a;
-				var newOptions = A3($author$project$OptionSearcher$updateOptionsWithSearchString, searchParams.cS, searchParams.cT, options);
+				var newOptions = A3($author$project$OptionSearcher$updateOptionsWithSearchString, searchParams.cR, searchParams.cS, options);
 				var optionsToSend = A2(
 					$elm$core$List$take,
 					100,
@@ -4548,7 +4548,7 @@ var $author$project$FilterWorker$update = F2(
 				return _Utils_Tuple2(
 					newOptions,
 					$author$project$FilterWorker$sendSearchResults(
-						A3($author$project$Option$encodeSearchResults, optionsToSend, searchParams.cR, searchParams.b$)));
+						A3($author$project$Option$encodeSearchResults, optionsToSend, searchParams.cQ, searchParams.b2)));
 			} else {
 				var error = _v2.a;
 				return _Utils_Tuple2(
@@ -4560,6 +4560,6 @@ var $author$project$FilterWorker$update = F2(
 	});
 var $elm$core$Platform$worker = _Platform_worker;
 var $author$project$FilterWorker$main = $elm$core$Platform$worker(
-	{ch: $author$project$FilterWorker$init, c$: $author$project$FilterWorker$subscriptions, c4: $author$project$FilterWorker$update});
+	{cj: $author$project$FilterWorker$init, c_: $author$project$FilterWorker$subscriptions, c3: $author$project$FilterWorker$update});
 _Platform_export({'FilterWorker':{'init':$author$project$FilterWorker$main(
 	$elm$json$Json$Decode$succeed(0))(0)}});}(this));

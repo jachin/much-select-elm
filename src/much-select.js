@@ -258,18 +258,6 @@ class MuchSelect extends HTMLElement {
     this._isInMultiSelectModeWithSingleItemRemoval = false;
 
     /**
-     * @type {boolean}
-     * @private
-     */
-    this._allowCustomOptions = false;
-
-    /**
-     * @type {string|null}
-     * @private
-     */
-    this._customOptionHint = null;
-
-    /**
      * @type {string}
      * @private
      */
@@ -1768,8 +1756,22 @@ class MuchSelect extends HTMLElement {
     });
   }
 
+  /**
+   * A promise that will resolve to a boolean that will be true if much-select
+   * is allowing custom options and false if otherwise. It needs to be a promise
+   * because it needs to get the answer from the Elm state.
+   *
+   * @returns {Promise<*|boolean|undefined>}
+   */
   get allowCustomOptions() {
-    return this._allowCustomOptions;
+    return async () => {
+      try {
+        const selectionConfig = await this.getSelectionConfig();
+        return selectionConfig["allows-custom-options"];
+      } catch (e) {
+        return false;
+      }
+    };
   }
 
   set allowCustomOptions(value) {
@@ -2167,6 +2169,25 @@ class MuchSelect extends HTMLElement {
         app.ports.allOptions.subscribe(callback);
         // noinspection JSUnresolvedVariable
         app.ports.requestAllOptionsReceiver.send(null);
+      });
+    });
+  }
+
+  async getSelectionConfig() {
+    return new Promise((resolve) => {
+      const callback = (selectionConfig) => {
+        this.appPromise.then((app) => {
+          // noinspection JSUnresolvedVariable
+          app.ports.requestSelectionConfig.unsubscribe(callback);
+        });
+        resolve(selectionConfig);
+      };
+
+      this.appPromise.then((app) => {
+        // noinspection JSUnresolvedVariable
+        app.ports.dumpSelectionConfig.subscribe(callback);
+        // noinspection JSUnresolvedVariable
+        app.ports.requestSelectionConfig.send(null);
       });
     });
   }
