@@ -1,0 +1,31 @@
+[
+  {
+    "command": [
+      "watchexec",
+      "-w",
+      "src",
+      "-i",
+      "src/gen/**/*",
+      "--",
+      "./scripts/build.sh"
+    ]
+  },
+  {
+    "command": [
+      "watchexec",
+      "-w",
+      "site",
+      "-w",
+      "src",
+      "-w",
+      "templates",
+      "-i",
+      "src/gen/**/*",
+      "--",
+      "soupault"
+    ]
+  },
+  {
+    "command": ["python3", "-m", "http.server", "1234", "--directory", "./build/"]
+  }
+]
