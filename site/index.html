@@ -5,27 +5,29 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <!--suppress HtmlUnknownTarget -->
-  <link rel="icon" href="./favicon.ico" type="image/x-icon" />
   <title>Much Select</title>
-  <link href="demo-styles.css" rel="stylesheet">
-  <script src="./styles.js"></script>
 </head>
 
 <body>
 
-<include src="header.html">
-  {
-  "pageName": "Home"
-  }
-</include>
+<header id="header">
+  <div id="site-title">
+    <h1>&lt;much-select&gt;</h1>
+  </div>
+  <div id="page-name">
+    <h2>Home</h2>
+  </div>
+  <div id="sub-title">
+    <h3>Demo and Development Playground</h3>
+  </div>
+</header>
 
 <div id="nav"></div>
 
 <div class="container">
   <div class="example">
-    <include src="example-partials/simple-example.html"></include>
-    <a href="simple-example.html">open example on its own page</a>
+    <div id="simple-example"></div>
+    <a href="simple-example">open example on its own page</a>
   </div>
 
   <div class="example">
@@ -89,6 +91,7 @@
 
 </div>
 
-<script src="./index.js" type="module"></script>
+<footer></footer>
+
 </body>
 </html>
