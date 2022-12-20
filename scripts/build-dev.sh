@@ -6,5 +6,3 @@ mkdir -p ./build
 
 npx elm-esm make src/Main.elm --output=build/elm-main.js --debug
 
-mkdir -p ./build/gen
-cp ./src/gen/*.js ./build/gen/
