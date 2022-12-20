@@ -91,6 +91,13 @@
   plugin_discovery = true
   plugin_dirs = ["plugins"]
 
+[widgets.page-title]
+  widget = "title"
+  selector = "#page-name h2"
+  default = "Much Select"
+  append = ""
+  prepend = "Much Select: "
+
 [widgets.demo-styles]
   widget = "insert_html"
   html = '<link href="/demo-styles.css" rel="stylesheet">'
