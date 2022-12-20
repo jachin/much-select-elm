@@ -7,7 +7,7 @@
       "-i",
       "src/gen/**/*",
       "--",
-      "./scripts/build.sh"
+      "./scripts/build-dev.sh"
     ]
   },
   {

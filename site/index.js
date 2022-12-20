@@ -1,4 +1,4 @@
-import MuchSelect from "../src/much-select.js";
+import MuchSelect from "./much-select.js";
 
 import makeLogEventHandler from "./event-logger.js";
 

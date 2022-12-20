@@ -1,7 +1,10 @@
-// noinspection ES6CheckImport
-import { Elm } from "./Main.elm";
+// noinspection JSFileReferences
 
-import getMuchSelectTemplate from "./gen/much-select-template.js";
+// eslint-disable-next-line import/no-unresolved
+import { Elm } from "./elm-main.js";
+
+// eslint-disable-next-line import/no-unresolved
+import getMuchSelectTemplate from "./much-select-template.js";
 
 import asciiFold from "./ascii-fold.js";
 
