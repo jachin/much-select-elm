@@ -45,10 +45,10 @@ printf "$tpl" "$FILTER_WORKER_JS" > ./dist/much-select-template.js
 # Clean up. We do not need build/gen/filter-worker-dev.js any more
 #  since all it contents have been put in /build/gen/much-select-template.js
 #  so lets clean up after ourselves.
-rm build/gen/filter-worker.min.js
+#rm build/gen/filter-worker.min.js
 
 # We are all done with the gen directory, so lets clean that up too
-rmdir ./build/gen
+#rmdir ./build/gen
 
 # Compile the Main elm file into JavaScript and optimize it because this
 # build is for production. So also put the out put in the dist directory.
