@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# To learn more about what all is going on here and why checkout the wiki
+# https://github.com/DripEmail/much-select-elm/wiki/How-the-Build-Works
+
 # Ensure the build directory is there
 mkdir -p ./build
 
