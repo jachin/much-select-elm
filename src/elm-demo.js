@@ -1,8 +1,7 @@
-// noinspection ES6CheckImport
-import { Elm } from "./Demo.elm";
-
 const demoDiv = document.getElementById("elm-demo");
 
+// noinspection JSUnresolvedVariable
+// eslint-disable-next-line no-undef
 Elm.Demo.init({
   flags: {},
   node: demoDiv,
