@@ -14,7 +14,7 @@ mkdir -p ./dist
 ./scripts/build-worker.sh
 
 # Read in the generated file into a variable.
-FILTER_WORKER_JS=$(<build/gen/filter-worker.min.js)
+FILTER_WORKER_JS=$(<build/gen/filter-worker.js)
 
 # Here we have our little JavaScript template. This code should
 #  mirror what we have else where. It would be great if this could
