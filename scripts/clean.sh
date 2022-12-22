@@ -6,4 +6,5 @@ rm -f dist/*.css
 rm -f dist/*.ico
 rm -f dist/*.html
 rm -f dist/*.map
+rm -f -R dist/site
 rm -f dist/gen/*.js
