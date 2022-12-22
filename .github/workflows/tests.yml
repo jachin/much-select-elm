@@ -41,4 +41,4 @@
           uses: cypress-io/github-action@v4
           with:
             browser: chrome
-            start: npm start
+            start: ./scripts/test-production-site.sh
