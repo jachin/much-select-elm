@@ -1,7 +1,8 @@
+<!--suppress HtmlFormInputWithoutLabel -->
 <div id="validation-and-transformation-slot-custom-validation">
   <h3>Custom Validation</h3>
   <p>
-
+    No milk
   </p>
   <much-select multi-select output-style="datalist">
     <script type="application/json" slot="transformation-validation">
@@ -49,10 +50,10 @@
           selectedValueIndex,
         };
       }
-      const cusomValidationResultSlot = muchSelect.querySelector(
+      const customValidationResultSlot = muchSelect.querySelector(
         "[slot='custom-validation-result']"
       );
-      cusomValidationResultSlot.innerText = JSON.stringify(result);
+      customValidationResultSlot.innerText = JSON.stringify(result);
     });
   </script>
 

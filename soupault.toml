@@ -104,12 +104,14 @@
   html = '<link href="/demo-styles.css" rel="stylesheet">'
   selector = "head"
   parse = true
+  exclude_page = "sans-css.html"
 
 [widgets.styles-script]
   widget = "insert_html"
   html = '<script src="/styles.js"></script>'
   selector = "head"
   parse = true
+  exclude_page = "sans-css.html"
 
 [widgets.favicon]
   widget = "insert_html"

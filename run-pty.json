@@ -30,8 +30,10 @@
       "src",
       "-w",
       "templates",
-      "-i",
-      "src/gen/**/*",
+      "-w",
+      "examples",
+      "-w",
+      "soupault.toml",
       "--",
       "soupault"
     ]
