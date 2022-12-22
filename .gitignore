@@ -1,6 +1,5 @@
-# Generated files
+# Hot files
 /build
-/dist
 
 # npm
 /node_modules/
