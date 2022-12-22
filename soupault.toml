@@ -97,6 +97,7 @@
   default = "Much Select"
   append = ""
   prepend = "Much Select: "
+  force = true
 
 [widgets.demo-styles]
   widget = "insert_html"
@@ -117,10 +118,10 @@
   parse = true
 
 [widgets.demo-javascript]
-widget = "insert_html"
-html = '<script src="/index.js" type="module"></script>'
-selector = "footer"
-parse = true
+  widget = "insert_html"
+  html = '<script src="/index.js" type="module"></script>'
+  selector = "footer"
+  parse = true
 
 [widgets.navigation]
   widget = "include"
