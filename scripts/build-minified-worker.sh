@@ -26,8 +26,11 @@ npx terser --compress "pure_funcs=[F2,F3,F4,F5,F6,F7,F8,F9,A2,A3,A4,A5,A6,A7,A8,
 cat ./build/gen/filter-worker.min.js | tr -d '`' > ./build/gen/filter-worker.min.js.tmp
 cp ./build/gen/filter-worker.min.js.tmp ./build/gen/filter-worker.min.js
 
+# Unicode escape the output because that's... important.
+cat ./build/gen/filter-worker.min.js | scripts/unicode-escape.py > ./build/gen/filter-worker.js
+
 # We don't need "just" the compiled elm (JavaScript) for the filter worker any more so
 #  lets clean up after our selves.
-rm ./build/gen/filter-worker.js
-rm ./build/gen/filter-worker-elm-clean.js
+rm ./build/gen/filter-worker.min.js
+rm ./build/gen/filter-worker.min.js.tmp
 rm ./build/gen/filter-worker-elm.js

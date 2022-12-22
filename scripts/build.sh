@@ -11,7 +11,8 @@ mkdir -p ./dist
 
 # Do a production build of the filter worker. This will result in a file
 # which lives here: build/gen/filter-worker.js
-./scripts/build-worker.sh
+#./scripts/build-worker.sh
+./scripts/build-minified-worker.sh
 
 # Read in the generated file into a variable.
 FILTER_WORKER_JS=$(<build/gen/filter-worker.js)
@@ -42,13 +43,13 @@ EOF
 # Generate the muchSelectTemplate es6 module.
 printf "$tpl" "$FILTER_WORKER_JS" > ./dist/much-select-template.js
 
-# Clean up. We do not need build/gen/filter-worker-dev.js any more
+# Clean up. We do not need the filter worker (by it self) any more
 #  since all it contents have been put in /build/gen/much-select-template.js
 #  so lets clean up after ourselves.
-#rm build/gen/filter-worker.min.js
+rm build/gen/filter-worker.js
 
 # We are all done with the gen directory, so lets clean that up too
-#rmdir ./build/gen
+rmdir ./build/gen
 
 # Compile the Main elm file into JavaScript and optimize it because this
 # build is for production. So also put the out put in the dist directory.
