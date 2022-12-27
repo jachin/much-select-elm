@@ -44,4 +44,4 @@
           uses: cypress-io/github-action@v4
           with:
             browser: chrome
-            start: ./scripts/serve-site.sh
+            start: ./.github/scripts/serve-site.sh
