@@ -69,7 +69,7 @@ cp ./src/much-select.js ./dist/much-select-debug.js
 
 # This condition is because we need format sed differently if we're on macOS for in the Github actions environment.
 if [[ -v GITHUB_RUN_ID ]]; then
-  sed -i -e 's/elm-main\./elm-main-debug\.js/g' ./dist/much-select-debug.js
+  sed -i -e 's/elm-main\./elm-main-debug\./g' ./dist/much-select-debug.js
 else
-  sed -i '' -e 's/elm-main\./elm-main-debug\.js/g' ./dist/much-select-debug.js
+  sed -i '' -e 's/elm-main\./elm-main-debug\./g' ./dist/much-select-debug.js
 fi
