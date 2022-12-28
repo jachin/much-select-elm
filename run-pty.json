@@ -1,0 +1,52 @@
+[
+  {
+    "title": "Build much-select elm code",
+    "command": [
+      "watchexec",
+      "-w",
+      "src",
+      "--",
+      "scripts/build-dev.sh"
+    ]
+  },
+  {
+    "title": "Build elm demo code",
+    "command": [
+      "watchexec",
+      "-w",
+      "src",
+      "--",
+      "./scripts/build-elm-demo.sh"
+    ]
+  },
+  {
+    "title": "Build HTML for demo/sandbox site",
+    "command": [
+
+      "watchexec",
+      "-w",
+      "site",
+      "-w",
+      "src",
+      "-w",
+      "templates",
+      "-w",
+      "examples",
+      "-w",
+      "soupault.toml",
+      "--",
+      "soupault"
+    ]
+  },
+  {
+    "title": "Run web server",
+    "command": [
+      "python3",
+      "-m",
+      "http.server",
+      "1234",
+      "--directory",
+      "./build/"
+    ]
+  }
+]

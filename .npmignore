@@ -26,11 +26,8 @@ elm-stuff/
 /node_modules/
 /npm-debug.log
 
-
 # The public site
-public/
-build/site
-build/output
+dist/site
 
 * Test coverage files
 coverage
