@@ -1,28 +1,28 @@
 [
   {
+    "title": "Build much-select elm code",
     "command": [
       "watchexec",
       "-w",
       "src",
-      "-i",
-      "src/gen/**/*",
       "--",
-      "./scripts/build-dev.sh"
+      "scripts/build-dev.sh"
     ]
   },
   {
+    "title": "Build elm demo code",
     "command": [
       "watchexec",
       "-w",
       "src",
-      "-i",
-      "src/gen/**/*",
       "--",
       "./scripts/build-elm-demo.sh"
     ]
   },
   {
+    "title": "Build HTML for demo/sandbox site",
     "command": [
+
       "watchexec",
       "-w",
       "site",
@@ -39,6 +39,14 @@
     ]
   },
   {
-    "command": ["python3", "-m", "http.server", "1234", "--directory", "./build/"]
+    "title": "Run web server",
+    "command": [
+      "python3",
+      "-m",
+      "http.server",
+      "1234",
+      "--directory",
+      "./build/"
+    ]
   }
 ]
