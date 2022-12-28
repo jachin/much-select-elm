@@ -36,7 +36,7 @@ describe("the multi select example", () => {
       .shadow()
       .find("#input-filter")
       .click()
-      .wait(1000)
+      .wait(2000)
       .type("al");
     cy.get("much-select")
       .shadow()
