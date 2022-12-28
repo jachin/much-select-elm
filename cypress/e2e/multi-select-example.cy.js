@@ -1,6 +1,6 @@
 describe("the multi select example", () => {
   it("allows multiple selections", () => {
-    cy.visit("/multi-select-example.html");
+    cy.visit("/multi-select-example/");
     cy.get("much-select").click();
     cy.get("much-select")
       .shadow()
@@ -15,9 +15,14 @@ describe("the multi select example", () => {
     cy.get("much-select").should("have.attr", "selected-value", "Java,Go");
   });
   it("filters the dropdown based on what the user types", () => {
-    cy.visit("/multi-select-example.html");
+    cy.visit("/multi-select-example/");
     cy.get("much-select").click();
-    cy.get("much-select").shadow().find("#input-filter").click().type("jav");
+    cy.get("much-select")
+      .shadow()
+      .find("#input-filter")
+      .click()
+      .wait(1000)
+      .type("jav");
     cy.get("much-select")
       .shadow()
       .find("#dropdown")
@@ -25,9 +30,14 @@ describe("the multi select example", () => {
       .should("have.attr", "data-value", "Java");
   });
   it("the first item in the dropdown should be highlighted", () => {
-    cy.visit("/multi-select-example.html");
+    cy.visit("/multi-select-example/");
     cy.get("much-select").click();
-    cy.get("much-select").shadow().find("#input-filter").click().type("al");
+    cy.get("much-select")
+      .shadow()
+      .find("#input-filter")
+      .click()
+      .wait(2000)
+      .type("al");
     cy.get("much-select")
       .shadow()
       .find("#dropdown")

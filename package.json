@@ -24,7 +24,7 @@
     }
   },
   "scripts": {
-    "start": "parcel --no-cache public/index.html",
+    "start": "run-pty run-pty.json",
     "test": "elm-test",
     "web-test-runner": "web-test-runner tests/**/*.test.html --node-resolve",
     "web-test-runner-with-coverage": "web-test-runner tests/**/*.test.html --coverage --node-resolve",
@@ -32,7 +32,7 @@
     "build-site": "parcel build --target site",
     "build-and-test": "npm run build; npm run test; npm run web-test-runner",
     "watch": "chokidar \"src/**/*.js\" \"src/**/*.elm\" -c \"npm run build\" --initial",
-    "serve": "scripts/serve.sh",
+    "serve": "scripts/serve-site.sh",
     "deploy-site": "npm run build-site && firebase deploy",
     "lint": "eslint",
     "format": "elm-format"
@@ -42,21 +42,16 @@
   "devDependencies": {
     "@esm-bundle/chai": "^4.3.4",
     "@open-wc/testing": "^3.1.7",
-    "@parcel/transformer-elm": "^2.8.2",
     "@web/test-runner": "^0.15.0",
     "@web/test-runner-commands": "^0.6.5",
     "@web/test-runner-mocha": "^0.7.5",
     "chai-dom": "^1.11.0",
-    "chokidar-cli": "^3.0.0",
     "cypress": "^12.1.0",
-    "elm": "^0.19.1-5",
     "elm-esm": "^1.1.4",
-    "elm-format": "^0.8.5",
-    "elm-hot": "^1.1.6",
-    "elm-outdated": "^1.1.1",
     "elm-review": "^2.8.5",
     "elm-test": "0.19.1-revision9",
     "elm-tooling": "^1.10.0",
+    "esbuild": "^0.16.10",
     "eslint": "^8.29.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^8.5.0",
@@ -64,10 +59,8 @@
     "eslint-plugin-html": "^7.1.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-prettier": "^4.2.1",
-    "eslint-webpack-plugin": "^3.2.0",
-    "node-elm-compiler": "^5.0.6",
-    "parcel": "2.8.2",
-    "posthtml-include": "^1.7.4",
-    "prettier": "^2.8.1"
+    "prettier": "^2.8.1",
+    "run-pty": "^4.0.3",
+    "terser": "^5.16.1"
   }
 }
