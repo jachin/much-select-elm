@@ -47,7 +47,7 @@ rm ./build/gen/filter-worker-dev.js
 rmdir ./build/gen
 
 # Build much select as a ESM module and put the compiled JavaScript in elm-main.js
-npx elm-esm make src/Main.elm --output=build/elm-main.js --debug
+npx elm-watch make --debug "much-select"
 
 # There are more JavaScript files the sandbox site needs, let's copy those over
 #  to the build directory

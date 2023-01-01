@@ -7,7 +7,7 @@
 # Ensure the build directory is there
 mkdir -p ./build
 
-npx elm-esm make ./src/Demo.elm --output=./build/elm-demo.js --debug
+npx elm-watch make --debug elm-demo
 
 # Add some new lines to the compiled elm (JavaScript) so we can put the 2 files
 # together it easy to see where 1 starts and the other ends.

@@ -1,0 +1,16 @@
+{
+  "targets": {
+    "much-select": {
+      "inputs": [
+        "src/Main.elm"
+      ],
+      "output": "build/elm-main.js"
+    },
+    "elm-demo": {
+      "inputs": [
+        "src/Demo.elm"
+      ],
+      "output": "build/elm-demo.js"
+    }
+  }
+}

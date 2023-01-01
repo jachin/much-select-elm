@@ -22,7 +22,6 @@
   {
     "title": "Build HTML for demo/sandbox site",
     "command": [
-
       "watchexec",
       "-w",
       "site",
