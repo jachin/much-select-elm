@@ -1,4 +1,4 @@
-module Main exposing (..)
+module MuchSelect exposing (..)
 
 import Bounce exposing (Bounce)
 import Browser

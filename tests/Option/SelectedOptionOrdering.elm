@@ -2,7 +2,7 @@ module Option.SelectedOptionOrdering exposing (..)
 
 import Json.Decode
 import Json.Encode
-import Main exposing (Flags)
+import MuchSelect exposing (Flags)
 import ProgramTest exposing (ProgramTest)
 import SimulatedEffect.Cmd
 import SimulatedEffect.Ports
@@ -59,61 +59,61 @@ flagsBookOptionsWithSelected =
     }
 
 
-simulatedEffects : Main.Effect -> ProgramTest.SimulatedEffect Main.Msg
+simulatedEffects : MuchSelect.Effect -> ProgramTest.SimulatedEffect MuchSelect.Msg
 simulatedEffects effect =
     case effect of
-        Main.NoEffect ->
+        MuchSelect.NoEffect ->
             SimulatedEffect.Cmd.none
 
-        Main.Batch effects ->
+        MuchSelect.Batch effects ->
             SimulatedEffect.Cmd.batch (List.map simulatedEffects effects)
 
-        Main.FocusInput ->
+        MuchSelect.FocusInput ->
             SimulatedEffect.Ports.send "focusInput" (Json.Encode.object [])
 
-        Main.BlurInput ->
+        MuchSelect.BlurInput ->
             SimulatedEffect.Ports.send "blurInput" (Json.Encode.object [])
 
-        Main.InputHasBeenFocused ->
+        MuchSelect.InputHasBeenFocused ->
             SimulatedEffect.Ports.send "inputFocused" (Json.Encode.object [])
 
-        Main.InputHasBeenBlurred ->
+        MuchSelect.InputHasBeenBlurred ->
             SimulatedEffect.Ports.send "inputBlurred" (Json.Encode.object [])
 
-        Main.InputHasBeenKeyUp string _ ->
+        MuchSelect.InputHasBeenKeyUp string _ ->
             SimulatedEffect.Ports.send "inputKeyUp" (Json.Encode.string string)
 
-        Main.SearchStringTouched _ ->
+        MuchSelect.SearchStringTouched _ ->
             SimulatedEffect.Cmd.none
 
-        Main.UpdateOptionsInWebWorker ->
+        MuchSelect.UpdateOptionsInWebWorker ->
             SimulatedEffect.Ports.send "updateOptionsInWebWorker" (Json.Encode.object [])
 
-        Main.SearchOptionsWithWebWorker value ->
+        MuchSelect.SearchOptionsWithWebWorker value ->
             SimulatedEffect.Ports.send "searchOptionsWithWebWorker" value
 
-        Main.ReportValueChanged value ->
+        MuchSelect.ReportValueChanged value ->
             SimulatedEffect.Ports.send "valueChanged" value
 
-        Main.ValueCleared ->
+        MuchSelect.ValueCleared ->
             SimulatedEffect.Ports.send "valueCleared" (Json.Encode.object [])
 
-        Main.InvalidValue value ->
+        MuchSelect.InvalidValue value ->
             SimulatedEffect.Ports.send "invalidValue" value
 
-        Main.CustomOptionSelected strings ->
+        MuchSelect.CustomOptionSelected strings ->
             SimulatedEffect.Ports.send "invalidValue" (Json.Encode.list Json.Encode.string strings)
 
-        Main.ReportOptionSelected value ->
+        MuchSelect.ReportOptionSelected value ->
             SimulatedEffect.Ports.send "optionSelected" value
 
-        Main.OptionDeselected value ->
+        MuchSelect.OptionDeselected value ->
             SimulatedEffect.Ports.send "optionDeselected" value
 
-        Main.OptionsUpdated bool ->
+        MuchSelect.OptionsUpdated bool ->
             SimulatedEffect.Ports.send "optionDeselected" (Json.Encode.bool bool)
 
-        Main.SendCustomValidationRequest ( string, int ) ->
+        MuchSelect.SendCustomValidationRequest ( string, int ) ->
             SimulatedEffect.Ports.send "sendCustomValidationRequest"
                 (Json.Encode.list identity
                     [ Json.Encode.string string
@@ -121,36 +121,36 @@ simulatedEffects effect =
                     ]
                 )
 
-        Main.ReportErrorMessage string ->
+        MuchSelect.ReportErrorMessage string ->
             SimulatedEffect.Ports.send "errorMessage" (Json.Encode.string string)
 
-        Main.ReportReady ->
+        MuchSelect.ReportReady ->
             SimulatedEffect.Ports.send "ready" (Json.Encode.object [])
 
-        Main.ReportInitialValueSet value ->
+        MuchSelect.ReportInitialValueSet value ->
             SimulatedEffect.Ports.send "initialValueSet" value
 
-        Main.FetchOptionsFromDom ->
+        MuchSelect.FetchOptionsFromDom ->
             SimulatedEffect.Ports.send "ready" (Json.Encode.object [])
 
-        Main.ScrollDownToElement string ->
+        MuchSelect.ScrollDownToElement string ->
             SimulatedEffect.Ports.send "scrollDropdownToElement" (Json.Encode.string string)
 
-        Main.ReportAllOptions value ->
+        MuchSelect.ReportAllOptions value ->
             SimulatedEffect.Ports.send "allOptions" value
 
 
-simulateSubscriptions : Main.Model -> ProgramTest.SimulatedSub Main.Msg
+simulateSubscriptions : MuchSelect.Model -> ProgramTest.SimulatedSub MuchSelect.Msg
 simulateSubscriptions _ =
     SimulatedEffect.Ports.subscribe "addOptions"
         Json.Decode.value
-        Main.AddOptions
+        MuchSelect.AddOptions
 
 
-start : ProgramTest Main.Model Main.Msg Main.Effect
+start : ProgramTest MuchSelect.Model MuchSelect.Msg MuchSelect.Effect
 start =
     ProgramTest.createElement
-        { init = Main.init, update = Main.update, view = Main.view }
+        { init = MuchSelect.init, update = MuchSelect.update, view = MuchSelect.view }
         |> ProgramTest.withSimulatedEffects simulatedEffects
         |> ProgramTest.withSimulatedSubscriptions simulateSubscriptions
         |> ProgramTest.start flagsBookOptionsWithSelected
