@@ -1,10 +1,10 @@
 # \<much-select>
 
-![Doge Meme](public/doge.jpg)
+![Doge Meme](site/doge.jpg)
 
 A web component - powered by Elm - that will create a powerful select menu.
 
-## Prior Art/Inspiration/Goals
+## Prior Art, Inspiration, and Goals
 
 The project draws heavy inspiration from the jquery based [selectize.js](https://selectize.github.io/selectize.js/).
 
@@ -40,9 +40,13 @@ if (!customElements.get("much-select")) {
 ## Development
 
 ### Pre-requisites
+
+#### asdf
 This project manages its Node version with [asdf](https://github.com/asdf-vm/asdf)
 
-You'll need asdf installed as well as the [asdf nodejs plugin](https://github.com/asdf-vm/asdf-nodejs)
+#### asdf-node-js
+
+You'll need `asdf` installed as well as the [asdf nodejs plugin](https://github.com/asdf-vm/asdf-nodejs)
 (`gpg` is a dependency used by asdf to verify plugin asset validity)
 
 ```bash
@@ -51,6 +55,13 @@ brew install asdf
 asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git
 ```
 
+#### soupault
+
+We use a static site generator called [Soupault](https://soupault.app/) to make the sandbox.
+There [several ways to install](https://soupault.app/install/) it. I recommend using the OPAM method.
+
+### Initial Setup
+
 To work on this project, clone the repo to your machine then:
 
 ```bash
@@ -58,9 +69,6 @@ asdf install
 npm install
 npm start
 ```
-
-
-### Initial Setup
 
 Just do like you'd expect to get started. Only development dependencies.
 
