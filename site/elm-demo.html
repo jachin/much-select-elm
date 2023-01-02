@@ -28,7 +28,18 @@
   </div>
 </div>
 
-<script src="/elm-demo.js" type="module"></script>
+<script src="/elm-demo.js"></script>
+
+<script>
+  const demoDiv = document.getElementById("elm-demo");
+
+  // noinspection JSUnresolvedVariable
+  // eslint-disable-next-line no-undef
+  Elm.Demo.init({
+    flags: {},
+    node: demoDiv,
+  });
+</script>
 
 <footer></footer>
 

@@ -4,7 +4,7 @@
       "inputs": [
         "src/Demo.elm"
       ],
-      "output": "build/elm-demo.js"
+      "output": "build/elm-demo-elm.js"
     }
   }
 }

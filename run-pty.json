@@ -16,7 +16,9 @@
       "-w",
       "src",
       "--",
-      "./scripts/build-elm-demo.sh"
+      "elm-watch",
+      "hot",
+      "elm-demo"
     ]
   },
   {

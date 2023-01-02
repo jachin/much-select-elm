@@ -8,10 +8,3 @@
 mkdir -p ./build
 
 npx elm-watch make --debug elm-demo
-
-# Add some new lines to the compiled elm (JavaScript) so we can put the 2 files
-# together it easy to see where 1 starts and the other ends.
-printf "\n\n" >> ./build/elm-demo.js
-
-# Put together the compiled Elm and JavaScript to start up the app.
-cat ./src/elm-demo.js >> ./build/elm-demo.js
