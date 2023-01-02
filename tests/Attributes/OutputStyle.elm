@@ -3,7 +3,7 @@ module Attributes.OutputStyle exposing (suite)
 import Expect
 import Json.Decode
 import Json.Encode
-import Main exposing (Flags)
+import MuchSelect exposing (Flags)
 import ProgramTest exposing (expectLastEffect, start)
 import SimulatedEffect.Cmd
 import SimulatedEffect.Ports
@@ -12,16 +12,16 @@ import Test exposing (Test, describe, test)
 
 element =
     ProgramTest.createElement
-        { init = Main.init
-        , update = Main.update
-        , view = Main.view
+        { init = MuchSelect.init
+        , update = MuchSelect.update
+        , view = MuchSelect.view
         }
 
 
-simulateEffects : Main.Effect -> ProgramTest.SimulatedEffect Main.Msg
+simulateEffects : MuchSelect.Effect -> ProgramTest.SimulatedEffect MuchSelect.Msg
 simulateEffects effect =
     case effect of
-        Main.Batch effects ->
+        MuchSelect.Batch effects ->
             effects
                 |> List.map simulateEffects
                 |> SimulatedEffect.Cmd.batch
@@ -30,11 +30,11 @@ simulateEffects effect =
             SimulatedEffect.Cmd.none
 
 
-simulateSub : Main.Model -> ProgramTest.SimulatedSub Main.Msg
+simulateSub : MuchSelect.Model -> ProgramTest.SimulatedSub MuchSelect.Msg
 simulateSub _ =
     SimulatedEffect.Ports.subscribe "outputStyleChangedReceiver"
         Json.Decode.string
-        Main.OutputStyleChanged
+        MuchSelect.OutputStyleChanged
 
 
 flagsDatalistSingle : Flags
@@ -94,7 +94,7 @@ suite =
                     |> expectLastEffect
                         (\effect ->
                             case effect of
-                                Main.FetchOptionsFromDom ->
+                                MuchSelect.FetchOptionsFromDom ->
                                     Expect.pass
 
                                 _ ->
@@ -112,7 +112,7 @@ suite =
                     |> expectLastEffect
                         (\effect ->
                             case effect of
-                                Main.FetchOptionsFromDom ->
+                                MuchSelect.FetchOptionsFromDom ->
                                     Expect.pass
 
                                 _ ->
@@ -130,7 +130,7 @@ suite =
                     |> expectLastEffect
                         (\effect ->
                             case effect of
-                                Main.ReportErrorMessage _ ->
+                                MuchSelect.ReportErrorMessage _ ->
                                     Expect.pass
 
                                 _ ->

@@ -31,47 +31,47 @@ suite =
             [ describe "a simple example where the whole needs matches the whole hay"
                 [ test "Expected the first character to be part of a match" <|
                     \_ ->
-                        Expect.true "" (indexInsideMatch straightUpMatchResult 0)
+                        Expect.equal True (indexInsideMatch straightUpMatchResult 0)
                 , test "Expected the second character to be part of a match" <|
                     \_ ->
-                        Expect.true "" (indexInsideMatch straightUpMatchResult 1)
+                        Expect.equal True (indexInsideMatch straightUpMatchResult 1)
                 , test "Expected the third character to be part of a match" <|
                     \_ ->
-                        Expect.true "" (indexInsideMatch straightUpMatchResult 2)
+                        Expect.equal True (indexInsideMatch straightUpMatchResult 2)
                 , test "Expected the forth character to not be part of a match" <|
                     \_ ->
-                        Expect.false "" (indexInsideMatch straightUpMatchResult 3)
+                        Expect.equal False (indexInsideMatch straightUpMatchResult 3)
                 ]
             , describe "a simple example nothing in the needle matches in the hay"
                 [ test "Expected the first character not to be part of a match" <|
                     \_ ->
-                        Expect.false "" (indexInsideMatch noMatchResult 0)
+                        Expect.equal False (indexInsideMatch noMatchResult 0)
                 , test "Expected the second character not to be part of a match" <|
                     \_ ->
-                        Expect.false "" (indexInsideMatch noMatchResult 1)
+                        Expect.equal False (indexInsideMatch noMatchResult 1)
                 , test "Expected the third character to not be part of a match" <|
                     \_ ->
-                        Expect.false "" (indexInsideMatch noMatchResult 2)
+                        Expect.equal False (indexInsideMatch noMatchResult 2)
                 ]
             , describe "an example where the needle is in the middle of the hay"
                 [ test "Expected the 1st character not to be part of a match" <|
                     \_ ->
-                        Expect.false "" (indexInsideMatch colorResult 0)
+                        Expect.equal False (indexInsideMatch colorResult 0)
                 , test "Expected the 10th character not to be part of a match" <|
                     \_ ->
-                        Expect.false "" (indexInsideMatch colorResult 9)
+                        Expect.equal False (indexInsideMatch colorResult 9)
                 , test "Expected the 11th character to be part of a match" <|
                     \_ ->
-                        Expect.true "" (indexInsideMatch colorResult 10)
+                        Expect.equal True (indexInsideMatch colorResult 10)
                 , test "Expected the 12th character to be part of a match" <|
                     \_ ->
-                        Expect.true "" (indexInsideMatch colorResult 11)
+                        Expect.equal True (indexInsideMatch colorResult 11)
                 , test "Expected the 13th character to be part of a match" <|
                     \_ ->
-                        Expect.true "" (indexInsideMatch colorResult 12)
+                        Expect.equal True (indexInsideMatch colorResult 12)
                 , test "Expected the 14th character not to be part of a match" <|
                     \_ ->
-                        Expect.false "" (indexInsideMatch colorResult 13)
+                        Expect.equal False (indexInsideMatch colorResult 13)
                 ]
             ]
         , test "a simple example where the needle and the hay are identical" <|

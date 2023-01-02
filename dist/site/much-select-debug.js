@@ -1,7 +1,7 @@
 // noinspection JSFileReferences
 
 // eslint-disable-next-line import/no-unresolved
-import { Elm } from "./elm-main-debug.jsjs";
+import { Elm } from "./much-select-elm.js";
 
 // eslint-disable-next-line import/no-unresolved
 import getMuchSelectTemplate from "./much-select-template.js";
@@ -1327,7 +1327,7 @@ class MuchSelect extends HTMLElement {
           const elmDiv = this._parentDiv.querySelector("#mount-node");
 
           // noinspection JSUnresolvedVariable
-          this._app = Elm.Main.init({
+          this._app = Elm.MuchSelect.init({
             flags,
             node: elmDiv,
           });

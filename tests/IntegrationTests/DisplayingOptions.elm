@@ -2,7 +2,7 @@ module IntegrationTests.DisplayingOptions exposing (suite)
 
 import Html.Attributes
 import Json.Encode
-import Main exposing (Flags)
+import MuchSelect exposing (Flags)
 import ProgramTest
     exposing
         ( ProgramTest
@@ -160,13 +160,13 @@ flagsBookOptionsWithSelected =
 
 element =
     ProgramTest.createElement
-        { init = Main.init
-        , update = Main.update
-        , view = Main.view
+        { init = MuchSelect.init
+        , update = MuchSelect.update
+        , view = MuchSelect.view
         }
 
 
-start : Flags -> ProgramTest Main.Model Main.Msg Main.Effect
+start : Flags -> ProgramTest MuchSelect.Model MuchSelect.Msg MuchSelect.Effect
 start flags =
     element
         |> ProgramTest.start

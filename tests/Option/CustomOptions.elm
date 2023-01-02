@@ -1,7 +1,7 @@
 module Option.CustomOptions exposing (suite)
 
 import Expect
-import Main
+import MuchSelect
     exposing
         ( figureOutWhichOptionsToShowInTheDropdown
         , updateModelWithChangesThatEffectTheOptionsWithSearchString
