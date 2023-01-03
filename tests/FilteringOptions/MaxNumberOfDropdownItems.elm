@@ -1,7 +1,7 @@
 module FilteringOptions.MaxNumberOfDropdownItems exposing (suite)
 
 import Expect
-import Main exposing (figureOutWhichOptionsToShowInTheDropdown)
+import MuchSelect exposing (figureOutWhichOptionsToShowInTheDropdown)
 import Option exposing (newOption, setGroupWithString)
 import OptionSearcher
 import OptionsUtilities exposing (highlightOptionInList, selectOptionInList)

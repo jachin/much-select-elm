@@ -12,6 +12,11 @@
 # Ensure the directory for the site is set.
 mkdir -p ./dist/site/
 
+# This a script for building the Elm demo App. Since we want much-select to
+# work well as part of a larger Elm app, it's important that we're able
+# to test the features of much-select in Elm's virtual DOM's.
+npx elm-watch make --optimize elm-demo-production
+
 # Copy the production javascript assets to the site.
 cp ./dist/*.js ./dist/site/
 

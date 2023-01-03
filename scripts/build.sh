@@ -53,7 +53,7 @@ rmdir ./build/gen
 
 # Compile the Main elm file into JavaScript and optimize it because this
 # build is for production. So also put the out put in the dist directory.
-npx elm-esm make ./src/Main.elm --output=./dist/elm-main.js --optimize
+npx elm-esm make ./src/MuchSelect.elm --output=./dist/much-select-elm.js --optimize
 
 # There are more JavaScript modules (files) the production build need, let's copy those over
 #  to the build directory
@@ -64,7 +64,7 @@ cp ./src/diacritics.js ./dist/diacritics.js
 # We want a version of much select with debugger turned on, because sometimes
 # that is helpful. It should not be used in production but we should ship it in the
 # dist folder.
-npx elm-esm make src/Main.elm --output=dist/elm-main-debug.js --debug
+npx elm-esm make src/MuchSelect.elm --output=dist/much-select-elm-debug.js --debug
 cp ./src/much-select.js ./dist/much-select-debug.js
 
 # This condition is because we need format sed differently if we're on macOS for in the Github actions environment.

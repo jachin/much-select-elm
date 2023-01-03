@@ -16,13 +16,14 @@
       "-w",
       "src",
       "--",
-      "./scripts/build-elm-demo.sh"
+      "elm-watch",
+      "hot",
+      "elm-demo"
     ]
   },
   {
     "title": "Build HTML for demo/sandbox site",
     "command": [
-
       "watchexec",
       "-w",
       "site",
