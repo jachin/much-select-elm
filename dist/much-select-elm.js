@@ -4787,22 +4787,22 @@ var $elm$core$Array$builderToArray = F2(
 		if (!builder.n) {
 			return A4(
 				$elm$core$Array$Array_elm_builtin,
-				$elm$core$Elm$JsArray$length(builder.o),
+				$elm$core$Elm$JsArray$length(builder.p),
 				$elm$core$Array$shiftStep,
 				$elm$core$Elm$JsArray$empty,
-				builder.o);
+				builder.p);
 		} else {
 			var treeLen = builder.n * $elm$core$Array$branchFactor;
 			var depth = $elm$core$Basics$floor(
 				A2($elm$core$Basics$logBase, $elm$core$Array$branchFactor, treeLen - 1));
-			var correctNodeList = reverseNodeList ? $elm$core$List$reverse(builder.p) : builder.p;
+			var correctNodeList = reverseNodeList ? $elm$core$List$reverse(builder.q) : builder.q;
 			var tree = A2($elm$core$Array$treeFromBuilder, correctNodeList, builder.n);
 			return A4(
 				$elm$core$Array$Array_elm_builtin,
-				$elm$core$Elm$JsArray$length(builder.o) + treeLen,
+				$elm$core$Elm$JsArray$length(builder.p) + treeLen,
 				A2($elm$core$Basics$max, 5, depth * $elm$core$Array$shiftStep),
 				tree,
-				builder.o);
+				builder.p);
 		}
 	});
 var $elm$core$Basics$idiv = _Basics_idiv;
@@ -4815,7 +4815,7 @@ var $elm$core$Array$initializeHelp = F5(
 				return A2(
 					$elm$core$Array$builderToArray,
 					false,
-					{p: nodeList, n: (len / $elm$core$Array$branchFactor) | 0, o: tail});
+					{q: nodeList, n: (len / $elm$core$Array$branchFactor) | 0, p: tail});
 			} else {
 				var leaf = $elm$core$Array$Leaf(
 					A3($elm$core$Elm$JsArray$initialize, $elm$core$Array$branchFactor, fromIndex, fn));
@@ -5720,7 +5720,7 @@ var $author$project$SelectionMode$Unfocused = 1;
 var $author$project$SelectionMode$defaultSelectionConfig = A3(
 	$author$project$SelectionMode$SingleSelectConfig,
 	$author$project$OutputStyle$SingleSelectCustomHtml(
-		{S: $author$project$OutputStyle$NoCustomOptions, T: 1, U: 0, V: 1, bt: $author$project$OutputStyle$NoLimitToDropdownItems, bG: $author$project$OutputStyle$NoMinimumToSearchStringLength, bH: 0}),
+		{T: $author$project$OutputStyle$NoCustomOptions, U: 1, V: 0, K: 1, bt: $author$project$OutputStyle$NoLimitToDropdownItems, bG: $author$project$OutputStyle$NoMinimumToSearchStringLength, bH: 0}),
 	_Utils_Tuple2(false, ''),
 	1);
 var $author$project$MuchSelect$getDebouceDelayForSearch = function (numberOfOptions) {
@@ -6083,10 +6083,10 @@ var $author$project$SelectionMode$makeMultiSelectOutputStyle = F9(
 			return $elm$core$Result$Ok(
 				$author$project$OutputStyle$MultiSelectCustomHtml(
 					{
-						S: customOptions,
-						T: 1,
-						U: dropdownStyle,
-						V: eventsMode,
+						T: customOptions,
+						U: 1,
+						V: dropdownStyle,
+						K: eventsMode,
 						bt: $author$project$OutputStyle$FixedMaxDropdownItems(
 							$author$project$PositiveInt$new(maxDropdownItems)),
 						bG: $author$project$OutputStyle$FixedSearchStringMinimumLength(
@@ -6114,10 +6114,10 @@ var $author$project$SelectionMode$makeSingleSelectOutputStyle = F9(
 			return $elm$core$Result$Ok(
 				$author$project$OutputStyle$SingleSelectCustomHtml(
 					{
-						S: customOptions,
-						T: 1,
-						U: dropdownStyle,
-						V: eventsMode,
+						T: customOptions,
+						U: 1,
+						V: dropdownStyle,
+						K: eventsMode,
 						bt: $author$project$OutputStyle$FixedMaxDropdownItems(
 							$author$project$PositiveInt$new(maxDropdownItems)),
 						bG: $author$project$OutputStyle$FixedSearchStringMinimumLength(
@@ -7025,9 +7025,9 @@ var $author$project$MuchSelect$init = function (flags) {
 					}
 				}
 			}(),
-			h: $author$project$SearchString$reset,
-			s: $grotsev$elm_debouncer$Bounce$init,
-			t: $author$project$MuchSelect$getDebouceDelayForSearch(
+			g: $author$project$SearchString$reset,
+			t: $grotsev$elm_debouncer$Bounce$init,
+			o: $author$project$MuchSelect$getDebouceDelayForSearch(
 				$elm$core$List$length(optionsWithInitialValueSelectedSorted)),
 			ar: 0,
 			a: selectionConfig,
@@ -8200,7 +8200,7 @@ var $author$project$MuchSelect$clearAllSelectedOption = function (model) {
 			{
 				b: $author$project$OptionsUtilities$deselectAllOptionsInOptionsList(newOptions),
 				e: A4($author$project$RightSlot$updateRightSlot, model.e, model.a, false, _List_Nil),
-				h: $author$project$SearchString$reset
+				g: $author$project$SearchString$reset
 			}),
 		$author$project$MuchSelect$batch(
 			_List_fromArray(
@@ -8473,7 +8473,7 @@ var $author$project$SelectionMode$getCustomOptionHint = function (selectionConfi
 		var singleSelectOutputStyle = selectionConfig.a;
 		if (!singleSelectOutputStyle.$) {
 			var singleSelectCustomHtmlFields = singleSelectOutputStyle.a;
-			var _v2 = singleSelectCustomHtmlFields.S;
+			var _v2 = singleSelectCustomHtmlFields.T;
 			if (!_v2.$) {
 				var customOptionHint = _v2.a;
 				return customOptionHint;
@@ -8487,7 +8487,7 @@ var $author$project$SelectionMode$getCustomOptionHint = function (selectionConfi
 		var multiSelectOutputStyle = selectionConfig.a;
 		if (!multiSelectOutputStyle.$) {
 			var multiSelectCustomHtmlFields = multiSelectOutputStyle.a;
-			var _v4 = multiSelectCustomHtmlFields.S;
+			var _v4 = multiSelectCustomHtmlFields.T;
 			if (!_v4.$) {
 				var customOptionHint = _v4.a;
 				return customOptionHint;
@@ -8504,7 +8504,7 @@ var $author$project$SelectionMode$getCustomOptions = function (selectionConfig) 
 		var singleSelectOutputStyle = selectionConfig.a;
 		if (!singleSelectOutputStyle.$) {
 			var singleSelectCustomHtmlFields = singleSelectOutputStyle.a;
-			return singleSelectCustomHtmlFields.S;
+			return singleSelectCustomHtmlFields.T;
 		} else {
 			var transformAndValidate = singleSelectOutputStyle.b;
 			return A2($author$project$OutputStyle$AllowCustomOptions, $elm$core$Maybe$Nothing, transformAndValidate);
@@ -8513,7 +8513,7 @@ var $author$project$SelectionMode$getCustomOptions = function (selectionConfig) 
 		var multiSelectOutputStyle = selectionConfig.a;
 		if (!multiSelectOutputStyle.$) {
 			var multiSelectCustomHtmlFields = multiSelectOutputStyle.a;
-			return multiSelectCustomHtmlFields.S;
+			return multiSelectCustomHtmlFields.T;
 		} else {
 			var transformAndValidate = multiSelectOutputStyle.b;
 			return A2($author$project$OutputStyle$AllowCustomOptions, $elm$core$Maybe$Nothing, transformAndValidate);
@@ -8826,7 +8826,7 @@ var $author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWithSea
 			});
 	});
 var $author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges = function (model) {
-	return A5($author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWithSearchString, model.e, model.a, model.h, model.b, model);
+	return A5($author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWithSearchString, model.e, model.a, model.g, model.b, model);
 };
 var $author$project$MuchSelect$deselectOption = F2(
 	function (model, option) {
@@ -8844,7 +8844,7 @@ var $author$project$MuchSelect$deselectOption = F2(
 						$author$project$MuchSelect$makeEffectsWhenValuesChanges,
 						$author$project$OptionsUtilities$selectedOptions(updatedOptions),
 						$elm$core$Maybe$Nothing),
-						A2($author$project$MuchSelect$makeCommandMessagesForUpdatingOptionsInTheWebWorker, model.t, model.h)
+						A2($author$project$MuchSelect$makeCommandMessagesForUpdatingOptionsInTheWebWorker, model.o, model.g)
 					])));
 	});
 var $author$project$Option$optionDescriptionToSearchString = function (optionDescription) {
@@ -8979,7 +8979,7 @@ var $author$project$SelectionMode$isEventsOnly = function (selectionConfig) {
 		var singleSelectOutputStyle = selectionConfig.a;
 		if (!singleSelectOutputStyle.$) {
 			var singleSelectCustomHtmlFields = singleSelectOutputStyle.a;
-			var _v2 = singleSelectCustomHtmlFields.V;
+			var _v2 = singleSelectCustomHtmlFields.K;
 			if (!_v2) {
 				return true;
 			} else {
@@ -8997,7 +8997,7 @@ var $author$project$SelectionMode$isEventsOnly = function (selectionConfig) {
 		var multiSelectOutputStyle = selectionConfig.a;
 		if (!multiSelectOutputStyle.$) {
 			var multiSelectCustomHtmlFields = multiSelectOutputStyle.a;
-			var _v5 = multiSelectCustomHtmlFields.V;
+			var _v5 = multiSelectCustomHtmlFields.K;
 			if (!_v5) {
 				return true;
 			} else {
@@ -9018,14 +9018,6 @@ var $author$project$SelectionMode$encodeSelectionConfig = function (selectionCon
 		_List_fromArray(
 			[
 				_Utils_Tuple2(
-				'disabled',
-				$elm$json$Json$Encode$bool(
-					$author$project$SelectionMode$isDisabled(selectionConfig))),
-				_Utils_Tuple2(
-				'events-only',
-				$elm$json$Json$Encode$bool(
-					$author$project$SelectionMode$isEventsOnly(selectionConfig))),
-				_Utils_Tuple2(
 				'allows-custom-options',
 				$elm$json$Json$Encode$bool(
 					function () {
@@ -9035,7 +9027,26 @@ var $author$project$SelectionMode$encodeSelectionConfig = function (selectionCon
 						} else {
 							return false;
 						}
-					}()))
+					}())),
+				_Utils_Tuple2(
+				'disabled',
+				$elm$json$Json$Encode$bool(
+					$author$project$SelectionMode$isDisabled(selectionConfig))),
+				_Utils_Tuple2(
+				'multi-select',
+				$elm$json$Json$Encode$bool(
+					function () {
+						var _v1 = $author$project$SelectionMode$getSelectionMode(selectionConfig);
+						if (_v1 === 1) {
+							return true;
+						} else {
+							return false;
+						}
+					}())),
+				_Utils_Tuple2(
+				'events-only',
+				$elm$json$Json$Encode$bool(
+					$author$project$SelectionMode$isEventsOnly(selectionConfig)))
 			]));
 };
 var $author$project$OptionsUtilities$filterOptionsToShowInDropdownByOptionDisplay = function (selectionConfig) {
@@ -9394,6 +9405,21 @@ var $author$project$OptionsUtilities$findHighlightedOption = function (options) 
 		},
 		options);
 };
+var $elm$core$Maybe$andThen = F2(
+	function (callback, maybeValue) {
+		if (!maybeValue.$) {
+			var value = maybeValue.a;
+			return callback(value);
+		} else {
+			return $elm$core$Maybe$Nothing;
+		}
+	});
+var $author$project$PositiveInt$fromString = function (str) {
+	return A2(
+		$elm$core$Maybe$andThen,
+		$author$project$PositiveInt$maybeNew,
+		$elm$core$String$toInt(str));
+};
 var $author$project$SelectionMode$getSearchStringMinimumLength = function (selectionConfig) {
 	if (!selectionConfig.$) {
 		var singleSelectOutputStyle = selectionConfig.a;
@@ -9426,7 +9452,7 @@ var $author$project$SelectionMode$getTransformAndValidate = function (selectionC
 		var singleSelectOutputStyle = selectionConfig.a;
 		if (!singleSelectOutputStyle.$) {
 			var singleSelectCustomHtmlFields = singleSelectOutputStyle.a;
-			return $author$project$OutputStyle$getTransformAndValidateFromCustomOptions(singleSelectCustomHtmlFields.S);
+			return $author$project$OutputStyle$getTransformAndValidateFromCustomOptions(singleSelectCustomHtmlFields.T);
 		} else {
 			var valueTransformAndValidate = singleSelectOutputStyle.b;
 			return valueTransformAndValidate;
@@ -9435,7 +9461,7 @@ var $author$project$SelectionMode$getTransformAndValidate = function (selectionC
 		var multiSelectOutputStyle = selectionConfig.a;
 		if (!multiSelectOutputStyle.$) {
 			var multiSelectCustomHtmlFields = multiSelectOutputStyle.a;
-			return $author$project$OutputStyle$getTransformAndValidateFromCustomOptions(multiSelectCustomHtmlFields.S);
+			return $author$project$OutputStyle$getTransformAndValidateFromCustomOptions(multiSelectCustomHtmlFields.T);
 		} else {
 			var valueTransformAndValidate = multiSelectOutputStyle.b;
 			return valueTransformAndValidate;
@@ -9516,15 +9542,6 @@ var $author$project$RightSlot$isRightSlotTransitioning = function (rightSlot) {
 			return false;
 	}
 };
-var $elm$core$Maybe$andThen = F2(
-	function (callback, maybeValue) {
-		if (!maybeValue.$) {
-			var value = maybeValue.a;
-			return callback(value);
-		} else {
-			return $elm$core$Maybe$Nothing;
-		}
-	});
 var $author$project$OptionDisplay$isHighlightable = F2(
 	function (selectionMode, optionDisplay) {
 		switch (optionDisplay.$) {
@@ -9995,7 +10012,7 @@ var $author$project$SelectionMode$setCustomOptions = F2(
 					$author$project$OutputStyle$SingleSelectCustomHtml(
 						_Utils_update(
 							singleSelectCustomHtmlFields,
-							{S: customOptions})),
+							{T: customOptions})),
 					placeholder,
 					interactionState);
 			} else {
@@ -10012,7 +10029,7 @@ var $author$project$SelectionMode$setCustomOptions = F2(
 					$author$project$OutputStyle$MultiSelectCustomHtml(
 						_Utils_update(
 							multiSelectCustomHtmlFields,
-							{S: customOptions})),
+							{T: customOptions})),
 					placeholder,
 					interactionState);
 			} else {
@@ -10053,7 +10070,7 @@ var $author$project$SelectionMode$setDropdownStyle = F2(
 					$author$project$OutputStyle$SingleSelectCustomHtml(
 						_Utils_update(
 							singleSelectCustomHtmlFields,
-							{U: dropdownStyle})),
+							{V: dropdownStyle})),
 					placeholder,
 					interactionState);
 			} else {
@@ -10070,13 +10087,66 @@ var $author$project$SelectionMode$setDropdownStyle = F2(
 					$author$project$OutputStyle$MultiSelectCustomHtml(
 						_Utils_update(
 							multiSelectCustomHtmlFields,
-							{U: dropdownStyle})),
+							{V: dropdownStyle})),
 					placeholder,
 					interactionState);
 			} else {
 				return selectionConfig;
 			}
 		}
+	});
+var $author$project$OutputStyle$setEventsModeMultiSelect = F2(
+	function (eventsMode, multiSelectOutputStyle) {
+		if (!multiSelectOutputStyle.$) {
+			var multiSelectCustomHtmlFields = multiSelectOutputStyle.a;
+			return $author$project$OutputStyle$MultiSelectCustomHtml(
+				_Utils_update(
+					multiSelectCustomHtmlFields,
+					{K: eventsMode}));
+		} else {
+			var valueTransformAndValidate = multiSelectOutputStyle.b;
+			return A2($author$project$OutputStyle$MultiSelectDataList, eventsMode, valueTransformAndValidate);
+		}
+	});
+var $author$project$OutputStyle$setEventsModeSingleSelect = F2(
+	function (eventsMode, singleSelectOutputStyle) {
+		if (!singleSelectOutputStyle.$) {
+			var singleSelectCustomHtmlFields = singleSelectOutputStyle.a;
+			return $author$project$OutputStyle$SingleSelectCustomHtml(
+				_Utils_update(
+					singleSelectCustomHtmlFields,
+					{K: eventsMode}));
+		} else {
+			var valueTransformAndValidate = singleSelectOutputStyle.b;
+			return A2($author$project$OutputStyle$SingleSelectDatalist, eventsMode, valueTransformAndValidate);
+		}
+	});
+var $author$project$SelectionMode$setEventsMode = F2(
+	function (eventsMode, selectionConfig) {
+		if (!selectionConfig.$) {
+			var singleSelectOutputStyle = selectionConfig.a;
+			var placeholder = selectionConfig.b;
+			var interactionState = selectionConfig.c;
+			return A3(
+				$author$project$SelectionMode$SingleSelectConfig,
+				A2($author$project$OutputStyle$setEventsModeSingleSelect, eventsMode, singleSelectOutputStyle),
+				placeholder,
+				interactionState);
+		} else {
+			var multiSelectOutputStyle = selectionConfig.a;
+			var placeholder = selectionConfig.b;
+			var interactionState = selectionConfig.c;
+			return A3(
+				$author$project$SelectionMode$MultiSelectConfig,
+				A2($author$project$OutputStyle$setEventsModeMultiSelect, eventsMode, multiSelectOutputStyle),
+				placeholder,
+				interactionState);
+		}
+	});
+var $author$project$SelectionMode$setEventsOnly = F2(
+	function (bool, selectionConfig) {
+		var newEventsMode = bool ? 0 : 1;
+		return A2($author$project$SelectionMode$setEventsMode, newEventsMode, selectionConfig);
 	});
 var $author$project$SelectionMode$setInteractionState = F2(
 	function (newInteractionState, selectionConfig) {
@@ -10142,7 +10212,7 @@ var $author$project$OutputStyle$multiToSingle = function (multiSelectOutputStyle
 	if (!multiSelectOutputStyle.$) {
 		var multiSelectCustomHtmlFields = multiSelectOutputStyle.a;
 		return $author$project$OutputStyle$SingleSelectCustomHtml(
-			{S: multiSelectCustomHtmlFields.S, T: multiSelectCustomHtmlFields.T, U: multiSelectCustomHtmlFields.U, V: multiSelectCustomHtmlFields.V, bt: multiSelectCustomHtmlFields.bt, bG: multiSelectCustomHtmlFields.bG, bH: 0});
+			{T: multiSelectCustomHtmlFields.T, U: multiSelectCustomHtmlFields.U, V: multiSelectCustomHtmlFields.V, K: multiSelectCustomHtmlFields.K, bt: multiSelectCustomHtmlFields.bt, bG: multiSelectCustomHtmlFields.bG, bH: 0});
 	} else {
 		var eventsMode = multiSelectOutputStyle.a;
 		var transformAndValidate = multiSelectOutputStyle.b;
@@ -10153,7 +10223,7 @@ var $author$project$OutputStyle$singleToMulti = function (singleSelectOutputStyl
 	if (!singleSelectOutputStyle.$) {
 		var singleSelectCustomHtmlFields = singleSelectOutputStyle.a;
 		return $author$project$OutputStyle$MultiSelectCustomHtml(
-			{S: singleSelectCustomHtmlFields.S, T: singleSelectCustomHtmlFields.T, U: singleSelectCustomHtmlFields.U, V: singleSelectCustomHtmlFields.V, bt: singleSelectCustomHtmlFields.bt, bG: singleSelectCustomHtmlFields.bG, bL: 1});
+			{T: singleSelectCustomHtmlFields.T, U: singleSelectCustomHtmlFields.U, V: singleSelectCustomHtmlFields.V, K: singleSelectCustomHtmlFields.K, bt: singleSelectCustomHtmlFields.bt, bG: singleSelectCustomHtmlFields.bG, bL: 1});
 	} else {
 		var eventsMode = singleSelectOutputStyle.a;
 		var transformAndValidate = singleSelectOutputStyle.b;
@@ -10183,20 +10253,20 @@ var $author$project$SelectionMode$setMultiSelectModeWithBool = F2(
 		}
 	});
 var $author$project$OutputStyle$defaultMultiSelectCustomHtmlFields = {
-	S: $author$project$OutputStyle$NoCustomOptions,
-	T: 1,
-	U: 0,
-	V: 1,
+	T: $author$project$OutputStyle$NoCustomOptions,
+	U: 1,
+	V: 0,
+	K: 1,
 	bt: $author$project$OutputStyle$NoLimitToDropdownItems,
 	bG: $author$project$OutputStyle$FixedSearchStringMinimumLength(
 		$author$project$PositiveInt$new(2)),
 	bL: 0
 };
 var $author$project$OutputStyle$defaultSingleSelectCustomHtmlFields = {
-	S: $author$project$OutputStyle$NoCustomOptions,
-	T: 1,
-	U: 0,
-	V: 1,
+	T: $author$project$OutputStyle$NoCustomOptions,
+	U: 1,
+	V: 0,
+	K: 1,
 	bt: $author$project$OutputStyle$NoLimitToDropdownItems,
 	bG: $author$project$OutputStyle$FixedSearchStringMinimumLength(
 		$author$project$PositiveInt$new(2)),
@@ -10243,8 +10313,8 @@ var $author$project$SelectionMode$setOutputStyle = F2(
 						$author$project$SelectionMode$SingleSelectConfig,
 						A2(
 							$author$project$OutputStyle$SingleSelectDatalist,
-							fields.V,
-							$author$project$OutputStyle$getTransformAndValidateFromCustomOptions(fields.S)),
+							fields.K,
+							$author$project$OutputStyle$getTransformAndValidateFromCustomOptions(fields.T)),
 						placeholder,
 						interactionState);
 				} else {
@@ -10260,8 +10330,8 @@ var $author$project$SelectionMode$setOutputStyle = F2(
 						$author$project$SelectionMode$MultiSelectConfig,
 						A2(
 							$author$project$OutputStyle$MultiSelectDataList,
-							fields.V,
-							$author$project$OutputStyle$getTransformAndValidateFromCustomOptions(fields.S)),
+							fields.K,
+							$author$project$OutputStyle$getTransformAndValidateFromCustomOptions(fields.T)),
 						placeholder,
 						interactionState);
 				} else {
@@ -10362,7 +10432,7 @@ var $author$project$SelectionMode$setShowDropdown = F2(
 					$author$project$OutputStyle$SingleSelectCustomHtml(
 						_Utils_update(
 							singleSelectCustomHtmlFields,
-							{T: newDropdownState})),
+							{U: newDropdownState})),
 					placeholder,
 					interactionState);
 			} else {
@@ -10379,7 +10449,7 @@ var $author$project$SelectionMode$setShowDropdown = F2(
 					$author$project$OutputStyle$MultiSelectCustomHtml(
 						_Utils_update(
 							multiSelectCustomHtmlFields,
-							{T: newDropdownState})),
+							{U: newDropdownState})),
 					placeholder,
 					interactionState);
 			} else {
@@ -10430,7 +10500,7 @@ var $author$project$SelectionMode$setTransformAndValidate = F2(
 				var newSingleSelectCustomFields = _Utils_update(
 					singleSelectCustomHtmlFields,
 					{
-						S: A2($author$project$OutputStyle$setTransformAndValidateFromCustomOptions, newTransformAndValidate, singleSelectCustomHtmlFields.S)
+						T: A2($author$project$OutputStyle$setTransformAndValidateFromCustomOptions, newTransformAndValidate, singleSelectCustomHtmlFields.T)
 					});
 				return A3(
 					$author$project$SelectionMode$SingleSelectConfig,
@@ -10454,7 +10524,7 @@ var $author$project$SelectionMode$setTransformAndValidate = F2(
 				var newMultiSelectCustomHtmlFields = _Utils_update(
 					multiSelectCustomHtmlFields,
 					{
-						S: A2($author$project$OutputStyle$setTransformAndValidateFromCustomOptions, newTransformAndValidate, multiSelectCustomHtmlFields.S)
+						T: A2($author$project$OutputStyle$setTransformAndValidateFromCustomOptions, newTransformAndValidate, multiSelectCustomHtmlFields.T)
 					});
 				return A3(
 					$author$project$SelectionMode$MultiSelectConfig,
@@ -10993,8 +11063,8 @@ var $author$project$MuchSelect$update = F2(
 								{
 									b: optionsWithoutUnselectedCustomOptions,
 									e: A2($author$project$RightSlot$updateRightSlotTransitioning, 1, model.e),
-									h: $author$project$SearchString$reset,
-									s: $grotsev$elm_debouncer$Bounce$push(model.s),
+									g: $author$project$SearchString$reset,
+									t: $grotsev$elm_debouncer$Bounce$push(model.t),
 									a: A2(
 										$author$project$SelectionMode$setIsFocused,
 										false,
@@ -11004,7 +11074,7 @@ var $author$project$MuchSelect$update = F2(
 							_List_fromArray(
 								[
 									$author$project$MuchSelect$InputHasBeenBlurred,
-									$author$project$MuchSelect$SearchStringTouched(model.t)
+									$author$project$MuchSelect$SearchStringTouched(model.o)
 								])));
 				} else {
 					return _Utils_Tuple2(
@@ -11081,7 +11151,7 @@ var $author$project$MuchSelect$update = F2(
 						$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
 							_Utils_update(
 								model,
-								{b: updatedOptions, h: $author$project$SearchString$reset})),
+								{b: updatedOptions, g: $author$project$SearchString$reset})),
 						$author$project$MuchSelect$batch(
 							_List_fromArray(
 								[
@@ -11096,7 +11166,7 @@ var $author$project$MuchSelect$update = F2(
 						$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
 							_Utils_update(
 								model,
-								{b: updatedOptions, h: $author$project$SearchString$reset})),
+								{b: updatedOptions, g: $author$project$SearchString$reset})),
 						$author$project$MuchSelect$batch(
 							_List_fromArray(
 								[
@@ -11113,15 +11183,15 @@ var $author$project$MuchSelect$update = F2(
 					_Utils_update(
 						model,
 						{
-							h: $author$project$SearchString$update(searchString),
-							s: $grotsev$elm_debouncer$Bounce$push(model.s),
+							g: $author$project$SearchString$update(searchString),
+							t: $grotsev$elm_debouncer$Bounce$push(model.t),
 							ar: model.ar + 1
 						}),
 					$author$project$MuchSelect$batch(
 						_List_fromArray(
 							[
 								A2($author$project$MuchSelect$InputHasBeenKeyUp, searchString, 3),
-								$author$project$MuchSelect$SearchStringTouched(model.t)
+								$author$project$MuchSelect$SearchStringTouched(model.o)
 							])));
 			case 10:
 				return _Utils_Tuple2(
@@ -11129,10 +11199,10 @@ var $author$project$MuchSelect$update = F2(
 					$author$project$MuchSelect$SearchOptionsWithWebWorker(
 						A4(
 							$author$project$OptionSearcher$encodeSearchParams,
-							model.h,
+							model.g,
 							$author$project$SelectionMode$getSearchStringMinimumLength(model.a),
 							model.ar,
-							$author$project$SearchString$isCleared(model.h))));
+							$author$project$SearchString$isCleared(model.g))));
 			case 11:
 				var selectedValueIndex = msg.a;
 				var valueString = msg.b;
@@ -11246,7 +11316,7 @@ var $author$project$MuchSelect$update = F2(
 								$author$project$SearchString$update(inputString),
 								model.a,
 								model.b),
-							h: $author$project$SearchString$update(inputString)
+							g: $author$project$SearchString$update(inputString)
 						}),
 					A2($author$project$MuchSelect$InputHasBeenKeyUp, inputString, 3));
 			case 13:
@@ -11311,7 +11381,7 @@ var $author$project$MuchSelect$update = F2(
 										b: A4(
 											$author$project$OptionsUtilities$updateAge,
 											0,
-											model.h,
+											model.g,
 											$author$project$SelectionMode$getSearchStringMinimumLength(model.a),
 											newOptionWithOldSelectedOption),
 										e: A4(
@@ -11320,19 +11390,19 @@ var $author$project$MuchSelect$update = F2(
 											model.a,
 											$author$project$OptionsUtilities$hasSelectedOption(newOptionWithOldSelectedOption),
 											model.b),
-										s: $grotsev$elm_debouncer$Bounce$push(model.s)
+										t: $grotsev$elm_debouncer$Bounce$push(model.t)
 									})),
 							$author$project$MuchSelect$batch(
 								_List_fromArray(
 									[
 										$author$project$MuchSelect$OptionsUpdated(true),
-										A2($author$project$MuchSelect$makeCommandMessagesForUpdatingOptionsInTheWebWorker, model.t, model.h)
+										A2($author$project$MuchSelect$makeCommandMessagesForUpdatingOptionsInTheWebWorker, model.o, model.g)
 									])));
 					} else {
 						var newOptionWithOldSelectedOption = A4(
 							$author$project$OptionsUtilities$updateAge,
 							1,
-							model.h,
+							model.g,
 							$author$project$SelectionMode$getSearchStringMinimumLength(model.a),
 							$author$project$OptionsUtilities$organizeNewDatalistOptions(
 								A3($author$project$OptionsUtilities$replaceOptions, model.a, model.b, newOptions)));
@@ -11348,13 +11418,13 @@ var $author$project$MuchSelect$update = F2(
 											model.a,
 											$author$project$OptionsUtilities$hasSelectedOption(newOptionWithOldSelectedOption),
 											model.b),
-										s: $grotsev$elm_debouncer$Bounce$push(model.s)
+										t: $grotsev$elm_debouncer$Bounce$push(model.t)
 									})),
 							$author$project$MuchSelect$batch(
 								_List_fromArray(
 									[
 										$author$project$MuchSelect$OptionsUpdated(true),
-										A2($author$project$MuchSelect$makeCommandMessagesForUpdatingOptionsInTheWebWorker, model.t, model.h)
+										A2($author$project$MuchSelect$makeCommandMessagesForUpdatingOptionsInTheWebWorker, model.o, model.g)
 									])));
 					}
 				} else {
@@ -11378,7 +11448,7 @@ var $author$project$MuchSelect$update = F2(
 					var updatedOptions = A4(
 						$author$project$OptionsUtilities$updateAge,
 						$author$project$SelectionMode$getOutputStyle(model.a),
-						model.h,
+						model.g,
 						$author$project$SelectionMode$getSearchStringMinimumLength(model.a),
 						A2($author$project$OptionsUtilities$addAdditionalOptionsToOptionList, model.b, newOptions));
 					return _Utils_Tuple2(
@@ -11387,15 +11457,15 @@ var $author$project$MuchSelect$update = F2(
 								model,
 								{
 									b: updatedOptions,
-									s: $grotsev$elm_debouncer$Bounce$push(model.s),
-									t: $author$project$MuchSelect$getDebouceDelayForSearch(
+									t: $grotsev$elm_debouncer$Bounce$push(model.t),
+									o: $author$project$MuchSelect$getDebouceDelayForSearch(
 										$elm$core$List$length(updatedOptions))
 								})),
 						$author$project$MuchSelect$batch(
 							_List_fromArray(
 								[
 									$author$project$MuchSelect$OptionsUpdated(false),
-									A2($author$project$MuchSelect$makeCommandMessagesForUpdatingOptionsInTheWebWorker, model.t, model.h)
+									A2($author$project$MuchSelect$makeCommandMessagesForUpdatingOptionsInTheWebWorker, model.o, model.g)
 								])));
 				} else {
 					var error = _v12.a;
@@ -11422,15 +11492,15 @@ var $author$project$MuchSelect$update = F2(
 								model,
 								{
 									b: updatedOptions,
-									s: $grotsev$elm_debouncer$Bounce$push(model.s),
-									t: $author$project$MuchSelect$getDebouceDelayForSearch(
+									t: $grotsev$elm_debouncer$Bounce$push(model.t),
+									o: $author$project$MuchSelect$getDebouceDelayForSearch(
 										$elm$core$List$length(updatedOptions))
 								})),
 						$author$project$MuchSelect$batch(
 							_List_fromArray(
 								[
 									$author$project$MuchSelect$OptionsUpdated(true),
-									A2($author$project$MuchSelect$makeCommandMessagesForUpdatingOptionsInTheWebWorker, model.t, model.h)
+									A2($author$project$MuchSelect$makeCommandMessagesForUpdatingOptionsInTheWebWorker, model.o, model.g)
 								])));
 				} else {
 					var error = _v13.a;
@@ -11465,7 +11535,7 @@ var $author$project$MuchSelect$update = F2(
 								model,
 								{
 									b: updatedOptions,
-									s: $grotsev$elm_debouncer$Bounce$push(model.s)
+									t: $grotsev$elm_debouncer$Bounce$push(model.t)
 								})),
 						$author$project$MuchSelect$batch(
 							_List_fromArray(
@@ -11474,8 +11544,8 @@ var $author$project$MuchSelect$update = F2(
 									$author$project$MuchSelect$makeEffectsWhenValuesChanges,
 									$author$project$OptionsUtilities$selectedOptions(updatedOptions),
 									$elm$core$Maybe$Just(optionValue)),
-									A2($author$project$MuchSelect$makeCommandMessagesForUpdatingOptionsInTheWebWorker, model.t, model.h),
-									$author$project$MuchSelect$SearchStringTouched(model.t)
+									A2($author$project$MuchSelect$makeCommandMessagesForUpdatingOptionsInTheWebWorker, model.o, model.g),
+									$author$project$MuchSelect$SearchStringTouched(model.o)
 								])));
 				} else {
 					var error = _v14.a;
@@ -11652,7 +11722,7 @@ var $author$project$MuchSelect$update = F2(
 						_List_fromArray(
 							[
 								$author$project$MuchSelect$ReportReady,
-								A2($author$project$MuchSelect$makeCommandMessagesForUpdatingOptionsInTheWebWorker, model.t, model.h),
+								A2($author$project$MuchSelect$makeCommandMessagesForUpdatingOptionsInTheWebWorker, model.o, model.g),
 								cmd
 							])));
 			case 29:
@@ -11681,7 +11751,7 @@ var $author$project$MuchSelect$update = F2(
 						$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
 							_Utils_update(
 								model,
-								{b: updatedOptions, h: $author$project$SearchString$reset})),
+								{b: updatedOptions, g: $author$project$SearchString$reset})),
 						$author$project$MuchSelect$batch(
 							_List_fromArray(
 								[
@@ -11689,7 +11759,7 @@ var $author$project$MuchSelect$update = F2(
 									$author$project$MuchSelect$makeEffectsWhenValuesChanges,
 									$author$project$OptionsUtilities$selectedOptions(updatedOptions),
 									maybeHighlightedOptionValue),
-									A2($author$project$MuchSelect$makeCommandMessagesForUpdatingOptionsInTheWebWorker, model.t, model.h),
+									A2($author$project$MuchSelect$makeCommandMessagesForUpdatingOptionsInTheWebWorker, model.o, model.g),
 									$author$project$MuchSelect$BlurInput
 								])));
 				} else {
@@ -11697,7 +11767,7 @@ var $author$project$MuchSelect$update = F2(
 						$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
 							_Utils_update(
 								model,
-								{b: updatedOptions, h: $author$project$SearchString$reset})),
+								{b: updatedOptions, g: $author$project$SearchString$reset})),
 						$author$project$MuchSelect$batch(
 							_List_fromArray(
 								[
@@ -11705,7 +11775,7 @@ var $author$project$MuchSelect$update = F2(
 									$author$project$MuchSelect$makeEffectsWhenValuesChanges,
 									$author$project$OptionsUtilities$selectedOptions(updatedOptions),
 									maybeHighlightedOptionValue),
-									A2($author$project$MuchSelect$makeCommandMessagesForUpdatingOptionsInTheWebWorker, model.t, model.h),
+									A2($author$project$MuchSelect$makeCommandMessagesForUpdatingOptionsInTheWebWorker, model.o, model.g),
 									$author$project$MuchSelect$FocusInput
 								])));
 				}
@@ -11721,7 +11791,7 @@ var $author$project$MuchSelect$update = F2(
 					$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
 						_Utils_update(
 							model,
-							{h: $author$project$SearchString$reset})),
+							{g: $author$project$SearchString$reset})),
 					$author$project$MuchSelect$BlurInput);
 			case 35:
 				var updatedOptions = A3(
@@ -11766,7 +11836,7 @@ var $author$project$MuchSelect$update = F2(
 							{b: updatedOptions})),
 					$author$project$MuchSelect$NoEffect);
 			case 40:
-				if ($author$project$SearchString$length(model.h) > 0) {
+				if ($author$project$SearchString$length(model.g) > 0) {
 					return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
 				} else {
 					var updatedOptions = $author$project$OptionsUtilities$hasSelectedHighlightedOptions(model.b) ? $author$project$OptionsUtilities$deselectAllSelectedHighlightedOptions(model.b) : $author$project$OptionsUtilities$deselectLastSelectedOption(model.b);
@@ -11998,13 +12068,32 @@ var $author$project$MuchSelect$update = F2(
 					case 'disabled':
 						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
 					case 'events-only':
-						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									a: A2($author$project$SelectionMode$setEventsOnly, true, model.a)
+								}),
+							$author$project$MuchSelect$NoEffect);
 					case 'loading':
 						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
 					case 'max-dropdown-items':
 						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
 					case 'multi-select':
-						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
+						return _Utils_Tuple2(
+							$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
+								_Utils_update(
+									model,
+									{
+										a: A2($author$project$SelectionMode$setMultiSelectModeWithBool, true, model.a)
+									})),
+							$author$project$MuchSelect$batch(
+								_List_fromArray(
+									[
+										$author$project$MuchSelect$ReportReady,
+										A2($author$project$MuchSelect$makeCommandMessagesForUpdatingOptionsInTheWebWorker, model.o, model.g),
+										$author$project$MuchSelect$NoEffect
+									])));
 					case 'multi-select-single-item-removal':
 						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
 					case 'option-sorting':
@@ -12014,7 +12103,25 @@ var $author$project$MuchSelect$update = F2(
 					case 'placeholder':
 						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
 					case 'search-string-minimum-length':
-						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
+						var _v30 = $author$project$PositiveInt$fromString(newAttributeValue);
+						if (!_v30.$) {
+							var minimumLength = _v30.a;
+							return _Utils_Tuple2(
+								$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
+									_Utils_update(
+										model,
+										{
+											a: A2(
+												$author$project$SelectionMode$setSearchStringMinimumLength,
+												$author$project$OutputStyle$FixedSearchStringMinimumLength(minimumLength),
+												model.a)
+										})),
+								$author$project$MuchSelect$NoEffect);
+						} else {
+							return _Utils_Tuple2(
+								model,
+								$author$project$MuchSelect$ReportErrorMessage('Search string minimum length needs to be a positive integer'));
+						}
 					case 'selected-option-goes-to-top':
 						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
 					case 'selected-value':
@@ -12043,13 +12150,37 @@ var $author$project$MuchSelect$update = F2(
 					case 'disabled':
 						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
 					case 'events-only':
-						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									a: A2($author$project$SelectionMode$setEventsOnly, false, model.a)
+								}),
+							$author$project$MuchSelect$NoEffect);
 					case 'loading':
 						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
 					case 'max-dropdown-items':
 						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
 					case 'multi-select':
-						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
+						var updatedOptions = $author$project$OptionsUtilities$deselectAllButTheFirstSelectedOptionInList(model.b);
+						return _Utils_Tuple2(
+							$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
+								_Utils_update(
+									model,
+									{
+										b: updatedOptions,
+										a: A2($author$project$SelectionMode$setMultiSelectModeWithBool, false, model.a)
+									})),
+							$author$project$MuchSelect$batch(
+								_List_fromArray(
+									[
+										$author$project$MuchSelect$ReportReady,
+										A2($author$project$MuchSelect$makeCommandMessagesForUpdatingOptionsInTheWebWorker, model.o, model.g),
+										A2(
+										$author$project$MuchSelect$makeEffectsWhenValuesChanges,
+										$author$project$OptionsUtilities$selectedOptions(updatedOptions),
+										$elm$core$Maybe$Nothing)
+									])));
 					case 'multi-select-single-item-removal':
 						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
 					case 'option-sorting':
@@ -12059,7 +12190,14 @@ var $author$project$MuchSelect$update = F2(
 					case 'placeholder':
 						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
 					case 'search-string-minimum-length':
-						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
+						return _Utils_Tuple2(
+							$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
+								_Utils_update(
+									model,
+									{
+										a: A2($author$project$SelectionMode$setSearchStringMinimumLength, $author$project$OutputStyle$NoMinimumToSearchStringLength, model.a)
+									})),
+							$author$project$MuchSelect$NoEffect);
 					case 'selected-option-goes-to-top':
 						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
 					case 'selected-value':
@@ -12672,7 +12810,7 @@ var $author$project$SelectionMode$getDropdownState = function (selectionConfig) 
 		var singleSelectOutputStyle = selectionConfig.a;
 		if (!singleSelectOutputStyle.$) {
 			var singleSelectCustomHtmlFields = singleSelectOutputStyle.a;
-			return singleSelectCustomHtmlFields.T;
+			return singleSelectCustomHtmlFields.U;
 		} else {
 			return 2;
 		}
@@ -12680,7 +12818,7 @@ var $author$project$SelectionMode$getDropdownState = function (selectionConfig) 
 		var multiSelectOutputStyle = selectionConfig.a;
 		if (!multiSelectOutputStyle.$) {
 			var multiSelectCustomHtmlFields = multiSelectOutputStyle.a;
-			return multiSelectCustomHtmlFields.T;
+			return multiSelectCustomHtmlFields.U;
 		} else {
 			return 2;
 		}
@@ -12702,7 +12840,7 @@ var $author$project$SelectionMode$getDropdownStyle = function (selectionConfig) 
 		var singleSelectOutputStyle = selectionConfig.a;
 		if (!singleSelectOutputStyle.$) {
 			var singleSelectCustomHtmlFields = singleSelectOutputStyle.a;
-			return singleSelectCustomHtmlFields.U;
+			return singleSelectCustomHtmlFields.V;
 		} else {
 			return 0;
 		}
@@ -12710,7 +12848,7 @@ var $author$project$SelectionMode$getDropdownStyle = function (selectionConfig) 
 		var multiSelectOutputStyle = selectionConfig.a;
 		if (!multiSelectOutputStyle.$) {
 			var multiSelectCustomHtmlFields = multiSelectOutputStyle.a;
-			return multiSelectCustomHtmlFields.U;
+			return multiSelectCustomHtmlFields.V;
 		} else {
 			return 0;
 		}
@@ -14519,11 +14657,11 @@ var $author$project$MuchSelect$view = function (model) {
 			]),
 		_List_fromArray(
 			[
-				$author$project$SelectionMode$isSingleSelect(model.a) ? A4($author$project$MuchSelect$singleSelectView, model.a, model.b, model.h, model.e) : A4($author$project$MuchSelect$multiSelectView, model.a, model.b, model.h, model.e),
+				$author$project$SelectionMode$isSingleSelect(model.a) ? A4($author$project$MuchSelect$singleSelectView, model.a, model.b, model.g, model.e) : A4($author$project$MuchSelect$multiSelectView, model.a, model.b, model.g, model.e),
 				function () {
 				var _v1 = $author$project$SelectionMode$getOutputStyle(model.a);
 				if (!_v1) {
-					return A4($author$project$MuchSelect$dropdown, model.a, model.b, model.h, model.a8);
+					return A4($author$project$MuchSelect$dropdown, model.a, model.b, model.g, model.a8);
 				} else {
 					return $author$project$MuchSelect$datalist(model.b);
 				}

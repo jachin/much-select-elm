@@ -185,3 +185,23 @@ setTransformAndValidateFromCustomOptions newTransformAndValidate customOptions =
 
         NoCustomOptions ->
             customOptions
+
+
+setEventsModeSingleSelect : EventsMode -> SingleSelectOutputStyle -> SingleSelectOutputStyle
+setEventsModeSingleSelect eventsMode singleSelectOutputStyle =
+    case singleSelectOutputStyle of
+        SingleSelectCustomHtml singleSelectCustomHtmlFields ->
+            SingleSelectCustomHtml { singleSelectCustomHtmlFields | eventsMode = eventsMode }
+
+        SingleSelectDatalist _ valueTransformAndValidate ->
+            SingleSelectDatalist eventsMode valueTransformAndValidate
+
+
+setEventsModeMultiSelect : EventsMode -> MultiSelectOutputStyle -> MultiSelectOutputStyle
+setEventsModeMultiSelect eventsMode multiSelectOutputStyle =
+    case multiSelectOutputStyle of
+        MultiSelectCustomHtml multiSelectCustomHtmlFields ->
+            MultiSelectCustomHtml { multiSelectCustomHtmlFields | eventsMode = eventsMode }
+
+        MultiSelectDataList _ valueTransformAndValidate ->
+            MultiSelectDataList eventsMode valueTransformAndValidate

@@ -1,4 +1,4 @@
-module PositiveInt exposing (PositiveInt, decode, encode, isZero, lessThanOrEqualTo, maybeNew, new, toInt)
+module PositiveInt exposing (PositiveInt, decode, encode, fromString, isZero, lessThanOrEqualTo, maybeNew, new, toInt)
 
 import Json.Decode
 import Json.Encode
@@ -11,6 +11,12 @@ type PositiveInt
 new : Int -> PositiveInt
 new int =
     PositiveInt (abs int)
+
+
+fromString : String -> Maybe PositiveInt
+fromString str =
+    String.toInt str
+        |> Maybe.andThen maybeNew
 
 
 maybeNew : Int -> Maybe PositiveInt

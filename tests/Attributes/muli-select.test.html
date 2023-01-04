@@ -56,7 +56,7 @@
           el.setAttribute("multi-select", "");
 
           await waitUntil(
-            () => el.isInMultiSelectMode === true,
+            async () => (await el.isInMultiSelectMode) === true,
             "Multi select mode did not become true."
           );
 

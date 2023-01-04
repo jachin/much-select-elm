@@ -1229,7 +1229,14 @@ update msg model =
                     ( model, NoEffect )
 
                 "events-only" ->
-                    ( model, NoEffect )
+                    ( { model
+                        | selectionConfig =
+                            SelectionMode.setEventsOnly
+                                True
+                                model.selectionConfig
+                      }
+                    , NoEffect
+                    )
 
                 "loading" ->
                     ( model, NoEffect )
@@ -1238,7 +1245,16 @@ update msg model =
                     ( model, NoEffect )
 
                 "multi-select" ->
-                    ( model, NoEffect )
+                    ( { model
+                        | selectionConfig = SelectionMode.setMultiSelectModeWithBool True model.selectionConfig
+                      }
+                        |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
+                    , batch
+                        [ ReportReady
+                        , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
+                        , NoEffect
+                        ]
+                    )
 
                 "multi-select-single-item-removal" ->
                     ( model, NoEffect )
@@ -1253,7 +1269,22 @@ update msg model =
                     ( model, NoEffect )
 
                 "search-string-minimum-length" ->
-                    ( model, NoEffect )
+                    case PositiveInt.fromString newAttributeValue of
+                        Just minimumLength ->
+                            ( { model
+                                | selectionConfig =
+                                    setSearchStringMinimumLength
+                                        (FixedSearchStringMinimumLength minimumLength)
+                                        model.selectionConfig
+                              }
+                                |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
+                            , NoEffect
+                            )
+
+                        Nothing ->
+                            ( model
+                            , ReportErrorMessage "Search string minimum length needs to be a positive integer"
+                            )
 
                 "selected-option-goes-to-top" ->
                     ( model, NoEffect )
@@ -1287,7 +1318,14 @@ update msg model =
                     ( model, NoEffect )
 
                 "events-only" ->
-                    ( model, NoEffect )
+                    ( { model
+                        | selectionConfig =
+                            SelectionMode.setEventsOnly
+                                False
+                                model.selectionConfig
+                      }
+                    , NoEffect
+                    )
 
                 "loading" ->
                     ( model, NoEffect )
@@ -1296,7 +1334,21 @@ update msg model =
                     ( model, NoEffect )
 
                 "multi-select" ->
-                    ( model, NoEffect )
+                    let
+                        updatedOptions =
+                            deselectAllButTheFirstSelectedOptionInList model.options
+                    in
+                    ( { model
+                        | selectionConfig = SelectionMode.setMultiSelectModeWithBool False model.selectionConfig
+                        , options = updatedOptions
+                      }
+                        |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
+                    , batch
+                        [ ReportReady
+                        , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
+                        , makeEffectsWhenValuesChanges (selectedOptions updatedOptions) Nothing
+                        ]
+                    )
 
                 "multi-select-single-item-removal" ->
                     ( model, NoEffect )
@@ -1311,7 +1363,15 @@ update msg model =
                     ( model, NoEffect )
 
                 "search-string-minimum-length" ->
-                    ( model, NoEffect )
+                    ( { model
+                        | selectionConfig =
+                            setSearchStringMinimumLength
+                                NoMinimumToSearchStringLength
+                                model.selectionConfig
+                      }
+                        |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
+                    , NoEffect
+                    )
 
                 "selected-option-goes-to-top" ->
                     ( model, NoEffect )

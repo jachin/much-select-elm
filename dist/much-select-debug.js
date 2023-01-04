@@ -199,16 +199,6 @@ class MuchSelect extends HTMLElement {
     this._selectedValue = null;
 
     /**
-     * This is controlled by the events-only attribute.
-     * If this is true, no changes to the light DOM should
-     * happen automatically.
-     *
-     * @type {boolean}
-     * @private
-     */
-    this._eventsOnlyMode = false;
-
-    /**
      * @type {string|null}
      * @private
      */
@@ -238,21 +228,6 @@ class MuchSelect extends HTMLElement {
      * @private
      */
     this._showDropdownFooter = false;
-
-    /**
-     * As the user types to filter the search results, what is the minimum number of character they need to type before
-     *  the options are filtered.
-     *
-     * @type {number}
-     * @private
-     */
-    this._searchStringMinimumLength = 2;
-
-    /**
-     * @type {boolean}
-     * @private
-     */
-    this._isInMultiSelectMode = false;
 
     /**
      * @type {boolean}
@@ -1078,7 +1053,7 @@ class MuchSelect extends HTMLElement {
 
     flags.isEventsOnly = this.hasAttribute("events-only");
 
-    flags.allowMultiSelect = this.isInMultiSelectMode;
+    flags.allowMultiSelect = this.hasAttribute("multi-select");
 
     if (this.hasAttribute("multi-select-single-item-removal")) {
       flags.enableMultiSelectSingleItemRemoval =
@@ -1107,7 +1082,8 @@ class MuchSelect extends HTMLElement {
         10
       );
     } else {
-      flags.searchStringMinimumLength = this.searchStringMinimumLength;
+      // The default value for the search string minimum length.
+      flags.searchStringMinimumLength = 2;
     }
 
     if (this.hasAttribute("show-dropdown-footer")) {
@@ -1565,16 +1541,19 @@ class MuchSelect extends HTMLElement {
   }
 
   get eventsOnlyMode() {
-    return this.getConfigValuePromise("events-only-mode", false);
+    return this.getConfigValuePromise("events-only-mode");
   }
 
   set eventsOnlyMode(value) {
-    if (value === "false") {
-      this._eventsOnlyMode = false;
-    } else if (value === "") {
-      this._eventsOnlyMode = true;
-    } else {
-      this._eventsOnlyMode = !!value;
+    this.appPromise.then((app) => {
+      app.ports.attributeChanged.send(["events-only", value]);
+    });
+
+    if (!value) {
+      // This is kinda strange, if we're saying allow light DOM manipulation,
+      //  then manipulate the light DOM. Which makes sense, but I guess we'll
+      //  see how this plays out in practice.
+      this.removeAttribute("events-only");
     }
   }
 
@@ -1636,10 +1615,10 @@ class MuchSelect extends HTMLElement {
   /**
    * Search String Minimum Length getter.
    *
-   * @returns {number}
+   * @returns {Promise<number>}
    */
   get searchStringMinimumLength() {
-    return this._searchStringMinimumLength;
+    return this.getConfigValuePromise("search-string-minimum-length");
   }
 
   /**
@@ -1648,64 +1627,55 @@ class MuchSelect extends HTMLElement {
    * @param value {string|number}
    */
   set searchStringMinimumLength(value) {
+    let cleanValue;
+
     if (value === "false") {
-      this._searchStringMinimumLength = 0;
+      cleanValue = 0;
     } else if (value === "") {
-      this._searchStringMinimumLength = 0;
+      cleanValue = 0;
     } else if (Number.isInteger(value)) {
       if (value >= 0) {
-        this._searchStringMinimumLength = value;
+        cleanValue = value;
       } else {
-        this._searchStringMinimumLength = 0;
+        cleanValue = 0;
       }
     } else if (typeof value === "string") {
       const intVal = parseInt(value, 10);
       if (intVal >= 0) {
-        this._searchStringMinimumLength = intVal;
+        cleanValue = intVal;
       } else {
-        this._searchStringMinimumLength = 0;
+        cleanValue = 0;
       }
-    }
-
-    if (!this.eventsOnlyMode) {
-      this.setAttribute(
-        "search-string-minimum-length",
-        `${this._searchStringMinimumLength}`
-      );
     }
 
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
-      app.ports.searchStringMinimumLengthChangedReceiver.send(
-        this._searchStringMinimumLength
-      )
+      app.ports.searchStringMinimumLengthChangedReceiver.send(cleanValue)
     );
   }
 
+  /**
+   * Get whether we are in multi-select mode.
+   *
+   * @returns {Promise<boolean>}
+   */
   get isInMultiSelectMode() {
-    return this._isInMultiSelectMode;
+    return this.getConfigValuePromise("multi-select");
   }
 
   set isInMultiSelectMode(value) {
+    let cleanValue;
     if (value === "false") {
-      this._isInMultiSelectMode = false;
+      cleanValue = false;
     } else if (value === "") {
-      this._isInMultiSelectMode = true;
+      cleanValue = true;
     } else {
-      this._isInMultiSelectMode = !!value;
-    }
-
-    if (!this.eventsOnlyMode) {
-      if (this._isInMultiSelectMode) {
-        this.setAttribute("multi-select", value);
-      } else {
-        this.removeAttribute("multi-select");
-      }
+      cleanValue = !!value;
     }
 
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
-      app.ports.multiSelectChangedReceiver.send(this.isInMultiSelectMode)
+      app.ports.multiSelectChangedReceiver.send(cleanValue)
     );
   }
 
@@ -1786,9 +1756,6 @@ class MuchSelect extends HTMLElement {
         return Promise.all(this.eventsOnlyMode, this.allowCustomOptions);
       })
       .then(([eventsOnlyMode, allowCustomOptions]) => {
-        console.log("eventsOnlyMode", eventsOnlyMode);
-        console.log("allowCustomOptions", allowCustomOptions);
-
         if (!eventsOnlyMode) {
           // TODO - This is wrong, we need to preserver the custom hit message if it's there.
           if (allowCustomOptions) {

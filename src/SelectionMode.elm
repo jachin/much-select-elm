@@ -26,6 +26,8 @@ module SelectionMode exposing
     , setAllowCustomOptionsWithBool
     , setCustomOptionHint
     , setDropdownStyle
+    , setEventsMode
+    , setEventsOnly
     , setInteractionState
     , setIsDisabled
     , setIsFocused
@@ -45,7 +47,7 @@ module SelectionMode exposing
     )
 
 import Json.Encode
-import OutputStyle exposing (CustomOptionHint, CustomOptions(..), DropdownState(..), DropdownStyle(..), EventsMode(..), MaxDropdownItems(..), MultiSelectOutputStyle(..), SearchStringMinimumLength(..), SelectedItemPlacementMode(..), SingleItemRemoval(..), SingleSelectOutputStyle(..), defaultMultiSelectCustomHtmlFields, defaultSingleSelectCustomHtmlFields, getTransformAndValidateFromCustomOptions, setTransformAndValidateFromCustomOptions)
+import OutputStyle exposing (CustomOptionHint, CustomOptions(..), DropdownState(..), DropdownStyle(..), EventsMode(..), MaxDropdownItems(..), MultiSelectOutputStyle(..), SearchStringMinimumLength(..), SelectedItemPlacementMode(..), SingleItemRemoval(..), SingleSelectOutputStyle(..), defaultMultiSelectCustomHtmlFields, defaultSingleSelectCustomHtmlFields, getTransformAndValidateFromCustomOptions, setEventsModeMultiSelect, setEventsModeSingleSelect, setTransformAndValidateFromCustomOptions)
 import PositiveInt
 import TransformAndValidate exposing (ValueTransformAndValidate)
 
@@ -574,6 +576,59 @@ stringToOutputStyle string =
             Err "Invalid output style"
 
 
+isEventsOnly : SelectionConfig -> Bool
+isEventsOnly selectionConfig =
+    case selectionConfig of
+        SingleSelectConfig singleSelectOutputStyle _ _ ->
+            case singleSelectOutputStyle of
+                SingleSelectCustomHtml singleSelectCustomHtmlFields ->
+                    case singleSelectCustomHtmlFields.eventsMode of
+                        EventsOnly ->
+                            True
+
+                        AllowLightDomChanges ->
+                            False
+
+                SingleSelectDatalist eventsMode _ ->
+                    case eventsMode of
+                        EventsOnly ->
+                            True
+
+                        AllowLightDomChanges ->
+                            False
+
+        MultiSelectConfig multiSelectOutputStyle _ _ ->
+            case multiSelectOutputStyle of
+                MultiSelectCustomHtml multiSelectCustomHtmlFields ->
+                    case multiSelectCustomHtmlFields.eventsMode of
+                        EventsOnly ->
+                            True
+
+                        AllowLightDomChanges ->
+                            False
+
+                MultiSelectDataList eventsMode _ ->
+                    case eventsMode of
+                        EventsOnly ->
+                            True
+
+                        AllowLightDomChanges ->
+                            False
+
+
+setEventsOnly : Bool -> SelectionConfig -> SelectionConfig
+setEventsOnly bool selectionConfig =
+    let
+        newEventsMode =
+            if bool then
+                EventsOnly
+
+            else
+                AllowLightDomChanges
+    in
+    setEventsMode newEventsMode selectionConfig
+
+
 isFocused : SelectionConfig -> Bool
 isFocused selectionConfig =
     case selectionConfig of
@@ -639,46 +694,6 @@ isDisabled selectionConfig =
                     True
 
 
-isEventsOnly : SelectionConfig -> Bool
-isEventsOnly selectionConfig =
-    case selectionConfig of
-        SingleSelectConfig singleSelectOutputStyle _ _ ->
-            case singleSelectOutputStyle of
-                SingleSelectCustomHtml singleSelectCustomHtmlFields ->
-                    case singleSelectCustomHtmlFields.eventsMode of
-                        EventsOnly ->
-                            True
-
-                        AllowLightDomChanges ->
-                            False
-
-                SingleSelectDatalist eventsMode _ ->
-                    case eventsMode of
-                        EventsOnly ->
-                            True
-
-                        AllowLightDomChanges ->
-                            False
-
-        MultiSelectConfig multiSelectOutputStyle _ _ ->
-            case multiSelectOutputStyle of
-                MultiSelectCustomHtml multiSelectCustomHtmlFields ->
-                    case multiSelectCustomHtmlFields.eventsMode of
-                        EventsOnly ->
-                            True
-
-                        AllowLightDomChanges ->
-                            False
-
-                MultiSelectDataList eventsMode _ ->
-                    case eventsMode of
-                        EventsOnly ->
-                            True
-
-                        AllowLightDomChanges ->
-                            False
-
-
 setIsDisabled : Bool -> SelectionConfig -> SelectionConfig
 setIsDisabled isDisabled_ selectionConfig =
     if isDisabled_ then
@@ -696,6 +711,22 @@ getInteractionState selectionConfig =
 
         MultiSelectConfig _ _ interactionState ->
             interactionState
+
+
+setEventsMode : EventsMode -> SelectionConfig -> SelectionConfig
+setEventsMode eventsMode selectionConfig =
+    case selectionConfig of
+        SingleSelectConfig singleSelectOutputStyle placeholder interactionState ->
+            SingleSelectConfig
+                (setEventsModeSingleSelect eventsMode singleSelectOutputStyle)
+                placeholder
+                interactionState
+
+        MultiSelectConfig multiSelectOutputStyle placeholder interactionState ->
+            MultiSelectConfig
+                (setEventsModeMultiSelect eventsMode multiSelectOutputStyle)
+                placeholder
+                interactionState
 
 
 setInteractionState : InteractionState -> SelectionConfig -> SelectionConfig
@@ -1055,9 +1086,7 @@ setTransformAndValidate newTransformAndValidate selectionConfig =
 encodeSelectionConfig : SelectionConfig -> Json.Encode.Value
 encodeSelectionConfig selectionConfig =
     Json.Encode.object
-        [ ( "disabled", Json.Encode.bool (isDisabled selectionConfig) )
-        , ( "events-only", Json.Encode.bool (isEventsOnly selectionConfig) )
-        , ( "allows-custom-options"
+        [ ( "allows-custom-options"
           , Json.Encode.bool
                 (case getCustomOptions selectionConfig of
                     AllowCustomOptions _ _ ->
@@ -1067,4 +1096,16 @@ encodeSelectionConfig selectionConfig =
                         False
                 )
           )
+        , ( "disabled", Json.Encode.bool (isDisabled selectionConfig) )
+        , ( "multi-select"
+          , Json.Encode.bool
+                (case getSelectionMode selectionConfig of
+                    MultiSelect ->
+                        True
+
+                    SingleSelect ->
+                        False
+                )
+          )
+        , ( "events-only", Json.Encode.bool (isEventsOnly selectionConfig) )
         ]

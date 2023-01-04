@@ -14329,14 +14329,6 @@ var $author$project$SelectionMode$encodeSelectionConfig = function (selectionCon
 		_List_fromArray(
 			[
 				_Utils_Tuple2(
-				'disabled',
-				$elm$json$Json$Encode$bool(
-					$author$project$SelectionMode$isDisabled(selectionConfig))),
-				_Utils_Tuple2(
-				'events-only',
-				$elm$json$Json$Encode$bool(
-					$author$project$SelectionMode$isEventsOnly(selectionConfig))),
-				_Utils_Tuple2(
 				'allows-custom-options',
 				$elm$json$Json$Encode$bool(
 					function () {
@@ -14346,7 +14338,26 @@ var $author$project$SelectionMode$encodeSelectionConfig = function (selectionCon
 						} else {
 							return false;
 						}
-					}()))
+					}())),
+				_Utils_Tuple2(
+				'disabled',
+				$elm$json$Json$Encode$bool(
+					$author$project$SelectionMode$isDisabled(selectionConfig))),
+				_Utils_Tuple2(
+				'multi-select',
+				$elm$json$Json$Encode$bool(
+					function () {
+						var _v1 = $author$project$SelectionMode$getSelectionMode(selectionConfig);
+						if (_v1.$ === 'MultiSelect') {
+							return true;
+						} else {
+							return false;
+						}
+					}())),
+				_Utils_Tuple2(
+				'events-only',
+				$elm$json$Json$Encode$bool(
+					$author$project$SelectionMode$isEventsOnly(selectionConfig)))
 			]));
 };
 var $author$project$OptionsUtilities$filterOptionsToShowInDropdownByOptionDisplay = function (selectionConfig) {
@@ -14696,6 +14707,21 @@ var $author$project$OptionsUtilities$findHighlightedOption = function (options) 
 		},
 		options);
 };
+var $elm$core$Maybe$andThen = F2(
+	function (callback, maybeValue) {
+		if (maybeValue.$ === 'Just') {
+			var value = maybeValue.a;
+			return callback(value);
+		} else {
+			return $elm$core$Maybe$Nothing;
+		}
+	});
+var $author$project$PositiveInt$fromString = function (str) {
+	return A2(
+		$elm$core$Maybe$andThen,
+		$author$project$PositiveInt$maybeNew,
+		$elm$core$String$toInt(str));
+};
 var $author$project$SelectionMode$getSearchStringMinimumLength = function (selectionConfig) {
 	if (selectionConfig.$ === 'SingleSelectConfig') {
 		var singleSelectOutputStyle = selectionConfig.a;
@@ -14818,15 +14844,6 @@ var $author$project$RightSlot$isRightSlotTransitioning = function (rightSlot) {
 			return false;
 	}
 };
-var $elm$core$Maybe$andThen = F2(
-	function (callback, maybeValue) {
-		if (maybeValue.$ === 'Just') {
-			var value = maybeValue.a;
-			return callback(value);
-		} else {
-			return $elm$core$Maybe$Nothing;
-		}
-	});
 var $author$project$OptionDisplay$isHighlightable = F2(
 	function (selectionMode, optionDisplay) {
 		switch (optionDisplay.$) {
@@ -15374,6 +15391,59 @@ var $author$project$SelectionMode$setDropdownStyle = F2(
 				return selectionConfig;
 			}
 		}
+	});
+var $author$project$OutputStyle$setEventsModeMultiSelect = F2(
+	function (eventsMode, multiSelectOutputStyle) {
+		if (multiSelectOutputStyle.$ === 'MultiSelectCustomHtml') {
+			var multiSelectCustomHtmlFields = multiSelectOutputStyle.a;
+			return $author$project$OutputStyle$MultiSelectCustomHtml(
+				_Utils_update(
+					multiSelectCustomHtmlFields,
+					{eventsMode: eventsMode}));
+		} else {
+			var valueTransformAndValidate = multiSelectOutputStyle.b;
+			return A2($author$project$OutputStyle$MultiSelectDataList, eventsMode, valueTransformAndValidate);
+		}
+	});
+var $author$project$OutputStyle$setEventsModeSingleSelect = F2(
+	function (eventsMode, singleSelectOutputStyle) {
+		if (singleSelectOutputStyle.$ === 'SingleSelectCustomHtml') {
+			var singleSelectCustomHtmlFields = singleSelectOutputStyle.a;
+			return $author$project$OutputStyle$SingleSelectCustomHtml(
+				_Utils_update(
+					singleSelectCustomHtmlFields,
+					{eventsMode: eventsMode}));
+		} else {
+			var valueTransformAndValidate = singleSelectOutputStyle.b;
+			return A2($author$project$OutputStyle$SingleSelectDatalist, eventsMode, valueTransformAndValidate);
+		}
+	});
+var $author$project$SelectionMode$setEventsMode = F2(
+	function (eventsMode, selectionConfig) {
+		if (selectionConfig.$ === 'SingleSelectConfig') {
+			var singleSelectOutputStyle = selectionConfig.a;
+			var placeholder = selectionConfig.b;
+			var interactionState = selectionConfig.c;
+			return A3(
+				$author$project$SelectionMode$SingleSelectConfig,
+				A2($author$project$OutputStyle$setEventsModeSingleSelect, eventsMode, singleSelectOutputStyle),
+				placeholder,
+				interactionState);
+		} else {
+			var multiSelectOutputStyle = selectionConfig.a;
+			var placeholder = selectionConfig.b;
+			var interactionState = selectionConfig.c;
+			return A3(
+				$author$project$SelectionMode$MultiSelectConfig,
+				A2($author$project$OutputStyle$setEventsModeMultiSelect, eventsMode, multiSelectOutputStyle),
+				placeholder,
+				interactionState);
+		}
+	});
+var $author$project$SelectionMode$setEventsOnly = F2(
+	function (bool, selectionConfig) {
+		var newEventsMode = bool ? $author$project$OutputStyle$EventsOnly : $author$project$OutputStyle$AllowLightDomChanges;
+		return A2($author$project$SelectionMode$setEventsMode, newEventsMode, selectionConfig);
 	});
 var $author$project$SelectionMode$setInteractionState = F2(
 	function (newInteractionState, selectionConfig) {
@@ -17295,13 +17365,32 @@ var $author$project$MuchSelect$update = F2(
 					case 'disabled':
 						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
 					case 'events-only':
-						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									selectionConfig: A2($author$project$SelectionMode$setEventsOnly, true, model.selectionConfig)
+								}),
+							$author$project$MuchSelect$NoEffect);
 					case 'loading':
 						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
 					case 'max-dropdown-items':
 						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
 					case 'multi-select':
-						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
+						return _Utils_Tuple2(
+							$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
+								_Utils_update(
+									model,
+									{
+										selectionConfig: A2($author$project$SelectionMode$setMultiSelectModeWithBool, true, model.selectionConfig)
+									})),
+							$author$project$MuchSelect$batch(
+								_List_fromArray(
+									[
+										$author$project$MuchSelect$ReportReady,
+										A2($author$project$MuchSelect$makeCommandMessagesForUpdatingOptionsInTheWebWorker, model.searchStringDebounceLength, model.searchString),
+										$author$project$MuchSelect$NoEffect
+									])));
 					case 'multi-select-single-item-removal':
 						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
 					case 'option-sorting':
@@ -17311,7 +17400,25 @@ var $author$project$MuchSelect$update = F2(
 					case 'placeholder':
 						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
 					case 'search-string-minimum-length':
-						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
+						var _v30 = $author$project$PositiveInt$fromString(newAttributeValue);
+						if (_v30.$ === 'Just') {
+							var minimumLength = _v30.a;
+							return _Utils_Tuple2(
+								$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
+									_Utils_update(
+										model,
+										{
+											selectionConfig: A2(
+												$author$project$SelectionMode$setSearchStringMinimumLength,
+												$author$project$OutputStyle$FixedSearchStringMinimumLength(minimumLength),
+												model.selectionConfig)
+										})),
+								$author$project$MuchSelect$NoEffect);
+						} else {
+							return _Utils_Tuple2(
+								model,
+								$author$project$MuchSelect$ReportErrorMessage('Search string minimum length needs to be a positive integer'));
+						}
 					case 'selected-option-goes-to-top':
 						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
 					case 'selected-value':
@@ -17340,13 +17447,37 @@ var $author$project$MuchSelect$update = F2(
 					case 'disabled':
 						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
 					case 'events-only':
-						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									selectionConfig: A2($author$project$SelectionMode$setEventsOnly, false, model.selectionConfig)
+								}),
+							$author$project$MuchSelect$NoEffect);
 					case 'loading':
 						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
 					case 'max-dropdown-items':
 						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
 					case 'multi-select':
-						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
+						var updatedOptions = $author$project$OptionsUtilities$deselectAllButTheFirstSelectedOptionInList(model.options);
+						return _Utils_Tuple2(
+							$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
+								_Utils_update(
+									model,
+									{
+										options: updatedOptions,
+										selectionConfig: A2($author$project$SelectionMode$setMultiSelectModeWithBool, false, model.selectionConfig)
+									})),
+							$author$project$MuchSelect$batch(
+								_List_fromArray(
+									[
+										$author$project$MuchSelect$ReportReady,
+										A2($author$project$MuchSelect$makeCommandMessagesForUpdatingOptionsInTheWebWorker, model.searchStringDebounceLength, model.searchString),
+										A2(
+										$author$project$MuchSelect$makeEffectsWhenValuesChanges,
+										$author$project$OptionsUtilities$selectedOptions(updatedOptions),
+										$elm$core$Maybe$Nothing)
+									])));
 					case 'multi-select-single-item-removal':
 						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
 					case 'option-sorting':
@@ -17356,7 +17487,14 @@ var $author$project$MuchSelect$update = F2(
 					case 'placeholder':
 						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
 					case 'search-string-minimum-length':
-						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
+						return _Utils_Tuple2(
+							$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
+								_Utils_update(
+									model,
+									{
+										selectionConfig: A2($author$project$SelectionMode$setSearchStringMinimumLength, $author$project$OutputStyle$NoMinimumToSearchStringLength, model.selectionConfig)
+									})),
+							$author$project$MuchSelect$NoEffect);
 					case 'selected-option-goes-to-top':
 						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
 					case 'selected-value':
