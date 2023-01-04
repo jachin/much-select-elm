@@ -49,5 +49,15 @@
       "--directory",
       "./build/"
     ]
+  },
+  {
+    "title": "Build production code",
+    "command": [
+      "watchexec",
+      "-w",
+      "src",
+      "--",
+      "scripts/build.sh"
+    ]
   }
 ]

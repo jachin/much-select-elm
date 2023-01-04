@@ -425,6 +425,17 @@ class MuchSelect extends HTMLElement {
 
   // noinspection JSUnusedGlobalSymbols
   attributeChangedCallback(name, oldValue, newValue) {
+    if (oldValue !== newValue) {
+      // noinspection JSUnresolvedVariable
+      this.appPromise.then((app) => {
+        if (newValue === null) {
+          app.ports.attributeRemoved.send(name);
+        } else {
+          app.ports.attributeChanged.send([name, newValue]);
+        }
+      });
+    }
+    /*
     if (name === "allow-custom-options") {
       if (oldValue !== newValue) {
         this.updateAllowCustomOptions(newValue);
@@ -489,6 +500,7 @@ class MuchSelect extends HTMLElement {
         this.showDropdownFooter = newValue;
       }
     }
+    */
   }
 
   // noinspection JSUnusedGlobalSymbols
@@ -1064,6 +1076,8 @@ class MuchSelect extends HTMLElement {
   buildFlags() {
     const flags = {};
 
+    flags.isEventsOnly = this.hasAttribute("events-only");
+
     flags.allowMultiSelect = this.isInMultiSelectMode;
 
     if (this.hasAttribute("multi-select-single-item-removal")) {
@@ -1134,8 +1148,14 @@ class MuchSelect extends HTMLElement {
     flags.loading = this.loading;
     flags.selectedItemStaysInPlace = this.selectedItemStaysInPlace;
     flags.maxDropdownItems = this.maxDropdownItems;
-    flags.allowCustomOptions = this.allowCustomOptions;
-    flags.customOptionHint = this.customOptionHint;
+
+    if (this.hasAttribute("allow-custom-options")) {
+      flags.customOptionHint = this.getAttribute("allow-custom-options");
+      flags.allowCustomOptions = true;
+    } else {
+      flags.customOptionHint = null;
+      flags.allowCustomOptions = false;
+    }
 
     const selectElement = this.querySelector("select[slot='select-input']");
     if (selectElement) {
@@ -1327,6 +1347,11 @@ class MuchSelect extends HTMLElement {
       }
     });
     return this._appPromise;
+  }
+
+  async getConfigValuePromise(key) {
+    const selectionConfig = await this.getSelectionConfig();
+    return selectionConfig[key];
   }
 
   /**
@@ -1540,7 +1565,7 @@ class MuchSelect extends HTMLElement {
   }
 
   get eventsOnlyMode() {
-    return this._eventsOnlyMode;
+    return this.getConfigValuePromise("events-only-mode", false);
   }
 
   set eventsOnlyMode(value) {
@@ -1741,58 +1766,38 @@ class MuchSelect extends HTMLElement {
     );
   }
 
-  updateAllowCustomOptions(newValue) {
-    this.allowCustomOptions = newValue;
-    this.customOptionHint = newValue;
-
-    this.appPromise.then((app) => {
-      const customOptionHint =
-        this.customOptionHint === null ? "" : this.customOptionHint;
-
-      // noinspection JSUnresolvedVariable
-      app.ports.allowCustomOptionsReceiver.send([
-        this.allowCustomOptions,
-        customOptionHint,
-      ]);
-
-      this._updateTransformationValidationFromTheDom();
-    });
-  }
-
   /**
    * A promise that will resolve to a boolean that will be true if much-select
    * is allowing custom options and false if otherwise. It needs to be a promise
    * because it needs to get the answer from the Elm state.
    *
-   * @returns {Promise<*|boolean|undefined>}
+   * @returns Promise<boolean>
    */
   get allowCustomOptions() {
-    return async () => {
-      try {
-        const selectionConfig = await this.getSelectionConfig();
-        return selectionConfig["allows-custom-options"];
-      } catch (e) {
-        return false;
-      }
-    };
+    // TODO ensure this is a boolean value
+    return (async () => this.getConfigValuePromise("allows-custom-options"))();
   }
 
   set allowCustomOptions(value) {
-    if (value === "false") {
-      this._allowCustomOptions = false;
-    } else if (value === "") {
-      this._allowCustomOptions = true;
-    } else {
-      this._allowCustomOptions = !!value;
-    }
-    // TODO - This is wrong, we need to preserver the custom hit message if it's there.
-    if (!this.eventsOnlyMode) {
-      if (this._allowCustomOptions) {
-        this.setAttribute("allow-custom-options", "true");
-      } else {
-        this.removeAttribute("allow-custom-options");
-      }
-    }
+    this.appPromise
+      .then((app) => {
+        app.ports.attributeChanged.send(["allow-custom-options", value]);
+
+        return Promise.all(this.eventsOnlyMode, this.allowCustomOptions);
+      })
+      .then(([eventsOnlyMode, allowCustomOptions]) => {
+        console.log("eventsOnlyMode", eventsOnlyMode);
+        console.log("allowCustomOptions", allowCustomOptions);
+
+        if (!eventsOnlyMode) {
+          // TODO - This is wrong, we need to preserver the custom hit message if it's there.
+          if (allowCustomOptions) {
+            this.setAttribute("allow-custom-options", "true");
+          } else {
+            this.removeAttribute("allow-custom-options");
+          }
+        }
+      });
   }
 
   get customOptionHint() {
@@ -2181,7 +2186,10 @@ class MuchSelect extends HTMLElement {
       const callback = (selectionConfig) => {
         this.appPromise.then((app) => {
           // noinspection JSUnresolvedVariable
-          app.ports.requestSelectionConfig.unsubscribe(callback);
+          if (app.ports.requestSelectionConfig.unsubscribe) {
+            // noinspection JSUnresolvedVariable
+            app.ports.requestSelectionConfig.unsubscribe(callback);
+          }
         });
         resolve(selectionConfig);
       };

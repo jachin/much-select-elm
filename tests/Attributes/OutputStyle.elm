@@ -39,7 +39,8 @@ simulateSub _ =
 
 flagsDatalistSingle : Flags
 flagsDatalistSingle =
-    { value = Json.Encode.object []
+    { isEventsOnly = False
+    , value = Json.Encode.object []
     , placeholder = ( True, "" )
     , customOptionHint = Nothing
     , allowMultiSelect = False
@@ -60,7 +61,8 @@ flagsDatalistSingle =
 
 flagsCustomHtmlSingle : Flags
 flagsCustomHtmlSingle =
-    { value = Json.Encode.object []
+    { isEventsOnly = False
+    , value = Json.Encode.object []
     , placeholder = ( True, "" )
     , customOptionHint = Nothing
     , allowMultiSelect = False

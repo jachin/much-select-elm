@@ -105,6 +105,7 @@ import Ports
         , allOptions
         , allowCustomOptionsReceiver
         , attributeChanged
+        , attributeRemoved
         , blurInput
         , customOptionHintReceiver
         , customOptionSelected
@@ -276,6 +277,7 @@ type Msg
     | CustomValidationResponse Json.Encode.Value
     | UpdateTransformationAndValidation Json.Encode.Value
     | AttributeChanged ( String, String )
+    | AttributeRemoved String
     | CustomOptionHintChanged String
     | SelectionConfigRequested
 
@@ -1222,6 +1224,64 @@ update msg model =
                               }
                             , NoEffect
                             )
+
+                "disabled" ->
+                    ( model, NoEffect )
+
+                "events-only" ->
+                    ( model, NoEffect )
+
+                "loading" ->
+                    ( model, NoEffect )
+
+                "max-dropdown-items" ->
+                    ( model, NoEffect )
+
+                "multi-select" ->
+                    ( model, NoEffect )
+
+                "multi-select-single-item-removal" ->
+                    ( model, NoEffect )
+
+                "option-sorting" ->
+                    ( model, NoEffect )
+
+                "output-style" ->
+                    ( model, NoEffect )
+
+                "placeholder" ->
+                    ( model, NoEffect )
+
+                "search-string-minimum-length" ->
+                    ( model, NoEffect )
+
+                "selected-option-goes-to-top" ->
+                    ( model, NoEffect )
+
+                "selected-value" ->
+                    ( model, NoEffect )
+
+                "selected-value-encoding" ->
+                    ( model, NoEffect )
+
+                "show-dropdown-footer" ->
+                    ( model, NoEffect )
+
+                unknownAttribute ->
+                    ( model, ReportErrorMessage ("Unknown attribute: " ++ unknownAttribute) )
+
+        AttributeRemoved attributeName ->
+            case attributeName of
+                "allow-custom-options" ->
+                    ( { model
+                        | selectionConfig =
+                            SelectionMode.setAllowCustomOptionsWithBool
+                                False
+                                Nothing
+                                model.selectionConfig
+                      }
+                    , NoEffect
+                    )
 
                 "disabled" ->
                     ( model, NoEffect )
@@ -2925,6 +2985,7 @@ makeCommandMessageForInitialValue selectedOptions =
 
 type alias Flags =
     { value : Json.Decode.Value
+    , isEventsOnly : Bool
     , placeholder : ( Bool, String )
     , customOptionHint : Maybe String
     , allowMultiSelect : Bool
@@ -2955,7 +3016,9 @@ init flags =
                     ( TransformAndValidate.empty, ReportErrorMessage (Json.Decode.errorToString error) )
 
         selectionConfig =
-            makeSelectionConfig flags.disabled
+            makeSelectionConfig
+                flags.isEventsOnly
+                flags.disabled
                 flags.allowMultiSelect
                 flags.allowCustomOptions
                 flags.outputStyle
@@ -3132,6 +3195,7 @@ subscriptions _ =
         , customValidationReceiver CustomValidationResponse
         , transformationAndValidationReceiver UpdateTransformationAndValidation
         , attributeChanged AttributeChanged
+        , attributeRemoved AttributeRemoved
         , customOptionHintReceiver CustomOptionHintChanged
         , requestSelectionConfig (\() -> SelectionConfigRequested)
         ]

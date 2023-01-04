@@ -45,7 +45,7 @@ module SelectionMode exposing
     )
 
 import Json.Encode
-import OutputStyle exposing (CustomOptionHint, CustomOptions(..), DropdownState(..), DropdownStyle(..), MaxDropdownItems(..), MultiSelectOutputStyle(..), SearchStringMinimumLength(..), SelectedItemPlacementMode(..), SingleItemRemoval(..), SingleSelectOutputStyle(..), defaultMultiSelectCustomHtmlFields, defaultSingleSelectCustomHtmlFields, getTransformAndValidateFromCustomOptions, setTransformAndValidateFromCustomOptions)
+import OutputStyle exposing (CustomOptionHint, CustomOptions(..), DropdownState(..), DropdownStyle(..), EventsMode(..), MaxDropdownItems(..), MultiSelectOutputStyle(..), SearchStringMinimumLength(..), SelectedItemPlacementMode(..), SingleItemRemoval(..), SingleSelectOutputStyle(..), defaultMultiSelectCustomHtmlFields, defaultSingleSelectCustomHtmlFields, getTransformAndValidateFromCustomOptions, setTransformAndValidateFromCustomOptions)
 import PositiveInt
 import TransformAndValidate exposing (ValueTransformAndValidate)
 
@@ -85,6 +85,7 @@ defaultSelectionConfig =
             , searchStringMinimumLength = NoMinimumToSearchStringLength
             , dropdownState = Collapsed
             , dropdownStyle = NoFooter
+            , eventsMode = AllowLightDomChanges
             }
         )
         ( False, "" )
@@ -93,6 +94,7 @@ defaultSelectionConfig =
 
 makeSelectionConfig :
     Bool
+    -> Bool
     -> Bool
     -> Bool
     -> String
@@ -105,7 +107,7 @@ makeSelectionConfig :
     -> Bool
     -> ValueTransformAndValidate
     -> Result String SelectionConfig
-makeSelectionConfig disabled allowMultiSelect allowCustomOptions outputStyle placeholder customOptionHint enableMultiSelectSingleItemRemoval maxDropdownItems selectedItemStaysInPlace searchStringMinimumLength shouldShowDropdownFooter transformAndValidate =
+makeSelectionConfig isEventsOnly_ disabled allowMultiSelect allowCustomOptions outputStyle placeholder customOptionHint enableMultiSelectSingleItemRemoval maxDropdownItems selectedItemStaysInPlace searchStringMinimumLength shouldShowDropdownFooter transformAndValidate =
     let
         outputStyleResult =
             outputStyle
@@ -124,6 +126,7 @@ makeSelectionConfig disabled allowMultiSelect allowCustomOptions outputStyle pla
                 let
                     styleResult =
                         makeMultiSelectOutputStyle s
+                            isEventsOnly_
                             allowCustomOptions
                             enableMultiSelectSingleItemRemoval
                             maxDropdownItems
@@ -137,7 +140,15 @@ makeSelectionConfig disabled allowMultiSelect allowCustomOptions outputStyle pla
             else
                 let
                     styleResult =
-                        makeSingleSelectOutputStyle s allowCustomOptions selectedItemStaysInPlace maxDropdownItems searchStringMinimumLength shouldShowDropdownFooter customOptionHint transformAndValidate
+                        makeSingleSelectOutputStyle s
+                            isEventsOnly_
+                            allowCustomOptions
+                            selectedItemStaysInPlace
+                            maxDropdownItems
+                            searchStringMinimumLength
+                            shouldShowDropdownFooter
+                            customOptionHint
+                            transformAndValidate
                 in
                 Result.map
                     (\style_ -> SingleSelectConfig style_ placeholder interactionState)
@@ -146,8 +157,8 @@ makeSelectionConfig disabled allowMultiSelect allowCustomOptions outputStyle pla
         outputStyleResult
 
 
-makeSingleSelectOutputStyle : OutputStyle -> Bool -> Bool -> Int -> Int -> Bool -> Maybe String -> ValueTransformAndValidate -> Result String SingleSelectOutputStyle
-makeSingleSelectOutputStyle outputStyle allowCustomOptions selectedItemStaysInPlace maxDropdownItems searchStringMinimumLength shouldShowDropdownFooter customOptionHint transformAndValidate =
+makeSingleSelectOutputStyle : OutputStyle -> Bool -> Bool -> Bool -> Int -> Int -> Bool -> Maybe String -> ValueTransformAndValidate -> Result String SingleSelectOutputStyle
+makeSingleSelectOutputStyle outputStyle isEventsOnly_ allowCustomOptions selectedItemStaysInPlace maxDropdownItems searchStringMinimumLength shouldShowDropdownFooter customOptionHint transformAndValidate =
     case outputStyle of
         CustomHtml ->
             let
@@ -171,6 +182,13 @@ makeSingleSelectOutputStyle outputStyle allowCustomOptions selectedItemStaysInPl
 
                     else
                         NoFooter
+
+                eventsMode =
+                    if isEventsOnly_ then
+                        EventsOnly
+
+                    else
+                        AllowLightDomChanges
             in
             Ok
                 (SingleSelectCustomHtml
@@ -180,15 +198,24 @@ makeSingleSelectOutputStyle outputStyle allowCustomOptions selectedItemStaysInPl
                     , searchStringMinimumLength = FixedSearchStringMinimumLength (PositiveInt.new searchStringMinimumLength)
                     , dropdownState = Collapsed
                     , dropdownStyle = dropdownStyle
+                    , eventsMode = eventsMode
                     }
                 )
 
         Datalist ->
-            Ok (SingleSelectDatalist transformAndValidate)
+            let
+                eventsMode =
+                    if isEventsOnly_ then
+                        EventsOnly
+
+                    else
+                        AllowLightDomChanges
+            in
+            Ok (SingleSelectDatalist eventsMode transformAndValidate)
 
 
-makeMultiSelectOutputStyle : OutputStyle -> Bool -> Bool -> Int -> Int -> Bool -> Maybe String -> ValueTransformAndValidate -> Result String MultiSelectOutputStyle
-makeMultiSelectOutputStyle outputStyle allowCustomOptions enableMultiSelectSingleItemRemoval maxDropdownItems searchStringMinimumLength shouldShowDropdownFooter customOptionHint transformAndValidate =
+makeMultiSelectOutputStyle : OutputStyle -> Bool -> Bool -> Bool -> Int -> Int -> Bool -> Maybe String -> ValueTransformAndValidate -> Result String MultiSelectOutputStyle
+makeMultiSelectOutputStyle outputStyle isEventsOnly_ allowCustomOptions enableMultiSelectSingleItemRemoval maxDropdownItems searchStringMinimumLength shouldShowDropdownFooter customOptionHint transformAndValidate =
     case outputStyle of
         CustomHtml ->
             let
@@ -212,6 +239,13 @@ makeMultiSelectOutputStyle outputStyle allowCustomOptions enableMultiSelectSingl
 
                     else
                         NoFooter
+
+                eventsMode =
+                    if isEventsOnly_ then
+                        EventsOnly
+
+                    else
+                        AllowLightDomChanges
             in
             Ok
                 (MultiSelectCustomHtml
@@ -221,11 +255,20 @@ makeMultiSelectOutputStyle outputStyle allowCustomOptions enableMultiSelectSingl
                     , searchStringMinimumLength = FixedSearchStringMinimumLength (PositiveInt.new searchStringMinimumLength)
                     , dropdownState = Collapsed
                     , dropdownStyle = dropdownStyle
+                    , eventsMode = eventsMode
                     }
                 )
 
         Datalist ->
-            Ok (MultiSelectDataList transformAndValidate)
+            let
+                eventsMode =
+                    if isEventsOnly_ then
+                        EventsOnly
+
+                    else
+                        AllowLightDomChanges
+            in
+            Ok (MultiSelectDataList eventsMode transformAndValidate)
 
 
 isSingleSelect : SelectionConfig -> Bool
@@ -246,7 +289,7 @@ getOutputStyle selectionConfig =
                 SingleSelectCustomHtml _ ->
                     CustomHtml
 
-                SingleSelectDatalist _ ->
+                SingleSelectDatalist _ _ ->
                     Datalist
 
         MultiSelectConfig multiSelectOutputStyle _ _ ->
@@ -254,7 +297,7 @@ getOutputStyle selectionConfig =
                 MultiSelectCustomHtml _ ->
                     CustomHtml
 
-                MultiSelectDataList _ ->
+                MultiSelectDataList _ _ ->
                     Datalist
 
 
@@ -271,7 +314,7 @@ setOutputStyle outputStyle selectionConfig =
                         SingleSelectCustomHtml _ ->
                             selectionConfig
 
-                        SingleSelectDatalist _ ->
+                        SingleSelectDatalist _ _ ->
                             SingleSelectConfig (SingleSelectCustomHtml defaultSingleSelectCustomHtmlFields) placeholder interactionState
 
                 MultiSelectConfig multiSelectOutputStyle placeholder interactionState ->
@@ -279,7 +322,7 @@ setOutputStyle outputStyle selectionConfig =
                         MultiSelectCustomHtml _ ->
                             selectionConfig
 
-                        MultiSelectDataList _ ->
+                        MultiSelectDataList _ _ ->
                             MultiSelectConfig (MultiSelectCustomHtml defaultMultiSelectCustomHtmlFields) placeholder interactionState
 
         Datalist ->
@@ -289,20 +332,26 @@ setOutputStyle outputStyle selectionConfig =
                         SingleSelectCustomHtml fields ->
                             SingleSelectConfig
                                 (SingleSelectDatalist
+                                    fields.eventsMode
                                     (getTransformAndValidateFromCustomOptions fields.customOptions)
                                 )
                                 placeholder
                                 interactionState
 
-                        SingleSelectDatalist _ ->
+                        SingleSelectDatalist _ _ ->
                             selectionConfig
 
                 MultiSelectConfig multiSelectOutputStyle placeholder interactionState ->
                     case multiSelectOutputStyle of
                         MultiSelectCustomHtml fields ->
-                            MultiSelectConfig (MultiSelectDataList (getTransformAndValidateFromCustomOptions fields.customOptions)) placeholder interactionState
+                            MultiSelectConfig
+                                (MultiSelectDataList fields.eventsMode
+                                    (getTransformAndValidateFromCustomOptions fields.customOptions)
+                                )
+                                placeholder
+                                interactionState
 
-                        MultiSelectDataList _ ->
+                        MultiSelectDataList _ _ ->
                             selectionConfig
 
 
@@ -314,7 +363,7 @@ getCustomOptions selectionConfig =
                 SingleSelectCustomHtml singleSelectCustomHtmlFields ->
                     singleSelectCustomHtmlFields.customOptions
 
-                SingleSelectDatalist transformAndValidate ->
+                SingleSelectDatalist _ transformAndValidate ->
                     AllowCustomOptions Nothing transformAndValidate
 
         MultiSelectConfig multiSelectOutputStyle _ _ ->
@@ -322,7 +371,7 @@ getCustomOptions selectionConfig =
                 MultiSelectCustomHtml multiSelectCustomHtmlFields ->
                     multiSelectCustomHtmlFields.customOptions
 
-                MultiSelectDataList transformAndValidate ->
+                MultiSelectDataList _ transformAndValidate ->
                     AllowCustomOptions Nothing transformAndValidate
 
 
@@ -339,7 +388,7 @@ setCustomOptions customOptions selectionConfig =
                         placeholder
                         interactionState
 
-                SingleSelectDatalist _ ->
+                SingleSelectDatalist _ _ ->
                     selectionConfig
 
         MultiSelectConfig multiSelectOutputStyle placeholder interactionState ->
@@ -347,7 +396,7 @@ setCustomOptions customOptions selectionConfig =
                 MultiSelectCustomHtml multiSelectCustomHtmlFields ->
                     MultiSelectConfig (MultiSelectCustomHtml { multiSelectCustomHtmlFields | customOptions = customOptions }) placeholder interactionState
 
-                MultiSelectDataList _ ->
+                MultiSelectDataList _ _ ->
                     selectionConfig
 
 
@@ -364,7 +413,7 @@ getCustomOptionHint selectionConfig =
                         NoCustomOptions ->
                             Nothing
 
-                SingleSelectDatalist _ ->
+                SingleSelectDatalist _ _ ->
                     Nothing
 
         MultiSelectConfig multiSelectOutputStyle _ _ ->
@@ -377,7 +426,7 @@ getCustomOptionHint selectionConfig =
                         NoCustomOptions ->
                             Nothing
 
-                MultiSelectDataList _ ->
+                MultiSelectDataList _ _ ->
                     Nothing
 
 
@@ -425,7 +474,7 @@ getSelectedItemPlacementMode selectionConfig =
                 SingleSelectCustomHtml singleSelectCustomHtmlFields ->
                     singleSelectCustomHtmlFields.selectedItemPlacementMode
 
-                SingleSelectDatalist _ ->
+                SingleSelectDatalist _ _ ->
                     SelectedItemIsHidden
 
         MultiSelectConfig _ _ _ ->
@@ -454,7 +503,7 @@ setSelectedItemPlacementMode selectedItemPlacementMode selectionConfig =
                         placeholder
                         interactionState
 
-                SingleSelectDatalist _ ->
+                SingleSelectDatalist _ _ ->
                     selectionConfig
 
         MultiSelectConfig _ _ _ ->
@@ -590,6 +639,46 @@ isDisabled selectionConfig =
                     True
 
 
+isEventsOnly : SelectionConfig -> Bool
+isEventsOnly selectionConfig =
+    case selectionConfig of
+        SingleSelectConfig singleSelectOutputStyle _ _ ->
+            case singleSelectOutputStyle of
+                SingleSelectCustomHtml singleSelectCustomHtmlFields ->
+                    case singleSelectCustomHtmlFields.eventsMode of
+                        EventsOnly ->
+                            True
+
+                        AllowLightDomChanges ->
+                            False
+
+                SingleSelectDatalist eventsMode _ ->
+                    case eventsMode of
+                        EventsOnly ->
+                            True
+
+                        AllowLightDomChanges ->
+                            False
+
+        MultiSelectConfig multiSelectOutputStyle _ _ ->
+            case multiSelectOutputStyle of
+                MultiSelectCustomHtml multiSelectCustomHtmlFields ->
+                    case multiSelectCustomHtmlFields.eventsMode of
+                        EventsOnly ->
+                            True
+
+                        AllowLightDomChanges ->
+                            False
+
+                MultiSelectDataList eventsMode _ ->
+                    case eventsMode of
+                        EventsOnly ->
+                            True
+
+                        AllowLightDomChanges ->
+                            False
+
+
 setIsDisabled : Bool -> SelectionConfig -> SelectionConfig
 setIsDisabled isDisabled_ selectionConfig =
     if isDisabled_ then
@@ -640,7 +729,7 @@ setShowDropdown showDropdown_ selectionConfig =
                         placeholder
                         interactionState
 
-                SingleSelectDatalist _ ->
+                SingleSelectDatalist _ _ ->
                     selectionConfig
 
         MultiSelectConfig multiSelectOutputStyle placeholder interactionState ->
@@ -651,7 +740,7 @@ setShowDropdown showDropdown_ selectionConfig =
                         placeholder
                         interactionState
 
-                MultiSelectDataList _ ->
+                MultiSelectDataList _ _ ->
                     selectionConfig
 
 
@@ -668,7 +757,7 @@ setDropdownStyle dropdownStyle selectionConfig =
                         placeholder
                         interactionState
 
-                SingleSelectDatalist _ ->
+                SingleSelectDatalist _ _ ->
                     selectionConfig
 
         MultiSelectConfig multiSelectOutputStyle placeholder interactionState ->
@@ -679,7 +768,7 @@ setDropdownStyle dropdownStyle selectionConfig =
                         placeholder
                         interactionState
 
-                MultiSelectDataList _ ->
+                MultiSelectDataList _ _ ->
                     selectionConfig
 
 
@@ -696,7 +785,7 @@ setMaxDropdownItems maxDropdownItems selectionConfig =
                         placeholder
                         interactionState
 
-                SingleSelectDatalist _ ->
+                SingleSelectDatalist _ _ ->
                     selectionConfig
 
         MultiSelectConfig multiSelectOutputStyle placeholder interactionState ->
@@ -707,7 +796,7 @@ setMaxDropdownItems maxDropdownItems selectionConfig =
                         placeholder
                         interactionState
 
-                MultiSelectDataList _ ->
+                MultiSelectDataList _ _ ->
                     selectionConfig
 
 
@@ -719,7 +808,7 @@ getMaxDropdownItems selectionConfig =
                 SingleSelectCustomHtml singleSelectCustomHtmlFields ->
                     singleSelectCustomHtmlFields.maxDropdownItems
 
-                SingleSelectDatalist _ ->
+                SingleSelectDatalist _ _ ->
                     NoLimitToDropdownItems
 
         MultiSelectConfig multiSelectOutputStyle _ _ ->
@@ -727,7 +816,7 @@ getMaxDropdownItems selectionConfig =
                 MultiSelectCustomHtml multiSelectCustomHtmlFields ->
                     multiSelectCustomHtmlFields.maxDropdownItems
 
-                MultiSelectDataList _ ->
+                MultiSelectDataList _ _ ->
                     NoLimitToDropdownItems
 
 
@@ -745,7 +834,7 @@ setSingleItemRemoval newSingleItemRemoval selectionConfig =
                         placeholder
                         interactionState
 
-                MultiSelectDataList _ ->
+                MultiSelectDataList _ _ ->
                     selectionConfig
 
 
@@ -762,7 +851,7 @@ setSearchStringMinimumLength newSearchStringMinimumLength selectionConfig =
                         placeholder
                         interactionState
 
-                SingleSelectDatalist _ ->
+                SingleSelectDatalist _ _ ->
                     selectionConfig
 
         MultiSelectConfig multiSelectOutputStyle placeholder interactionState ->
@@ -773,7 +862,7 @@ setSearchStringMinimumLength newSearchStringMinimumLength selectionConfig =
                         placeholder
                         interactionState
 
-                MultiSelectDataList _ ->
+                MultiSelectDataList _ _ ->
                     selectionConfig
 
 
@@ -785,7 +874,7 @@ getSearchStringMinimumLength selectionConfig =
                 SingleSelectCustomHtml singleSelectCustomHtmlFields ->
                     singleSelectCustomHtmlFields.searchStringMinimumLength
 
-                SingleSelectDatalist _ ->
+                SingleSelectDatalist _ _ ->
                     NoMinimumToSearchStringLength
 
         MultiSelectConfig multiSelectOutputStyle _ _ ->
@@ -793,7 +882,7 @@ getSearchStringMinimumLength selectionConfig =
                 MultiSelectCustomHtml multiSelectCustomHtmlFields ->
                     multiSelectCustomHtmlFields.searchStringMinimumLength
 
-                MultiSelectDataList _ ->
+                MultiSelectDataList _ _ ->
                     NoMinimumToSearchStringLength
 
 
@@ -838,7 +927,7 @@ getSingleItemRemoval selectionConfig =
                 MultiSelectCustomHtml multiSelectCustomHtmlFields ->
                     multiSelectCustomHtmlFields.singleItemRemoval
 
-                MultiSelectDataList _ ->
+                MultiSelectDataList _ _ ->
                     EnableSingleItemRemoval
 
 
@@ -850,7 +939,7 @@ getDropdownStyle selectionConfig =
                 SingleSelectCustomHtml singleSelectCustomHtmlFields ->
                     singleSelectCustomHtmlFields.dropdownStyle
 
-                SingleSelectDatalist _ ->
+                SingleSelectDatalist _ _ ->
                     NoFooter
 
         MultiSelectConfig multiSelectOutputStyle _ _ ->
@@ -858,7 +947,7 @@ getDropdownStyle selectionConfig =
                 MultiSelectCustomHtml multiSelectCustomHtmlFields ->
                     multiSelectCustomHtmlFields.dropdownStyle
 
-                MultiSelectDataList _ ->
+                MultiSelectDataList _ _ ->
                     NoFooter
 
 
@@ -880,7 +969,7 @@ getDropdownState selectionConfig =
                 SingleSelectCustomHtml singleSelectCustomHtmlFields ->
                     singleSelectCustomHtmlFields.dropdownState
 
-                SingleSelectDatalist _ ->
+                SingleSelectDatalist _ _ ->
                     NotManagedByMe
 
         MultiSelectConfig multiSelectOutputStyle _ _ ->
@@ -888,7 +977,7 @@ getDropdownState selectionConfig =
                 MultiSelectCustomHtml multiSelectCustomHtmlFields ->
                     multiSelectCustomHtmlFields.dropdownState
 
-                MultiSelectDataList _ ->
+                MultiSelectDataList _ _ ->
                     NotManagedByMe
 
 
@@ -913,7 +1002,7 @@ getTransformAndValidate selectionConfig =
                 SingleSelectCustomHtml singleSelectCustomHtmlFields ->
                     getTransformAndValidateFromCustomOptions singleSelectCustomHtmlFields.customOptions
 
-                SingleSelectDatalist valueTransformAndValidate ->
+                SingleSelectDatalist _ valueTransformAndValidate ->
                     valueTransformAndValidate
 
         MultiSelectConfig multiSelectOutputStyle _ _ ->
@@ -921,7 +1010,7 @@ getTransformAndValidate selectionConfig =
                 MultiSelectCustomHtml multiSelectCustomHtmlFields ->
                     getTransformAndValidateFromCustomOptions multiSelectCustomHtmlFields.customOptions
 
-                MultiSelectDataList valueTransformAndValidate ->
+                MultiSelectDataList _ valueTransformAndValidate ->
                     valueTransformAndValidate
 
 
@@ -942,8 +1031,8 @@ setTransformAndValidate newTransformAndValidate selectionConfig =
                     in
                     SingleSelectConfig (SingleSelectCustomHtml newSingleSelectCustomFields) placeholder interactionState
 
-                SingleSelectDatalist _ ->
-                    SingleSelectConfig (SingleSelectDatalist newTransformAndValidate) placeholder interactionState
+                SingleSelectDatalist eventsMode _ ->
+                    SingleSelectConfig (SingleSelectDatalist eventsMode newTransformAndValidate) placeholder interactionState
 
         MultiSelectConfig multiSelectOutputStyle placeholder interactionState ->
             case multiSelectOutputStyle of
@@ -959,14 +1048,15 @@ setTransformAndValidate newTransformAndValidate selectionConfig =
                     in
                     MultiSelectConfig (MultiSelectCustomHtml newMultiSelectCustomHtmlFields) placeholder interactionState
 
-                MultiSelectDataList _ ->
-                    MultiSelectConfig (MultiSelectDataList newTransformAndValidate) placeholder interactionState
+                MultiSelectDataList eventsMode _ ->
+                    MultiSelectConfig (MultiSelectDataList eventsMode newTransformAndValidate) placeholder interactionState
 
 
 encodeSelectionConfig : SelectionConfig -> Json.Encode.Value
 encodeSelectionConfig selectionConfig =
     Json.Encode.object
         [ ( "disabled", Json.Encode.bool (isDisabled selectionConfig) )
+        , ( "events-only", Json.Encode.bool (isEventsOnly selectionConfig) )
         , ( "allows-custom-options"
           , Json.Encode.bool
                 (case getCustomOptions selectionConfig of

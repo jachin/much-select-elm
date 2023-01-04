@@ -43,6 +43,11 @@ type alias CustomOptionHint =
     Maybe String
 
 
+type EventsMode
+    = EventsOnly
+    | AllowLightDomChanges
+
+
 type DropdownState
     = Expanded
     | Collapsed
@@ -77,6 +82,7 @@ type alias SingleSelectCustomHtmlFields =
     , searchStringMinimumLength : SearchStringMinimumLength
     , dropdownState : DropdownState
     , dropdownStyle : DropdownStyle
+    , eventsMode : EventsMode
     }
 
 
@@ -88,6 +94,7 @@ defaultSingleSelectCustomHtmlFields =
     , searchStringMinimumLength = FixedSearchStringMinimumLength (PositiveInt.new 2)
     , dropdownState = Collapsed
     , dropdownStyle = NoFooter
+    , eventsMode = AllowLightDomChanges
     }
 
 
@@ -98,6 +105,7 @@ type alias MultiSelectCustomHtmlFields =
     , searchStringMinimumLength : SearchStringMinimumLength
     , dropdownState : DropdownState
     , dropdownStyle : DropdownStyle
+    , eventsMode : EventsMode
     }
 
 
@@ -109,17 +117,18 @@ defaultMultiSelectCustomHtmlFields =
     , searchStringMinimumLength = FixedSearchStringMinimumLength (PositiveInt.new 2)
     , dropdownState = Collapsed
     , dropdownStyle = NoFooter
+    , eventsMode = AllowLightDomChanges
     }
 
 
 type SingleSelectOutputStyle
     = SingleSelectCustomHtml SingleSelectCustomHtmlFields
-    | SingleSelectDatalist ValueTransformAndValidate
+    | SingleSelectDatalist EventsMode ValueTransformAndValidate
 
 
 type MultiSelectOutputStyle
     = MultiSelectCustomHtml MultiSelectCustomHtmlFields
-    | MultiSelectDataList ValueTransformAndValidate
+    | MultiSelectDataList EventsMode ValueTransformAndValidate
 
 
 singleToMulti : SingleSelectOutputStyle -> MultiSelectOutputStyle
@@ -133,10 +142,11 @@ singleToMulti singleSelectOutputStyle =
                 , searchStringMinimumLength = singleSelectCustomHtmlFields.searchStringMinimumLength
                 , dropdownState = singleSelectCustomHtmlFields.dropdownState
                 , dropdownStyle = singleSelectCustomHtmlFields.dropdownStyle
+                , eventsMode = singleSelectCustomHtmlFields.eventsMode
                 }
 
-        SingleSelectDatalist transformAndValidate ->
-            MultiSelectDataList transformAndValidate
+        SingleSelectDatalist eventsMode transformAndValidate ->
+            MultiSelectDataList eventsMode transformAndValidate
 
 
 multiToSingle : MultiSelectOutputStyle -> SingleSelectOutputStyle
@@ -150,10 +160,11 @@ multiToSingle multiSelectOutputStyle =
                 , searchStringMinimumLength = multiSelectCustomHtmlFields.searchStringMinimumLength
                 , dropdownState = multiSelectCustomHtmlFields.dropdownState
                 , dropdownStyle = multiSelectCustomHtmlFields.dropdownStyle
+                , eventsMode = multiSelectCustomHtmlFields.eventsMode
                 }
 
-        MultiSelectDataList transformAndValidate ->
-            SingleSelectDatalist transformAndValidate
+        MultiSelectDataList eventsMode transformAndValidate ->
+            SingleSelectDatalist eventsMode transformAndValidate
 
 
 getTransformAndValidateFromCustomOptions : CustomOptions -> ValueTransformAndValidate

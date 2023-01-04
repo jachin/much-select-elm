@@ -40,7 +40,8 @@ booksJsonWithIndexesAndWithSelected =
 
 flagsBookOptionsWithSelected : Flags
 flagsBookOptionsWithSelected =
-    { value = Json.Encode.object []
+    { isEventsOnly = False
+    , value = Json.Encode.object []
     , placeholder = ( True, "A book" )
     , customOptionHint = Nothing
     , allowMultiSelect = False
@@ -138,6 +139,9 @@ simulatedEffects effect =
 
         MuchSelect.ReportAllOptions value ->
             SimulatedEffect.Ports.send "allOptions" value
+
+        MuchSelect.DumpSelectionConfig value ->
+            SimulatedEffect.Ports.send "dumpSelectionConfig" value
 
 
 simulateSubscriptions : MuchSelect.Model -> ProgramTest.SimulatedSub MuchSelect.Msg

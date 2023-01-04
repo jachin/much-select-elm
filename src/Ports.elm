@@ -3,6 +3,7 @@ port module Ports exposing
     , allOptions
     , allowCustomOptionsReceiver
     , attributeChanged
+    , attributeRemoved
     , blurInput
     , customOptionHintReceiver
     , customOptionSelected
@@ -164,6 +165,9 @@ port scrollDropdownToElement : String -> Cmd msg
 
 
 port attributeChanged : (( String, String ) -> msg) -> Sub msg
+
+
+port attributeRemoved : (String -> msg) -> Sub msg
 
 
 valuesDecoder : Json.Decode.Decoder (List String)
