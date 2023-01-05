@@ -14344,6 +14344,10 @@ var $author$project$SelectionMode$encodeSelectionConfig = function (selectionCon
 				$elm$json$Json$Encode$bool(
 					$author$project$SelectionMode$isDisabled(selectionConfig))),
 				_Utils_Tuple2(
+				'events-only',
+				$elm$json$Json$Encode$bool(
+					$author$project$SelectionMode$isEventsOnly(selectionConfig))),
+				_Utils_Tuple2(
 				'multi-select',
 				$elm$json$Json$Encode$bool(
 					function () {
@@ -14353,11 +14357,7 @@ var $author$project$SelectionMode$encodeSelectionConfig = function (selectionCon
 						} else {
 							return false;
 						}
-					}())),
-				_Utils_Tuple2(
-				'events-only',
-				$elm$json$Json$Encode$bool(
-					$author$project$SelectionMode$isEventsOnly(selectionConfig)))
+					}()))
 			]));
 };
 var $author$project$OptionsUtilities$filterOptionsToShowInDropdownByOptionDisplay = function (selectionConfig) {
@@ -17363,7 +17363,13 @@ var $author$project$MuchSelect$update = F2(
 									$author$project$MuchSelect$NoEffect);
 						}
 					case 'disabled':
-						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									selectionConfig: A2($author$project$SelectionMode$setIsDisabled, false, model.selectionConfig)
+								}),
+							$author$project$MuchSelect$NoEffect);
 					case 'events-only':
 						return _Utils_Tuple2(
 							_Utils_update(
@@ -17373,9 +17379,37 @@ var $author$project$MuchSelect$update = F2(
 								}),
 							$author$project$MuchSelect$NoEffect);
 					case 'loading':
-						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									rightSlot: A3(
+										$author$project$RightSlot$updateRightSlotLoading,
+										true,
+										model.selectionConfig,
+										$author$project$OptionsUtilities$hasSelectedOption(model.options))
+								}),
+							$author$project$MuchSelect$NoEffect);
 					case 'max-dropdown-items':
-						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
+						var _v30 = $author$project$PositiveInt$fromString(newAttributeValue);
+						if (_v30.$ === 'Just') {
+							var maxDropdownItems = _v30.a;
+							return _Utils_Tuple2(
+								$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
+									_Utils_update(
+										model,
+										{
+											selectionConfig: A2(
+												$author$project$SelectionMode$setMaxDropdownItems,
+												$author$project$OutputStyle$FixedMaxDropdownItems(maxDropdownItems),
+												model.selectionConfig)
+										})),
+								$author$project$MuchSelect$NoEffect);
+						} else {
+							return _Utils_Tuple2(
+								model,
+								$author$project$MuchSelect$ReportErrorMessage('Invalid value for the max-dropdown-items attribute, it should be a positive integer.'));
+						}
 					case 'multi-select':
 						return _Utils_Tuple2(
 							$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
@@ -17388,21 +17422,64 @@ var $author$project$MuchSelect$update = F2(
 								_List_fromArray(
 									[
 										$author$project$MuchSelect$ReportReady,
-										A2($author$project$MuchSelect$makeCommandMessagesForUpdatingOptionsInTheWebWorker, model.searchStringDebounceLength, model.searchString),
-										$author$project$MuchSelect$NoEffect
+										A2($author$project$MuchSelect$makeCommandMessagesForUpdatingOptionsInTheWebWorker, model.searchStringDebounceLength, model.searchString)
 									])));
 					case 'multi-select-single-item-removal':
-						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									selectionConfig: A2($author$project$SelectionMode$setSingleItemRemoval, $author$project$OutputStyle$EnableSingleItemRemoval, model.selectionConfig)
+								}),
+							$author$project$MuchSelect$ReportReady);
 					case 'option-sorting':
-						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
+						var _v31 = $author$project$OptionSorting$stringToOptionSort(newAttributeValue);
+						if (_v31.$ === 'Ok') {
+							var optionSorting = _v31.a;
+							return _Utils_Tuple2(
+								_Utils_update(
+									model,
+									{optionSort: optionSorting}),
+								$author$project$MuchSelect$NoEffect);
+						} else {
+							var error = _v31.a;
+							return _Utils_Tuple2(
+								model,
+								$author$project$MuchSelect$ReportErrorMessage(error));
+						}
 					case 'output-style':
-						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
+						var _v32 = $author$project$SelectionMode$stringToOutputStyle(newAttributeValue);
+						if (_v32.$ === 'Ok') {
+							var outputStyle = _v32.a;
+							var newSelectionConfig = A2($author$project$SelectionMode$setOutputStyle, outputStyle, model.selectionConfig);
+							return _Utils_Tuple2(
+								_Utils_update(
+									model,
+									{
+										rightSlot: A4($author$project$RightSlot$updateRightSlot, model.rightSlot, newSelectionConfig, true, model.options),
+										selectionConfig: newSelectionConfig
+									}),
+								$author$project$MuchSelect$FetchOptionsFromDom);
+						} else {
+							return _Utils_Tuple2(
+								model,
+								$author$project$MuchSelect$ReportErrorMessage('Invalid output style: ' + newAttributeValue));
+						}
 					case 'placeholder':
-						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									selectionConfig: A2(
+										$author$project$SelectionMode$setPlaceholder,
+										_Utils_Tuple2(true, newAttributeValue),
+										model.selectionConfig)
+								}),
+							$author$project$MuchSelect$NoEffect);
 					case 'search-string-minimum-length':
-						var _v30 = $author$project$PositiveInt$fromString(newAttributeValue);
-						if (_v30.$ === 'Just') {
-							var minimumLength = _v30.a;
+						var _v33 = $author$project$PositiveInt$fromString(newAttributeValue);
+						if (_v33.$ === 'Just') {
+							var minimumLength = _v33.a;
 							return _Utils_Tuple2(
 								$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
 									_Utils_update(
@@ -17445,7 +17522,13 @@ var $author$project$MuchSelect$update = F2(
 								}),
 							$author$project$MuchSelect$NoEffect);
 					case 'disabled':
-						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									selectionConfig: A2($author$project$SelectionMode$setIsDisabled, false, model.selectionConfig)
+								}),
+							$author$project$MuchSelect$NoEffect);
 					case 'events-only':
 						return _Utils_Tuple2(
 							_Utils_update(
@@ -17455,9 +17538,26 @@ var $author$project$MuchSelect$update = F2(
 								}),
 							$author$project$MuchSelect$NoEffect);
 					case 'loading':
-						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									rightSlot: A3(
+										$author$project$RightSlot$updateRightSlotLoading,
+										false,
+										model.selectionConfig,
+										$author$project$OptionsUtilities$hasSelectedOption(model.options))
+								}),
+							$author$project$MuchSelect$NoEffect);
 					case 'max-dropdown-items':
-						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
+						return _Utils_Tuple2(
+							$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
+								_Utils_update(
+									model,
+									{
+										selectionConfig: A2($author$project$SelectionMode$setMaxDropdownItems, $author$project$OutputStyle$NoLimitToDropdownItems, model.selectionConfig)
+									})),
+							$author$project$MuchSelect$NoEffect);
 					case 'multi-select':
 						var updatedOptions = $author$project$OptionsUtilities$deselectAllButTheFirstSelectedOptionInList(model.options);
 						return _Utils_Tuple2(
@@ -17479,13 +17579,40 @@ var $author$project$MuchSelect$update = F2(
 										$elm$core$Maybe$Nothing)
 									])));
 					case 'multi-select-single-item-removal':
-						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									selectionConfig: A2($author$project$SelectionMode$setSingleItemRemoval, $author$project$OutputStyle$DisableSingleItemRemoval, model.selectionConfig)
+								}),
+							$author$project$MuchSelect$ReportReady);
 					case 'option-sorting':
-						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{optionSort: $author$project$OptionSorting$NoSorting}),
+							$author$project$MuchSelect$NoEffect);
 					case 'output-style':
-						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
+						var newSelectionConfig = A2($author$project$SelectionMode$setOutputStyle, $author$project$SelectionMode$CustomHtml, model.selectionConfig);
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									rightSlot: A4($author$project$RightSlot$updateRightSlot, model.rightSlot, newSelectionConfig, true, model.options),
+									selectionConfig: newSelectionConfig
+								}),
+							$author$project$MuchSelect$FetchOptionsFromDom);
 					case 'placeholder':
-						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									selectionConfig: A2(
+										$author$project$SelectionMode$setPlaceholder,
+										_Utils_Tuple2(false, ''),
+										model.selectionConfig)
+								}),
+							$author$project$MuchSelect$NoEffect);
 					case 'search-string-minimum-length':
 						return _Utils_Tuple2(
 							$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(

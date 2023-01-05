@@ -1226,7 +1226,9 @@ update msg model =
                             )
 
                 "disabled" ->
-                    ( model, NoEffect )
+                    ( { model | selectionConfig = setIsDisabled False model.selectionConfig }
+                    , NoEffect
+                    )
 
                 "events-only" ->
                     ( { model
@@ -1239,10 +1241,31 @@ update msg model =
                     )
 
                 "loading" ->
-                    ( model, NoEffect )
+                    ( { model
+                        | rightSlot =
+                            updateRightSlotLoading
+                                True
+                                model.selectionConfig
+                                (hasSelectedOption model.options)
+                      }
+                    , NoEffect
+                    )
 
                 "max-dropdown-items" ->
-                    ( model, NoEffect )
+                    case PositiveInt.fromString newAttributeValue of
+                        Just maxDropdownItems ->
+                            ( { model
+                                | selectionConfig = setMaxDropdownItems (FixedMaxDropdownItems maxDropdownItems) model.selectionConfig
+                              }
+                                |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
+                            , NoEffect
+                            )
+
+                        Nothing ->
+                            ( model
+                            , ReportErrorMessage
+                                "Invalid value for the max-dropdown-items attribute, it should be a positive integer."
+                            )
 
                 "multi-select" ->
                     ( { model
@@ -1252,21 +1275,47 @@ update msg model =
                     , batch
                         [ ReportReady
                         , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
-                        , NoEffect
                         ]
                     )
 
                 "multi-select-single-item-removal" ->
-                    ( model, NoEffect )
+                    ( { model
+                        | selectionConfig = setSingleItemRemoval EnableSingleItemRemoval model.selectionConfig
+                      }
+                    , ReportReady
+                    )
 
                 "option-sorting" ->
-                    ( model, NoEffect )
+                    case stringToOptionSort newAttributeValue of
+                        Ok optionSorting ->
+                            ( { model | optionSort = optionSorting }, NoEffect )
+
+                        Err error ->
+                            ( model, ReportErrorMessage error )
 
                 "output-style" ->
-                    ( model, NoEffect )
+                    case SelectionMode.stringToOutputStyle newAttributeValue of
+                        Ok outputStyle ->
+                            let
+                                newSelectionConfig =
+                                    SelectionMode.setOutputStyle
+                                        outputStyle
+                                        model.selectionConfig
+                            in
+                            ( { model
+                                | selectionConfig = newSelectionConfig
+                                , rightSlot = updateRightSlot model.rightSlot newSelectionConfig True model.options
+                              }
+                            , FetchOptionsFromDom
+                            )
+
+                        Err _ ->
+                            ( model, ReportErrorMessage ("Invalid output style: " ++ newAttributeValue) )
 
                 "placeholder" ->
-                    ( model, NoEffect )
+                    ( { model | selectionConfig = SelectionMode.setPlaceholder ( True, newAttributeValue ) model.selectionConfig }
+                    , NoEffect
+                    )
 
                 "search-string-minimum-length" ->
                     case PositiveInt.fromString newAttributeValue of
@@ -1315,7 +1364,9 @@ update msg model =
                     )
 
                 "disabled" ->
-                    ( model, NoEffect )
+                    ( { model | selectionConfig = setIsDisabled False model.selectionConfig }
+                    , NoEffect
+                    )
 
                 "events-only" ->
                     ( { model
@@ -1328,10 +1379,23 @@ update msg model =
                     )
 
                 "loading" ->
-                    ( model, NoEffect )
+                    ( { model
+                        | rightSlot =
+                            updateRightSlotLoading
+                                False
+                                model.selectionConfig
+                                (hasSelectedOption model.options)
+                      }
+                    , NoEffect
+                    )
 
                 "max-dropdown-items" ->
-                    ( model, NoEffect )
+                    ( { model
+                        | selectionConfig = setMaxDropdownItems NoLimitToDropdownItems model.selectionConfig
+                      }
+                        |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
+                    , NoEffect
+                    )
 
                 "multi-select" ->
                     let
@@ -1351,16 +1415,40 @@ update msg model =
                     )
 
                 "multi-select-single-item-removal" ->
-                    ( model, NoEffect )
+                    ( { model
+                        | selectionConfig =
+                            setSingleItemRemoval
+                                DisableSingleItemRemoval
+                                model.selectionConfig
+                      }
+                    , ReportReady
+                    )
 
                 "option-sorting" ->
-                    ( model, NoEffect )
+                    ( { model | optionSort = NoSorting }, NoEffect )
 
                 "output-style" ->
-                    ( model, NoEffect )
+                    let
+                        newSelectionConfig =
+                            SelectionMode.setOutputStyle
+                                CustomHtml
+                                model.selectionConfig
+                    in
+                    ( { model
+                        | selectionConfig = newSelectionConfig
+                        , rightSlot = updateRightSlot model.rightSlot newSelectionConfig True model.options
+                      }
+                    , FetchOptionsFromDom
+                    )
 
                 "placeholder" ->
-                    ( model, NoEffect )
+                    ( { model
+                        | selectionConfig =
+                            SelectionMode.setPlaceholder ( False, "" )
+                                model.selectionConfig
+                      }
+                    , NoEffect
+                    )
 
                 "search-string-minimum-length" ->
                     ( { model

@@ -1097,6 +1097,7 @@ encodeSelectionConfig selectionConfig =
                 )
           )
         , ( "disabled", Json.Encode.bool (isDisabled selectionConfig) )
+        , ( "events-only", Json.Encode.bool (isEventsOnly selectionConfig) )
         , ( "multi-select"
           , Json.Encode.bool
                 (case getSelectionMode selectionConfig of
@@ -1107,5 +1108,4 @@ encodeSelectionConfig selectionConfig =
                         False
                 )
           )
-        , ( "events-only", Json.Encode.bool (isEventsOnly selectionConfig) )
         ]
