@@ -165,6 +165,7 @@ import RightSlot
         , updateRightSlotTransitioning
         )
 import SearchString exposing (SearchString)
+import SelectedValueEncoding exposing (SelectedValueEncoding)
 import SelectionMode
     exposing
         ( OutputStyle(..)
@@ -294,6 +295,7 @@ type alias Model =
     , focusedIndex : Int
     , rightSlot : RightSlot
     , valueCasing : ValueCasing
+    , selectedValueEncoding : SelectedValueEncoding
     }
 
 
@@ -1346,7 +1348,19 @@ update msg model =
                     )
 
                 "selected-value" ->
-                    ( model, NoEffect )
+                    case SelectedValueEncoding.fromString newAttributeValue of
+                        Ok selectedValueEncoding ->
+                            ( { model
+                                | selectedValueEncoding =
+                                    selectedValueEncoding
+                              }
+                            , NoEffect
+                            )
+
+                        Err error ->
+                            ( model
+                            , ReportErrorMessage error
+                            )
 
                 "selected-value-encoding" ->
                     ( model, NoEffect )
@@ -1486,7 +1500,12 @@ update msg model =
                     ( model, NoEffect )
 
                 "selected-value-encoding" ->
-                    ( model, NoEffect )
+                    ( { model
+                        | selectedValueEncoding =
+                            SelectedValueEncoding.defaultSelectedValueEncoding
+                      }
+                    , NoEffect
+                    )
 
                 "show-dropdown-footer" ->
                     ( { model
@@ -3171,6 +3190,7 @@ type alias Flags =
     , searchStringMinimumLength : Int
     , showDropdownFooter : Bool
     , transformationAndValidationJson : String
+    , selectedValueEncoding : String
     }
 
 
@@ -3202,9 +3222,15 @@ init flags =
                 valueTransformationAndValidation
                 |> Result.withDefault defaultSelectionConfig
 
+        -- TODO report an error if this is an inlaid value
         optionSort =
             stringToOptionSort flags.optionSort
                 |> Result.withDefault NoSorting
+
+        -- TODO report an error if this is an inlaid value
+        selectedValueEncoding =
+            SelectedValueEncoding.fromString flags.selectedValueEncoding
+                |> Result.withDefault SelectedValueEncoding.defaultSelectedValueEncoding
 
         ( initialValues, initialValueErrEffect ) =
             case Json.Decode.decodeValue (Json.Decode.oneOf [ valuesDecoder, valueDecoder ]) flags.value of
@@ -3301,6 +3327,7 @@ init flags =
 
       -- TODO Should these be passed as flags?
       , valueCasing = ValueCasing 100 45
+      , selectedValueEncoding = selectedValueEncoding
       }
     , batch
         [ errorEffect
