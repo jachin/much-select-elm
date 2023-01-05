@@ -40,6 +40,7 @@ port module Ports exposing
     , searchStringMinimumLengthChangedReceiver
     , selectOptionReceiver
     , selectedItemStaysInPlaceChangedReceiver
+    , selectedValueEncodingChangeReceiver
     , sendCustomValidationRequest
     , showDropdownFooterChangedReceiver
     , transformationAndValidationReceiver
@@ -252,6 +253,9 @@ port customOptionHintReceiver : (String -> msg) -> Sub msg
 
 
 port valueCasingDimensionsChangedReceiver : ({ width : Float, height : Float } -> msg) -> Sub msg
+
+
+port selectedValueEncodingChangeReceiver : (String -> msg) -> Sub msg
 
 
 port optionSortingChangedReceiver : (String -> msg) -> Sub msg

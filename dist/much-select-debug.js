@@ -199,74 +199,6 @@ class MuchSelect extends HTMLElement {
     this._selectedValue = null;
 
     /**
-     * @type {string|null}
-     * @private
-     */
-    this._placeholder = null;
-
-    /**
-     * @type {boolean}
-     * @private
-     */
-    this._disabled = false;
-
-    /**
-     * @type {boolean}
-     * @private
-     */
-    this._loading = false;
-
-    /**
-     * @type {number}
-     * @private
-     */
-    this._maxDropdownItems = 10000;
-
-    /**
-     * There's a footer we can show in the dropdown that gives a summary of how many options are available.
-     * @type {boolean}
-     * @private
-     */
-    this._showDropdownFooter = false;
-
-    /**
-     * @type {boolean}
-     * @private
-     */
-    this._isInMultiSelectModeWithSingleItemRemoval = false;
-
-    /**
-     * @type {string}
-     * @private
-     */
-    this._optionSorting = "no-sorting";
-
-    /**
-     * @type {boolean}
-     * @private
-     */
-    this._selectedItemStaysInPlace = true;
-
-    /**
-     * Depending on what you've got going on, you may want different
-     * schemes for encoding the selected values. There are some choices.
-     *  - comma (default) - just making the values' comma separated (problematic if you have commas in your values)
-     *  - json
-     * @type {string}
-     * @private
-     */
-    this._selectedValueEncoding = "comma";
-
-    /**
-     * Specify how the much-select should be rendered. The following styles are all options
-     *  - customHtml (default)
-     *  - datalist
-     * @type {string}
-     * @private
-     */
-    this._outputStyle = "customHtml";
-
-    /**
      * @type {null|object}
      * @private
      */
@@ -1120,10 +1052,14 @@ class MuchSelect extends HTMLElement {
       flags.transformationAndValidationJson = "";
     }
 
-    flags.disabled = this.disabled;
-    flags.loading = this.loading;
-    flags.selectedItemStaysInPlace = this.selectedItemStaysInPlace;
-    flags.maxDropdownItems = this.maxDropdownItems;
+    flags.disabled = booleanAttributeValueToBool(this.getAttribute("disabled"));
+    flags.loading = booleanAttributeValueToBool(this.getAttribute("loading"));
+
+    // TODO let's get the verbage here aligned.
+    flags.selectedItemStaysInPlace = !booleanAttributeValueToBool(
+      this.getAttribute("selected-option-goes-to-top")
+    );
+    flags.maxDropdownItems = this.getAttribute("max-dropdown-items");
 
     if (this.hasAttribute("allow-custom-options")) {
       flags.customOptionHint = this.getAttribute("allow-custom-options");
@@ -1492,14 +1428,10 @@ class MuchSelect extends HTMLElement {
   }
 
   get placeholder() {
-    return this._placeholder;
+    return this.getConfigValuePromise("placeholder");
   }
 
   set placeholder(placeholder) {
-    if (!this.eventsOnlyMode) {
-      this.setAttribute("placeholder", placeholder);
-    }
-
     this.appPromise.then((app) => {
       if (placeholder === null) {
         // noinspection JSUnresolvedVariable
@@ -1509,34 +1441,18 @@ class MuchSelect extends HTMLElement {
         app.ports.placeholderChangedReceiver.send([true, placeholder]);
       }
     });
-
-    this._placeholder = placeholder;
   }
 
   get disabled() {
-    return this._disabled;
+    return this.getConfigValuePromise("disabled");
   }
 
   set disabled(value) {
-    if (value === "false") {
-      this._disabled = false;
-    } else if (value === "") {
-      this._disabled = true;
-    } else {
-      this._disabled = !!value;
-    }
-
-    if (!this.eventsOnlyMode) {
-      if (this._disabled) {
-        this.setAttribute("disabled", "disabled");
-      } else {
-        this.removeAttribute("disabled");
-      }
-    }
+    const disabled = booleanAttributeValueToBool(value);
 
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
-      app.ports.disableChangedReceiver.send(this._disabled)
+      app.ports.disableChangedReceiver.send(disabled)
     );
   }
 
@@ -1548,17 +1464,10 @@ class MuchSelect extends HTMLElement {
     this.appPromise.then((app) => {
       app.ports.attributeChanged.send(["events-only", value]);
     });
-
-    if (!value) {
-      // This is kinda strange, if we're saying allow light DOM manipulation,
-      //  then manipulate the light DOM. Which makes sense, but I guess we'll
-      //  see how this plays out in practice.
-      this.removeAttribute("events-only");
-    }
   }
 
   get maxDropdownItems() {
-    return this._maxDropdownItems;
+    return this.getConfigValuePromise("max-dropdown-items");
   }
 
   set maxDropdownItems(value) {
@@ -1570,18 +1479,18 @@ class MuchSelect extends HTMLElement {
     } else {
       throw new TypeError("Max dropdown items must be a number!");
     }
-    if (newValue < 3) {
-      this._maxDropdownItems = 3;
-    } else {
-      this._maxDropdownItems = newValue;
 
-      if (!this.eventsOnlyMode) {
-        this.setAttribute("max-dropdown-items", newValue);
-      }
+    // TODO Handle this floor in Elm.
+    let maxDropdownItems = 3;
+
+    if (newValue < 3) {
+      maxDropdownItems = 3;
+    } else {
+      maxDropdownItems = newValue;
     }
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
-      app.ports.maxDropdownItemsChangedReceiver.send(this._maxDropdownItems)
+      app.ports.maxDropdownItemsChangedReceiver.send(maxDropdownItems)
     );
   }
 
@@ -1589,26 +1498,20 @@ class MuchSelect extends HTMLElement {
    * @returns {boolean}
    */
   get showDropdownFooter() {
-    return this._showDropdownFooter;
+    return this.getConfigValuePromise("show-dropdown-footer");
   }
 
   /**
    * @param value {boolean|string}
    */
   set showDropdownFooter(value) {
-    this._showDropdownFooter = booleanAttributeValueToBool(value);
-
-    if (!this.eventsOnlyMode) {
-      if (this._showDropdownFooter) {
-        this.setAttribute("show-dropdown-footer", "");
-      } else {
-        this.removeAttribute("show-dropdown-footer");
-      }
-    }
+    const searchStringMinimumLength = booleanAttributeValueToBool(value);
 
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
-      app.ports.showDropdownFooterChangedReceiver.send(this._showDropdownFooter)
+      app.ports.showDropdownFooterChangedReceiver.send(
+        searchStringMinimumLength
+      )
     );
   }
 
@@ -1627,30 +1530,32 @@ class MuchSelect extends HTMLElement {
    * @param value {string|number}
    */
   set searchStringMinimumLength(value) {
-    let cleanValue;
+    let searchStringMinimumLength;
 
     if (value === "false") {
-      cleanValue = 0;
+      searchStringMinimumLength = 0;
     } else if (value === "") {
-      cleanValue = 0;
+      searchStringMinimumLength = 0;
     } else if (Number.isInteger(value)) {
       if (value >= 0) {
-        cleanValue = value;
+        searchStringMinimumLength = value;
       } else {
-        cleanValue = 0;
+        searchStringMinimumLength = 0;
       }
     } else if (typeof value === "string") {
       const intVal = parseInt(value, 10);
       if (intVal >= 0) {
-        cleanValue = intVal;
+        searchStringMinimumLength = intVal;
       } else {
-        cleanValue = 0;
+        searchStringMinimumLength = 0;
       }
     }
 
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
-      app.ports.searchStringMinimumLengthChangedReceiver.send(cleanValue)
+      app.ports.searchStringMinimumLengthChangedReceiver.send(
+        searchStringMinimumLength
+      )
     );
   }
 
@@ -1681,58 +1586,43 @@ class MuchSelect extends HTMLElement {
 
   // noinspection JSUnusedGlobalSymbols
   get isInMultiSelectModeWithSingleItemRemoval() {
-    return this._isInMultiSelectModeWithSingleItemRemoval;
+    return this.getConfigValuePromise("single-item-removal");
   }
 
   set isInMultiSelectModeWithSingleItemRemoval(value) {
+    let isInMultiSelectModeWithSingleItemRemoval;
     if (value === "false") {
-      this._isInMultiSelectModeWithSingleItemRemoval = false;
+      this.isInMultiSelectModeWithSingleItemRemoval = false;
     } else if (value === "") {
-      this._isInMultiSelectModeWithSingleItemRemoval = true;
+      this.isInMultiSelectModeWithSingleItemRemoval = true;
     } else {
-      this._isInMultiSelectModeWithSingleItemRemoval = !!value;
+      this.isInMultiSelectModeWithSingleItemRemoval = !!value;
     }
 
-    if (!this.eventsOnlyMode) {
-      if (this._isInMultiSelectModeWithSingleItemRemoval) {
-        this.setAttribute(
-          "multi-select-single-item-removal",
-          "multi-select-single-item-removal"
-        );
-      } else {
-        this.removeAttribute("multi-select-single-item-removal");
-      }
-      // noinspection JSUnresolvedVariable
-      this.appPromise.then((app) =>
-        app.ports.multiSelectSingleItemRemovalChangedReceiver.send(
-          this._isInMultiSelectModeWithSingleItemRemoval
-        )
-      );
-    }
+    // noinspection JSUnresolvedVariable
+    this.appPromise.then((app) =>
+      app.ports.multiSelectSingleItemRemovalChangedReceiver.send(
+        isInMultiSelectModeWithSingleItemRemoval
+      )
+    );
   }
 
   get loading() {
-    return this._loading;
+    return this.getConfigValuePromise("loading");
   }
 
   set loading(value) {
+    let isLoading;
     if (value === "false") {
-      this._loading = false;
+      isLoading = false;
     } else if (value === "") {
-      this._loading = true;
+      isLoading = true;
     } else {
-      this._loading = !!value;
-    }
-    if (!this.eventsOnlyMode) {
-      if (this._loading) {
-        this.setAttribute("loading", "loading");
-      } else {
-        this.removeAttribute("loading");
-      }
+      isLoading = !!value;
     }
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
-      app.ports.loadingChangedReceiver.send(this._loading)
+      app.ports.loadingChangedReceiver.send(isLoading)
     );
   }
 
@@ -1745,7 +1635,7 @@ class MuchSelect extends HTMLElement {
    */
   get allowCustomOptions() {
     // TODO ensure this is a boolean value
-    return (async () => this.getConfigValuePromise("allows-custom-options"))();
+    return this.getConfigValuePromise("allows-custom-options");
   }
 
   set allowCustomOptions(value) {
@@ -1768,7 +1658,7 @@ class MuchSelect extends HTMLElement {
   }
 
   get customOptionHint() {
-    return this._customOptionHint;
+    return this.getConfigValuePromise("custom-options-hint");
   }
 
   set customOptionHint(value) {
@@ -1797,44 +1687,49 @@ class MuchSelect extends HTMLElement {
   }
 
   get selectedItemStaysInPlace() {
-    return this._selectedItemStaysInPlace;
+    return this.getConfigValuePromise("selected-item-stays-in-place");
   }
 
   set selectedItemStaysInPlace(value) {
+    let selectedItemStaysInPlace;
     if (value === "false") {
-      this._selectedItemStaysInPlace = false;
+      selectedItemStaysInPlace = false;
     } else {
-      this._selectedItemStaysInPlace = !!value;
-    }
-
-    if (!this.eventsOnlyMode) {
-      if (!this._selectedItemStaysInPlace) {
-        this.setAttribute("selected-option-goes-to-top", "");
-      } else {
-        this.removeAttribute("selected-option-goes-to-top");
-      }
+      selectedItemStaysInPlace = !!value;
     }
 
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
       app.ports.selectedItemStaysInPlaceChangedReceiver.send(
-        this._selectedItemStaysInPlace
+        selectedItemStaysInPlace
       )
     );
   }
 
+  /**
+   * TODO What's the deal with the name, let's align this stuff better.
+   * @param value
+   */
   set selectedItemGOesToTop(value) {
+    let selectedItemStaysInPlace;
     if (value === "") {
-      this.selectedItemStaysInPlace = false;
+      selectedItemStaysInPlace = false;
     } else if (value === null) {
-      this.selectedItemStaysInPlace = true;
+      selectedItemStaysInPlace = true;
     } else {
-      this.selectedItemStaysInPlace = !value;
+      selectedItemStaysInPlace = !value;
     }
+
+    // noinspection JSUnresolvedVariable
+    this.appPromise.then((app) =>
+      app.ports.selectedItemStaysInPlaceChangedReceiver.send(
+        selectedItemStaysInPlace
+      )
+    );
   }
 
   get selectedValueEncoding() {
-    return this._selectedValueEncoding;
+    return this.getConfigValuePromise("selected-value-encoding");
   }
 
   /**
@@ -1849,20 +1744,26 @@ class MuchSelect extends HTMLElement {
    * */
   set selectedValueEncoding(value) {
     const currentValue = this.parsedSelectedValue;
+    let selectedValueEncoding;
     if (value === "json") {
-      this._selectedValueEncoding = "json";
+      selectedValueEncoding = "json";
     } else if (value === "comma") {
-      this._selectedValueEncoding = "comma";
+      selectedValueEncoding = "comma";
     } else {
       throw new Error(`Invalid selected value encoding: ${value}`);
     }
     if (this._connected) {
       this.parsedSelectedValue = currentValue;
     }
+
+    // noinspection JSUnresolvedVariable
+    this.appPromise.then((app) =>
+      app.ports.selectedValueEncodingChangeReceiver.send(selectedValueEncoding)
+    );
   }
 
   get optionSorting() {
-    return this._optionSorting;
+    return this.getConfigValuePromise("option-sorting");
   }
 
   /**
@@ -1871,28 +1772,22 @@ class MuchSelect extends HTMLElement {
    *  - by-option-label
    * */
   set optionSorting(value) {
+    let optionSorting = "no-sorting";
     if (value === "no-sorting") {
-      this._optionSorting = "no-sorting";
+      optionSorting = "no-sorting";
     } else if (value === "by-option-label") {
-      this._optionSorting = "by-option-label";
+      optionSorting = "by-option-label";
     } else if (value === null) {
-      this._optionSorting = "no-sorting";
+      optionSorting = "no-sorting";
     } else if (value === "") {
-      this._optionSorting = "no-sorting";
+      optionSorting = "no-sorting";
     } else {
       throw new Error(`Unexpected value for option sorting: ${value}`);
     }
 
-    if (!this.eventsOnlyMode) {
-      if (value === null || value === "") {
-        this.removeAttribute("option-sorting");
-      } else {
-        this.setAttribute("option-sorting", this._optionSorting);
-      }
-    }
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
-      app.ports.optionSortingChangedReceiver.send(this._optionSorting)
+      app.ports.optionSortingChangedReceiver.send(optionSorting)
     );
   }
 
@@ -1905,20 +1800,17 @@ class MuchSelect extends HTMLElement {
   }
 
   get outputStyle() {
-    return this._outputStyle;
+    return this.getConfigValuePromise("output-style");
   }
 
   set outputStyle(value) {
+    // TODO Move this validation to Elm.
     if (MuchSelect.isValidOutputStyle(value)) {
-      this._outputStyle = value;
-
-      if (!this.eventsOnlyMode) {
-        this.setAttribute("output-style", this._outputStyle);
-      }
+      const outputStyle = value;
 
       this.appPromise.then((app) => {
         // noinspection JSUnresolvedVariable
-        app.ports.outputStyleChangedReceiver.send(this._outputStyle);
+        app.ports.outputStyleChangedReceiver.send(outputStyle);
         this._updateTransformationValidationFromTheDom();
       });
     } else {
