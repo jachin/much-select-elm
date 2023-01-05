@@ -103,13 +103,13 @@ makeSelectionConfig :
     -> ( Bool, String )
     -> Maybe String
     -> Bool
-    -> Int
+    -> Maybe Int
     -> Bool
     -> Int
     -> Bool
     -> ValueTransformAndValidate
     -> Result String SelectionConfig
-makeSelectionConfig isEventsOnly_ disabled allowMultiSelect allowCustomOptions outputStyle placeholder customOptionHint enableMultiSelectSingleItemRemoval maxDropdownItems selectedItemStaysInPlace searchStringMinimumLength shouldShowDropdownFooter transformAndValidate =
+makeSelectionConfig isEventsOnly_ disabled allowMultiSelect allowCustomOptions outputStyle placeholder customOptionHint enableMultiSelectSingleItemRemoval maybeMaxDropdownItems selectedItemStaysInPlace searchStringMinimumLength shouldShowDropdownFooter transformAndValidate =
     let
         outputStyleResult =
             outputStyle
@@ -121,6 +121,9 @@ makeSelectionConfig isEventsOnly_ disabled allowMultiSelect allowCustomOptions o
 
             else
                 Unfocused
+
+        maxDropdownItems =
+            Maybe.withDefault 1000 maybeMaxDropdownItems
     in
     Result.andThen
         (\s ->

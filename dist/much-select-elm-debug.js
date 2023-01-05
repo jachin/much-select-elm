@@ -11553,12 +11553,13 @@ var $author$project$SelectionMode$makeSelectionConfig = function (isEventsOnly_)
 					return function (placeholder) {
 						return function (customOptionHint) {
 							return function (enableMultiSelectSingleItemRemoval) {
-								return function (maxDropdownItems) {
+								return function (maybeMaxDropdownItems) {
 									return function (selectedItemStaysInPlace) {
 										return function (searchStringMinimumLength) {
 											return function (shouldShowDropdownFooter) {
 												return function (transformAndValidate) {
 													var outputStyleResult = $author$project$SelectionMode$stringToOutputStyle(outputStyle);
+													var maxDropdownItems = A2($elm$core$Maybe$withDefault, 1000, maybeMaxDropdownItems);
 													var interactionState = disabled ? $author$project$SelectionMode$Disabled : $author$project$SelectionMode$Unfocused;
 													return A2(
 														$elm$core$Result$andThen,
@@ -20236,7 +20237,15 @@ _Platform_export({'MuchSelect':{'init':$author$project$MuchSelect$main(
 																								},
 																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
 																						},
-																						A2($elm$json$Json$Decode$field, 'maxDropdownItems', $elm$json$Json$Decode$int));
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$int)
+																									]))));
 																				},
 																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
 																		},
@@ -20352,7 +20361,15 @@ export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
 																								},
 																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
 																						},
-																						A2($elm$json$Json$Decode$field, 'maxDropdownItems', $elm$json$Json$Decode$int));
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$int)
+																									]))));
 																				},
 																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
 																		},

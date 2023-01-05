@@ -3201,7 +3201,7 @@ type alias Flags =
     , enableMultiSelectSingleItemRemoval : Bool
     , optionSort : String
     , loading : Bool
-    , maxDropdownItems : Int
+    , maxDropdownItems : Maybe Int
     , disabled : Bool
     , allowCustomOptions : Bool
     , selectedItemStaysInPlace : Bool

@@ -6182,6 +6182,15 @@ var $author$project$SelectionMode$stringToOutputStyle = function (string) {
 			return $elm$core$Result$Err('Invalid output style');
 	}
 };
+var $elm$core$Maybe$withDefault = F2(
+	function (_default, maybe) {
+		if (!maybe.$) {
+			var value = maybe.a;
+			return value;
+		} else {
+			return _default;
+		}
+	});
 var $author$project$SelectionMode$makeSelectionConfig = function (isEventsOnly_) {
 	return function (disabled) {
 		return function (allowMultiSelect) {
@@ -6190,12 +6199,13 @@ var $author$project$SelectionMode$makeSelectionConfig = function (isEventsOnly_)
 					return function (placeholder) {
 						return function (customOptionHint) {
 							return function (enableMultiSelectSingleItemRemoval) {
-								return function (maxDropdownItems) {
+								return function (maybeMaxDropdownItems) {
 									return function (selectedItemStaysInPlace) {
 										return function (searchStringMinimumLength) {
 											return function (shouldShowDropdownFooter) {
 												return function (transformAndValidate) {
 													var outputStyleResult = $author$project$SelectionMode$stringToOutputStyle(outputStyle);
+													var maxDropdownItems = A2($elm$core$Maybe$withDefault, 1000, maybeMaxDropdownItems);
 													var interactionState = disabled ? 2 : 1;
 													return A2(
 														$elm$core$Result$andThen,
@@ -9411,15 +9421,6 @@ var $author$project$SelectionMode$getMaxDropdownItems = function (selectionConfi
 	}
 };
 var $elm$core$Basics$modBy = _Basics_modBy;
-var $elm$core$Maybe$withDefault = F2(
-	function (_default, maybe) {
-		if (!maybe.$) {
-			var value = maybe.a;
-			return value;
-		} else {
-			return _default;
-		}
-	});
 var $author$project$OptionsUtilities$sortOptionsByBestScore = function (options) {
 	return A2(
 		$elm$core$List$sortBy,
@@ -15031,7 +15032,15 @@ _Platform_export({'MuchSelect':{'init':$author$project$MuchSelect$main(
 																								},
 																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
 																						},
-																						A2($elm$json$Json$Decode$field, 'maxDropdownItems', $elm$json$Json$Decode$int));
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$int)
+																									]))));
 																				},
 																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
 																		},
@@ -15147,7 +15156,15 @@ export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
 																								},
 																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
 																						},
-																						A2($elm$json$Json$Decode$field, 'maxDropdownItems', $elm$json$Json$Decode$int));
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$int)
+																									]))));
 																				},
 																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
 																		},

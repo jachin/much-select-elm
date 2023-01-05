@@ -1038,7 +1038,7 @@ class MuchSelect extends HTMLElement {
     ) {
       flags.outputStyle = this.getAttribute("output-style");
     } else {
-      flags.outputStyle = this.outputStyle;
+      flags.outputStyle = "";
     }
 
     const transformationAndValidationSlot = this.querySelector(
@@ -1080,6 +1080,8 @@ class MuchSelect extends HTMLElement {
     } else {
       flags.selectedValue = "";
     }
+
+    flags.selectedValueEncoding = this.getAttribute("selected-value-encoding");
 
     if (selectElement) {
       flags.optionsJson = JSON.stringify(
