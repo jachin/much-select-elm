@@ -45,6 +45,16 @@ fromString string =
             Err ("Invalid selected value encoding: " ++ string)
 
 
+toString : SelectedValueEncoding -> String
+toString selectedValueEncoding =
+    case selectedValueEncoding of
+        CommaSeperated ->
+            "comma"
+
+        JsonEncoded ->
+            "json"
+
+
 valuesFromFlags : SelectedValueEncoding -> String -> Result String (List String)
 valuesFromFlags selectedValueEncoding valuesString =
     if valuesString == "" then

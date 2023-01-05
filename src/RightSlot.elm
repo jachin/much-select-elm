@@ -89,8 +89,8 @@ updateRightSlotForDatalist selectedOptions =
 
 
 updateRightSlotLoading : Bool -> SelectionConfig -> Bool -> RightSlot
-updateRightSlotLoading isLoading selectionMode hasSelectedOption =
-    if isLoading then
+updateRightSlotLoading isLoading_ selectionMode hasSelectedOption =
+    if isLoading_ then
         ShowLoadingIndicator
 
     else
@@ -132,6 +132,28 @@ isRightSlotTransitioning rightSlot =
 
                 NotInFocusTransition ->
                     False
+
+        ShowClearButton ->
+            False
+
+        ShowAddButton ->
+            False
+
+        ShowAddAndRemoveButtons ->
+            False
+
+
+isLoading : RightSlot -> Bool
+isLoading rightSlot =
+    case rightSlot of
+        ShowNothing ->
+            False
+
+        ShowLoadingIndicator ->
+            True
+
+        ShowDropdownIndicator _ ->
+            False
 
         ShowClearButton ->
             False

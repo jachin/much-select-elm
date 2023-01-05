@@ -20,6 +20,7 @@ module SelectionMode exposing
     , getTransformAndValidate
     , hasPlaceholder
     , isDisabled
+    , isEventsOnly
     , isFocused
     , isSingleSelect
     , makeSelectionConfig

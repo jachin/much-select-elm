@@ -2,6 +2,7 @@ module MuchSelect exposing (..)
 
 import Bounce exposing (Bounce)
 import Browser
+import ConfigDump
 import Html exposing (Html, button, div, input, li, node, optgroup, span, text, ul)
 import Html.Attributes
     exposing
@@ -223,7 +224,7 @@ type Effect
     | FetchOptionsFromDom
     | ScrollDownToElement String
     | ReportAllOptions Json.Encode.Value
-    | DumpSelectionConfig Json.Encode.Value
+    | DumpConfigState Json.Encode.Value
 
 
 type Msg
@@ -282,7 +283,7 @@ type Msg
     | AttributeRemoved String
     | CustomOptionHintChanged String
     | SelectedValueEncodingChanged String
-    | SelectionConfigRequested
+    | ConfigStateRequested
 
 
 type alias Model =
@@ -1544,8 +1545,16 @@ update msg model =
             , NoEffect
             )
 
-        SelectionConfigRequested ->
-            ( model, DumpSelectionConfig (SelectionMode.encodeSelectionConfig model.selectionConfig) )
+        ConfigStateRequested ->
+            ( model
+            , DumpConfigState
+                (ConfigDump.encodeConfig
+                    model.selectionConfig
+                    model.optionSort
+                    model.selectedValueEncoding
+                    model.rightSlot
+                )
+            )
 
 
 perform : Effect -> Cmd Msg
@@ -1625,7 +1634,7 @@ perform effect =
         ReportInitialValueSet value ->
             initialValueSet value
 
-        DumpSelectionConfig value ->
+        DumpConfigState value ->
             dumpSelectionConfig value
 
 
@@ -3411,7 +3420,7 @@ subscriptions _ =
         , attributeChanged AttributeChanged
         , attributeRemoved AttributeRemoved
         , customOptionHintReceiver CustomOptionHintChanged
-        , requestSelectionConfig (\() -> SelectionConfigRequested)
+        , requestSelectionConfig (\() -> ConfigStateRequested)
         , selectedValueEncodingChangeReceiver SelectedValueEncodingChanged
         ]
 

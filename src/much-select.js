@@ -1470,7 +1470,7 @@ class MuchSelect extends HTMLElement {
   }
 
   get eventsOnlyMode() {
-    return this.getConfigValuePromise("events-only-mode");
+    return this.getConfigValuePromise("events-only");
   }
 
   set eventsOnlyMode(value) {

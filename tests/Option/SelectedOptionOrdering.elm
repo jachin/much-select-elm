@@ -141,7 +141,7 @@ simulatedEffects effect =
         MuchSelect.ReportAllOptions value ->
             SimulatedEffect.Ports.send "allOptions" value
 
-        MuchSelect.DumpSelectionConfig value ->
+        MuchSelect.DumpConfigState value ->
             SimulatedEffect.Ports.send "dumpSelectionConfig" value
 
 

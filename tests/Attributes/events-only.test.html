@@ -21,13 +21,13 @@
           const el = /** @type {MuchSelect} */ await fixture(
             html`<much-select></much-select>`
           );
-          expect(el.eventsOnlyMode).to.be.false;
+          expect(await el.eventsOnlyMode).to.be.false;
 
           el.setAttribute("events-only", "");
-          expect(el.eventsOnlyMode).to.be.true;
+          expect(await el.eventsOnlyMode).to.be.true;
 
           el.removeAttribute("events-only");
-          expect(el.eventsOnlyMode).to.be.false;
+          expect(await el.eventsOnlyMode).to.be.false;
         });
 
         it("should prevent the select-value attribute from automatically updating", async () => {
