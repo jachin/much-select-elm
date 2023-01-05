@@ -40,7 +40,8 @@ simulateSub _ =
 flagsDatalistSingle : Flags
 flagsDatalistSingle =
     { isEventsOnly = False
-    , value = Json.Encode.object []
+    , selectedValue = ""
+    , selectedValueEncoding = "comma"
     , placeholder = ( True, "" )
     , customOptionHint = Nothing
     , allowMultiSelect = False
@@ -62,7 +63,8 @@ flagsDatalistSingle =
 flagsCustomHtmlSingle : Flags
 flagsCustomHtmlSingle =
     { isEventsOnly = False
-    , value = Json.Encode.object []
+    , selectedValue = ""
+    , selectedValueEncoding = "comma"
     , placeholder = ( True, "" )
     , customOptionHint = Nothing
     , allowMultiSelect = False

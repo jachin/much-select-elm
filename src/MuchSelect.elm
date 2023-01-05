@@ -3190,14 +3190,15 @@ makeCommandMessageForInitialValue selectedOptions =
 
 
 type alias Flags =
-    { value : Json.Decode.Value
+    { selectedValue : String
+    , selectedValueEncoding : String
+    , optionsJson : String
     , isEventsOnly : Bool
     , placeholder : ( Bool, String )
     , customOptionHint : Maybe String
     , allowMultiSelect : Bool
     , outputStyle : String
     , enableMultiSelectSingleItemRemoval : Bool
-    , optionsJson : String
     , optionSort : String
     , loading : Bool
     , maxDropdownItems : Int
@@ -3207,7 +3208,6 @@ type alias Flags =
     , searchStringMinimumLength : Int
     , showDropdownFooter : Bool
     , transformationAndValidationJson : String
-    , selectedValueEncoding : String
     }
 
 
@@ -3250,12 +3250,12 @@ init flags =
                 |> Result.withDefault SelectedValueEncoding.defaultSelectedValueEncoding
 
         ( initialValues, initialValueErrEffect ) =
-            case Json.Decode.decodeValue (Json.Decode.oneOf [ valuesDecoder, valueDecoder ]) flags.value of
+            case SelectedValueEncoding.valuesFromFlags selectedValueEncoding flags.selectedValue of
                 Ok values ->
                     ( values, NoEffect )
 
                 Err error ->
-                    ( [], ReportErrorMessage (Json.Decode.errorToString error) )
+                    ( [], ReportErrorMessage error )
 
         ( optionsWithInitialValueSelected, errorEffect ) =
             case Json.Decode.decodeString (Option.optionsDecoder OptionDisplay.MatureOption (SelectionMode.getOutputStyle selectionConfig)) flags.optionsJson of

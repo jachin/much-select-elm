@@ -41,7 +41,8 @@ booksJsonWithIndexesAndWithSelected =
 flagsBookOptionsWithSelected : Flags
 flagsBookOptionsWithSelected =
     { isEventsOnly = False
-    , value = Json.Encode.object []
+    , selectedValue = ""
+    , selectedValueEncoding = "comma"
     , placeholder = ( True, "A book" )
     , customOptionHint = Nothing
     , allowMultiSelect = False

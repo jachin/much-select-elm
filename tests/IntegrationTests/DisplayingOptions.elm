@@ -1,7 +1,6 @@
 module IntegrationTests.DisplayingOptions exposing (suite)
 
 import Html.Attributes
-import Json.Encode
 import MuchSelect exposing (Flags)
 import ProgramTest
     exposing
@@ -18,7 +17,8 @@ import Test.Html.Selector exposing (classes, text)
 flagsEmptyOptionsWithOrangeSelected : Flags
 flagsEmptyOptionsWithOrangeSelected =
     { isEventsOnly = False
-    , value = Json.Encode.list Json.Encode.string [ "Orange" ]
+    , selectedValue = "Orange"
+    , selectedValueEncoding = "comma"
     , placeholder = ( True, "What is your favorite color" )
     , customOptionHint = Nothing
     , allowMultiSelect = False
@@ -99,7 +99,8 @@ booksJsonWithIndexesAndWithSelected =
 flagsBookOptions : Flags
 flagsBookOptions =
     { isEventsOnly = False
-    , value = Json.Encode.object []
+    , selectedValue = ""
+    , selectedValueEncoding = "comma"
     , placeholder = ( True, "A book" )
     , customOptionHint = Nothing
     , allowMultiSelect = False
@@ -121,7 +122,8 @@ flagsBookOptions =
 flagsBookOptionsWithValue : Flags
 flagsBookOptionsWithValue =
     { isEventsOnly = False
-    , value = Json.Encode.list Json.Encode.string [ "Matilda" ]
+    , selectedValue = "Matilda"
+    , selectedValueEncoding = "comma"
     , placeholder = ( True, "A book" )
     , customOptionHint = Nothing
     , allowMultiSelect = False
@@ -143,7 +145,8 @@ flagsBookOptionsWithValue =
 flagsBookOptionsWithSelected : Flags
 flagsBookOptionsWithSelected =
     { isEventsOnly = False
-    , value = Json.Encode.object []
+    , selectedValue = ""
+    , selectedValueEncoding = "comma"
     , placeholder = ( True, "A book" )
     , customOptionHint = Nothing
     , allowMultiSelect = False

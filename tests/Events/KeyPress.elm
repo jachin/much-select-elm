@@ -22,7 +22,8 @@ element =
 flagsDatalistSingle : Flags
 flagsDatalistSingle =
     { isEventsOnly = False
-    , value = Json.Encode.object []
+    , selectedValue = ""
+    , selectedValueEncoding = "comma"
     , placeholder = ( True, "" )
     , customOptionHint = Nothing
     , allowMultiSelect = False

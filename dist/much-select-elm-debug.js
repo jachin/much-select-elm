@@ -4961,7 +4961,24 @@ function _Browser_load(url)
 		}
 	}));
 }
-var $elm$core$Maybe$Just = function (a) {
+
+
+function _Url_percentEncode(string)
+{
+	return encodeURIComponent(string);
+}
+
+function _Url_percentDecode(string)
+{
+	try
+	{
+		return $elm$core$Maybe$Just(decodeURIComponent(string));
+	}
+	catch (e)
+	{
+		return $elm$core$Maybe$Nothing;
+	}
+}var $elm$core$Maybe$Just = function (a) {
 	return {$: 'Just', a: a};
 };
 var $elm$core$Maybe$Nothing = {$: 'Nothing'};
@@ -12209,6 +12226,27 @@ var $author$project$RightSlot$updateRightSlotForDatalist = function (selectedOpt
 		selectedOptions);
 	return (showAddButtons && (!showRemoveButtons)) ? $author$project$RightSlot$ShowAddButton : ((showAddButtons && showRemoveButtons) ? $author$project$RightSlot$ShowAddAndRemoveButtons : $author$project$RightSlot$ShowNothing);
 };
+var $elm$core$Result$fromMaybe = F2(
+	function (err, maybe) {
+		if (maybe.$ === 'Just') {
+			var v = maybe.a;
+			return $elm$core$Result$Ok(v);
+		} else {
+			return $elm$core$Result$Err(err);
+		}
+	});
+var $elm$core$Result$mapError = F2(
+	function (f, result) {
+		if (result.$ === 'Ok') {
+			var v = result.a;
+			return $elm$core$Result$Ok(v);
+		} else {
+			var e = result.a;
+			return $elm$core$Result$Err(
+				f(e));
+		}
+	});
+var $elm$url$Url$percentDecode = _Url_percentDecode;
 var $elm$core$List$singleton = function (value) {
 	return _List_fromArray(
 		[value]);
@@ -12235,6 +12273,37 @@ var $author$project$Ports$valuesDecoder = $elm$json$Json$Decode$oneOf(
 			$elm$json$Json$Decode$list($elm$json$Json$Decode$string),
 			A2($elm$json$Json$Decode$map, $elm$core$List$singleton, $elm$json$Json$Decode$string)
 		]));
+var $author$project$SelectedValueEncoding$valuesFromFlags = F2(
+	function (selectedValueEncoding, valuesString) {
+		if (valuesString === '') {
+			return $elm$core$Result$Ok(_List_Nil);
+		} else {
+			if (selectedValueEncoding.$ === 'CommaSeperated') {
+				return $elm$core$Result$Ok(
+					A2($elm$core$String$split, ',', valuesString));
+			} else {
+				return A2(
+					$elm$core$Result$andThen,
+					function (decodedValueString) {
+						return A2(
+							$elm$core$Result$mapError,
+							function (error) {
+								return $elm$json$Json$Decode$errorToString(error);
+							},
+							A2(
+								$elm$json$Json$Decode$decodeString,
+								$elm$json$Json$Decode$oneOf(
+									_List_fromArray(
+										[$author$project$Ports$valuesDecoder, $author$project$Ports$valueDecoder])),
+								decodedValueString));
+					},
+					A2(
+						$elm$core$Result$fromMaybe,
+						'Unable to do a percent decode on the selected value',
+						$elm$url$Url$percentDecode(valuesString)));
+			}
+		}
+	});
 var $elm$core$Result$withDefault = F2(
 	function (def, result) {
 		if (result.$ === 'Ok') {
@@ -12273,12 +12342,7 @@ var $author$project$MuchSelect$init = function (flags) {
 		$author$project$SelectionMode$defaultSelectionConfig,
 		$author$project$SelectionMode$makeSelectionConfig(flags.isEventsOnly)(flags.disabled)(flags.allowMultiSelect)(flags.allowCustomOptions)(flags.outputStyle)(flags.placeholder)(flags.customOptionHint)(flags.enableMultiSelectSingleItemRemoval)(flags.maxDropdownItems)(flags.selectedItemStaysInPlace)(flags.searchStringMinimumLength)(flags.showDropdownFooter)(valueTransformationAndValidation));
 	var _v2 = function () {
-		var _v3 = A2(
-			$elm$json$Json$Decode$decodeValue,
-			$elm$json$Json$Decode$oneOf(
-				_List_fromArray(
-					[$author$project$Ports$valuesDecoder, $author$project$Ports$valueDecoder])),
-			flags.value);
+		var _v3 = A2($author$project$SelectedValueEncoding$valuesFromFlags, selectedValueEncoding, flags.selectedValue);
 		if (_v3.$ === 'Ok') {
 			var values = _v3.a;
 			return _Utils_Tuple2(values, $author$project$MuchSelect$NoEffect);
@@ -12286,8 +12350,7 @@ var $author$project$MuchSelect$init = function (flags) {
 			var error = _v3.a;
 			return _Utils_Tuple2(
 				_List_Nil,
-				$author$project$MuchSelect$ReportErrorMessage(
-					$elm$json$Json$Decode$errorToString(error)));
+				$author$project$MuchSelect$ReportErrorMessage(error));
 		}
 	}();
 	var initialValues = _v2.a;
@@ -20096,16 +20159,16 @@ var $author$project$MuchSelect$main = $elm$browser$Browser$element(
 _Platform_export({'MuchSelect':{'init':$author$project$MuchSelect$main(
 	A2(
 		$elm$json$Json$Decode$andThen,
-		function (value) {
+		function (transformationAndValidationJson) {
 			return A2(
 				$elm$json$Json$Decode$andThen,
-				function (transformationAndValidationJson) {
+				function (showDropdownFooter) {
 					return A2(
 						$elm$json$Json$Decode$andThen,
-						function (showDropdownFooter) {
+						function (selectedValueEncoding) {
 							return A2(
 								$elm$json$Json$Decode$andThen,
-								function (selectedValueEncoding) {
+								function (selectedValue) {
 									return A2(
 										$elm$json$Json$Decode$andThen,
 										function (selectedItemStaysInPlace) {
@@ -20149,7 +20212,7 @@ _Platform_export({'MuchSelect':{'init':$author$project$MuchSelect$main(
 																																				$elm$json$Json$Decode$andThen,
 																																				function (allowCustomOptions) {
 																																					return $elm$json$Json$Decode$succeed(
-																																						{allowCustomOptions: allowCustomOptions, allowMultiSelect: allowMultiSelect, customOptionHint: customOptionHint, disabled: disabled, enableMultiSelectSingleItemRemoval: enableMultiSelectSingleItemRemoval, isEventsOnly: isEventsOnly, loading: loading, maxDropdownItems: maxDropdownItems, optionSort: optionSort, optionsJson: optionsJson, outputStyle: outputStyle, placeholder: placeholder, searchStringMinimumLength: searchStringMinimumLength, selectedItemStaysInPlace: selectedItemStaysInPlace, selectedValueEncoding: selectedValueEncoding, showDropdownFooter: showDropdownFooter, transformationAndValidationJson: transformationAndValidationJson, value: value});
+																																						{allowCustomOptions: allowCustomOptions, allowMultiSelect: allowMultiSelect, customOptionHint: customOptionHint, disabled: disabled, enableMultiSelectSingleItemRemoval: enableMultiSelectSingleItemRemoval, isEventsOnly: isEventsOnly, loading: loading, maxDropdownItems: maxDropdownItems, optionSort: optionSort, optionsJson: optionsJson, outputStyle: outputStyle, placeholder: placeholder, searchStringMinimumLength: searchStringMinimumLength, selectedItemStaysInPlace: selectedItemStaysInPlace, selectedValue: selectedValue, selectedValueEncoding: selectedValueEncoding, showDropdownFooter: showDropdownFooter, transformationAndValidationJson: transformationAndValidationJson});
 																																				},
 																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
 																																		},
@@ -20201,27 +20264,27 @@ _Platform_export({'MuchSelect':{'init':$author$project$MuchSelect$main(
 										},
 										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
 								},
-								A2($elm$json$Json$Decode$field, 'selectedValueEncoding', $elm$json$Json$Decode$string));
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
 						},
-						A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+						A2($elm$json$Json$Decode$field, 'selectedValueEncoding', $elm$json$Json$Decode$string));
 				},
-				A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string));
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
 		},
-		A2($elm$json$Json$Decode$field, 'value', $elm$json$Json$Decode$value)))({"versions":{"elm":"0.19.1"},"types":{"message":"MuchSelect.Msg","aliases":{"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"},"OptionSearchFilter.OptionSearchFilter":{"args":[],"type":"{ totalScore : Basics.Int, bestScore : Basics.Int, labelTokens : List.List ( Basics.Bool, String.String ), descriptionTokens : List.List ( Basics.Bool, String.String ), groupTokens : List.List ( Basics.Bool, String.String ) }"}},"unions":{"MuchSelect.Msg":{"args":[],"tags":{"NoOp":[],"BringInputInFocus":[],"BringInputOutOfFocus":[],"InputBlur":[],"InputFocus":[],"DropdownMouseOverOption":["OptionValue.OptionValue"],"DropdownMouseOutOption":["OptionValue.OptionValue"],"DropdownMouseDownOption":["OptionValue.OptionValue"],"DropdownMouseUpOption":["OptionValue.OptionValue"],"UpdateSearchString":["String.String"],"SearchStringSteady":[],"UpdateOptionValueValue":["Basics.Int","String.String"],"TextInputOnInput":["String.String"],"ValueChanged":["Json.Decode.Value"],"OptionsReplaced":["Json.Decode.Value"],"OptionSortingChanged":["String.String"],"AddOptions":["Json.Decode.Value"],"RemoveOptions":["Json.Decode.Value"],"SelectOption":["Json.Decode.Value"],"DeselectOption":["Json.Decode.Value"],"DeselectOptionInternal":["Option.Option"],"PlaceholderAttributeChanged":["( Basics.Bool, String.String )"],"LoadingAttributeChanged":["Basics.Bool"],"MaxDropdownItemsChanged":["Basics.Int"],"ShowDropdownFooterChanged":["Basics.Bool"],"AllowCustomOptionsChanged":["( Basics.Bool, String.String )"],"DisabledAttributeChanged":["Basics.Bool"],"MultiSelectAttributeChanged":["Basics.Bool"],"MultiSelectSingleItemRemovalAttributeChanged":["Basics.Bool"],"SearchStringMinimumLengthAttributeChanged":["Basics.Int"],"SelectedItemStaysInPlaceChanged":["Basics.Bool"],"OutputStyleChanged":["String.String"],"SelectHighlightedOption":[],"DeleteInputForSingleSelect":[],"EscapeKeyInInputFilter":[],"MoveHighlightedOptionUp":[],"MoveHighlightedOptionDown":[],"ValueCasingWidthUpdate":["{ width : Basics.Float, height : Basics.Float }"],"ClearAllSelectedOptions":[],"ToggleSelectedValueHighlight":["OptionValue.OptionValue"],"DeleteKeydownForMultiSelect":[],"AddMultiSelectValue":["Basics.Int"],"RemoveMultiSelectValue":["Basics.Int"],"RequestAllOptions":[],"UpdateSearchResultsForOptions":["Json.Encode.Value"],"CustomValidationResponse":["Json.Encode.Value"],"UpdateTransformationAndValidation":["Json.Encode.Value"],"AttributeChanged":["( String.String, String.String )"],"AttributeRemoved":["String.String"],"CustomOptionHintChanged":["String.String"],"SelectedValueEncodingChanged":["String.String"],"SelectionConfigRequested":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Option.Option":{"args":[],"tags":{"Option":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Option.OptionDescription","Option.OptionGroup","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"CustomOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"DatalistOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue"],"EmptyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel"]}},"OptionValue.OptionValue":{"args":[],"tags":{"OptionValue":["String.String"],"EmptyOptionValue":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"List.List":{"args":["a"],"tags":{}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Option.OptionDescription":{"args":[],"tags":{"OptionDescription":["String.String","Maybe.Maybe String.String"],"NoDescription":[]}},"OptionDisplay.OptionDisplay":{"args":[],"tags":{"OptionShown":["OptionDisplay.OptionAge"],"OptionHidden":[],"OptionSelected":["Basics.Int","OptionDisplay.OptionAge"],"OptionSelectedAndInvalid":["Basics.Int","List.List TransformAndValidate.ValidationFailureMessage"],"OptionSelectedPendingValidation":["Basics.Int"],"OptionSelectedHighlighted":["Basics.Int"],"OptionHighlighted":[],"OptionActivated":[],"OptionDisabled":["OptionDisplay.OptionAge"]}},"Option.OptionGroup":{"args":[],"tags":{"OptionGroup":["String.String"],"NoOptionGroup":[]}},"OptionLabel.OptionLabel":{"args":[],"tags":{"OptionLabel":["String.String","Maybe.Maybe String.String","SortRank.SortRank"]}},"OptionDisplay.OptionAge":{"args":[],"tags":{"NewOption":[],"MatureOption":[]}},"SortRank.SortRank":{"args":[],"tags":{"Auto":["PositiveInt.PositiveInt"],"Manual":["PositiveInt.PositiveInt"],"NoSortRank":[]}},"TransformAndValidate.ValidationFailureMessage":{"args":[],"tags":{"ValidationFailureMessage":["TransformAndValidate.ValidationReportLevel","TransformAndValidate.ValidationErrorMessage"]}},"PositiveInt.PositiveInt":{"args":[],"tags":{"PositiveInt":["Basics.Int"]}},"TransformAndValidate.ValidationErrorMessage":{"args":[],"tags":{"ValidationErrorMessage":["String.String"]}},"TransformAndValidate.ValidationReportLevel":{"args":[],"tags":{"SilentError":[],"ShowError":[]}}}}})}});}(this));
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))({"versions":{"elm":"0.19.1"},"types":{"message":"MuchSelect.Msg","aliases":{"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"},"OptionSearchFilter.OptionSearchFilter":{"args":[],"type":"{ totalScore : Basics.Int, bestScore : Basics.Int, labelTokens : List.List ( Basics.Bool, String.String ), descriptionTokens : List.List ( Basics.Bool, String.String ), groupTokens : List.List ( Basics.Bool, String.String ) }"}},"unions":{"MuchSelect.Msg":{"args":[],"tags":{"NoOp":[],"BringInputInFocus":[],"BringInputOutOfFocus":[],"InputBlur":[],"InputFocus":[],"DropdownMouseOverOption":["OptionValue.OptionValue"],"DropdownMouseOutOption":["OptionValue.OptionValue"],"DropdownMouseDownOption":["OptionValue.OptionValue"],"DropdownMouseUpOption":["OptionValue.OptionValue"],"UpdateSearchString":["String.String"],"SearchStringSteady":[],"UpdateOptionValueValue":["Basics.Int","String.String"],"TextInputOnInput":["String.String"],"ValueChanged":["Json.Decode.Value"],"OptionsReplaced":["Json.Decode.Value"],"OptionSortingChanged":["String.String"],"AddOptions":["Json.Decode.Value"],"RemoveOptions":["Json.Decode.Value"],"SelectOption":["Json.Decode.Value"],"DeselectOption":["Json.Decode.Value"],"DeselectOptionInternal":["Option.Option"],"PlaceholderAttributeChanged":["( Basics.Bool, String.String )"],"LoadingAttributeChanged":["Basics.Bool"],"MaxDropdownItemsChanged":["Basics.Int"],"ShowDropdownFooterChanged":["Basics.Bool"],"AllowCustomOptionsChanged":["( Basics.Bool, String.String )"],"DisabledAttributeChanged":["Basics.Bool"],"MultiSelectAttributeChanged":["Basics.Bool"],"MultiSelectSingleItemRemovalAttributeChanged":["Basics.Bool"],"SearchStringMinimumLengthAttributeChanged":["Basics.Int"],"SelectedItemStaysInPlaceChanged":["Basics.Bool"],"OutputStyleChanged":["String.String"],"SelectHighlightedOption":[],"DeleteInputForSingleSelect":[],"EscapeKeyInInputFilter":[],"MoveHighlightedOptionUp":[],"MoveHighlightedOptionDown":[],"ValueCasingWidthUpdate":["{ width : Basics.Float, height : Basics.Float }"],"ClearAllSelectedOptions":[],"ToggleSelectedValueHighlight":["OptionValue.OptionValue"],"DeleteKeydownForMultiSelect":[],"AddMultiSelectValue":["Basics.Int"],"RemoveMultiSelectValue":["Basics.Int"],"RequestAllOptions":[],"UpdateSearchResultsForOptions":["Json.Encode.Value"],"CustomValidationResponse":["Json.Encode.Value"],"UpdateTransformationAndValidation":["Json.Encode.Value"],"AttributeChanged":["( String.String, String.String )"],"AttributeRemoved":["String.String"],"CustomOptionHintChanged":["String.String"],"SelectedValueEncodingChanged":["String.String"],"SelectionConfigRequested":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Option.Option":{"args":[],"tags":{"Option":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Option.OptionDescription","Option.OptionGroup","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"CustomOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"DatalistOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue"],"EmptyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel"]}},"OptionValue.OptionValue":{"args":[],"tags":{"OptionValue":["String.String"],"EmptyOptionValue":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"List.List":{"args":["a"],"tags":{}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Option.OptionDescription":{"args":[],"tags":{"OptionDescription":["String.String","Maybe.Maybe String.String"],"NoDescription":[]}},"OptionDisplay.OptionDisplay":{"args":[],"tags":{"OptionShown":["OptionDisplay.OptionAge"],"OptionHidden":[],"OptionSelected":["Basics.Int","OptionDisplay.OptionAge"],"OptionSelectedAndInvalid":["Basics.Int","List.List TransformAndValidate.ValidationFailureMessage"],"OptionSelectedPendingValidation":["Basics.Int"],"OptionSelectedHighlighted":["Basics.Int"],"OptionHighlighted":[],"OptionActivated":[],"OptionDisabled":["OptionDisplay.OptionAge"]}},"Option.OptionGroup":{"args":[],"tags":{"OptionGroup":["String.String"],"NoOptionGroup":[]}},"OptionLabel.OptionLabel":{"args":[],"tags":{"OptionLabel":["String.String","Maybe.Maybe String.String","SortRank.SortRank"]}},"OptionDisplay.OptionAge":{"args":[],"tags":{"NewOption":[],"MatureOption":[]}},"SortRank.SortRank":{"args":[],"tags":{"Auto":["PositiveInt.PositiveInt"],"Manual":["PositiveInt.PositiveInt"],"NoSortRank":[]}},"TransformAndValidate.ValidationFailureMessage":{"args":[],"tags":{"ValidationFailureMessage":["TransformAndValidate.ValidationReportLevel","TransformAndValidate.ValidationErrorMessage"]}},"PositiveInt.PositiveInt":{"args":[],"tags":{"PositiveInt":["Basics.Int"]}},"TransformAndValidate.ValidationErrorMessage":{"args":[],"tags":{"ValidationErrorMessage":["String.String"]}},"TransformAndValidate.ValidationReportLevel":{"args":[],"tags":{"SilentError":[],"ShowError":[]}}}}})}});}(this));
 */
 export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
 	A2(
 		$elm$json$Json$Decode$andThen,
-		function (value) {
+		function (transformationAndValidationJson) {
 			return A2(
 				$elm$json$Json$Decode$andThen,
-				function (transformationAndValidationJson) {
+				function (showDropdownFooter) {
 					return A2(
 						$elm$json$Json$Decode$andThen,
-						function (showDropdownFooter) {
+						function (selectedValueEncoding) {
 							return A2(
 								$elm$json$Json$Decode$andThen,
-								function (selectedValueEncoding) {
+								function (selectedValue) {
 									return A2(
 										$elm$json$Json$Decode$andThen,
 										function (selectedItemStaysInPlace) {
@@ -20265,7 +20328,7 @@ export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
 																																				$elm$json$Json$Decode$andThen,
 																																				function (allowCustomOptions) {
 																																					return $elm$json$Json$Decode$succeed(
-																																						{allowCustomOptions: allowCustomOptions, allowMultiSelect: allowMultiSelect, customOptionHint: customOptionHint, disabled: disabled, enableMultiSelectSingleItemRemoval: enableMultiSelectSingleItemRemoval, isEventsOnly: isEventsOnly, loading: loading, maxDropdownItems: maxDropdownItems, optionSort: optionSort, optionsJson: optionsJson, outputStyle: outputStyle, placeholder: placeholder, searchStringMinimumLength: searchStringMinimumLength, selectedItemStaysInPlace: selectedItemStaysInPlace, selectedValueEncoding: selectedValueEncoding, showDropdownFooter: showDropdownFooter, transformationAndValidationJson: transformationAndValidationJson, value: value});
+																																						{allowCustomOptions: allowCustomOptions, allowMultiSelect: allowMultiSelect, customOptionHint: customOptionHint, disabled: disabled, enableMultiSelectSingleItemRemoval: enableMultiSelectSingleItemRemoval, isEventsOnly: isEventsOnly, loading: loading, maxDropdownItems: maxDropdownItems, optionSort: optionSort, optionsJson: optionsJson, outputStyle: outputStyle, placeholder: placeholder, searchStringMinimumLength: searchStringMinimumLength, selectedItemStaysInPlace: selectedItemStaysInPlace, selectedValue: selectedValue, selectedValueEncoding: selectedValueEncoding, showDropdownFooter: showDropdownFooter, transformationAndValidationJson: transformationAndValidationJson});
 																																				},
 																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
 																																		},
@@ -20317,11 +20380,11 @@ export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
 										},
 										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
 								},
-								A2($elm$json$Json$Decode$field, 'selectedValueEncoding', $elm$json$Json$Decode$string));
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
 						},
-						A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+						A2($elm$json$Json$Decode$field, 'selectedValueEncoding', $elm$json$Json$Decode$string));
 				},
-				A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string));
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
 		},
-		A2($elm$json$Json$Decode$field, 'value', $elm$json$Json$Decode$value)))({"versions":{"elm":"0.19.1"},"types":{"message":"MuchSelect.Msg","aliases":{"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"},"OptionSearchFilter.OptionSearchFilter":{"args":[],"type":"{ totalScore : Basics.Int, bestScore : Basics.Int, labelTokens : List.List ( Basics.Bool, String.String ), descriptionTokens : List.List ( Basics.Bool, String.String ), groupTokens : List.List ( Basics.Bool, String.String ) }"}},"unions":{"MuchSelect.Msg":{"args":[],"tags":{"NoOp":[],"BringInputInFocus":[],"BringInputOutOfFocus":[],"InputBlur":[],"InputFocus":[],"DropdownMouseOverOption":["OptionValue.OptionValue"],"DropdownMouseOutOption":["OptionValue.OptionValue"],"DropdownMouseDownOption":["OptionValue.OptionValue"],"DropdownMouseUpOption":["OptionValue.OptionValue"],"UpdateSearchString":["String.String"],"SearchStringSteady":[],"UpdateOptionValueValue":["Basics.Int","String.String"],"TextInputOnInput":["String.String"],"ValueChanged":["Json.Decode.Value"],"OptionsReplaced":["Json.Decode.Value"],"OptionSortingChanged":["String.String"],"AddOptions":["Json.Decode.Value"],"RemoveOptions":["Json.Decode.Value"],"SelectOption":["Json.Decode.Value"],"DeselectOption":["Json.Decode.Value"],"DeselectOptionInternal":["Option.Option"],"PlaceholderAttributeChanged":["( Basics.Bool, String.String )"],"LoadingAttributeChanged":["Basics.Bool"],"MaxDropdownItemsChanged":["Basics.Int"],"ShowDropdownFooterChanged":["Basics.Bool"],"AllowCustomOptionsChanged":["( Basics.Bool, String.String )"],"DisabledAttributeChanged":["Basics.Bool"],"MultiSelectAttributeChanged":["Basics.Bool"],"MultiSelectSingleItemRemovalAttributeChanged":["Basics.Bool"],"SearchStringMinimumLengthAttributeChanged":["Basics.Int"],"SelectedItemStaysInPlaceChanged":["Basics.Bool"],"OutputStyleChanged":["String.String"],"SelectHighlightedOption":[],"DeleteInputForSingleSelect":[],"EscapeKeyInInputFilter":[],"MoveHighlightedOptionUp":[],"MoveHighlightedOptionDown":[],"ValueCasingWidthUpdate":["{ width : Basics.Float, height : Basics.Float }"],"ClearAllSelectedOptions":[],"ToggleSelectedValueHighlight":["OptionValue.OptionValue"],"DeleteKeydownForMultiSelect":[],"AddMultiSelectValue":["Basics.Int"],"RemoveMultiSelectValue":["Basics.Int"],"RequestAllOptions":[],"UpdateSearchResultsForOptions":["Json.Encode.Value"],"CustomValidationResponse":["Json.Encode.Value"],"UpdateTransformationAndValidation":["Json.Encode.Value"],"AttributeChanged":["( String.String, String.String )"],"AttributeRemoved":["String.String"],"CustomOptionHintChanged":["String.String"],"SelectedValueEncodingChanged":["String.String"],"SelectionConfigRequested":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Option.Option":{"args":[],"tags":{"Option":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Option.OptionDescription","Option.OptionGroup","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"CustomOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"DatalistOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue"],"EmptyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel"]}},"OptionValue.OptionValue":{"args":[],"tags":{"OptionValue":["String.String"],"EmptyOptionValue":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"List.List":{"args":["a"],"tags":{}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Option.OptionDescription":{"args":[],"tags":{"OptionDescription":["String.String","Maybe.Maybe String.String"],"NoDescription":[]}},"OptionDisplay.OptionDisplay":{"args":[],"tags":{"OptionShown":["OptionDisplay.OptionAge"],"OptionHidden":[],"OptionSelected":["Basics.Int","OptionDisplay.OptionAge"],"OptionSelectedAndInvalid":["Basics.Int","List.List TransformAndValidate.ValidationFailureMessage"],"OptionSelectedPendingValidation":["Basics.Int"],"OptionSelectedHighlighted":["Basics.Int"],"OptionHighlighted":[],"OptionActivated":[],"OptionDisabled":["OptionDisplay.OptionAge"]}},"Option.OptionGroup":{"args":[],"tags":{"OptionGroup":["String.String"],"NoOptionGroup":[]}},"OptionLabel.OptionLabel":{"args":[],"tags":{"OptionLabel":["String.String","Maybe.Maybe String.String","SortRank.SortRank"]}},"OptionDisplay.OptionAge":{"args":[],"tags":{"NewOption":[],"MatureOption":[]}},"SortRank.SortRank":{"args":[],"tags":{"Auto":["PositiveInt.PositiveInt"],"Manual":["PositiveInt.PositiveInt"],"NoSortRank":[]}},"TransformAndValidate.ValidationFailureMessage":{"args":[],"tags":{"ValidationFailureMessage":["TransformAndValidate.ValidationReportLevel","TransformAndValidate.ValidationErrorMessage"]}},"PositiveInt.PositiveInt":{"args":[],"tags":{"PositiveInt":["Basics.Int"]}},"TransformAndValidate.ValidationErrorMessage":{"args":[],"tags":{"ValidationErrorMessage":["String.String"]}},"TransformAndValidate.ValidationReportLevel":{"args":[],"tags":{"SilentError":[],"ShowError":[]}}}}})}};
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))({"versions":{"elm":"0.19.1"},"types":{"message":"MuchSelect.Msg","aliases":{"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"},"OptionSearchFilter.OptionSearchFilter":{"args":[],"type":"{ totalScore : Basics.Int, bestScore : Basics.Int, labelTokens : List.List ( Basics.Bool, String.String ), descriptionTokens : List.List ( Basics.Bool, String.String ), groupTokens : List.List ( Basics.Bool, String.String ) }"}},"unions":{"MuchSelect.Msg":{"args":[],"tags":{"NoOp":[],"BringInputInFocus":[],"BringInputOutOfFocus":[],"InputBlur":[],"InputFocus":[],"DropdownMouseOverOption":["OptionValue.OptionValue"],"DropdownMouseOutOption":["OptionValue.OptionValue"],"DropdownMouseDownOption":["OptionValue.OptionValue"],"DropdownMouseUpOption":["OptionValue.OptionValue"],"UpdateSearchString":["String.String"],"SearchStringSteady":[],"UpdateOptionValueValue":["Basics.Int","String.String"],"TextInputOnInput":["String.String"],"ValueChanged":["Json.Decode.Value"],"OptionsReplaced":["Json.Decode.Value"],"OptionSortingChanged":["String.String"],"AddOptions":["Json.Decode.Value"],"RemoveOptions":["Json.Decode.Value"],"SelectOption":["Json.Decode.Value"],"DeselectOption":["Json.Decode.Value"],"DeselectOptionInternal":["Option.Option"],"PlaceholderAttributeChanged":["( Basics.Bool, String.String )"],"LoadingAttributeChanged":["Basics.Bool"],"MaxDropdownItemsChanged":["Basics.Int"],"ShowDropdownFooterChanged":["Basics.Bool"],"AllowCustomOptionsChanged":["( Basics.Bool, String.String )"],"DisabledAttributeChanged":["Basics.Bool"],"MultiSelectAttributeChanged":["Basics.Bool"],"MultiSelectSingleItemRemovalAttributeChanged":["Basics.Bool"],"SearchStringMinimumLengthAttributeChanged":["Basics.Int"],"SelectedItemStaysInPlaceChanged":["Basics.Bool"],"OutputStyleChanged":["String.String"],"SelectHighlightedOption":[],"DeleteInputForSingleSelect":[],"EscapeKeyInInputFilter":[],"MoveHighlightedOptionUp":[],"MoveHighlightedOptionDown":[],"ValueCasingWidthUpdate":["{ width : Basics.Float, height : Basics.Float }"],"ClearAllSelectedOptions":[],"ToggleSelectedValueHighlight":["OptionValue.OptionValue"],"DeleteKeydownForMultiSelect":[],"AddMultiSelectValue":["Basics.Int"],"RemoveMultiSelectValue":["Basics.Int"],"RequestAllOptions":[],"UpdateSearchResultsForOptions":["Json.Encode.Value"],"CustomValidationResponse":["Json.Encode.Value"],"UpdateTransformationAndValidation":["Json.Encode.Value"],"AttributeChanged":["( String.String, String.String )"],"AttributeRemoved":["String.String"],"CustomOptionHintChanged":["String.String"],"SelectedValueEncodingChanged":["String.String"],"SelectionConfigRequested":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Option.Option":{"args":[],"tags":{"Option":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Option.OptionDescription","Option.OptionGroup","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"CustomOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"DatalistOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue"],"EmptyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel"]}},"OptionValue.OptionValue":{"args":[],"tags":{"OptionValue":["String.String"],"EmptyOptionValue":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"List.List":{"args":["a"],"tags":{}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Option.OptionDescription":{"args":[],"tags":{"OptionDescription":["String.String","Maybe.Maybe String.String"],"NoDescription":[]}},"OptionDisplay.OptionDisplay":{"args":[],"tags":{"OptionShown":["OptionDisplay.OptionAge"],"OptionHidden":[],"OptionSelected":["Basics.Int","OptionDisplay.OptionAge"],"OptionSelectedAndInvalid":["Basics.Int","List.List TransformAndValidate.ValidationFailureMessage"],"OptionSelectedPendingValidation":["Basics.Int"],"OptionSelectedHighlighted":["Basics.Int"],"OptionHighlighted":[],"OptionActivated":[],"OptionDisabled":["OptionDisplay.OptionAge"]}},"Option.OptionGroup":{"args":[],"tags":{"OptionGroup":["String.String"],"NoOptionGroup":[]}},"OptionLabel.OptionLabel":{"args":[],"tags":{"OptionLabel":["String.String","Maybe.Maybe String.String","SortRank.SortRank"]}},"OptionDisplay.OptionAge":{"args":[],"tags":{"NewOption":[],"MatureOption":[]}},"SortRank.SortRank":{"args":[],"tags":{"Auto":["PositiveInt.PositiveInt"],"Manual":["PositiveInt.PositiveInt"],"NoSortRank":[]}},"TransformAndValidate.ValidationFailureMessage":{"args":[],"tags":{"ValidationFailureMessage":["TransformAndValidate.ValidationReportLevel","TransformAndValidate.ValidationErrorMessage"]}},"PositiveInt.PositiveInt":{"args":[],"tags":{"PositiveInt":["Basics.Int"]}},"TransformAndValidate.ValidationErrorMessage":{"args":[],"tags":{"ValidationErrorMessage":["String.String"]}},"TransformAndValidate.ValidationReportLevel":{"args":[],"tags":{"SilentError":[],"ShowError":[]}}}}})}};
   

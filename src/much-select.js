@@ -994,7 +994,7 @@ class MuchSelect extends HTMLElement {
       flags.enableMultiSelectSingleItemRemoval = false;
     }
 
-    flags.value = this.parsedSelectedValue;
+    // flags.value = this.parsedSelectedValue;
 
     if (this.hasAttribute("placeholder")) {
       flags.placeholder = [true, this.getAttribute("placeholder").trim()];
@@ -1070,6 +1070,17 @@ class MuchSelect extends HTMLElement {
     }
 
     const selectElement = this.querySelector("select[slot='select-input']");
+    if (this.hasAttribute("selected-value")) {
+      if (selectElement.querySelector("option[selected]")) {
+        throw new Error(
+          "MuchSelect does not support using the selected-value attribute and selected options in the selected-value slot."
+        );
+      }
+      flags.selectedValue = this.getAttribute("selected-value");
+    } else {
+      flags.selectedValue = "";
+    }
+
     if (selectElement) {
       flags.optionsJson = JSON.stringify(
         buildOptionsFromSelectElement(selectElement)
@@ -1352,42 +1363,42 @@ class MuchSelect extends HTMLElement {
     }
   }
 
-  get parsedSelectedValue() {
-    if (this.selectedValueEncoding === "comma") {
-      if (this.selectedValue) {
-        return this.selectedValue.split(",");
-      }
-      return [];
-    }
-    if (this.selectedValueEncoding === "json") {
-      if (this.isInMultiSelectMode) {
-        if (this.selectedValue === "") {
-          // a special case because an empty string is not valid JSON.
-          return [];
-        }
-        return JSON.parse(decodeURIComponent(this.selectedValue));
-      }
-      if (this.selectedValue === "") {
-        // a special case because an empty string is not valid JSON.
-        return "";
-      }
-      const val = JSON.parse(decodeURIComponent(this.selectedValue));
-      if (Array.isArray(val)) {
-        return val.shift();
-      }
-      if (val === undefined) {
-        return null;
-      }
-      return val;
-    }
-    throw new Error(
-      `Unknown selected value encoding, something is very wrong: ${this.selectedValueEncoding}`
-    );
-  }
+  // get parsedSelectedValue() {
+  //   if (this.selectedValueEncoding === "comma") {
+  //     if (this.selectedValue) {
+  //       return this.selectedValue.split(",");
+  //     }
+  //     return [];
+  //   }
+  //   if (this.selectedValueEncoding === "json") {
+  //     if (this.isInMultiSelectMode) {
+  //       if (this.selectedValue === "") {
+  //         // a special case because an empty string is not valid JSON.
+  //         return [];
+  //       }
+  //       return JSON.parse(decodeURIComponent(this.selectedValue));
+  //     }
+  //     if (this.selectedValue === "") {
+  //       // a special case because an empty string is not valid JSON.
+  //       return "";
+  //     }
+  //     const val = JSON.parse(decodeURIComponent(this.selectedValue));
+  //     if (Array.isArray(val)) {
+  //       return val.shift();
+  //     }
+  //     if (val === undefined) {
+  //       return null;
+  //     }
+  //     return val;
+  //   }
+  //   throw new Error(
+  //     `Unknown selected value encoding, something is very wrong: ${this.selectedValueEncoding}`
+  //   );
+  // }
 
-  set parsedSelectedValue(values) {
-    this.selectedValue = this._makeSelectedValue(values);
-  }
+  // set parsedSelectedValue(values) {
+  //   this.selectedValue = this._makeSelectedValue(values);
+  // }
 
   /**
    * This method takes a selected value, and it returns a string of the "parsed"
@@ -1397,23 +1408,23 @@ class MuchSelect extends HTMLElement {
    * @returns {string|*}
    * @private
    */
-  _makeSelectedValue(values) {
-    if (this.selectedValueEncoding === "comma") {
-      if (Array.isArray(values)) {
-        return values.join(",");
-      }
-      // This should be a string or possibly a null.
-      return values;
-    }
-    if (this.selectedValueEncoding === "json") {
-      if (values === "") {
-        // The empty string here is a special case because we don't want to encode an empty string.
-        return "";
-      }
-      return encodeURIComponent(JSON.stringify(values));
-    }
-    return "";
-  }
+  // _makeSelectedValue(values) {
+  //   if (this.selectedValueEncoding === "comma") {
+  //     if (Array.isArray(values)) {
+  //       return values.join(",");
+  //     }
+  //     // This should be a string or possibly a null.
+  //     return values;
+  //   }
+  //   if (this.selectedValueEncoding === "json") {
+  //     if (values === "") {
+  //       // The empty string here is a special case because we don't want to encode an empty string.
+  //       return "";
+  //     }
+  //     return encodeURIComponent(JSON.stringify(values));
+  //   }
+  //   return "";
+  // }
 
   /**
    * This is a "sync" function, so this is kinda like a "set" function but the
