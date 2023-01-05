@@ -1336,7 +1336,14 @@ update msg model =
                             )
 
                 "selected-option-goes-to-top" ->
-                    ( model, NoEffect )
+                    ( { model
+                        | selectionConfig =
+                            setSelectedItemStaysInPlaceWithBool
+                                False
+                                model.selectionConfig
+                      }
+                    , NoEffect
+                    )
 
                 "selected-value" ->
                     ( model, NoEffect )
@@ -1345,7 +1352,11 @@ update msg model =
                     ( model, NoEffect )
 
                 "show-dropdown-footer" ->
-                    ( model, NoEffect )
+                    ( { model
+                        | selectionConfig = setDropdownStyle ShowFooter model.selectionConfig
+                      }
+                    , NoEffect
+                    )
 
                 unknownAttribute ->
                     ( model, ReportErrorMessage ("Unknown attribute: " ++ unknownAttribute) )
@@ -1462,7 +1473,14 @@ update msg model =
                     )
 
                 "selected-option-goes-to-top" ->
-                    ( model, NoEffect )
+                    ( { model
+                        | selectionConfig =
+                            setSelectedItemStaysInPlaceWithBool
+                                True
+                                model.selectionConfig
+                      }
+                    , NoEffect
+                    )
 
                 "selected-value" ->
                     ( model, NoEffect )
@@ -1471,7 +1489,11 @@ update msg model =
                     ( model, NoEffect )
 
                 "show-dropdown-footer" ->
-                    ( model, NoEffect )
+                    ( { model
+                        | selectionConfig = setDropdownStyle NoFooter model.selectionConfig
+                      }
+                    , NoEffect
+                    )
 
                 unknownAttribute ->
                     ( model, ReportErrorMessage ("Unknown attribute: " ++ unknownAttribute) )

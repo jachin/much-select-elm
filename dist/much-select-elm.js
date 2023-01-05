@@ -12200,13 +12200,25 @@ var $author$project$MuchSelect$update = F2(
 								$author$project$MuchSelect$ReportErrorMessage('Search string minimum length needs to be a positive integer'));
 						}
 					case 'selected-option-goes-to-top':
-						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									a: A2($author$project$SelectionMode$setSelectedItemStaysInPlaceWithBool, false, model.a)
+								}),
+							$author$project$MuchSelect$NoEffect);
 					case 'selected-value':
 						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
 					case 'selected-value-encoding':
 						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
 					case 'show-dropdown-footer':
-						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									a: A2($author$project$SelectionMode$setDropdownStyle, 1, model.a)
+								}),
+							$author$project$MuchSelect$NoEffect);
 					default:
 						var unknownAttribute = attributeName;
 						return _Utils_Tuple2(
@@ -12326,13 +12338,25 @@ var $author$project$MuchSelect$update = F2(
 									})),
 							$author$project$MuchSelect$NoEffect);
 					case 'selected-option-goes-to-top':
-						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									a: A2($author$project$SelectionMode$setSelectedItemStaysInPlaceWithBool, true, model.a)
+								}),
+							$author$project$MuchSelect$NoEffect);
 					case 'selected-value':
 						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
 					case 'selected-value-encoding':
 						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
 					case 'show-dropdown-footer':
-						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									a: A2($author$project$SelectionMode$setDropdownStyle, 0, model.a)
+								}),
+							$author$project$MuchSelect$NoEffect);
 					default:
 						var unknownAttribute = attributeName;
 						return _Utils_Tuple2(
