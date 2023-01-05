@@ -3325,7 +3325,7 @@ init flags =
                             SelectionMode.MultiSelect ->
                                 updateRightSlotForDatalist optionsWithInitialValueSelectedSorted
 
-      -- TODO Should these be passed as flags?
+      -- TODO Should the value casing's initial values be passed in as flags?
       , valueCasing = ValueCasing 100 45
       , selectedValueEncoding = selectedValueEncoding
       }
