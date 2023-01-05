@@ -5742,14 +5742,19 @@ var $author$project$SelectionMode$defaultSelectionConfig = A3(
 	_Utils_Tuple2(false, ''),
 	1);
 var $author$project$SelectedValueEncoding$JsonEncoded = 1;
-var $author$project$SelectedValueEncoding$fromString = function (string) {
-	switch (string) {
-		case 'json':
-			return $elm$core$Result$Ok(1);
-		case 'comma':
-			return $elm$core$Result$Ok(0);
-		default:
-			return $elm$core$Result$Err('Invalid selected value encoding: ' + string);
+var $author$project$SelectedValueEncoding$fromMaybeString = function (maybeString) {
+	if (!maybeString.$) {
+		var string = maybeString.a;
+		switch (string) {
+			case 'json':
+				return $elm$core$Result$Ok(1);
+			case 'comma':
+				return $elm$core$Result$Ok(0);
+			default:
+				return $elm$core$Result$Err('Invalid selected value encoding: ' + string);
+		}
+	} else {
+		return $elm$core$Result$Ok($author$project$SelectedValueEncoding$defaultSelectedValueEncoding);
 	}
 };
 var $author$project$MuchSelect$getDebouceDelayForSearch = function (numberOfOptions) {
@@ -6980,7 +6985,7 @@ var $author$project$MuchSelect$init = function (flags) {
 	var selectedValueEncoding = A2(
 		$elm$core$Result$withDefault,
 		$author$project$SelectedValueEncoding$defaultSelectedValueEncoding,
-		$author$project$SelectedValueEncoding$fromString(flags.aa));
+		$author$project$SelectedValueEncoding$fromMaybeString(flags.aa));
 	var optionSort = A2(
 		$elm$core$Result$withDefault,
 		0,
@@ -9506,6 +9511,16 @@ var $author$project$PositiveInt$fromString = function (str) {
 		$elm$core$Maybe$andThen,
 		$author$project$PositiveInt$maybeNew,
 		$elm$core$String$toInt(str));
+};
+var $author$project$SelectedValueEncoding$fromString = function (string) {
+	switch (string) {
+		case 'json':
+			return $elm$core$Result$Ok(1);
+		case 'comma':
+			return $elm$core$Result$Ok(0);
+		default:
+			return $elm$core$Result$Err('Invalid selected value encoding: ' + string);
+	}
 };
 var $author$project$SelectionMode$getSearchStringMinimumLength = function (selectionConfig) {
 	if (!selectionConfig.$) {
@@ -15070,7 +15085,15 @@ _Platform_export({'MuchSelect':{'init':$author$project$MuchSelect$main(
 								},
 								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
 						},
-						A2($elm$json$Json$Decode$field, 'selectedValueEncoding', $elm$json$Json$Decode$string));
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
 				},
 				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
 		},
@@ -15194,7 +15217,15 @@ export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
 								},
 								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
 						},
-						A2($elm$json$Json$Decode$field, 'selectedValueEncoding', $elm$json$Json$Decode$string));
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
 				},
 				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
 		},

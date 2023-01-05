@@ -14,6 +14,24 @@ defaultSelectedValueEncoding =
     CommaSeperated
 
 
+fromMaybeString : Maybe String -> Result String SelectedValueEncoding
+fromMaybeString maybeString =
+    case maybeString of
+        Just string ->
+            case string of
+                "json" ->
+                    Ok JsonEncoded
+
+                "comma" ->
+                    Ok CommaSeperated
+
+                _ ->
+                    Err ("Invalid selected value encoding: " ++ string)
+
+        Nothing ->
+            Ok defaultSelectedValueEncoding
+
+
 fromString : String -> Result String SelectedValueEncoding
 fromString string =
     case string of

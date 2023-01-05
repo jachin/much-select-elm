@@ -3191,7 +3191,7 @@ makeCommandMessageForInitialValue selectedOptions =
 
 type alias Flags =
     { selectedValue : String
-    , selectedValueEncoding : String
+    , selectedValueEncoding : Maybe String
     , optionsJson : String
     , isEventsOnly : Bool
     , placeholder : ( Bool, String )
@@ -3246,7 +3246,7 @@ init flags =
 
         -- TODO report an error if this is an inlaid value
         selectedValueEncoding =
-            SelectedValueEncoding.fromString flags.selectedValueEncoding
+            SelectedValueEncoding.fromMaybeString flags.selectedValueEncoding
                 |> Result.withDefault SelectedValueEncoding.defaultSelectedValueEncoding
 
         ( initialValues, initialValueErrEffect ) =

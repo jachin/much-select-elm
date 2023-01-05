@@ -23,7 +23,7 @@ flagsDatalistSingle : Flags
 flagsDatalistSingle =
     { isEventsOnly = False
     , selectedValue = ""
-    , selectedValueEncoding = "comma"
+    , selectedValueEncoding = Nothing
     , placeholder = ( True, "" )
     , customOptionHint = Nothing
     , allowMultiSelect = False

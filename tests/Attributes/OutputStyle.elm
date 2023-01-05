@@ -41,7 +41,7 @@ flagsDatalistSingle : Flags
 flagsDatalistSingle =
     { isEventsOnly = False
     , selectedValue = ""
-    , selectedValueEncoding = "comma"
+    , selectedValueEncoding = Nothing
     , placeholder = ( True, "" )
     , customOptionHint = Nothing
     , allowMultiSelect = False
@@ -64,7 +64,7 @@ flagsCustomHtmlSingle : Flags
 flagsCustomHtmlSingle =
     { isEventsOnly = False
     , selectedValue = ""
-    , selectedValueEncoding = "comma"
+    , selectedValueEncoding = Nothing
     , placeholder = ( True, "" )
     , customOptionHint = Nothing
     , allowMultiSelect = False

@@ -18,7 +18,7 @@ flagsEmptyOptionsWithOrangeSelected : Flags
 flagsEmptyOptionsWithOrangeSelected =
     { isEventsOnly = False
     , selectedValue = "Orange"
-    , selectedValueEncoding = "comma"
+    , selectedValueEncoding = Nothing
     , placeholder = ( True, "What is your favorite color" )
     , customOptionHint = Nothing
     , allowMultiSelect = False
@@ -100,7 +100,7 @@ flagsBookOptions : Flags
 flagsBookOptions =
     { isEventsOnly = False
     , selectedValue = ""
-    , selectedValueEncoding = "comma"
+    , selectedValueEncoding = Nothing
     , placeholder = ( True, "A book" )
     , customOptionHint = Nothing
     , allowMultiSelect = False
@@ -123,7 +123,7 @@ flagsBookOptionsWithValue : Flags
 flagsBookOptionsWithValue =
     { isEventsOnly = False
     , selectedValue = "Matilda"
-    , selectedValueEncoding = "comma"
+    , selectedValueEncoding = Nothing
     , placeholder = ( True, "A book" )
     , customOptionHint = Nothing
     , allowMultiSelect = False
@@ -146,7 +146,7 @@ flagsBookOptionsWithSelected : Flags
 flagsBookOptionsWithSelected =
     { isEventsOnly = False
     , selectedValue = ""
-    , selectedValueEncoding = "comma"
+    , selectedValueEncoding = Nothing
     , placeholder = ( True, "A book" )
     , customOptionHint = Nothing
     , allowMultiSelect = False

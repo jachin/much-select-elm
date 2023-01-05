@@ -42,7 +42,7 @@ flagsBookOptionsWithSelected : Flags
 flagsBookOptionsWithSelected =
     { isEventsOnly = False
     , selectedValue = ""
-    , selectedValueEncoding = "comma"
+    , selectedValueEncoding = Nothing
     , placeholder = ( True, "A book" )
     , customOptionHint = Nothing
     , allowMultiSelect = False

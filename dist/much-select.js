@@ -1437,7 +1437,7 @@ class MuchSelect extends HTMLElement {
    * @private
    */
   _syncParseSelectedValue(values) {
-    this._syncSelectedValue(this._makeSelectedValue(values));
+    // this._syncSelectedValue(this._makeSelectedValue(values));
   }
 
   get placeholder() {
