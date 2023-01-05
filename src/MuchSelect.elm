@@ -113,7 +113,8 @@ import Ports
         , customValidationReceiver
         , deselectOptionReceiver
         , disableChangedReceiver
-        , dumpSelectionConfig
+        , dumpConfigState
+        , dumpSelectedValues
         , errorMessage
         , focusInput
         , initialValueSet
@@ -135,7 +136,7 @@ import Ports
         , placeholderChangedReceiver
         , removeOptionsReceiver
         , requestAllOptionsReceiver
-        , requestSelectionConfig
+        , requestConfigState
         , scrollDropdownToElement
         , searchOptionsWithWebWorker
         , searchStringMinimumLengthChangedReceiver
@@ -225,6 +226,7 @@ type Effect
     | ScrollDownToElement String
     | ReportAllOptions Json.Encode.Value
     | DumpConfigState Json.Encode.Value
+    | DumpSelectedValues Json.Encode.Value
 
 
 type Msg
@@ -283,7 +285,8 @@ type Msg
     | AttributeRemoved String
     | CustomOptionHintChanged String
     | SelectedValueEncodingChanged String
-    | ConfigStateRequested
+    | RequestConfigState
+    | RequestSelectedValues
 
 
 type alias Model =
@@ -1545,7 +1548,7 @@ update msg model =
             , NoEffect
             )
 
-        ConfigStateRequested ->
+        RequestConfigState ->
             ( model
             , DumpConfigState
                 (ConfigDump.encodeConfig
@@ -1553,6 +1556,16 @@ update msg model =
                     model.optionSort
                     model.selectedValueEncoding
                     model.rightSlot
+                )
+            )
+
+        RequestSelectedValues ->
+            ( model
+            , DumpSelectedValues
+                (Json.Encode.list Json.Encode.string
+                    (selectedOptions model.options
+                        |> List.map Option.getOptionValueAsString
+                    )
                 )
             )
 
@@ -1635,7 +1648,10 @@ perform effect =
             initialValueSet value
 
         DumpConfigState value ->
-            dumpSelectionConfig value
+            dumpConfigState value
+
+        DumpSelectedValues value ->
+            dumpSelectedValues value
 
 
 batch : List Effect -> Effect
@@ -3420,7 +3436,7 @@ subscriptions _ =
         , attributeChanged AttributeChanged
         , attributeRemoved AttributeRemoved
         , customOptionHintReceiver CustomOptionHintChanged
-        , requestSelectionConfig (\() -> ConfigStateRequested)
+        , requestConfigState (\() -> RequestConfigState)
         , selectedValueEncodingChangeReceiver SelectedValueEncodingChanged
         ]
 

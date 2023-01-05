@@ -1107,22 +1107,22 @@ class MuchSelect extends HTMLElement {
   valueChangedHandler(valuesObjects, isInitialValueChange = false) {
     const isValid = valuesObjects.filter((v) => !v.isValid).length === 0;
 
-    if (this.isInMultiSelectMode) {
-      const tempSelectedValue = valuesObjects.map(
-        (valueObject) => valueObject.value
-      );
-      this._syncParseSelectedValue(tempSelectedValue);
-    } else {
-      const valueAsArray = valuesObjects.map(
-        (valueObject) => valueObject.value
-      );
-      if (valueAsArray.length === 0) {
-        this._syncParseSelectedValue("");
-      } else if (valueAsArray.length > 0) {
-        const [tempSelectedValue] = valueAsArray;
-        this._syncParseSelectedValue(tempSelectedValue);
-      }
-    }
+    // if (this.isInMultiSelectMode) {
+    //   const tempSelectedValue = valuesObjects.map(
+    //     (valueObject) => valueObject.value
+    //   );
+    //   //this._syncParseSelectedValue(tempSelectedValue);
+    // } else {
+    //   const valueAsArray = valuesObjects.map(
+    //     (valueObject) => valueObject.value
+    //   );
+    //   if (valueAsArray.length === 0) {
+    //     //this._syncParseSelectedValue("");
+    //   } else if (valueAsArray.length > 0) {
+    //     const [tempSelectedValue] = valueAsArray;
+    //     //this._syncParseSelectedValue(tempSelectedValue);
+    //   }
+    // }
 
     if (isValid) {
       this._emitBlurOrUnfocusedValueChanged = true;
@@ -1189,9 +1189,9 @@ class MuchSelect extends HTMLElement {
       );
     }
 
-    this.updateHiddenInputValueSlot();
+    // this.updateHiddenInputValueSlot();
 
-    this.updateSelectInputSlot();
+    // this.updateSelectInputSlot();
   }
 
   customOptionSelected(values) {
@@ -1306,41 +1306,14 @@ class MuchSelect extends HTMLElement {
   }
 
   get selectedValue() {
-    return this._selectedValue;
+    return this.getSelectedValues();
   }
 
   set selectedValue(value) {
     const newSelectedValue = cleanUpSelectedValue(value);
+    this._callValueChanged(newSelectedValue);
 
-    if (newSelectedValue === this._selectedValue) {
-      // No actual change happening here, we can skip all this other stuff.
-      return;
-    }
-
-    this._selectedValue = newSelectedValue;
-
-    if (!this.eventsOnlyMode) {
-      this.setAttribute("selected-value", this._selectedValue);
-    }
-
-    if (this._selectedValue && !this.isInMultiSelectMode) {
-      if (this.parsedSelectedValue === undefined) {
-        // TODO - This case here seems heavy handed, why would parsedSelectedValue
-        //  ever be undefined? I haven't been able to figure that out, so here,
-        //  my "fix".
-        this._callValueChanged(null);
-      } else {
-        this._callValueChanged(this.parsedSelectedValue);
-      }
-    } else if (this._selectedValue && this.isInMultiSelectMode) {
-      this._callValueChanged(this.parsedSelectedValue);
-    } else if (this.isInMultiSelectMode) {
-      this._callValueChanged([]);
-    } else {
-      this._callValueChanged(null);
-    }
-
-    this.updateHiddenInputValueSlot();
+    // this.updateHiddenInputValueSlot();
   }
 
   /**
@@ -1351,19 +1324,19 @@ class MuchSelect extends HTMLElement {
    * @param value
    * @private
    */
-  _syncSelectedValue(value) {
-    const newSelectedValue = cleanUpSelectedValue(value);
-
-    if (newSelectedValue === this._selectedValue) {
-      return;
-    }
-
-    this._selectedValue = newSelectedValue;
-
-    if (!this.eventsOnlyMode) {
-      this.setAttribute("selected-value", this._selectedValue);
-    }
-  }
+  // _syncSelectedValue(value) {
+  //   const newSelectedValue = cleanUpSelectedValue(value);
+  //
+  //   if (newSelectedValue === this._selectedValue) {
+  //     return;
+  //   }
+  //
+  //   this._selectedValue = newSelectedValue;
+  //
+  //   if (!this.eventsOnlyMode) {
+  //     this.setAttribute("selected-value", this._selectedValue);
+  //   }
+  // }
 
   // get parsedSelectedValue() {
   //   if (this.selectedValueEncoding === "comma") {
@@ -1436,9 +1409,9 @@ class MuchSelect extends HTMLElement {
    * @param values
    * @private
    */
-  _syncParseSelectedValue(values) {
-    // this._syncSelectedValue(this._makeSelectedValue(values));
-  }
+  // _syncParseSelectedValue(values) {
+  //   // this._syncSelectedValue(this._makeSelectedValue(values));
+  // }
 
   get placeholder() {
     return this.getConfigValuePromise("placeholder");
@@ -2058,9 +2031,9 @@ class MuchSelect extends HTMLElement {
       const callback = (selectionConfig) => {
         this.appPromise.then((app) => {
           // noinspection JSUnresolvedVariable
-          if (app.ports.requestSelectionConfig.unsubscribe) {
+          if (app.ports.requestConfigState.unsubscribe) {
             // noinspection JSUnresolvedVariable
-            app.ports.requestSelectionConfig.unsubscribe(callback);
+            app.ports.requestConfigState.unsubscribe(callback);
           }
         });
         resolve(selectionConfig);
@@ -2068,9 +2041,31 @@ class MuchSelect extends HTMLElement {
 
       this.appPromise.then((app) => {
         // noinspection JSUnresolvedVariable
-        app.ports.dumpSelectionConfig.subscribe(callback);
+        app.ports.dumpConfigState.subscribe(callback);
         // noinspection JSUnresolvedVariable
-        app.ports.requestSelectionConfig.send(null);
+        app.ports.requestConfigState.send(null);
+      });
+    });
+  }
+
+  async getSelectedValues() {
+    return new Promise((resolve) => {
+      const callback = (selectedValues) => {
+        this.appPromise.then((app) => {
+          // noinspection JSUnresolvedVariable
+          if (app.ports.requestSelectedValues.unsubscribe) {
+            // noinspection JSUnresolvedVariable
+            app.ports.requestSelectedValues.unsubscribe(callback);
+          }
+        });
+        resolve(selectedValues);
+      };
+
+      this.appPromise.then((app) => {
+        // noinspection JSUnresolvedVariable
+        app.ports.dumpSelectedValues.subscribe(callback);
+        // noinspection JSUnresolvedVariable
+        app.ports.requestSelectedValues.send(null);
       });
     });
   }

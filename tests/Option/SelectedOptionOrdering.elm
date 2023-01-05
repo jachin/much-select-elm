@@ -142,7 +142,10 @@ simulatedEffects effect =
             SimulatedEffect.Ports.send "allOptions" value
 
         MuchSelect.DumpConfigState value ->
-            SimulatedEffect.Ports.send "dumpSelectionConfig" value
+            SimulatedEffect.Ports.send "dumpConfigState" value
+
+        MuchSelect.DumpSelectedValues value ->
+            SimulatedEffect.Ports.send "dumpSelectedValues" value
 
 
 simulateSubscriptions : MuchSelect.Model -> ProgramTest.SimulatedSub MuchSelect.Msg

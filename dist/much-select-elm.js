@@ -7172,7 +7172,8 @@ var $grotsev$elm_debouncer$Bounce$delay = F2(
 			$elm$core$Basics$always(msg),
 			$elm$core$Process$sleep(milliseconds));
 	});
-var $author$project$Ports$dumpSelectionConfig = _Platform_outgoingPort('dumpSelectionConfig', $elm$core$Basics$identity);
+var $author$project$Ports$dumpConfigState = _Platform_outgoingPort('dumpConfigState', $elm$core$Basics$identity);
+var $author$project$Ports$dumpSelectedValues = _Platform_outgoingPort('dumpSelectedValues', $elm$core$Basics$identity);
 var $author$project$Ports$errorMessage = _Platform_outgoingPort('errorMessage', $elm$json$Json$Encode$string);
 var $author$project$Ports$focusInput = _Platform_outgoingPort(
 	'focusInput',
@@ -7302,9 +7303,12 @@ var $author$project$MuchSelect$perform = function (effect) {
 		case 20:
 			var value = effect.a;
 			return $author$project$Ports$initialValueSet(value);
+		case 24:
+			var value = effect.a;
+			return $author$project$Ports$dumpConfigState(value);
 		default:
 			var value = effect.a;
-			return $author$project$Ports$dumpSelectionConfig(value);
+			return $author$project$Ports$dumpSelectedValues(value);
 	}
 };
 var $author$project$MuchSelect$AddOptions = function (a) {
@@ -7319,7 +7323,6 @@ var $author$project$MuchSelect$AttributeChanged = function (a) {
 var $author$project$MuchSelect$AttributeRemoved = function (a) {
 	return {$: 48, a: a};
 };
-var $author$project$MuchSelect$ConfigStateRequested = {$: 51};
 var $author$project$MuchSelect$CustomOptionHintChanged = function (a) {
 	return {$: 49, a: a};
 };
@@ -7360,6 +7363,7 @@ var $author$project$MuchSelect$RemoveOptions = function (a) {
 	return {$: 17, a: a};
 };
 var $author$project$MuchSelect$RequestAllOptions = {$: 43};
+var $author$project$MuchSelect$RequestConfigState = {$: 51};
 var $author$project$MuchSelect$SearchStringMinimumLengthAttributeChanged = function (a) {
 	return {$: 29, a: a};
 };
@@ -7448,8 +7452,8 @@ var $author$project$Ports$removeOptionsReceiver = _Platform_incomingPort('remove
 var $author$project$Ports$requestAllOptionsReceiver = _Platform_incomingPort(
 	'requestAllOptionsReceiver',
 	$elm$json$Json$Decode$null(0));
-var $author$project$Ports$requestSelectionConfig = _Platform_incomingPort(
-	'requestSelectionConfig',
+var $author$project$Ports$requestConfigState = _Platform_incomingPort(
+	'requestConfigState',
 	$elm$json$Json$Decode$null(0));
 var $author$project$Ports$searchStringMinimumLengthChangedReceiver = _Platform_incomingPort('searchStringMinimumLengthChangedReceiver', $elm$json$Json$Decode$int);
 var $author$project$Ports$selectOptionReceiver = _Platform_incomingPort('selectOptionReceiver', $elm$json$Json$Decode$value);
@@ -7507,9 +7511,9 @@ var $author$project$MuchSelect$subscriptions = function (_v0) {
 				$author$project$Ports$attributeChanged($author$project$MuchSelect$AttributeChanged),
 				$author$project$Ports$attributeRemoved($author$project$MuchSelect$AttributeRemoved),
 				$author$project$Ports$customOptionHintReceiver($author$project$MuchSelect$CustomOptionHintChanged),
-				$author$project$Ports$requestSelectionConfig(
+				$author$project$Ports$requestConfigState(
 				function (_v2) {
-					return $author$project$MuchSelect$ConfigStateRequested;
+					return $author$project$MuchSelect$RequestConfigState;
 				}),
 				$author$project$Ports$selectedValueEncodingChangeReceiver($author$project$MuchSelect$SelectedValueEncodingChanged)
 			]));
@@ -7517,6 +7521,9 @@ var $author$project$MuchSelect$subscriptions = function (_v0) {
 var $author$project$MuchSelect$BlurInput = {$: 3};
 var $author$project$MuchSelect$DumpConfigState = function (a) {
 	return {$: 24, a: a};
+};
+var $author$project$MuchSelect$DumpSelectedValues = function (a) {
+	return {$: 25, a: a};
 };
 var $author$project$MuchSelect$FetchOptionsFromDom = {$: 21};
 var $author$project$MuchSelect$FocusInput = {$: 2};
@@ -12550,11 +12557,22 @@ var $author$project$MuchSelect$update = F2(
 							a: A2($author$project$SelectionMode$setCustomOptionHint, customOptionHint, model.a)
 						}),
 					$author$project$MuchSelect$NoEffect);
-			default:
+			case 51:
 				return _Utils_Tuple2(
 					model,
 					$author$project$MuchSelect$DumpConfigState(
 						A4($author$project$ConfigDump$encodeConfig, model.a, model.N, model.T, model.d)));
+			default:
+				return _Utils_Tuple2(
+					model,
+					$author$project$MuchSelect$DumpSelectedValues(
+						A2(
+							$elm$json$Json$Encode$list,
+							$elm$json$Json$Encode$string,
+							A2(
+								$elm$core$List$map,
+								$author$project$Option$getOptionValueAsString,
+								$author$project$OptionsUtilities$selectedOptions(model.b)))));
 		}
 	});
 var $author$project$MuchSelect$updateWrapper = F2(
