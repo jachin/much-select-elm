@@ -6902,7 +6902,7 @@ var $author$project$MuchSelect$init = function (flags) {
 	var selectedValueEncoding = A2(
 		$elm$core$Result$withDefault,
 		$author$project$SelectedValueEncoding$defaultSelectedValueEncoding,
-		$author$project$SelectedValueEncoding$fromString(flags.am));
+		$author$project$SelectedValueEncoding$fromString(flags.aa));
 	var optionSort = A2(
 		$elm$core$Result$withDefault,
 		0,
@@ -7047,7 +7047,7 @@ var $author$project$MuchSelect$init = function (flags) {
 			o: $author$project$MuchSelect$getDebouceDelayForSearch(
 				$elm$core$List$length(optionsWithInitialValueSelectedSorted)),
 			as: 0,
-			am: selectedValueEncoding,
+			aa: selectedValueEncoding,
 			a: selectionConfig,
 			a9: A2($author$project$MuchSelect$ValueCasing, 100, 45)
 		},
@@ -7291,7 +7291,10 @@ var $author$project$MuchSelect$SelectOption = function (a) {
 var $author$project$MuchSelect$SelectedItemStaysInPlaceChanged = function (a) {
 	return {$: 30, a: a};
 };
-var $author$project$MuchSelect$SelectionConfigRequested = {$: 50};
+var $author$project$MuchSelect$SelectedValueEncodingChanged = function (a) {
+	return {$: 50, a: a};
+};
+var $author$project$MuchSelect$SelectionConfigRequested = {$: 51};
 var $author$project$MuchSelect$ShowDropdownFooterChanged = function (a) {
 	return {$: 24, a: a};
 };
@@ -7374,6 +7377,7 @@ var $author$project$Ports$requestSelectionConfig = _Platform_incomingPort(
 var $author$project$Ports$searchStringMinimumLengthChangedReceiver = _Platform_incomingPort('searchStringMinimumLengthChangedReceiver', $elm$json$Json$Decode$int);
 var $author$project$Ports$selectOptionReceiver = _Platform_incomingPort('selectOptionReceiver', $elm$json$Json$Decode$value);
 var $author$project$Ports$selectedItemStaysInPlaceChangedReceiver = _Platform_incomingPort('selectedItemStaysInPlaceChangedReceiver', $elm$json$Json$Decode$bool);
+var $author$project$Ports$selectedValueEncodingChangeReceiver = _Platform_incomingPort('selectedValueEncodingChangeReceiver', $elm$json$Json$Decode$string);
 var $author$project$Ports$showDropdownFooterChangedReceiver = _Platform_incomingPort('showDropdownFooterChangedReceiver', $elm$json$Json$Decode$bool);
 var $author$project$Ports$transformationAndValidationReceiver = _Platform_incomingPort('transformationAndValidationReceiver', $elm$json$Json$Decode$value);
 var $author$project$Ports$updateSearchResultDataWithWebWorkerReceiver = _Platform_incomingPort('updateSearchResultDataWithWebWorkerReceiver', $elm$json$Json$Decode$value);
@@ -7429,7 +7433,8 @@ var $author$project$MuchSelect$subscriptions = function (_v0) {
 				$author$project$Ports$requestSelectionConfig(
 				function (_v2) {
 					return $author$project$MuchSelect$SelectionConfigRequested;
-				})
+				}),
+				$author$project$Ports$selectedValueEncodingChangeReceiver($author$project$MuchSelect$SelectedValueEncodingChanged)
 			]));
 };
 var $author$project$MuchSelect$BlurInput = {$: 3};
@@ -11594,18 +11599,34 @@ var $author$project$MuchSelect$update = F2(
 						$author$project$MuchSelect$ReportErrorMessage(
 							$elm$json$Json$Decode$errorToString(error)));
 				}
+			case 50:
+				var selectedValueEncodingString = msg.a;
+				var _v17 = $author$project$SelectedValueEncoding$fromString(selectedValueEncodingString);
+				if (!_v17.$) {
+					var selectedValueEncoding = _v17.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{aa: selectedValueEncoding}),
+						$author$project$MuchSelect$NoEffect);
+				} else {
+					var error = _v17.a;
+					return _Utils_Tuple2(
+						model,
+						$author$project$MuchSelect$ReportErrorMessage(error));
+				}
 			case 15:
 				var sortingString = msg.a;
-				var _v17 = $author$project$OptionSorting$stringToOptionSort(sortingString);
-				if (!_v17.$) {
-					var optionSorting = _v17.a;
+				var _v18 = $author$project$OptionSorting$stringToOptionSort(sortingString);
+				if (!_v18.$) {
+					var optionSorting = _v18.a;
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
 							{S: optionSorting}),
 						$author$project$MuchSelect$NoEffect);
 				} else {
-					var error = _v17.a;
+					var error = _v18.a;
 					return _Utils_Tuple2(
 						model,
 						$author$project$MuchSelect$ReportErrorMessage(error));
@@ -11655,9 +11676,9 @@ var $author$project$MuchSelect$update = F2(
 						}),
 					$author$project$MuchSelect$NoEffect);
 			case 25:
-				var _v18 = msg.a;
-				var canAddCustomOptions = _v18.a;
-				var customOptionHint = _v18.b;
+				var _v19 = msg.a;
+				var canAddCustomOptions = _v19.a;
+				var customOptionHint = _v19.b;
 				var maybeCustomOptionHint = function () {
 					if (customOptionHint === '') {
 						return $elm$core$Maybe$Nothing;
@@ -11692,9 +11713,9 @@ var $author$project$MuchSelect$update = F2(
 					$author$project$MuchSelect$NoEffect);
 			case 31:
 				var newOutputStyleString = msg.a;
-				var _v20 = $author$project$SelectionMode$stringToOutputStyle(newOutputStyleString);
-				if (!_v20.$) {
-					var outputStyle = _v20.a;
+				var _v21 = $author$project$SelectionMode$stringToOutputStyle(newOutputStyleString);
+				if (!_v21.$) {
+					var outputStyle = _v21.a;
 					var newSelectionConfig = A2($author$project$SelectionMode$setOutputStyle, outputStyle, model.a);
 					return _Utils_Tuple2(
 						_Utils_update(
@@ -11763,8 +11784,8 @@ var $author$project$MuchSelect$update = F2(
 					$elm$core$Maybe$map,
 					$author$project$Option$getOptionValue,
 					$author$project$OptionsUtilities$findHighlightedOption(model.b));
-				var _v21 = model.a;
-				if (!_v21.$) {
+				var _v22 = model.a;
+				if (!_v22.$) {
 					return _Utils_Tuple2(
 						$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
 							_Utils_update(
@@ -11798,8 +11819,8 @@ var $author$project$MuchSelect$update = F2(
 								])));
 				}
 			case 33:
-				var _v22 = model.a;
-				if (!_v22.$) {
+				var _v23 = model.a;
+				if (!_v23.$) {
 					return $author$project$OptionsUtilities$hasSelectedOption(model.b) ? $author$project$MuchSelect$clearAllSelectedOption(model) : _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
 				} else {
 					return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
@@ -11920,9 +11941,9 @@ var $author$project$MuchSelect$update = F2(
 						A2($elm$json$Json$Encode$list, $author$project$Option$encode, model.b)));
 			case 44:
 				var updatedSearchResultsJsonValue = msg.a;
-				var _v23 = A2($elm$json$Json$Decode$decodeValue, $author$project$Option$decodeSearchResults, updatedSearchResultsJsonValue);
-				if (!_v23.$) {
-					var searchResults = _v23.a;
+				var _v24 = A2($elm$json$Json$Decode$decodeValue, $author$project$Option$decodeSearchResults, updatedSearchResultsJsonValue);
+				if (!_v24.$) {
+					var searchResults = _v24.a;
 					if (_Utils_eq(searchResults.d0, model.as)) {
 						var updatedOptions = A2(
 							$author$project$OptionsUtilities$setAge,
@@ -11943,7 +11964,7 @@ var $author$project$MuchSelect$update = F2(
 						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
 					}
 				} else {
-					var error = _v23.a;
+					var error = _v24.a;
 					return _Utils_Tuple2(
 						model,
 						$author$project$MuchSelect$ReportErrorMessage(
@@ -11951,17 +11972,17 @@ var $author$project$MuchSelect$update = F2(
 				}
 			case 45:
 				var customValidationResultJson = msg.a;
-				var _v24 = A2($elm$json$Json$Decode$decodeValue, $author$project$TransformAndValidate$customValidationResultDecoder, customValidationResultJson);
-				if (!_v24.$) {
-					var customValidationResult = _v24.a;
-					var _v25 = A2(
+				var _v25 = A2($elm$json$Json$Decode$decodeValue, $author$project$TransformAndValidate$customValidationResultDecoder, customValidationResultJson);
+				if (!_v25.$) {
+					var customValidationResult = _v25.a;
+					var _v26 = A2(
 						$author$project$TransformAndValidate$transformAndValidateSecondPass,
 						$author$project$SelectionMode$getTransformAndValidate(model.a),
 						customValidationResult);
-					switch (_v25.$) {
+					switch (_v26.$) {
 						case 0:
-							var valueString = _v25.a;
-							var selectedValueIndex = _v25.b;
+							var valueString = _v26.a;
+							var selectedValueIndex = _v26.b;
 							var updatedOptions = A3(
 								$author$project$OptionsUtilities$updateDatalistOptionsWithValue,
 								$author$project$OptionValue$stringToOptionValue(valueString),
@@ -11987,9 +12008,9 @@ var $author$project$MuchSelect$update = F2(
 										$author$project$OptionsUtilities$selectedOptions(updatedOptions)),
 									maybeSelectedOptionValue));
 						case 1:
-							var valueString = _v25.a;
-							var selectedValueIndex = _v25.b;
-							var validationFailureMessages = _v25.c;
+							var valueString = _v26.a;
+							var selectedValueIndex = _v26.b;
+							var validationFailureMessages = _v26.c;
 							var updatedOptions = A4(
 								$author$project$OptionsUtilities$updateDatalistOptionsWithValueAndErrors,
 								validationFailureMessages,
@@ -12021,7 +12042,7 @@ var $author$project$MuchSelect$update = F2(
 								$author$project$MuchSelect$ReportErrorMessage('We should not end up with a validation pending state on a second pass.'));
 					}
 				} else {
-					var error = _v24.a;
+					var error = _v25.a;
 					return _Utils_Tuple2(
 						model,
 						$author$project$MuchSelect$ReportErrorMessage(
@@ -12029,9 +12050,9 @@ var $author$project$MuchSelect$update = F2(
 				}
 			case 46:
 				var transformationAndValidationJson = msg.a;
-				var _v26 = A2($elm$json$Json$Decode$decodeValue, $author$project$TransformAndValidate$decoder, transformationAndValidationJson);
-				if (!_v26.$) {
-					var newTransformationAndValidation = _v26.a;
+				var _v27 = A2($elm$json$Json$Decode$decodeValue, $author$project$TransformAndValidate$decoder, transformationAndValidationJson);
+				if (!_v27.$) {
+					var newTransformationAndValidation = _v27.a;
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
@@ -12040,16 +12061,16 @@ var $author$project$MuchSelect$update = F2(
 							}),
 						$author$project$MuchSelect$NoEffect);
 				} else {
-					var error = _v26.a;
+					var error = _v27.a;
 					return _Utils_Tuple2(
 						model,
 						$author$project$MuchSelect$ReportErrorMessage(
 							$elm$json$Json$Decode$errorToString(error)));
 				}
 			case 47:
-				var _v27 = msg.a;
-				var attributeName = _v27.a;
-				var newAttributeValue = _v27.b;
+				var _v28 = msg.a;
+				var attributeName = _v28.a;
+				var newAttributeValue = _v28.b;
 				switch (attributeName) {
 					case 'allow-custom-options':
 						switch (newAttributeValue) {
@@ -12112,9 +12133,9 @@ var $author$project$MuchSelect$update = F2(
 								}),
 							$author$project$MuchSelect$NoEffect);
 					case 'max-dropdown-items':
-						var _v30 = $author$project$PositiveInt$fromString(newAttributeValue);
-						if (!_v30.$) {
-							var maxDropdownItems = _v30.a;
+						var _v31 = $author$project$PositiveInt$fromString(newAttributeValue);
+						if (!_v31.$) {
+							var maxDropdownItems = _v31.a;
 							return _Utils_Tuple2(
 								$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
 									_Utils_update(
@@ -12154,24 +12175,24 @@ var $author$project$MuchSelect$update = F2(
 								}),
 							$author$project$MuchSelect$ReportReady);
 					case 'option-sorting':
-						var _v31 = $author$project$OptionSorting$stringToOptionSort(newAttributeValue);
-						if (!_v31.$) {
-							var optionSorting = _v31.a;
+						var _v32 = $author$project$OptionSorting$stringToOptionSort(newAttributeValue);
+						if (!_v32.$) {
+							var optionSorting = _v32.a;
 							return _Utils_Tuple2(
 								_Utils_update(
 									model,
 									{S: optionSorting}),
 								$author$project$MuchSelect$NoEffect);
 						} else {
-							var error = _v31.a;
+							var error = _v32.a;
 							return _Utils_Tuple2(
 								model,
 								$author$project$MuchSelect$ReportErrorMessage(error));
 						}
 					case 'output-style':
-						var _v32 = $author$project$SelectionMode$stringToOutputStyle(newAttributeValue);
-						if (!_v32.$) {
-							var outputStyle = _v32.a;
+						var _v33 = $author$project$SelectionMode$stringToOutputStyle(newAttributeValue);
+						if (!_v33.$) {
+							var outputStyle = _v33.a;
 							var newSelectionConfig = A2($author$project$SelectionMode$setOutputStyle, outputStyle, model.a);
 							return _Utils_Tuple2(
 								_Utils_update(
@@ -12198,9 +12219,9 @@ var $author$project$MuchSelect$update = F2(
 								}),
 							$author$project$MuchSelect$NoEffect);
 					case 'search-string-minimum-length':
-						var _v33 = $author$project$PositiveInt$fromString(newAttributeValue);
-						if (!_v33.$) {
-							var minimumLength = _v33.a;
+						var _v34 = $author$project$PositiveInt$fromString(newAttributeValue);
+						if (!_v34.$) {
+							var minimumLength = _v34.a;
 							return _Utils_Tuple2(
 								$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
 									_Utils_update(
@@ -12226,22 +12247,22 @@ var $author$project$MuchSelect$update = F2(
 								}),
 							$author$project$MuchSelect$NoEffect);
 					case 'selected-value':
-						var _v34 = $author$project$SelectedValueEncoding$fromString(newAttributeValue);
-						if (!_v34.$) {
-							var selectedValueEncoding = _v34.a;
+						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
+					case 'selected-value-encoding':
+						var _v35 = $author$project$SelectedValueEncoding$fromString(newAttributeValue);
+						if (!_v35.$) {
+							var selectedValueEncoding = _v35.a;
 							return _Utils_Tuple2(
 								_Utils_update(
 									model,
-									{am: selectedValueEncoding}),
+									{aa: selectedValueEncoding}),
 								$author$project$MuchSelect$NoEffect);
 						} else {
-							var error = _v34.a;
+							var error = _v35.a;
 							return _Utils_Tuple2(
 								model,
 								$author$project$MuchSelect$ReportErrorMessage(error));
 						}
-					case 'selected-value-encoding':
-						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
 					case 'show-dropdown-footer':
 						return _Utils_Tuple2(
 							_Utils_update(
@@ -12382,7 +12403,7 @@ var $author$project$MuchSelect$update = F2(
 						return _Utils_Tuple2(
 							_Utils_update(
 								model,
-								{am: $author$project$SelectedValueEncoding$defaultSelectedValueEncoding}),
+								{aa: $author$project$SelectedValueEncoding$defaultSelectedValueEncoding}),
 							$author$project$MuchSelect$NoEffect);
 					case 'show-dropdown-footer':
 						return _Utils_Tuple2(
@@ -12754,16 +12775,16 @@ var $author$project$MuchSelect$optionToDropdownOption = F3(
 								_List_fromArray(
 									[
 										$elm$html$Html$Events$onMouseEnter(
-										eventHandlers.ai(
+										eventHandlers.aj(
 											$author$project$Option$getOptionValue(option))),
 										$elm$html$Html$Events$onMouseLeave(
-										eventHandlers.ah(
+										eventHandlers.ai(
 											$author$project$Option$getOptionValue(option))),
 										$author$project$MuchSelect$mousedownPreventDefault(
-										eventHandlers.ag(
+										eventHandlers.ah(
 											$author$project$Option$getOptionValue(option))),
 										$author$project$MuchSelect$mouseupPreventDefault(
-										eventHandlers.aj(
+										eventHandlers.ak(
 											$author$project$Option$getOptionValue(option))),
 										$author$project$MuchSelect$onClickPreventDefault(eventHandlers.a$),
 										A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option'),
@@ -12782,16 +12803,16 @@ var $author$project$MuchSelect$optionToDropdownOption = F3(
 									_List_fromArray(
 										[
 											$elm$html$Html$Events$onMouseEnter(
-											eventHandlers.ai(
+											eventHandlers.aj(
 												$author$project$Option$getOptionValue(option))),
 											$elm$html$Html$Events$onMouseLeave(
-											eventHandlers.ah(
+											eventHandlers.ai(
 												$author$project$Option$getOptionValue(option))),
 											$author$project$MuchSelect$mousedownPreventDefault(
-											eventHandlers.ag(
+											eventHandlers.ah(
 												$author$project$Option$getOptionValue(option))),
 											$author$project$MuchSelect$mouseupPreventDefault(
-											eventHandlers.aj(
+											eventHandlers.ak(
 												$author$project$Option$getOptionValue(option))),
 											A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option selected'),
 											$elm$html$Html$Attributes$class('selected'),
@@ -12824,16 +12845,16 @@ var $author$project$MuchSelect$optionToDropdownOption = F3(
 									_List_fromArray(
 										[
 											$elm$html$Html$Events$onMouseEnter(
-											eventHandlers.ai(
+											eventHandlers.aj(
 												$author$project$Option$getOptionValue(option))),
 											$elm$html$Html$Events$onMouseLeave(
-											eventHandlers.ah(
+											eventHandlers.ai(
 												$author$project$Option$getOptionValue(option))),
 											$author$project$MuchSelect$mousedownPreventDefault(
-											eventHandlers.ag(
+											eventHandlers.ah(
 												$author$project$Option$getOptionValue(option))),
 											$author$project$MuchSelect$mouseupPreventDefault(
-											eventHandlers.aj(
+											eventHandlers.ak(
 												$author$project$Option$getOptionValue(option))),
 											A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option selected highlighted'),
 											$elm$html$Html$Attributes$class('selected'),
@@ -12852,16 +12873,16 @@ var $author$project$MuchSelect$optionToDropdownOption = F3(
 								_List_fromArray(
 									[
 										$elm$html$Html$Events$onMouseEnter(
-										eventHandlers.ai(
+										eventHandlers.aj(
 											$author$project$Option$getOptionValue(option))),
 										$elm$html$Html$Events$onMouseLeave(
-										eventHandlers.ah(
+										eventHandlers.ai(
 											$author$project$Option$getOptionValue(option))),
 										$author$project$MuchSelect$mousedownPreventDefault(
-										eventHandlers.ag(
+										eventHandlers.ah(
 											$author$project$Option$getOptionValue(option))),
 										$author$project$MuchSelect$mouseupPreventDefault(
-										eventHandlers.aj(
+										eventHandlers.ak(
 											$author$project$Option$getOptionValue(option))),
 										A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option highlighted'),
 										$elm$html$Html$Attributes$class('highlighted'),
@@ -12888,16 +12909,16 @@ var $author$project$MuchSelect$optionToDropdownOption = F3(
 								_List_fromArray(
 									[
 										$elm$html$Html$Events$onMouseEnter(
-										eventHandlers.ai(
+										eventHandlers.aj(
 											$author$project$Option$getOptionValue(option))),
 										$elm$html$Html$Events$onMouseLeave(
-										eventHandlers.ah(
+										eventHandlers.ai(
 											$author$project$Option$getOptionValue(option))),
 										$author$project$MuchSelect$mousedownPreventDefault(
-										eventHandlers.ag(
+										eventHandlers.ah(
 											$author$project$Option$getOptionValue(option))),
 										$author$project$MuchSelect$mouseupPreventDefault(
-										eventHandlers.aj(
+										eventHandlers.ak(
 											$author$project$Option$getOptionValue(option))),
 										$author$project$MuchSelect$onClickPreventDefault(eventHandlers.a$),
 										A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option active'),
@@ -13105,7 +13126,7 @@ var $author$project$MuchSelect$dropdown = F4(
 					]))
 			]) : A3(
 			$author$project$MuchSelect$optionsToDropdownOptions,
-			{ag: $author$project$MuchSelect$DropdownMouseDownOption, ah: $author$project$MuchSelect$DropdownMouseOutOption, ai: $author$project$MuchSelect$DropdownMouseOverOption, aj: $author$project$MuchSelect$DropdownMouseUpOption, a$: $author$project$MuchSelect$NoOp},
+			{ah: $author$project$MuchSelect$DropdownMouseDownOption, ai: $author$project$MuchSelect$DropdownMouseOutOption, aj: $author$project$MuchSelect$DropdownMouseOverOption, ak: $author$project$MuchSelect$DropdownMouseUpOption, a$: $author$project$MuchSelect$NoOp},
 			selectionMode,
 			optionsForTheDropdown));
 		var dropdownFooterHtml = ($author$project$SelectionMode$showDropdownFooter(selectionMode) && (_Utils_cmp(
@@ -14923,7 +14944,7 @@ _Platform_export({'MuchSelect':{'init':$author$project$MuchSelect$main(
 																																				$elm$json$Json$Decode$andThen,
 																																				function (allowCustomOptions) {
 																																					return $elm$json$Json$Decode$succeed(
-																																						{ba: allowCustomOptions, bb: allowMultiSelect, bg: customOptionHint, bi: disabled, bk: enableMultiSelectSingleItemRemoval, br: isEventsOnly, bt: loading, bu: maxDropdownItems, S: optionSort, bB: optionsJson, bC: outputStyle, bD: placeholder, bH: searchStringMinimumLength, bJ: selectedItemStaysInPlace, am: selectedValueEncoding, bL: showDropdownFooter, bQ: transformationAndValidationJson, bS: value});
+																																						{ba: allowCustomOptions, bb: allowMultiSelect, bg: customOptionHint, bi: disabled, bk: enableMultiSelectSingleItemRemoval, br: isEventsOnly, bt: loading, bu: maxDropdownItems, S: optionSort, bB: optionsJson, bC: outputStyle, bD: placeholder, bH: searchStringMinimumLength, bJ: selectedItemStaysInPlace, aa: selectedValueEncoding, bL: showDropdownFooter, bQ: transformationAndValidationJson, bS: value});
 																																				},
 																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
 																																		},
@@ -15039,7 +15060,7 @@ export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
 																																				$elm$json$Json$Decode$andThen,
 																																				function (allowCustomOptions) {
 																																					return $elm$json$Json$Decode$succeed(
-																																						{ba: allowCustomOptions, bb: allowMultiSelect, bg: customOptionHint, bi: disabled, bk: enableMultiSelectSingleItemRemoval, br: isEventsOnly, bt: loading, bu: maxDropdownItems, S: optionSort, bB: optionsJson, bC: outputStyle, bD: placeholder, bH: searchStringMinimumLength, bJ: selectedItemStaysInPlace, am: selectedValueEncoding, bL: showDropdownFooter, bQ: transformationAndValidationJson, bS: value});
+																																						{ba: allowCustomOptions, bb: allowMultiSelect, bg: customOptionHint, bi: disabled, bk: enableMultiSelectSingleItemRemoval, br: isEventsOnly, bt: loading, bu: maxDropdownItems, S: optionSort, bB: optionsJson, bC: outputStyle, bD: placeholder, bH: searchStringMinimumLength, bJ: selectedItemStaysInPlace, aa: selectedValueEncoding, bL: showDropdownFooter, bQ: transformationAndValidationJson, bS: value});
 																																				},
 																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
 																																		},

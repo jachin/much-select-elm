@@ -140,6 +140,7 @@ import Ports
         , searchStringMinimumLengthChangedReceiver
         , selectOptionReceiver
         , selectedItemStaysInPlaceChangedReceiver
+        , selectedValueEncodingChangeReceiver
         , sendCustomValidationRequest
         , showDropdownFooterChangedReceiver
         , transformationAndValidationReceiver
@@ -280,6 +281,7 @@ type Msg
     | AttributeChanged ( String, String )
     | AttributeRemoved String
     | CustomOptionHintChanged String
+    | SelectedValueEncodingChanged String
     | SelectionConfigRequested
 
 
@@ -774,6 +776,21 @@ update msg model =
 
                 Err error ->
                     ( model, ReportErrorMessage (Json.Decode.errorToString error) )
+
+        SelectedValueEncodingChanged selectedValueEncodingString ->
+            case SelectedValueEncoding.fromString selectedValueEncodingString of
+                Ok selectedValueEncoding ->
+                    ( { model
+                        | selectedValueEncoding =
+                            selectedValueEncoding
+                      }
+                    , NoEffect
+                    )
+
+                Err error ->
+                    ( model
+                    , ReportErrorMessage error
+                    )
 
         OptionSortingChanged sortingString ->
             case stringToOptionSort sortingString of
@@ -1348,6 +1365,9 @@ update msg model =
                     )
 
                 "selected-value" ->
+                    ( model, NoEffect )
+
+                "selected-value-encoding" ->
                     case SelectedValueEncoding.fromString newAttributeValue of
                         Ok selectedValueEncoding ->
                             ( { model
@@ -1361,9 +1381,6 @@ update msg model =
                             ( model
                             , ReportErrorMessage error
                             )
-
-                "selected-value-encoding" ->
-                    ( model, NoEffect )
 
                 "show-dropdown-footer" ->
                     ( { model
@@ -3395,6 +3412,7 @@ subscriptions _ =
         , attributeRemoved AttributeRemoved
         , customOptionHintReceiver CustomOptionHintChanged
         , requestSelectionConfig (\() -> SelectionConfigRequested)
+        , selectedValueEncodingChangeReceiver SelectedValueEncodingChanged
         ]
 
 
