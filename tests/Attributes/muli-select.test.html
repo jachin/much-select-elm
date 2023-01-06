@@ -21,6 +21,7 @@
           const el = /** @type {MuchSelect} */ await fixture(
             html`<much-select multi-select=""></much-select>`
           );
+          await nextFrame();
           expect(
             el.shadowRoot.querySelectorAll("#value-casing.multi").length
           ).to.equal(1);
@@ -36,6 +37,7 @@
               multi-select
             ></much-select>`
           );
+          await nextFrame();
           expect(
             el.shadowRoot.querySelectorAll("#value-casing.multi").length
           ).to.equal(1);
