@@ -44,7 +44,7 @@
 
           expect(options[0].isSelected).to.be.true;
 
-          expect(el.getAttribute("selected-value")).to.equal("rino");
+          expect(await el.selectedValue).to.equal("rino");
         });
 
         it("should respect the selected attribute in multi select mode", async () => {
@@ -60,7 +60,7 @@
           const options = await el.getAllOptions();
           expect(options[0].isSelected).to.be.true;
 
-          expect(el.getAttribute("selected-value")).to.equal("rino");
+          expect(await el.selectedValue).to.deep.equal(["rino"]);
         });
       });
     });
