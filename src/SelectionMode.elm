@@ -48,7 +48,26 @@ module SelectionMode exposing
     )
 
 import Json.Encode
-import OutputStyle exposing (CustomOptionHint, CustomOptions(..), DropdownState(..), DropdownStyle(..), EventsMode(..), MaxDropdownItems(..), MultiSelectOutputStyle(..), SearchStringMinimumLength(..), SelectedItemPlacementMode(..), SingleItemRemoval(..), SingleSelectOutputStyle(..), defaultMultiSelectCustomHtmlFields, defaultSingleSelectCustomHtmlFields, getTransformAndValidateFromCustomOptions, setEventsModeMultiSelect, setEventsModeSingleSelect, setTransformAndValidateFromCustomOptions)
+import OutputStyle
+    exposing
+        ( CustomOptionHint
+        , CustomOptions(..)
+        , DropdownState(..)
+        , DropdownStyle(..)
+        , EventsMode(..)
+        , MaxDropdownItems(..)
+        , MultiSelectOutputStyle(..)
+        , SearchStringMinimumLength(..)
+        , SelectedItemPlacementMode(..)
+        , SingleItemRemoval(..)
+        , SingleSelectOutputStyle(..)
+        , defaultMultiSelectCustomHtmlFields
+        , defaultSingleSelectCustomHtmlFields
+        , getTransformAndValidateFromCustomOptions
+        , setEventsModeMultiSelect
+        , setEventsModeSingleSelect
+        , setTransformAndValidateFromCustomOptions
+        )
 import PositiveInt
 import TransformAndValidate exposing (ValueTransformAndValidate)
 
@@ -85,7 +104,7 @@ defaultSelectionConfig =
             { customOptions = NoCustomOptions
             , selectedItemPlacementMode = SelectedItemStaysInPlace
             , maxDropdownItems = NoLimitToDropdownItems
-            , searchStringMinimumLength = NoMinimumToSearchStringLength
+            , searchStringMinimumLength = FixedSearchStringMinimumLength (PositiveInt.new 2)
             , dropdownState = Collapsed
             , dropdownStyle = NoFooter
             , eventsMode = AllowLightDomChanges

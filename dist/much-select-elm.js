@@ -5722,10 +5722,12 @@ var $author$project$SelectedValueEncoding$CommaSeperated = 0;
 var $author$project$SelectedValueEncoding$defaultSelectedValueEncoding = 0;
 var $author$project$OutputStyle$AllowLightDomChanges = 1;
 var $author$project$OutputStyle$Collapsed = 1;
+var $author$project$OutputStyle$FixedSearchStringMinimumLength = function (a) {
+	return {$: 0, a: a};
+};
 var $author$project$OutputStyle$NoCustomOptions = {$: 1};
 var $author$project$OutputStyle$NoFooter = 0;
 var $author$project$OutputStyle$NoLimitToDropdownItems = {$: 1};
-var $author$project$OutputStyle$NoMinimumToSearchStringLength = {$: 1};
 var $author$project$OutputStyle$SelectedItemStaysInPlace = 0;
 var $author$project$SelectionMode$SingleSelectConfig = F3(
 	function (a, b, c) {
@@ -5735,10 +5737,29 @@ var $author$project$OutputStyle$SingleSelectCustomHtml = function (a) {
 	return {$: 0, a: a};
 };
 var $author$project$SelectionMode$Unfocused = 1;
+var $author$project$PositiveInt$PositiveInt = $elm$core$Basics$identity;
+var $elm$core$Basics$negate = function (n) {
+	return -n;
+};
+var $elm$core$Basics$abs = function (n) {
+	return (n < 0) ? (-n) : n;
+};
+var $author$project$PositiveInt$new = function (_int) {
+	return $elm$core$Basics$abs(_int);
+};
 var $author$project$SelectionMode$defaultSelectionConfig = A3(
 	$author$project$SelectionMode$SingleSelectConfig,
 	$author$project$OutputStyle$SingleSelectCustomHtml(
-		{V: $author$project$OutputStyle$NoCustomOptions, W: 1, X: 0, K: 1, bu: $author$project$OutputStyle$NoLimitToDropdownItems, bH: $author$project$OutputStyle$NoMinimumToSearchStringLength, bI: 0}),
+		{
+			V: $author$project$OutputStyle$NoCustomOptions,
+			W: 1,
+			X: 0,
+			K: 1,
+			bu: $author$project$OutputStyle$NoLimitToDropdownItems,
+			bH: $author$project$OutputStyle$FixedSearchStringMinimumLength(
+				$author$project$PositiveInt$new(2)),
+			bI: 0
+		}),
 	_Utils_Tuple2(false, ''),
 	1);
 var $author$project$SelectedValueEncoding$JsonEncoded = 1;
@@ -5796,9 +5817,6 @@ var $author$project$SelectionMode$getSelectionMode = function (selectionConfig) 
 	} else {
 		return 1;
 	}
-};
-var $elm$core$Basics$negate = function (n) {
-	return -n;
 };
 var $author$project$OptionDisplay$getSelectedIndex = function (optionDisplay) {
 	switch (optionDisplay.$) {
@@ -6089,9 +6107,6 @@ var $author$project$OutputStyle$EventsOnly = 0;
 var $author$project$OutputStyle$FixedMaxDropdownItems = function (a) {
 	return {$: 0, a: a};
 };
-var $author$project$OutputStyle$FixedSearchStringMinimumLength = function (a) {
-	return {$: 0, a: a};
-};
 var $author$project$OutputStyle$MultiSelectCustomHtml = function (a) {
 	return {$: 0, a: a};
 };
@@ -6100,13 +6115,6 @@ var $author$project$OutputStyle$MultiSelectDataList = F2(
 		return {$: 1, a: a, b: b};
 	});
 var $author$project$OutputStyle$ShowFooter = 1;
-var $author$project$PositiveInt$PositiveInt = $elm$core$Basics$identity;
-var $elm$core$Basics$abs = function (n) {
-	return (n < 0) ? (-n) : n;
-};
-var $author$project$PositiveInt$new = function (_int) {
-	return $elm$core$Basics$abs(_int);
-};
 var $author$project$SelectionMode$makeMultiSelectOutputStyle = F9(
 	function (outputStyle, isEventsOnly_, allowCustomOptions, enableMultiSelectSingleItemRemoval, maxDropdownItems, searchStringMinimumLength, shouldShowDropdownFooter, customOptionHint, transformAndValidate) {
 		if (!outputStyle) {
@@ -7547,6 +7555,7 @@ var $author$project$TransformAndValidate$InputHasFailedValidation = 2;
 var $author$project$TransformAndValidate$InputHasValidationPending = 1;
 var $author$project$TransformAndValidate$InputValidationIsNotHappening = 3;
 var $author$project$OptionDisplay$NewOption = 0;
+var $author$project$OutputStyle$NoMinimumToSearchStringLength = {$: 1};
 var $author$project$MuchSelect$OptionsUpdated = function (a) {
 	return {$: 16, a: a};
 };

@@ -1014,6 +1014,7 @@ class MuchSelect extends HTMLElement {
         10
       );
     } else {
+      // TODO This should only be in the Elm code.
       // The default value for the search string minimum length.
       flags.searchStringMinimumLength = 2;
     }
