@@ -1311,6 +1311,7 @@ class MuchSelect extends HTMLElement {
 
   set selectedValue(value) {
     const newSelectedValue = cleanUpSelectedValue(value);
+
     this._callValueChanged(newSelectedValue);
 
     // this.updateHiddenInputValueSlot();

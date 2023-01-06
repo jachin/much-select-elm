@@ -69,6 +69,7 @@ import OptionsUtilities
         , findHighlightedOption
         , findHighlightedOrSelectedOptionIndex
         , findOptionByOptionValue
+        , findSelectedOption
         , groupOptionsInOrder
         , hasSelectedHighlightedOptions
         , hasSelectedOption
@@ -137,6 +138,7 @@ import Ports
         , removeOptionsReceiver
         , requestAllOptionsReceiver
         , requestConfigState
+        , requestSelectedValues
         , scrollDropdownToElement
         , searchOptionsWithWebWorker
         , searchStringMinimumLengthChangedReceiver
@@ -604,7 +606,7 @@ update msg model =
                         CustomHtml ->
                             let
                                 newOptions =
-                                    addAndSelectOptionsInOptionsListByString
+                                    selectOptionsInOptionsListByString
                                         values
                                         model.options
                             in
@@ -1562,10 +1564,22 @@ update msg model =
         RequestSelectedValues ->
             ( model
             , DumpSelectedValues
-                (Json.Encode.list Json.Encode.string
-                    (selectedOptions model.options
-                        |> List.map Option.getOptionValueAsString
-                    )
+                (case SelectionMode.getSelectionMode model.selectionConfig of
+                    SelectionMode.SingleSelect ->
+                        case findSelectedOption model.options of
+                            Just selectedOption ->
+                                selectedOption
+                                    |> Option.getOptionValueAsString
+                                    |> Json.Encode.string
+
+                            Nothing ->
+                                Json.Encode.null
+
+                    SelectionMode.MultiSelect ->
+                        Json.Encode.list Json.Encode.string
+                            (selectedOptions model.options
+                                |> List.map Option.getOptionValueAsString
+                            )
                 )
             )
 
@@ -3437,6 +3451,7 @@ subscriptions _ =
         , attributeRemoved AttributeRemoved
         , customOptionHintReceiver CustomOptionHintChanged
         , requestConfigState (\() -> RequestConfigState)
+        , requestSelectedValues (\() -> RequestSelectedValues)
         , selectedValueEncodingChangeReceiver SelectedValueEncodingChanged
         ]
 

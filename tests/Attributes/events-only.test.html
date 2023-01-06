@@ -44,10 +44,16 @@
             </select>
           </much-select>`);
 
-          expect(el.selectedValue).to.equal("air");
+          expect(await el.selectedValue).to.equal("air");
 
           el.selectedValue = "water";
+
+          await nextFrame();
+
+          // The "internal" value should change
           expect(await el.selectedValue).to.equal("water");
+
+          // The light dom should still reflect the old value.
           expect(el.getAttribute("selected-value")).to.equal("air");
         });
       });

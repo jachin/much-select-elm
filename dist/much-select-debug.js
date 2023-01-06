@@ -1,7 +1,7 @@
 // noinspection JSFileReferences
 
 // eslint-disable-next-line import/no-unresolved
-import { Elm } from "./much-select-elm.js";
+import { Elm } from "./much-select-elm-debug.js";
 
 // eslint-disable-next-line import/no-unresolved
 import getMuchSelectTemplate from "./much-select-template.js";
@@ -1311,6 +1311,7 @@ class MuchSelect extends HTMLElement {
 
   set selectedValue(value) {
     const newSelectedValue = cleanUpSelectedValue(value);
+
     this._callValueChanged(newSelectedValue);
 
     // this.updateHiddenInputValueSlot();

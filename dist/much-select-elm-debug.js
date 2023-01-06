@@ -12696,6 +12696,7 @@ var $author$project$MuchSelect$RemoveOptions = function (a) {
 };
 var $author$project$MuchSelect$RequestAllOptions = {$: 'RequestAllOptions'};
 var $author$project$MuchSelect$RequestConfigState = {$: 'RequestConfigState'};
+var $author$project$MuchSelect$RequestSelectedValues = {$: 'RequestSelectedValues'};
 var $author$project$MuchSelect$SearchStringMinimumLengthAttributeChanged = function (a) {
 	return {$: 'SearchStringMinimumLengthAttributeChanged', a: a};
 };
@@ -12786,6 +12787,9 @@ var $author$project$Ports$requestAllOptionsReceiver = _Platform_incomingPort(
 var $author$project$Ports$requestConfigState = _Platform_incomingPort(
 	'requestConfigState',
 	$elm$json$Json$Decode$null(_Utils_Tuple0));
+var $author$project$Ports$requestSelectedValues = _Platform_incomingPort(
+	'requestSelectedValues',
+	$elm$json$Json$Decode$null(_Utils_Tuple0));
 var $author$project$Ports$searchStringMinimumLengthChangedReceiver = _Platform_incomingPort('searchStringMinimumLengthChangedReceiver', $elm$json$Json$Decode$int);
 var $author$project$Ports$selectOptionReceiver = _Platform_incomingPort('selectOptionReceiver', $elm$json$Json$Decode$value);
 var $author$project$Ports$selectedItemStaysInPlaceChangedReceiver = _Platform_incomingPort('selectedItemStaysInPlaceChangedReceiver', $elm$json$Json$Decode$bool);
@@ -12844,6 +12848,10 @@ var $author$project$MuchSelect$subscriptions = function (_v0) {
 				$author$project$Ports$requestConfigState(
 				function (_v2) {
 					return $author$project$MuchSelect$RequestConfigState;
+				}),
+				$author$project$Ports$requestSelectedValues(
+				function (_v3) {
+					return $author$project$MuchSelect$RequestSelectedValues;
 				}),
 				$author$project$Ports$selectedValueEncodingChangeReceiver($author$project$MuchSelect$SelectedValueEncodingChanged)
 			]));
@@ -14849,6 +14857,10 @@ var $author$project$OptionsUtilities$findHighlightedOption = function (options) 
 		},
 		options);
 };
+var $author$project$OptionsUtilities$findSelectedOption = function (options) {
+	return $elm$core$List$head(
+		$author$project$OptionsUtilities$selectedOptions(options));
+};
 var $elm$core$Maybe$andThen = F2(
 	function (callback, maybeValue) {
 		if (maybeValue.$ === 'Just') {
@@ -16782,7 +16794,7 @@ var $author$project$MuchSelect$update = F2(
 					var values = valuesResult.a;
 					var _v8 = $author$project$SelectionMode$getOutputStyle(model.selectionConfig);
 					if (_v8.$ === 'CustomHtml') {
-						var newOptions = A2($author$project$OptionsUtilities$addAndSelectOptionsInOptionsListByString, values, model.options);
+						var newOptions = A2($author$project$OptionsUtilities$selectOptionsInOptionsListByString, values, model.options);
 						return _Utils_Tuple2(
 							$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
 								_Utils_update(
@@ -17863,13 +17875,27 @@ var $author$project$MuchSelect$update = F2(
 				return _Utils_Tuple2(
 					model,
 					$author$project$MuchSelect$DumpSelectedValues(
-						A2(
-							$elm$json$Json$Encode$list,
-							$elm$json$Json$Encode$string,
-							A2(
-								$elm$core$List$map,
-								$author$project$Option$getOptionValueAsString,
-								$author$project$OptionsUtilities$selectedOptions(model.options)))));
+						function () {
+							var _v37 = $author$project$SelectionMode$getSelectionMode(model.selectionConfig);
+							if (_v37.$ === 'SingleSelect') {
+								var _v38 = $author$project$OptionsUtilities$findSelectedOption(model.options);
+								if (_v38.$ === 'Just') {
+									var selectedOption = _v38.a;
+									return $elm$json$Json$Encode$string(
+										$author$project$Option$getOptionValueAsString(selectedOption));
+								} else {
+									return $elm$json$Json$Encode$null;
+								}
+							} else {
+								return A2(
+									$elm$json$Json$Encode$list,
+									$elm$json$Json$Encode$string,
+									A2(
+										$elm$core$List$map,
+										$author$project$Option$getOptionValueAsString,
+										$author$project$OptionsUtilities$selectedOptions(model.options)));
+							}
+						}()));
 		}
 	});
 var $author$project$MuchSelect$updateWrapper = F2(
@@ -20092,10 +20118,6 @@ var $author$project$MuchSelect$singleSelectViewCustomHtml = F4(
 				}()
 				]));
 	});
-var $author$project$OptionsUtilities$findSelectedOption = function (options) {
-	return $elm$core$List$head(
-		$author$project$OptionsUtilities$selectedOptions(options));
-};
 var $author$project$MuchSelect$singleSelectDatasetInputField = F3(
 	function (maybeOption, selectionMode, hasSelectedOption) {
 		var valueString = function () {
