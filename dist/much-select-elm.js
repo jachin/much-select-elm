@@ -9041,6 +9041,25 @@ var $author$project$Option$encode = function (option) {
 					$author$project$Option$isOptionSelected(option)))
 			]));
 };
+var $author$project$SelectionMode$getSearchStringMinimumLength = function (selectionConfig) {
+	if (!selectionConfig.$) {
+		var singleSelectOutputStyle = selectionConfig.a;
+		if (!singleSelectOutputStyle.$) {
+			var singleSelectCustomHtmlFields = singleSelectOutputStyle.a;
+			return singleSelectCustomHtmlFields.bH;
+		} else {
+			return $author$project$OutputStyle$NoMinimumToSearchStringLength;
+		}
+	} else {
+		var multiSelectOutputStyle = selectionConfig.a;
+		if (!multiSelectOutputStyle.$) {
+			var multiSelectCustomHtmlFields = multiSelectOutputStyle.a;
+			return multiSelectCustomHtmlFields.bH;
+		} else {
+			return $author$project$OutputStyle$NoMinimumToSearchStringLength;
+		}
+	}
+};
 var $author$project$SelectionMode$isDisabled = function (selectionConfig) {
 	if (!selectionConfig.$) {
 		var interactionState = selectionConfig.c;
@@ -9203,6 +9222,18 @@ var $author$project$ConfigDump$encodeConfig = F4(
 					'option-sort',
 					$elm$json$Json$Encode$string(
 						$author$project$OptionSorting$toString(optionSort))),
+					_Utils_Tuple2(
+					'search-string-minimum-length',
+					$elm$json$Json$Encode$int(
+						function () {
+							var _v2 = $author$project$SelectionMode$getSearchStringMinimumLength(selectionConfig);
+							if (_v2.$ === 1) {
+								return 0;
+							} else {
+								var positiveInt = _v2.a;
+								return $author$project$PositiveInt$toInt(positiveInt);
+							}
+						}())),
 					_Utils_Tuple2(
 					'selected-value-encoding',
 					$elm$json$Json$Encode$string(
@@ -9622,25 +9653,6 @@ var $author$project$SelectedValueEncoding$fromString = function (string) {
 			return $elm$core$Result$Ok(0);
 		default:
 			return $elm$core$Result$Err('Invalid selected value encoding: ' + string);
-	}
-};
-var $author$project$SelectionMode$getSearchStringMinimumLength = function (selectionConfig) {
-	if (!selectionConfig.$) {
-		var singleSelectOutputStyle = selectionConfig.a;
-		if (!singleSelectOutputStyle.$) {
-			var singleSelectCustomHtmlFields = singleSelectOutputStyle.a;
-			return singleSelectCustomHtmlFields.bH;
-		} else {
-			return $author$project$OutputStyle$NoMinimumToSearchStringLength;
-		}
-	} else {
-		var multiSelectOutputStyle = selectionConfig.a;
-		if (!multiSelectOutputStyle.$) {
-			var multiSelectCustomHtmlFields = multiSelectOutputStyle.a;
-			return multiSelectCustomHtmlFields.bH;
-		} else {
-			return $author$project$OutputStyle$NoMinimumToSearchStringLength;
-		}
 	}
 };
 var $author$project$OutputStyle$getTransformAndValidateFromCustomOptions = function (customOptions) {

@@ -3,6 +3,7 @@ module ConfigDump exposing (..)
 import Json.Encode
 import OptionSorting exposing (OptionSort)
 import OutputStyle exposing (CustomOptions(..))
+import PositiveInt
 import RightSlot exposing (RightSlot)
 import SelectedValueEncoding exposing (SelectedValueEncoding)
 import SelectionMode exposing (SelectionConfig, getCustomOptions)
@@ -36,6 +37,16 @@ encodeConfig selectionConfig optionSort selectedValueEncoding rightSlot =
           )
         , ( "option-sort"
           , Json.Encode.string (OptionSorting.toString optionSort)
+          )
+        , ( "search-string-minimum-length"
+          , Json.Encode.int
+                (case SelectionMode.getSearchStringMinimumLength selectionConfig of
+                    OutputStyle.NoMinimumToSearchStringLength ->
+                        0
+
+                    OutputStyle.FixedSearchStringMinimumLength positiveInt ->
+                        PositiveInt.toInt positiveInt
+                )
           )
         , ( "selected-value-encoding"
           , Json.Encode.string (SelectedValueEncoding.toString selectedValueEncoding)
