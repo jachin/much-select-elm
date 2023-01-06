@@ -1072,7 +1072,7 @@ class MuchSelect extends HTMLElement {
 
     const selectElement = this.querySelector("select[slot='select-input']");
     if (this.hasAttribute("selected-value")) {
-      if (selectElement.querySelector("option[selected]")) {
+      if (selectElement && selectElement.querySelector("option[selected]")) {
         throw new Error(
           "MuchSelect does not support using the selected-value attribute and selected options in the selected-value slot."
         );

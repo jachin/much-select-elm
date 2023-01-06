@@ -4,7 +4,7 @@
 <script type="module">
   import { runTests } from "@web/test-runner-mocha";
   import { expect } from "@esm-bundle/chai";
-  import { html, fixture } from "@open-wc/testing";
+  import { html, fixture, nextFrame } from "@open-wc/testing";
 
   import MuchSelect from "../../dist/much-select-debug.js";
 
@@ -21,7 +21,7 @@
           const el = /** @type {MuchSelect} */ await fixture(
             html`<much-select selected-value="table"></much-select>`
           );
-          expect(el.selectedValue).to.equal("table");
+          expect(await el.selectedValue).to.equal("table");
           expect(
             el.shadowRoot.querySelector("#selected-value").innerHTML
           ).to.equal("table");
@@ -31,14 +31,14 @@
           const el = /** @type {MuchSelect} */ await fixture(
             html`<much-select selected-value=""></much-select>`
           );
-          expect(el.selectedValue).to.equal("");
+          expect(await el.selectedValue).to.equal("");
         });
 
         it("the selected value should be null of no attribute for selected-value is present", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
             html`<much-select></much-select>`
           );
-          expect(el.selectedValue).to.equal(null);
+          expect(await el.selectedValue).to.equal(null);
         });
       });
       describe("multi selection mode", () => {
@@ -49,7 +49,10 @@
               selected-value="table"
             ></much-select>`
           );
-          expect(el.selectedValue).to.equal("table");
+          expect(await el.selectedValue).to.deep.equal(["table"]);
+
+          await nextFrame();
+
           expect(el.shadowRoot.querySelectorAll(".value")[0].innerHTML).to.equal(
             '<span class="value-label">table</span>'
           );
