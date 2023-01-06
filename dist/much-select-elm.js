@@ -6191,6 +6191,8 @@ var $author$project$SelectionMode$stringToOutputStyle = function (string) {
 			return $elm$core$Result$Ok(0);
 		case 'datalist':
 			return $elm$core$Result$Ok(1);
+		case '':
+			return $elm$core$Result$Ok(0);
 		default:
 			return $elm$core$Result$Err('Invalid output style');
 	}
@@ -7013,38 +7015,49 @@ var $author$project$MuchSelect$init = function (flags) {
 	}();
 	var valueTransformationAndValidation = _v0.a;
 	var valueTransformationAndValidationErrorEffect = _v0.b;
-	var selectionConfig = A2(
-		$elm$core$Result$withDefault,
-		$author$project$SelectionMode$defaultSelectionConfig,
-		$author$project$SelectionMode$makeSelectionConfig(flags.br)(flags.bi)(flags.bb)(flags.ba)(flags.bC)(flags.bD)(flags.bg)(flags.bk)(flags.bu)(flags.bJ)(flags.bH)(flags.bM)(valueTransformationAndValidation));
 	var _v2 = function () {
-		var _v3 = A2($author$project$SelectedValueEncoding$valuesFromFlags, selectedValueEncoding, flags.bK);
+		var _v3 = $author$project$SelectionMode$makeSelectionConfig(flags.br)(flags.bi)(flags.bb)(flags.ba)(flags.bC)(flags.bD)(flags.bg)(flags.bk)(flags.bu)(flags.bJ)(flags.bH)(flags.bM)(valueTransformationAndValidation);
 		if (!_v3.$) {
-			var values = _v3.a;
-			return _Utils_Tuple2(values, $author$project$MuchSelect$NoEffect);
+			var value = _v3.a;
+			return _Utils_Tuple2(value, $author$project$MuchSelect$NoEffect);
 		} else {
 			var error = _v3.a;
+			return _Utils_Tuple2(
+				$author$project$SelectionMode$defaultSelectionConfig,
+				$author$project$MuchSelect$ReportErrorMessage(error));
+		}
+	}();
+	var selectionConfig = _v2.a;
+	var selectionConfigErrorEffect = _v2.b;
+	var _v4 = function () {
+		var _v5 = A2($author$project$SelectedValueEncoding$valuesFromFlags, selectedValueEncoding, flags.bK);
+		if (!_v5.$) {
+			var values = _v5.a;
+			return _Utils_Tuple2(values, $author$project$MuchSelect$NoEffect);
+		} else {
+			var error = _v5.a;
 			return _Utils_Tuple2(
 				_List_Nil,
 				$author$project$MuchSelect$ReportErrorMessage(error));
 		}
 	}();
-	var initialValues = _v2.a;
-	var initialValueErrEffect = _v2.b;
-	var _v4 = function () {
-		var _v5 = A2(
+	var initialValues = _v4.a;
+	var initialValueErrEffect = _v4.b;
+	var _v6 = function () {
+		var _v7 = A2(
 			$elm$json$Json$Decode$decodeString,
 			A2(
 				$author$project$Option$optionsDecoder,
 				1,
 				$author$project$SelectionMode$getOutputStyle(selectionConfig)),
 			flags.bB);
-		if (!_v5.$) {
-			var options = _v5.a;
-			if (!selectionConfig.$) {
-				var _v7 = $elm$core$List$head(initialValues);
-				if (!_v7.$) {
-					var initialValueStr_ = _v7.a;
+		if (!_v7.$) {
+			var options = _v7.a;
+			var _v8 = $author$project$SelectionMode$getSelectionMode(selectionConfig);
+			if (!_v8) {
+				var _v9 = $elm$core$List$head(initialValues);
+				if (!_v9.$) {
+					var initialValueStr_ = _v9.a;
 					if (A2(
 						$author$project$OptionsUtilities$isOptionValueInListOfOptionsByValue,
 						$author$project$OptionValue$stringToOptionValue(initialValueStr_),
@@ -7079,18 +7092,18 @@ var $author$project$MuchSelect$init = function (flags) {
 				return _Utils_Tuple2(optionsWithInitialValues, $author$project$MuchSelect$NoEffect);
 			}
 		} else {
-			var error = _v5.a;
+			var error = _v7.a;
 			return _Utils_Tuple2(
 				_List_Nil,
 				$author$project$MuchSelect$ReportErrorMessage(
 					$elm$json$Json$Decode$errorToString(error)));
 		}
 	}();
-	var optionsWithInitialValueSelected = _v4.a;
-	var errorEffect = _v4.b;
+	var optionsWithInitialValueSelected = _v6.a;
+	var errorEffect = _v6.b;
 	var optionsWithInitialValueSelectedSorted = function () {
-		var _v11 = $author$project$SelectionMode$getOutputStyle(selectionConfig);
-		if (!_v11) {
+		var _v13 = $author$project$SelectionMode$getOutputStyle(selectionConfig);
+		if (!_v13) {
 			return A2($author$project$OptionSorting$sortOptions, optionSort, optionsWithInitialValueSelected);
 		} else {
 			return $author$project$OptionsUtilities$organizeNewDatalistOptions(optionsWithInitialValueSelected);
@@ -7109,17 +7122,17 @@ var $author$project$MuchSelect$init = function (flags) {
 				if (flags.bt) {
 					return $author$project$RightSlot$ShowLoadingIndicator;
 				} else {
-					var _v8 = $author$project$SelectionMode$getOutputStyle(selectionConfig);
-					if (!_v8) {
-						var _v9 = $author$project$SelectionMode$getSelectionMode(selectionConfig);
-						if (!_v9) {
+					var _v10 = $author$project$SelectionMode$getOutputStyle(selectionConfig);
+					if (!_v10) {
+						var _v11 = $author$project$SelectionMode$getSelectionMode(selectionConfig);
+						if (!_v11) {
 							return $author$project$RightSlot$ShowDropdownIndicator(1);
 						} else {
 							return $author$project$OptionsUtilities$hasSelectedOption(optionsWithInitialValueSelected) ? $author$project$RightSlot$ShowClearButton : $author$project$RightSlot$ShowDropdownIndicator(1);
 						}
 					} else {
-						var _v10 = $author$project$SelectionMode$getSelectionMode(selectionConfig);
-						if (!_v10) {
+						var _v12 = $author$project$SelectionMode$getSelectionMode(selectionConfig);
+						if (!_v12) {
 							return $author$project$RightSlot$ShowNothing;
 						} else {
 							return $author$project$RightSlot$updateRightSlotForDatalist(optionsWithInitialValueSelectedSorted);
@@ -7145,7 +7158,8 @@ var $author$project$MuchSelect$init = function (flags) {
 					$author$project$MuchSelect$makeCommandMessageForInitialValue(
 					$author$project$OptionsUtilities$selectedOptions(optionsWithInitialValueSelected)),
 					$author$project$MuchSelect$UpdateOptionsInWebWorker,
-					valueTransformationAndValidationErrorEffect
+					valueTransformationAndValidationErrorEffect,
+					selectionConfigErrorEffect
 				])));
 };
 var $elm$core$Tuple$mapSecond = F2(

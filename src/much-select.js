@@ -333,11 +333,12 @@ class MuchSelect extends HTMLElement {
   // noinspection JSUnusedGlobalSymbols
   attributeChangedCallback(name, oldValue, newValue) {
     if (oldValue !== newValue) {
-      // noinspection JSUnresolvedVariable
       this.appPromise.then((app) => {
         if (newValue === null) {
+          // noinspection JSUnresolvedVariable
           app.ports.attributeRemoved.send(name);
         } else {
+          // noinspection JSUnresolvedVariable
           app.ports.attributeChanged.send([name, newValue]);
         }
       });
@@ -983,9 +984,13 @@ class MuchSelect extends HTMLElement {
   buildFlags() {
     const flags = {};
 
-    flags.isEventsOnly = this.hasAttribute("events-only");
+    flags.isEventsOnly = booleanAttributeValueToBool(
+      this.hasAttribute("events-only")
+    );
 
-    flags.allowMultiSelect = this.hasAttribute("multi-select");
+    flags.allowMultiSelect = booleanAttributeValueToBool(
+      this.hasAttribute("multi-select")
+    );
 
     if (this.hasAttribute("multi-select-single-item-removal")) {
       flags.enableMultiSelectSingleItemRemoval =

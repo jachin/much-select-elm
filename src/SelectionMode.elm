@@ -595,6 +595,9 @@ stringToOutputStyle string =
         "datalist" ->
             Ok Datalist
 
+        "" ->
+            Ok CustomHtml
+
         _ ->
             Err "Invalid output style"
 

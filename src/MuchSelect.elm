@@ -3274,22 +3274,29 @@ init flags =
                 Err error ->
                     ( TransformAndValidate.empty, ReportErrorMessage (Json.Decode.errorToString error) )
 
-        selectionConfig =
-            makeSelectionConfig
-                flags.isEventsOnly
-                flags.disabled
-                flags.allowMultiSelect
-                flags.allowCustomOptions
-                flags.outputStyle
-                flags.placeholder
-                flags.customOptionHint
-                flags.enableMultiSelectSingleItemRemoval
-                flags.maxDropdownItems
-                flags.selectedItemStaysInPlace
-                flags.searchStringMinimumLength
-                flags.showDropdownFooter
-                valueTransformationAndValidation
-                |> Result.withDefault defaultSelectionConfig
+        ( selectionConfig, selectionConfigErrorEffect ) =
+            case
+                makeSelectionConfig
+                    flags.isEventsOnly
+                    flags.disabled
+                    flags.allowMultiSelect
+                    flags.allowCustomOptions
+                    flags.outputStyle
+                    flags.placeholder
+                    flags.customOptionHint
+                    flags.enableMultiSelectSingleItemRemoval
+                    flags.maxDropdownItems
+                    flags.selectedItemStaysInPlace
+                    flags.searchStringMinimumLength
+                    flags.showDropdownFooter
+                    valueTransformationAndValidation
+            of
+                Ok value ->
+                    ( value, NoEffect )
+
+                Err error ->
+                    -- TODO this should return some invalid selection config
+                    ( defaultSelectionConfig, ReportErrorMessage error )
 
         -- TODO report an error if this is an inlaid value
         optionSort =
@@ -3312,14 +3319,15 @@ init flags =
         ( optionsWithInitialValueSelected, errorEffect ) =
             case Json.Decode.decodeString (Option.optionsDecoder OptionDisplay.MatureOption (SelectionMode.getOutputStyle selectionConfig)) flags.optionsJson of
                 Ok options ->
-                    case selectionConfig of
-                        SingleSelectConfig _ _ _ ->
+                    case SelectionMode.getSelectionMode selectionConfig of
+                        SelectionMode.SingleSelect ->
                             case List.head initialValues of
                                 Just initialValueStr_ ->
                                     if isOptionValueInListOfOptionsByValue (OptionValue.stringToOptionValue initialValueStr_) options then
                                         let
                                             optionsWithUniqueValues =
-                                                options |> List.Extra.uniqueBy Option.getOptionValueAsString
+                                                options
+                                                    |> List.Extra.uniqueBy Option.getOptionValueAsString
                                         in
                                         ( selectOptionsInOptionsListByString
                                             initialValues
@@ -3338,7 +3346,7 @@ init flags =
                                     in
                                     ( optionsWithUniqueValues, NoEffect )
 
-                        MultiSelectConfig _ _ _ ->
+                        SelectionMode.MultiSelect ->
                             let
                                 -- Don't include any empty options, that doesn't make sense.
                                 optionsWithInitialValues =
@@ -3405,6 +3413,7 @@ init flags =
         , makeCommandMessageForInitialValue (selectedOptions optionsWithInitialValueSelected)
         , UpdateOptionsInWebWorker
         , valueTransformationAndValidationErrorEffect
+        , selectionConfigErrorEffect
         ]
     )
 
