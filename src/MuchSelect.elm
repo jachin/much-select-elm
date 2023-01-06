@@ -1586,7 +1586,7 @@ update msg model =
                                     |> Json.Encode.string
 
                             Nothing ->
-                                Json.Encode.null
+                                Json.Encode.string ""
 
                     SelectionMode.MultiSelect ->
                         Json.Encode.list Json.Encode.string

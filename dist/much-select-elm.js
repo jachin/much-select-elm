@@ -12650,7 +12650,7 @@ var $author$project$MuchSelect$update = F2(
 									return $elm$json$Json$Encode$string(
 										$author$project$Option$getOptionValueAsString(selectedOption));
 								} else {
-									return $elm$json$Json$Encode$null;
+									return $elm$json$Json$Encode$string('');
 								}
 							} else {
 								return A2(
