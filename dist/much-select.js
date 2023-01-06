@@ -1627,22 +1627,19 @@ class MuchSelect extends HTMLElement {
   }
 
   set allowCustomOptions(value) {
-    this.appPromise
-      .then((app) => {
-        app.ports.attributeChanged.send(["allow-custom-options", value]);
-
-        return Promise.all(this.eventsOnlyMode, this.allowCustomOptions);
-      })
-      .then(([eventsOnlyMode, allowCustomOptions]) => {
-        if (!eventsOnlyMode) {
-          // TODO - This is wrong, we need to preserver the custom hit message if it's there.
-          if (allowCustomOptions) {
-            this.setAttribute("allow-custom-options", "true");
-          } else {
-            this.removeAttribute("allow-custom-options");
-          }
-        }
-      });
+    this.appPromise.then((app) => {
+      if (value === null) {
+        app.ports.allowCustomOptionsReceiver.send([true, ""]);
+      } else if (value === undefined) {
+        app.ports.allowCustomOptionsReceiver.send([true, ""]);
+      } else if (value === true) {
+        app.ports.allowCustomOptionsReceiver.send([true, ""]);
+      } else if (value === false) {
+        app.ports.allowCustomOptionsReceiver.send([false, ""]);
+      } else {
+        app.ports.allowCustomOptionsReceiver.send([true, value]);
+      }
+    });
   }
 
   get customOptionHint() {
