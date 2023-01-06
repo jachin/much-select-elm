@@ -193,12 +193,6 @@ class MuchSelect extends HTMLElement {
     this._minimumHeight = 20;
 
     /**
-     * @type {string|null}
-     * @private
-     */
-    this._selectedValue = null;
-
-    /**
      * @type {null|object}
      * @private
      */
@@ -343,72 +337,6 @@ class MuchSelect extends HTMLElement {
         }
       });
     }
-    /*
-    if (name === "allow-custom-options") {
-      if (oldValue !== newValue) {
-        this.updateAllowCustomOptions(newValue);
-      }
-    } else if (name === "disabled") {
-      if (oldValue !== newValue) {
-        this.disabled = newValue;
-      }
-    } else if (name === "events-only") {
-      if (oldValue !== newValue) {
-        this.eventsOnlyMode = newValue;
-      }
-    } else if (name === "loading") {
-      if (oldValue !== newValue) {
-        this.loading = newValue;
-      }
-    } else if (name === "max-dropdown-items") {
-      if (oldValue !== newValue) {
-        this.maxDropdownItems = newValue;
-      }
-    } else if (name === "multi-select") {
-      if (oldValue !== newValue) {
-        this.isInMultiSelectMode = newValue;
-      }
-    } else if (name === "multi-select-single-item-removal") {
-      if (oldValue !== newValue) {
-        this.isInMultiSelectModeWithSingleItemRemoval = newValue;
-      }
-    } else if (name === "placeholder") {
-      if (oldValue !== newValue) {
-        this.updateDimensions();
-        this.placeholder = newValue;
-      }
-    } else if (name === "option-sorting") {
-      if (oldValue !== newValue) {
-        this.optionSorting = newValue;
-      }
-    } else if (name === "output-style") {
-      if (oldValue !== newValue) {
-        this.outputStyle = newValue;
-      }
-    } else if (name === "search-string-minimum-length") {
-      if (oldValue !== newValue) {
-        this.searchStringMinimumLength = newValue;
-      }
-    } else if (name === "selected-option-goes-to-top") {
-      if (oldValue !== newValue) {
-        this.selectedItemGOesToTop = newValue;
-      }
-    } else if (name === "selected-value") {
-      if (oldValue !== newValue) {
-        this.updateDimensions();
-        this.selectedValue = newValue;
-      }
-    } else if (name === "selected-value-encoding") {
-      if (oldValue !== newValue) {
-        this.updateDimensions();
-        this.selectedValueEncoding = newValue;
-      }
-    } else if (name === "show-dropdown-footer") {
-      if (oldValue !== newValue) {
-        this.showDropdownFooter = newValue;
-      }
-    }
-    */
   }
 
   // noinspection JSUnusedGlobalSymbols
@@ -918,26 +846,26 @@ class MuchSelect extends HTMLElement {
    *  that we do not feed bad data back into the Elm app. Then, when we are done changing
    *  the DOM, turn the mutation observers back on.
    */
-  updateSelectInputSlot() {
-    if (!this.eventsOnlyMode) {
-      this.stopMuchSelectObserver();
-      this.stopSelectSlotObserver();
-      const selectInputSlot = this.querySelector("[slot='select-input']");
-      if (selectInputSlot) {
-        selectInputSlot.querySelectorAll("option").forEach((optionEl) => {
-          if (optionEl.selected) {
-            if (!this.isValueSelected(optionEl.value)) {
-              optionEl.removeAttribute("selected");
-            }
-          } else if (this.isValueSelected(optionEl.value)) {
-            optionEl.setAttribute("selected", "");
-          }
-        });
-      }
-      this.startMuchSelectObserver();
-      this.startSelectSlotObserver();
-    }
-  }
+  // updateSelectInputSlot() {
+  //   if (!this.eventsOnlyMode) {
+  //     this.stopMuchSelectObserver();
+  //     this.stopSelectSlotObserver();
+  //     const selectInputSlot = this.querySelector("[slot='select-input']");
+  //     if (selectInputSlot) {
+  //       selectInputSlot.querySelectorAll("option").forEach((optionEl) => {
+  //         if (optionEl.selected) {
+  //           if (!this.isValueSelected(optionEl.value)) {
+  //             optionEl.removeAttribute("selected");
+  //           }
+  //         } else if (this.isValueSelected(optionEl.value)) {
+  //           optionEl.setAttribute("selected", "");
+  //         }
+  //       });
+  //     }
+  //     this.startMuchSelectObserver();
+  //     this.startSelectSlotObserver();
+  //   }
+  // }
 
   // eslint-disable-next-line class-methods-use-this
   errorHandler(error) {
@@ -1583,14 +1511,8 @@ class MuchSelect extends HTMLElement {
   }
 
   set isInMultiSelectModeWithSingleItemRemoval(value) {
-    let isInMultiSelectModeWithSingleItemRemoval;
-    if (value === "false") {
-      this.isInMultiSelectModeWithSingleItemRemoval = false;
-    } else if (value === "") {
-      this.isInMultiSelectModeWithSingleItemRemoval = true;
-    } else {
-      this.isInMultiSelectModeWithSingleItemRemoval = !!value;
-    }
+    const isInMultiSelectModeWithSingleItemRemoval =
+      booleanAttributeValueToBool(value);
 
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
