@@ -14521,7 +14521,7 @@ var $author$project$ConfigDump$encodeConfig = F4(
 							}
 						}())),
 					_Utils_Tuple2(
-					'option-sort',
+					'option-sorting',
 					$elm$json$Json$Encode$string(
 						$author$project$OptionSorting$toString(optionSort))),
 					_Utils_Tuple2(

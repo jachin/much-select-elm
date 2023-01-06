@@ -35,7 +35,7 @@ encodeConfig selectionConfig optionSort selectedValueEncoding rightSlot =
                         False
                 )
           )
-        , ( "option-sort"
+        , ( "option-sorting"
           , Json.Encode.string (OptionSorting.toString optionSort)
           )
         , ( "search-string-minimum-length"
