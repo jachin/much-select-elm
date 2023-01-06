@@ -1343,22 +1343,35 @@ update msg model =
                     )
 
                 "search-string-minimum-length" ->
-                    case PositiveInt.fromString newAttributeValue of
-                        Just minimumLength ->
+                    case newAttributeValue of
+                        "" ->
                             ( { model
                                 | selectionConfig =
                                     setSearchStringMinimumLength
-                                        (FixedSearchStringMinimumLength minimumLength)
+                                        NoMinimumToSearchStringLength
                                         model.selectionConfig
                               }
                                 |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                             , NoEffect
                             )
 
-                        Nothing ->
-                            ( model
-                            , ReportErrorMessage "Search string minimum length needs to be a positive integer"
-                            )
+                        _ ->
+                            case PositiveInt.fromString newAttributeValue of
+                                Just minimumLength ->
+                                    ( { model
+                                        | selectionConfig =
+                                            setSearchStringMinimumLength
+                                                (FixedSearchStringMinimumLength minimumLength)
+                                                model.selectionConfig
+                                      }
+                                        |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
+                                    , NoEffect
+                                    )
+
+                                Nothing ->
+                                    ( model
+                                    , ReportErrorMessage "Search string minimum length needs to be a positive integer"
+                                    )
 
                 "selected-option-goes-to-top" ->
                     ( { model

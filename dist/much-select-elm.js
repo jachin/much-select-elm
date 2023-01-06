@@ -12412,24 +12412,35 @@ var $author$project$MuchSelect$update = F2(
 								}),
 							$author$project$MuchSelect$NoEffect);
 					case 'search-string-minimum-length':
-						var _v34 = $author$project$PositiveInt$fromString(newAttributeValue);
-						if (!_v34.$) {
-							var minimumLength = _v34.a;
+						if (newAttributeValue === '') {
 							return _Utils_Tuple2(
 								$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
 									_Utils_update(
 										model,
 										{
-											a: A2(
-												$author$project$SelectionMode$setSearchStringMinimumLength,
-												$author$project$OutputStyle$FixedSearchStringMinimumLength(minimumLength),
-												model.a)
+											a: A2($author$project$SelectionMode$setSearchStringMinimumLength, $author$project$OutputStyle$NoMinimumToSearchStringLength, model.a)
 										})),
 								$author$project$MuchSelect$NoEffect);
 						} else {
-							return _Utils_Tuple2(
-								model,
-								$author$project$MuchSelect$ReportErrorMessage('Search string minimum length needs to be a positive integer'));
+							var _v35 = $author$project$PositiveInt$fromString(newAttributeValue);
+							if (!_v35.$) {
+								var minimumLength = _v35.a;
+								return _Utils_Tuple2(
+									$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
+										_Utils_update(
+											model,
+											{
+												a: A2(
+													$author$project$SelectionMode$setSearchStringMinimumLength,
+													$author$project$OutputStyle$FixedSearchStringMinimumLength(minimumLength),
+													model.a)
+											})),
+									$author$project$MuchSelect$NoEffect);
+							} else {
+								return _Utils_Tuple2(
+									model,
+									$author$project$MuchSelect$ReportErrorMessage('Search string minimum length needs to be a positive integer'));
+							}
 						}
 					case 'selected-option-goes-to-top':
 						return _Utils_Tuple2(
@@ -12442,16 +12453,16 @@ var $author$project$MuchSelect$update = F2(
 					case 'selected-value':
 						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
 					case 'selected-value-encoding':
-						var _v35 = $author$project$SelectedValueEncoding$fromString(newAttributeValue);
-						if (!_v35.$) {
-							var selectedValueEncoding = _v35.a;
+						var _v36 = $author$project$SelectedValueEncoding$fromString(newAttributeValue);
+						if (!_v36.$) {
+							var selectedValueEncoding = _v36.a;
 							return _Utils_Tuple2(
 								_Utils_update(
 									model,
 									{T: selectedValueEncoding}),
 								$author$project$MuchSelect$NoEffect);
 						} else {
-							var error = _v35.a;
+							var error = _v36.a;
 							return _Utils_Tuple2(
 								model,
 								$author$project$MuchSelect$ReportErrorMessage(error));
@@ -12631,11 +12642,11 @@ var $author$project$MuchSelect$update = F2(
 					model,
 					$author$project$MuchSelect$DumpSelectedValues(
 						function () {
-							var _v37 = $author$project$SelectionMode$getSelectionMode(model.a);
-							if (!_v37) {
-								var _v38 = $author$project$OptionsUtilities$findSelectedOption(model.b);
-								if (!_v38.$) {
-									var selectedOption = _v38.a;
+							var _v38 = $author$project$SelectionMode$getSelectionMode(model.a);
+							if (!_v38) {
+								var _v39 = $author$project$OptionsUtilities$findSelectedOption(model.b);
+								if (!_v39.$) {
+									var selectedOption = _v39.a;
 									return $elm$json$Json$Encode$string(
 										$author$project$Option$getOptionValueAsString(selectedOption));
 								} else {

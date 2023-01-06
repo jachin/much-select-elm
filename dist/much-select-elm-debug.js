@@ -17709,24 +17709,35 @@ var $author$project$MuchSelect$update = F2(
 								}),
 							$author$project$MuchSelect$NoEffect);
 					case 'search-string-minimum-length':
-						var _v34 = $author$project$PositiveInt$fromString(newAttributeValue);
-						if (_v34.$ === 'Just') {
-							var minimumLength = _v34.a;
+						if (newAttributeValue === '') {
 							return _Utils_Tuple2(
 								$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
 									_Utils_update(
 										model,
 										{
-											selectionConfig: A2(
-												$author$project$SelectionMode$setSearchStringMinimumLength,
-												$author$project$OutputStyle$FixedSearchStringMinimumLength(minimumLength),
-												model.selectionConfig)
+											selectionConfig: A2($author$project$SelectionMode$setSearchStringMinimumLength, $author$project$OutputStyle$NoMinimumToSearchStringLength, model.selectionConfig)
 										})),
 								$author$project$MuchSelect$NoEffect);
 						} else {
-							return _Utils_Tuple2(
-								model,
-								$author$project$MuchSelect$ReportErrorMessage('Search string minimum length needs to be a positive integer'));
+							var _v35 = $author$project$PositiveInt$fromString(newAttributeValue);
+							if (_v35.$ === 'Just') {
+								var minimumLength = _v35.a;
+								return _Utils_Tuple2(
+									$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
+										_Utils_update(
+											model,
+											{
+												selectionConfig: A2(
+													$author$project$SelectionMode$setSearchStringMinimumLength,
+													$author$project$OutputStyle$FixedSearchStringMinimumLength(minimumLength),
+													model.selectionConfig)
+											})),
+									$author$project$MuchSelect$NoEffect);
+							} else {
+								return _Utils_Tuple2(
+									model,
+									$author$project$MuchSelect$ReportErrorMessage('Search string minimum length needs to be a positive integer'));
+							}
 						}
 					case 'selected-option-goes-to-top':
 						return _Utils_Tuple2(
@@ -17739,16 +17750,16 @@ var $author$project$MuchSelect$update = F2(
 					case 'selected-value':
 						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
 					case 'selected-value-encoding':
-						var _v35 = $author$project$SelectedValueEncoding$fromString(newAttributeValue);
-						if (_v35.$ === 'Ok') {
-							var selectedValueEncoding = _v35.a;
+						var _v36 = $author$project$SelectedValueEncoding$fromString(newAttributeValue);
+						if (_v36.$ === 'Ok') {
+							var selectedValueEncoding = _v36.a;
 							return _Utils_Tuple2(
 								_Utils_update(
 									model,
 									{selectedValueEncoding: selectedValueEncoding}),
 								$author$project$MuchSelect$NoEffect);
 						} else {
-							var error = _v35.a;
+							var error = _v36.a;
 							return _Utils_Tuple2(
 								model,
 								$author$project$MuchSelect$ReportErrorMessage(error));
@@ -17928,11 +17939,11 @@ var $author$project$MuchSelect$update = F2(
 					model,
 					$author$project$MuchSelect$DumpSelectedValues(
 						function () {
-							var _v37 = $author$project$SelectionMode$getSelectionMode(model.selectionConfig);
-							if (_v37.$ === 'SingleSelect') {
-								var _v38 = $author$project$OptionsUtilities$findSelectedOption(model.options);
-								if (_v38.$ === 'Just') {
-									var selectedOption = _v38.a;
+							var _v38 = $author$project$SelectionMode$getSelectionMode(model.selectionConfig);
+							if (_v38.$ === 'SingleSelect') {
+								var _v39 = $author$project$OptionsUtilities$findSelectedOption(model.options);
+								if (_v39.$ === 'Just') {
+									var selectedOption = _v39.a;
 									return $elm$json$Json$Encode$string(
 										$author$project$Option$getOptionValueAsString(selectedOption));
 								} else {
