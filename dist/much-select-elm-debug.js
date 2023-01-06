@@ -14421,6 +14421,33 @@ var $author$project$RightSlot$isLoading = function (rightSlot) {
 			return false;
 	}
 };
+var $author$project$SelectionMode$getDropdownStyle = function (selectionConfig) {
+	if (selectionConfig.$ === 'SingleSelectConfig') {
+		var singleSelectOutputStyle = selectionConfig.a;
+		if (singleSelectOutputStyle.$ === 'SingleSelectCustomHtml') {
+			var singleSelectCustomHtmlFields = singleSelectOutputStyle.a;
+			return singleSelectCustomHtmlFields.dropdownStyle;
+		} else {
+			return $author$project$OutputStyle$NoFooter;
+		}
+	} else {
+		var multiSelectOutputStyle = selectionConfig.a;
+		if (multiSelectOutputStyle.$ === 'MultiSelectCustomHtml') {
+			var multiSelectCustomHtmlFields = multiSelectOutputStyle.a;
+			return multiSelectCustomHtmlFields.dropdownStyle;
+		} else {
+			return $author$project$OutputStyle$NoFooter;
+		}
+	}
+};
+var $author$project$SelectionMode$showDropdownFooter = function (selectionConfig) {
+	var _v0 = $author$project$SelectionMode$getDropdownStyle(selectionConfig);
+	if (_v0.$ === 'NoFooter') {
+		return false;
+	} else {
+		return true;
+	}
+};
 var $author$project$OptionSorting$toString = function (optionSort) {
 	if (optionSort.$ === 'NoSorting') {
 		return 'no-sorting';
@@ -14481,7 +14508,11 @@ var $author$project$ConfigDump$encodeConfig = F4(
 					_Utils_Tuple2(
 					'selected-value-encoding',
 					$elm$json$Json$Encode$string(
-						$author$project$SelectedValueEncoding$toString(selectedValueEncoding)))
+						$author$project$SelectedValueEncoding$toString(selectedValueEncoding))),
+					_Utils_Tuple2(
+					'show-dropdown-footer',
+					$elm$json$Json$Encode$bool(
+						$author$project$SelectionMode$showDropdownFooter(selectionConfig)))
 				]));
 	});
 var $author$project$SearchString$encode = function (searchString) {
@@ -18474,33 +18505,6 @@ var $author$project$SelectionMode$showDropdown = function (selectionConfig) {
 			return false;
 		default:
 			return false;
-	}
-};
-var $author$project$SelectionMode$getDropdownStyle = function (selectionConfig) {
-	if (selectionConfig.$ === 'SingleSelectConfig') {
-		var singleSelectOutputStyle = selectionConfig.a;
-		if (singleSelectOutputStyle.$ === 'SingleSelectCustomHtml') {
-			var singleSelectCustomHtmlFields = singleSelectOutputStyle.a;
-			return singleSelectCustomHtmlFields.dropdownStyle;
-		} else {
-			return $author$project$OutputStyle$NoFooter;
-		}
-	} else {
-		var multiSelectOutputStyle = selectionConfig.a;
-		if (multiSelectOutputStyle.$ === 'MultiSelectCustomHtml') {
-			var multiSelectCustomHtmlFields = multiSelectOutputStyle.a;
-			return multiSelectCustomHtmlFields.dropdownStyle;
-		} else {
-			return $author$project$OutputStyle$NoFooter;
-		}
-	}
-};
-var $author$project$SelectionMode$showDropdownFooter = function (selectionConfig) {
-	var _v0 = $author$project$SelectionMode$getDropdownStyle(selectionConfig);
-	if (_v0.$ === 'NoFooter') {
-		return false;
-	} else {
-		return true;
 	}
 };
 var $author$project$MuchSelect$dropdown = F4(

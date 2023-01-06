@@ -40,4 +40,7 @@ encodeConfig selectionConfig optionSort selectedValueEncoding rightSlot =
         , ( "selected-value-encoding"
           , Json.Encode.string (SelectedValueEncoding.toString selectedValueEncoding)
           )
+        , ( "show-dropdown-footer"
+          , Json.Encode.bool (SelectionMode.showDropdownFooter selectionConfig)
+          )
         ]

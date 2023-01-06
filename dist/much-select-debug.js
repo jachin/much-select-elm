@@ -1483,7 +1483,7 @@ class MuchSelect extends HTMLElement {
   }
 
   /**
-   * @returns {boolean}
+   * @returns {Promise<boolean>}
    */
   get showDropdownFooter() {
     return this.getConfigValuePromise("show-dropdown-footer");
