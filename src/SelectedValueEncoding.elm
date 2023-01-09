@@ -1,8 +1,12 @@
 module SelectedValueEncoding exposing (..)
 
 import Json.Decode
+import Json.Encode
+import Option exposing (Option)
+import OptionsUtilities exposing (findSelectedOption, selectedOptions)
 import Ports exposing (valueDecoder, valuesDecoder)
-import Url exposing (percentDecode)
+import SelectionMode exposing (SelectionMode)
+import Url exposing (percentDecode, percentEncode)
 
 
 type SelectedValueEncoding
@@ -74,3 +78,80 @@ valuesFromFlags selectedValueEncoding valuesString =
                                 |> Result.mapError
                                     (\error -> Json.Decode.errorToString error)
                         )
+
+
+selectedValue : SelectionMode -> List Option -> Json.Encode.Value
+selectedValue selectionMode options =
+    case selectionMode of
+        SelectionMode.SingleSelect ->
+            case findSelectedOption options of
+                Just selectedOption ->
+                    let
+                        valueAsString =
+                            selectedOption
+                                |> Option.getOptionValueAsString
+                    in
+                    Json.Encode.string valueAsString
+
+                Nothing ->
+                    Json.Encode.object
+                        [ ( "value", Json.Encode.string "" )
+                        ]
+
+        SelectionMode.MultiSelect ->
+            let
+                selectedValues =
+                    selectedOptions options
+                        |> List.map Option.getOptionValueAsString
+            in
+            Json.Encode.list Json.Encode.string
+                selectedValues
+
+
+rawSelectedValue : SelectionMode -> SelectedValueEncoding -> List Option -> Json.Encode.Value
+rawSelectedValue selectionMode selectedValueEncoding options =
+    case selectionMode of
+        SelectionMode.SingleSelect ->
+            case findSelectedOption options of
+                Just selectedOption ->
+                    let
+                        valueAsString =
+                            selectedOption
+                                |> Option.getOptionValueAsString
+                    in
+                    case selectedValueEncoding of
+                        JsonEncoded ->
+                            Json.Encode.string
+                                (Json.Encode.encode 0 (Json.Encode.string valueAsString)
+                                    |> percentEncode
+                                )
+
+                        CommaSeperated ->
+                            Json.Encode.string valueAsString
+
+                Nothing ->
+                    case selectedValueEncoding of
+                        JsonEncoded ->
+                            Json.Encode.string
+                                (Json.Encode.encode 0 (Json.Encode.string "")
+                                    |> percentEncode
+                                )
+
+                        CommaSeperated ->
+                            Json.Encode.string ""
+
+        SelectionMode.MultiSelect ->
+            let
+                selectedValues =
+                    selectedOptions options
+                        |> List.map Option.getOptionValueAsString
+            in
+            case selectedValueEncoding of
+                JsonEncoded ->
+                    Json.Encode.string
+                        (Json.Encode.encode 0 (Json.Encode.list Json.Encode.string selectedValues)
+                            |> percentEncode
+                        )
+
+                CommaSeperated ->
+                    Json.Encode.string (String.join "," selectedValues)

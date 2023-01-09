@@ -35,6 +35,7 @@ import Json.Decode
 import Json.Encode
 import Keyboard exposing (Key(..))
 import Keyboard.Events as Keyboard
+import LightDomChange
 import List.Extra
 import Option
     exposing
@@ -69,7 +70,6 @@ import OptionsUtilities
         , findHighlightedOption
         , findHighlightedOrSelectedOptionIndex
         , findOptionByOptionValue
-        , findSelectedOption
         , groupOptionsInOrder
         , hasSelectedHighlightedOptions
         , hasSelectedOption
@@ -101,63 +101,7 @@ import OutputStyle
         , SearchStringMinimumLength(..)
         , SingleItemRemoval(..)
         )
-import Ports
-    exposing
-        ( addOptionsReceiver
-        , allOptions
-        , allowCustomOptionsReceiver
-        , attributeChanged
-        , attributeRemoved
-        , blurInput
-        , customOptionHintReceiver
-        , customOptionSelected
-        , customValidationReceiver
-        , deselectOptionReceiver
-        , disableChangedReceiver
-        , dumpConfigState
-        , dumpSelectedValues
-        , errorMessage
-        , focusInput
-        , initialValueSet
-        , inputBlurred
-        , inputFocused
-        , inputKeyUp
-        , invalidValue
-        , loadingChangedReceiver
-        , maxDropdownItemsChangedReceiver
-        , muchSelectIsReady
-        , multiSelectChangedReceiver
-        , multiSelectSingleItemRemovalChangedReceiver
-        , optionDeselected
-        , optionSelected
-        , optionSortingChangedReceiver
-        , optionsReplacedReceiver
-        , optionsUpdated
-        , outputStyleChangedReceiver
-        , placeholderChangedReceiver
-        , removeOptionsReceiver
-        , requestAllOptionsReceiver
-        , requestConfigState
-        , requestSelectedValues
-        , scrollDropdownToElement
-        , searchOptionsWithWebWorker
-        , searchStringMinimumLengthChangedReceiver
-        , selectOptionReceiver
-        , selectedItemStaysInPlaceChangedReceiver
-        , selectedValueEncodingChangeReceiver
-        , sendCustomValidationRequest
-        , showDropdownFooterChangedReceiver
-        , transformationAndValidationReceiver
-        , updateOptionsFromDom
-        , updateOptionsInWebWorker
-        , updateSearchResultDataWithWebWorkerReceiver
-        , valueCasingDimensionsChangedReceiver
-        , valueChanged
-        , valueChangedReceiver
-        , valueCleared
-        , valueDecoder
-        , valuesDecoder
-        )
+import Ports exposing (addOptionsReceiver, allOptions, allowCustomOptionsReceiver, attributeChanged, attributeRemoved, blurInput, customOptionHintReceiver, customOptionSelected, customValidationReceiver, deselectOptionReceiver, disableChangedReceiver, dumpConfigState, dumpSelectedValues, errorMessage, focusInput, initialValueSet, inputBlurred, inputFocused, inputKeyUp, invalidValue, lightDomChange, loadingChangedReceiver, maxDropdownItemsChangedReceiver, muchSelectIsReady, multiSelectChangedReceiver, multiSelectSingleItemRemovalChangedReceiver, optionDeselected, optionSelected, optionSortingChangedReceiver, optionsReplacedReceiver, optionsUpdated, outputStyleChangedReceiver, placeholderChangedReceiver, removeOptionsReceiver, requestAllOptionsReceiver, requestConfigState, requestSelectedValues, scrollDropdownToElement, searchOptionsWithWebWorker, searchStringMinimumLengthChangedReceiver, selectOptionReceiver, selectedItemStaysInPlaceChangedReceiver, selectedValueEncodingChangeReceiver, sendCustomValidationRequest, showDropdownFooterChangedReceiver, transformationAndValidationReceiver, updateOptionsFromDom, updateOptionsInWebWorker, updateSearchResultDataWithWebWorkerReceiver, valueCasingDimensionsChangedReceiver, valueChanged, valueChangedReceiver, valueCleared, valueDecoder, valuesDecoder)
 import PositiveInt exposing (PositiveInt)
 import RightSlot
     exposing
@@ -200,7 +144,6 @@ import TransformAndValidate
         ( ValueTransformAndValidate
         , transformAndValidateFirstPass
         )
-import Url exposing (percentEncode)
 
 
 type Effect
@@ -230,6 +173,7 @@ type Effect
     | ReportAllOptions Json.Encode.Value
     | DumpConfigState Json.Encode.Value
     | DumpSelectedValues Json.Encode.Value
+    | ChangeTheLightDom LightDomChange.LightDomChange
 
 
 type Msg
@@ -461,7 +405,12 @@ update msg model =
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , batch
-                        [ makeEffectsWhenValuesChanges (selectedOptions updatedOptions) (Just optionValue)
+                        [ makeEffectsWhenValuesChanges
+                            (SelectionMode.getEventMode model.selectionConfig)
+                            (SelectionMode.getSelectionMode model.selectionConfig)
+                            model.selectedValueEncoding
+                            (selectedOptions updatedOptions)
+                            (Just optionValue)
                         , BlurInput
                         ]
                     )
@@ -473,7 +422,12 @@ update msg model =
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , batch
-                        [ makeEffectsWhenValuesChanges (selectedOptions updatedOptions) (Just optionValue)
+                        [ makeEffectsWhenValuesChanges
+                            (SelectionMode.getEventMode model.selectionConfig)
+                            (SelectionMode.getSelectionMode model.selectionConfig)
+                            model.selectedValueEncoding
+                            (selectedOptions updatedOptions)
+                            (Just optionValue)
                         , FocusInput
                         ]
                     )
@@ -520,6 +474,9 @@ update msg model =
                       }
                     , batch
                         [ makeEffectsWhenValuesChanges
+                            (SelectionMode.getEventMode model.selectionConfig)
+                            (SelectionMode.getSelectionMode model.selectionConfig)
+                            model.selectedValueEncoding
                             (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
                             maybeSelectedOptionValue
                         , InputHasBeenKeyUp valueString TransformAndValidate.InputHasBeenValidated
@@ -549,6 +506,9 @@ update msg model =
                       }
                     , batch
                         [ makeEffectsWhenValuesChanges
+                            (SelectionMode.getEventMode model.selectionConfig)
+                            (SelectionMode.getSelectionMode model.selectionConfig)
+                            model.selectedValueEncoding
                             (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
                             maybeSelectedOptionValue
                         , InputHasBeenKeyUp valueString TransformAndValidate.InputHasFailedValidation
@@ -577,6 +537,9 @@ update msg model =
                       }
                     , batch
                         [ makeEffectsWhenValuesChanges
+                            (SelectionMode.getEventMode model.selectionConfig)
+                            (SelectionMode.getSelectionMode model.selectionConfig)
+                            model.selectedValueEncoding
                             (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
                             maybeSelectedOptionValue
                         , InputHasBeenKeyUp valueString TransformAndValidate.InputHasValidationPending
@@ -764,7 +727,12 @@ update msg model =
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , batch
-                        [ makeEffectsWhenValuesChanges (selectedOptions updatedOptions) (Just optionValue)
+                        [ makeEffectsWhenValuesChanges
+                            (SelectionMode.getEventMode model.selectionConfig)
+                            (SelectionMode.getSelectionMode model.selectionConfig)
+                            model.selectedValueEncoding
+                            (selectedOptions updatedOptions)
+                            (Just optionValue)
                         , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
                         , SearchStringTouched model.searchStringDebounceLength
                         ]
@@ -896,7 +864,11 @@ update msg model =
                         | selectionConfig = newSelectionConfig
                         , rightSlot = updateRightSlot model.rightSlot newSelectionConfig True model.options
                       }
-                    , FetchOptionsFromDom
+                    , Batch
+                        [ FetchOptionsFromDom
+                        , ChangeTheLightDom
+                            (LightDomChange.AddUpdateAttribute "output-style" newOutputStyleString)
+                        ]
                     )
 
                 Err _ ->
@@ -934,7 +906,12 @@ update msg model =
                         NoEffect
 
                     else
-                        makeEffectsWhenValuesChanges (selectedOptions updatedOptions) Nothing
+                        makeEffectsWhenValuesChanges
+                            (SelectionMode.getEventMode model.selectionConfig)
+                            (SelectionMode.getSelectionMode model.selectionConfig)
+                            model.selectedValueEncoding
+                            (selectedOptions updatedOptions)
+                            Nothing
             in
             ( { model
                 | selectionConfig = SelectionMode.setMultiSelectModeWithBool isInMultiSelectMode model.selectionConfig
@@ -975,7 +952,12 @@ update msg model =
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , batch
-                        [ makeEffectsWhenValuesChanges (selectedOptions updatedOptions) maybeHighlightedOptionValue
+                        [ makeEffectsWhenValuesChanges
+                            (SelectionMode.getEventMode model.selectionConfig)
+                            (SelectionMode.getSelectionMode model.selectionConfig)
+                            model.selectedValueEncoding
+                            (selectedOptions updatedOptions)
+                            maybeHighlightedOptionValue
                         , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
                         , BlurInput
                         ]
@@ -988,7 +970,12 @@ update msg model =
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , batch
-                        [ makeEffectsWhenValuesChanges (selectedOptions updatedOptions) maybeHighlightedOptionValue
+                        [ makeEffectsWhenValuesChanges
+                            (SelectionMode.getEventMode model.selectionConfig)
+                            (SelectionMode.getSelectionMode model.selectionConfig)
+                            model.selectedValueEncoding
+                            (selectedOptions updatedOptions)
+                            maybeHighlightedOptionValue
                         , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
                         , FocusInput
                         ]
@@ -1093,6 +1080,9 @@ update msg model =
                 , rightSlot = updateRightSlot model.rightSlot model.selectionConfig True (updatedOptions |> selectedOptions)
               }
             , makeEffectsWhenValuesChanges
+                (SelectionMode.getEventMode model.selectionConfig)
+                (SelectionMode.getSelectionMode model.selectionConfig)
+                model.selectedValueEncoding
                 (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
                 Nothing
             )
@@ -1107,6 +1097,9 @@ update msg model =
                 , rightSlot = updateRightSlot model.rightSlot model.selectionConfig True (updatedOptions |> selectedOptions)
               }
             , makeEffectsWhenValuesChanges
+                (SelectionMode.getEventMode model.selectionConfig)
+                (SelectionMode.getSelectionMode model.selectionConfig)
+                model.selectedValueEncoding
                 (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
                 Nothing
             )
@@ -1168,6 +1161,9 @@ update msg model =
                                 , rightSlot = updateRightSlot model.rightSlot model.selectionConfig True (updatedOptions |> selectedOptions)
                               }
                             , makeEffectsWhenValuesChanges
+                                (SelectionMode.getEventMode model.selectionConfig)
+                                (SelectionMode.getSelectionMode model.selectionConfig)
+                                model.selectedValueEncoding
                                 (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
                                 maybeSelectedOptionValue
                             )
@@ -1189,6 +1185,9 @@ update msg model =
                                 , rightSlot = updateRightSlot model.rightSlot model.selectionConfig True (updatedOptions |> selectedOptions)
                               }
                             , makeEffectsWhenValuesChanges
+                                (SelectionMode.getEventMode model.selectionConfig)
+                                (SelectionMode.getSelectionMode model.selectionConfig)
+                                model.selectedValueEncoding
                                 (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
                                 maybeSelectedOptionValue
                             )
@@ -1472,7 +1471,11 @@ update msg model =
                     , batch
                         [ ReportReady
                         , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
-                        , makeEffectsWhenValuesChanges (selectedOptions updatedOptions) Nothing
+                        , makeEffectsWhenValuesChanges (SelectionMode.getEventMode model.selectionConfig)
+                            (SelectionMode.getSelectionMode model.selectionConfig)
+                            model.selectedValueEncoding
+                            (selectedOptions updatedOptions)
+                            Nothing
                         ]
                     )
 
@@ -1578,69 +1581,19 @@ update msg model =
         RequestSelectedValues ->
             ( model
             , DumpSelectedValues
-                (case SelectionMode.getSelectionMode model.selectionConfig of
-                    SelectionMode.SingleSelect ->
-                        case findSelectedOption model.options of
-                            Just selectedOption ->
-                                let
-                                    valueAsString =
-                                        selectedOption
-                                            |> Option.getOptionValueAsString
-                                in
-                                Json.Encode.object
-                                    [ ( "value", Json.Encode.string valueAsString )
-                                    , ( "rawValue"
-                                      , case model.selectedValueEncoding of
-                                            SelectedValueEncoding.JsonEncoded ->
-                                                Json.Encode.string
-                                                    (Json.Encode.encode 0 (Json.Encode.string valueAsString)
-                                                        |> percentEncode
-                                                    )
-
-                                            SelectedValueEncoding.CommaSeperated ->
-                                                Json.Encode.string valueAsString
-                                      )
-                                    ]
-
-                            Nothing ->
-                                Json.Encode.object
-                                    [ ( "value", Json.Encode.string "" )
-                                    , ( "rawValue"
-                                      , case model.selectedValueEncoding of
-                                            SelectedValueEncoding.JsonEncoded ->
-                                                Json.Encode.string
-                                                    (Json.Encode.encode 0 (Json.Encode.string "")
-                                                        |> percentEncode
-                                                    )
-
-                                            SelectedValueEncoding.CommaSeperated ->
-                                                Json.Encode.string ""
-                                      )
-                                    ]
-
-                    SelectionMode.MultiSelect ->
-                        let
-                            selectedValues =
-                                selectedOptions model.options
-                                    |> List.map Option.getOptionValueAsString
-                        in
-                        Json.Encode.object
-                            [ ( "value"
-                              , Json.Encode.list Json.Encode.string
-                                    selectedValues
-                              )
-                            , ( "rawValue"
-                              , case model.selectedValueEncoding of
-                                    SelectedValueEncoding.JsonEncoded ->
-                                        Json.Encode.string
-                                            (Json.Encode.encode 0 (Json.Encode.list Json.Encode.string selectedValues)
-                                                |> percentEncode
-                                            )
-
-                                    SelectedValueEncoding.CommaSeperated ->
-                                        Json.Encode.string (String.join "," selectedValues)
-                              )
-                            ]
+                (Json.Encode.object
+                    [ ( "value"
+                      , SelectedValueEncoding.selectedValue
+                            (SelectionMode.getSelectionMode model.selectionConfig)
+                            model.options
+                      )
+                    , ( "rawValue"
+                      , SelectedValueEncoding.rawSelectedValue
+                            (SelectionMode.getSelectionMode model.selectionConfig)
+                            model.selectedValueEncoding
+                            model.options
+                      )
+                    ]
                 )
             )
 
@@ -1728,6 +1681,9 @@ perform effect =
         DumpSelectedValues value ->
             dumpSelectedValues value
 
+        ChangeTheLightDom lightDomChange_ ->
+            lightDomChange (LightDomChange.encode lightDomChange_)
+
 
 batch : List Effect -> Effect
 batch effects =
@@ -1748,7 +1704,11 @@ deselectOption model option =
       }
         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
     , batch
-        [ makeEffectsWhenValuesChanges (selectedOptions updatedOptions) Nothing
+        [ makeEffectsWhenValuesChanges (SelectionMode.getEventMode model.selectionConfig)
+            (SelectionMode.getSelectionMode model.selectionConfig)
+            model.selectedValueEncoding
+            (selectedOptions updatedOptions)
+            Nothing
         , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
         ]
     )
@@ -1790,7 +1750,11 @@ clearAllSelectedOption model =
         , searchString = SearchString.reset
       }
     , batch
-        [ makeEffectsWhenValuesChanges [] Nothing
+        [ makeEffectsWhenValuesChanges (SelectionMode.getEventMode model.selectionConfig)
+            (SelectionMode.getSelectionMode model.selectionConfig)
+            model.selectedValueEncoding
+            []
+            Nothing
         , deselectEventEffect
         , focusEffect
         ]
@@ -3196,8 +3160,8 @@ valueCasingPartsAttribute selectionConfig hasError hasPendingValidation =
         )
 
 
-makeEffectsWhenValuesChanges : List Option -> Maybe OptionValue -> Effect
-makeEffectsWhenValuesChanges selectedOptions maybeSelectedValue =
+makeEffectsWhenValuesChanges : OutputStyle.EventsMode -> SelectionMode.SelectionMode -> SelectedValueEncoding.SelectedValueEncoding -> List Option -> Maybe OptionValue -> Effect
+makeEffectsWhenValuesChanges eventsMode selectionMode selectedValueEncoding selectedOptions maybeSelectedValue =
     let
         valueChangeCmd =
             if OptionsUtilities.allOptionsAreValid selectedOptions then
@@ -3247,6 +3211,38 @@ makeEffectsWhenValuesChanges selectedOptions maybeSelectedValue =
                 Nothing ->
                     NoEffect
 
+        lightDomChangeEffect =
+            case eventsMode of
+                OutputStyle.EventsOnly ->
+                    NoEffect
+
+                OutputStyle.AllowLightDomChanges ->
+                    ChangeTheLightDom
+                        (LightDomChange.UpdateSelectedValue
+                            (Json.Encode.object
+                                [ ( "rawValue"
+                                  , SelectedValueEncoding.rawSelectedValue
+                                        selectionMode
+                                        selectedValueEncoding
+                                        selectedOptions
+                                  )
+                                , ( "value"
+                                  , SelectedValueEncoding.selectedValue
+                                        selectionMode
+                                        selectedOptions
+                                  )
+                                , ( "selectionMode"
+                                  , case selectionMode of
+                                        SelectionMode.SingleSelect ->
+                                            Json.Encode.string "single-select"
+
+                                        SelectionMode.MultiSelect ->
+                                            Json.Encode.string "multi-select"
+                                  )
+                                ]
+                            )
+                        )
+
         customValidationCmd =
             if OptionsUtilities.hasAnyPendingValidation selectedOptions then
                 selectedOptions
@@ -3263,6 +3259,7 @@ makeEffectsWhenValuesChanges selectedOptions maybeSelectedValue =
         , clearCmd
         , optionSelectedCmd
         , customValidationCmd
+        , lightDomChangeEffect
         ]
 
 

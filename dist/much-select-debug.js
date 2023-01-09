@@ -363,8 +363,40 @@ class MuchSelect extends HTMLElement {
 
     // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
     this.appPromise.then((app) =>
-      app.ports.initialValueSet.subscribe((initialValues) => {
-        this.valueChangedHandler(initialValues, true);
+      app.ports.errorMessage.subscribe(this.errorHandler.bind(this))
+    );
+
+    // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
+    this.appPromise.then((app) =>
+      app.ports.lightDomChange.subscribe((lightDomChange) => {
+        if (lightDomChange.changeType === "update-selected-value") {
+          if (this.hasAttribute("selected-value")) {
+            this.setAttribute("selected-value", lightDomChange.data.rawValue);
+          }
+
+          // const newValue = lightDomChange.value;
+          // this.stopMuchSelectObserver();
+          // this.stopSelectSlotObserver();
+          // const selectInputSlot = this.querySelector("[slot='select-input']");
+          // if (selectInputSlot) {
+          //   selectInputSlot.querySelectorAll("option").forEach((optionEl) => {
+          //     if (optionEl.selected) {
+          //       if (!this.isValueSelected(optionEl.value)) {
+          //         optionEl.removeAttribute("selected");
+          //       }
+          //     } else if (this.isValueSelected(optionEl.value)) {
+          //       optionEl.setAttribute("selected", "");
+          //     }
+          //   });
+          // }
+          // this.startMuchSelectObserver();
+          // this.startSelectSlotObserver();
+        } else if (lightDomChange.changeType === "remove-attribute") {
+          this.removeAttribute(lightDomChange.name);
+        } else if (lightDomChange.changeType === "add-update-attribute") {
+          this.setAttribute(lightDomChange.name, lightDomChange.value);
+        }
+        console.log("lightDomChange", lightDomChange);
       })
     );
 
@@ -1210,7 +1242,10 @@ class MuchSelect extends HTMLElement {
 
   async getConfigValuePromise(key) {
     const selectionConfig = await this.getSelectionConfig();
-    return selectionConfig[key];
+    if (Object.hasOwn(selectionConfig, key)) {
+      return selectionConfig[key];
+    }
+    throw new Error(`Invalid config value: ${key}`);
   }
 
   /**
@@ -1715,6 +1750,9 @@ class MuchSelect extends HTMLElement {
     return ["customHtml", "custom-html", "datalist"].includes(outputStyle);
   }
 
+  /**
+   * @return {Promise<string>}
+   * */
   get outputStyle() {
     return this.getConfigValuePromise("output-style");
   }

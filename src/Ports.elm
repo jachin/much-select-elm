@@ -19,6 +19,7 @@ port module Ports exposing
     , inputFocused
     , inputKeyUp
     , invalidValue
+    , lightDomChange
     , loadingChangedReceiver
     , maxDropdownItemsChangedReceiver
     , muchSelectIsReady
@@ -177,6 +178,9 @@ port attributeChanged : (( String, String ) -> msg) -> Sub msg
 
 
 port attributeRemoved : (String -> msg) -> Sub msg
+
+
+port lightDomChange : Json.Decode.Value -> Cmd msg
 
 
 valuesDecoder : Json.Decode.Decoder (List String)
