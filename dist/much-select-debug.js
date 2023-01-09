@@ -1251,6 +1251,10 @@ class MuchSelect extends HTMLElement {
     // this.updateHiddenInputValueSlot();
   }
 
+  get rawSelectedValue() {
+    return this.getSelectedValues(true);
+  }
+
   /**
    * This is a "sync" function, so this is kinda like a "set" function but the
    *  selected value(s) are coming from Elm. So we do not need to tell Elm about
@@ -1974,7 +1978,7 @@ class MuchSelect extends HTMLElement {
     });
   }
 
-  async getSelectedValues() {
+  async getSelectedValues(rawSelectedValue = false) {
     return new Promise((resolve) => {
       const callback = (selectedValues) => {
         this.appPromise.then((app) => {
@@ -1984,7 +1988,12 @@ class MuchSelect extends HTMLElement {
             app.ports.requestSelectedValues.unsubscribe(callback);
           }
         });
-        resolve(selectedValues);
+
+        if (rawSelectedValue) {
+          resolve(selectedValues.rawValue);
+        } else {
+          resolve(selectedValues.value);
+        }
       };
 
       this.appPromise.then((app) => {

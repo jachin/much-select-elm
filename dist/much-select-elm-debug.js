@@ -15198,6 +15198,7 @@ var $author$project$OptionsUtilities$notSelectedOptions = function (options) {
 			A2($elm$core$Basics$composeL, $elm$core$Basics$not, $author$project$Option$isOptionSelected),
 			options));
 };
+var $elm$url$Url$percentEncode = _Url_percentEncode;
 var $grotsev$elm_debouncer$Bounce$push = function (_v0) {
 	var counter = _v0.a;
 	return $grotsev$elm_debouncer$Bounce$Bounce(counter + 1);
@@ -17958,19 +17959,81 @@ var $author$project$MuchSelect$update = F2(
 								var _v39 = $author$project$OptionsUtilities$findSelectedOption(model.options);
 								if (_v39.$ === 'Just') {
 									var selectedOption = _v39.a;
-									return $elm$json$Json$Encode$string(
-										$author$project$Option$getOptionValueAsString(selectedOption));
+									var valueAsString = $author$project$Option$getOptionValueAsString(selectedOption);
+									return $elm$json$Json$Encode$object(
+										_List_fromArray(
+											[
+												_Utils_Tuple2(
+												'value',
+												$elm$json$Json$Encode$string(valueAsString)),
+												_Utils_Tuple2(
+												'rawValue',
+												function () {
+													var _v40 = model.selectedValueEncoding;
+													if (_v40.$ === 'JsonEncoded') {
+														return $elm$json$Json$Encode$string(
+															$elm$url$Url$percentEncode(
+																A2(
+																	$elm$json$Json$Encode$encode,
+																	0,
+																	$elm$json$Json$Encode$string(valueAsString))));
+													} else {
+														return $elm$json$Json$Encode$string(valueAsString);
+													}
+												}())
+											]));
 								} else {
-									return $elm$json$Json$Encode$string('');
+									return $elm$json$Json$Encode$object(
+										_List_fromArray(
+											[
+												_Utils_Tuple2(
+												'value',
+												$elm$json$Json$Encode$string('')),
+												_Utils_Tuple2(
+												'rawValue',
+												function () {
+													var _v41 = model.selectedValueEncoding;
+													if (_v41.$ === 'JsonEncoded') {
+														return $elm$json$Json$Encode$string(
+															$elm$url$Url$percentEncode(
+																A2(
+																	$elm$json$Json$Encode$encode,
+																	0,
+																	$elm$json$Json$Encode$string(''))));
+													} else {
+														return $elm$json$Json$Encode$string('');
+													}
+												}())
+											]));
 								}
 							} else {
-								return A2(
-									$elm$json$Json$Encode$list,
-									$elm$json$Json$Encode$string,
-									A2(
-										$elm$core$List$map,
-										$author$project$Option$getOptionValueAsString,
-										$author$project$OptionsUtilities$selectedOptions(model.options)));
+								var selectedValues = A2(
+									$elm$core$List$map,
+									$author$project$Option$getOptionValueAsString,
+									$author$project$OptionsUtilities$selectedOptions(model.options));
+								return $elm$json$Json$Encode$object(
+									_List_fromArray(
+										[
+											_Utils_Tuple2(
+											'value',
+											A2($elm$json$Json$Encode$list, $elm$json$Json$Encode$string, selectedValues)),
+											_Utils_Tuple2(
+											'rawValue',
+											function () {
+												var _v42 = model.selectedValueEncoding;
+												if (_v42.$ === 'JsonEncoded') {
+													return $elm$json$Json$Encode$string(
+														$elm$url$Url$percentEncode(
+															A2(
+																$elm$json$Json$Encode$encode,
+																0,
+																A2($elm$json$Json$Encode$list, $elm$json$Json$Encode$string, selectedValues))));
+												} else {
+													return $elm$json$Json$Encode$string(
+														A2($elm$core$String$join, ',', selectedValues));
+												}
+											}())
+										]));
 							}
 						}()));
 		}

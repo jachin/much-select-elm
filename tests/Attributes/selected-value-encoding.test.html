@@ -4,7 +4,7 @@
 <script type="module">
   import { runTests } from "@web/test-runner-mocha";
   import { expect } from "@esm-bundle/chai";
-  import { html, fixture, nextFrame } from "@open-wc/testing";
+  import { html, fixture, nextFrame, waitUntil } from "@open-wc/testing";
 
   import MuchSelect from "../../dist/much-select-debug.js";
 
@@ -33,17 +33,44 @@
           expect(await el.selectedValueEncoding).to.equal("json");
         });
 
-        it("changing the selected value encoding should change the selected value", async () => {
+        it("changing the selected value encoding should change the selected value (to json)", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
             html`<much-select multi-select selected-value="ho,hum"></much-select>`
           );
           el.setAttribute("selected-value-encoding", "json");
-          expect(await el.selectedValue).to.equal("%5B%22ho%22%2C%22hum%22%5D");
-          expect(await el.parsedSelectedValue).to.eql(["ho", "hum"]);
+
+          await nextFrame();
+
+          expect(await el.rawSelectedValue).to.equal(
+            "%5B%22ho%22%2C%22hum%22%5D"
+          );
+          expect(await el.selectedValue).to.eql(["ho", "hum"]);
+        });
+
+        it("changing the selected value encoding should change the selected value (to comma)", async () => {
+          const el = /** @type {MuchSelect} */ await fixture(
+            html`<much-select multi-select selected-value="ho,hum"></much-select>`
+          );
+          el.setAttribute("selected-value-encoding", "json");
+
+          await waitUntil(
+            async () => (await el.selectedValueEncoding) === "json",
+            "Multi select did to switch over to json selected value encoding."
+          );
+
+          await nextFrame();
 
           el.setAttribute("selected-value-encoding", "comma");
-          expect(await el.selectedValue).to.equal("ho,hum");
-          expect(await el.parsedSelectedValue).to.eql(["ho", "hum"]);
+
+          await waitUntil(
+            async () => (await el.selectedValueEncoding) === "comma",
+            "Multi select did to switch over to comma selected value encoding."
+          );
+
+          await nextFrame();
+
+          expect(await el.rawSelectedValue).to.equal("ho,hum");
+          expect(await el.selectedValue).to.eql(["ho", "hum"]);
         });
 
         it("with json should support values that include commas", async () => {
@@ -54,13 +81,10 @@
               selected-value-encoding="json"
             ></much-select>`
           );
-          expect(await el.selectedValue).to.equal(
+          expect(await el.rawSelectedValue).to.equal(
             "%5B%22oh%2Cwhere%22%2C%22can%20my%20%F0%9F%99%82%20be%22%5D"
           );
-          expect(await el.parsedSelectedValue).to.eql([
-            "oh,where",
-            "can my 🙂 be",
-          ]);
+          expect(await el.selectedValue).to.eql(["oh,where", "can my 🙂 be"]);
         });
       });
     });

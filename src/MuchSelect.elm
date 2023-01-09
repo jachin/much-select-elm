@@ -200,6 +200,7 @@ import TransformAndValidate
         ( ValueTransformAndValidate
         , transformAndValidateFirstPass
         )
+import Url exposing (percentEncode)
 
 
 type Effect
@@ -1581,18 +1582,65 @@ update msg model =
                     SelectionMode.SingleSelect ->
                         case findSelectedOption model.options of
                             Just selectedOption ->
-                                selectedOption
-                                    |> Option.getOptionValueAsString
-                                    |> Json.Encode.string
+                                let
+                                    valueAsString =
+                                        selectedOption
+                                            |> Option.getOptionValueAsString
+                                in
+                                Json.Encode.object
+                                    [ ( "value", Json.Encode.string valueAsString )
+                                    , ( "rawValue"
+                                      , case model.selectedValueEncoding of
+                                            SelectedValueEncoding.JsonEncoded ->
+                                                Json.Encode.string
+                                                    (Json.Encode.encode 0 (Json.Encode.string valueAsString)
+                                                        |> percentEncode
+                                                    )
+
+                                            SelectedValueEncoding.CommaSeperated ->
+                                                Json.Encode.string valueAsString
+                                      )
+                                    ]
 
                             Nothing ->
-                                Json.Encode.string ""
+                                Json.Encode.object
+                                    [ ( "value", Json.Encode.string "" )
+                                    , ( "rawValue"
+                                      , case model.selectedValueEncoding of
+                                            SelectedValueEncoding.JsonEncoded ->
+                                                Json.Encode.string
+                                                    (Json.Encode.encode 0 (Json.Encode.string "")
+                                                        |> percentEncode
+                                                    )
+
+                                            SelectedValueEncoding.CommaSeperated ->
+                                                Json.Encode.string ""
+                                      )
+                                    ]
 
                     SelectionMode.MultiSelect ->
-                        Json.Encode.list Json.Encode.string
-                            (selectedOptions model.options
-                                |> List.map Option.getOptionValueAsString
-                            )
+                        let
+                            selectedValues =
+                                selectedOptions model.options
+                                    |> List.map Option.getOptionValueAsString
+                        in
+                        Json.Encode.object
+                            [ ( "value"
+                              , Json.Encode.list Json.Encode.string
+                                    selectedValues
+                              )
+                            , ( "rawValue"
+                              , case model.selectedValueEncoding of
+                                    SelectedValueEncoding.JsonEncoded ->
+                                        Json.Encode.string
+                                            (Json.Encode.encode 0 (Json.Encode.list Json.Encode.string selectedValues)
+                                                |> percentEncode
+                                            )
+
+                                    SelectedValueEncoding.CommaSeperated ->
+                                        Json.Encode.string (String.join "," selectedValues)
+                              )
+                            ]
                 )
             )
 
