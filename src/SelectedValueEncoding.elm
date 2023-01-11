@@ -94,9 +94,7 @@ selectedValue selectionMode options =
                     Json.Encode.string valueAsString
 
                 Nothing ->
-                    Json.Encode.object
-                        [ ( "value", Json.Encode.string "" )
-                        ]
+                    Json.Encode.string ""
 
         SelectionMode.MultiSelect ->
             let

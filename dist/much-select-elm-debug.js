@@ -13694,13 +13694,7 @@ var $author$project$SelectedValueEncoding$selectedValue = F2(
 				var valueAsString = $author$project$Option$getOptionValueAsString(selectedOption);
 				return $elm$json$Json$Encode$string(valueAsString);
 			} else {
-				return $elm$json$Json$Encode$object(
-					_List_fromArray(
-						[
-							_Utils_Tuple2(
-							'value',
-							$elm$json$Json$Encode$string(''))
-						]));
+				return $elm$json$Json$Encode$string('');
 			}
 		} else {
 			var selectedValues = A2(
@@ -18017,7 +18011,7 @@ var $author$project$MuchSelect$update = F2(
 									if (selectedValueString === '') {
 										return $author$project$MuchSelect$clearAllSelectedOption(model);
 									} else {
-										var newOptions = A2($author$project$OptionsUtilities$selectOptionsInOptionsListByString, selectedValueStrings, model.options);
+										var newOptions = A2($author$project$OptionsUtilities$addAndSelectOptionsInOptionsListByString, selectedValueStrings, model.options);
 										return _Utils_Tuple2(
 											$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
 												_Utils_update(
@@ -18026,7 +18020,7 @@ var $author$project$MuchSelect$update = F2(
 											$author$project$MuchSelect$NoEffect);
 									}
 								} else {
-									var newOptions = A2($author$project$OptionsUtilities$selectOptionsInOptionsListByString, selectedValueStrings, model.options);
+									var newOptions = A2($author$project$OptionsUtilities$addAndSelectOptionsInOptionsListByString, selectedValueStrings, model.options);
 									return _Utils_Tuple2(
 										$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
 											_Utils_update(

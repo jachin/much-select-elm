@@ -1455,7 +1455,7 @@ update msg model =
                                         _ ->
                                             let
                                                 newOptions =
-                                                    selectOptionsInOptionsListByString
+                                                    addAndSelectOptionsInOptionsListByString
                                                         selectedValueStrings
                                                         model.options
                                             in
@@ -1469,7 +1469,7 @@ update msg model =
                                 _ ->
                                     let
                                         newOptions =
-                                            selectOptionsInOptionsListByString
+                                            addAndSelectOptionsInOptionsListByString
                                                 selectedValueStrings
                                                 model.options
                                     in
