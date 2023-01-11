@@ -3,6 +3,7 @@ module SelectionMode exposing
     , OutputStyle(..)
     , SelectionConfig(..)
     , SelectionMode(..)
+    , defaultMaxDropdownItems
     , defaultSelectionConfig
     , getCustomOptionHint
     , getCustomOptions
@@ -68,7 +69,7 @@ import OutputStyle
         , setEventsModeSingleSelect
         , setTransformAndValidateFromCustomOptions
         )
-import PositiveInt
+import PositiveInt exposing (PositiveInt)
 import TransformAndValidate exposing (ValueTransformAndValidate)
 
 
@@ -114,6 +115,11 @@ defaultSelectionConfig =
         Unfocused
 
 
+defaultMaxDropdownItems : PositiveInt
+defaultMaxDropdownItems =
+    PositiveInt.new 1000
+
+
 makeSelectionConfig :
     Bool
     -> Bool
@@ -123,13 +129,13 @@ makeSelectionConfig :
     -> ( Bool, String )
     -> Maybe String
     -> Bool
-    -> Maybe Int
+    -> PositiveInt
     -> Bool
     -> Int
     -> Bool
     -> ValueTransformAndValidate
     -> Result String SelectionConfig
-makeSelectionConfig isEventsOnly_ disabled allowMultiSelect allowCustomOptions outputStyle placeholder customOptionHint enableMultiSelectSingleItemRemoval maybeMaxDropdownItems selectedItemStaysInPlace searchStringMinimumLength shouldShowDropdownFooter transformAndValidate =
+makeSelectionConfig isEventsOnly_ disabled allowMultiSelect allowCustomOptions outputStyle placeholder customOptionHint enableMultiSelectSingleItemRemoval maxDropdownItems selectedItemStaysInPlace searchStringMinimumLength shouldShowDropdownFooter transformAndValidate =
     let
         outputStyleResult =
             outputStyle
@@ -141,9 +147,6 @@ makeSelectionConfig isEventsOnly_ disabled allowMultiSelect allowCustomOptions o
 
             else
                 Unfocused
-
-        maxDropdownItems =
-            Maybe.withDefault 1000 maybeMaxDropdownItems
     in
     Result.andThen
         (\s ->
@@ -182,7 +185,7 @@ makeSelectionConfig isEventsOnly_ disabled allowMultiSelect allowCustomOptions o
         outputStyleResult
 
 
-makeSingleSelectOutputStyle : OutputStyle -> Bool -> Bool -> Bool -> Int -> Int -> Bool -> Maybe String -> ValueTransformAndValidate -> Result String SingleSelectOutputStyle
+makeSingleSelectOutputStyle : OutputStyle -> Bool -> Bool -> Bool -> PositiveInt -> Int -> Bool -> Maybe String -> ValueTransformAndValidate -> Result String SingleSelectOutputStyle
 makeSingleSelectOutputStyle outputStyle isEventsOnly_ allowCustomOptions selectedItemStaysInPlace maxDropdownItems searchStringMinimumLength shouldShowDropdownFooter customOptionHint transformAndValidate =
     case outputStyle of
         CustomHtml ->
@@ -219,7 +222,7 @@ makeSingleSelectOutputStyle outputStyle isEventsOnly_ allowCustomOptions selecte
                 (SingleSelectCustomHtml
                     { customOptions = customOptions
                     , selectedItemPlacementMode = selectedItemPlacementMode
-                    , maxDropdownItems = FixedMaxDropdownItems (PositiveInt.new maxDropdownItems)
+                    , maxDropdownItems = FixedMaxDropdownItems maxDropdownItems
                     , searchStringMinimumLength = FixedSearchStringMinimumLength (PositiveInt.new searchStringMinimumLength)
                     , dropdownState = Collapsed
                     , dropdownStyle = dropdownStyle
@@ -239,7 +242,7 @@ makeSingleSelectOutputStyle outputStyle isEventsOnly_ allowCustomOptions selecte
             Ok (SingleSelectDatalist eventsMode transformAndValidate)
 
 
-makeMultiSelectOutputStyle : OutputStyle -> Bool -> Bool -> Bool -> Int -> Int -> Bool -> Maybe String -> ValueTransformAndValidate -> Result String MultiSelectOutputStyle
+makeMultiSelectOutputStyle : OutputStyle -> Bool -> Bool -> Bool -> PositiveInt -> Int -> Bool -> Maybe String -> ValueTransformAndValidate -> Result String MultiSelectOutputStyle
 makeMultiSelectOutputStyle outputStyle isEventsOnly_ allowCustomOptions enableMultiSelectSingleItemRemoval maxDropdownItems searchStringMinimumLength shouldShowDropdownFooter customOptionHint transformAndValidate =
     case outputStyle of
         CustomHtml ->
@@ -276,7 +279,7 @@ makeMultiSelectOutputStyle outputStyle isEventsOnly_ allowCustomOptions enableMu
                 (MultiSelectCustomHtml
                     { customOptions = customOptions
                     , singleItemRemoval = singleItemRemoval
-                    , maxDropdownItems = FixedMaxDropdownItems (PositiveInt.new maxDropdownItems)
+                    , maxDropdownItems = FixedMaxDropdownItems maxDropdownItems
                     , searchStringMinimumLength = FixedSearchStringMinimumLength (PositiveInt.new searchStringMinimumLength)
                     , dropdownState = Collapsed
                     , dropdownStyle = dropdownStyle

@@ -1,9 +1,25 @@
 module SelectionMode.MakeSelectionConfig exposing (suite)
 
 import Expect
-import OutputStyle exposing (CustomOptions(..), DropdownState(..), DropdownStyle(..), EventsMode(..), MaxDropdownItems(..), MultiSelectOutputStyle(..), SearchStringMinimumLength(..), SingleItemRemoval(..))
+import OutputStyle
+    exposing
+        ( CustomOptions(..)
+        , DropdownState(..)
+        , DropdownStyle(..)
+        , EventsMode(..)
+        , MaxDropdownItems(..)
+        , MultiSelectOutputStyle(..)
+        , SearchStringMinimumLength(..)
+        , SingleItemRemoval(..)
+        )
 import PositiveInt
-import SelectionMode exposing (InteractionState(..), SelectionConfig(..), makeSelectionConfig)
+import SelectionMode
+    exposing
+        ( InteractionState(..)
+        , SelectionConfig(..)
+        , defaultMaxDropdownItems
+        , makeSelectionConfig
+        )
 import Test exposing (Test, describe, test)
 import TransformAndValidate
 
@@ -23,7 +39,7 @@ suite =
                         ( False, "" )
                         Nothing
                         False
-                        Nothing
+                        defaultMaxDropdownItems
                         True
                         2
                         False

@@ -3396,7 +3396,7 @@ type alias Flags =
     , enableMultiSelectSingleItemRemoval : Bool
     , optionSort : String
     , loading : Bool
-    , maxDropdownItems : Maybe Int
+    , maxDropdownItems : Maybe String
     , disabled : Bool
     , allowCustomOptions : Bool
     , selectedItemStaysInPlace : Bool
@@ -3417,6 +3417,29 @@ init flags =
                 Err error ->
                     ( TransformAndValidate.empty, ReportErrorMessage (Json.Decode.errorToString error) )
 
+        ( maxDropdownItems, maxDropdownItemsErrorEffect ) =
+            case flags.maxDropdownItems of
+                Just str ->
+                    case PositiveInt.fromString str of
+                        Just int ->
+                            if PositiveInt.isZero int then
+                                ( SelectionMode.defaultMaxDropdownItems
+                                , ReportErrorMessage
+                                    "Invalid value for the max-dropdown-items attribute."
+                                )
+
+                            else
+                                ( int, NoEffect )
+
+                        Nothing ->
+                            ( SelectionMode.defaultMaxDropdownItems
+                            , ReportErrorMessage
+                                "Invalid value for the max-dropdown-items attribute."
+                            )
+
+                Nothing ->
+                    ( SelectionMode.defaultMaxDropdownItems, NoEffect )
+
         ( selectionConfig, selectionConfigErrorEffect ) =
             case
                 makeSelectionConfig
@@ -3428,7 +3451,7 @@ init flags =
                     flags.placeholder
                     flags.customOptionHint
                     flags.enableMultiSelectSingleItemRemoval
-                    flags.maxDropdownItems
+                    maxDropdownItems
                     flags.selectedItemStaysInPlace
                     flags.searchStringMinimumLength
                     flags.showDropdownFooter
@@ -3551,6 +3574,7 @@ init flags =
       }
     , batch
         [ errorEffect
+        , maxDropdownItemsErrorEffect
         , initialValueErrEffect
         , ReportReady
         , makeCommandMessageForInitialValue
