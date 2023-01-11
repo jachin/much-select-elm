@@ -54,6 +54,26 @@
           // The light dom should still reflect the old value.
           expect(el.getAttribute("selected-value")).to.equal("air");
         });
+
+        it("should support setting the property directly on the element", async () => {
+          const el = /** @type {MuchSelect} */ await fixture(html` <much-select>
+            <select slot="select-input">
+              <option>air</option>
+              <option>fire</option>
+              <option>water</option>
+            </select>
+          </much-select>`);
+
+          el.eventsOnlyMode = true;
+
+          // eslint-disable-next-line no-return-await
+          await waitUntil(async () => await el.eventsOnlyMode);
+
+          el.eventsOnlyMode = false;
+
+          // eslint-disable-next-line no-return-await
+          await waitUntil(async () => !(await el.eventsOnlyMode));
+        });
       });
     });
   });

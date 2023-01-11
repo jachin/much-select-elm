@@ -19,7 +19,7 @@ const buildOptionsFromSelectElement = (selectElement) => {
       value = optionElement.innerText;
     }
     const option = { value };
-    option.label = optionElement.innerText;
+    option.label = optionElement.innerText.trim();
     option.labelClean = asciiFold(optionElement.innerText);
     option.index = optionIndex;
     if (optionElement.hasAttribute("selected")) {
@@ -442,13 +442,13 @@ class MuchSelect extends HTMLElement {
 
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
-      app.ports.optionSelected.subscribe((valueLabelPair) => {
+      app.ports.optionSelected.subscribe((option) => {
         this.dispatchEvent(
           new CustomEvent("optionSelected", {
             bubbles: true,
             detail: {
-              value: valueLabelPair[0],
-              label: valueLabelPair[1],
+              value: option.value,
+              label: option.label,
             },
           })
         );
@@ -457,8 +457,8 @@ class MuchSelect extends HTMLElement {
           new CustomEvent("addItem", {
             bubbles: true,
             detail: {
-              value: valueLabelPair[0],
-              label: valueLabelPair[1],
+              value: option.value,
+              label: option.label,
             },
           })
         );
@@ -1269,9 +1269,14 @@ class MuchSelect extends HTMLElement {
     return this.getConfigValuePromise("events-only");
   }
 
+  // noinspection JSUnusedGlobalSymbols
   set eventsOnlyMode(value) {
     this.appPromise.then((app) => {
-      app.ports.attributeChanged.send(["events-only", value]);
+      if (value) {
+        app.ports.attributeChanged.send(["events-only", ""]);
+      } else {
+        app.ports.attributeRemoved.send("events-only");
+      }
     });
   }
 
