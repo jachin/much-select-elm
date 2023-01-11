@@ -67,9 +67,7 @@ import OptionsUtilities
         , deselectLastSelectedOption
         , deselectOptionInListByOptionValue
         , filterOptionsToShowInDropdown
-        , findHighlightedOption
         , findHighlightedOrSelectedOptionIndex
-        , findOptionByOptionValue
         , groupOptionsInOrder
         , hasSelectedHighlightedOptions
         , hasSelectedOption
@@ -467,7 +465,6 @@ update msg model =
                             (SelectionMode.getSelectionMode model.selectionConfig)
                             model.selectedValueEncoding
                             (selectedOptions updatedOptions)
-                            (Just optionValue)
                         , BlurInput
                         ]
                     )
@@ -484,7 +481,6 @@ update msg model =
                             (SelectionMode.getSelectionMode model.selectionConfig)
                             model.selectedValueEncoding
                             (selectedOptions updatedOptions)
-                            (Just optionValue)
                         , FocusInput
                         ]
                     )
@@ -521,9 +517,6 @@ update msg model =
                                 (OptionValue.stringToOptionValue valueString)
                                 selectedValueIndex
                                 model.options
-
-                        maybeSelectedOptionValue =
-                            Just (OptionValue.stringToOptionValue valueString)
                     in
                     ( { model
                         | options = updatedOptions
@@ -535,7 +528,6 @@ update msg model =
                             (SelectionMode.getSelectionMode model.selectionConfig)
                             model.selectedValueEncoding
                             (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
-                            maybeSelectedOptionValue
                         , InputHasBeenKeyUp valueString TransformAndValidate.InputHasBeenValidated
                         ]
                     )
@@ -548,9 +540,6 @@ update msg model =
                                 (OptionValue.stringToOptionValue valueString)
                                 selectedValueIndex
                                 model.options
-
-                        maybeSelectedOptionValue =
-                            Just (OptionValue.stringToOptionValue valueString)
                     in
                     ( { model
                         | options = updatedOptions
@@ -567,7 +556,6 @@ update msg model =
                             (SelectionMode.getSelectionMode model.selectionConfig)
                             model.selectedValueEncoding
                             (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
-                            maybeSelectedOptionValue
                         , InputHasBeenKeyUp valueString TransformAndValidate.InputHasFailedValidation
                         ]
                     )
@@ -579,9 +567,6 @@ update msg model =
                                 (OptionValue.stringToOptionValue valueString)
                                 selectedValueIndex
                                 model.options
-
-                        maybeSelectedOptionValue =
-                            Just (OptionValue.stringToOptionValue valueString)
                     in
                     ( { model
                         | options = updatedOptions
@@ -598,7 +583,6 @@ update msg model =
                             (SelectionMode.getSelectionMode model.selectionConfig)
                             model.selectedValueEncoding
                             (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
-                            maybeSelectedOptionValue
                         , InputHasBeenKeyUp valueString TransformAndValidate.InputHasValidationPending
                         ]
                     )
@@ -635,7 +619,11 @@ update msg model =
                                 | options = newOptions
                               }
                                 |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-                            , NoEffect
+                            , makeEffectsWhenValuesChanges
+                                (SelectionMode.getEventMode model.selectionConfig)
+                                (SelectionMode.getSelectionMode model.selectionConfig)
+                                model.selectedValueEncoding
+                                (selectedOptions newOptions)
                             )
 
                         Datalist ->
@@ -649,7 +637,11 @@ update msg model =
                                 | options = newOptions
                               }
                                 |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-                            , NoEffect
+                            , makeEffectsWhenValuesChanges
+                                (SelectionMode.getEventMode model.selectionConfig)
+                                (SelectionMode.getSelectionMode model.selectionConfig)
+                                model.selectedValueEncoding
+                                (selectedOptions newOptions)
                             )
 
                 Err error ->
@@ -789,7 +781,6 @@ update msg model =
                             (SelectionMode.getSelectionMode model.selectionConfig)
                             model.selectedValueEncoding
                             (selectedOptions updatedOptions)
-                            (Just optionValue)
                         , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
                         , SearchStringTouched model.searchStringDebounceLength
                         ]
@@ -968,7 +959,6 @@ update msg model =
                             (SelectionMode.getSelectionMode model.selectionConfig)
                             model.selectedValueEncoding
                             (selectedOptions updatedOptions)
-                            Nothing
             in
             ( { model
                 | selectionConfig = SelectionMode.setMultiSelectModeWithBool isInMultiSelectMode model.selectionConfig
@@ -995,9 +985,6 @@ update msg model =
 
         SelectHighlightedOption ->
             let
-                maybeHighlightedOptionValue =
-                    findHighlightedOption model.options |> Maybe.map Option.getOptionValue
-
                 updatedOptions =
                     selectHighlightedOption model.selectionConfig model.options
             in
@@ -1014,7 +1001,6 @@ update msg model =
                             (SelectionMode.getSelectionMode model.selectionConfig)
                             model.selectedValueEncoding
                             (selectedOptions updatedOptions)
-                            maybeHighlightedOptionValue
                         , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
                         , BlurInput
                         ]
@@ -1032,7 +1018,6 @@ update msg model =
                             (SelectionMode.getSelectionMode model.selectionConfig)
                             model.selectedValueEncoding
                             (selectedOptions updatedOptions)
-                            maybeHighlightedOptionValue
                         , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
                         , FocusInput
                         ]
@@ -1141,7 +1126,6 @@ update msg model =
                 (SelectionMode.getSelectionMode model.selectionConfig)
                 model.selectedValueEncoding
                 (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
-                Nothing
             )
 
         RemoveMultiSelectValue indexWhereToDelete ->
@@ -1158,7 +1142,6 @@ update msg model =
                 (SelectionMode.getSelectionMode model.selectionConfig)
                 model.selectedValueEncoding
                 (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
-                Nothing
             )
 
         RequestAllOptions ->
@@ -1209,9 +1192,6 @@ update msg model =
                                         (OptionValue.stringToOptionValue valueString)
                                         selectedValueIndex
                                         model.options
-
-                                maybeSelectedOptionValue =
-                                    Just (OptionValue.stringToOptionValue valueString)
                             in
                             ( { model
                                 | options = updatedOptions
@@ -1222,7 +1202,6 @@ update msg model =
                                 (SelectionMode.getSelectionMode model.selectionConfig)
                                 model.selectedValueEncoding
                                 (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
-                                maybeSelectedOptionValue
                             )
 
                         TransformAndValidate.ValidationFailed valueString selectedValueIndex validationFailureMessages ->
@@ -1233,9 +1212,6 @@ update msg model =
                                         (OptionValue.stringToOptionValue valueString)
                                         selectedValueIndex
                                         model.options
-
-                                maybeSelectedOptionValue =
-                                    Just (OptionValue.stringToOptionValue valueString)
                             in
                             ( { model
                                 | options = updatedOptions
@@ -1246,7 +1222,6 @@ update msg model =
                                 (SelectionMode.getSelectionMode model.selectionConfig)
                                 model.selectedValueEncoding
                                 (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
-                                maybeSelectedOptionValue
                             )
 
                         TransformAndValidate.ValidationPending _ _ ->
@@ -1469,7 +1444,6 @@ update msg model =
                                                 (SelectionMode.getSelectionMode model.selectionConfig)
                                                 model.selectedValueEncoding
                                                 (OptionsUtilities.selectedOptions newOptions)
-                                                (Just (OptionValue.stringToOptionValue newAttributeValue))
                                             )
 
                                 _ ->
@@ -1579,7 +1553,6 @@ update msg model =
                             (SelectionMode.getSelectionMode model.selectionConfig)
                             model.selectedValueEncoding
                             (selectedOptions updatedOptions)
-                            Nothing
                         ]
                     )
 
@@ -1808,11 +1781,11 @@ deselectOption model option =
       }
         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
     , batch
-        [ makeEffectsWhenValuesChanges (SelectionMode.getEventMode model.selectionConfig)
+        [ makeEffectsWhenValuesChanges
+            (SelectionMode.getEventMode model.selectionConfig)
             (SelectionMode.getSelectionMode model.selectionConfig)
             model.selectedValueEncoding
             (selectedOptions updatedOptions)
-            Nothing
         , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
         ]
     )
@@ -1858,7 +1831,6 @@ clearAllSelectedOption model =
             (SelectionMode.getSelectionMode model.selectionConfig)
             model.selectedValueEncoding
             []
-            Nothing
         , deselectEventEffect
         , focusEffect
         ]
@@ -3264,8 +3236,8 @@ valueCasingPartsAttribute selectionConfig hasError hasPendingValidation =
         )
 
 
-makeEffectsWhenValuesChanges : OutputStyle.EventsMode -> SelectionMode.SelectionMode -> SelectedValueEncoding.SelectedValueEncoding -> List Option -> Maybe OptionValue -> Effect
-makeEffectsWhenValuesChanges eventsMode selectionMode selectedValueEncoding selectedOptions maybeSelectedValue =
+makeEffectsWhenValuesChanges : OutputStyle.EventsMode -> SelectionMode.SelectionMode -> SelectedValueEncoding.SelectedValueEncoding -> List Option -> Effect
+makeEffectsWhenValuesChanges eventsMode selectionMode selectedValueEncoding selectedOptions =
     let
         valueChangeCmd =
             if OptionsUtilities.allOptionsAreValid selectedOptions then
@@ -3298,22 +3270,17 @@ makeEffectsWhenValuesChanges eventsMode selectionMode selectedValueEncoding sele
                 NoEffect
 
         -- Any time we select a new value we need to emit an `optionSelected` event.
-        optionSelectedCmd =
-            case maybeSelectedValue of
-                Just selectedValue ->
-                    case findOptionByOptionValue selectedValue selectedOptions of
-                        Just option ->
-                            if Option.isValid option then
-                                ReportOptionSelected (Ports.optionEncoder option)
+        optionSelectedEffects =
+            List.map
+                (\option ->
+                    if Option.isValid option then
+                        ReportOptionSelected (Ports.optionEncoder option)
 
-                            else
-                                NoEffect
-
-                        Nothing ->
-                            NoEffect
-
-                Nothing ->
-                    NoEffect
+                    else
+                        NoEffect
+                )
+                selectedOptions
+                |> Batch
 
         lightDomChangeEffect =
             case eventsMode of
@@ -3361,7 +3328,7 @@ makeEffectsWhenValuesChanges eventsMode selectionMode selectedValueEncoding sele
         [ valueChangeCmd
         , customOptionCmd
         , clearCmd
-        , optionSelectedCmd
+        , optionSelectedEffects
         , customValidationCmd
         , lightDomChangeEffect
         ]
@@ -3380,15 +3347,15 @@ makeCommandMessagesForUpdatingOptionsInTheWebWorker searchStringDebounceLength s
     batch [ UpdateOptionsInWebWorker, searchStringUpdateCmd ]
 
 
-makeCommandMessageForInitialValue : SelectionMode.SelectionMode -> SelectedValueEncoding.SelectedValueEncoding -> List Option -> Effect
-makeCommandMessageForInitialValue selectionMode selectedValueEncoding selectedOptions =
-    case selectedOptions of
-        [] ->
-            NoEffect
+makeCommandMessageForInitialValue : OutputStyle.EventsMode -> SelectionMode.SelectionMode -> SelectedValueEncoding.SelectedValueEncoding -> List Option -> Effect
+makeCommandMessageForInitialValue eventsMode selectionMode selectedValueEncoding selectedOptions =
+    case eventsMode of
+        OutputStyle.EventsOnly ->
+            ReportInitialValueSet (Ports.optionsEncoder selectedOptions)
 
-        selectionOptions_ ->
+        OutputStyle.AllowLightDomChanges ->
             Batch
-                [ ReportInitialValueSet (Ports.optionsEncoder selectionOptions_)
+                [ ReportInitialValueSet (Ports.optionsEncoder selectedOptions)
                 , ChangeTheLightDom
                     (LightDomChange.UpdateSelectedValue
                         (Json.Encode.object
@@ -3587,6 +3554,7 @@ init flags =
         , initialValueErrEffect
         , ReportReady
         , makeCommandMessageForInitialValue
+            (SelectionMode.getEventMode selectionConfig)
             (SelectionMode.getSelectionMode selectionConfig)
             selectedValueEncoding
             (selectedOptions optionsWithInitialValueSelected)

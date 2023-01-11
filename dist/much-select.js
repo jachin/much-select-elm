@@ -675,9 +675,6 @@ class MuchSelect extends HTMLElement {
 
     this.startTransformationValidationSlotObserver();
 
-    // Set up the hidden input slot (if it exists) with any initial values
-    this.updateHiddenInputValueSlot();
-
     this._connected = true;
   }
 
@@ -873,53 +870,6 @@ class MuchSelect extends HTMLElement {
     this._connected = false;
   }
 
-  updateHiddenInputValueSlot() {
-    if (!this.eventsOnlyMode) {
-      const hiddenValueInput = this.querySelector(
-        "[slot='hidden-value-input']"
-      );
-      if (hiddenValueInput) {
-        if (this.selectedValue === null) {
-          hiddenValueInput.setAttribute("value", "");
-        } else if (this.selectedValue === undefined) {
-          hiddenValueInput.setAttribute("value", "");
-        } else {
-          hiddenValueInput.setAttribute("value", this.selectedValue);
-        }
-      }
-    }
-  }
-
-  /**
-   * The idea with this method is that we need the selected input slot to mirror the internal state of the
-   * much select, unless something else wants full control over the DOM (eventsOnlyMode is true), then we leave that
-   * responsibility to them.
-   *
-   * One important thing that happens here is we need to pause the mutation observers so
-   *  that we do not feed bad data back into the Elm app. Then, when we are done changing
-   *  the DOM, turn the mutation observers back on.
-   */
-  // updateSelectInputSlot() {
-  //   if (!this.eventsOnlyMode) {
-  //     this.stopMuchSelectObserver();
-  //     this.stopSelectSlotObserver();
-  //     const selectInputSlot = this.querySelector("[slot='select-input']");
-  //     if (selectInputSlot) {
-  //       selectInputSlot.querySelectorAll("option").forEach((optionEl) => {
-  //         if (optionEl.selected) {
-  //           if (!this.isValueSelected(optionEl.value)) {
-  //             optionEl.removeAttribute("selected");
-  //           }
-  //         } else if (this.isValueSelected(optionEl.value)) {
-  //           optionEl.setAttribute("selected", "");
-  //         }
-  //       });
-  //     }
-  //     this.startMuchSelectObserver();
-  //     this.startSelectSlotObserver();
-  //   }
-  // }
-
   // eslint-disable-next-line class-methods-use-this
   errorHandler(error) {
     // eslint-disable-next-line no-console
@@ -979,8 +929,6 @@ class MuchSelect extends HTMLElement {
     } else {
       flags.enableMultiSelectSingleItemRemoval = false;
     }
-
-    // flags.value = this.parsedSelectedValue;
 
     if (this.hasAttribute("placeholder")) {
       flags.placeholder = [true, this.getAttribute("placeholder").trim()];
@@ -1282,110 +1230,11 @@ class MuchSelect extends HTMLElement {
     const newSelectedValue = cleanUpSelectedValue(value);
 
     this._callValueChanged(newSelectedValue);
-
-    // this.updateHiddenInputValueSlot();
   }
 
   get rawSelectedValue() {
     return this.getSelectedValues(true);
   }
-
-  /**
-   * This is a "sync" function, so this is kinda like a "set" function but the
-   *  selected value(s) are coming from Elm. So we do not need to tell Elm about
-   *  them.
-   *
-   * @param value
-   * @private
-   */
-  // _syncSelectedValue(value) {
-  //   const newSelectedValue = cleanUpSelectedValue(value);
-  //
-  //   if (newSelectedValue === this._selectedValue) {
-  //     return;
-  //   }
-  //
-  //   this._selectedValue = newSelectedValue;
-  //
-  //   if (!this.eventsOnlyMode) {
-  //     this.setAttribute("selected-value", this._selectedValue);
-  //   }
-  // }
-
-  // get parsedSelectedValue() {
-  //   if (this.selectedValueEncoding === "comma") {
-  //     if (this.selectedValue) {
-  //       return this.selectedValue.split(",");
-  //     }
-  //     return [];
-  //   }
-  //   if (this.selectedValueEncoding === "json") {
-  //     if (this.isInMultiSelectMode) {
-  //       if (this.selectedValue === "") {
-  //         // a special case because an empty string is not valid JSON.
-  //         return [];
-  //       }
-  //       return JSON.parse(decodeURIComponent(this.selectedValue));
-  //     }
-  //     if (this.selectedValue === "") {
-  //       // a special case because an empty string is not valid JSON.
-  //       return "";
-  //     }
-  //     const val = JSON.parse(decodeURIComponent(this.selectedValue));
-  //     if (Array.isArray(val)) {
-  //       return val.shift();
-  //     }
-  //     if (val === undefined) {
-  //       return null;
-  //     }
-  //     return val;
-  //   }
-  //   throw new Error(
-  //     `Unknown selected value encoding, something is very wrong: ${this.selectedValueEncoding}`
-  //   );
-  // }
-
-  // set parsedSelectedValue(values) {
-  //   this.selectedValue = this._makeSelectedValue(values);
-  // }
-
-  /**
-   * This method takes a selected value, and it returns a string of the "parsed"
-   *  selected value.
-   *
-   * @param values
-   * @returns {string|*}
-   * @private
-   */
-  // _makeSelectedValue(values) {
-  //   if (this.selectedValueEncoding === "comma") {
-  //     if (Array.isArray(values)) {
-  //       return values.join(",");
-  //     }
-  //     // This should be a string or possibly a null.
-  //     return values;
-  //   }
-  //   if (this.selectedValueEncoding === "json") {
-  //     if (values === "") {
-  //       // The empty string here is a special case because we don't want to encode an empty string.
-  //       return "";
-  //     }
-  //     return encodeURIComponent(JSON.stringify(values));
-  //   }
-  //   return "";
-  // }
-
-  /**
-   * This is a "sync" function, so this is kinda like a "set" function but the
-   *  selected value(s) are coming from Elm. So we do not need to tell Elm about
-   *  them.
-   *
-   * @param values
-   * @private
-   */
-  // _syncParseSelectedValue(values) {
-  //   // this._syncSelectedValue(this._makeSelectedValue(values));
-  // }
 
   get placeholder() {
     return this.getConfigValuePromise("placeholder");

@@ -34,11 +34,11 @@
           expect(await el.selectedValue).to.equal("");
         });
 
-        it("the selected value should be null of no attribute for selected-value is present", async () => {
+        it("the selected value should be an empty string if no attribute for selected-value is present", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
             html`<much-select></much-select>`
           );
-          expect(await el.selectedValue).to.equal(null);
+          expect(await el.selectedValue).to.equal("");
         });
       });
       describe("multi selection mode", () => {
