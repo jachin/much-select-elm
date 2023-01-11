@@ -2,6 +2,7 @@ module Option.SelectedOptionOrdering exposing (..)
 
 import Json.Decode
 import Json.Encode
+import LightDomChange
 import MuchSelect exposing (Flags)
 import ProgramTest exposing (ProgramTest)
 import SimulatedEffect.Cmd
@@ -146,6 +147,9 @@ simulatedEffects effect =
 
         MuchSelect.DumpSelectedValues value ->
             SimulatedEffect.Ports.send "dumpSelectedValues" value
+
+        MuchSelect.ChangeTheLightDom lightDomChange ->
+            SimulatedEffect.Ports.send "lightDomChange" (LightDomChange.encode lightDomChange)
 
 
 simulateSubscriptions : MuchSelect.Model -> ProgramTest.SimulatedSub MuchSelect.Msg

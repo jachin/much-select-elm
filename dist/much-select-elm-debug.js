@@ -18006,18 +18006,52 @@ var $author$project$MuchSelect$update = F2(
 								}),
 							$author$project$MuchSelect$NoEffect);
 					case 'selected-value':
-						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
-					case 'selected-value-encoding':
-						var _v36 = $author$project$SelectedValueEncoding$fromString(newAttributeValue);
+						var _v36 = A2($author$project$SelectedValueEncoding$valuesFromFlags, model.selectedValueEncoding, newAttributeValue);
 						if (_v36.$ === 'Ok') {
-							var selectedValueEncoding = _v36.a;
+							var selectedValueStrings = _v36.a;
+							if (!selectedValueStrings.b) {
+								return $author$project$MuchSelect$clearAllSelectedOption(model);
+							} else {
+								if (!selectedValueStrings.b.b) {
+									var selectedValueString = selectedValueStrings.a;
+									if (selectedValueString === '') {
+										return $author$project$MuchSelect$clearAllSelectedOption(model);
+									} else {
+										var newOptions = A2($author$project$OptionsUtilities$selectOptionsInOptionsListByString, selectedValueStrings, model.options);
+										return _Utils_Tuple2(
+											$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
+												_Utils_update(
+													model,
+													{options: newOptions})),
+											$author$project$MuchSelect$NoEffect);
+									}
+								} else {
+									var newOptions = A2($author$project$OptionsUtilities$selectOptionsInOptionsListByString, selectedValueStrings, model.options);
+									return _Utils_Tuple2(
+										$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
+											_Utils_update(
+												model,
+												{options: newOptions})),
+										$author$project$MuchSelect$NoEffect);
+								}
+							}
+						} else {
+							var error = _v36.a;
+							return _Utils_Tuple2(
+								model,
+								$author$project$MuchSelect$ReportErrorMessage(error));
+						}
+					case 'selected-value-encoding':
+						var _v39 = $author$project$SelectedValueEncoding$fromString(newAttributeValue);
+						if (_v39.$ === 'Ok') {
+							var selectedValueEncoding = _v39.a;
 							return _Utils_Tuple2(
 								_Utils_update(
 									model,
 									{selectedValueEncoding: selectedValueEncoding}),
 								$author$project$MuchSelect$NoEffect);
 						} else {
-							var error = _v36.a;
+							var error = _v39.a;
 							return _Utils_Tuple2(
 								model,
 								$author$project$MuchSelect$ReportErrorMessage(error));
@@ -18160,7 +18194,7 @@ var $author$project$MuchSelect$update = F2(
 								}),
 							$author$project$MuchSelect$NoEffect);
 					case 'selected-value':
-						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
+						return $author$project$MuchSelect$clearAllSelectedOption(model);
 					case 'selected-value-encoding':
 						return _Utils_Tuple2(
 							_Utils_update(

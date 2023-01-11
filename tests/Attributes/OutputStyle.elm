@@ -86,7 +86,7 @@ flagsCustomHtmlSingle =
 suite : Test
 suite =
     describe "Changing the output style"
-        [ test "to custom-html should work" <|
+        [ test "to custom-html should result in an effect to fetch the options from the DOM" <|
             \() ->
                 element
                     |> ProgramTest.withSimulatedEffects simulateEffects
@@ -98,13 +98,17 @@ suite =
                     |> expectLastEffect
                         (\effect ->
                             case effect of
-                                MuchSelect.FetchOptionsFromDom ->
-                                    Expect.pass
+                                MuchSelect.Batch batchEffects ->
+                                    if List.member MuchSelect.FetchOptionsFromDom batchEffects then
+                                        Expect.pass
+
+                                    else
+                                        Expect.fail "We should be fetching options from the DOM."
 
                                 _ ->
                                     Expect.fail "We should be fetching options from the DOM."
                         )
-        , test "to datalist should work" <|
+        , test "to datalist should result in an effect to fetch the options from the DOM" <|
             \() ->
                 element
                     |> ProgramTest.withSimulatedEffects simulateEffects
@@ -116,8 +120,12 @@ suite =
                     |> expectLastEffect
                         (\effect ->
                             case effect of
-                                MuchSelect.FetchOptionsFromDom ->
-                                    Expect.pass
+                                MuchSelect.Batch batchEffects ->
+                                    if List.member MuchSelect.FetchOptionsFromDom batchEffects then
+                                        Expect.pass
+
+                                    else
+                                        Expect.fail "We should be fetching options from the DOM."
 
                                 _ ->
                                     Expect.fail "We should be fetching options from the DOM."

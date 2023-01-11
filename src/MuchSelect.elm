@@ -101,7 +101,64 @@ import OutputStyle
         , SearchStringMinimumLength(..)
         , SingleItemRemoval(..)
         )
-import Ports exposing (addOptionsReceiver, allOptions, allowCustomOptionsReceiver, attributeChanged, attributeRemoved, blurInput, customOptionHintReceiver, customOptionSelected, customValidationReceiver, deselectOptionReceiver, disableChangedReceiver, dumpConfigState, dumpSelectedValues, errorMessage, focusInput, initialValueSet, inputBlurred, inputFocused, inputKeyUp, invalidValue, lightDomChange, loadingChangedReceiver, maxDropdownItemsChangedReceiver, muchSelectIsReady, multiSelectChangedReceiver, multiSelectSingleItemRemovalChangedReceiver, optionDeselected, optionSelected, optionSortingChangedReceiver, optionsReplacedReceiver, optionsUpdated, outputStyleChangedReceiver, placeholderChangedReceiver, removeOptionsReceiver, requestAllOptionsReceiver, requestConfigState, requestSelectedValues, scrollDropdownToElement, searchOptionsWithWebWorker, searchStringMinimumLengthChangedReceiver, selectOptionReceiver, selectedItemStaysInPlaceChangedReceiver, selectedValueEncodingChangeReceiver, sendCustomValidationRequest, showDropdownFooterChangedReceiver, transformationAndValidationReceiver, updateOptionsFromDom, updateOptionsInWebWorker, updateSearchResultDataWithWebWorkerReceiver, valueCasingDimensionsChangedReceiver, valueChanged, valueChangedReceiver, valueCleared, valueDecoder, valuesDecoder)
+import Ports
+    exposing
+        ( addOptionsReceiver
+        , allOptions
+        , allowCustomOptionsReceiver
+        , attributeChanged
+        , attributeRemoved
+        , blurInput
+        , customOptionHintReceiver
+        , customOptionSelected
+        , customValidationReceiver
+        , deselectOptionReceiver
+        , disableChangedReceiver
+        , dumpConfigState
+        , dumpSelectedValues
+        , errorMessage
+        , focusInput
+        , initialValueSet
+        , inputBlurred
+        , inputFocused
+        , inputKeyUp
+        , invalidValue
+        , lightDomChange
+        , loadingChangedReceiver
+        , maxDropdownItemsChangedReceiver
+        , muchSelectIsReady
+        , multiSelectChangedReceiver
+        , multiSelectSingleItemRemovalChangedReceiver
+        , optionDeselected
+        , optionSelected
+        , optionSortingChangedReceiver
+        , optionsReplacedReceiver
+        , optionsUpdated
+        , outputStyleChangedReceiver
+        , placeholderChangedReceiver
+        , removeOptionsReceiver
+        , requestAllOptionsReceiver
+        , requestConfigState
+        , requestSelectedValues
+        , scrollDropdownToElement
+        , searchOptionsWithWebWorker
+        , searchStringMinimumLengthChangedReceiver
+        , selectOptionReceiver
+        , selectedItemStaysInPlaceChangedReceiver
+        , selectedValueEncodingChangeReceiver
+        , sendCustomValidationRequest
+        , showDropdownFooterChangedReceiver
+        , transformationAndValidationReceiver
+        , updateOptionsFromDom
+        , updateOptionsInWebWorker
+        , updateSearchResultDataWithWebWorkerReceiver
+        , valueCasingDimensionsChangedReceiver
+        , valueChanged
+        , valueChangedReceiver
+        , valueCleared
+        , valueDecoder
+        , valuesDecoder
+        )
 import PositiveInt exposing (PositiveInt)
 import RightSlot
     exposing
@@ -1384,7 +1441,47 @@ update msg model =
                     )
 
                 "selected-value" ->
-                    ( model, NoEffect )
+                    case SelectedValueEncoding.valuesFromFlags model.selectedValueEncoding newAttributeValue of
+                        Ok selectedValueStrings ->
+                            case selectedValueStrings of
+                                [] ->
+                                    clearAllSelectedOption model
+
+                                [ selectedValueString ] ->
+                                    case selectedValueString of
+                                        "" ->
+                                            clearAllSelectedOption model
+
+                                        _ ->
+                                            let
+                                                newOptions =
+                                                    selectOptionsInOptionsListByString
+                                                        selectedValueStrings
+                                                        model.options
+                                            in
+                                            ( { model
+                                                | options = newOptions
+                                              }
+                                                |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
+                                            , NoEffect
+                                            )
+
+                                _ ->
+                                    let
+                                        newOptions =
+                                            selectOptionsInOptionsListByString
+                                                selectedValueStrings
+                                                model.options
+                                    in
+                                    ( { model
+                                        | options = newOptions
+                                      }
+                                        |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
+                                    , NoEffect
+                                    )
+
+                        Err error ->
+                            ( model, ReportErrorMessage error )
 
                 "selected-value-encoding" ->
                     case SelectedValueEncoding.fromString newAttributeValue of
@@ -1537,7 +1634,7 @@ update msg model =
                     )
 
                 "selected-value" ->
-                    ( model, NoEffect )
+                    clearAllSelectedOption model
 
                 "selected-value-encoding" ->
                     ( { model

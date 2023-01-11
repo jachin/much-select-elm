@@ -6995,7 +6995,7 @@ var $author$project$MuchSelect$init = function (flags) {
 	var selectedValueEncoding = A2(
 		$elm$core$Result$withDefault,
 		$author$project$SelectedValueEncoding$defaultSelectedValueEncoding,
-		$author$project$SelectedValueEncoding$fromMaybeString(flags.j));
+		$author$project$SelectedValueEncoding$fromMaybeString(flags.i));
 	var optionSort = A2(
 		$elm$core$Result$withDefault,
 		0,
@@ -7145,7 +7145,7 @@ var $author$project$MuchSelect$init = function (flags) {
 			p: $author$project$MuchSelect$getDebouceDelayForSearch(
 				$elm$core$List$length(optionsWithInitialValueSelectedSorted)),
 			as: 0,
-			j: selectedValueEncoding,
+			i: selectedValueEncoding,
 			a: selectionConfig,
 			a9: A2($author$project$MuchSelect$ValueCasing, 100, 45)
 		},
@@ -8529,7 +8529,7 @@ var $author$project$MuchSelect$clearAllSelectedOption = function (model) {
 					$author$project$MuchSelect$makeEffectsWhenValuesChanges,
 					$author$project$SelectionMode$getEventMode(model.a),
 					$author$project$SelectionMode$getSelectionMode(model.a),
-					model.j,
+					model.i,
 					_List_Nil,
 					$elm$core$Maybe$Nothing),
 					deselectEventEffect,
@@ -9171,7 +9171,7 @@ var $author$project$MuchSelect$deselectOption = F2(
 						$author$project$MuchSelect$makeEffectsWhenValuesChanges,
 						$author$project$SelectionMode$getEventMode(model.a),
 						$author$project$SelectionMode$getSelectionMode(model.a),
-						model.j,
+						model.i,
 						$author$project$OptionsUtilities$selectedOptions(updatedOptions),
 						$elm$core$Maybe$Nothing),
 						A2($author$project$MuchSelect$makeCommandMessagesForUpdatingOptionsInTheWebWorker, model.p, model.g)
@@ -11588,7 +11588,7 @@ var $author$project$MuchSelect$update = F2(
 									$author$project$MuchSelect$makeEffectsWhenValuesChanges,
 									$author$project$SelectionMode$getEventMode(model.a),
 									$author$project$SelectionMode$getSelectionMode(model.a),
-									model.j,
+									model.i,
 									$author$project$OptionsUtilities$selectedOptions(updatedOptions),
 									$elm$core$Maybe$Just(optionValue)),
 									$author$project$MuchSelect$BlurInput
@@ -11606,7 +11606,7 @@ var $author$project$MuchSelect$update = F2(
 									$author$project$MuchSelect$makeEffectsWhenValuesChanges,
 									$author$project$SelectionMode$getEventMode(model.a),
 									$author$project$SelectionMode$getSelectionMode(model.a),
-									model.j,
+									model.i,
 									$author$project$OptionsUtilities$selectedOptions(updatedOptions),
 									$elm$core$Maybe$Just(optionValue)),
 									$author$project$MuchSelect$FocusInput
@@ -11674,7 +11674,7 @@ var $author$project$MuchSelect$update = F2(
 										$author$project$MuchSelect$makeEffectsWhenValuesChanges,
 										$author$project$SelectionMode$getEventMode(model.a),
 										$author$project$SelectionMode$getSelectionMode(model.a),
-										model.j,
+										model.i,
 										$author$project$OptionsUtilities$cleanupEmptySelectedOptions(
 											$author$project$OptionsUtilities$selectedOptions(updatedOptions)),
 										maybeSelectedOptionValue),
@@ -11709,7 +11709,7 @@ var $author$project$MuchSelect$update = F2(
 										$author$project$MuchSelect$makeEffectsWhenValuesChanges,
 										$author$project$SelectionMode$getEventMode(model.a),
 										$author$project$SelectionMode$getSelectionMode(model.a),
-										model.j,
+										model.i,
 										$author$project$OptionsUtilities$cleanupEmptySelectedOptions(
 											$author$project$OptionsUtilities$selectedOptions(updatedOptions)),
 										maybeSelectedOptionValue),
@@ -11742,7 +11742,7 @@ var $author$project$MuchSelect$update = F2(
 										$author$project$MuchSelect$makeEffectsWhenValuesChanges,
 										$author$project$SelectionMode$getEventMode(model.a),
 										$author$project$SelectionMode$getSelectionMode(model.a),
-										model.j,
+										model.i,
 										$author$project$OptionsUtilities$cleanupEmptySelectedOptions(
 											$author$project$OptionsUtilities$selectedOptions(updatedOptions)),
 										maybeSelectedOptionValue),
@@ -11988,7 +11988,7 @@ var $author$project$MuchSelect$update = F2(
 									$author$project$MuchSelect$makeEffectsWhenValuesChanges,
 									$author$project$SelectionMode$getEventMode(model.a),
 									$author$project$SelectionMode$getSelectionMode(model.a),
-									model.j,
+									model.i,
 									$author$project$OptionsUtilities$selectedOptions(updatedOptions),
 									$elm$core$Maybe$Just(optionValue)),
 									A2($author$project$MuchSelect$makeCommandMessagesForUpdatingOptionsInTheWebWorker, model.p, model.g),
@@ -12031,7 +12031,7 @@ var $author$project$MuchSelect$update = F2(
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
-							{j: selectedValueEncoding}),
+							{i: selectedValueEncoding}),
 						$author$project$MuchSelect$NoEffect);
 				} else {
 					var error = _v17.a;
@@ -12179,7 +12179,7 @@ var $author$project$MuchSelect$update = F2(
 					$author$project$MuchSelect$makeEffectsWhenValuesChanges,
 					$author$project$SelectionMode$getEventMode(model.a),
 					$author$project$SelectionMode$getSelectionMode(model.a),
-					model.j,
+					model.i,
 					$author$project$OptionsUtilities$selectedOptions(updatedOptions),
 					$elm$core$Maybe$Nothing);
 				return _Utils_Tuple2(
@@ -12231,7 +12231,7 @@ var $author$project$MuchSelect$update = F2(
 									$author$project$MuchSelect$makeEffectsWhenValuesChanges,
 									$author$project$SelectionMode$getEventMode(model.a),
 									$author$project$SelectionMode$getSelectionMode(model.a),
-									model.j,
+									model.i,
 									$author$project$OptionsUtilities$selectedOptions(updatedOptions),
 									maybeHighlightedOptionValue),
 									A2($author$project$MuchSelect$makeCommandMessagesForUpdatingOptionsInTheWebWorker, model.p, model.g),
@@ -12250,7 +12250,7 @@ var $author$project$MuchSelect$update = F2(
 									$author$project$MuchSelect$makeEffectsWhenValuesChanges,
 									$author$project$SelectionMode$getEventMode(model.a),
 									$author$project$SelectionMode$getSelectionMode(model.a),
-									model.j,
+									model.i,
 									$author$project$OptionsUtilities$selectedOptions(updatedOptions),
 									maybeHighlightedOptionValue),
 									A2($author$project$MuchSelect$makeCommandMessagesForUpdatingOptionsInTheWebWorker, model.p, model.g),
@@ -12352,7 +12352,7 @@ var $author$project$MuchSelect$update = F2(
 						$author$project$MuchSelect$makeEffectsWhenValuesChanges,
 						$author$project$SelectionMode$getEventMode(model.a),
 						$author$project$SelectionMode$getSelectionMode(model.a),
-						model.j,
+						model.i,
 						$author$project$OptionsUtilities$cleanupEmptySelectedOptions(
 							$author$project$OptionsUtilities$selectedOptions(updatedOptions)),
 						$elm$core$Maybe$Nothing));
@@ -12375,7 +12375,7 @@ var $author$project$MuchSelect$update = F2(
 						$author$project$MuchSelect$makeEffectsWhenValuesChanges,
 						$author$project$SelectionMode$getEventMode(model.a),
 						$author$project$SelectionMode$getSelectionMode(model.a),
-						model.j,
+						model.i,
 						$author$project$OptionsUtilities$cleanupEmptySelectedOptions(
 							$author$project$OptionsUtilities$selectedOptions(updatedOptions)),
 						$elm$core$Maybe$Nothing));
@@ -12451,7 +12451,7 @@ var $author$project$MuchSelect$update = F2(
 									$author$project$MuchSelect$makeEffectsWhenValuesChanges,
 									$author$project$SelectionMode$getEventMode(model.a),
 									$author$project$SelectionMode$getSelectionMode(model.a),
-									model.j,
+									model.i,
 									$author$project$OptionsUtilities$cleanupEmptySelectedOptions(
 										$author$project$OptionsUtilities$selectedOptions(updatedOptions)),
 									maybeSelectedOptionValue));
@@ -12483,7 +12483,7 @@ var $author$project$MuchSelect$update = F2(
 									$author$project$MuchSelect$makeEffectsWhenValuesChanges,
 									$author$project$SelectionMode$getEventMode(model.a),
 									$author$project$SelectionMode$getSelectionMode(model.a),
-									model.j,
+									model.i,
 									$author$project$OptionsUtilities$cleanupEmptySelectedOptions(
 										$author$project$OptionsUtilities$selectedOptions(updatedOptions)),
 									maybeSelectedOptionValue));
@@ -12709,18 +12709,52 @@ var $author$project$MuchSelect$update = F2(
 								}),
 							$author$project$MuchSelect$NoEffect);
 					case 'selected-value':
-						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
-					case 'selected-value-encoding':
-						var _v36 = $author$project$SelectedValueEncoding$fromString(newAttributeValue);
+						var _v36 = A2($author$project$SelectedValueEncoding$valuesFromFlags, model.i, newAttributeValue);
 						if (!_v36.$) {
-							var selectedValueEncoding = _v36.a;
+							var selectedValueStrings = _v36.a;
+							if (!selectedValueStrings.b) {
+								return $author$project$MuchSelect$clearAllSelectedOption(model);
+							} else {
+								if (!selectedValueStrings.b.b) {
+									var selectedValueString = selectedValueStrings.a;
+									if (selectedValueString === '') {
+										return $author$project$MuchSelect$clearAllSelectedOption(model);
+									} else {
+										var newOptions = A2($author$project$OptionsUtilities$selectOptionsInOptionsListByString, selectedValueStrings, model.b);
+										return _Utils_Tuple2(
+											$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
+												_Utils_update(
+													model,
+													{b: newOptions})),
+											$author$project$MuchSelect$NoEffect);
+									}
+								} else {
+									var newOptions = A2($author$project$OptionsUtilities$selectOptionsInOptionsListByString, selectedValueStrings, model.b);
+									return _Utils_Tuple2(
+										$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
+											_Utils_update(
+												model,
+												{b: newOptions})),
+										$author$project$MuchSelect$NoEffect);
+								}
+							}
+						} else {
+							var error = _v36.a;
+							return _Utils_Tuple2(
+								model,
+								$author$project$MuchSelect$ReportErrorMessage(error));
+						}
+					case 'selected-value-encoding':
+						var _v39 = $author$project$SelectedValueEncoding$fromString(newAttributeValue);
+						if (!_v39.$) {
+							var selectedValueEncoding = _v39.a;
 							return _Utils_Tuple2(
 								_Utils_update(
 									model,
-									{j: selectedValueEncoding}),
+									{i: selectedValueEncoding}),
 								$author$project$MuchSelect$NoEffect);
 						} else {
-							var error = _v36.a;
+							var error = _v39.a;
 							return _Utils_Tuple2(
 								model,
 								$author$project$MuchSelect$ReportErrorMessage(error));
@@ -12806,7 +12840,7 @@ var $author$project$MuchSelect$update = F2(
 										$author$project$MuchSelect$makeEffectsWhenValuesChanges,
 										$author$project$SelectionMode$getEventMode(model.a),
 										$author$project$SelectionMode$getSelectionMode(model.a),
-										model.j,
+										model.i,
 										$author$project$OptionsUtilities$selectedOptions(updatedOptions),
 										$elm$core$Maybe$Nothing)
 									])));
@@ -12863,12 +12897,12 @@ var $author$project$MuchSelect$update = F2(
 								}),
 							$author$project$MuchSelect$NoEffect);
 					case 'selected-value':
-						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
+						return $author$project$MuchSelect$clearAllSelectedOption(model);
 					case 'selected-value-encoding':
 						return _Utils_Tuple2(
 							_Utils_update(
 								model,
-								{j: $author$project$SelectedValueEncoding$defaultSelectedValueEncoding}),
+								{i: $author$project$SelectedValueEncoding$defaultSelectedValueEncoding}),
 							$author$project$MuchSelect$NoEffect);
 					case 'show-dropdown-footer':
 						return _Utils_Tuple2(
@@ -12897,7 +12931,7 @@ var $author$project$MuchSelect$update = F2(
 				return _Utils_Tuple2(
 					model,
 					$author$project$MuchSelect$DumpConfigState(
-						A4($author$project$ConfigDump$encodeConfig, model.a, model.O, model.j, model.d)));
+						A4($author$project$ConfigDump$encodeConfig, model.a, model.O, model.i, model.d)));
 			default:
 				return _Utils_Tuple2(
 					model,
@@ -12916,7 +12950,7 @@ var $author$project$MuchSelect$update = F2(
 									A3(
 										$author$project$SelectedValueEncoding$rawSelectedValue,
 										$author$project$SelectionMode$getSelectionMode(model.a),
-										model.j,
+										model.i,
 										model.b))
 								]))));
 		}
@@ -15399,7 +15433,7 @@ _Platform_export({'MuchSelect':{'init':$author$project$MuchSelect$main(
 																																				$elm$json$Json$Decode$andThen,
 																																				function (allowCustomOptions) {
 																																					return $elm$json$Json$Decode$succeed(
-																																						{ba: allowCustomOptions, bb: allowMultiSelect, bg: customOptionHint, bi: disabled, bk: enableMultiSelectSingleItemRemoval, br: isEventsOnly, bt: loading, bu: maxDropdownItems, O: optionSort, bB: optionsJson, bC: outputStyle, bD: placeholder, bH: searchStringMinimumLength, bJ: selectedItemStaysInPlace, bK: selectedValue, j: selectedValueEncoding, bM: showDropdownFooter, bR: transformationAndValidationJson});
+																																						{ba: allowCustomOptions, bb: allowMultiSelect, bg: customOptionHint, bi: disabled, bk: enableMultiSelectSingleItemRemoval, br: isEventsOnly, bt: loading, bu: maxDropdownItems, O: optionSort, bB: optionsJson, bC: outputStyle, bD: placeholder, bH: searchStringMinimumLength, bJ: selectedItemStaysInPlace, bK: selectedValue, i: selectedValueEncoding, bM: showDropdownFooter, bR: transformationAndValidationJson});
 																																				},
 																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
 																																		},
@@ -15531,7 +15565,7 @@ export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
 																																				$elm$json$Json$Decode$andThen,
 																																				function (allowCustomOptions) {
 																																					return $elm$json$Json$Decode$succeed(
-																																						{ba: allowCustomOptions, bb: allowMultiSelect, bg: customOptionHint, bi: disabled, bk: enableMultiSelectSingleItemRemoval, br: isEventsOnly, bt: loading, bu: maxDropdownItems, O: optionSort, bB: optionsJson, bC: outputStyle, bD: placeholder, bH: searchStringMinimumLength, bJ: selectedItemStaysInPlace, bK: selectedValue, j: selectedValueEncoding, bM: showDropdownFooter, bR: transformationAndValidationJson});
+																																						{ba: allowCustomOptions, bb: allowMultiSelect, bg: customOptionHint, bi: disabled, bk: enableMultiSelectSingleItemRemoval, br: isEventsOnly, bt: loading, bu: maxDropdownItems, O: optionSort, bB: optionsJson, bC: outputStyle, bD: placeholder, bH: searchStringMinimumLength, bJ: selectedItemStaysInPlace, bK: selectedValue, i: selectedValueEncoding, bM: showDropdownFooter, bR: transformationAndValidationJson});
 																																				},
 																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
 																																		},

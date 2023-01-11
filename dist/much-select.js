@@ -370,8 +370,42 @@ class MuchSelect extends HTMLElement {
     this.appPromise.then((app) =>
       app.ports.lightDomChange.subscribe((lightDomChange) => {
         if (lightDomChange.changeType === "update-selected-value") {
+          const selectInputSlot = this.querySelector("[slot='select-input']");
+
           if (this.hasAttribute("selected-value")) {
             this.setAttribute("selected-value", lightDomChange.data.rawValue);
+          } else if (selectInputSlot) {
+            if (lightDomChange.data.selectionMode === "single-select") {
+              selectInputSlot.querySelectorAll("option").forEach((optionEl) => {
+                if (optionEl.selected) {
+                  if (!lightDomChange.data.value === optionEl.value) {
+                    optionEl.removeAttribute("selected");
+                  }
+                } else if (lightDomChange.data.value === optionEl.value) {
+                  optionEl.setAttribute("selected", "");
+                }
+              });
+            } else if (lightDomChange.data.selectionMode === "multi-select") {
+              selectInputSlot.querySelectorAll("option").forEach((optionEl) => {
+                if (optionEl.selected) {
+                  if (!lightDomChange.data.value.includes(optionEl.value)) {
+                    optionEl.removeAttribute("selected");
+                  }
+                } else if (lightDomChange.data.value.includes(optionEl.value)) {
+                  optionEl.setAttribute("selected", "");
+                }
+              });
+            }
+          }
+
+          const hiddenValueInput = this.querySelector(
+            "[slot='hidden-value-input']"
+          );
+          if (hiddenValueInput) {
+            hiddenValueInput.setAttribute(
+              "value",
+              lightDomChange.data.rawValue
+            );
           }
 
           // const newValue = lightDomChange.value;
