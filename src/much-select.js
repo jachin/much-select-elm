@@ -380,7 +380,7 @@ class MuchSelect extends HTMLElement {
           } else if (selectInputSlot) {
             if (lightDomChange.data.selectionMode === "single-select") {
               selectInputSlot.querySelectorAll("option").forEach((optionEl) => {
-                if (optionEl.selected) {
+                if (optionEl.hasAttribute("selected")) {
                   if (lightDomChange.data.value !== optionEl.value) {
                     optionEl.removeAttribute("selected");
                   }
@@ -418,8 +418,6 @@ class MuchSelect extends HTMLElement {
         } else if (lightDomChange.changeType === "add-update-attribute") {
           this.setAttribute(lightDomChange.name, lightDomChange.value);
         }
-
-        console.log("lightDomChange", lightDomChange);
       })
     );
 
@@ -1096,23 +1094,6 @@ class MuchSelect extends HTMLElement {
   valueChangedHandler(valuesObjects, isInitialValueChange = false) {
     const isValid = valuesObjects.filter((v) => !v.isValid).length === 0;
 
-    // if (this.isInMultiSelectMode) {
-    //   const tempSelectedValue = valuesObjects.map(
-    //     (valueObject) => valueObject.value
-    //   );
-    //   //this._syncParseSelectedValue(tempSelectedValue);
-    // } else {
-    //   const valueAsArray = valuesObjects.map(
-    //     (valueObject) => valueObject.value
-    //   );
-    //   if (valueAsArray.length === 0) {
-    //     //this._syncParseSelectedValue("");
-    //   } else if (valueAsArray.length > 0) {
-    //     const [tempSelectedValue] = valueAsArray;
-    //     //this._syncParseSelectedValue(tempSelectedValue);
-    //   }
-    // }
-
     if (isValid) {
       this._emitBlurOrUnfocusedValueChanged = true;
     }
@@ -1177,10 +1158,6 @@ class MuchSelect extends HTMLElement {
         `In single select mode we are expecting a single value, instead we got ${valuesObjects.length}`
       );
     }
-
-    // this.updateHiddenInputValueSlot();
-
-    // this.updateSelectInputSlot();
   }
 
   customOptionSelected(values) {

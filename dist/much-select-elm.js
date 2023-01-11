@@ -5940,8 +5940,27 @@ var $author$project$OptionsUtilities$isOptionValueInListOfOptionsByValue = F2(
 			},
 			options);
 	});
+var $author$project$MuchSelect$ChangeTheLightDom = function (a) {
+	return {$: 26, a: a};
+};
 var $author$project$MuchSelect$ReportInitialValueSet = function (a) {
 	return {$: 20, a: a};
+};
+var $author$project$LightDomChange$UpdateSelectedValue = function (a) {
+	return {$: 2, a: a};
+};
+var $elm$json$Json$Encode$object = function (pairs) {
+	return _Json_wrap(
+		A3(
+			$elm$core$List$foldl,
+			F2(
+				function (_v0, obj) {
+					var k = _v0.a;
+					var v = _v0.b;
+					return A3(_Json_addField, k, v, obj);
+				}),
+			_Json_emptyObject(0),
+			pairs));
 };
 var $elm$json$Json$Encode$list = F2(
 	function (func, entries) {
@@ -6029,19 +6048,6 @@ var $author$project$Option$isPendingValidation = function (option) {
 var $author$project$Option$isValid = function (option) {
 	return !($author$project$Option$isInvalid(option) || $author$project$Option$isPendingValidation(option));
 };
-var $elm$json$Json$Encode$object = function (pairs) {
-	return _Json_wrap(
-		A3(
-			$elm$core$List$foldl,
-			F2(
-				function (_v0, obj) {
-					var k = _v0.a;
-					var v = _v0.b;
-					return A3(_Json_addField, k, v, obj);
-				}),
-			_Json_emptyObject(0),
-			pairs));
-};
 var $author$project$OptionLabel$optionLabelToString = function (optionLabel) {
 	var label = optionLabel.a;
 	return label;
@@ -6073,15 +6079,112 @@ var $author$project$Ports$optionEncoder = function (option) {
 var $author$project$Ports$optionsEncoder = function (options) {
 	return A2($elm$json$Json$Encode$list, $author$project$Ports$optionEncoder, options);
 };
-var $author$project$MuchSelect$makeCommandMessageForInitialValue = function (selectedOptions) {
-	if (!selectedOptions.b) {
-		return $author$project$MuchSelect$NoEffect;
-	} else {
-		var selectionOptions_ = selectedOptions;
-		return $author$project$MuchSelect$ReportInitialValueSet(
-			$author$project$Ports$optionsEncoder(selectionOptions_));
-	}
+var $author$project$OptionsUtilities$findSelectedOption = function (options) {
+	return $elm$core$List$head(
+		$author$project$OptionsUtilities$selectedOptions(options));
 };
+var $elm$url$Url$percentEncode = _Url_percentEncode;
+var $author$project$SelectedValueEncoding$rawSelectedValue = F3(
+	function (selectionMode, selectedValueEncoding, options) {
+		if (!selectionMode) {
+			var _v1 = $author$project$OptionsUtilities$findSelectedOption(options);
+			if (!_v1.$) {
+				var selectedOption = _v1.a;
+				var valueAsString = $author$project$Option$getOptionValueAsString(selectedOption);
+				if (selectedValueEncoding === 1) {
+					return $elm$json$Json$Encode$string(
+						$elm$url$Url$percentEncode(
+							A2(
+								$elm$json$Json$Encode$encode,
+								0,
+								$elm$json$Json$Encode$string(valueAsString))));
+				} else {
+					return $elm$json$Json$Encode$string(valueAsString);
+				}
+			} else {
+				if (selectedValueEncoding === 1) {
+					return $elm$json$Json$Encode$string(
+						$elm$url$Url$percentEncode(
+							A2(
+								$elm$json$Json$Encode$encode,
+								0,
+								$elm$json$Json$Encode$string(''))));
+				} else {
+					return $elm$json$Json$Encode$string('');
+				}
+			}
+		} else {
+			var selectedValues = A2(
+				$elm$core$List$map,
+				$author$project$Option$getOptionValueAsString,
+				$author$project$OptionsUtilities$selectedOptions(options));
+			if (selectedValueEncoding === 1) {
+				return $elm$json$Json$Encode$string(
+					$elm$url$Url$percentEncode(
+						A2(
+							$elm$json$Json$Encode$encode,
+							0,
+							A2($elm$json$Json$Encode$list, $elm$json$Json$Encode$string, selectedValues))));
+			} else {
+				return $elm$json$Json$Encode$string(
+					A2($elm$core$String$join, ',', selectedValues));
+			}
+		}
+	});
+var $author$project$SelectedValueEncoding$selectedValue = F2(
+	function (selectionMode, options) {
+		if (!selectionMode) {
+			var _v1 = $author$project$OptionsUtilities$findSelectedOption(options);
+			if (!_v1.$) {
+				var selectedOption = _v1.a;
+				var valueAsString = $author$project$Option$getOptionValueAsString(selectedOption);
+				return $elm$json$Json$Encode$string(valueAsString);
+			} else {
+				return $elm$json$Json$Encode$string('');
+			}
+		} else {
+			var selectedValues = A2(
+				$elm$core$List$map,
+				$author$project$Option$getOptionValueAsString,
+				$author$project$OptionsUtilities$selectedOptions(options));
+			return A2($elm$json$Json$Encode$list, $elm$json$Json$Encode$string, selectedValues);
+		}
+	});
+var $author$project$MuchSelect$makeCommandMessageForInitialValue = F3(
+	function (selectionMode, selectedValueEncoding, selectedOptions) {
+		if (!selectedOptions.b) {
+			return $author$project$MuchSelect$NoEffect;
+		} else {
+			var selectionOptions_ = selectedOptions;
+			return $author$project$MuchSelect$Batch(
+				_List_fromArray(
+					[
+						$author$project$MuchSelect$ReportInitialValueSet(
+						$author$project$Ports$optionsEncoder(selectionOptions_)),
+						$author$project$MuchSelect$ChangeTheLightDom(
+						$author$project$LightDomChange$UpdateSelectedValue(
+							$elm$json$Json$Encode$object(
+								_List_fromArray(
+									[
+										_Utils_Tuple2(
+										'rawValue',
+										A3($author$project$SelectedValueEncoding$rawSelectedValue, selectionMode, selectedValueEncoding, selectedOptions)),
+										_Utils_Tuple2(
+										'value',
+										A2($author$project$SelectedValueEncoding$selectedValue, selectionMode, selectedOptions)),
+										_Utils_Tuple2(
+										'selectionMode',
+										function () {
+											if (!selectionMode) {
+												return $elm$json$Json$Encode$string('single-select');
+											} else {
+												return $elm$json$Json$Encode$string('multi-select');
+											}
+										}())
+									]))))
+					]));
+		}
+	});
 var $author$project$SelectionMode$Disabled = 2;
 var $author$project$SelectionMode$MultiSelectConfig = F3(
 	function (a, b, c) {
@@ -7155,7 +7258,10 @@ var $author$project$MuchSelect$init = function (flags) {
 					errorEffect,
 					initialValueErrEffect,
 					$author$project$MuchSelect$ReportReady,
-					$author$project$MuchSelect$makeCommandMessageForInitialValue(
+					A3(
+					$author$project$MuchSelect$makeCommandMessageForInitialValue,
+					$author$project$SelectionMode$getSelectionMode(selectionConfig),
+					selectedValueEncoding,
 					$author$project$OptionsUtilities$selectedOptions(optionsWithInitialValueSelected)),
 					$author$project$MuchSelect$UpdateOptionsInWebWorker,
 					valueTransformationAndValidationErrorEffect,
@@ -7600,9 +7706,6 @@ var $author$project$LightDomChange$AddUpdateAttribute = F2(
 		return {$: 0, a: a, b: b};
 	});
 var $author$project$MuchSelect$BlurInput = {$: 3};
-var $author$project$MuchSelect$ChangeTheLightDom = function (a) {
-	return {$: 26, a: a};
-};
 var $author$project$MuchSelect$DumpConfigState = function (a) {
 	return {$: 24, a: a};
 };
@@ -8288,9 +8391,6 @@ var $author$project$MuchSelect$ReportOptionSelected = function (a) {
 var $author$project$MuchSelect$SendCustomValidationRequest = function (a) {
 	return {$: 17, a: a};
 };
-var $author$project$LightDomChange$UpdateSelectedValue = function (a) {
-	return {$: 2, a: a};
-};
 var $author$project$MuchSelect$ValueCleared = {$: 11};
 var $elm$core$List$all = F2(
 	function (isOkay, list) {
@@ -8324,77 +8424,6 @@ var $author$project$OptionsUtilities$hasAnyPendingValidation = function (options
 var $author$project$OptionsUtilities$optionsValues = function (options) {
 	return A2($elm$core$List$map, $author$project$Option$getOptionValueAsString, options);
 };
-var $author$project$OptionsUtilities$findSelectedOption = function (options) {
-	return $elm$core$List$head(
-		$author$project$OptionsUtilities$selectedOptions(options));
-};
-var $elm$url$Url$percentEncode = _Url_percentEncode;
-var $author$project$SelectedValueEncoding$rawSelectedValue = F3(
-	function (selectionMode, selectedValueEncoding, options) {
-		if (!selectionMode) {
-			var _v1 = $author$project$OptionsUtilities$findSelectedOption(options);
-			if (!_v1.$) {
-				var selectedOption = _v1.a;
-				var valueAsString = $author$project$Option$getOptionValueAsString(selectedOption);
-				if (selectedValueEncoding === 1) {
-					return $elm$json$Json$Encode$string(
-						$elm$url$Url$percentEncode(
-							A2(
-								$elm$json$Json$Encode$encode,
-								0,
-								$elm$json$Json$Encode$string(valueAsString))));
-				} else {
-					return $elm$json$Json$Encode$string(valueAsString);
-				}
-			} else {
-				if (selectedValueEncoding === 1) {
-					return $elm$json$Json$Encode$string(
-						$elm$url$Url$percentEncode(
-							A2(
-								$elm$json$Json$Encode$encode,
-								0,
-								$elm$json$Json$Encode$string(''))));
-				} else {
-					return $elm$json$Json$Encode$string('');
-				}
-			}
-		} else {
-			var selectedValues = A2(
-				$elm$core$List$map,
-				$author$project$Option$getOptionValueAsString,
-				$author$project$OptionsUtilities$selectedOptions(options));
-			if (selectedValueEncoding === 1) {
-				return $elm$json$Json$Encode$string(
-					$elm$url$Url$percentEncode(
-						A2(
-							$elm$json$Json$Encode$encode,
-							0,
-							A2($elm$json$Json$Encode$list, $elm$json$Json$Encode$string, selectedValues))));
-			} else {
-				return $elm$json$Json$Encode$string(
-					A2($elm$core$String$join, ',', selectedValues));
-			}
-		}
-	});
-var $author$project$SelectedValueEncoding$selectedValue = F2(
-	function (selectionMode, options) {
-		if (!selectionMode) {
-			var _v1 = $author$project$OptionsUtilities$findSelectedOption(options);
-			if (!_v1.$) {
-				var selectedOption = _v1.a;
-				var valueAsString = $author$project$Option$getOptionValueAsString(selectedOption);
-				return $elm$json$Json$Encode$string(valueAsString);
-			} else {
-				return $elm$json$Json$Encode$string('');
-			}
-		} else {
-			var selectedValues = A2(
-				$elm$core$List$map,
-				$author$project$Option$getOptionValueAsString,
-				$author$project$OptionsUtilities$selectedOptions(options));
-			return A2($elm$json$Json$Encode$list, $elm$json$Json$Encode$string, selectedValues);
-		}
-	});
 var $author$project$MuchSelect$makeEffectsWhenValuesChanges = F5(
 	function (eventsMode, selectionMode, selectedValueEncoding, selectedOptions, maybeSelectedValue) {
 		var valueChangeCmd = $author$project$OptionsUtilities$allOptionsAreValid(selectedOptions) ? $author$project$MuchSelect$ReportValueChanged(
@@ -12714,16 +12743,29 @@ var $author$project$MuchSelect$update = F2(
 									if (selectedValueString === '') {
 										return $author$project$MuchSelect$clearAllSelectedOption(model);
 									} else {
-										var newOptions = A2($author$project$OptionsUtilities$addAndSelectOptionsInOptionsListByString, selectedValueStrings, model.b);
+										var newOptions = A2(
+											$author$project$OptionsUtilities$addAndSelectOptionsInOptionsListByString,
+											selectedValueStrings,
+											A2($elm$core$List$map, $author$project$Option$deselectOption, model.b));
 										return _Utils_Tuple2(
 											$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
 												_Utils_update(
 													model,
 													{b: newOptions})),
-											$author$project$MuchSelect$NoEffect);
+											A5(
+												$author$project$MuchSelect$makeEffectsWhenValuesChanges,
+												$author$project$SelectionMode$getEventMode(model.a),
+												$author$project$SelectionMode$getSelectionMode(model.a),
+												model.i,
+												$author$project$OptionsUtilities$selectedOptions(newOptions),
+												$elm$core$Maybe$Just(
+													$author$project$OptionValue$stringToOptionValue(newAttributeValue))));
 									}
 								} else {
-									var newOptions = A2($author$project$OptionsUtilities$addAndSelectOptionsInOptionsListByString, selectedValueStrings, model.b);
+									var newOptions = A2(
+										$author$project$OptionsUtilities$addAndSelectOptionsInOptionsListByString,
+										selectedValueStrings,
+										A2($elm$core$List$map, $author$project$Option$deselectOption, model.b));
 									return _Utils_Tuple2(
 										$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
 											_Utils_update(

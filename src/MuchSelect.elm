@@ -1455,23 +1455,30 @@ update msg model =
                                         _ ->
                                             let
                                                 newOptions =
-                                                    addAndSelectOptionsInOptionsListByString
-                                                        selectedValueStrings
-                                                        model.options
+                                                    model.options
+                                                        |> List.map Option.deselectOption
+                                                        |> addAndSelectOptionsInOptionsListByString
+                                                            selectedValueStrings
                                             in
                                             ( { model
                                                 | options = newOptions
                                               }
                                                 |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-                                            , NoEffect
+                                            , makeEffectsWhenValuesChanges
+                                                (SelectionMode.getEventMode model.selectionConfig)
+                                                (SelectionMode.getSelectionMode model.selectionConfig)
+                                                model.selectedValueEncoding
+                                                (OptionsUtilities.selectedOptions newOptions)
+                                                (Just (OptionValue.stringToOptionValue newAttributeValue))
                                             )
 
                                 _ ->
                                     let
                                         newOptions =
-                                            addAndSelectOptionsInOptionsListByString
-                                                selectedValueStrings
-                                                model.options
+                                            model.options
+                                                |> List.map Option.deselectOption
+                                                |> addAndSelectOptionsInOptionsListByString
+                                                    selectedValueStrings
                                     in
                                     ( { model
                                         | options = newOptions
@@ -3373,14 +3380,41 @@ makeCommandMessagesForUpdatingOptionsInTheWebWorker searchStringDebounceLength s
     batch [ UpdateOptionsInWebWorker, searchStringUpdateCmd ]
 
 
-makeCommandMessageForInitialValue : List Option -> Effect
-makeCommandMessageForInitialValue selectedOptions =
+makeCommandMessageForInitialValue : SelectionMode.SelectionMode -> SelectedValueEncoding.SelectedValueEncoding -> List Option -> Effect
+makeCommandMessageForInitialValue selectionMode selectedValueEncoding selectedOptions =
     case selectedOptions of
         [] ->
             NoEffect
 
         selectionOptions_ ->
-            ReportInitialValueSet (Ports.optionsEncoder selectionOptions_)
+            Batch
+                [ ReportInitialValueSet (Ports.optionsEncoder selectionOptions_)
+                , ChangeTheLightDom
+                    (LightDomChange.UpdateSelectedValue
+                        (Json.Encode.object
+                            [ ( "rawValue"
+                              , SelectedValueEncoding.rawSelectedValue
+                                    selectionMode
+                                    selectedValueEncoding
+                                    selectedOptions
+                              )
+                            , ( "value"
+                              , SelectedValueEncoding.selectedValue
+                                    selectionMode
+                                    selectedOptions
+                              )
+                            , ( "selectionMode"
+                              , case selectionMode of
+                                    SelectionMode.SingleSelect ->
+                                        Json.Encode.string "single-select"
+
+                                    SelectionMode.MultiSelect ->
+                                        Json.Encode.string "multi-select"
+                              )
+                            ]
+                        )
+                    )
+                ]
 
 
 type alias Flags =
@@ -3552,7 +3586,10 @@ init flags =
         [ errorEffect
         , initialValueErrEffect
         , ReportReady
-        , makeCommandMessageForInitialValue (selectedOptions optionsWithInitialValueSelected)
+        , makeCommandMessageForInitialValue
+            (SelectionMode.getSelectionMode selectionConfig)
+            selectedValueEncoding
+            (selectedOptions optionsWithInitialValueSelected)
         , UpdateOptionsInWebWorker
         , valueTransformationAndValidationErrorEffect
         , selectionConfigErrorEffect
