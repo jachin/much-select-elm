@@ -372,13 +372,16 @@ class MuchSelect extends HTMLElement {
         if (lightDomChange.changeType === "update-selected-value") {
           const selectInputSlot = this.querySelector("[slot='select-input']");
 
+          this.stopMuchSelectObserver();
+          this.stopSelectSlotObserver();
+
           if (this.hasAttribute("selected-value")) {
             this.setAttribute("selected-value", lightDomChange.data.rawValue);
           } else if (selectInputSlot) {
             if (lightDomChange.data.selectionMode === "single-select") {
               selectInputSlot.querySelectorAll("option").forEach((optionEl) => {
                 if (optionEl.selected) {
-                  if (!lightDomChange.data.value === optionEl.value) {
+                  if (lightDomChange.data.value !== optionEl.value) {
                     optionEl.removeAttribute("selected");
                   }
                 } else if (lightDomChange.data.value === optionEl.value) {
@@ -408,28 +411,14 @@ class MuchSelect extends HTMLElement {
             );
           }
 
-          // const newValue = lightDomChange.value;
-          // this.stopMuchSelectObserver();
-          // this.stopSelectSlotObserver();
-          // const selectInputSlot = this.querySelector("[slot='select-input']");
-          // if (selectInputSlot) {
-          //   selectInputSlot.querySelectorAll("option").forEach((optionEl) => {
-          //     if (optionEl.selected) {
-          //       if (!this.isValueSelected(optionEl.value)) {
-          //         optionEl.removeAttribute("selected");
-          //       }
-          //     } else if (this.isValueSelected(optionEl.value)) {
-          //       optionEl.setAttribute("selected", "");
-          //     }
-          //   });
-          // }
-          // this.startMuchSelectObserver();
-          // this.startSelectSlotObserver();
+          this.startMuchSelectObserver();
+          this.startSelectSlotObserver();
         } else if (lightDomChange.changeType === "remove-attribute") {
           this.removeAttribute(lightDomChange.name);
         } else if (lightDomChange.changeType === "add-update-attribute") {
           this.setAttribute(lightDomChange.name, lightDomChange.value);
         }
+
         console.log("lightDomChange", lightDomChange);
       })
     );
