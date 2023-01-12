@@ -68,6 +68,25 @@
         expect(evt.detail.value).to.be.equal("one");
         expect(evt.detail.label).to.be.equal("one");
       });
+
+      it("should emit optionDeselected events when an option is deselected", async () => {
+        const el = /** @type {MuchSelect} */ await fixture(
+          html`<much-select></much-select>`
+        );
+
+        // Add some options
+        el.addOption("one");
+        el.addOption("two");
+        el.addOption("three");
+
+        el.selectOption("one");
+        await oneEvent(el, "optionSelected");
+        el.deselectOption("one");
+
+        const evt = await oneEvent(el, "optionDeselected");
+        expect(evt.detail.value).to.be.equal("one");
+        expect(evt.detail.label).to.be.equal("one");
+      });
     });
   });
 </script>

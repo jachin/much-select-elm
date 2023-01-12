@@ -25,10 +25,12 @@ port module Ports exposing
     , muchSelectIsReady
     , multiSelectChangedReceiver
     , multiSelectSingleItemRemovalChangedReceiver
+    , optionDecoder
     , optionDeselected
     , optionEncoder
     , optionSelected
     , optionSortingChangedReceiver
+    , optionsDecoder
     , optionsEncoder
     , optionsReplacedReceiver
     , optionsUpdated
@@ -104,6 +106,29 @@ optionEncoder option =
         , ( "isValid", Json.Encode.bool (Option.isValid option) )
         , ( "selectedIndex", Json.Encode.int (Option.getOptionSelectedIndex option) )
         ]
+
+
+type alias PortOption =
+    { value : String
+    , label : String
+    , isValid : Bool
+    , selectedIndex : Int
+    }
+
+
+optionsDecoder : Json.Decode.Decoder (List PortOption)
+optionsDecoder =
+    Json.Decode.list optionDecoder
+
+
+optionDecoder : Json.Decode.Decoder PortOption
+optionDecoder =
+    Json.Decode.map4
+        PortOption
+        (Json.Decode.field "value" Json.Decode.string)
+        (Json.Decode.field "label" Json.Decode.string)
+        (Json.Decode.field "isValid" Json.Decode.bool)
+        (Json.Decode.field "selectedIndex" Json.Decode.int)
 
 
 port inputKeyUp : String -> Cmd msg

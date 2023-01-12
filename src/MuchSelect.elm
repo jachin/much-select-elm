@@ -217,7 +217,7 @@ type Effect
     | InvalidValue Json.Encode.Value
     | CustomOptionSelected (List String)
     | ReportOptionSelected Json.Encode.Value
-    | OptionDeselected Json.Encode.Value
+    | ReportOptionDeselected Json.Encode.Value
     | OptionsUpdated Bool
     | SendCustomValidationRequest ( String, Int )
     | ReportErrorMessage String
@@ -672,7 +672,7 @@ update msg model =
                                 |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                             , batch
                                 [ OptionsUpdated True
-                                , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
+                                , makeEffectsForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
                                 ]
                             )
 
@@ -697,7 +697,7 @@ update msg model =
                                 |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                             , batch
                                 [ OptionsUpdated True
-                                , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
+                                , makeEffectsForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
                                 ]
                             )
 
@@ -725,7 +725,7 @@ update msg model =
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , batch
                         [ OptionsUpdated False
-                        , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
+                        , makeEffectsForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
                         ]
                     )
 
@@ -747,7 +747,7 @@ update msg model =
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , batch
                         [ OptionsUpdated True
-                        , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
+                        , makeEffectsForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
                         ]
                     )
 
@@ -776,12 +776,13 @@ update msg model =
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , batch
-                        [ makeEffectsWhenValuesChanges
+                        [ makeEffectsWhenSelectingAnOption
+                            option
                             (SelectionMode.getEventMode model.selectionConfig)
                             (SelectionMode.getSelectionMode model.selectionConfig)
                             model.selectedValueEncoding
                             (selectedOptions updatedOptions)
-                        , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
+                        , makeEffectsForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
                         , SearchStringTouched model.searchStringDebounceLength
                         ]
                     )
@@ -967,7 +968,7 @@ update msg model =
                 |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
             , batch
                 [ ReportReady
-                , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
+                , makeEffectsForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
                 , cmd
                 ]
             )
@@ -985,43 +986,56 @@ update msg model =
 
         SelectHighlightedOption ->
             let
+                maybeHighlightedOption =
+                    OptionsUtilities.findHighlightedOption model.options
+
                 updatedOptions =
                     selectHighlightedOption model.selectionConfig model.options
-            in
-            case model.selectionConfig of
-                SingleSelectConfig _ _ _ ->
-                    ( { model
-                        | options = updatedOptions
-                        , searchString = SearchString.reset
-                      }
-                        |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-                    , batch
-                        [ makeEffectsWhenValuesChanges
-                            (SelectionMode.getEventMode model.selectionConfig)
-                            (SelectionMode.getSelectionMode model.selectionConfig)
-                            model.selectedValueEncoding
-                            (selectedOptions updatedOptions)
-                        , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
-                        , BlurInput
-                        ]
-                    )
 
-                MultiSelectConfig _ _ _ ->
-                    ( { model
-                        | options = updatedOptions
-                        , searchString = SearchString.reset
-                      }
-                        |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-                    , batch
-                        [ makeEffectsWhenValuesChanges
-                            (SelectionMode.getEventMode model.selectionConfig)
-                            (SelectionMode.getSelectionMode model.selectionConfig)
-                            model.selectedValueEncoding
-                            (selectedOptions updatedOptions)
-                        , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
-                        , FocusInput
-                        ]
-                    )
+                maybeNewlySelectedOption =
+                    maybeHighlightedOption |> Maybe.andThen (\highlightedOption -> OptionsUtilities.findOptionByOptionValue (Option.getOptionValue highlightedOption) updatedOptions)
+            in
+            case maybeNewlySelectedOption of
+                Just newlySelectedOption ->
+                    case SelectionMode.getSelectionMode model.selectionConfig of
+                        SelectionMode.SingleSelect ->
+                            ( { model
+                                | options = updatedOptions
+                                , searchString = SearchString.reset
+                              }
+                                |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
+                            , batch
+                                [ makeEffectsWhenSelectingAnOption
+                                    newlySelectedOption
+                                    (SelectionMode.getEventMode model.selectionConfig)
+                                    (SelectionMode.getSelectionMode model.selectionConfig)
+                                    model.selectedValueEncoding
+                                    (selectedOptions updatedOptions)
+                                , makeEffectsForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
+                                , BlurInput
+                                ]
+                            )
+
+                        SelectionMode.MultiSelect ->
+                            ( { model
+                                | options = updatedOptions
+                                , searchString = SearchString.reset
+                              }
+                                |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
+                            , batch
+                                [ makeEffectsWhenSelectingAnOption
+                                    newlySelectedOption
+                                    (SelectionMode.getEventMode model.selectionConfig)
+                                    (SelectionMode.getSelectionMode model.selectionConfig)
+                                    model.selectedValueEncoding
+                                    (selectedOptions updatedOptions)
+                                , makeEffectsForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
+                                , FocusInput
+                                ]
+                            )
+
+                Nothing ->
+                    ( model, ReportErrorMessage "Unable select highlighted option" )
 
         DeleteInputForSingleSelect ->
             case model.selectionConfig of
@@ -1331,7 +1345,7 @@ update msg model =
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , batch
                         [ ReportReady
-                        , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
+                        , makeEffectsForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
                         ]
                     )
 
@@ -1548,7 +1562,7 @@ update msg model =
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , batch
                         [ ReportReady
-                        , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
+                        , makeEffectsForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
                         , makeEffectsWhenValuesChanges (SelectionMode.getEventMode model.selectionConfig)
                             (SelectionMode.getSelectionMode model.selectionConfig)
                             model.selectedValueEncoding
@@ -1725,7 +1739,7 @@ perform effect =
         ReportOptionSelected value ->
             optionSelected value
 
-        OptionDeselected value ->
+        ReportOptionDeselected value ->
             optionDeselected value
 
         OptionsUpdated bool ->
@@ -1781,12 +1795,13 @@ deselectOption model option =
       }
         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
     , batch
-        [ makeEffectsWhenValuesChanges
+        [ makeEffectsWhenDeselectingAnOption
+            option
             (SelectionMode.getEventMode model.selectionConfig)
             (SelectionMode.getSelectionMode model.selectionConfig)
             model.selectedValueEncoding
             (selectedOptions updatedOptions)
-        , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
+        , makeEffectsForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
         ]
     )
 
@@ -1794,22 +1809,16 @@ deselectOption model option =
 clearAllSelectedOption : Model -> ( Model, Effect )
 clearAllSelectedOption model =
     let
-        deselectedOptions : List Option
-        deselectedOptions =
-            if List.isEmpty <| selectedOptionsToTuple model.options then
-                -- no deselected options
-                []
-
-            else
-                -- an option has been deselected. return the deselected value as a tuple.
-                model.options
+        optionsAboutToBeDeselected : List Option
+        optionsAboutToBeDeselected =
+            OptionsUtilities.selectedOptions model.options
 
         deselectEventEffect =
-            if List.isEmpty deselectedOptions then
+            if List.isEmpty optionsAboutToBeDeselected then
                 NoEffect
 
             else
-                OptionDeselected (Ports.optionsEncoder deselectedOptions)
+                ReportOptionDeselected (Ports.optionsEncoder (deselectAllOptionsInOptionsList optionsAboutToBeDeselected))
 
         newOptions =
             deselectAllOptionsInOptionsList model.options
@@ -3269,19 +3278,6 @@ makeEffectsWhenValuesChanges eventsMode selectionMode selectedValueEncoding sele
             else
                 NoEffect
 
-        -- Any time we select a new value we need to emit an `optionSelected` event.
-        optionSelectedEffects =
-            List.map
-                (\option ->
-                    if Option.isValid option then
-                        ReportOptionSelected (Ports.optionEncoder option)
-
-                    else
-                        NoEffect
-                )
-                selectedOptions
-                |> Batch
-
         lightDomChangeEffect =
             case eventsMode of
                 OutputStyle.EventsOnly ->
@@ -3328,14 +3324,39 @@ makeEffectsWhenValuesChanges eventsMode selectionMode selectedValueEncoding sele
         [ valueChangeCmd
         , customOptionCmd
         , clearCmd
-        , optionSelectedEffects
         , customValidationCmd
         , lightDomChangeEffect
         ]
 
 
-makeCommandMessagesForUpdatingOptionsInTheWebWorker : Float -> SearchString -> Effect
-makeCommandMessagesForUpdatingOptionsInTheWebWorker searchStringDebounceLength searchString =
+makeEffectsWhenSelectingAnOption : Option -> OutputStyle.EventsMode -> SelectionMode.SelectionMode -> SelectedValueEncoding.SelectedValueEncoding -> List Option -> Effect
+makeEffectsWhenSelectingAnOption newlySelectedOption eventsMode selectionMode selectedValueEncoding options =
+    let
+        -- Any time we select a new value we need to emit an `optionSelected` event.
+        optionSelectedEffects =
+            ReportOptionSelected (Ports.optionEncoder newlySelectedOption)
+    in
+    batch
+        [ makeEffectsWhenValuesChanges eventsMode selectionMode selectedValueEncoding options
+        , optionSelectedEffects
+        ]
+
+
+makeEffectsWhenDeselectingAnOption : Option -> OutputStyle.EventsMode -> SelectionMode.SelectionMode -> SelectedValueEncoding.SelectedValueEncoding -> List Option -> Effect
+makeEffectsWhenDeselectingAnOption deselectedOption eventsMode selectionMode selectedValueEncoding options =
+    let
+        -- Any time we deselect a new value we need to emit an `optionDeselected` event.
+        optionDeselectedEffects =
+            ReportOptionDeselected (Ports.optionEncoder deselectedOption)
+    in
+    batch
+        [ makeEffectsWhenValuesChanges eventsMode selectionMode selectedValueEncoding options
+        , optionDeselectedEffects
+        ]
+
+
+makeEffectsForUpdatingOptionsInTheWebWorker : Float -> SearchString -> Effect
+makeEffectsForUpdatingOptionsInTheWebWorker searchStringDebounceLength searchString =
     let
         searchStringUpdateCmd =
             if SearchString.isEmpty searchString then
@@ -3347,8 +3368,8 @@ makeCommandMessagesForUpdatingOptionsInTheWebWorker searchStringDebounceLength s
     batch [ UpdateOptionsInWebWorker, searchStringUpdateCmd ]
 
 
-makeCommandMessageForInitialValue : OutputStyle.EventsMode -> SelectionMode.SelectionMode -> SelectedValueEncoding.SelectedValueEncoding -> List Option -> Effect
-makeCommandMessageForInitialValue eventsMode selectionMode selectedValueEncoding selectedOptions =
+makeEffectsForInitialValue : OutputStyle.EventsMode -> SelectionMode.SelectionMode -> SelectedValueEncoding.SelectedValueEncoding -> List Option -> Effect
+makeEffectsForInitialValue eventsMode selectionMode selectedValueEncoding selectedOptions =
     case eventsMode of
         OutputStyle.EventsOnly ->
             ReportInitialValueSet (Ports.optionsEncoder selectedOptions)
@@ -3577,7 +3598,7 @@ init flags =
         , maxDropdownItemsErrorEffect
         , initialValueErrEffect
         , ReportReady
-        , makeCommandMessageForInitialValue
+        , makeEffectsForInitialValue
             (SelectionMode.getEventMode selectionConfig)
             (SelectionMode.getSelectionMode selectionConfig)
             selectedValueEncoding
