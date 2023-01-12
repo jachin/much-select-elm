@@ -443,47 +443,64 @@ update msg model =
             )
 
         DropdownMouseUpOption optionValue ->
-            let
-                updatedOptions =
-                    case model.selectionConfig of
-                        MultiSelectConfig _ _ _ ->
-                            selectOptionInListByOptionValue optionValue model.options
-
-                        SingleSelectConfig _ _ _ ->
-                            selectSingleOptionInList optionValue model.options
-            in
             case SelectionMode.getSelectionMode model.selectionConfig of
                 SelectionMode.SingleSelect ->
-                    ( { model
-                        | options = updatedOptions
-                        , searchString = SearchString.reset
-                      }
-                        |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-                    , batch
-                        [ makeEffectsWhenValuesChanges
-                            (SelectionMode.getEventMode model.selectionConfig)
-                            (SelectionMode.getSelectionMode model.selectionConfig)
-                            model.selectedValueEncoding
-                            (selectedOptions updatedOptions)
-                        , BlurInput
-                        ]
-                    )
+                    let
+                        updatedOptions =
+                            selectSingleOptionInList optionValue model.options
+
+                        maybeNewlySelectedOption =
+                            OptionsUtilities.findOptionByOptionValue optionValue updatedOptions
+                    in
+                    case maybeNewlySelectedOption of
+                        Just newlySelectedOption ->
+                            ( { model
+                                | options = updatedOptions
+                                , searchString = SearchString.reset
+                              }
+                                |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
+                            , batch
+                                [ makeEffectsWhenSelectingAnOption
+                                    newlySelectedOption
+                                    (SelectionMode.getEventMode model.selectionConfig)
+                                    (SelectionMode.getSelectionMode model.selectionConfig)
+                                    model.selectedValueEncoding
+                                    (selectedOptions updatedOptions)
+                                , BlurInput
+                                ]
+                            )
+
+                        Nothing ->
+                            ( model, ReportErrorMessage "Unable to select option" )
 
                 SelectionMode.MultiSelect ->
-                    ( { model
-                        | options = updatedOptions
-                        , searchString = SearchString.reset
-                      }
-                        |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-                    , batch
-                        [ makeEffectsWhenValuesChanges
-                            (SelectionMode.getEventMode model.selectionConfig)
-                            (SelectionMode.getSelectionMode model.selectionConfig)
-                            model.selectedValueEncoding
-                            (selectedOptions updatedOptions)
-                        , FocusInput
-                        ]
-                    )
+                    let
+                        updatedOptions =
+                            selectOptionInListByOptionValue optionValue model.options
+
+                        maybeNewlySelectedOption =
+                            OptionsUtilities.findOptionByOptionValue optionValue updatedOptions
+                    in
+                    case maybeNewlySelectedOption of
+                        Just newlySelectedOption ->
+                            ( { model
+                                | options = updatedOptions
+                                , searchString = SearchString.reset
+                              }
+                                |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
+                            , batch
+                                [ makeEffectsWhenSelectingAnOption
+                                    newlySelectedOption
+                                    (SelectionMode.getEventMode model.selectionConfig)
+                                    (SelectionMode.getSelectionMode model.selectionConfig)
+                                    model.selectedValueEncoding
+                                    (selectedOptions updatedOptions)
+                                , FocusInput
+                                ]
+                            )
+
+                        Nothing ->
+                            ( model, ReportErrorMessage "Unable to select option" )
 
         UpdateSearchString searchString ->
             ( { model

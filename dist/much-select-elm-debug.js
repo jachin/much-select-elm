@@ -16905,49 +16905,61 @@ var $author$project$MuchSelect$update = F2(
 					$author$project$MuchSelect$NoEffect);
 			case 'DropdownMouseUpOption':
 				var optionValue = msg.a;
-				var updatedOptions = function () {
-					var _v5 = model.selectionConfig;
-					if (_v5.$ === 'MultiSelectConfig') {
-						return A2($author$project$OptionsUtilities$selectOptionInListByOptionValue, optionValue, model.options);
-					} else {
-						return A2($author$project$OptionsUtilities$selectSingleOptionInList, optionValue, model.options);
-					}
-				}();
 				var _v4 = $author$project$SelectionMode$getSelectionMode(model.selectionConfig);
 				if (_v4.$ === 'SingleSelect') {
-					return _Utils_Tuple2(
-						$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
-							_Utils_update(
-								model,
-								{options: updatedOptions, searchString: $author$project$SearchString$reset})),
-						$author$project$MuchSelect$batch(
-							_List_fromArray(
-								[
-									A4(
-									$author$project$MuchSelect$makeEffectsWhenValuesChanges,
-									$author$project$SelectionMode$getEventMode(model.selectionConfig),
-									$author$project$SelectionMode$getSelectionMode(model.selectionConfig),
-									model.selectedValueEncoding,
-									$author$project$OptionsUtilities$selectedOptions(updatedOptions)),
-									$author$project$MuchSelect$BlurInput
-								])));
+					var updatedOptions = A2($author$project$OptionsUtilities$selectSingleOptionInList, optionValue, model.options);
+					var maybeNewlySelectedOption = A2($author$project$OptionsUtilities$findOptionByOptionValue, optionValue, updatedOptions);
+					if (maybeNewlySelectedOption.$ === 'Just') {
+						var newlySelectedOption = maybeNewlySelectedOption.a;
+						return _Utils_Tuple2(
+							$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
+								_Utils_update(
+									model,
+									{options: updatedOptions, searchString: $author$project$SearchString$reset})),
+							$author$project$MuchSelect$batch(
+								_List_fromArray(
+									[
+										A5(
+										$author$project$MuchSelect$makeEffectsWhenSelectingAnOption,
+										newlySelectedOption,
+										$author$project$SelectionMode$getEventMode(model.selectionConfig),
+										$author$project$SelectionMode$getSelectionMode(model.selectionConfig),
+										model.selectedValueEncoding,
+										$author$project$OptionsUtilities$selectedOptions(updatedOptions)),
+										$author$project$MuchSelect$BlurInput
+									])));
+					} else {
+						return _Utils_Tuple2(
+							model,
+							$author$project$MuchSelect$ReportErrorMessage('Unable to select option'));
+					}
 				} else {
-					return _Utils_Tuple2(
-						$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
-							_Utils_update(
-								model,
-								{options: updatedOptions, searchString: $author$project$SearchString$reset})),
-						$author$project$MuchSelect$batch(
-							_List_fromArray(
-								[
-									A4(
-									$author$project$MuchSelect$makeEffectsWhenValuesChanges,
-									$author$project$SelectionMode$getEventMode(model.selectionConfig),
-									$author$project$SelectionMode$getSelectionMode(model.selectionConfig),
-									model.selectedValueEncoding,
-									$author$project$OptionsUtilities$selectedOptions(updatedOptions)),
-									$author$project$MuchSelect$FocusInput
-								])));
+					var updatedOptions = A2($author$project$OptionsUtilities$selectOptionInListByOptionValue, optionValue, model.options);
+					var maybeNewlySelectedOption = A2($author$project$OptionsUtilities$findOptionByOptionValue, optionValue, updatedOptions);
+					if (maybeNewlySelectedOption.$ === 'Just') {
+						var newlySelectedOption = maybeNewlySelectedOption.a;
+						return _Utils_Tuple2(
+							$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
+								_Utils_update(
+									model,
+									{options: updatedOptions, searchString: $author$project$SearchString$reset})),
+							$author$project$MuchSelect$batch(
+								_List_fromArray(
+									[
+										A5(
+										$author$project$MuchSelect$makeEffectsWhenSelectingAnOption,
+										newlySelectedOption,
+										$author$project$SelectionMode$getEventMode(model.selectionConfig),
+										$author$project$SelectionMode$getSelectionMode(model.selectionConfig),
+										model.selectedValueEncoding,
+										$author$project$OptionsUtilities$selectedOptions(updatedOptions)),
+										$author$project$MuchSelect$FocusInput
+									])));
+					} else {
+						return _Utils_Tuple2(
+							model,
+							$author$project$MuchSelect$ReportErrorMessage('Unable to select option'));
+					}
 				}
 			case 'UpdateSearchString':
 				var searchString = msg.a;
@@ -16978,12 +16990,12 @@ var $author$project$MuchSelect$update = F2(
 			case 'UpdateOptionValueValue':
 				var selectedValueIndex = msg.a;
 				var valueString = msg.b;
-				var _v6 = A3(
+				var _v7 = A3(
 					$author$project$TransformAndValidate$transformAndValidateFirstPass,
 					$author$project$SelectionMode$getTransformAndValidate(model.selectionConfig),
 					valueString,
 					selectedValueIndex);
-				switch (_v6.$) {
+				switch (_v7.$) {
 					case 'ValidationPass':
 						var updatedOptions = A3(
 							$author$project$OptionsUtilities$updateDatalistOptionsWithValue,
@@ -17015,7 +17027,7 @@ var $author$project$MuchSelect$update = F2(
 										A2($author$project$MuchSelect$InputHasBeenKeyUp, valueString, $author$project$TransformAndValidate$InputHasBeenValidated)
 									])));
 					case 'ValidationFailed':
-						var validationErrorMessages = _v6.c;
+						var validationErrorMessages = _v7.c;
 						var updatedOptions = A4(
 							$author$project$OptionsUtilities$updateDatalistOptionsWithValueAndErrors,
 							validationErrorMessages,
@@ -17094,8 +17106,8 @@ var $author$project$MuchSelect$update = F2(
 			case 'ValueChanged':
 				var valuesJson = msg.a;
 				var valuesResult = function () {
-					var _v9 = $author$project$SelectionMode$getSelectionMode(model.selectionConfig);
-					if (_v9.$ === 'SingleSelect') {
+					var _v10 = $author$project$SelectionMode$getSelectionMode(model.selectionConfig);
+					if (_v10.$ === 'SingleSelect') {
 						return A2($elm$json$Json$Decode$decodeValue, $author$project$Ports$valueDecoder, valuesJson);
 					} else {
 						return A2($elm$json$Json$Decode$decodeValue, $author$project$Ports$valuesDecoder, valuesJson);
@@ -17103,8 +17115,8 @@ var $author$project$MuchSelect$update = F2(
 				}();
 				if (valuesResult.$ === 'Ok') {
 					var values = valuesResult.a;
-					var _v8 = $author$project$SelectionMode$getOutputStyle(model.selectionConfig);
-					if (_v8.$ === 'CustomHtml') {
+					var _v9 = $author$project$SelectionMode$getOutputStyle(model.selectionConfig);
+					if (_v9.$ === 'CustomHtml') {
 						var newOptions = A2($author$project$OptionsUtilities$selectOptionsInOptionsListByString, values, model.options);
 						return _Utils_Tuple2(
 							$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
@@ -17143,17 +17155,17 @@ var $author$project$MuchSelect$update = F2(
 				}
 			case 'OptionsReplaced':
 				var newOptionsJson = msg.a;
-				var _v10 = A2(
+				var _v11 = A2(
 					$elm$json$Json$Decode$decodeValue,
 					A2(
 						$author$project$Option$optionsDecoder,
 						$author$project$OptionDisplay$NewOption,
 						$author$project$SelectionMode$getOutputStyle(model.selectionConfig)),
 					newOptionsJson);
-				if (_v10.$ === 'Ok') {
-					var newOptions = _v10.a;
-					var _v11 = $author$project$SelectionMode$getOutputStyle(model.selectionConfig);
-					if (_v11.$ === 'CustomHtml') {
+				if (_v11.$ === 'Ok') {
+					var newOptions = _v11.a;
+					var _v12 = $author$project$SelectionMode$getOutputStyle(model.selectionConfig);
+					if (_v12.$ === 'CustomHtml') {
 						var newOptionWithOldSelectedOption = A3($author$project$OptionsUtilities$replaceOptions, model.selectionConfig, model.options, newOptions);
 						return _Utils_Tuple2(
 							$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
@@ -17210,7 +17222,7 @@ var $author$project$MuchSelect$update = F2(
 									])));
 					}
 				} else {
-					var error = _v10.a;
+					var error = _v11.a;
 					return _Utils_Tuple2(
 						model,
 						$author$project$MuchSelect$ReportErrorMessage(
@@ -17218,15 +17230,15 @@ var $author$project$MuchSelect$update = F2(
 				}
 			case 'AddOptions':
 				var optionsJson = msg.a;
-				var _v12 = A2(
+				var _v13 = A2(
 					$elm$json$Json$Decode$decodeValue,
 					A2(
 						$author$project$Option$optionsDecoder,
 						$author$project$OptionDisplay$NewOption,
 						$author$project$SelectionMode$getOutputStyle(model.selectionConfig)),
 					optionsJson);
-				if (_v12.$ === 'Ok') {
-					var newOptions = _v12.a;
+				if (_v13.$ === 'Ok') {
+					var newOptions = _v13.a;
 					var updatedOptions = A4(
 						$author$project$OptionsUtilities$updateAge,
 						$author$project$SelectionMode$getOutputStyle(model.selectionConfig),
@@ -17250,7 +17262,7 @@ var $author$project$MuchSelect$update = F2(
 									A2($author$project$MuchSelect$makeEffectsForUpdatingOptionsInTheWebWorker, model.searchStringDebounceLength, model.searchString)
 								])));
 				} else {
-					var error = _v12.a;
+					var error = _v13.a;
 					return _Utils_Tuple2(
 						model,
 						$author$project$MuchSelect$ReportErrorMessage(
@@ -17258,15 +17270,15 @@ var $author$project$MuchSelect$update = F2(
 				}
 			case 'RemoveOptions':
 				var optionsJson = msg.a;
-				var _v13 = A2(
+				var _v14 = A2(
 					$elm$json$Json$Decode$decodeValue,
 					A2(
 						$author$project$Option$optionsDecoder,
 						$author$project$OptionDisplay$MatureOption,
 						$author$project$SelectionMode$getOutputStyle(model.selectionConfig)),
 					optionsJson);
-				if (_v13.$ === 'Ok') {
-					var optionsToRemove = _v13.a;
+				if (_v14.$ === 'Ok') {
+					var optionsToRemove = _v14.a;
 					var updatedOptions = A2($author$project$OptionsUtilities$removeOptionsFromOptionList, model.options, optionsToRemove);
 					return _Utils_Tuple2(
 						$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
@@ -17285,7 +17297,7 @@ var $author$project$MuchSelect$update = F2(
 									A2($author$project$MuchSelect$makeEffectsForUpdatingOptionsInTheWebWorker, model.searchStringDebounceLength, model.searchString)
 								])));
 				} else {
-					var error = _v13.a;
+					var error = _v14.a;
 					return _Utils_Tuple2(
 						model,
 						$author$project$MuchSelect$ReportErrorMessage(
@@ -17293,19 +17305,19 @@ var $author$project$MuchSelect$update = F2(
 				}
 			case 'SelectOption':
 				var optionJson = msg.a;
-				var _v14 = A2(
+				var _v15 = A2(
 					$elm$json$Json$Decode$decodeValue,
 					A2(
 						$author$project$Option$decoder,
 						$author$project$OptionDisplay$MatureOption,
 						$author$project$SelectionMode$getOutputStyle(model.selectionConfig)),
 					optionJson);
-				if (_v14.$ === 'Ok') {
-					var option = _v14.a;
+				if (_v15.$ === 'Ok') {
+					var option = _v15.a;
 					var optionValue = $author$project$Option$getOptionValue(option);
 					var updatedOptions = function () {
-						var _v15 = $author$project$SelectionMode$getSelectionMode(model.selectionConfig);
-						if (_v15.$ === 'MultiSelect') {
+						var _v16 = $author$project$SelectionMode$getSelectionMode(model.selectionConfig);
+						if (_v16.$ === 'MultiSelect') {
 							return A2($author$project$OptionsUtilities$selectOptionInListByOptionValue, optionValue, model.options);
 						} else {
 							return A2($author$project$OptionsUtilities$selectSingleOptionInList, optionValue, model.options);
@@ -17333,7 +17345,7 @@ var $author$project$MuchSelect$update = F2(
 									$author$project$MuchSelect$SearchStringTouched(model.searchStringDebounceLength)
 								])));
 				} else {
-					var error = _v14.a;
+					var error = _v15.a;
 					return _Utils_Tuple2(
 						model,
 						$author$project$MuchSelect$ReportErrorMessage(
@@ -17344,18 +17356,18 @@ var $author$project$MuchSelect$update = F2(
 				return A2($author$project$MuchSelect$deselectOption, model, optionToDeselect);
 			case 'DeselectOption':
 				var optionJson = msg.a;
-				var _v16 = A2(
+				var _v17 = A2(
 					$elm$json$Json$Decode$decodeValue,
 					A2(
 						$author$project$Option$decoder,
 						$author$project$OptionDisplay$MatureOption,
 						$author$project$SelectionMode$getOutputStyle(model.selectionConfig)),
 					optionJson);
-				if (_v16.$ === 'Ok') {
-					var option = _v16.a;
+				if (_v17.$ === 'Ok') {
+					var option = _v17.a;
 					return A2($author$project$MuchSelect$deselectOption, model, option);
 				} else {
-					var error = _v16.a;
+					var error = _v17.a;
 					return _Utils_Tuple2(
 						model,
 						$author$project$MuchSelect$ReportErrorMessage(
@@ -17363,32 +17375,32 @@ var $author$project$MuchSelect$update = F2(
 				}
 			case 'SelectedValueEncodingChanged':
 				var selectedValueEncodingString = msg.a;
-				var _v17 = $author$project$SelectedValueEncoding$fromString(selectedValueEncodingString);
-				if (_v17.$ === 'Ok') {
-					var selectedValueEncoding = _v17.a;
+				var _v18 = $author$project$SelectedValueEncoding$fromString(selectedValueEncodingString);
+				if (_v18.$ === 'Ok') {
+					var selectedValueEncoding = _v18.a;
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
 							{selectedValueEncoding: selectedValueEncoding}),
 						$author$project$MuchSelect$NoEffect);
 				} else {
-					var error = _v17.a;
+					var error = _v18.a;
 					return _Utils_Tuple2(
 						model,
 						$author$project$MuchSelect$ReportErrorMessage(error));
 				}
 			case 'OptionSortingChanged':
 				var sortingString = msg.a;
-				var _v18 = $author$project$OptionSorting$stringToOptionSort(sortingString);
-				if (_v18.$ === 'Ok') {
-					var optionSorting = _v18.a;
+				var _v19 = $author$project$OptionSorting$stringToOptionSort(sortingString);
+				if (_v19.$ === 'Ok') {
+					var optionSorting = _v19.a;
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
 							{optionSort: optionSorting}),
 						$author$project$MuchSelect$NoEffect);
 				} else {
-					var error = _v18.a;
+					var error = _v19.a;
 					return _Utils_Tuple2(
 						model,
 						$author$project$MuchSelect$ReportErrorMessage(error));
@@ -17438,9 +17450,9 @@ var $author$project$MuchSelect$update = F2(
 						}),
 					$author$project$MuchSelect$NoEffect);
 			case 'AllowCustomOptionsChanged':
-				var _v19 = msg.a;
-				var canAddCustomOptions = _v19.a;
-				var customOptionHint = _v19.b;
+				var _v20 = msg.a;
+				var canAddCustomOptions = _v20.a;
+				var customOptionHint = _v20.b;
 				var maybeCustomOptionHint = function () {
 					if (customOptionHint === '') {
 						return $elm$core$Maybe$Nothing;
@@ -17475,9 +17487,9 @@ var $author$project$MuchSelect$update = F2(
 					$author$project$MuchSelect$NoEffect);
 			case 'OutputStyleChanged':
 				var newOutputStyleString = msg.a;
-				var _v21 = $author$project$SelectionMode$stringToOutputStyle(newOutputStyleString);
-				if (_v21.$ === 'Ok') {
-					var outputStyle = _v21.a;
+				var _v22 = $author$project$SelectionMode$stringToOutputStyle(newOutputStyleString);
+				if (_v22.$ === 'Ok') {
+					var outputStyle = _v22.a;
 					var newSelectionConfig = A2($author$project$SelectionMode$setOutputStyle, outputStyle, model.selectionConfig);
 					return _Utils_Tuple2(
 						_Utils_update(
@@ -17562,8 +17574,8 @@ var $author$project$MuchSelect$update = F2(
 					maybeHighlightedOption);
 				if (maybeNewlySelectedOption.$ === 'Just') {
 					var newlySelectedOption = maybeNewlySelectedOption.a;
-					var _v23 = $author$project$SelectionMode$getSelectionMode(model.selectionConfig);
-					if (_v23.$ === 'SingleSelect') {
+					var _v24 = $author$project$SelectionMode$getSelectionMode(model.selectionConfig);
+					if (_v24.$ === 'SingleSelect') {
 						return _Utils_Tuple2(
 							$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
 								_Utils_update(
@@ -17608,8 +17620,8 @@ var $author$project$MuchSelect$update = F2(
 						$author$project$MuchSelect$ReportErrorMessage('Unable select highlighted option'));
 				}
 			case 'DeleteInputForSingleSelect':
-				var _v24 = model.selectionConfig;
-				if (_v24.$ === 'SingleSelectConfig') {
+				var _v25 = model.selectionConfig;
+				if (_v25.$ === 'SingleSelectConfig') {
 					return $author$project$OptionsUtilities$hasSelectedOption(model.options) ? $author$project$MuchSelect$clearAllSelectedOption(model) : _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
 				} else {
 					return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
@@ -17734,9 +17746,9 @@ var $author$project$MuchSelect$update = F2(
 						A2($elm$json$Json$Encode$list, $author$project$Option$encode, model.options)));
 			case 'UpdateSearchResultsForOptions':
 				var updatedSearchResultsJsonValue = msg.a;
-				var _v25 = A2($elm$json$Json$Decode$decodeValue, $author$project$Option$decodeSearchResults, updatedSearchResultsJsonValue);
-				if (_v25.$ === 'Ok') {
-					var searchResults = _v25.a;
+				var _v26 = A2($elm$json$Json$Decode$decodeValue, $author$project$Option$decodeSearchResults, updatedSearchResultsJsonValue);
+				if (_v26.$ === 'Ok') {
+					var searchResults = _v26.a;
 					if (_Utils_eq(searchResults.searchNonce, model.searchStringNonce)) {
 						var updatedOptions = A2(
 							$author$project$OptionsUtilities$setAge,
@@ -17757,7 +17769,7 @@ var $author$project$MuchSelect$update = F2(
 						return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
 					}
 				} else {
-					var error = _v25.a;
+					var error = _v26.a;
 					return _Utils_Tuple2(
 						model,
 						$author$project$MuchSelect$ReportErrorMessage(
@@ -17765,17 +17777,17 @@ var $author$project$MuchSelect$update = F2(
 				}
 			case 'CustomValidationResponse':
 				var customValidationResultJson = msg.a;
-				var _v26 = A2($elm$json$Json$Decode$decodeValue, $author$project$TransformAndValidate$customValidationResultDecoder, customValidationResultJson);
-				if (_v26.$ === 'Ok') {
-					var customValidationResult = _v26.a;
-					var _v27 = A2(
+				var _v27 = A2($elm$json$Json$Decode$decodeValue, $author$project$TransformAndValidate$customValidationResultDecoder, customValidationResultJson);
+				if (_v27.$ === 'Ok') {
+					var customValidationResult = _v27.a;
+					var _v28 = A2(
 						$author$project$TransformAndValidate$transformAndValidateSecondPass,
 						$author$project$SelectionMode$getTransformAndValidate(model.selectionConfig),
 						customValidationResult);
-					switch (_v27.$) {
+					switch (_v28.$) {
 						case 'ValidationPass':
-							var valueString = _v27.a;
-							var selectedValueIndex = _v27.b;
+							var valueString = _v28.a;
+							var selectedValueIndex = _v28.b;
 							var updatedOptions = A3(
 								$author$project$OptionsUtilities$updateDatalistOptionsWithValue,
 								$author$project$OptionValue$stringToOptionValue(valueString),
@@ -17801,9 +17813,9 @@ var $author$project$MuchSelect$update = F2(
 									$author$project$OptionsUtilities$cleanupEmptySelectedOptions(
 										$author$project$OptionsUtilities$selectedOptions(updatedOptions))));
 						case 'ValidationFailed':
-							var valueString = _v27.a;
-							var selectedValueIndex = _v27.b;
-							var validationFailureMessages = _v27.c;
+							var valueString = _v28.a;
+							var selectedValueIndex = _v28.b;
+							var validationFailureMessages = _v28.c;
 							var updatedOptions = A4(
 								$author$project$OptionsUtilities$updateDatalistOptionsWithValueAndErrors,
 								validationFailureMessages,
@@ -17835,7 +17847,7 @@ var $author$project$MuchSelect$update = F2(
 								$author$project$MuchSelect$ReportErrorMessage('We should not end up with a validation pending state on a second pass.'));
 					}
 				} else {
-					var error = _v26.a;
+					var error = _v27.a;
 					return _Utils_Tuple2(
 						model,
 						$author$project$MuchSelect$ReportErrorMessage(
@@ -17843,9 +17855,9 @@ var $author$project$MuchSelect$update = F2(
 				}
 			case 'UpdateTransformationAndValidation':
 				var transformationAndValidationJson = msg.a;
-				var _v28 = A2($elm$json$Json$Decode$decodeValue, $author$project$TransformAndValidate$decoder, transformationAndValidationJson);
-				if (_v28.$ === 'Ok') {
-					var newTransformationAndValidation = _v28.a;
+				var _v29 = A2($elm$json$Json$Decode$decodeValue, $author$project$TransformAndValidate$decoder, transformationAndValidationJson);
+				if (_v29.$ === 'Ok') {
+					var newTransformationAndValidation = _v29.a;
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
@@ -17854,16 +17866,16 @@ var $author$project$MuchSelect$update = F2(
 							}),
 						$author$project$MuchSelect$NoEffect);
 				} else {
-					var error = _v28.a;
+					var error = _v29.a;
 					return _Utils_Tuple2(
 						model,
 						$author$project$MuchSelect$ReportErrorMessage(
 							$elm$json$Json$Decode$errorToString(error)));
 				}
 			case 'AttributeChanged':
-				var _v29 = msg.a;
-				var attributeName = _v29.a;
-				var newAttributeValue = _v29.b;
+				var _v30 = msg.a;
+				var attributeName = _v30.a;
+				var newAttributeValue = _v30.b;
 				switch (attributeName) {
 					case 'allow-custom-options':
 						switch (newAttributeValue) {
@@ -17926,9 +17938,9 @@ var $author$project$MuchSelect$update = F2(
 								}),
 							$author$project$MuchSelect$NoEffect);
 					case 'max-dropdown-items':
-						var _v32 = $author$project$PositiveInt$fromString(newAttributeValue);
-						if (_v32.$ === 'Just') {
-							var maxDropdownItems = _v32.a;
+						var _v33 = $author$project$PositiveInt$fromString(newAttributeValue);
+						if (_v33.$ === 'Just') {
+							var maxDropdownItems = _v33.a;
 							return _Utils_Tuple2(
 								$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
 									_Utils_update(
@@ -17968,24 +17980,24 @@ var $author$project$MuchSelect$update = F2(
 								}),
 							$author$project$MuchSelect$ReportReady);
 					case 'option-sorting':
-						var _v33 = $author$project$OptionSorting$stringToOptionSort(newAttributeValue);
-						if (_v33.$ === 'Ok') {
-							var optionSorting = _v33.a;
+						var _v34 = $author$project$OptionSorting$stringToOptionSort(newAttributeValue);
+						if (_v34.$ === 'Ok') {
+							var optionSorting = _v34.a;
 							return _Utils_Tuple2(
 								_Utils_update(
 									model,
 									{optionSort: optionSorting}),
 								$author$project$MuchSelect$NoEffect);
 						} else {
-							var error = _v33.a;
+							var error = _v34.a;
 							return _Utils_Tuple2(
 								model,
 								$author$project$MuchSelect$ReportErrorMessage(error));
 						}
 					case 'output-style':
-						var _v34 = $author$project$SelectionMode$stringToOutputStyle(newAttributeValue);
-						if (_v34.$ === 'Ok') {
-							var outputStyle = _v34.a;
+						var _v35 = $author$project$SelectionMode$stringToOutputStyle(newAttributeValue);
+						if (_v35.$ === 'Ok') {
+							var outputStyle = _v35.a;
 							var newSelectionConfig = A2($author$project$SelectionMode$setOutputStyle, outputStyle, model.selectionConfig);
 							return _Utils_Tuple2(
 								_Utils_update(
@@ -18022,9 +18034,9 @@ var $author$project$MuchSelect$update = F2(
 										})),
 								$author$project$MuchSelect$NoEffect);
 						} else {
-							var _v36 = $author$project$PositiveInt$fromString(newAttributeValue);
-							if (_v36.$ === 'Just') {
-								var minimumLength = _v36.a;
+							var _v37 = $author$project$PositiveInt$fromString(newAttributeValue);
+							if (_v37.$ === 'Just') {
+								var minimumLength = _v37.a;
 								return _Utils_Tuple2(
 									$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
 										_Utils_update(
@@ -18051,9 +18063,9 @@ var $author$project$MuchSelect$update = F2(
 								}),
 							$author$project$MuchSelect$NoEffect);
 					case 'selected-value':
-						var _v37 = A2($author$project$SelectedValueEncoding$valuesFromFlags, model.selectedValueEncoding, newAttributeValue);
-						if (_v37.$ === 'Ok') {
-							var selectedValueStrings = _v37.a;
+						var _v38 = A2($author$project$SelectedValueEncoding$valuesFromFlags, model.selectedValueEncoding, newAttributeValue);
+						if (_v38.$ === 'Ok') {
+							var selectedValueStrings = _v38.a;
 							if (!selectedValueStrings.b) {
 								return $author$project$MuchSelect$clearAllSelectedOption(model);
 							} else {
@@ -18092,22 +18104,22 @@ var $author$project$MuchSelect$update = F2(
 								}
 							}
 						} else {
-							var error = _v37.a;
+							var error = _v38.a;
 							return _Utils_Tuple2(
 								model,
 								$author$project$MuchSelect$ReportErrorMessage(error));
 						}
 					case 'selected-value-encoding':
-						var _v40 = $author$project$SelectedValueEncoding$fromString(newAttributeValue);
-						if (_v40.$ === 'Ok') {
-							var selectedValueEncoding = _v40.a;
+						var _v41 = $author$project$SelectedValueEncoding$fromString(newAttributeValue);
+						if (_v41.$ === 'Ok') {
+							var selectedValueEncoding = _v41.a;
 							return _Utils_Tuple2(
 								_Utils_update(
 									model,
 									{selectedValueEncoding: selectedValueEncoding}),
 								$author$project$MuchSelect$NoEffect);
 						} else {
-							var error = _v40.a;
+							var error = _v41.a;
 							return _Utils_Tuple2(
 								model,
 								$author$project$MuchSelect$ReportErrorMessage(error));
