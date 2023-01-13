@@ -1572,22 +1572,9 @@ class MuchSelect extends HTMLElement {
    *  - by-option-label
    * */
   set optionSorting(value) {
-    let optionSorting = "no-sorting";
-    if (value === "no-sorting") {
-      optionSorting = "no-sorting";
-    } else if (value === "by-option-label") {
-      optionSorting = "by-option-label";
-    } else if (value === null) {
-      optionSorting = "no-sorting";
-    } else if (value === "") {
-      optionSorting = "no-sorting";
-    } else {
-      throw new Error(`Unexpected value for option sorting: ${value}`);
-    }
-
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
-      app.ports.optionSortingChangedReceiver.send(optionSorting)
+      app.ports.optionSortingChangedReceiver.send(value)
     );
   }
 

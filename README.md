@@ -141,6 +141,16 @@ The `multi-select-single-item-removal` attribute adds buttons to remove individu
 
 This is a boolean attribute, so if the `multi-select-single-item-removal` is present the `<much-select>` will have the selected option removal buttons visible. If not, the default behavior is to not show them. 
 
+##### `option-sorting`
+
+The `option-sorting` attribute allows you to specify what order the options should appear in the dropdown.
+
+The options for this are:
+ - `no-sorting` respect the value the options are in already
+ - `by-option-label` sort the options alphabetically by their label
+
+The default value is `no-sorting`.
+
 ##### `placeholder`
 
 The `placeholder` attribute is used to set the placeholder in the text input of the `<much-select>`. Just like in the `<input type="text">` it should only show up if the input is empty.

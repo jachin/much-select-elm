@@ -65,6 +65,34 @@
 
           expect(await el.optionSorting).to.equal("no-sorting");
         });
+
+        it("should be able to be set by the property", async () => {
+          const el = /** @type {MuchSelect} */ await fixture(
+            html`<much-select></much-select>`
+          );
+
+          el.optionSorting = "no-sorting";
+          await nextFrame();
+          expect(await el.optionSorting).to.equal("no-sorting");
+
+          el.optionSorting = "by-option-label";
+          await nextFrame();
+          expect(await el.optionSorting).to.equal("by-option-label");
+        });
+
+        it("should not allow a non-sense value change via the property setter", async () => {
+          const el = /** @type {MuchSelect} */ await fixture(
+            html`<much-select></much-select>`
+          );
+
+          el.optionSorting = "no-sorting";
+          await nextFrame();
+          expect(await el.optionSorting).to.equal("no-sorting");
+
+          el.optionSorting = "junk";
+          await nextFrame();
+          expect(await el.optionSorting).to.equal("no-sorting");
+        });
       });
     });
   });
