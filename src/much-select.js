@@ -1904,6 +1904,11 @@ class MuchSelect extends HTMLElement {
   setupFilterWorker() {
     return this.parentDivPromise.then((parentDiv) => {
       const code = parentDiv.querySelector("#filter-worker").textContent;
+
+      if (code.trim().length < 1000) {
+        throw new Error("The code for the filter worker is missing.");
+      }
+
       const blob = new Blob([code], { type: "application/javascript" });
 
       this._filterWorker = new Worker(URL.createObjectURL(blob));
