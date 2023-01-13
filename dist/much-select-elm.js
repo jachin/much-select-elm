@@ -9299,6 +9299,15 @@ var $author$project$SelectionMode$getMaxDropdownItems = function (selectionConfi
 		}
 	}
 };
+var $author$project$SelectionMode$getPlaceholder = function (selectionConfig) {
+	if (!selectionConfig.$) {
+		var placeholder = selectionConfig.b;
+		return placeholder;
+	} else {
+		var placeholder = selectionConfig.b;
+		return placeholder;
+	}
+};
 var $author$project$SelectionMode$getSearchStringMinimumLength = function (selectionConfig) {
 	if (!selectionConfig.$) {
 		var singleSelectOutputStyle = selectionConfig.a;
@@ -9416,6 +9425,10 @@ var $author$project$SelectionMode$outputStyleToString = function (outputStyle) {
 		return 'datalist';
 	}
 };
+var $elm$core$Tuple$second = function (_v0) {
+	var y = _v0.b;
+	return y;
+};
 var $author$project$SelectionMode$getDropdownStyle = function (selectionConfig) {
 	if (!selectionConfig.$) {
 		var singleSelectOutputStyle = selectionConfig.a;
@@ -9517,6 +9530,10 @@ var $author$project$ConfigDump$encodeConfig = F4(
 					$elm$json$Json$Encode$string(
 						$author$project$SelectionMode$outputStyleToString(
 							$author$project$SelectionMode$getOutputStyle(selectionConfig)))),
+					_Utils_Tuple2(
+					'placeholder',
+					$elm$json$Json$Encode$string(
+						$author$project$SelectionMode$getPlaceholder(selectionConfig).b)),
 					_Utils_Tuple2(
 					'search-string-minimum-length',
 					$elm$json$Json$Encode$int(
@@ -10101,10 +10118,6 @@ var $author$project$Option$optionIsHighlightable = F2(
 				return false;
 		}
 	});
-var $elm$core$Tuple$second = function (_v0) {
-	var y = _v0.b;
-	return y;
-};
 var $elm_community$list_extra$List$Extra$splitAt = F2(
 	function (n, xs) {
 		return _Utils_Tuple2(
@@ -13822,15 +13835,6 @@ var $author$project$SelectionMode$getInteractionState = function (selectionConfi
 	} else {
 		var interactionState = selectionConfig.c;
 		return interactionState;
-	}
-};
-var $author$project$SelectionMode$getPlaceholder = function (selectionConfig) {
-	if (!selectionConfig.$) {
-		var placeholder = selectionConfig.b;
-		return placeholder;
-	} else {
-		var placeholder = selectionConfig.b;
-		return placeholder;
 	}
 };
 var $author$project$SelectionMode$getPlaceholderString = function (selectionConfig) {

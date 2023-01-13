@@ -51,6 +51,9 @@ encodeConfig selectionConfig optionSort selectedValueEncoding rightSlot =
         , ( "output-style"
           , Json.Encode.string (SelectionMode.outputStyleToString (SelectionMode.getOutputStyle selectionConfig))
           )
+        , ( "placeholder"
+          , Json.Encode.string (Tuple.second (SelectionMode.getPlaceholder selectionConfig))
+          )
         , ( "search-string-minimum-length"
           , Json.Encode.int
                 (case SelectionMode.getSearchStringMinimumLength selectionConfig of

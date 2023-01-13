@@ -14610,6 +14610,15 @@ var $author$project$SelectionMode$getMaxDropdownItems = function (selectionConfi
 		}
 	}
 };
+var $author$project$SelectionMode$getPlaceholder = function (selectionConfig) {
+	if (selectionConfig.$ === 'SingleSelectConfig') {
+		var placeholder = selectionConfig.b;
+		return placeholder;
+	} else {
+		var placeholder = selectionConfig.b;
+		return placeholder;
+	}
+};
 var $author$project$SelectionMode$getSearchStringMinimumLength = function (selectionConfig) {
 	if (selectionConfig.$ === 'SingleSelectConfig') {
 		var singleSelectOutputStyle = selectionConfig.a;
@@ -14828,6 +14837,10 @@ var $author$project$ConfigDump$encodeConfig = F4(
 					$elm$json$Json$Encode$string(
 						$author$project$SelectionMode$outputStyleToString(
 							$author$project$SelectionMode$getOutputStyle(selectionConfig)))),
+					_Utils_Tuple2(
+					'placeholder',
+					$elm$json$Json$Encode$string(
+						$author$project$SelectionMode$getPlaceholder(selectionConfig).b)),
 					_Utils_Tuple2(
 					'search-string-minimum-length',
 					$elm$json$Json$Encode$int(
@@ -19079,15 +19092,6 @@ var $author$project$SelectionMode$getInteractionState = function (selectionConfi
 	} else {
 		var interactionState = selectionConfig.c;
 		return interactionState;
-	}
-};
-var $author$project$SelectionMode$getPlaceholder = function (selectionConfig) {
-	if (selectionConfig.$ === 'SingleSelectConfig') {
-		var placeholder = selectionConfig.b;
-		return placeholder;
-	} else {
-		var placeholder = selectionConfig.b;
-		return placeholder;
 	}
 };
 var $author$project$SelectionMode$getPlaceholderString = function (selectionConfig) {
