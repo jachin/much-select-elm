@@ -179,7 +179,19 @@ The `selected-option-goes-to-top` attribute lets you change the behvaior of `<mu
 
 The `selected-value` attribute is used to set the value of the `<much-select>`.
 
-You should _not_ use this in combination with using `selected` attributes on the `<option>` tags in the `select-input` slot. You should just pick one place in the DOM to track the selected value. 
+You should _not_ use this in combination with using `selected` attributes on the `<option>` tags in the `select-input` slot. You should just pick one place in the DOM to track the selected value.
+
+##### `selected-value-encoding`
+
+The `selected-value-encoding` attribute is used to change how the values work in the `selected-value` attribute.
+
+The options for this attribute are:
+ - `comma` (default) the selected options are comma delenated
+ - `json` the selected options are encoded in json and `encodeURIComponent()`
+
+`comma` is the most straight forward but if you allow values that have commas in them things are not going to go well. As far as I can tell `json` can handle any kinds of text values, however it is a bit harder to just look at and know what the selected value is.
+
+`json` encoding is recommended.
 
 ##### `show-dropdown-footer`
 
