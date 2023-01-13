@@ -1371,12 +1371,21 @@ update msg model =
                 "max-dropdown-items" ->
                     case PositiveInt.fromString newAttributeValue of
                         Just maxDropdownItems ->
-                            ( { model
-                                | selectionConfig = setMaxDropdownItems (FixedMaxDropdownItems maxDropdownItems) model.selectionConfig
-                              }
-                                |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-                            , NoEffect
-                            )
+                            if PositiveInt.isZero maxDropdownItems then
+                                ( { model
+                                    | selectionConfig = setMaxDropdownItems NoLimitToDropdownItems model.selectionConfig
+                                  }
+                                    |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
+                                , NoEffect
+                                )
+
+                            else
+                                ( { model
+                                    | selectionConfig = setMaxDropdownItems (FixedMaxDropdownItems maxDropdownItems) model.selectionConfig
+                                  }
+                                    |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
+                                , NoEffect
+                                )
 
                         Nothing ->
                             ( model
@@ -1590,7 +1599,10 @@ update msg model =
 
                 "max-dropdown-items" ->
                     ( { model
-                        | selectionConfig = setMaxDropdownItems NoLimitToDropdownItems model.selectionConfig
+                        | selectionConfig =
+                            setMaxDropdownItems
+                                (OutputStyle.FixedMaxDropdownItems SelectionMode.defaultMaxDropdownItems)
+                                model.selectionConfig
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , NoEffect
@@ -3489,14 +3501,7 @@ init flags =
                 Just str ->
                     case PositiveInt.fromString str of
                         Just int ->
-                            if PositiveInt.isZero int then
-                                ( SelectionMode.defaultMaxDropdownItems
-                                , ReportErrorMessage
-                                    "Invalid value for the max-dropdown-items attribute."
-                                )
-
-                            else
-                                ( int, NoEffect )
+                            ( int, NoEffect )
 
                         Nothing ->
                             ( SelectionMode.defaultMaxDropdownItems

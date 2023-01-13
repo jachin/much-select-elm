@@ -11367,10 +11367,6 @@ var $author$project$OptionsUtilities$isOptionValueInListOfOptionsByValue = F2(
 			},
 			options);
 	});
-var $author$project$PositiveInt$isZero = function (_v0) {
-	var positiveInt = _v0.a;
-	return !positiveInt;
-};
 var $author$project$MuchSelect$ChangeTheLightDom = function (a) {
 	return {$: 'ChangeTheLightDom', a: a};
 };
@@ -11626,10 +11622,15 @@ var $author$project$OutputStyle$MultiSelectDataList = F2(
 		return {$: 'MultiSelectDataList', a: a, b: b};
 	});
 var $author$project$OutputStyle$ShowFooter = {$: 'ShowFooter'};
+var $author$project$PositiveInt$isZero = function (_v0) {
+	var positiveInt = _v0.a;
+	return !positiveInt;
+};
 var $author$project$SelectionMode$makeMultiSelectOutputStyle = F9(
-	function (outputStyle, isEventsOnly_, allowCustomOptions, enableMultiSelectSingleItemRemoval, maxDropdownItems, searchStringMinimumLength, shouldShowDropdownFooter, customOptionHint, transformAndValidate) {
+	function (outputStyle, isEventsOnly_, allowCustomOptions, enableMultiSelectSingleItemRemoval, maxDropdownItemsNum, searchStringMinimumLength, shouldShowDropdownFooter, customOptionHint, transformAndValidate) {
 		if (outputStyle.$ === 'CustomHtml') {
 			var singleItemRemoval = enableMultiSelectSingleItemRemoval ? $author$project$OutputStyle$EnableSingleItemRemoval : $author$project$OutputStyle$DisableSingleItemRemoval;
+			var maxDropdownItems = $author$project$PositiveInt$isZero(maxDropdownItemsNum) ? $author$project$OutputStyle$NoLimitToDropdownItems : $author$project$OutputStyle$FixedMaxDropdownItems(maxDropdownItemsNum);
 			var eventsMode = isEventsOnly_ ? $author$project$OutputStyle$EventsOnly : $author$project$OutputStyle$AllowLightDomChanges;
 			var dropdownStyle = shouldShowDropdownFooter ? $author$project$OutputStyle$ShowFooter : $author$project$OutputStyle$NoFooter;
 			var customOptions = allowCustomOptions ? A2($author$project$OutputStyle$AllowCustomOptions, customOptionHint, transformAndValidate) : $author$project$OutputStyle$NoCustomOptions;
@@ -11640,7 +11641,7 @@ var $author$project$SelectionMode$makeMultiSelectOutputStyle = F9(
 						dropdownState: $author$project$OutputStyle$Collapsed,
 						dropdownStyle: dropdownStyle,
 						eventsMode: eventsMode,
-						maxDropdownItems: $author$project$OutputStyle$FixedMaxDropdownItems(maxDropdownItems),
+						maxDropdownItems: maxDropdownItems,
 						searchStringMinimumLength: $author$project$OutputStyle$FixedSearchStringMinimumLength(
 							$author$project$PositiveInt$new(searchStringMinimumLength)),
 						singleItemRemoval: singleItemRemoval
@@ -11657,9 +11658,10 @@ var $author$project$OutputStyle$SingleSelectDatalist = F2(
 		return {$: 'SingleSelectDatalist', a: a, b: b};
 	});
 var $author$project$SelectionMode$makeSingleSelectOutputStyle = F9(
-	function (outputStyle, isEventsOnly_, allowCustomOptions, selectedItemStaysInPlace, maxDropdownItems, searchStringMinimumLength, shouldShowDropdownFooter, customOptionHint, transformAndValidate) {
+	function (outputStyle, isEventsOnly_, allowCustomOptions, selectedItemStaysInPlace, maxDropdownItemsNum, searchStringMinimumLength, shouldShowDropdownFooter, customOptionHint, transformAndValidate) {
 		if (outputStyle.$ === 'CustomHtml') {
 			var selectedItemPlacementMode = selectedItemStaysInPlace ? $author$project$OutputStyle$SelectedItemStaysInPlace : $author$project$OutputStyle$SelectedItemMovesToTheTop;
+			var maxDropdownItems = $author$project$PositiveInt$isZero(maxDropdownItemsNum) ? $author$project$OutputStyle$NoLimitToDropdownItems : $author$project$OutputStyle$FixedMaxDropdownItems(maxDropdownItemsNum);
 			var eventsMode = isEventsOnly_ ? $author$project$OutputStyle$EventsOnly : $author$project$OutputStyle$AllowLightDomChanges;
 			var dropdownStyle = shouldShowDropdownFooter ? $author$project$OutputStyle$ShowFooter : $author$project$OutputStyle$NoFooter;
 			var customOptions = allowCustomOptions ? A2($author$project$OutputStyle$AllowCustomOptions, customOptionHint, transformAndValidate) : $author$project$OutputStyle$NoCustomOptions;
@@ -11670,7 +11672,7 @@ var $author$project$SelectionMode$makeSingleSelectOutputStyle = F9(
 						dropdownState: $author$project$OutputStyle$Collapsed,
 						dropdownStyle: dropdownStyle,
 						eventsMode: eventsMode,
-						maxDropdownItems: $author$project$OutputStyle$FixedMaxDropdownItems(maxDropdownItems),
+						maxDropdownItems: maxDropdownItems,
 						searchStringMinimumLength: $author$project$OutputStyle$FixedSearchStringMinimumLength(
 							$author$project$PositiveInt$new(searchStringMinimumLength)),
 						selectedItemPlacementMode: selectedItemPlacementMode
@@ -12501,9 +12503,7 @@ var $author$project$MuchSelect$init = function (flags) {
 			var _v4 = $author$project$PositiveInt$fromString(str);
 			if (_v4.$ === 'Just') {
 				var _int = _v4.a;
-				return $author$project$PositiveInt$isZero(_int) ? _Utils_Tuple2(
-					$author$project$SelectionMode$defaultMaxDropdownItems,
-					$author$project$MuchSelect$ReportErrorMessage('Invalid value for the max-dropdown-items attribute.')) : _Utils_Tuple2(_int, $author$project$MuchSelect$NoEffect);
+				return _Utils_Tuple2(_int, $author$project$MuchSelect$NoEffect);
 			} else {
 				return _Utils_Tuple2(
 					$author$project$SelectionMode$defaultMaxDropdownItems,
@@ -14591,6 +14591,25 @@ var $author$project$Option$encode = function (option) {
 					$author$project$Option$isOptionSelected(option)))
 			]));
 };
+var $author$project$SelectionMode$getMaxDropdownItems = function (selectionConfig) {
+	if (selectionConfig.$ === 'SingleSelectConfig') {
+		var singleSelectOutputStyle = selectionConfig.a;
+		if (singleSelectOutputStyle.$ === 'SingleSelectCustomHtml') {
+			var singleSelectCustomHtmlFields = singleSelectOutputStyle.a;
+			return singleSelectCustomHtmlFields.maxDropdownItems;
+		} else {
+			return $author$project$OutputStyle$NoLimitToDropdownItems;
+		}
+	} else {
+		var multiSelectOutputStyle = selectionConfig.a;
+		if (multiSelectOutputStyle.$ === 'MultiSelectCustomHtml') {
+			var multiSelectCustomHtmlFields = multiSelectOutputStyle.a;
+			return multiSelectCustomHtmlFields.maxDropdownItems;
+		} else {
+			return $author$project$OutputStyle$NoLimitToDropdownItems;
+		}
+	}
+};
 var $author$project$SelectionMode$getSearchStringMinimumLength = function (selectionConfig) {
 	if (selectionConfig.$ === 'SingleSelectConfig') {
 		var singleSelectOutputStyle = selectionConfig.a;
@@ -14765,11 +14784,23 @@ var $author$project$ConfigDump$encodeConfig = F4(
 					$elm$json$Json$Encode$bool(
 						$author$project$RightSlot$isLoading(rightSlot))),
 					_Utils_Tuple2(
+					'max-dropdown-items',
+					$elm$json$Json$Encode$int(
+						function () {
+							var _v1 = $author$project$SelectionMode$getMaxDropdownItems(selectionConfig);
+							if (_v1.$ === 'FixedMaxDropdownItems') {
+								var i = _v1.a;
+								return $author$project$PositiveInt$toInt(i);
+							} else {
+								return 0;
+							}
+						}())),
+					_Utils_Tuple2(
 					'multi-select',
 					$elm$json$Json$Encode$bool(
 						function () {
-							var _v1 = $author$project$SelectionMode$getSelectionMode(selectionConfig);
-							if (_v1.$ === 'MultiSelect') {
+							var _v2 = $author$project$SelectionMode$getSelectionMode(selectionConfig);
+							if (_v2.$ === 'MultiSelect') {
 								return true;
 							} else {
 								return false;
@@ -14788,11 +14819,11 @@ var $author$project$ConfigDump$encodeConfig = F4(
 					'search-string-minimum-length',
 					$elm$json$Json$Encode$int(
 						function () {
-							var _v2 = $author$project$SelectionMode$getSearchStringMinimumLength(selectionConfig);
-							if (_v2.$ === 'NoMinimumToSearchStringLength') {
+							var _v3 = $author$project$SelectionMode$getSearchStringMinimumLength(selectionConfig);
+							if (_v3.$ === 'NoMinimumToSearchStringLength') {
 								return 0;
 							} else {
-								var positiveInt = _v2.a;
+								var positiveInt = _v3.a;
 								return $author$project$PositiveInt$toInt(positiveInt);
 							}
 						}())),
@@ -15095,25 +15126,6 @@ var $author$project$OptionsUtilities$findHighlightedOrSelectedOptionIndex = func
 		return $elm$core$Maybe$Just(index);
 	} else {
 		return $author$project$OptionsUtilities$findSelectedOptionIndex(options);
-	}
-};
-var $author$project$SelectionMode$getMaxDropdownItems = function (selectionConfig) {
-	if (selectionConfig.$ === 'SingleSelectConfig') {
-		var singleSelectOutputStyle = selectionConfig.a;
-		if (singleSelectOutputStyle.$ === 'SingleSelectCustomHtml') {
-			var singleSelectCustomHtmlFields = singleSelectOutputStyle.a;
-			return singleSelectCustomHtmlFields.maxDropdownItems;
-		} else {
-			return $author$project$OutputStyle$NoLimitToDropdownItems;
-		}
-	} else {
-		var multiSelectOutputStyle = selectionConfig.a;
-		if (multiSelectOutputStyle.$ === 'MultiSelectCustomHtml') {
-			var multiSelectCustomHtmlFields = multiSelectOutputStyle.a;
-			return multiSelectCustomHtmlFields.maxDropdownItems;
-		} else {
-			return $author$project$OutputStyle$NoLimitToDropdownItems;
-		}
 	}
 };
 var $elm$core$Basics$modBy = _Basics_modBy;
@@ -17941,7 +17953,14 @@ var $author$project$MuchSelect$update = F2(
 						var _v33 = $author$project$PositiveInt$fromString(newAttributeValue);
 						if (_v33.$ === 'Just') {
 							var maxDropdownItems = _v33.a;
-							return _Utils_Tuple2(
+							return $author$project$PositiveInt$isZero(maxDropdownItems) ? _Utils_Tuple2(
+								$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
+									_Utils_update(
+										model,
+										{
+											selectionConfig: A2($author$project$SelectionMode$setMaxDropdownItems, $author$project$OutputStyle$NoLimitToDropdownItems, model.selectionConfig)
+										})),
+								$author$project$MuchSelect$NoEffect) : _Utils_Tuple2(
 								$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
 									_Utils_update(
 										model,
@@ -18183,7 +18202,10 @@ var $author$project$MuchSelect$update = F2(
 								_Utils_update(
 									model,
 									{
-										selectionConfig: A2($author$project$SelectionMode$setMaxDropdownItems, $author$project$OutputStyle$NoLimitToDropdownItems, model.selectionConfig)
+										selectionConfig: A2(
+											$author$project$SelectionMode$setMaxDropdownItems,
+											$author$project$OutputStyle$FixedMaxDropdownItems($author$project$SelectionMode$defaultMaxDropdownItems),
+											model.selectionConfig)
 									})),
 							$author$project$MuchSelect$NoEffect);
 					case 'multi-select':

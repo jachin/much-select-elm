@@ -25,6 +25,16 @@ encodeConfig selectionConfig optionSort selectedValueEncoding rightSlot =
         , ( "disabled", Json.Encode.bool (SelectionMode.isDisabled selectionConfig) )
         , ( "events-only", Json.Encode.bool (SelectionMode.isEventsOnly selectionConfig) )
         , ( "loading", Json.Encode.bool (RightSlot.isLoading rightSlot) )
+        , ( "max-dropdown-items"
+          , Json.Encode.int
+                (case SelectionMode.getMaxDropdownItems selectionConfig of
+                    OutputStyle.FixedMaxDropdownItems i ->
+                        PositiveInt.toInt i
+
+                    OutputStyle.NoLimitToDropdownItems ->
+                        0
+                )
+          )
         , ( "multi-select"
           , Json.Encode.bool
                 (case SelectionMode.getSelectionMode selectionConfig of
