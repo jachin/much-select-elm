@@ -56,7 +56,7 @@ suite =
                                     _ ->
                                         fail "Expecting a batch of effects"
                            )
-            , test "should not allow zero" <|
+            , test "should allow zero, no limit to the number of items" <|
                 \() ->
                     MuchSelect.init
                         { defaultTestFlags
@@ -67,15 +67,13 @@ suite =
                                     MuchSelect.Batch effects ->
                                         if
                                             List.member
-                                                (MuchSelect.ReportErrorMessage
-                                                    "Invalid value for the max-dropdown-items attribute."
-                                                )
+                                                MuchSelect.ReportReady
                                                 effects
                                         then
                                             pass
 
                                         else
-                                            fail "There should have been an error message about max dropdown items being invalid"
+                                            fail "These flags should have been OK"
 
                                     _ ->
                                         fail "Expecting a batch of effects"
