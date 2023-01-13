@@ -9,6 +9,7 @@ import Ports
 import ProgramTest exposing (ProgramTest)
 import SimulatedEffect.Cmd
 import SimulatedEffect.Ports
+import SimulatedEffect.Sub
 import Test exposing (Test, describe, test)
 
 
@@ -155,16 +156,17 @@ simulatedEffects effect =
 
 simulateSubscriptions : MuchSelect.Model -> ProgramTest.SimulatedSub MuchSelect.Msg
 simulateSubscriptions _ =
-    SimulatedEffect.Ports.subscribe "valueCleared"
-        Json.Decode.value
-        (\_ -> MuchSelect.ClearAllSelectedOptions)
-
-
-simulateMoreSubscriptions : MuchSelect.Model -> ProgramTest.SimulatedSub MuchSelect.Msg
-simulateMoreSubscriptions _ =
-    SimulatedEffect.Ports.subscribe "deselectOptionReceiver"
-        Json.Decode.value
-        (\_ -> MuchSelect.ClearAllSelectedOptions)
+    SimulatedEffect.Sub.batch
+        [ SimulatedEffect.Ports.subscribe "valueCleared"
+            Json.Decode.value
+            (\_ -> MuchSelect.ClearAllSelectedOptions)
+        , SimulatedEffect.Ports.subscribe "deselectOptionReceiver"
+            Json.Decode.value
+            MuchSelect.DeselectOption
+        , SimulatedEffect.Ports.subscribe "selectOptionReceiver"
+            Json.Decode.value
+            (\jsonValue -> MuchSelect.SelectOption jsonValue)
+        ]
 
 
 start : ProgramTest MuchSelect.Model MuchSelect.Msg MuchSelect.Effect
@@ -173,15 +175,6 @@ start =
         { init = MuchSelect.init, update = MuchSelect.update, view = MuchSelect.view }
         |> ProgramTest.withSimulatedEffects simulatedEffects
         |> ProgramTest.withSimulatedSubscriptions simulateSubscriptions
-        |> ProgramTest.start flags
-
-
-startAgain : ProgramTest MuchSelect.Model MuchSelect.Msg MuchSelect.Effect
-startAgain =
-    ProgramTest.createElement
-        { init = MuchSelect.init, update = MuchSelect.update, view = MuchSelect.view }
-        |> ProgramTest.withSimulatedEffects simulatedEffects
-        |> ProgramTest.withSimulatedSubscriptions simulateMoreSubscriptions
         |> ProgramTest.start flags
 
 
@@ -208,34 +201,27 @@ suite =
                         )
         , test "deselecting the selected value should trigger an optionDeselected event" <|
             \_ ->
-                startAgain
+                start
                     |> ProgramTest.simulateIncomingPort
                         "deselectOptionReceiver"
-                        (Json.Encode.string "Matilda")
+                        (Json.Encode.object
+                            [ ( "value", Json.Encode.string "Matilda" )
+                            ]
+                        )
                     |> ProgramTest.expectOutgoingPortValues
                         "optionDeselected"
-                        Ports.optionsDecoder
+                        Ports.optionDecoder
                         (Expect.equal
-                            [ [ { value = "Matilda"
-                                , label = "Matilda"
-                                , isValid = True
-                                , selectedIndex = -1
-                                }
-                              ]
+                            [ { value = "Matilda"
+                              , label = "Matilda"
+                              , isValid = True
+                              , selectedIndex = -1
+                              }
                             ]
                         )
         , test "selecting an option should trigger an optionSelected event" <|
             \_ ->
-                ProgramTest.createElement
-                    { init = MuchSelect.init, update = MuchSelect.update, view = MuchSelect.view }
-                    |> ProgramTest.withSimulatedEffects simulatedEffects
-                    |> ProgramTest.withSimulatedSubscriptions
-                        (\_ ->
-                            SimulatedEffect.Ports.subscribe "selectOptionReceiver"
-                                Json.Decode.value
-                                (\jsonValue -> MuchSelect.SelectOption jsonValue)
-                        )
-                    |> ProgramTest.start flags
+                start
                     |> ProgramTest.simulateIncomingPort
                         "selectOptionReceiver"
                         (Json.Encode.object
