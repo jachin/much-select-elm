@@ -129,6 +129,12 @@ The `max-dropdown-items` attribute needs a positive integer for its value.
 
 If you set the value of `max-dropdown-items` to `0` there will be no limit. Would  anyone want that? Should it even be allowed?.
 
+##### `multi-select`
+
+The `multi-select` attribute but the `<much-select>` into multi select mode, which allows the user to select multiple values.
+
+This is a boolean attribute, so if the `mulit-select` attribute is present, the `<much-select>` will be in mulit-select mode. If not, it will be in the defaul single select mode.
+
 ##### `placeholder`
 
 The `placeholder` attribute is used to set the placeholder in the text input of the `<much-select>`. Just like in the `<input type="text">` it should only show up if the input is empty.

@@ -17,6 +17,14 @@
   runTests(() => {
     describe("Attributes", () => {
       describe("multi-select", () => {
+        it("should have a default value of false", async () => {
+          const el = /** @type {MuchSelect} */ await fixture(
+            html`<much-select></much-select>`
+          );
+          await nextFrame();
+          expect(await el.isInMultiSelectMode).is.false;
+        });
+
         it("adding the attribute should put the much select into multi select mode", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
             html`<much-select multi-select=""></much-select>`
@@ -76,6 +84,17 @@
           await nextFrame();
 
           expect(el.shadowRoot.querySelector("#value-casing.single")).is.not.null;
+        });
+
+        it("when removing the attribute the multiSelect property on the element should change to refelct that", async () => {
+          const el = /** @type {MuchSelect} */ await fixture(
+            html`<much-select multi-select></much-select>`
+          );
+          el.removeAttribute("multi-select");
+
+          await nextFrame();
+
+          expect(await el.isInMultiSelectMode).is.false;
         });
       });
     });
