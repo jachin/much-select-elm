@@ -105,14 +105,33 @@ npm run build
 
 The `allow-custom-options` attribute will allow the user to add new options to the `<much-select>`, not just one of given ones. Of course, you will want to know when that's happened. You might be able to _just_ look at the value, but you might want to know when a custom option has been added too. For that there's the `customValueSelected` event.
 
+This is a boolean attribute, so it's presents means it's true. It's absence means it's false. So the default value for allowing custom options is false.
+
 ##### `disabled`
 
 The `disabled` attribute prevents the `<much-select>` from responding to user input. It is supposed to work like disabling any of the standard form elements.
 
+This is a boolean attribute, so it's presents means it's true. It's absence means it's false. So the default is for a `<much-select>` to not be disabled.
+
+##### `events-only`
+
+The `events-only` attribute prevents the `<much-select>` from automatically updating its "light DOM". This is important for using `<much-select>` inside of an Elm app (and possibly other situations too).
+
+This is a boolean attribute, so if the `events-only` attribute is present means it's true. It's absence means it's false. So the default is for a `<much-select>` to not be in events only mode and it will try to update the light DOM to reflect it's internal state..
+
+##### `max-dropdown-items`
+
+The `max-dropdown-items` attribute sets the maxiumn number of items that much-selelct will attempt to render in the dropdown.
+
+The default value is 1000.
+
+The `max-dropdown-items` attribute needs a positive integer for its value.
+
+If you set the value of `max-dropdown-items` to `0` there will be no limit. Would  anyone want that? Should it even be allowed?.
+
 ##### `placeholder`
 
 The `placeholder` attribute is used to set the placeholder in the text input of the `<much-select>`. Just like in the `<input type="text">` it should only show up if the input is empty.
-
 
 ##### `search-string-minimum-length`
 
