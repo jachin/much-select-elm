@@ -64,6 +64,19 @@ encodeConfig selectionConfig optionSort selectedValueEncoding rightSlot =
                         PositiveInt.toInt positiveInt
                 )
           )
+        , ( "selected-item-stays-in-place"
+          , Json.Encode.bool
+                (case SelectionMode.getSelectedItemPlacementMode selectionConfig of
+                    OutputStyle.SelectedItemStaysInPlace ->
+                        True
+
+                    OutputStyle.SelectedItemMovesToTheTop ->
+                        False
+
+                    OutputStyle.SelectedItemIsHidden ->
+                        False
+                )
+          )
         , ( "selected-value-encoding"
           , Json.Encode.string (SelectedValueEncoding.toString selectedValueEncoding)
           )

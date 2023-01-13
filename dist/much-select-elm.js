@@ -9327,6 +9327,20 @@ var $author$project$SelectionMode$getSearchStringMinimumLength = function (selec
 		}
 	}
 };
+var $author$project$OutputStyle$SelectedItemIsHidden = 2;
+var $author$project$SelectionMode$getSelectedItemPlacementMode = function (selectionConfig) {
+	if (!selectionConfig.$) {
+		var singleSelectOutputStyle = selectionConfig.a;
+		if (!singleSelectOutputStyle.$) {
+			var singleSelectCustomHtmlFields = singleSelectOutputStyle.a;
+			return singleSelectCustomHtmlFields.bH;
+		} else {
+			return 2;
+		}
+	} else {
+		return 0;
+	}
+};
 var $author$project$SelectionMode$getSingleItemRemoval = function (selectionConfig) {
 	if (!selectionConfig.$) {
 		return 1;
@@ -9547,6 +9561,20 @@ var $author$project$ConfigDump$encodeConfig = F4(
 							}
 						}())),
 					_Utils_Tuple2(
+					'selected-item-stays-in-place',
+					$elm$json$Json$Encode$bool(
+						function () {
+							var _v4 = $author$project$SelectionMode$getSelectedItemPlacementMode(selectionConfig);
+							switch (_v4) {
+								case 0:
+									return true;
+								case 1:
+									return false;
+								default:
+									return false;
+							}
+						}())),
+					_Utils_Tuple2(
 					'selected-value-encoding',
 					$elm$json$Json$Encode$string(
 						$author$project$SelectedValueEncoding$toString(selectedValueEncoding))),
@@ -9558,8 +9586,8 @@ var $author$project$ConfigDump$encodeConfig = F4(
 					'single-item-removal',
 					$elm$json$Json$Encode$bool(
 						function () {
-							var _v4 = $author$project$SelectionMode$getSingleItemRemoval(selectionConfig);
-							if (!_v4) {
+							var _v5 = $author$project$SelectionMode$getSingleItemRemoval(selectionConfig);
+							if (!_v5) {
 								return true;
 							} else {
 								return false;
@@ -10216,20 +10244,6 @@ var $author$project$OptionsUtilities$removeOptionFromOptionListBySelectedIndex =
 				},
 				options));
 	});
-var $author$project$OutputStyle$SelectedItemIsHidden = 2;
-var $author$project$SelectionMode$getSelectedItemPlacementMode = function (selectionConfig) {
-	if (!selectionConfig.$) {
-		var singleSelectOutputStyle = selectionConfig.a;
-		if (!singleSelectOutputStyle.$) {
-			var singleSelectCustomHtmlFields = singleSelectOutputStyle.a;
-			return singleSelectCustomHtmlFields.bH;
-		} else {
-			return 2;
-		}
-	} else {
-		return 0;
-	}
-};
 var $author$project$OptionsUtilities$selectOptionInListWithIndex = F2(
 	function (optionToSelect, options) {
 		var optionValue = $author$project$Option$getOptionValue(optionToSelect);

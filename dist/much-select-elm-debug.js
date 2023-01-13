@@ -14638,6 +14638,20 @@ var $author$project$SelectionMode$getSearchStringMinimumLength = function (selec
 		}
 	}
 };
+var $author$project$OutputStyle$SelectedItemIsHidden = {$: 'SelectedItemIsHidden'};
+var $author$project$SelectionMode$getSelectedItemPlacementMode = function (selectionConfig) {
+	if (selectionConfig.$ === 'SingleSelectConfig') {
+		var singleSelectOutputStyle = selectionConfig.a;
+		if (singleSelectOutputStyle.$ === 'SingleSelectCustomHtml') {
+			var singleSelectCustomHtmlFields = singleSelectOutputStyle.a;
+			return singleSelectCustomHtmlFields.selectedItemPlacementMode;
+		} else {
+			return $author$project$OutputStyle$SelectedItemIsHidden;
+		}
+	} else {
+		return $author$project$OutputStyle$SelectedItemStaysInPlace;
+	}
+};
 var $author$project$SelectionMode$getSingleItemRemoval = function (selectionConfig) {
 	if (selectionConfig.$ === 'SingleSelectConfig') {
 		return $author$project$OutputStyle$DisableSingleItemRemoval;
@@ -14854,6 +14868,20 @@ var $author$project$ConfigDump$encodeConfig = F4(
 							}
 						}())),
 					_Utils_Tuple2(
+					'selected-item-stays-in-place',
+					$elm$json$Json$Encode$bool(
+						function () {
+							var _v4 = $author$project$SelectionMode$getSelectedItemPlacementMode(selectionConfig);
+							switch (_v4.$) {
+								case 'SelectedItemStaysInPlace':
+									return true;
+								case 'SelectedItemMovesToTheTop':
+									return false;
+								default:
+									return false;
+							}
+						}())),
+					_Utils_Tuple2(
 					'selected-value-encoding',
 					$elm$json$Json$Encode$string(
 						$author$project$SelectedValueEncoding$toString(selectedValueEncoding))),
@@ -14865,8 +14893,8 @@ var $author$project$ConfigDump$encodeConfig = F4(
 					'single-item-removal',
 					$elm$json$Json$Encode$bool(
 						function () {
-							var _v4 = $author$project$SelectionMode$getSingleItemRemoval(selectionConfig);
-							if (_v4.$ === 'EnableSingleItemRemoval') {
+							var _v5 = $author$project$SelectionMode$getSingleItemRemoval(selectionConfig);
+							if (_v5.$ === 'EnableSingleItemRemoval') {
 								return true;
 							} else {
 								return false;
@@ -15513,20 +15541,6 @@ var $author$project$OptionsUtilities$removeOptionFromOptionListBySelectedIndex =
 				},
 				options));
 	});
-var $author$project$OutputStyle$SelectedItemIsHidden = {$: 'SelectedItemIsHidden'};
-var $author$project$SelectionMode$getSelectedItemPlacementMode = function (selectionConfig) {
-	if (selectionConfig.$ === 'SingleSelectConfig') {
-		var singleSelectOutputStyle = selectionConfig.a;
-		if (singleSelectOutputStyle.$ === 'SingleSelectCustomHtml') {
-			var singleSelectCustomHtmlFields = singleSelectOutputStyle.a;
-			return singleSelectCustomHtmlFields.selectedItemPlacementMode;
-		} else {
-			return $author$project$OutputStyle$SelectedItemIsHidden;
-		}
-	} else {
-		return $author$project$OutputStyle$SelectedItemStaysInPlace;
-	}
-};
 var $author$project$OptionsUtilities$selectOptionInListWithIndex = F2(
 	function (optionToSelect, options) {
 		var optionValue = $author$project$Option$getOptionValue(optionToSelect);

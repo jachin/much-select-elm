@@ -171,9 +171,15 @@ The `placeholder` attribute is used to set the placeholder in the text input of 
 
 The `search-string-minimum-length` attribute is used to manage how many characters a user needs to type in the `#input-filter` before the options in the dropdown start being filtered.
 
+##### `selected-option-goes-to-top`
+
+The `selected-option-goes-to-top` attribute lets you change the behvaior of `<much-select>`, so that when an option is selcted it appears at the top of the dropdown menue. This only works when its `output-mode` is `custom-html` and it's in single select mode.
+
 ##### `selected-value`
 
 The `selected-value` attribute is used to set the value of the `<much-select>`.
+
+You should _not_ use this in combination with using `selected` attributes on the `<option>` tags in the `select-input` slot. You should just pick one place in the DOM to track the selected value. 
 
 ##### `show-dropdown-footer`
 
