@@ -739,7 +739,7 @@ setIsDisabled isDisabled_ selectionConfig =
         setInteractionState Disabled selectionConfig
 
     else
-        selectionConfig
+        setInteractionState Unfocused selectionConfig
 
 
 getInteractionState : SelectionConfig -> InteractionState

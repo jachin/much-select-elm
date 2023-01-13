@@ -1343,7 +1343,7 @@ update msg model =
                             )
 
                 "disabled" ->
-                    ( { model | selectionConfig = setIsDisabled False model.selectionConfig }
+                    ( { model | selectionConfig = setIsDisabled True model.selectionConfig }
                     , NoEffect
                     )
 

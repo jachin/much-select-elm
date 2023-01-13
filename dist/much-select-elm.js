@@ -10633,7 +10633,7 @@ var $author$project$SelectionMode$setInteractionState = F2(
 	});
 var $author$project$SelectionMode$setIsDisabled = F2(
 	function (isDisabled_, selectionConfig) {
-		return isDisabled_ ? A2($author$project$SelectionMode$setInteractionState, 2, selectionConfig) : selectionConfig;
+		return isDisabled_ ? A2($author$project$SelectionMode$setInteractionState, 2, selectionConfig) : A2($author$project$SelectionMode$setInteractionState, 1, selectionConfig);
 	});
 var $author$project$SelectionMode$Focused = 0;
 var $author$project$SelectionMode$setIsFocused = F2(
@@ -12617,7 +12617,7 @@ var $author$project$MuchSelect$update = F2(
 							_Utils_update(
 								model,
 								{
-									a: A2($author$project$SelectionMode$setIsDisabled, false, model.a)
+									a: A2($author$project$SelectionMode$setIsDisabled, true, model.a)
 								}),
 							$author$project$MuchSelect$NoEffect);
 					case 'events-only':
