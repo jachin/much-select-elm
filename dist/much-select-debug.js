@@ -527,14 +527,16 @@ class MuchSelect extends HTMLElement {
         if (this._emitBlurOrUnfocusedValueChanged) {
           this._emitBlurOrUnfocusedValueChanged = false;
 
-          this.dispatchEvent(
-            new CustomEvent("blurOrUnfocusedValueChanged", {
-              bubbles: true,
-              detail: {
-                value: this.selectedValue,
-              },
-            })
-          );
+          (async () => {
+            this.dispatchEvent(
+              new CustomEvent("blurOrUnfocusedValueChanged", {
+                bubbles: true,
+                detail: {
+                  value: await this.selectedValue,
+                },
+              })
+            );
+          })();
         }
         window.requestAnimationFrame(() => {
           this.dispatchEvent(
