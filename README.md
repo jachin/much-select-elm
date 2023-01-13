@@ -117,7 +117,7 @@ This is a boolean attribute, so it's presents means it's true. It's absence mean
 
 The `events-only` attribute prevents the `<much-select>` from automatically updating its "light DOM". This is important for using `<much-select>` inside of an Elm app (and possibly other situations too).
 
-This is a boolean attribute, so if the `events-only` attribute is present means it's true. It's absence means it's false. So the default is for a `<much-select>` to not be in events only mode and it will try to update the light DOM to reflect it's internal state..
+This is a boolean attribute, so if the `events-only` attribute is present means it's true. It's absence means it's false. So the default is for a `<much-select>` to not be in events only mode, and it will try to update the light DOM to reflect it's internal state.
 
 ##### `max-dropdown-items`
 
@@ -126,6 +126,8 @@ The `max-dropdown-items` attribute sets the maxiumn number of items that much-se
 The default value is 1000.
 
 The `max-dropdown-items` attribute needs a positive integer for its value.
+
+This is also not enforced when a `<much-select>` is using the `datalist` `output-style`.
 
 If you set the value of `max-dropdown-items` to `0` there will be no limit. Would  anyone want that? Should it even be allowed?.
 
@@ -146,10 +148,20 @@ This is a boolean attribute, so if the `multi-select-single-item-removal` is pre
 The `option-sorting` attribute allows you to specify what order the options should appear in the dropdown.
 
 The options for this are:
- - `no-sorting` respect the value the options are in already
+ - `no-sorting` (default) respect the value the options are in already
  - `by-option-label` sort the options alphabetically by their label
 
-The default value is `no-sorting`.
+##### `output-style`
+
+The `output-style` attribute allows you to change the way a `<much-select>` is rendered, which give it a different look and feel. Hopefully you can find one that matches the user experience that best fits your circumstances.
+
+The options for this are:
+ - `custom-html` (default)
+ - `datalist`
+
+`custom-html` give you a lot of power to style the `<much-select>` but a lot of the markup in hand rolled and an attempt to feel like the user is expecting but even our best effort here will probably fall short.
+
+`datalist` uses the datalist feature of the `<input>` element to render the dropdown part. This can work well if you want to allow the user to type in a text field in a more free form way, and you want to make it easy for them to select a value they might want. It also uses more native widgets. Multi select mode can take up a lot of vertical space though.
 
 ##### `placeholder`
 
