@@ -842,7 +842,12 @@ update msg model =
                     ( model, ReportErrorMessage error )
 
         PlaceholderAttributeChanged newPlaceholder ->
-            ( { model | selectionConfig = SelectionMode.setPlaceholder newPlaceholder model.selectionConfig }
+            ( { model
+                | selectionConfig =
+                    SelectionMode.setPlaceholder
+                        newPlaceholder
+                        model.selectionConfig
+              }
             , NoEffect
             )
 
@@ -879,7 +884,10 @@ update msg model =
                         NoFooter
             in
             ( { model
-                | selectionConfig = setDropdownStyle newDropdownStyle model.selectionConfig
+                | selectionConfig =
+                    setDropdownStyle
+                        newDropdownStyle
+                        model.selectionConfig
               }
             , NoEffect
             )
@@ -905,7 +913,14 @@ update msg model =
             )
 
         DisabledAttributeChanged bool ->
-            ( { model | selectionConfig = setIsDisabled bool model.selectionConfig }, NoEffect )
+            ( { model
+                | selectionConfig =
+                    setIsDisabled
+                        bool
+                        model.selectionConfig
+              }
+            , NoEffect
+            )
 
         SelectedItemStaysInPlaceChanged selectedItemStaysInPlace ->
             ( { model
@@ -928,17 +943,28 @@ update msg model =
                     in
                     ( { model
                         | selectionConfig = newSelectionConfig
-                        , rightSlot = updateRightSlot model.rightSlot newSelectionConfig True model.options
+                        , rightSlot =
+                            updateRightSlot
+                                model.rightSlot
+                                newSelectionConfig
+                                True
+                                model.options
                       }
                     , Batch
                         [ FetchOptionsFromDom
                         , ChangeTheLightDom
-                            (LightDomChange.AddUpdateAttribute "output-style" newOutputStyleString)
+                            (LightDomChange.AddUpdateAttribute
+                                "output-style"
+                                newOutputStyleString
+                            )
                         ]
                     )
 
                 Err _ ->
-                    ( model, ReportErrorMessage ("Invalid output style " ++ newOutputStyleString) )
+                    ( model
+                    , ReportErrorMessage
+                        ("Invalid output style " ++ newOutputStyleString)
+                    )
 
         MultiSelectSingleItemRemovalAttributeChanged shouldEnableMultiSelectSingleItemRemoval ->
             let
@@ -950,7 +976,10 @@ update msg model =
                         DisableSingleItemRemoval
             in
             ( { model
-                | selectionConfig = setSingleItemRemoval multiSelectSingleItemRemoval model.selectionConfig
+                | selectionConfig =
+                    setSingleItemRemoval
+                        multiSelectSingleItemRemoval
+                        model.selectionConfig
               }
             , batch
                 [ ReportReady
