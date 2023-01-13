@@ -121,7 +121,7 @@ This is a boolean attribute, so if the `events-only` attribute is present means 
 
 ##### `max-dropdown-items`
 
-The `max-dropdown-items` attribute sets the maxiumn number of items that much-selelct will attempt to render in the dropdown.
+The `max-dropdown-items` attribute sets the maximum number of items that `<much-select>` will attempt to render in the dropdown.
 
 The default value is 1000.
 
@@ -135,11 +135,11 @@ If you set the value of `max-dropdown-items` to `0` there will be no limit. Woul
 
 The `multi-select` attribute puts the `<much-select>` into multi select mode, which allows the user to select multiple values.
 
-This is a boolean attribute, so if the `mulit-select` attribute is present, the `<much-select>` will be in mulit-select mode. If not, it will be in the defaul single select mode.
+This is a boolean attribute, so if the `mulit-select` attribute is present, the `<much-select>` will be in multi select mode. If not, it will be in the default single select mode.
 
 ##### `multi-select-single-item-removal`
 
-The `multi-select-single-item-removal` attribute adds buttons to remove individual selected options. This only works if the `<much-select>` is in mulit-select mode.
+The `multi-select-single-item-removal` attribute adds buttons to remove individual selected options. This only works if the `<much-select>` is in multi select mode.
 
 This is a boolean attribute, so if the `multi-select-single-item-removal` is present the `<much-select>` will have the selected option removal buttons visible. If not, the default behavior is to not show them. 
 
@@ -173,7 +173,7 @@ The `search-string-minimum-length` attribute is used to manage how many characte
 
 ##### `selected-option-goes-to-top`
 
-The `selected-option-goes-to-top` attribute lets you change the behvaior of `<much-select>`, so that when an option is selcted it appears at the top of the dropdown menue. This only works when its `output-mode` is `custom-html` and it's in single select mode.
+The `selected-option-goes-to-top` attribute lets you change the behavior of `<much-select>`, so that when an option is selected it appears at the top of the dropdown menu. This only works when its `output-mode` is `custom-html` and it's in single select mode.
 
 ##### `selected-value`
 
@@ -186,7 +186,7 @@ You should _not_ use this in combination with using `selected` attributes on the
 The `selected-value-encoding` attribute is used to change how the values work in the `selected-value` attribute.
 
 The options for this attribute are:
- - `comma` (default) the selected options are comma delenated
+ - `comma` (default) the selected options are comma delegated
  - `json` the selected options are encoded in json and `encodeURIComponent()`
 
 `comma` is the most straight forward but if you allow values that have commas in them things are not going to go well. As far as I can tell `json` can handle any kinds of text values, however it is a bit harder to just look at and know what the selected value is.
