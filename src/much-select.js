@@ -914,19 +914,16 @@ class MuchSelect extends HTMLElement {
     const flags = {};
 
     flags.isEventsOnly = booleanAttributeValueToBool(
-      this.hasAttribute("events-only")
+      this.getAttribute("events-only")
     );
 
     flags.allowMultiSelect = booleanAttributeValueToBool(
-      this.hasAttribute("multi-select")
+      this.getAttribute("multi-select")
     );
 
-    if (this.hasAttribute("multi-select-single-item-removal")) {
-      flags.enableMultiSelectSingleItemRemoval =
-        this.getAttribute("multi-select-single-item-removal").trim() === "true";
-    } else {
-      flags.enableMultiSelectSingleItemRemoval = false;
-    }
+    flags.enableMultiSelectSingleItemRemoval = booleanAttributeValueToBool(
+      this.getAttribute("multi-select-single-item-removal")
+    );
 
     if (this.hasAttribute("placeholder")) {
       flags.placeholder = [true, this.getAttribute("placeholder").trim()];

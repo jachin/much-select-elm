@@ -9318,6 +9318,19 @@ var $author$project$SelectionMode$getSearchStringMinimumLength = function (selec
 		}
 	}
 };
+var $author$project$SelectionMode$getSingleItemRemoval = function (selectionConfig) {
+	if (!selectionConfig.$) {
+		return 1;
+	} else {
+		var multiSelectOutputStyle = selectionConfig.a;
+		if (!multiSelectOutputStyle.$) {
+			var multiSelectCustomHtmlFields = multiSelectOutputStyle.a;
+			return multiSelectCustomHtmlFields.bM;
+		} else {
+			return 0;
+		}
+	}
+};
 var $author$project$SelectionMode$isDisabled = function (selectionConfig) {
 	if (!selectionConfig.$) {
 		var interactionState = selectionConfig.c;
@@ -9523,7 +9536,18 @@ var $author$project$ConfigDump$encodeConfig = F4(
 					_Utils_Tuple2(
 					'show-dropdown-footer',
 					$elm$json$Json$Encode$bool(
-						$author$project$SelectionMode$showDropdownFooter(selectionConfig)))
+						$author$project$SelectionMode$showDropdownFooter(selectionConfig))),
+					_Utils_Tuple2(
+					'single-item-removal',
+					$elm$json$Json$Encode$bool(
+						function () {
+							var _v4 = $author$project$SelectionMode$getSingleItemRemoval(selectionConfig);
+							if (!_v4) {
+								return true;
+							} else {
+								return false;
+							}
+						}()))
 				]));
 	});
 var $author$project$SearchString$encode = function (searchString) {
@@ -13811,19 +13835,6 @@ var $author$project$SelectionMode$getPlaceholder = function (selectionConfig) {
 };
 var $author$project$SelectionMode$getPlaceholderString = function (selectionConfig) {
 	return $author$project$SelectionMode$getPlaceholder(selectionConfig).b;
-};
-var $author$project$SelectionMode$getSingleItemRemoval = function (selectionConfig) {
-	if (!selectionConfig.$) {
-		return 1;
-	} else {
-		var multiSelectOutputStyle = selectionConfig.a;
-		if (!multiSelectOutputStyle.$) {
-			var multiSelectCustomHtmlFields = multiSelectOutputStyle.a;
-			return multiSelectCustomHtmlFields.bM;
-		} else {
-			return 0;
-		}
-	}
 };
 var $author$project$OptionsUtilities$hasAnyValidationErrors = function (options) {
 	return A2($elm$core$List$any, $author$project$Option$isInvalid, options);

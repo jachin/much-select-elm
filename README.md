@@ -131,9 +131,15 @@ If you set the value of `max-dropdown-items` to `0` there will be no limit. Woul
 
 ##### `multi-select`
 
-The `multi-select` attribute but the `<much-select>` into multi select mode, which allows the user to select multiple values.
+The `multi-select` attribute puts the `<much-select>` into multi select mode, which allows the user to select multiple values.
 
 This is a boolean attribute, so if the `mulit-select` attribute is present, the `<much-select>` will be in mulit-select mode. If not, it will be in the defaul single select mode.
+
+##### `multi-select-single-item-removal`
+
+The `multi-select-single-item-removal` attribute adds buttons to remove individual selected options. This only works if the `<much-select>` is in mulit-select mode.
+
+This is a boolean attribute, so if the `multi-select-single-item-removal` is present the `<much-select>` will have the selected option removal buttons visible. If not, the default behavior is to not show them. 
 
 ##### `placeholder`
 

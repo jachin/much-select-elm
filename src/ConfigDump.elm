@@ -67,4 +67,14 @@ encodeConfig selectionConfig optionSort selectedValueEncoding rightSlot =
         , ( "show-dropdown-footer"
           , Json.Encode.bool (SelectionMode.showDropdownFooter selectionConfig)
           )
+        , ( "single-item-removal"
+          , Json.Encode.bool
+                (case SelectionMode.getSingleItemRemoval selectionConfig of
+                    OutputStyle.EnableSingleItemRemoval ->
+                        True
+
+                    OutputStyle.DisableSingleItemRemoval ->
+                        False
+                )
+          )
         ]
