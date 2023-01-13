@@ -12,10 +12,7 @@
   {
     "title": "Build elm demo code",
     "command": [
-      "watchexec",
-      "-w",
-      "src",
-      "--",
+      "npx",
       "elm-watch",
       "hot",
       "elm-demo"
