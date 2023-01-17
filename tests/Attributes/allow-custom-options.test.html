@@ -38,6 +38,7 @@
           el.removeAttribute("allow-custom-options");
           await nextFrame();
           expect(await el.allowCustomOptions).to.be.false;
+          expect(await el.customOptionHint).to.be.null;
         });
 
         it("using the setter should set it to true", async () => {
