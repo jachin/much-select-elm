@@ -3991,7 +3991,7 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 		impl.eg,
 		impl.ea,
 		function(sendToApp, initialModel) {
-			var divertHrefToApp = impl.bK && impl.bK(sendToApp)
+			var divertHrefToApp = impl.bJ && impl.bJ(sendToApp)
 			var view = impl.ei;
 			var title = _VirtualDom_doc.title;
 			var bodyNode = _VirtualDom_doc.body;
@@ -4000,7 +4000,7 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 			{
 				_VirtualDom_divertHrefToApp = divertHrefToApp;
 				var doc = view(model);
-				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.bd);
+				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.be);
 				var patches = _VirtualDom_diff(currNode, nextNode);
 				bodyNode = _VirtualDom_applyPatches(bodyNode, currNode, patches, sendToApp);
 				currNode = nextNode;
@@ -4066,7 +4066,7 @@ function _Browser_application(impl)
 	var key = function() { key.a(onUrlChange(_Browser_getUrl())); };
 
 	return _Browser_document({
-		bK: function(sendToApp)
+		bJ: function(sendToApp)
 		{
 			key.a = sendToApp;
 			_Browser_window.addEventListener('popstate', key);
@@ -4082,9 +4082,9 @@ function _Browser_application(impl)
 					var next = $elm$url$Url$fromString(href).a;
 					sendToApp(onUrlRequest(
 						(next
-							&& curr.cA === next.cA
-							&& curr.bp === next.bp
-							&& curr.cu.a === next.cu.a
+							&& curr.cz === next.cz
+							&& curr.bq === next.bq
+							&& curr.ct.a === next.ct.a
 						)
 							? $elm$browser$Browser$Internal(next)
 							: $elm$browser$Browser$External(href)
@@ -4255,7 +4255,7 @@ var _Browser_call = F2(function(functionName, id)
 function _Browser_getViewport()
 {
 	return {
-		cG: _Browser_getScene(),
+		cF: _Browser_getScene(),
 		cR: {
 			cT: _Browser_window.pageXOffset,
 			cU: _Browser_window.pageYOffset,
@@ -4294,7 +4294,7 @@ function _Browser_getViewportOf(id)
 	return _Browser_withNode(id, function(node)
 	{
 		return {
-			cG: {
+			cF: {
 				ej: node.scrollWidth,
 				dk: node.scrollHeight
 			},
@@ -4332,7 +4332,7 @@ function _Browser_getElement(id)
 		var x = _Browser_window.pageXOffset;
 		var y = _Browser_window.pageYOffset;
 		return {
-			cG: _Browser_getScene(),
+			cF: _Browser_getScene(),
 			cR: {
 				cT: x,
 				cU: y,
@@ -4901,7 +4901,7 @@ var $elm$url$Url$Http = 0;
 var $elm$url$Url$Https = 1;
 var $elm$url$Url$Url = F6(
 	function (protocol, host, port_, path, query, fragment) {
-		return {aV: fragment, bp: host, a0: path, cu: port_, cA: protocol, bD: query};
+		return {aV: fragment, bq: host, a1: path, ct: port_, cz: protocol, bD: query};
 	});
 var $elm$core$String$contains = _String_contains;
 var $elm$core$String$length = _String_length;
@@ -5182,8 +5182,12 @@ var $elm$core$Task$perform = F2(
 var $elm$browser$Browser$element = _Browser_element;
 var $elm$json$Json$Decode$field = _Json_decodeField;
 var $elm$json$Json$Decode$index = _Json_decodeIndex;
+var $author$project$OutputStyle$FixedSearchStringMinimumLength = function (a) {
+	return {$: 0, a: a};
+};
 var $author$project$OptionDisplay$MatureOption = 1;
 var $author$project$MuchSelect$NoEffect = {$: 0};
+var $author$project$OutputStyle$NoMinimumToSearchStringLength = {$: 1};
 var $author$project$OptionSorting$NoSorting = 0;
 var $author$project$RightSlot$NotInFocusTransition = 1;
 var $author$project$MuchSelect$ReportErrorMessage = function (a) {
@@ -5729,13 +5733,12 @@ var $author$project$PositiveInt$new = function (_int) {
 	return $elm$core$Basics$abs(_int);
 };
 var $author$project$SelectionMode$defaultMaxDropdownItems = $author$project$PositiveInt$new(1000);
+var $author$project$OutputStyle$defaultSearchStringMinimumLength = $author$project$OutputStyle$FixedSearchStringMinimumLength(
+	$author$project$PositiveInt$new(2));
 var $author$project$SelectedValueEncoding$CommaSeperated = 0;
 var $author$project$SelectedValueEncoding$defaultSelectedValueEncoding = 0;
 var $author$project$OutputStyle$AllowLightDomChanges = 1;
 var $author$project$OutputStyle$Collapsed = 1;
-var $author$project$OutputStyle$FixedSearchStringMinimumLength = function (a) {
-	return {$: 0, a: a};
-};
 var $author$project$OutputStyle$NoCustomOptions = {$: 1};
 var $author$project$OutputStyle$NoFooter = 0;
 var $author$project$OutputStyle$NoLimitToDropdownItems = {$: 1};
@@ -5756,10 +5759,10 @@ var $author$project$SelectionMode$defaultSelectionConfig = A3(
 			W: 1,
 			X: 0,
 			L: 1,
-			bt: $author$project$OutputStyle$NoLimitToDropdownItems,
-			bG: $author$project$OutputStyle$FixedSearchStringMinimumLength(
+			aZ: $author$project$OutputStyle$NoLimitToDropdownItems,
+			cG: $author$project$OutputStyle$FixedSearchStringMinimumLength(
 				$author$project$PositiveInt$new(2)),
-			bH: 0
+			bG: 0
 		}),
 	_Utils_Tuple2(false, ''),
 	1);
@@ -5981,6 +5984,10 @@ var $author$project$OptionsUtilities$isOptionValueInListOfOptionsByValue = F2(
 			},
 			options);
 	});
+var $author$project$PositiveInt$isZero = function (_v0) {
+	var positiveInt = _v0;
+	return !positiveInt;
+};
 var $author$project$MuchSelect$ChangeTheLightDom = function (a) {
 	return {$: 26, a: a};
 };
@@ -6259,10 +6266,6 @@ var $author$project$OutputStyle$MultiSelectDataList = F2(
 		return {$: 1, a: a, b: b};
 	});
 var $author$project$OutputStyle$ShowFooter = 1;
-var $author$project$PositiveInt$isZero = function (_v0) {
-	var positiveInt = _v0;
-	return !positiveInt;
-};
 var $author$project$SelectionMode$makeMultiSelectOutputStyle = F9(
 	function (outputStyle, isEventsOnly_, allowCustomOptions, enableMultiSelectSingleItemRemoval, maxDropdownItemsNum, searchStringMinimumLength, shouldShowDropdownFooter, customOptionHint, transformAndValidate) {
 		if (!outputStyle) {
@@ -6273,16 +6276,7 @@ var $author$project$SelectionMode$makeMultiSelectOutputStyle = F9(
 			var customOptions = allowCustomOptions ? A2($author$project$OutputStyle$AllowCustomOptions, customOptionHint, transformAndValidate) : $author$project$OutputStyle$NoCustomOptions;
 			return $elm$core$Result$Ok(
 				$author$project$OutputStyle$MultiSelectCustomHtml(
-					{
-						V: customOptions,
-						W: 1,
-						X: dropdownStyle,
-						L: eventsMode,
-						bt: maxDropdownItems,
-						bG: $author$project$OutputStyle$FixedSearchStringMinimumLength(
-							$author$project$PositiveInt$new(searchStringMinimumLength)),
-						bM: singleItemRemoval
-					}));
+					{V: customOptions, W: 1, X: dropdownStyle, L: eventsMode, aZ: maxDropdownItems, cG: searchStringMinimumLength, bL: singleItemRemoval}));
 		} else {
 			var eventsMode = isEventsOnly_ ? 0 : 1;
 			return $elm$core$Result$Ok(
@@ -6304,16 +6298,7 @@ var $author$project$SelectionMode$makeSingleSelectOutputStyle = F9(
 			var customOptions = allowCustomOptions ? A2($author$project$OutputStyle$AllowCustomOptions, customOptionHint, transformAndValidate) : $author$project$OutputStyle$NoCustomOptions;
 			return $elm$core$Result$Ok(
 				$author$project$OutputStyle$SingleSelectCustomHtml(
-					{
-						V: customOptions,
-						W: 1,
-						X: dropdownStyle,
-						L: eventsMode,
-						bt: maxDropdownItems,
-						bG: $author$project$OutputStyle$FixedSearchStringMinimumLength(
-							$author$project$PositiveInt$new(searchStringMinimumLength)),
-						bH: selectedItemPlacementMode
-					}));
+					{V: customOptions, W: 1, X: dropdownStyle, L: eventsMode, aZ: maxDropdownItems, cG: searchStringMinimumLength, bG: selectedItemPlacementMode}));
 		} else {
 			var eventsMode = isEventsOnly_ ? 0 : 1;
 			return $elm$core$Result$Ok(
@@ -7135,7 +7120,7 @@ var $author$project$MuchSelect$init = function (flags) {
 		0,
 		$author$project$OptionSorting$stringToOptionSort(flags.O));
 	var _v0 = function () {
-		var _v1 = $author$project$TransformAndValidate$decode(flags.bQ);
+		var _v1 = $author$project$TransformAndValidate$decode(flags.bP);
 		if (!_v1.$) {
 			var value = _v1.a;
 			return _Utils_Tuple2(value, $author$project$MuchSelect$NoEffect);
@@ -7150,12 +7135,33 @@ var $author$project$MuchSelect$init = function (flags) {
 	var valueTransformationAndValidation = _v0.a;
 	var valueTransformationAndValidationErrorEffect = _v0.b;
 	var _v2 = function () {
-		var _v3 = flags.bt;
+		var _v3 = flags.aZ;
 		if (!_v3.$) {
 			var str = _v3.a;
 			var _v4 = $author$project$PositiveInt$fromString(str);
 			if (!_v4.$) {
 				var _int = _v4.a;
+				return $author$project$PositiveInt$isZero(_int) ? _Utils_Tuple2($author$project$OutputStyle$NoMinimumToSearchStringLength, $author$project$MuchSelect$NoEffect) : _Utils_Tuple2(
+					$author$project$OutputStyle$FixedSearchStringMinimumLength(_int),
+					$author$project$MuchSelect$NoEffect);
+			} else {
+				return _Utils_Tuple2(
+					$author$project$OutputStyle$defaultSearchStringMinimumLength,
+					$author$project$MuchSelect$ReportErrorMessage('Invalid value for the search-string-minimum-length attribute.'));
+			}
+		} else {
+			return _Utils_Tuple2($author$project$OutputStyle$defaultSearchStringMinimumLength, $author$project$MuchSelect$NoEffect);
+		}
+	}();
+	var searchStringMinimumLength = _v2.a;
+	var searchStringMinimumLengthErrorEffect = _v2.b;
+	var _v5 = function () {
+		var _v6 = flags.aZ;
+		if (!_v6.$) {
+			var str = _v6.a;
+			var _v7 = $author$project$PositiveInt$fromString(str);
+			if (!_v7.$) {
+				var _int = _v7.a;
 				return _Utils_Tuple2(_int, $author$project$MuchSelect$NoEffect);
 			} else {
 				return _Utils_Tuple2(
@@ -7166,51 +7172,51 @@ var $author$project$MuchSelect$init = function (flags) {
 			return _Utils_Tuple2($author$project$SelectionMode$defaultMaxDropdownItems, $author$project$MuchSelect$NoEffect);
 		}
 	}();
-	var maxDropdownItems = _v2.a;
-	var maxDropdownItemsErrorEffect = _v2.b;
-	var _v5 = function () {
-		var _v6 = $author$project$SelectionMode$makeSelectionConfig(flags.bq)(flags.bh)(flags.ba)(flags.a9)(flags.bB)(flags.bC)(flags.bf)(flags.bj)(maxDropdownItems)(flags.bI)(flags.bG)(flags.bL)(valueTransformationAndValidation);
-		if (!_v6.$) {
-			var value = _v6.a;
+	var maxDropdownItems = _v5.a;
+	var maxDropdownItemsErrorEffect = _v5.b;
+	var _v8 = function () {
+		var _v9 = $author$project$SelectionMode$makeSelectionConfig(flags.br)(flags.bi)(flags.bb)(flags.ba)(flags.bB)(flags.bC)(flags.bg)(flags.bk)(maxDropdownItems)(flags.bH)(searchStringMinimumLength)(flags.bK)(valueTransformationAndValidation);
+		if (!_v9.$) {
+			var value = _v9.a;
 			return _Utils_Tuple2(value, $author$project$MuchSelect$NoEffect);
 		} else {
-			var error = _v6.a;
+			var error = _v9.a;
 			return _Utils_Tuple2(
 				$author$project$SelectionMode$defaultSelectionConfig,
 				$author$project$MuchSelect$ReportErrorMessage(error));
 		}
 	}();
-	var selectionConfig = _v5.a;
-	var selectionConfigErrorEffect = _v5.b;
-	var _v7 = function () {
-		var _v8 = A2($author$project$SelectedValueEncoding$valuesFromFlags, selectedValueEncoding, flags.bJ);
-		if (!_v8.$) {
-			var values = _v8.a;
+	var selectionConfig = _v8.a;
+	var selectionConfigErrorEffect = _v8.b;
+	var _v10 = function () {
+		var _v11 = A2($author$project$SelectedValueEncoding$valuesFromFlags, selectedValueEncoding, flags.bI);
+		if (!_v11.$) {
+			var values = _v11.a;
 			return _Utils_Tuple2(values, $author$project$MuchSelect$NoEffect);
 		} else {
-			var error = _v8.a;
+			var error = _v11.a;
 			return _Utils_Tuple2(
 				_List_Nil,
 				$author$project$MuchSelect$ReportErrorMessage(error));
 		}
 	}();
-	var initialValues = _v7.a;
-	var initialValueErrEffect = _v7.b;
-	var _v9 = function () {
-		var _v10 = A2(
+	var initialValues = _v10.a;
+	var initialValueErrEffect = _v10.b;
+	var _v12 = function () {
+		var _v13 = A2(
 			$elm$json$Json$Decode$decodeString,
 			A2(
 				$author$project$Option$optionsDecoder,
 				1,
 				$author$project$SelectionMode$getOutputStyle(selectionConfig)),
 			flags.bA);
-		if (!_v10.$) {
-			var options = _v10.a;
-			var _v11 = $author$project$SelectionMode$getSelectionMode(selectionConfig);
-			if (!_v11) {
-				var _v12 = $elm$core$List$head(initialValues);
-				if (!_v12.$) {
-					var initialValueStr_ = _v12.a;
+		if (!_v13.$) {
+			var options = _v13.a;
+			var _v14 = $author$project$SelectionMode$getSelectionMode(selectionConfig);
+			if (!_v14) {
+				var _v15 = $elm$core$List$head(initialValues);
+				if (!_v15.$) {
+					var initialValueStr_ = _v15.a;
 					if (A2(
 						$author$project$OptionsUtilities$isOptionValueInListOfOptionsByValue,
 						$author$project$OptionValue$stringToOptionValue(initialValueStr_),
@@ -7245,18 +7251,18 @@ var $author$project$MuchSelect$init = function (flags) {
 				return _Utils_Tuple2(optionsWithInitialValues, $author$project$MuchSelect$NoEffect);
 			}
 		} else {
-			var error = _v10.a;
+			var error = _v13.a;
 			return _Utils_Tuple2(
 				_List_Nil,
 				$author$project$MuchSelect$ReportErrorMessage(
 					$elm$json$Json$Decode$errorToString(error)));
 		}
 	}();
-	var optionsWithInitialValueSelected = _v9.a;
-	var errorEffect = _v9.b;
+	var optionsWithInitialValueSelected = _v12.a;
+	var errorEffect = _v12.b;
 	var optionsWithInitialValueSelectedSorted = function () {
-		var _v16 = $author$project$SelectionMode$getOutputStyle(selectionConfig);
-		if (!_v16) {
+		var _v19 = $author$project$SelectionMode$getOutputStyle(selectionConfig);
+		if (!_v19) {
 			return A2($author$project$OptionSorting$sortOptions, optionSort, optionsWithInitialValueSelected);
 		} else {
 			return $author$project$OptionsUtilities$organizeNewDatalistOptions(optionsWithInitialValueSelected);
@@ -7264,28 +7270,28 @@ var $author$project$MuchSelect$init = function (flags) {
 	}();
 	return _Utils_Tuple2(
 		{
-			bk: 0,
-			cf: initialValues,
+			bl: 0,
+			ce: initialValues,
 			O: A2(
 				$elm$core$Result$withDefault,
 				0,
 				$author$project$OptionSorting$stringToOptionSort(flags.O)),
 			b: optionsWithInitialValueSelectedSorted,
 			d: function () {
-				if (flags.bs) {
+				if (flags.bt) {
 					return $author$project$RightSlot$ShowLoadingIndicator;
 				} else {
-					var _v13 = $author$project$SelectionMode$getOutputStyle(selectionConfig);
-					if (!_v13) {
-						var _v14 = $author$project$SelectionMode$getSelectionMode(selectionConfig);
-						if (!_v14) {
+					var _v16 = $author$project$SelectionMode$getOutputStyle(selectionConfig);
+					if (!_v16) {
+						var _v17 = $author$project$SelectionMode$getSelectionMode(selectionConfig);
+						if (!_v17) {
 							return $author$project$RightSlot$ShowDropdownIndicator(1);
 						} else {
 							return $author$project$OptionsUtilities$hasSelectedOption(optionsWithInitialValueSelected) ? $author$project$RightSlot$ShowClearButton : $author$project$RightSlot$ShowDropdownIndicator(1);
 						}
 					} else {
-						var _v15 = $author$project$SelectionMode$getSelectionMode(selectionConfig);
-						if (!_v15) {
+						var _v18 = $author$project$SelectionMode$getSelectionMode(selectionConfig);
+						if (!_v18) {
 							return $author$project$RightSlot$ShowNothing;
 						} else {
 							return $author$project$RightSlot$updateRightSlotForDatalist(optionsWithInitialValueSelectedSorted);
@@ -7300,13 +7306,14 @@ var $author$project$MuchSelect$init = function (flags) {
 			as: 0,
 			i: selectedValueEncoding,
 			a: selectionConfig,
-			a8: A2($author$project$MuchSelect$ValueCasing, 100, 45)
+			a9: A2($author$project$MuchSelect$ValueCasing, 100, 45)
 		},
 		$author$project$MuchSelect$batch(
 			_List_fromArray(
 				[
 					errorEffect,
 					maxDropdownItemsErrorEffect,
+					searchStringMinimumLengthErrorEffect,
 					initialValueErrEffect,
 					$author$project$MuchSelect$ReportReady,
 					A4(
@@ -7778,7 +7785,6 @@ var $author$project$TransformAndValidate$InputHasFailedValidation = 2;
 var $author$project$TransformAndValidate$InputHasValidationPending = 1;
 var $author$project$TransformAndValidate$InputValidationIsNotHappening = 3;
 var $author$project$OptionDisplay$NewOption = 0;
-var $author$project$OutputStyle$NoMinimumToSearchStringLength = {$: 1};
 var $author$project$MuchSelect$OptionsUpdated = function (a) {
 	return {$: 16, a: a};
 };
@@ -8607,7 +8613,7 @@ var $author$project$Option$SearchResults = F3(
 	});
 var $author$project$OptionSearchFilter$OptionSearchFilter = F5(
 	function (totalScore, bestScore, labelTokens, descriptionTokens, groupTokens) {
-		return {bc: bestScore, c7: descriptionTokens, di: groupTokens, dw: labelTokens, bP: totalScore};
+		return {bd: bestScore, c7: descriptionTokens, di: groupTokens, dw: labelTokens, bO: totalScore};
 	});
 var $elm$core$Tuple$pair = F2(
 	function (a, b) {
@@ -9285,7 +9291,7 @@ var $author$project$SelectionMode$getMaxDropdownItems = function (selectionConfi
 		var singleSelectOutputStyle = selectionConfig.a;
 		if (!singleSelectOutputStyle.$) {
 			var singleSelectCustomHtmlFields = singleSelectOutputStyle.a;
-			return singleSelectCustomHtmlFields.bt;
+			return singleSelectCustomHtmlFields.aZ;
 		} else {
 			return $author$project$OutputStyle$NoLimitToDropdownItems;
 		}
@@ -9293,7 +9299,7 @@ var $author$project$SelectionMode$getMaxDropdownItems = function (selectionConfi
 		var multiSelectOutputStyle = selectionConfig.a;
 		if (!multiSelectOutputStyle.$) {
 			var multiSelectCustomHtmlFields = multiSelectOutputStyle.a;
-			return multiSelectCustomHtmlFields.bt;
+			return multiSelectCustomHtmlFields.aZ;
 		} else {
 			return $author$project$OutputStyle$NoLimitToDropdownItems;
 		}
@@ -9313,7 +9319,7 @@ var $author$project$SelectionMode$getSearchStringMinimumLength = function (selec
 		var singleSelectOutputStyle = selectionConfig.a;
 		if (!singleSelectOutputStyle.$) {
 			var singleSelectCustomHtmlFields = singleSelectOutputStyle.a;
-			return singleSelectCustomHtmlFields.bG;
+			return singleSelectCustomHtmlFields.cG;
 		} else {
 			return $author$project$OutputStyle$NoMinimumToSearchStringLength;
 		}
@@ -9321,7 +9327,7 @@ var $author$project$SelectionMode$getSearchStringMinimumLength = function (selec
 		var multiSelectOutputStyle = selectionConfig.a;
 		if (!multiSelectOutputStyle.$) {
 			var multiSelectCustomHtmlFields = multiSelectOutputStyle.a;
-			return multiSelectCustomHtmlFields.bG;
+			return multiSelectCustomHtmlFields.cG;
 		} else {
 			return $author$project$OutputStyle$NoMinimumToSearchStringLength;
 		}
@@ -9333,7 +9339,7 @@ var $author$project$SelectionMode$getSelectedItemPlacementMode = function (selec
 		var singleSelectOutputStyle = selectionConfig.a;
 		if (!singleSelectOutputStyle.$) {
 			var singleSelectCustomHtmlFields = singleSelectOutputStyle.a;
-			return singleSelectCustomHtmlFields.bH;
+			return singleSelectCustomHtmlFields.bG;
 		} else {
 			return 2;
 		}
@@ -9348,7 +9354,7 @@ var $author$project$SelectionMode$getSingleItemRemoval = function (selectionConf
 		var multiSelectOutputStyle = selectionConfig.a;
 		if (!multiSelectOutputStyle.$) {
 			var multiSelectCustomHtmlFields = multiSelectOutputStyle.a;
-			return multiSelectCustomHtmlFields.bM;
+			return multiSelectCustomHtmlFields.bL;
 		} else {
 			return 0;
 		}
@@ -9758,7 +9764,7 @@ var $author$project$OptionsUtilities$optionSearchResultsBestScore = function (op
 	return A2(
 		$elm$core$List$map,
 		function ($) {
-			return $.bc;
+			return $.bd;
 		},
 		$elm_community$maybe_extra$Maybe$Extra$values(
 			A2($elm$core$List$map, $author$project$Option$getMaybeOptionSearchFilter, options)));
@@ -9785,7 +9791,7 @@ var $author$project$OptionsUtilities$isOptionBelowScore = F2(
 		var _v0 = $author$project$Option$getMaybeOptionSearchFilter(option);
 		if (!_v0.$) {
 			var optionSearchFilter = _v0.a;
-			return _Utils_cmp(score, optionSearchFilter.bc) > -1;
+			return _Utils_cmp(score, optionSearchFilter.bd) > -1;
 		} else {
 			return false;
 		}
@@ -9922,7 +9928,7 @@ var $author$project$OptionsUtilities$sortOptionsByBestScore = function (options)
 				A2(
 					$elm$core$Maybe$map,
 					function ($) {
-						return $.bc;
+						return $.bd;
 					},
 					$author$project$Option$getMaybeOptionSearchFilter(option)));
 		},
@@ -10733,7 +10739,7 @@ var $author$project$SelectionMode$setMaxDropdownItems = F2(
 					$author$project$OutputStyle$SingleSelectCustomHtml(
 						_Utils_update(
 							singleSelectCustomHtmlFields,
-							{bt: maxDropdownItems})),
+							{aZ: maxDropdownItems})),
 					placeholder,
 					interactionState);
 			} else {
@@ -10750,7 +10756,7 @@ var $author$project$SelectionMode$setMaxDropdownItems = F2(
 					$author$project$OutputStyle$MultiSelectCustomHtml(
 						_Utils_update(
 							multiSelectCustomHtmlFields,
-							{bt: maxDropdownItems})),
+							{aZ: maxDropdownItems})),
 					placeholder,
 					interactionState);
 			} else {
@@ -10762,7 +10768,7 @@ var $author$project$OutputStyle$multiToSingle = function (multiSelectOutputStyle
 	if (!multiSelectOutputStyle.$) {
 		var multiSelectCustomHtmlFields = multiSelectOutputStyle.a;
 		return $author$project$OutputStyle$SingleSelectCustomHtml(
-			{V: multiSelectCustomHtmlFields.V, W: multiSelectCustomHtmlFields.W, X: multiSelectCustomHtmlFields.X, L: multiSelectCustomHtmlFields.L, bt: multiSelectCustomHtmlFields.bt, bG: multiSelectCustomHtmlFields.bG, bH: 0});
+			{V: multiSelectCustomHtmlFields.V, W: multiSelectCustomHtmlFields.W, X: multiSelectCustomHtmlFields.X, L: multiSelectCustomHtmlFields.L, aZ: multiSelectCustomHtmlFields.aZ, cG: multiSelectCustomHtmlFields.cG, bG: 0});
 	} else {
 		var eventsMode = multiSelectOutputStyle.a;
 		var transformAndValidate = multiSelectOutputStyle.b;
@@ -10773,7 +10779,7 @@ var $author$project$OutputStyle$singleToMulti = function (singleSelectOutputStyl
 	if (!singleSelectOutputStyle.$) {
 		var singleSelectCustomHtmlFields = singleSelectOutputStyle.a;
 		return $author$project$OutputStyle$MultiSelectCustomHtml(
-			{V: singleSelectCustomHtmlFields.V, W: singleSelectCustomHtmlFields.W, X: singleSelectCustomHtmlFields.X, L: singleSelectCustomHtmlFields.L, bt: singleSelectCustomHtmlFields.bt, bG: singleSelectCustomHtmlFields.bG, bM: 1});
+			{V: singleSelectCustomHtmlFields.V, W: singleSelectCustomHtmlFields.W, X: singleSelectCustomHtmlFields.X, L: singleSelectCustomHtmlFields.L, aZ: singleSelectCustomHtmlFields.aZ, cG: singleSelectCustomHtmlFields.cG, bL: 1});
 	} else {
 		var eventsMode = singleSelectOutputStyle.a;
 		var transformAndValidate = singleSelectOutputStyle.b;
@@ -10807,20 +10813,20 @@ var $author$project$OutputStyle$defaultMultiSelectCustomHtmlFields = {
 	W: 1,
 	X: 0,
 	L: 1,
-	bt: $author$project$OutputStyle$NoLimitToDropdownItems,
-	bG: $author$project$OutputStyle$FixedSearchStringMinimumLength(
+	aZ: $author$project$OutputStyle$NoLimitToDropdownItems,
+	cG: $author$project$OutputStyle$FixedSearchStringMinimumLength(
 		$author$project$PositiveInt$new(2)),
-	bM: 0
+	bL: 0
 };
 var $author$project$OutputStyle$defaultSingleSelectCustomHtmlFields = {
 	V: $author$project$OutputStyle$NoCustomOptions,
 	W: 1,
 	X: 0,
 	L: 1,
-	bt: $author$project$OutputStyle$NoLimitToDropdownItems,
-	bG: $author$project$OutputStyle$FixedSearchStringMinimumLength(
+	aZ: $author$project$OutputStyle$NoLimitToDropdownItems,
+	cG: $author$project$OutputStyle$FixedSearchStringMinimumLength(
 		$author$project$PositiveInt$new(2)),
-	bH: 0
+	bG: 0
 };
 var $author$project$SelectionMode$setOutputStyle = F2(
 	function (outputStyle, selectionConfig) {
@@ -10915,7 +10921,7 @@ var $author$project$SelectionMode$setSearchStringMinimumLength = F2(
 					$author$project$OutputStyle$SingleSelectCustomHtml(
 						_Utils_update(
 							singleSelectCustomHtmlFields,
-							{bG: newSearchStringMinimumLength})),
+							{cG: newSearchStringMinimumLength})),
 					placeholder,
 					interactionState);
 			} else {
@@ -10932,7 +10938,7 @@ var $author$project$SelectionMode$setSearchStringMinimumLength = F2(
 					$author$project$OutputStyle$MultiSelectCustomHtml(
 						_Utils_update(
 							multiSelectCustomHtmlFields,
-							{bG: newSearchStringMinimumLength})),
+							{cG: newSearchStringMinimumLength})),
 					placeholder,
 					interactionState);
 			} else {
@@ -10953,7 +10959,7 @@ var $author$project$SelectionMode$setSelectedItemPlacementMode = F2(
 					$author$project$OutputStyle$SingleSelectCustomHtml(
 						_Utils_update(
 							singleSelectCustomHtmlFields,
-							{bH: selectedItemPlacementMode})),
+							{bG: selectedItemPlacementMode})),
 					placeholder,
 					interactionState);
 			} else {
@@ -11022,7 +11028,7 @@ var $author$project$SelectionMode$setSingleItemRemoval = F2(
 					$author$project$OutputStyle$MultiSelectCustomHtml(
 						_Utils_update(
 							multiSelectCustomHtmlFields,
-							{bM: newSingleItemRemoval})),
+							{bL: newSingleItemRemoval})),
 					placeholder,
 					interactionState);
 			} else {
@@ -12443,7 +12449,7 @@ var $author$project$MuchSelect$update = F2(
 					_Utils_update(
 						model,
 						{
-							a8: A2($author$project$MuchSelect$ValueCasing, dims.ej, dims.dk)
+							a9: A2($author$project$MuchSelect$ValueCasing, dims.ej, dims.dk)
 						}),
 					$author$project$MuchSelect$NoEffect);
 			case 38:
@@ -12483,7 +12489,7 @@ var $author$project$MuchSelect$update = F2(
 					_Utils_update(
 						model,
 						{
-							bk: indexWhereToAdd + 1,
+							bl: indexWhereToAdd + 1,
 							b: updatedOptions,
 							d: A4(
 								$author$project$RightSlot$updateRightSlot,
@@ -13268,7 +13274,7 @@ var $author$project$OptionSearcher$doesSearchStringFindNothing = F3(
 					var _v1 = $author$project$Option$getMaybeOptionSearchFilter(option);
 					if (!_v1.$) {
 						var optionSearchFilter = _v1.a;
-						return optionSearchFilter.bc > 1000;
+						return optionSearchFilter.bd > 1000;
 					} else {
 						return false;
 					}
@@ -13462,7 +13468,7 @@ var $author$project$MuchSelect$optionToDropdownOption = F3(
 										$author$project$MuchSelect$mouseupPreventDefault(
 										eventHandlers.ak(
 											$author$project$Option$getOptionValue(option))),
-										$author$project$MuchSelect$onClickPreventDefault(eventHandlers.a_),
+										$author$project$MuchSelect$onClickPreventDefault(eventHandlers.a$),
 										A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option'),
 										$elm$html$Html$Attributes$class('option'),
 										valueDataAttribute
@@ -13596,7 +13602,7 @@ var $author$project$MuchSelect$optionToDropdownOption = F3(
 										$author$project$MuchSelect$mouseupPreventDefault(
 										eventHandlers.ak(
 											$author$project$Option$getOptionValue(option))),
-										$author$project$MuchSelect$onClickPreventDefault(eventHandlers.a_),
+										$author$project$MuchSelect$onClickPreventDefault(eventHandlers.a$),
 										A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option active'),
 										$elm$html$Html$Attributes$class('option'),
 										$elm$html$Html$Attributes$class('active'),
@@ -13775,7 +13781,7 @@ var $author$project$MuchSelect$dropdown = F4(
 					]))
 			]) : A3(
 			$author$project$MuchSelect$optionsToDropdownOptions,
-			{ah: $author$project$MuchSelect$DropdownMouseDownOption, ai: $author$project$MuchSelect$DropdownMouseOutOption, aj: $author$project$MuchSelect$DropdownMouseOverOption, ak: $author$project$MuchSelect$DropdownMouseUpOption, a_: $author$project$MuchSelect$NoOp},
+			{ah: $author$project$MuchSelect$DropdownMouseDownOption, ai: $author$project$MuchSelect$DropdownMouseOutOption, aj: $author$project$MuchSelect$DropdownMouseOverOption, ak: $author$project$MuchSelect$DropdownMouseUpOption, a$: $author$project$MuchSelect$NoOp},
 			selectionMode,
 			optionsForTheDropdown));
 		var dropdownFooterHtml = ($author$project$SelectionMode$showDropdownFooter(selectionMode) && (_Utils_cmp(
@@ -15503,7 +15509,7 @@ var $author$project$MuchSelect$view = function (model) {
 				function () {
 				var _v1 = $author$project$SelectionMode$getOutputStyle(model.a);
 				if (!_v1) {
-					return A4($author$project$MuchSelect$dropdown, model.a, model.b, model.g, model.a8);
+					return A4($author$project$MuchSelect$dropdown, model.a, model.b, model.g, model.a9);
 				} else {
 					return $author$project$MuchSelect$datalist(model.b);
 				}
@@ -15579,7 +15585,7 @@ _Platform_export({'MuchSelect':{'init':$author$project$MuchSelect$main(
 																																				$elm$json$Json$Decode$andThen,
 																																				function (allowCustomOptions) {
 																																					return $elm$json$Json$Decode$succeed(
-																																						{a9: allowCustomOptions, ba: allowMultiSelect, bf: customOptionHint, bh: disabled, bj: enableMultiSelectSingleItemRemoval, bq: isEventsOnly, bs: loading, bt: maxDropdownItems, O: optionSort, bA: optionsJson, bB: outputStyle, bC: placeholder, bG: searchStringMinimumLength, bI: selectedItemStaysInPlace, bJ: selectedValue, i: selectedValueEncoding, bL: showDropdownFooter, bQ: transformationAndValidationJson});
+																																						{ba: allowCustomOptions, bb: allowMultiSelect, bg: customOptionHint, bi: disabled, bk: enableMultiSelectSingleItemRemoval, br: isEventsOnly, bt: loading, aZ: maxDropdownItems, O: optionSort, bA: optionsJson, bB: outputStyle, bC: placeholder, cG: searchStringMinimumLength, bH: selectedItemStaysInPlace, bI: selectedValue, i: selectedValueEncoding, bK: showDropdownFooter, bP: transformationAndValidationJson});
 																																				},
 																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
 																																		},
@@ -15635,7 +15641,15 @@ _Platform_export({'MuchSelect':{'init':$author$project$MuchSelect$main(
 																},
 																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
 												},
-												A2($elm$json$Json$Decode$field, 'searchStringMinimumLength', $elm$json$Json$Decode$int));
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
 										},
 										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
 								},
@@ -15711,7 +15725,7 @@ export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
 																																				$elm$json$Json$Decode$andThen,
 																																				function (allowCustomOptions) {
 																																					return $elm$json$Json$Decode$succeed(
-																																						{a9: allowCustomOptions, ba: allowMultiSelect, bf: customOptionHint, bh: disabled, bj: enableMultiSelectSingleItemRemoval, bq: isEventsOnly, bs: loading, bt: maxDropdownItems, O: optionSort, bA: optionsJson, bB: outputStyle, bC: placeholder, bG: searchStringMinimumLength, bI: selectedItemStaysInPlace, bJ: selectedValue, i: selectedValueEncoding, bL: showDropdownFooter, bQ: transformationAndValidationJson});
+																																						{ba: allowCustomOptions, bb: allowMultiSelect, bg: customOptionHint, bi: disabled, bk: enableMultiSelectSingleItemRemoval, br: isEventsOnly, bt: loading, aZ: maxDropdownItems, O: optionSort, bA: optionsJson, bB: outputStyle, bC: placeholder, cG: searchStringMinimumLength, bH: selectedItemStaysInPlace, bI: selectedValue, i: selectedValueEncoding, bK: showDropdownFooter, bP: transformationAndValidationJson});
 																																				},
 																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
 																																		},
@@ -15767,7 +15781,15 @@ export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
 																},
 																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
 												},
-												A2($elm$json$Json$Decode$field, 'searchStringMinimumLength', $elm$json$Json$Decode$int));
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
 										},
 										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
 								},

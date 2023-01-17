@@ -31,7 +31,7 @@ flagsEmptyOptionsWithOrangeSelected =
     , disabled = False
     , allowCustomOptions = False
     , selectedItemStaysInPlace = True
-    , searchStringMinimumLength = 2
+    , searchStringMinimumLength = Nothing
     , showDropdownFooter = False
     , transformationAndValidationJson = ""
     }
@@ -113,7 +113,7 @@ flagsBookOptions =
     , disabled = False
     , allowCustomOptions = False
     , selectedItemStaysInPlace = True
-    , searchStringMinimumLength = 2
+    , searchStringMinimumLength = Nothing
     , showDropdownFooter = False
     , transformationAndValidationJson = ""
     }
@@ -136,7 +136,7 @@ flagsBookOptionsWithValue =
     , disabled = False
     , allowCustomOptions = False
     , selectedItemStaysInPlace = True
-    , searchStringMinimumLength = 2
+    , searchStringMinimumLength = Nothing
     , showDropdownFooter = False
     , transformationAndValidationJson = ""
     }
@@ -159,7 +159,7 @@ flagsBookOptionsWithSelected =
     , disabled = False
     , allowCustomOptions = False
     , selectedItemStaysInPlace = True
-    , searchStringMinimumLength = 2
+    , searchStringMinimumLength = Nothing
     , showDropdownFooter = False
     , transformationAndValidationJson = ""
     }

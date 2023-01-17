@@ -13,6 +13,7 @@ import OutputStyle
         , SelectedItemPlacementMode(..)
         , SingleItemRemoval(..)
         , SingleSelectOutputStyle(..)
+        , defaultSearchStringMinimumLength
         )
 import PositiveInt
 import SelectionMode
@@ -43,7 +44,7 @@ suite =
                         False
                         defaultMaxDropdownItems
                         True
-                        2
+                        defaultSearchStringMinimumLength
                         False
                         TransformAndValidate.empty
                     )
@@ -77,7 +78,7 @@ suite =
                         False
                         defaultMaxDropdownItems
                         True
-                        2
+                        defaultSearchStringMinimumLength
                         False
                         TransformAndValidate.empty
                     )
@@ -111,7 +112,7 @@ suite =
                         False
                         defaultMaxDropdownItems
                         True
-                        2
+                        defaultSearchStringMinimumLength
                         False
                         TransformAndValidate.empty
                     )

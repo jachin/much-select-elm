@@ -3479,7 +3479,7 @@ type alias Flags =
     , disabled : Bool
     , allowCustomOptions : Bool
     , selectedItemStaysInPlace : Bool
-    , searchStringMinimumLength : Int
+    , searchStringMinimumLength : Maybe String
     , showDropdownFooter : Bool
     , transformationAndValidationJson : String
     }
@@ -3512,6 +3512,26 @@ init flags =
                 Nothing ->
                     ( SelectionMode.defaultMaxDropdownItems, NoEffect )
 
+        ( searchStringMinimumLength, searchStringMinimumLengthErrorEffect ) =
+            case flags.maxDropdownItems of
+                Just str ->
+                    case PositiveInt.fromString str of
+                        Just int ->
+                            if PositiveInt.isZero int then
+                                ( NoMinimumToSearchStringLength, NoEffect )
+
+                            else
+                                ( FixedSearchStringMinimumLength int, NoEffect )
+
+                        Nothing ->
+                            ( OutputStyle.defaultSearchStringMinimumLength
+                            , ReportErrorMessage
+                                "Invalid value for the search-string-minimum-length attribute."
+                            )
+
+                Nothing ->
+                    ( OutputStyle.defaultSearchStringMinimumLength, NoEffect )
+
         ( selectionConfig, selectionConfigErrorEffect ) =
             case
                 makeSelectionConfig
@@ -3525,7 +3545,7 @@ init flags =
                     flags.enableMultiSelectSingleItemRemoval
                     maxDropdownItems
                     flags.selectedItemStaysInPlace
-                    flags.searchStringMinimumLength
+                    searchStringMinimumLength
                     flags.showDropdownFooter
                     valueTransformationAndValidation
             of
@@ -3647,6 +3667,7 @@ init flags =
     , batch
         [ errorEffect
         , maxDropdownItemsErrorEffect
+        , searchStringMinimumLengthErrorEffect
         , initialValueErrEffect
         , ReportReady
         , makeEffectsForInitialValue

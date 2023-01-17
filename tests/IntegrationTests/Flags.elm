@@ -22,7 +22,7 @@ defaultTestFlags =
     , disabled = False
     , allowCustomOptions = False
     , selectedItemStaysInPlace = True
-    , searchStringMinimumLength = 2
+    , searchStringMinimumLength = Just "2"
     , showDropdownFooter = False
     , transformationAndValidationJson = ""
     }

@@ -54,7 +54,7 @@ flagsDatalistSingle =
     , disabled = False
     , allowCustomOptions = False
     , selectedItemStaysInPlace = True
-    , searchStringMinimumLength = 2
+    , searchStringMinimumLength = Nothing
     , showDropdownFooter = False
     , transformationAndValidationJson = ""
     }
@@ -77,7 +77,7 @@ flagsCustomHtmlSingle =
     , disabled = False
     , allowCustomOptions = False
     , selectedItemStaysInPlace = True
-    , searchStringMinimumLength = 2
+    , searchStringMinimumLength = Nothing
     , showDropdownFooter = False
     , transformationAndValidationJson = ""
     }

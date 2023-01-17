@@ -339,7 +339,7 @@ class MuchSelect extends HTMLElement {
     }
   }
 
-  // noinspection JSUnusedGlobalSymbols
+  // noinspection JSUnusedGlobalSymbols, JSUnresolvedVariable,JSIgnoredPromiseFromCall
   connectedCallback() {
     this.parentDivPromise.then((parentDiv) => {
       const wrapperDiv = parentDiv.querySelector("#wrapper");
@@ -375,9 +375,12 @@ class MuchSelect extends HTMLElement {
           this.stopMuchSelectObserver();
           this.stopSelectSlotObserver();
 
+          // noinspection JSUnresolvedVariable
           if (this.hasAttribute("selected-value")) {
+            // noinspection JSUnresolvedVariable
             this.setAttribute("selected-value", lightDomChange.data.rawValue);
           } else if (selectInputSlot) {
+            // noinspection JSUnresolvedVariable
             if (lightDomChange.data.selectionMode === "single-select") {
               selectInputSlot.querySelectorAll("option").forEach((optionEl) => {
                 if (optionEl.hasAttribute("selected")) {
@@ -405,6 +408,7 @@ class MuchSelect extends HTMLElement {
             "[slot='hidden-value-input']"
           );
           if (hiddenValueInput) {
+            // noinspection JSUnresolvedVariable
             hiddenValueInput.setAttribute(
               "value",
               lightDomChange.data.rawValue
@@ -937,16 +941,9 @@ class MuchSelect extends HTMLElement {
       flags.size = "";
     }
 
-    if (this.hasAttribute("search-string-minimum-length")) {
-      flags.searchStringMinimumLength = parseInt(
-        this.getAttribute("search-string-minimum-length").trim(),
-        10
-      );
-    } else {
-      // TODO This should only be in the Elm code.
-      // The default value for the search string minimum length.
-      flags.searchStringMinimumLength = 2;
-    }
+    flags.searchStringMinimumLength = this.getAttribute(
+      "search-string-minimum-length"
+    );
 
     if (this.hasAttribute("show-dropdown-footer")) {
       flags.showDropdownFooter = booleanAttributeValueToBool(
@@ -985,7 +982,7 @@ class MuchSelect extends HTMLElement {
     flags.disabled = booleanAttributeValueToBool(this.getAttribute("disabled"));
     flags.loading = booleanAttributeValueToBool(this.getAttribute("loading"));
 
-    // TODO let's get the verbage here aligned.
+    // TODO let's get the verbiage here aligned.
     flags.selectedItemStaysInPlace = !booleanAttributeValueToBool(
       this.getAttribute("selected-option-goes-to-top")
     );
@@ -1268,8 +1265,10 @@ class MuchSelect extends HTMLElement {
   set eventsOnlyMode(value) {
     this.appPromise.then((app) => {
       if (value) {
+        // noinspection JSUnresolvedVariable
         app.ports.attributeChanged.send(["events-only", ""]);
       } else {
+        // noinspection JSUnresolvedVariable
         app.ports.attributeRemoved.send("events-only");
       }
     });
@@ -1310,6 +1309,7 @@ class MuchSelect extends HTMLElement {
     return this.getConfigValuePromise("show-dropdown-footer");
   }
 
+  // noinspection JSValidateTypes
   /**
    * @param value {boolean|string}
    */
@@ -1333,6 +1333,7 @@ class MuchSelect extends HTMLElement {
     return this.getConfigValuePromise("search-string-minimum-length");
   }
 
+  // noinspection JSValidateTypes
   /**
    * Search String Minimum Length setter
    *
@@ -1377,6 +1378,7 @@ class MuchSelect extends HTMLElement {
     return this.getConfigValuePromise("multi-select");
   }
 
+  // noinspection JSUnusedGlobalSymbols
   set isInMultiSelectMode(value) {
     let cleanValue;
     if (value === "false") {
@@ -1398,6 +1400,7 @@ class MuchSelect extends HTMLElement {
     return this.getConfigValuePromise("single-item-removal");
   }
 
+  // noinspection JSUnusedGlobalSymbols
   set isInMultiSelectModeWithSingleItemRemoval(value) {
     const isInMultiSelectModeWithSingleItemRemoval =
       booleanAttributeValueToBool(value);
@@ -1437,21 +1440,27 @@ class MuchSelect extends HTMLElement {
    * @returns Promise<boolean>
    */
   get allowCustomOptions() {
-    // TODO ensure this is a boolean value
-    return this.getConfigValuePromise("allow-custom-options");
+    return this.getConfigValuePromise("allow-custom-options").then(
+      (result) => !!result
+    );
   }
 
   set allowCustomOptions(value) {
     this.appPromise.then((app) => {
       if (value === null) {
+        // noinspection JSUnresolvedVariable
         app.ports.allowCustomOptionsReceiver.send([true, ""]);
       } else if (value === undefined) {
+        // noinspection JSUnresolvedVariable
         app.ports.allowCustomOptionsReceiver.send([true, ""]);
       } else if (value === true) {
+        // noinspection JSUnresolvedVariable
         app.ports.allowCustomOptionsReceiver.send([true, ""]);
       } else if (value === false) {
+        // noinspection JSUnresolvedVariable
         app.ports.allowCustomOptionsReceiver.send([false, ""]);
       } else {
+        // noinspection JSUnresolvedVariable
         app.ports.allowCustomOptionsReceiver.send([true, value]);
       }
     });
@@ -1495,6 +1504,7 @@ class MuchSelect extends HTMLElement {
     return this.getConfigValuePromise("selected-item-stays-in-place");
   }
 
+  // noinspection JSUnusedGlobalSymbols
   set selectedItemStaysInPlace(value) {
     let selectedItemStaysInPlace;
     if (value === "false") {
@@ -1511,11 +1521,12 @@ class MuchSelect extends HTMLElement {
     );
   }
 
+  // noinspection JSUnusedGlobalSymbols
   /**
    * TODO What's the deal with the name, let's align this stuff better.
    * @param value
    */
-  set selectedItemGOesToTop(value) {
+  set selectedItemGoesToTop(value) {
     let selectedItemStaysInPlace;
     if (value === "") {
       selectedItemStaysInPlace = false;
@@ -1852,6 +1863,7 @@ class MuchSelect extends HTMLElement {
         });
 
         if (rawSelectedValue) {
+          // noinspection JSUnresolvedVariable
           resolve(selectedValues.rawValue);
         } else {
           resolve(selectedValues.value);

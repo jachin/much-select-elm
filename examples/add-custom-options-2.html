@@ -4,7 +4,7 @@
     If we type in an option that matches an existing option is should <em>not</em>
     show the option to add a custom option.
   </p>
-  <much-select allow-custom-options="true">
+  <much-select allow-custom-options>
     <!--suppress HtmlFormInputWithoutLabel -->
     <select slot="select-input">
       <option>Flashlight</option>
@@ -29,6 +29,7 @@
         .querySelector("#not-empty-single-select-value-changed-example much-select")
         .addEventListener(
           "customValueSelected",
+          // eslint-disable-next-line
           makeLogEventHandler("not-empty-single-select-custom-option-event-log")
         );
     });

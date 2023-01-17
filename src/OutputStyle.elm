@@ -16,6 +16,10 @@ type SearchStringMinimumLength
     | NoMinimumToSearchStringLength
 
 
+defaultSearchStringMinimumLength =
+    FixedSearchStringMinimumLength (PositiveInt.new 2)
+
+
 encodeSearchStringMinimumLength : SearchStringMinimumLength -> Json.Encode.Value
 encodeSearchStringMinimumLength searchStringMinimumLength =
     case searchStringMinimumLength of

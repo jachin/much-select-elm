@@ -131,7 +131,7 @@ makeSelectionConfig :
     -> Bool
     -> PositiveInt
     -> Bool
-    -> Int
+    -> SearchStringMinimumLength
     -> Bool
     -> ValueTransformAndValidate
     -> Result String SelectionConfig
@@ -185,7 +185,7 @@ makeSelectionConfig isEventsOnly_ disabled allowMultiSelect allowCustomOptions o
         outputStyleResult
 
 
-makeSingleSelectOutputStyle : OutputStyle -> Bool -> Bool -> Bool -> PositiveInt -> Int -> Bool -> Maybe String -> ValueTransformAndValidate -> Result String SingleSelectOutputStyle
+makeSingleSelectOutputStyle : OutputStyle -> Bool -> Bool -> Bool -> PositiveInt -> SearchStringMinimumLength -> Bool -> Maybe String -> ValueTransformAndValidate -> Result String SingleSelectOutputStyle
 makeSingleSelectOutputStyle outputStyle isEventsOnly_ allowCustomOptions selectedItemStaysInPlace maxDropdownItemsNum searchStringMinimumLength shouldShowDropdownFooter customOptionHint transformAndValidate =
     case outputStyle of
         CustomHtml ->
@@ -230,7 +230,7 @@ makeSingleSelectOutputStyle outputStyle isEventsOnly_ allowCustomOptions selecte
                     { customOptions = customOptions
                     , selectedItemPlacementMode = selectedItemPlacementMode
                     , maxDropdownItems = maxDropdownItems
-                    , searchStringMinimumLength = FixedSearchStringMinimumLength (PositiveInt.new searchStringMinimumLength)
+                    , searchStringMinimumLength = searchStringMinimumLength
                     , dropdownState = Collapsed
                     , dropdownStyle = dropdownStyle
                     , eventsMode = eventsMode
@@ -249,7 +249,7 @@ makeSingleSelectOutputStyle outputStyle isEventsOnly_ allowCustomOptions selecte
             Ok (SingleSelectDatalist eventsMode transformAndValidate)
 
 
-makeMultiSelectOutputStyle : OutputStyle -> Bool -> Bool -> Bool -> PositiveInt -> Int -> Bool -> Maybe String -> ValueTransformAndValidate -> Result String MultiSelectOutputStyle
+makeMultiSelectOutputStyle : OutputStyle -> Bool -> Bool -> Bool -> PositiveInt -> SearchStringMinimumLength -> Bool -> Maybe String -> ValueTransformAndValidate -> Result String MultiSelectOutputStyle
 makeMultiSelectOutputStyle outputStyle isEventsOnly_ allowCustomOptions enableMultiSelectSingleItemRemoval maxDropdownItemsNum searchStringMinimumLength shouldShowDropdownFooter customOptionHint transformAndValidate =
     case outputStyle of
         CustomHtml ->
@@ -294,7 +294,7 @@ makeMultiSelectOutputStyle outputStyle isEventsOnly_ allowCustomOptions enableMu
                     { customOptions = customOptions
                     , singleItemRemoval = singleItemRemoval
                     , maxDropdownItems = maxDropdownItems
-                    , searchStringMinimumLength = FixedSearchStringMinimumLength (PositiveInt.new searchStringMinimumLength)
+                    , searchStringMinimumLength = searchStringMinimumLength
                     , dropdownState = Collapsed
                     , dropdownStyle = dropdownStyle
                     , eventsMode = eventsMode
