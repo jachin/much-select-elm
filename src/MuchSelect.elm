@@ -2,6 +2,7 @@ module MuchSelect exposing (..)
 
 import Bounce exposing (Bounce)
 import Browser
+import ConfigDump
 import Html exposing (Html, button, div, input, li, node, optgroup, span, text, ul)
 import Html.Attributes
     exposing
@@ -34,6 +35,7 @@ import Json.Decode
 import Json.Encode
 import Keyboard exposing (Key(..))
 import Keyboard.Events as Keyboard
+import LightDomChange
 import List.Extra
 import Option
     exposing
@@ -48,7 +50,6 @@ import OptionSorting
     exposing
         ( OptionSort(..)
         , sortOptions
-        , sortOptionsBySearchFilterTotalScore
         , stringToOptionSort
         )
 import OptionValue exposing (OptionValue(..))
@@ -65,9 +66,7 @@ import OptionsUtilities
         , deselectLastSelectedOption
         , deselectOptionInListByOptionValue
         , filterOptionsToShowInDropdown
-        , findHighlightedOption
         , findHighlightedOrSelectedOptionIndex
-        , findOptionByOptionValue
         , groupOptionsInOrder
         , hasSelectedHighlightedOptions
         , hasSelectedOption
@@ -104,11 +103,16 @@ import Ports
         ( addOptionsReceiver
         , allOptions
         , allowCustomOptionsReceiver
+        , attributeChanged
+        , attributeRemoved
         , blurInput
+        , customOptionHintReceiver
         , customOptionSelected
         , customValidationReceiver
         , deselectOptionReceiver
         , disableChangedReceiver
+        , dumpConfigState
+        , dumpSelectedValues
         , errorMessage
         , focusInput
         , initialValueSet
@@ -116,6 +120,7 @@ import Ports
         , inputFocused
         , inputKeyUp
         , invalidValue
+        , lightDomChange
         , loadingChangedReceiver
         , maxDropdownItemsChangedReceiver
         , muchSelectIsReady
@@ -130,11 +135,14 @@ import Ports
         , placeholderChangedReceiver
         , removeOptionsReceiver
         , requestAllOptionsReceiver
+        , requestConfigState
+        , requestSelectedValues
         , scrollDropdownToElement
         , searchOptionsWithWebWorker
         , searchStringMinimumLengthChangedReceiver
         , selectOptionReceiver
         , selectedItemStaysInPlaceChangedReceiver
+        , selectedValueEncodingChangeReceiver
         , sendCustomValidationRequest
         , showDropdownFooterChangedReceiver
         , transformationAndValidationReceiver
@@ -160,6 +168,7 @@ import RightSlot
         , updateRightSlotTransitioning
         )
 import SearchString exposing (SearchString)
+import SelectedValueEncoding exposing (SelectedValueEncoding)
 import SelectionMode
     exposing
         ( OutputStyle(..)
@@ -207,7 +216,7 @@ type Effect
     | InvalidValue Json.Encode.Value
     | CustomOptionSelected (List String)
     | ReportOptionSelected Json.Encode.Value
-    | OptionDeselected Json.Encode.Value
+    | ReportOptionDeselected Json.Encode.Value
     | OptionsUpdated Bool
     | SendCustomValidationRequest ( String, Int )
     | ReportErrorMessage String
@@ -216,6 +225,9 @@ type Effect
     | FetchOptionsFromDom
     | ScrollDownToElement String
     | ReportAllOptions Json.Encode.Value
+    | DumpConfigState Json.Encode.Value
+    | DumpSelectedValues Json.Encode.Value
+    | ChangeTheLightDom LightDomChange.LightDomChange
 
 
 type Msg
@@ -242,7 +254,7 @@ type Msg
     | DeselectOptionInternal Option
     | PlaceholderAttributeChanged ( Bool, String )
     | LoadingAttributeChanged Bool
-    | MaxDropdownItemsChanged Int
+    | MaxDropdownItemsChanged String
     | ShowDropdownFooterChanged Bool
     | AllowCustomOptionsChanged ( Bool, String )
     | DisabledAttributeChanged Bool
@@ -270,6 +282,12 @@ type Msg
     | UpdateSearchResultsForOptions Json.Encode.Value
     | CustomValidationResponse Json.Encode.Value
     | UpdateTransformationAndValidation Json.Encode.Value
+    | AttributeChanged ( String, String )
+    | AttributeRemoved String
+    | CustomOptionHintChanged String
+    | SelectedValueEncodingChanged String
+    | RequestConfigState
+    | RequestSelectedValues
 
 
 type alias Model =
@@ -284,6 +302,7 @@ type alias Model =
     , focusedIndex : Int
     , rightSlot : RightSlot
     , valueCasing : ValueCasing
+    , selectedValueEncoding : SelectedValueEncoding
     }
 
 
@@ -423,39 +442,64 @@ update msg model =
             )
 
         DropdownMouseUpOption optionValue ->
-            let
-                updatedOptions =
-                    case model.selectionConfig of
-                        MultiSelectConfig _ _ _ ->
-                            selectOptionInListByOptionValue optionValue model.options
-
-                        SingleSelectConfig _ _ _ ->
-                            selectSingleOptionInList optionValue model.options
-            in
             case SelectionMode.getSelectionMode model.selectionConfig of
                 SelectionMode.SingleSelect ->
-                    ( { model
-                        | options = updatedOptions
-                        , searchString = SearchString.reset
-                      }
-                        |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-                    , batch
-                        [ makeEffectsWhenValuesChanges (selectedOptions updatedOptions) (Just optionValue)
-                        , BlurInput
-                        ]
-                    )
+                    let
+                        updatedOptions =
+                            selectSingleOptionInList optionValue model.options
+
+                        maybeNewlySelectedOption =
+                            OptionsUtilities.findOptionByOptionValue optionValue updatedOptions
+                    in
+                    case maybeNewlySelectedOption of
+                        Just newlySelectedOption ->
+                            ( { model
+                                | options = updatedOptions
+                                , searchString = SearchString.reset
+                              }
+                                |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
+                            , batch
+                                [ makeEffectsWhenSelectingAnOption
+                                    newlySelectedOption
+                                    (SelectionMode.getEventMode model.selectionConfig)
+                                    (SelectionMode.getSelectionMode model.selectionConfig)
+                                    model.selectedValueEncoding
+                                    (selectedOptions updatedOptions)
+                                , BlurInput
+                                ]
+                            )
+
+                        Nothing ->
+                            ( model, ReportErrorMessage "Unable to select option" )
 
                 SelectionMode.MultiSelect ->
-                    ( { model
-                        | options = updatedOptions
-                        , searchString = SearchString.reset
-                      }
-                        |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-                    , batch
-                        [ makeEffectsWhenValuesChanges (selectedOptions updatedOptions) (Just optionValue)
-                        , FocusInput
-                        ]
-                    )
+                    let
+                        updatedOptions =
+                            selectOptionInListByOptionValue optionValue model.options
+
+                        maybeNewlySelectedOption =
+                            OptionsUtilities.findOptionByOptionValue optionValue updatedOptions
+                    in
+                    case maybeNewlySelectedOption of
+                        Just newlySelectedOption ->
+                            ( { model
+                                | options = updatedOptions
+                                , searchString = SearchString.reset
+                              }
+                                |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
+                            , batch
+                                [ makeEffectsWhenSelectingAnOption
+                                    newlySelectedOption
+                                    (SelectionMode.getEventMode model.selectionConfig)
+                                    (SelectionMode.getSelectionMode model.selectionConfig)
+                                    model.selectedValueEncoding
+                                    (selectedOptions updatedOptions)
+                                , FocusInput
+                                ]
+                            )
+
+                        Nothing ->
+                            ( model, ReportErrorMessage "Unable to select option" )
 
         UpdateSearchString searchString ->
             ( { model
@@ -489,9 +533,6 @@ update msg model =
                                 (OptionValue.stringToOptionValue valueString)
                                 selectedValueIndex
                                 model.options
-
-                        maybeSelectedOptionValue =
-                            Just (OptionValue.stringToOptionValue valueString)
                     in
                     ( { model
                         | options = updatedOptions
@@ -499,8 +540,10 @@ update msg model =
                       }
                     , batch
                         [ makeEffectsWhenValuesChanges
+                            (SelectionMode.getEventMode model.selectionConfig)
+                            (SelectionMode.getSelectionMode model.selectionConfig)
+                            model.selectedValueEncoding
                             (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
-                            maybeSelectedOptionValue
                         , InputHasBeenKeyUp valueString TransformAndValidate.InputHasBeenValidated
                         ]
                     )
@@ -513,9 +556,6 @@ update msg model =
                                 (OptionValue.stringToOptionValue valueString)
                                 selectedValueIndex
                                 model.options
-
-                        maybeSelectedOptionValue =
-                            Just (OptionValue.stringToOptionValue valueString)
                     in
                     ( { model
                         | options = updatedOptions
@@ -528,8 +568,10 @@ update msg model =
                       }
                     , batch
                         [ makeEffectsWhenValuesChanges
+                            (SelectionMode.getEventMode model.selectionConfig)
+                            (SelectionMode.getSelectionMode model.selectionConfig)
+                            model.selectedValueEncoding
                             (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
-                            maybeSelectedOptionValue
                         , InputHasBeenKeyUp valueString TransformAndValidate.InputHasFailedValidation
                         ]
                     )
@@ -541,9 +583,6 @@ update msg model =
                                 (OptionValue.stringToOptionValue valueString)
                                 selectedValueIndex
                                 model.options
-
-                        maybeSelectedOptionValue =
-                            Just (OptionValue.stringToOptionValue valueString)
                     in
                     ( { model
                         | options = updatedOptions
@@ -556,8 +595,10 @@ update msg model =
                       }
                     , batch
                         [ makeEffectsWhenValuesChanges
+                            (SelectionMode.getEventMode model.selectionConfig)
+                            (SelectionMode.getSelectionMode model.selectionConfig)
+                            model.selectedValueEncoding
                             (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
-                            maybeSelectedOptionValue
                         , InputHasBeenKeyUp valueString TransformAndValidate.InputHasValidationPending
                         ]
                     )
@@ -586,7 +627,7 @@ update msg model =
                         CustomHtml ->
                             let
                                 newOptions =
-                                    addAndSelectOptionsInOptionsListByString
+                                    selectOptionsInOptionsListByString
                                         values
                                         model.options
                             in
@@ -594,7 +635,11 @@ update msg model =
                                 | options = newOptions
                               }
                                 |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-                            , NoEffect
+                            , makeEffectsWhenValuesChanges
+                                (SelectionMode.getEventMode model.selectionConfig)
+                                (SelectionMode.getSelectionMode model.selectionConfig)
+                                model.selectedValueEncoding
+                                (selectedOptions newOptions)
                             )
 
                         Datalist ->
@@ -608,7 +653,11 @@ update msg model =
                                 | options = newOptions
                               }
                                 |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-                            , NoEffect
+                            , makeEffectsWhenValuesChanges
+                                (SelectionMode.getEventMode model.selectionConfig)
+                                (SelectionMode.getSelectionMode model.selectionConfig)
+                                model.selectedValueEncoding
+                                (selectedOptions newOptions)
                             )
 
                 Err error ->
@@ -639,7 +688,7 @@ update msg model =
                                 |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                             , batch
                                 [ OptionsUpdated True
-                                , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
+                                , makeEffectsForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
                                 ]
                             )
 
@@ -664,7 +713,7 @@ update msg model =
                                 |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                             , batch
                                 [ OptionsUpdated True
-                                , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
+                                , makeEffectsForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
                                 ]
                             )
 
@@ -692,7 +741,7 @@ update msg model =
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , batch
                         [ OptionsUpdated False
-                        , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
+                        , makeEffectsForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
                         ]
                     )
 
@@ -714,7 +763,7 @@ update msg model =
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , batch
                         [ OptionsUpdated True
-                        , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
+                        , makeEffectsForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
                         ]
                     )
 
@@ -743,8 +792,13 @@ update msg model =
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                     , batch
-                        [ makeEffectsWhenValuesChanges (selectedOptions updatedOptions) (Just optionValue)
-                        , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
+                        [ makeEffectsWhenSelectingAnOption
+                            option
+                            (SelectionMode.getEventMode model.selectionConfig)
+                            (SelectionMode.getSelectionMode model.selectionConfig)
+                            model.selectedValueEncoding
+                            (selectedOptions updatedOptions)
+                        , makeEffectsForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
                         , SearchStringTouched model.searchStringDebounceLength
                         ]
                     )
@@ -763,6 +817,21 @@ update msg model =
                 Err error ->
                     ( model, ReportErrorMessage (Json.Decode.errorToString error) )
 
+        SelectedValueEncodingChanged selectedValueEncodingString ->
+            case SelectedValueEncoding.fromString selectedValueEncodingString of
+                Ok selectedValueEncoding ->
+                    ( { model
+                        | selectedValueEncoding =
+                            selectedValueEncoding
+                      }
+                    , NoEffect
+                    )
+
+                Err error ->
+                    ( model
+                    , ReportErrorMessage error
+                    )
+
         OptionSortingChanged sortingString ->
             case stringToOptionSort sortingString of
                 Ok optionSorting ->
@@ -772,7 +841,12 @@ update msg model =
                     ( model, ReportErrorMessage error )
 
         PlaceholderAttributeChanged newPlaceholder ->
-            ( { model | selectionConfig = SelectionMode.setPlaceholder newPlaceholder model.selectionConfig }
+            ( { model
+                | selectionConfig =
+                    SelectionMode.setPlaceholder
+                        newPlaceholder
+                        model.selectionConfig
+              }
             , NoEffect
             )
 
@@ -787,17 +861,18 @@ update msg model =
             , NoEffect
             )
 
-        MaxDropdownItemsChanged int ->
-            let
-                maxDropdownItems =
-                    FixedMaxDropdownItems (PositiveInt.new int)
-            in
-            ( { model
-                | selectionConfig = setMaxDropdownItems maxDropdownItems model.selectionConfig
-              }
-                |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-            , NoEffect
-            )
+        MaxDropdownItemsChanged stringValue ->
+            case OutputStyle.stringToMaxDropdownItems stringValue of
+                Ok maxDropdownItems ->
+                    ( { model
+                        | selectionConfig = setMaxDropdownItems maxDropdownItems model.selectionConfig
+                      }
+                        |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
+                    , NoEffect
+                    )
+
+                Err error ->
+                    ( model, ReportErrorMessage error )
 
         ShowDropdownFooterChanged bool ->
             let
@@ -809,7 +884,10 @@ update msg model =
                         NoFooter
             in
             ( { model
-                | selectionConfig = setDropdownStyle newDropdownStyle model.selectionConfig
+                | selectionConfig =
+                    setDropdownStyle
+                        newDropdownStyle
+                        model.selectionConfig
               }
             , NoEffect
             )
@@ -835,7 +913,14 @@ update msg model =
             )
 
         DisabledAttributeChanged bool ->
-            ( { model | selectionConfig = setIsDisabled bool model.selectionConfig }, NoEffect )
+            ( { model
+                | selectionConfig =
+                    setIsDisabled
+                        bool
+                        model.selectionConfig
+              }
+            , NoEffect
+            )
 
         SelectedItemStaysInPlaceChanged selectedItemStaysInPlace ->
             ( { model
@@ -858,13 +943,28 @@ update msg model =
                     in
                     ( { model
                         | selectionConfig = newSelectionConfig
-                        , rightSlot = updateRightSlot model.rightSlot newSelectionConfig True model.options
+                        , rightSlot =
+                            updateRightSlot
+                                model.rightSlot
+                                newSelectionConfig
+                                True
+                                model.options
                       }
-                    , FetchOptionsFromDom
+                    , Batch
+                        [ FetchOptionsFromDom
+                        , ChangeTheLightDom
+                            (LightDomChange.AddUpdateAttribute
+                                "output-style"
+                                newOutputStyleString
+                            )
+                        ]
                     )
 
                 Err _ ->
-                    ( model, ReportErrorMessage ("Invalid output style " ++ newOutputStyleString) )
+                    ( model
+                    , ReportErrorMessage
+                        ("Invalid output style " ++ newOutputStyleString)
+                    )
 
         MultiSelectSingleItemRemovalAttributeChanged shouldEnableMultiSelectSingleItemRemoval ->
             let
@@ -876,7 +976,10 @@ update msg model =
                         DisableSingleItemRemoval
             in
             ( { model
-                | selectionConfig = setSingleItemRemoval multiSelectSingleItemRemoval model.selectionConfig
+                | selectionConfig =
+                    setSingleItemRemoval
+                        multiSelectSingleItemRemoval
+                        model.selectionConfig
               }
             , batch
                 [ ReportReady
@@ -898,7 +1001,11 @@ update msg model =
                         NoEffect
 
                     else
-                        makeEffectsWhenValuesChanges (selectedOptions updatedOptions) Nothing
+                        makeEffectsWhenValuesChanges
+                            (SelectionMode.getEventMode model.selectionConfig)
+                            (SelectionMode.getSelectionMode model.selectionConfig)
+                            model.selectedValueEncoding
+                            (selectedOptions updatedOptions)
             in
             ( { model
                 | selectionConfig = SelectionMode.setMultiSelectModeWithBool isInMultiSelectMode model.selectionConfig
@@ -907,7 +1014,7 @@ update msg model =
                 |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
             , batch
                 [ ReportReady
-                , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
+                , makeEffectsForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
                 , cmd
                 ]
             )
@@ -925,38 +1032,56 @@ update msg model =
 
         SelectHighlightedOption ->
             let
-                maybeHighlightedOptionValue =
-                    findHighlightedOption model.options |> Maybe.map Option.getOptionValue
+                maybeHighlightedOption =
+                    OptionsUtilities.findHighlightedOption model.options
 
                 updatedOptions =
                     selectHighlightedOption model.selectionConfig model.options
-            in
-            case model.selectionConfig of
-                SingleSelectConfig _ _ _ ->
-                    ( { model
-                        | options = updatedOptions
-                        , searchString = SearchString.reset
-                      }
-                        |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-                    , batch
-                        [ makeEffectsWhenValuesChanges (selectedOptions updatedOptions) maybeHighlightedOptionValue
-                        , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
-                        , BlurInput
-                        ]
-                    )
 
-                MultiSelectConfig _ _ _ ->
-                    ( { model
-                        | options = updatedOptions
-                        , searchString = SearchString.reset
-                      }
-                        |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-                    , batch
-                        [ makeEffectsWhenValuesChanges (selectedOptions updatedOptions) maybeHighlightedOptionValue
-                        , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
-                        , FocusInput
-                        ]
-                    )
+                maybeNewlySelectedOption =
+                    maybeHighlightedOption |> Maybe.andThen (\highlightedOption -> OptionsUtilities.findOptionByOptionValue (Option.getOptionValue highlightedOption) updatedOptions)
+            in
+            case maybeNewlySelectedOption of
+                Just newlySelectedOption ->
+                    case SelectionMode.getSelectionMode model.selectionConfig of
+                        SelectionMode.SingleSelect ->
+                            ( { model
+                                | options = updatedOptions
+                                , searchString = SearchString.reset
+                              }
+                                |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
+                            , batch
+                                [ makeEffectsWhenSelectingAnOption
+                                    newlySelectedOption
+                                    (SelectionMode.getEventMode model.selectionConfig)
+                                    (SelectionMode.getSelectionMode model.selectionConfig)
+                                    model.selectedValueEncoding
+                                    (selectedOptions updatedOptions)
+                                , makeEffectsForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
+                                , BlurInput
+                                ]
+                            )
+
+                        SelectionMode.MultiSelect ->
+                            ( { model
+                                | options = updatedOptions
+                                , searchString = SearchString.reset
+                              }
+                                |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
+                            , batch
+                                [ makeEffectsWhenSelectingAnOption
+                                    newlySelectedOption
+                                    (SelectionMode.getEventMode model.selectionConfig)
+                                    (SelectionMode.getSelectionMode model.selectionConfig)
+                                    model.selectedValueEncoding
+                                    (selectedOptions updatedOptions)
+                                , makeEffectsForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
+                                , FocusInput
+                                ]
+                            )
+
+                Nothing ->
+                    ( model, ReportErrorMessage "Unable select highlighted option" )
 
         DeleteInputForSingleSelect ->
             case model.selectionConfig of
@@ -1057,8 +1182,10 @@ update msg model =
                 , rightSlot = updateRightSlot model.rightSlot model.selectionConfig True (updatedOptions |> selectedOptions)
               }
             , makeEffectsWhenValuesChanges
+                (SelectionMode.getEventMode model.selectionConfig)
+                (SelectionMode.getSelectionMode model.selectionConfig)
+                model.selectedValueEncoding
                 (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
-                Nothing
             )
 
         RemoveMultiSelectValue indexWhereToDelete ->
@@ -1071,8 +1198,10 @@ update msg model =
                 , rightSlot = updateRightSlot model.rightSlot model.selectionConfig True (updatedOptions |> selectedOptions)
               }
             , makeEffectsWhenValuesChanges
+                (SelectionMode.getEventMode model.selectionConfig)
+                (SelectionMode.getSelectionMode model.selectionConfig)
+                model.selectedValueEncoding
                 (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
-                Nothing
             )
 
         RequestAllOptions ->
@@ -1123,17 +1252,16 @@ update msg model =
                                         (OptionValue.stringToOptionValue valueString)
                                         selectedValueIndex
                                         model.options
-
-                                maybeSelectedOptionValue =
-                                    Just (OptionValue.stringToOptionValue valueString)
                             in
                             ( { model
                                 | options = updatedOptions
                                 , rightSlot = updateRightSlot model.rightSlot model.selectionConfig True (updatedOptions |> selectedOptions)
                               }
                             , makeEffectsWhenValuesChanges
+                                (SelectionMode.getEventMode model.selectionConfig)
+                                (SelectionMode.getSelectionMode model.selectionConfig)
+                                model.selectedValueEncoding
                                 (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
-                                maybeSelectedOptionValue
                             )
 
                         TransformAndValidate.ValidationFailed valueString selectedValueIndex validationFailureMessages ->
@@ -1144,17 +1272,16 @@ update msg model =
                                         (OptionValue.stringToOptionValue valueString)
                                         selectedValueIndex
                                         model.options
-
-                                maybeSelectedOptionValue =
-                                    Just (OptionValue.stringToOptionValue valueString)
                             in
                             ( { model
                                 | options = updatedOptions
                                 , rightSlot = updateRightSlot model.rightSlot model.selectionConfig True (updatedOptions |> selectedOptions)
                               }
                             , makeEffectsWhenValuesChanges
+                                (SelectionMode.getEventMode model.selectionConfig)
+                                (SelectionMode.getSelectionMode model.selectionConfig)
+                                model.selectedValueEncoding
                                 (updatedOptions |> selectedOptions |> OptionsUtilities.cleanupEmptySelectedOptions)
-                                maybeSelectedOptionValue
                             )
 
                         TransformAndValidate.ValidationPending _ _ ->
@@ -1177,6 +1304,438 @@ update msg model =
 
                 Err error ->
                     ( model, ReportErrorMessage (Json.Decode.errorToString error) )
+
+        AttributeChanged ( attributeName, newAttributeValue ) ->
+            case attributeName of
+                "allow-custom-options" ->
+                    case newAttributeValue of
+                        "" ->
+                            ( { model
+                                | selectionConfig =
+                                    SelectionMode.setAllowCustomOptionsWithBool
+                                        True
+                                        Nothing
+                                        model.selectionConfig
+                              }
+                            , NoEffect
+                            )
+
+                        "false" ->
+                            ( { model
+                                | selectionConfig =
+                                    SelectionMode.setAllowCustomOptionsWithBool
+                                        False
+                                        Nothing
+                                        model.selectionConfig
+                              }
+                            , NoEffect
+                            )
+
+                        customOptionHint ->
+                            ( { model
+                                | selectionConfig =
+                                    SelectionMode.setAllowCustomOptionsWithBool
+                                        True
+                                        (Just customOptionHint)
+                                        model.selectionConfig
+                              }
+                            , NoEffect
+                            )
+
+                "disabled" ->
+                    ( { model | selectionConfig = setIsDisabled True model.selectionConfig }
+                    , NoEffect
+                    )
+
+                "events-only" ->
+                    ( { model
+                        | selectionConfig =
+                            SelectionMode.setEventsOnly
+                                True
+                                model.selectionConfig
+                      }
+                    , NoEffect
+                    )
+
+                "loading" ->
+                    ( { model
+                        | rightSlot =
+                            updateRightSlotLoading
+                                True
+                                model.selectionConfig
+                                (hasSelectedOption model.options)
+                      }
+                    , NoEffect
+                    )
+
+                "max-dropdown-items" ->
+                    case OutputStyle.stringToMaxDropdownItems newAttributeValue of
+                        Ok maxDropdownItems ->
+                            ( { model
+                                | selectionConfig = setMaxDropdownItems maxDropdownItems model.selectionConfig
+                              }
+                                |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
+                            , NoEffect
+                            )
+
+                        Err err ->
+                            ( model
+                            , ReportErrorMessage
+                                err
+                            )
+
+                "multi-select" ->
+                    ( { model
+                        | selectionConfig = SelectionMode.setMultiSelectModeWithBool True model.selectionConfig
+                      }
+                        |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
+                    , batch
+                        [ ReportReady
+                        , makeEffectsForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
+                        ]
+                    )
+
+                "multi-select-single-item-removal" ->
+                    ( { model
+                        | selectionConfig = setSingleItemRemoval EnableSingleItemRemoval model.selectionConfig
+                      }
+                    , ReportReady
+                    )
+
+                "option-sorting" ->
+                    case stringToOptionSort newAttributeValue of
+                        Ok optionSorting ->
+                            ( { model | optionSort = optionSorting }, NoEffect )
+
+                        Err error ->
+                            ( model, ReportErrorMessage error )
+
+                "output-style" ->
+                    case SelectionMode.stringToOutputStyle newAttributeValue of
+                        Ok outputStyle ->
+                            let
+                                newSelectionConfig =
+                                    SelectionMode.setOutputStyle
+                                        outputStyle
+                                        model.selectionConfig
+                            in
+                            ( { model
+                                | selectionConfig = newSelectionConfig
+                                , rightSlot = updateRightSlot model.rightSlot newSelectionConfig True model.options
+                              }
+                            , FetchOptionsFromDom
+                            )
+
+                        Err _ ->
+                            ( model, ReportErrorMessage ("Invalid output style: " ++ newAttributeValue) )
+
+                "placeholder" ->
+                    ( { model | selectionConfig = SelectionMode.setPlaceholder ( True, newAttributeValue ) model.selectionConfig }
+                    , NoEffect
+                    )
+
+                "search-string-minimum-length" ->
+                    case newAttributeValue of
+                        "" ->
+                            ( { model
+                                | selectionConfig =
+                                    setSearchStringMinimumLength
+                                        NoMinimumToSearchStringLength
+                                        model.selectionConfig
+                              }
+                                |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
+                            , NoEffect
+                            )
+
+                        _ ->
+                            case PositiveInt.fromString newAttributeValue of
+                                Just minimumLength ->
+                                    ( { model
+                                        | selectionConfig =
+                                            setSearchStringMinimumLength
+                                                (FixedSearchStringMinimumLength minimumLength)
+                                                model.selectionConfig
+                                      }
+                                        |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
+                                    , NoEffect
+                                    )
+
+                                Nothing ->
+                                    ( model
+                                    , ReportErrorMessage "Search string minimum length needs to be a positive integer"
+                                    )
+
+                "selected-option-goes-to-top" ->
+                    ( { model
+                        | selectionConfig =
+                            setSelectedItemStaysInPlaceWithBool
+                                False
+                                model.selectionConfig
+                      }
+                    , NoEffect
+                    )
+
+                "selected-value" ->
+                    case SelectedValueEncoding.valuesFromFlags model.selectedValueEncoding newAttributeValue of
+                        Ok selectedValueStrings ->
+                            case selectedValueStrings of
+                                [] ->
+                                    clearAllSelectedOption model
+
+                                [ selectedValueString ] ->
+                                    case selectedValueString of
+                                        "" ->
+                                            clearAllSelectedOption model
+
+                                        _ ->
+                                            let
+                                                newOptions =
+                                                    model.options
+                                                        |> List.map Option.deselectOption
+                                                        |> addAndSelectOptionsInOptionsListByString
+                                                            selectedValueStrings
+                                            in
+                                            ( { model
+                                                | options = newOptions
+                                              }
+                                                |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
+                                            , makeEffectsWhenValuesChanges
+                                                (SelectionMode.getEventMode model.selectionConfig)
+                                                (SelectionMode.getSelectionMode model.selectionConfig)
+                                                model.selectedValueEncoding
+                                                (OptionsUtilities.selectedOptions newOptions)
+                                            )
+
+                                _ ->
+                                    let
+                                        newOptions =
+                                            model.options
+                                                |> List.map Option.deselectOption
+                                                |> addAndSelectOptionsInOptionsListByString
+                                                    selectedValueStrings
+                                    in
+                                    ( { model
+                                        | options = newOptions
+                                      }
+                                        |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
+                                    , NoEffect
+                                    )
+
+                        Err error ->
+                            ( model, ReportErrorMessage error )
+
+                "selected-value-encoding" ->
+                    case SelectedValueEncoding.fromString newAttributeValue of
+                        Ok selectedValueEncoding ->
+                            ( { model
+                                | selectedValueEncoding =
+                                    selectedValueEncoding
+                              }
+                            , NoEffect
+                            )
+
+                        Err error ->
+                            ( model
+                            , ReportErrorMessage error
+                            )
+
+                "show-dropdown-footer" ->
+                    ( { model
+                        | selectionConfig = setDropdownStyle ShowFooter model.selectionConfig
+                      }
+                    , NoEffect
+                    )
+
+                unknownAttribute ->
+                    ( model, ReportErrorMessage ("Unknown attribute: " ++ unknownAttribute) )
+
+        AttributeRemoved attributeName ->
+            case attributeName of
+                "allow-custom-options" ->
+                    ( { model
+                        | selectionConfig =
+                            SelectionMode.setAllowCustomOptionsWithBool
+                                False
+                                Nothing
+                                model.selectionConfig
+                      }
+                    , NoEffect
+                    )
+
+                "disabled" ->
+                    ( { model | selectionConfig = setIsDisabled False model.selectionConfig }
+                    , NoEffect
+                    )
+
+                "events-only" ->
+                    ( { model
+                        | selectionConfig =
+                            SelectionMode.setEventsOnly
+                                False
+                                model.selectionConfig
+                      }
+                    , NoEffect
+                    )
+
+                "loading" ->
+                    ( { model
+                        | rightSlot =
+                            updateRightSlotLoading
+                                False
+                                model.selectionConfig
+                                (hasSelectedOption model.options)
+                      }
+                    , NoEffect
+                    )
+
+                "max-dropdown-items" ->
+                    ( { model
+                        | selectionConfig =
+                            setMaxDropdownItems
+                                (OutputStyle.FixedMaxDropdownItems OutputStyle.defaultMaxDropdownItemsNum)
+                                model.selectionConfig
+                      }
+                        |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
+                    , NoEffect
+                    )
+
+                "multi-select" ->
+                    let
+                        updatedOptions =
+                            deselectAllButTheFirstSelectedOptionInList model.options
+                    in
+                    ( { model
+                        | selectionConfig = SelectionMode.setMultiSelectModeWithBool False model.selectionConfig
+                        , options = updatedOptions
+                      }
+                        |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
+                    , batch
+                        [ ReportReady
+                        , makeEffectsForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
+                        , makeEffectsWhenValuesChanges (SelectionMode.getEventMode model.selectionConfig)
+                            (SelectionMode.getSelectionMode model.selectionConfig)
+                            model.selectedValueEncoding
+                            (selectedOptions updatedOptions)
+                        ]
+                    )
+
+                "multi-select-single-item-removal" ->
+                    ( { model
+                        | selectionConfig =
+                            setSingleItemRemoval
+                                DisableSingleItemRemoval
+                                model.selectionConfig
+                      }
+                    , ReportReady
+                    )
+
+                "option-sorting" ->
+                    ( { model | optionSort = NoSorting }, NoEffect )
+
+                "output-style" ->
+                    let
+                        newSelectionConfig =
+                            SelectionMode.setOutputStyle
+                                CustomHtml
+                                model.selectionConfig
+                    in
+                    ( { model
+                        | selectionConfig = newSelectionConfig
+                        , rightSlot = updateRightSlot model.rightSlot newSelectionConfig True model.options
+                      }
+                    , FetchOptionsFromDom
+                    )
+
+                "placeholder" ->
+                    ( { model
+                        | selectionConfig =
+                            SelectionMode.setPlaceholder ( False, "" )
+                                model.selectionConfig
+                      }
+                    , NoEffect
+                    )
+
+                "search-string-minimum-length" ->
+                    ( { model
+                        | selectionConfig =
+                            setSearchStringMinimumLength
+                                NoMinimumToSearchStringLength
+                                model.selectionConfig
+                      }
+                        |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
+                    , NoEffect
+                    )
+
+                "selected-option-goes-to-top" ->
+                    ( { model
+                        | selectionConfig =
+                            setSelectedItemStaysInPlaceWithBool
+                                True
+                                model.selectionConfig
+                      }
+                    , NoEffect
+                    )
+
+                "selected-value" ->
+                    clearAllSelectedOption model
+
+                "selected-value-encoding" ->
+                    ( { model
+                        | selectedValueEncoding =
+                            SelectedValueEncoding.defaultSelectedValueEncoding
+                      }
+                    , NoEffect
+                    )
+
+                "show-dropdown-footer" ->
+                    ( { model
+                        | selectionConfig = setDropdownStyle NoFooter model.selectionConfig
+                      }
+                    , NoEffect
+                    )
+
+                unknownAttribute ->
+                    ( model, ReportErrorMessage ("Unknown attribute: " ++ unknownAttribute) )
+
+        CustomOptionHintChanged customOptionHint ->
+            ( { model
+                | selectionConfig =
+                    SelectionMode.setCustomOptionHint
+                        customOptionHint
+                        model.selectionConfig
+              }
+            , NoEffect
+            )
+
+        RequestConfigState ->
+            ( model
+            , DumpConfigState
+                (ConfigDump.encodeConfig
+                    model.selectionConfig
+                    model.optionSort
+                    model.selectedValueEncoding
+                    model.rightSlot
+                )
+            )
+
+        RequestSelectedValues ->
+            ( model
+            , DumpSelectedValues
+                (Json.Encode.object
+                    [ ( "value"
+                      , SelectedValueEncoding.selectedValue
+                            (SelectionMode.getSelectionMode model.selectionConfig)
+                            model.options
+                      )
+                    , ( "rawValue"
+                      , SelectedValueEncoding.rawSelectedValue
+                            (SelectionMode.getSelectionMode model.selectionConfig)
+                            model.selectedValueEncoding
+                            model.options
+                      )
+                    ]
+                )
+            )
 
 
 perform : Effect -> Cmd Msg
@@ -1229,7 +1788,7 @@ perform effect =
         ReportOptionSelected value ->
             optionSelected value
 
-        OptionDeselected value ->
+        ReportOptionDeselected value ->
             optionDeselected value
 
         OptionsUpdated bool ->
@@ -1256,6 +1815,15 @@ perform effect =
         ReportInitialValueSet value ->
             initialValueSet value
 
+        DumpConfigState value ->
+            dumpConfigState value
+
+        DumpSelectedValues value ->
+            dumpSelectedValues value
+
+        ChangeTheLightDom lightDomChange_ ->
+            lightDomChange (LightDomChange.encode lightDomChange_)
+
 
 batch : List Effect -> Effect
 batch effects =
@@ -1276,8 +1844,13 @@ deselectOption model option =
       }
         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
     , batch
-        [ makeEffectsWhenValuesChanges (selectedOptions updatedOptions) Nothing
-        , makeCommandMessagesForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
+        [ makeEffectsWhenDeselectingAnOption
+            option
+            (SelectionMode.getEventMode model.selectionConfig)
+            (SelectionMode.getSelectionMode model.selectionConfig)
+            model.selectedValueEncoding
+            (selectedOptions updatedOptions)
+        , makeEffectsForUpdatingOptionsInTheWebWorker model.searchStringDebounceLength model.searchString
         ]
     )
 
@@ -1285,22 +1858,16 @@ deselectOption model option =
 clearAllSelectedOption : Model -> ( Model, Effect )
 clearAllSelectedOption model =
     let
-        deselectedOptions : List Option
-        deselectedOptions =
-            if List.isEmpty <| selectedOptionsToTuple model.options then
-                -- no deselected options
-                []
-
-            else
-                -- an option has been deselected. return the deselected value as a tuple.
-                model.options
+        optionsAboutToBeDeselected : List Option
+        optionsAboutToBeDeselected =
+            OptionsUtilities.selectedOptions model.options
 
         deselectEventEffect =
-            if List.isEmpty deselectedOptions then
+            if List.isEmpty optionsAboutToBeDeselected then
                 NoEffect
 
             else
-                OptionDeselected (Ports.optionsEncoder deselectedOptions)
+                ReportOptionDeselected (Ports.optionsEncoder (deselectAllOptionsInOptionsList optionsAboutToBeDeselected))
 
         newOptions =
             deselectAllOptionsInOptionsList model.options
@@ -1318,7 +1885,10 @@ clearAllSelectedOption model =
         , searchString = SearchString.reset
       }
     , batch
-        [ makeEffectsWhenValuesChanges [] Nothing
+        [ makeEffectsWhenValuesChanges (SelectionMode.getEventMode model.selectionConfig)
+            (SelectionMode.getSelectionMode model.selectionConfig)
+            model.selectedValueEncoding
+            []
         , deselectEventEffect
         , focusEffect
         ]
@@ -1378,20 +1948,6 @@ updatePartOfTheModelWithChangesThatEffectTheOptionsWhenTheMouseMoves rightSlot s
                 (hasSelectedOption options)
                 (options |> selectedOptions)
     }
-
-
-updateTheFullListOfOptions : SelectionConfig -> SearchString -> List Option -> List Option
-updateTheFullListOfOptions selectionMode searchString options =
-    options
-        |> OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionMode searchString
-
-
-updateTheOptionsForTheDropdown : SelectionConfig -> List Option -> List Option
-updateTheOptionsForTheDropdown selectionMode options =
-    -- TODO This function can go I think, it just has some tests
-    options
-        |> sortOptionsBySearchFilterTotalScore
-        |> figureOutWhichOptionsToShowInTheDropdown selectionMode
 
 
 figureOutWhichOptionsToShowInTheDropdown : SelectionConfig -> List Option -> List Option
@@ -2724,8 +3280,8 @@ valueCasingPartsAttribute selectionConfig hasError hasPendingValidation =
         )
 
 
-makeEffectsWhenValuesChanges : List Option -> Maybe OptionValue -> Effect
-makeEffectsWhenValuesChanges selectedOptions maybeSelectedValue =
+makeEffectsWhenValuesChanges : OutputStyle.EventsMode -> SelectionMode.SelectionMode -> SelectedValueEncoding.SelectedValueEncoding -> List Option -> Effect
+makeEffectsWhenValuesChanges eventsMode selectionMode selectedValueEncoding selectedOptions =
     let
         valueChangeCmd =
             if OptionsUtilities.allOptionsAreValid selectedOptions then
@@ -2757,23 +3313,37 @@ makeEffectsWhenValuesChanges selectedOptions maybeSelectedValue =
             else
                 NoEffect
 
-        -- Any time we select a new value we need to emit an `optionSelected` event.
-        optionSelectedCmd =
-            case maybeSelectedValue of
-                Just selectedValue ->
-                    case findOptionByOptionValue selectedValue selectedOptions of
-                        Just option ->
-                            if Option.isValid option then
-                                ReportOptionSelected (Ports.optionEncoder option)
-
-                            else
-                                NoEffect
-
-                        Nothing ->
-                            NoEffect
-
-                Nothing ->
+        lightDomChangeEffect =
+            case eventsMode of
+                OutputStyle.EventsOnly ->
                     NoEffect
+
+                OutputStyle.AllowLightDomChanges ->
+                    ChangeTheLightDom
+                        (LightDomChange.UpdateSelectedValue
+                            (Json.Encode.object
+                                [ ( "rawValue"
+                                  , SelectedValueEncoding.rawSelectedValue
+                                        selectionMode
+                                        selectedValueEncoding
+                                        selectedOptions
+                                  )
+                                , ( "value"
+                                  , SelectedValueEncoding.selectedValue
+                                        selectionMode
+                                        selectedOptions
+                                  )
+                                , ( "selectionMode"
+                                  , case selectionMode of
+                                        SelectionMode.SingleSelect ->
+                                            Json.Encode.string "single-select"
+
+                                        SelectionMode.MultiSelect ->
+                                            Json.Encode.string "multi-select"
+                                  )
+                                ]
+                            )
+                        )
 
         customValidationCmd =
             if OptionsUtilities.hasAnyPendingValidation selectedOptions then
@@ -2789,13 +3359,39 @@ makeEffectsWhenValuesChanges selectedOptions maybeSelectedValue =
         [ valueChangeCmd
         , customOptionCmd
         , clearCmd
-        , optionSelectedCmd
         , customValidationCmd
+        , lightDomChangeEffect
         ]
 
 
-makeCommandMessagesForUpdatingOptionsInTheWebWorker : Float -> SearchString -> Effect
-makeCommandMessagesForUpdatingOptionsInTheWebWorker searchStringDebounceLength searchString =
+makeEffectsWhenSelectingAnOption : Option -> OutputStyle.EventsMode -> SelectionMode.SelectionMode -> SelectedValueEncoding.SelectedValueEncoding -> List Option -> Effect
+makeEffectsWhenSelectingAnOption newlySelectedOption eventsMode selectionMode selectedValueEncoding options =
+    let
+        -- Any time we select a new value we need to emit an `optionSelected` event.
+        optionSelectedEffects =
+            ReportOptionSelected (Ports.optionEncoder newlySelectedOption)
+    in
+    batch
+        [ makeEffectsWhenValuesChanges eventsMode selectionMode selectedValueEncoding options
+        , optionSelectedEffects
+        ]
+
+
+makeEffectsWhenDeselectingAnOption : Option -> OutputStyle.EventsMode -> SelectionMode.SelectionMode -> SelectedValueEncoding.SelectedValueEncoding -> List Option -> Effect
+makeEffectsWhenDeselectingAnOption deselectedOption eventsMode selectionMode selectedValueEncoding options =
+    let
+        -- Any time we deselect a new value we need to emit an `optionDeselected` event.
+        optionDeselectedEffects =
+            ReportOptionDeselected (Ports.optionEncoder deselectedOption)
+    in
+    batch
+        [ makeEffectsWhenValuesChanges eventsMode selectionMode selectedValueEncoding options
+        , optionDeselectedEffects
+        ]
+
+
+makeEffectsForUpdatingOptionsInTheWebWorker : Float -> SearchString -> Effect
+makeEffectsForUpdatingOptionsInTheWebWorker searchStringDebounceLength searchString =
     let
         searchStringUpdateCmd =
             if SearchString.isEmpty searchString then
@@ -2807,31 +3403,60 @@ makeCommandMessagesForUpdatingOptionsInTheWebWorker searchStringDebounceLength s
     batch [ UpdateOptionsInWebWorker, searchStringUpdateCmd ]
 
 
-makeCommandMessageForInitialValue : List Option -> Effect
-makeCommandMessageForInitialValue selectedOptions =
-    case selectedOptions of
-        [] ->
-            NoEffect
+makeEffectsForInitialValue : OutputStyle.EventsMode -> SelectionMode.SelectionMode -> SelectedValueEncoding.SelectedValueEncoding -> List Option -> Effect
+makeEffectsForInitialValue eventsMode selectionMode selectedValueEncoding selectedOptions =
+    case eventsMode of
+        OutputStyle.EventsOnly ->
+            ReportInitialValueSet (Ports.optionsEncoder selectedOptions)
 
-        selectionOptions_ ->
-            ReportInitialValueSet (Ports.optionsEncoder selectionOptions_)
+        OutputStyle.AllowLightDomChanges ->
+            Batch
+                [ ReportInitialValueSet (Ports.optionsEncoder selectedOptions)
+                , ChangeTheLightDom
+                    (LightDomChange.UpdateSelectedValue
+                        (Json.Encode.object
+                            [ ( "rawValue"
+                              , SelectedValueEncoding.rawSelectedValue
+                                    selectionMode
+                                    selectedValueEncoding
+                                    selectedOptions
+                              )
+                            , ( "value"
+                              , SelectedValueEncoding.selectedValue
+                                    selectionMode
+                                    selectedOptions
+                              )
+                            , ( "selectionMode"
+                              , case selectionMode of
+                                    SelectionMode.SingleSelect ->
+                                        Json.Encode.string "single-select"
+
+                                    SelectionMode.MultiSelect ->
+                                        Json.Encode.string "multi-select"
+                              )
+                            ]
+                        )
+                    )
+                ]
 
 
 type alias Flags =
-    { value : Json.Decode.Value
+    { selectedValue : String
+    , selectedValueEncoding : Maybe String
+    , optionsJson : String
+    , isEventsOnly : Bool
     , placeholder : ( Bool, String )
     , customOptionHint : Maybe String
     , allowMultiSelect : Bool
     , outputStyle : String
     , enableMultiSelectSingleItemRemoval : Bool
-    , optionsJson : String
     , optionSort : String
     , loading : Bool
-    , maxDropdownItems : Int
+    , maxDropdownItems : Maybe String
     , disabled : Bool
     , allowCustomOptions : Bool
     , selectedItemStaysInPlace : Bool
-    , searchStringMinimumLength : Int
+    , searchStringMinimumLength : Maybe String
     , showDropdownFooter : Bool
     , transformationAndValidationJson : String
     }
@@ -2846,46 +3471,101 @@ init flags =
                     ( value, NoEffect )
 
                 Err error ->
-                    ( TransformAndValidate.empty, ReportErrorMessage (Json.Decode.errorToString error) )
+                    ( TransformAndValidate.empty
+                    , ReportErrorMessage (Json.Decode.errorToString error)
+                    )
 
-        selectionConfig =
-            makeSelectionConfig flags.disabled
-                flags.allowMultiSelect
-                flags.allowCustomOptions
-                flags.outputStyle
-                flags.placeholder
-                flags.customOptionHint
-                flags.enableMultiSelectSingleItemRemoval
-                flags.maxDropdownItems
-                flags.selectedItemStaysInPlace
-                flags.searchStringMinimumLength
-                flags.showDropdownFooter
-                valueTransformationAndValidation
-                |> Result.withDefault defaultSelectionConfig
+        ( maxDropdownItems, maxDropdownItemsErrorEffect ) =
+            case flags.maxDropdownItems of
+                Just str ->
+                    case OutputStyle.stringToMaxDropdownItems str of
+                        Ok value ->
+                            ( value, NoEffect )
 
+                        Err error ->
+                            ( OutputStyle.defaultMaxDropdownItems
+                            , ReportErrorMessage error
+                            )
+
+                Nothing ->
+                    ( OutputStyle.defaultMaxDropdownItems
+                    , NoEffect
+                    )
+
+        ( searchStringMinimumLength, searchStringMinimumLengthErrorEffect ) =
+            case flags.maxDropdownItems of
+                Just str ->
+                    case PositiveInt.fromString str of
+                        Just int ->
+                            if PositiveInt.isZero int then
+                                ( NoMinimumToSearchStringLength, NoEffect )
+
+                            else
+                                ( FixedSearchStringMinimumLength int, NoEffect )
+
+                        Nothing ->
+                            ( OutputStyle.defaultSearchStringMinimumLength
+                            , ReportErrorMessage
+                                "Invalid value for the search-string-minimum-length attribute."
+                            )
+
+                Nothing ->
+                    ( OutputStyle.defaultSearchStringMinimumLength, NoEffect )
+
+        ( selectionConfig, selectionConfigErrorEffect ) =
+            case
+                makeSelectionConfig
+                    flags.isEventsOnly
+                    flags.disabled
+                    flags.allowMultiSelect
+                    flags.allowCustomOptions
+                    flags.outputStyle
+                    flags.placeholder
+                    flags.customOptionHint
+                    flags.enableMultiSelectSingleItemRemoval
+                    maxDropdownItems
+                    flags.selectedItemStaysInPlace
+                    searchStringMinimumLength
+                    flags.showDropdownFooter
+                    valueTransformationAndValidation
+            of
+                Ok value ->
+                    ( value, NoEffect )
+
+                Err error ->
+                    -- TODO this should return some invalid selection config
+                    ( defaultSelectionConfig, ReportErrorMessage error )
+
+        -- TODO report an error if this is an inlaid value
         optionSort =
             stringToOptionSort flags.optionSort
                 |> Result.withDefault NoSorting
 
+        -- TODO report an error if this is an inlaid value
+        selectedValueEncoding =
+            SelectedValueEncoding.fromMaybeString flags.selectedValueEncoding
+                |> Result.withDefault SelectedValueEncoding.defaultSelectedValueEncoding
+
         ( initialValues, initialValueErrEffect ) =
-            case Json.Decode.decodeValue (Json.Decode.oneOf [ valuesDecoder, valueDecoder ]) flags.value of
+            case SelectedValueEncoding.valuesFromFlags selectedValueEncoding flags.selectedValue of
                 Ok values ->
                     ( values, NoEffect )
 
                 Err error ->
-                    ( [], ReportErrorMessage (Json.Decode.errorToString error) )
+                    ( [], ReportErrorMessage error )
 
         ( optionsWithInitialValueSelected, errorEffect ) =
             case Json.Decode.decodeString (Option.optionsDecoder OptionDisplay.MatureOption (SelectionMode.getOutputStyle selectionConfig)) flags.optionsJson of
                 Ok options ->
-                    case selectionConfig of
-                        SingleSelectConfig _ _ _ ->
+                    case SelectionMode.getSelectionMode selectionConfig of
+                        SelectionMode.SingleSelect ->
                             case List.head initialValues of
                                 Just initialValueStr_ ->
                                     if isOptionValueInListOfOptionsByValue (OptionValue.stringToOptionValue initialValueStr_) options then
                                         let
                                             optionsWithUniqueValues =
-                                                options |> List.Extra.uniqueBy Option.getOptionValueAsString
+                                                options
+                                                    |> List.Extra.uniqueBy Option.getOptionValueAsString
                                         in
                                         ( selectOptionsInOptionsListByString
                                             initialValues
@@ -2904,7 +3584,7 @@ init flags =
                                     in
                                     ( optionsWithUniqueValues, NoEffect )
 
-                        MultiSelectConfig _ _ _ ->
+                        SelectionMode.MultiSelect ->
                             let
                                 -- Don't include any empty options, that doesn't make sense.
                                 optionsWithInitialValues =
@@ -2960,16 +3640,24 @@ init flags =
                             SelectionMode.MultiSelect ->
                                 updateRightSlotForDatalist optionsWithInitialValueSelectedSorted
 
-      -- TODO Should these be passed as flags?
+      -- TODO Should the value casing's initial values be passed in as flags?
       , valueCasing = ValueCasing 100 45
+      , selectedValueEncoding = selectedValueEncoding
       }
     , batch
         [ errorEffect
+        , maxDropdownItemsErrorEffect
+        , searchStringMinimumLengthErrorEffect
         , initialValueErrEffect
         , ReportReady
-        , makeCommandMessageForInitialValue (selectedOptions optionsWithInitialValueSelected)
+        , makeEffectsForInitialValue
+            (SelectionMode.getEventMode selectionConfig)
+            (SelectionMode.getSelectionMode selectionConfig)
+            selectedValueEncoding
+            (selectedOptions optionsWithInitialValueSelected)
         , UpdateOptionsInWebWorker
         , valueTransformationAndValidationErrorEffect
+        , selectionConfigErrorEffect
         ]
     )
 
@@ -3025,6 +3713,12 @@ subscriptions _ =
         , updateSearchResultDataWithWebWorkerReceiver UpdateSearchResultsForOptions
         , customValidationReceiver CustomValidationResponse
         , transformationAndValidationReceiver UpdateTransformationAndValidation
+        , attributeChanged AttributeChanged
+        , attributeRemoved AttributeRemoved
+        , customOptionHintReceiver CustomOptionHintChanged
+        , requestConfigState (\() -> RequestConfigState)
+        , requestSelectedValues (\() -> RequestSelectedValues)
+        , selectedValueEncodingChangeReceiver SelectedValueEncodingChanged
         ]
 
 

@@ -1,14 +1,16 @@
-module Option.SelectedOptionOrdering exposing (..)
+module Events.SelectingOptions exposing (suite)
 
+import Expect
 import Json.Decode
 import Json.Encode
 import LightDomChange
 import MuchSelect exposing (Flags)
+import Ports
 import ProgramTest exposing (ProgramTest)
 import SimulatedEffect.Cmd
 import SimulatedEffect.Ports
+import SimulatedEffect.Sub
 import Test exposing (Test, describe, test)
-import Test.Html.Selector exposing (all, classes, containing, id, text)
 
 
 booksJsonWithIndexesAndWithSelected =
@@ -39,15 +41,15 @@ booksJsonWithIndexesAndWithSelected =
 """
 
 
-flagsBookOptionsWithSelected : Flags
-flagsBookOptionsWithSelected =
+flags : Flags
+flags =
     { isEventsOnly = False
     , selectedValue = ""
     , selectedValueEncoding = Nothing
-    , placeholder = ( True, "A book" )
+    , placeholder = ( True, "" )
     , customOptionHint = Nothing
     , allowMultiSelect = False
-    , outputStyle = "customHtml"
+    , outputStyle = "datalist"
     , enableMultiSelectSingleItemRemoval = False
     , optionsJson = booksJsonWithIndexesAndWithSelected
     , optionSort = ""
@@ -154,9 +156,17 @@ simulatedEffects effect =
 
 simulateSubscriptions : MuchSelect.Model -> ProgramTest.SimulatedSub MuchSelect.Msg
 simulateSubscriptions _ =
-    SimulatedEffect.Ports.subscribe "addOptions"
-        Json.Decode.value
-        MuchSelect.AddOptions
+    SimulatedEffect.Sub.batch
+        [ SimulatedEffect.Ports.subscribe "valueCleared"
+            Json.Decode.value
+            (\_ -> MuchSelect.ClearAllSelectedOptions)
+        , SimulatedEffect.Ports.subscribe "deselectOptionReceiver"
+            Json.Decode.value
+            MuchSelect.DeselectOption
+        , SimulatedEffect.Ports.subscribe "selectOptionReceiver"
+            Json.Decode.value
+            (\jsonValue -> MuchSelect.SelectOption jsonValue)
+        ]
 
 
 start : ProgramTest MuchSelect.Model MuchSelect.Msg MuchSelect.Effect
@@ -165,34 +175,68 @@ start =
         { init = MuchSelect.init, update = MuchSelect.update, view = MuchSelect.view }
         |> ProgramTest.withSimulatedEffects simulatedEffects
         |> ProgramTest.withSimulatedSubscriptions simulateSubscriptions
-        |> ProgramTest.start flagsBookOptionsWithSelected
+        |> ProgramTest.start flags
 
 
 suite : Test
 suite =
-    describe "Selected Option Ordering"
-        [ test "initial selected value should be selected" <|
+    describe "Changing the value should trigger events"
+        [ test "clearing the selected value should trigger an optionDeselected event" <|
             \_ ->
                 start
-                    |> ProgramTest.ensureViewHas
-                        [ all
-                            [ id "selected-value"
-                            , containing [ text "Matilda" ]
+                    |> ProgramTest.simulateIncomingPort
+                        "valueCleared"
+                        (Json.Encode.object [])
+                    |> ProgramTest.expectOutgoingPortValues
+                        "optionDeselected"
+                        Ports.optionsDecoder
+                        (Expect.equal
+                            [ [ { value = "Matilda"
+                                , label = "Matilda"
+                                , isValid = True
+                                , selectedIndex = -1
+                                }
+                              ]
                             ]
-                        ]
-                    |> ProgramTest.ensureViewHas
-                        [ classes [ "selected", "option" ]
-                        , containing
-                            [ text "Matilda" ]
-                        ]
-                    |> ProgramTest.ensureViewHas
-                        [ classes [ "option" ]
-                        , containing
-                            [ text "The BFG" ]
-                        ]
-                    |> ProgramTest.expectViewHasNot
-                        [ classes [ "selected", "option" ]
-                        , containing
-                            [ text "The BFG" ]
-                        ]
+                        )
+        , test "deselecting the selected value should trigger an optionDeselected event" <|
+            \_ ->
+                start
+                    |> ProgramTest.simulateIncomingPort
+                        "deselectOptionReceiver"
+                        (Json.Encode.object
+                            [ ( "value", Json.Encode.string "Matilda" )
+                            ]
+                        )
+                    |> ProgramTest.expectOutgoingPortValues
+                        "optionDeselected"
+                        Ports.optionDecoder
+                        (Expect.equal
+                            [ { value = "Matilda"
+                              , label = "Matilda"
+                              , isValid = True
+                              , selectedIndex = -1
+                              }
+                            ]
+                        )
+        , test "selecting an option should trigger an optionSelected event" <|
+            \_ ->
+                start
+                    |> ProgramTest.simulateIncomingPort
+                        "selectOptionReceiver"
+                        (Json.Encode.object
+                            [ ( "value", Json.Encode.string "The Enormous Crocodile" )
+                            ]
+                        )
+                    |> ProgramTest.expectOutgoingPortValues
+                        "optionSelected"
+                        Ports.optionDecoder
+                        (Expect.equal
+                            [ { value = "The Enormous Crocodile"
+                              , label = "The Enormous Crocodile"
+                              , isValid = True
+                              , selectedIndex = -1
+                              }
+                            ]
+                        )
         ]

@@ -27,7 +27,7 @@
               <option>green</option>
             </select>
           </much-select>`);
-          expect(el.parsedSelectedValue).to.eql(["red", "green"]);
+          expect(await el.selectedValue).to.eql(["red", "green"]);
         });
         it("preserver the order of the selected values even if the order of the options are different", async () => {
           const el = /** @type {MuchSelect} */ await fixture(html` <much-select
@@ -39,7 +39,7 @@
               <option>red</option>
             </select>
           </much-select>`);
-          expect(el.parsedSelectedValue).to.eql(["red", "green"]);
+          expect(await el.selectedValue).to.eql(["red", "green"]);
         });
       });
       describe("json encoded selected-value", () => {
@@ -54,7 +54,7 @@
               <option>green</option>
             </select>
           </much-select>`);
-          expect(el.parsedSelectedValue).to.eql(["red", "green"]);
+          expect(await el.selectedValue).to.eql(["red", "green"]);
         });
         it("preserver the order of the selected values even if the order of the options are different", async () => {
           const el = /** @type {MuchSelect} */ await fixture(html`<much-select
@@ -67,7 +67,7 @@
               <option>red</option>
             </select>
           </much-select>`);
-          expect(el.parsedSelectedValue).to.eql(["red", "green"]);
+          expect(await el.selectedValue).to.eql(["red", "green"]);
         });
 
         it("can decode a selected value that's a string of IDs", async () => {
@@ -80,7 +80,7 @@
           </much-select>`);
 
           // The selected value should be set.
-          expect(el.parsedSelectedValue).to.eql(["211107950"]);
+          expect(await el.selectedValue).to.eql(["211107950"]);
 
           // There should be 1 option, the selected value.
           expect(await el.getAllOptions()).to.eql([
@@ -145,10 +145,7 @@
           </much-select>`);
 
           // The parsed selected value should be an empty array.
-          expect(el.parsedSelectedValue).to.eql([]);
-
-          // The selected value should be an empty string.
-          expect(el.selectedValue).to.equal("");
+          expect(await el.selectedValue).to.eql([]);
         });
 
         it("works in select mode with an empty selected value", async () => {
@@ -158,11 +155,8 @@
           >
           </much-select>`);
 
-          // The parsed selected value should be an empty array.
-          expect(el.parsedSelectedValue).to.eql("");
-
           // The selected value should be an empty string.
-          expect(el.selectedValue).to.equal("");
+          expect(await el.selectedValue).to.equal("");
         });
       });
     });

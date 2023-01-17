@@ -4,7 +4,7 @@
 <script type="module">
   import { runTests } from "@web/test-runner-mocha";
   import { expect } from "@esm-bundle/chai";
-  import { html, fixture } from "@open-wc/testing";
+  import { html, fixture, nextFrame } from "@open-wc/testing";
 
   import MuchSelect from "../../dist/much-select-debug.js";
 
@@ -21,7 +21,7 @@
           const el = /** @type {MuchSelect} */ await fixture(
             html`<much-select></much-select>`
           );
-          expect(el.showDropdownFooter).to.be.false;
+          expect(await el.showDropdownFooter).to.be.false;
         });
 
         it("an empty value should set it to true", async () => {
@@ -29,7 +29,8 @@
             html`<much-select></much-select>`
           );
           el.setAttribute("show-dropdown-footer", "");
-          expect(el.showDropdownFooter).to.be.true;
+          await nextFrame();
+          expect(await el.showDropdownFooter).to.be.true;
         });
 
         it("setting the attribute initially should set it to true", async () => {
@@ -37,7 +38,7 @@
             html`<much-select show-dropdown-footer=""></much-select>`
           );
 
-          expect(el.showDropdownFooter).to.be.true;
+          expect(await el.showDropdownFooter).to.be.true;
         });
 
         it("removing the attribute should set it to false", async () => {
@@ -47,7 +48,7 @@
 
           el.removeAttribute("show-dropdown-footer");
 
-          expect(el.showDropdownFooter).to.be.false;
+          expect(await el.showDropdownFooter).to.be.false;
         });
       });
     });

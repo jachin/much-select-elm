@@ -4,7 +4,7 @@
 <script type="module">
   import { runTests } from "@web/test-runner-mocha";
   import { expect } from "@esm-bundle/chai";
-  import { html, fixture } from "@open-wc/testing";
+  import { html, fixture, nextFrame, waitUntil } from "@open-wc/testing";
 
   import MuchSelect from "../../dist/much-select-debug.js";
 
@@ -26,9 +26,12 @@
                 name="my-special-value"
             /></much-select>`
           );
-          expect(
-            el.querySelector("[slot='hidden-value-input']").getAttribute("value")
-          ).to.equal("");
+          await waitUntil(
+            async () =>
+              el
+                .querySelector("[slot='hidden-value-input']")
+                .getAttribute("value") === ""
+          );
         });
 
         it("should be populated with the current value on initialization", async () => {
@@ -40,9 +43,12 @@
                 name="my-special-value"
             /></much-select>`
           );
-          expect(
-            el.querySelector("[slot='hidden-value-input']").getAttribute("value")
-          ).to.equal("Tocharians");
+          await waitUntil(
+            async () =>
+              el
+                .querySelector("[slot='hidden-value-input']")
+                .getAttribute("value") === "Tocharians"
+          );
         });
 
         it("should update when the selected value changes", async () => {
@@ -55,9 +61,13 @@
             /></much-select>`
           );
           el.setAttribute("selected-value", "Chaouacha");
-          expect(
-            el.querySelector("[slot='hidden-value-input']").getAttribute("value")
-          ).to.equal("Chaouacha");
+
+          await waitUntil(
+            async () =>
+              el
+                .querySelector("[slot='hidden-value-input']")
+                .getAttribute("value") === "Chaouacha"
+          );
         });
       });
     });

@@ -16,43 +16,41 @@
 
   runTests(() => {
     describe("Attributes", () => {
-      describe("search-string-minimum-length", () => {
-        it("the default value should be 2", async () => {
+      describe("disabled", () => {
+        it("the default value should be false", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
             html`<much-select></much-select>`
           );
-          expect(await el.searchStringMinimumLength).to.equal(2);
+          expect(await el.disabled).to.be.false;
         });
 
-        it("is empty the search string minimum should be set to 0", async () => {
+        it("setting an empty attribute should set it to true", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select></much-select>`
+            html`<much-select disabled></much-select>`
           );
-          el.setAttribute("search-string-minimum-length", "");
+          expect(await el.disabled).to.be.true;
+        });
+
+        it("removing the attribute should set it to false", async () => {
+          const el = /** @type {MuchSelect} */ await fixture(
+            html`<much-select disabled></much-select>`
+          );
+          el.removeAttribute("disabled");
           await nextFrame();
-          expect(await el.searchStringMinimumLength).to.equal(0);
+          expect(await el.disabled).to.be.false;
         });
 
-        it("setting the attribute to a positive number should change the value", async () => {
+        it("using the setter should set it to true", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
             html`<much-select></much-select>`
           );
-
-          el.setAttribute("search-string-minimum-length", "5");
+          el.disabled = true;
           await nextFrame();
-          expect(await el.searchStringMinimumLength).to.equal(5);
-        });
-
-        it("setting the attribute initially sets the minimum search string length", async () => {
-          const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select search-string-minimum-length="10"></much-select>`
-          );
-
-          expect(await el.searchStringMinimumLength).to.equal(10);
+          expect(await el.disabled).to.be.true;
         });
       });
     });
-});
+  });
 </script>
 </body>
 </html>

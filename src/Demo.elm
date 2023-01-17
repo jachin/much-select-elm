@@ -66,6 +66,7 @@ type alias Model =
     , showLoadingIndicator : Bool
     , filteredOptions : ( String, List DemoOption )
     , validators : List ( Bool, Validator )
+    , isDisabled : Bool
     }
 
 
@@ -136,6 +137,7 @@ type Msg
     | ChangeOptionDemo OptionDemo
     | FilterOptions String
     | ToggleValidation Validator Bool
+    | ToggleDisabled Bool
 
 
 main : Program Flags Model Msg
@@ -159,6 +161,7 @@ init _ =
       , selectedValues = []
       , placeholder = ( "Enter a value", False )
       , showLoadingIndicator = False
+      , isDisabled = False
       , filteredOptions =
             ( ""
             , filteredOptions "" 10
@@ -301,6 +304,9 @@ update msg model =
 
                 Nothing ->
                     ( model, Cmd.none )
+
+        ToggleDisabled bool ->
+            ( { model | isDisabled = bool }, Cmd.none )
 
 
 lordOfTheRingsCharacterToDemoOption : LordOfTheRingsCharacter -> DemoOption
@@ -495,6 +501,11 @@ loadingAttribute bool =
     attributeIf bool (attribute "loading" "")
 
 
+disabledAttribute : Bool -> Attribute msg
+disabledAttribute bool =
+    attributeIf bool (attribute "disabled" "")
+
+
 view : Model -> Html Msg
 view model =
     let
@@ -523,6 +534,7 @@ view model =
             , selectedValueAttribute model.selectedValueEncoding model.selectedValues
             , placeholderAttribute model.placeholder
             , loadingAttribute model.showLoadingIndicator
+            , disabledAttribute model.isDisabled
             , onValueChanged
             , onInvalidValueChanged
             , onCustomValidationRequest
@@ -733,6 +745,31 @@ view model =
                     ]
                     []
                 , label [ for "loading-indicator-is-on" ] [ text "Show" ]
+                ]
+            , fieldset []
+                [ legend []
+                    [ text "Disabled"
+                    ]
+                , input
+                    [ type_ "radio"
+                    , name "disabled-indicator"
+                    , id "disabled-is-off"
+                    , value "false"
+                    , checked (not model.isDisabled)
+                    , onChange (\_ -> ToggleDisabled False)
+                    ]
+                    []
+                , label [ for "disabled-is-off" ] [ text "Not Disabled" ]
+                , input
+                    [ type_ "radio"
+                    , name "disabled-indicator"
+                    , id "disabled-is-on"
+                    , value "true"
+                    , checked model.isDisabled
+                    , onCheck (\_ -> ToggleDisabled True)
+                    ]
+                    []
+                , label [ for "disabled-is-on" ] [ text "Disabled" ]
                 ]
             , fieldset []
                 [ legend []

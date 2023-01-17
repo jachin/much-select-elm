@@ -21,7 +21,9 @@ element =
 
 flagsDatalistSingle : Flags
 flagsDatalistSingle =
-    { value = Json.Encode.object []
+    { isEventsOnly = False
+    , selectedValue = ""
+    , selectedValueEncoding = Nothing
     , placeholder = ( True, "" )
     , customOptionHint = Nothing
     , allowMultiSelect = False
@@ -30,11 +32,11 @@ flagsDatalistSingle =
     , optionsJson = ""
     , optionSort = ""
     , loading = False
-    , maxDropdownItems = 2
+    , maxDropdownItems = Just "2"
     , disabled = False
     , allowCustomOptions = False
     , selectedItemStaysInPlace = True
-    , searchStringMinimumLength = 2
+    , searchStringMinimumLength = Just "2"
     , showDropdownFooter = False
     , transformationAndValidationJson = ""
     }

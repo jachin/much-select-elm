@@ -4,7 +4,7 @@
 <script type="module">
   import { runTests } from "@web/test-runner-mocha";
   import { expect } from "@esm-bundle/chai";
-  import { html, fixture } from "@open-wc/testing";
+  import { html, fixture, nextFrame } from "@open-wc/testing";
 
   import MuchSelect from "../../dist/much-select-debug.js";
 
@@ -21,7 +21,7 @@
           const el = /** @type {MuchSelect} */ await fixture(
             html`<much-select></much-select>`
           );
-          expect(el.optionSorting).to.equal("no-sorting");
+          expect(await el.optionSorting).to.equal("no-sorting");
         });
 
         it("is empty the default value of no-sorting should be used", async () => {
@@ -29,14 +29,14 @@
             html`<much-select option-sorting=""></much-select>`
           );
           el.setAttribute("search-string-minimum-length", "");
-          expect(el.optionSorting).to.equal("no-sorting");
+          expect(await el.optionSorting).to.equal("no-sorting");
         });
 
         it("setting the attribute to no-sorting should work", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
             html`<much-select option-sorting="no-sorting"></much-select>`
           );
-          expect(el.optionSorting).to.equal("no-sorting");
+          expect(await el.optionSorting).to.equal("no-sorting");
         });
 
         it("setting the attribute to no-sorting explicitly should persist", async () => {
@@ -51,7 +51,7 @@
             html`<much-select option-sorting="by-option-label"></much-select>`
           );
 
-          expect(el.optionSorting).to.equal("by-option-label");
+          expect(await el.optionSorting).to.equal("by-option-label");
         });
 
         it("removing the attribute should set the option sorting to default of no-sorting", async () => {
@@ -61,7 +61,37 @@
 
           el.removeAttribute("option-sorting");
 
-          expect(el.optionSorting).to.equal("no-sorting");
+          await nextFrame();
+
+          expect(await el.optionSorting).to.equal("no-sorting");
+        });
+
+        it("should be able to be set by the property", async () => {
+          const el = /** @type {MuchSelect} */ await fixture(
+            html`<much-select></much-select>`
+          );
+
+          el.optionSorting = "no-sorting";
+          await nextFrame();
+          expect(await el.optionSorting).to.equal("no-sorting");
+
+          el.optionSorting = "by-option-label";
+          await nextFrame();
+          expect(await el.optionSorting).to.equal("by-option-label");
+        });
+
+        it("should not allow a non-sense value change via the property setter", async () => {
+          const el = /** @type {MuchSelect} */ await fixture(
+            html`<much-select></much-select>`
+          );
+
+          el.optionSorting = "no-sorting";
+          await nextFrame();
+          expect(await el.optionSorting).to.equal("no-sorting");
+
+          el.optionSorting = "junk";
+          await nextFrame();
+          expect(await el.optionSorting).to.equal("no-sorting");
         });
       });
     });

@@ -39,7 +39,9 @@ simulateSub _ =
 
 flagsDatalistSingle : Flags
 flagsDatalistSingle =
-    { value = Json.Encode.object []
+    { isEventsOnly = False
+    , selectedValue = ""
+    , selectedValueEncoding = Nothing
     , placeholder = ( True, "" )
     , customOptionHint = Nothing
     , allowMultiSelect = False
@@ -48,11 +50,11 @@ flagsDatalistSingle =
     , optionsJson = ""
     , optionSort = ""
     , loading = False
-    , maxDropdownItems = 2
+    , maxDropdownItems = Just "2"
     , disabled = False
     , allowCustomOptions = False
     , selectedItemStaysInPlace = True
-    , searchStringMinimumLength = 2
+    , searchStringMinimumLength = Nothing
     , showDropdownFooter = False
     , transformationAndValidationJson = ""
     }
@@ -60,7 +62,9 @@ flagsDatalistSingle =
 
 flagsCustomHtmlSingle : Flags
 flagsCustomHtmlSingle =
-    { value = Json.Encode.object []
+    { isEventsOnly = False
+    , selectedValue = ""
+    , selectedValueEncoding = Nothing
     , placeholder = ( True, "" )
     , customOptionHint = Nothing
     , allowMultiSelect = False
@@ -69,11 +73,11 @@ flagsCustomHtmlSingle =
     , optionsJson = ""
     , optionSort = ""
     , loading = False
-    , maxDropdownItems = 2
+    , maxDropdownItems = Just "2"
     , disabled = False
     , allowCustomOptions = False
     , selectedItemStaysInPlace = True
-    , searchStringMinimumLength = 2
+    , searchStringMinimumLength = Nothing
     , showDropdownFooter = False
     , transformationAndValidationJson = ""
     }
@@ -82,7 +86,7 @@ flagsCustomHtmlSingle =
 suite : Test
 suite =
     describe "Changing the output style"
-        [ test "to custom-html should work" <|
+        [ test "to custom-html should result in an effect to fetch the options from the DOM" <|
             \() ->
                 element
                     |> ProgramTest.withSimulatedEffects simulateEffects
@@ -94,13 +98,17 @@ suite =
                     |> expectLastEffect
                         (\effect ->
                             case effect of
-                                MuchSelect.FetchOptionsFromDom ->
-                                    Expect.pass
+                                MuchSelect.Batch batchEffects ->
+                                    if List.member MuchSelect.FetchOptionsFromDom batchEffects then
+                                        Expect.pass
+
+                                    else
+                                        Expect.fail "We should be fetching options from the DOM."
 
                                 _ ->
                                     Expect.fail "We should be fetching options from the DOM."
                         )
-        , test "to datalist should work" <|
+        , test "to datalist should result in an effect to fetch the options from the DOM" <|
             \() ->
                 element
                     |> ProgramTest.withSimulatedEffects simulateEffects
@@ -112,8 +120,12 @@ suite =
                     |> expectLastEffect
                         (\effect ->
                             case effect of
-                                MuchSelect.FetchOptionsFromDom ->
-                                    Expect.pass
+                                MuchSelect.Batch batchEffects ->
+                                    if List.member MuchSelect.FetchOptionsFromDom batchEffects then
+                                        Expect.pass
+
+                                    else
+                                        Expect.fail "We should be fetching options from the DOM."
 
                                 _ ->
                                     Expect.fail "We should be fetching options from the DOM."

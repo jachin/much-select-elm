@@ -1483,7 +1483,7 @@ optionsValues options =
 
 
 
-{- This takes a list of string and a list of options.
+{- This takes a list of strings and a list of options.
    Then it selects any matching options (looking at values of the options).
 
    It also deselects any options that are NOT in the the list of string.

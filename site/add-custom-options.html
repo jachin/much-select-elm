@@ -5,7 +5,13 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!--suppress HtmlUnknownTarget -->
+  <link rel="icon" href="./favicon.ico" type="image/x-icon" />
+  <title>Much Select</title>
+  <link href="demo-styles.css" rel="stylesheet">
+  <script src="./styles.js"></script>
 </head>
+
 <body>
 
 <header id="header">
@@ -13,7 +19,7 @@
     <h1>&lt;much-select&gt;</h1>
   </div>
   <div id="page-name">
-    <h2>Elm Demo</h2>
+    <h2>Add Custom Options</h2>
   </div>
   <div id="sub-title">
     <h3>Demo and Development Playground</h3>
@@ -24,22 +30,9 @@
 
 <div class="container">
   <div class="example">
-    <div id="elm-demo"></div>
+    <div id="add-custom-options"></div>
   </div>
 </div>
-
-<script src="/elm-demo.js"></script>
-
-<script>
-  const demoDiv = document.getElementById("elm-demo");
-
-  // noinspection JSUnresolvedVariable
-  // eslint-disable-next-line no-undef
-  window.Elm.Demo.init({
-    flags: {},
-    node: demoDiv,
-  });
-</script>
 
 <footer></footer>
 
