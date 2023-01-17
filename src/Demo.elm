@@ -138,6 +138,7 @@ type Msg
     | FilterOptions String
     | ToggleValidation Validator Bool
     | ToggleDisabled Bool
+    | ChangeSelectedValue (List MuchSelectValue)
 
 
 main : Program Flags Model Msg
@@ -307,6 +308,9 @@ update msg model =
 
         ToggleDisabled bool ->
             ( { model | isDisabled = bool }, Cmd.none )
+
+        ChangeSelectedValue muchSelectValues ->
+            ( { model | selectedValues = muchSelectValues }, Cmd.none )
 
 
 lordOfTheRingsCharacterToDemoOption : LordOfTheRingsCharacter -> DemoOption
@@ -527,11 +531,11 @@ view model =
     div []
         [ Html.node "much-select"
             [ attribute "events-only" ""
+            , selectedValueAttribute model.selectedValueEncoding model.selectedValues
             , selectedValueEncodingAttribute model.selectedValueEncoding
             , allowCustomOptionsAttribute model.allowCustomOptions
             , multiSelectAttribute model.allowMultiSelect
             , outputStyleAttribute model.outputStyle
-            , selectedValueAttribute model.selectedValueEncoding model.selectedValues
             , placeholderAttribute model.placeholder
             , loadingAttribute model.showLoadingIndicator
             , disabledAttribute model.isDisabled
@@ -594,6 +598,21 @@ view model =
                             ]
                         , td []
                             [ button [ onClick ToggleMultiSelect, type_ "button" ] [ text "toggle" ]
+                            ]
+                        ]
+                    ]
+                ]
+            , fieldset []
+                [ legend [] [ text "Current Value" ]
+                , table []
+                    [ tr []
+                        [ td [] [ text "Clear" ]
+                        , td []
+                            [ if List.isEmpty model.selectedValues then
+                                button [ type_ "button", disabled True ] [ text "clear selected value" ]
+
+                              else
+                                button [ onClick (ChangeSelectedValue []), type_ "button" ] [ text "clear selected value" ]
                             ]
                         ]
                     ]
