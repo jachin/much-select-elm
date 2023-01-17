@@ -277,7 +277,7 @@ port searchStringMinimumLengthChangedReceiver : (Int -> msg) -> Sub msg
 port selectedItemStaysInPlaceChangedReceiver : (Bool -> msg) -> Sub msg
 
 
-port maxDropdownItemsChangedReceiver : (Int -> msg) -> Sub msg
+port maxDropdownItemsChangedReceiver : (String -> msg) -> Sub msg
 
 
 port showDropdownFooterChangedReceiver : (Bool -> msg) -> Sub msg

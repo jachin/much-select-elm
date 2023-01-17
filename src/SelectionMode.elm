@@ -3,7 +3,6 @@ module SelectionMode exposing
     , OutputStyle(..)
     , SelectionConfig(..)
     , SelectionMode(..)
-    , defaultMaxDropdownItems
     , defaultSelectionConfig
     , getCustomOptionHint
     , getCustomOptions
@@ -115,11 +114,6 @@ defaultSelectionConfig =
         Unfocused
 
 
-defaultMaxDropdownItems : PositiveInt
-defaultMaxDropdownItems =
-    PositiveInt.new 1000
-
-
 makeSelectionConfig :
     Bool
     -> Bool
@@ -129,7 +123,7 @@ makeSelectionConfig :
     -> ( Bool, String )
     -> Maybe String
     -> Bool
-    -> PositiveInt
+    -> MaxDropdownItems
     -> Bool
     -> SearchStringMinimumLength
     -> Bool
@@ -185,8 +179,8 @@ makeSelectionConfig isEventsOnly_ disabled allowMultiSelect allowCustomOptions o
         outputStyleResult
 
 
-makeSingleSelectOutputStyle : OutputStyle -> Bool -> Bool -> Bool -> PositiveInt -> SearchStringMinimumLength -> Bool -> Maybe String -> ValueTransformAndValidate -> Result String SingleSelectOutputStyle
-makeSingleSelectOutputStyle outputStyle isEventsOnly_ allowCustomOptions selectedItemStaysInPlace maxDropdownItemsNum searchStringMinimumLength shouldShowDropdownFooter customOptionHint transformAndValidate =
+makeSingleSelectOutputStyle : OutputStyle -> Bool -> Bool -> Bool -> MaxDropdownItems -> SearchStringMinimumLength -> Bool -> Maybe String -> ValueTransformAndValidate -> Result String SingleSelectOutputStyle
+makeSingleSelectOutputStyle outputStyle isEventsOnly_ allowCustomOptions selectedItemStaysInPlace maxDropdownItems searchStringMinimumLength shouldShowDropdownFooter customOptionHint transformAndValidate =
     case outputStyle of
         CustomHtml ->
             let
@@ -217,13 +211,6 @@ makeSingleSelectOutputStyle outputStyle isEventsOnly_ allowCustomOptions selecte
 
                     else
                         AllowLightDomChanges
-
-                maxDropdownItems =
-                    if PositiveInt.isZero maxDropdownItemsNum then
-                        NoLimitToDropdownItems
-
-                    else
-                        FixedMaxDropdownItems maxDropdownItemsNum
             in
             Ok
                 (SingleSelectCustomHtml
@@ -249,8 +236,8 @@ makeSingleSelectOutputStyle outputStyle isEventsOnly_ allowCustomOptions selecte
             Ok (SingleSelectDatalist eventsMode transformAndValidate)
 
 
-makeMultiSelectOutputStyle : OutputStyle -> Bool -> Bool -> Bool -> PositiveInt -> SearchStringMinimumLength -> Bool -> Maybe String -> ValueTransformAndValidate -> Result String MultiSelectOutputStyle
-makeMultiSelectOutputStyle outputStyle isEventsOnly_ allowCustomOptions enableMultiSelectSingleItemRemoval maxDropdownItemsNum searchStringMinimumLength shouldShowDropdownFooter customOptionHint transformAndValidate =
+makeMultiSelectOutputStyle : OutputStyle -> Bool -> Bool -> Bool -> MaxDropdownItems -> SearchStringMinimumLength -> Bool -> Maybe String -> ValueTransformAndValidate -> Result String MultiSelectOutputStyle
+makeMultiSelectOutputStyle outputStyle isEventsOnly_ allowCustomOptions enableMultiSelectSingleItemRemoval maxDropdownItems searchStringMinimumLength shouldShowDropdownFooter customOptionHint transformAndValidate =
     case outputStyle of
         CustomHtml ->
             let
@@ -281,13 +268,6 @@ makeMultiSelectOutputStyle outputStyle isEventsOnly_ allowCustomOptions enableMu
 
                     else
                         AllowLightDomChanges
-
-                maxDropdownItems =
-                    if PositiveInt.isZero maxDropdownItemsNum then
-                        NoLimitToDropdownItems
-
-                    else
-                        FixedMaxDropdownItems maxDropdownItemsNum
             in
             Ok
                 (MultiSelectCustomHtml

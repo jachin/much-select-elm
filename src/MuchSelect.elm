@@ -50,7 +50,6 @@ import OptionSorting
     exposing
         ( OptionSort(..)
         , sortOptions
-        , sortOptionsBySearchFilterTotalScore
         , stringToOptionSort
         )
 import OptionValue exposing (OptionValue(..))
@@ -255,7 +254,7 @@ type Msg
     | DeselectOptionInternal Option
     | PlaceholderAttributeChanged ( Bool, String )
     | LoadingAttributeChanged Bool
-    | MaxDropdownItemsChanged Int
+    | MaxDropdownItemsChanged String
     | ShowDropdownFooterChanged Bool
     | AllowCustomOptionsChanged ( Bool, String )
     | DisabledAttributeChanged Bool
@@ -862,17 +861,18 @@ update msg model =
             , NoEffect
             )
 
-        MaxDropdownItemsChanged int ->
-            let
-                maxDropdownItems =
-                    FixedMaxDropdownItems (PositiveInt.new int)
-            in
-            ( { model
-                | selectionConfig = setMaxDropdownItems maxDropdownItems model.selectionConfig
-              }
-                |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-            , NoEffect
-            )
+        MaxDropdownItemsChanged stringValue ->
+            case OutputStyle.stringToMaxDropdownItems stringValue of
+                Ok maxDropdownItems ->
+                    ( { model
+                        | selectionConfig = setMaxDropdownItems maxDropdownItems model.selectionConfig
+                      }
+                        |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
+                    , NoEffect
+                    )
+
+                Err error ->
+                    ( model, ReportErrorMessage error )
 
         ShowDropdownFooterChanged bool ->
             let
@@ -1369,28 +1369,19 @@ update msg model =
                     )
 
                 "max-dropdown-items" ->
-                    case PositiveInt.fromString newAttributeValue of
-                        Just maxDropdownItems ->
-                            if PositiveInt.isZero maxDropdownItems then
-                                ( { model
-                                    | selectionConfig = setMaxDropdownItems NoLimitToDropdownItems model.selectionConfig
-                                  }
-                                    |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-                                , NoEffect
-                                )
+                    case OutputStyle.stringToMaxDropdownItems newAttributeValue of
+                        Ok maxDropdownItems ->
+                            ( { model
+                                | selectionConfig = setMaxDropdownItems maxDropdownItems model.selectionConfig
+                              }
+                                |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
+                            , NoEffect
+                            )
 
-                            else
-                                ( { model
-                                    | selectionConfig = setMaxDropdownItems (FixedMaxDropdownItems maxDropdownItems) model.selectionConfig
-                                  }
-                                    |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-                                , NoEffect
-                                )
-
-                        Nothing ->
+                        Err err ->
                             ( model
                             , ReportErrorMessage
-                                "Invalid value for the max-dropdown-items attribute, it should be a positive integer."
+                                err
                             )
 
                 "multi-select" ->
@@ -1601,7 +1592,7 @@ update msg model =
                     ( { model
                         | selectionConfig =
                             setMaxDropdownItems
-                                (OutputStyle.FixedMaxDropdownItems SelectionMode.defaultMaxDropdownItems)
+                                (OutputStyle.FixedMaxDropdownItems OutputStyle.defaultMaxDropdownItemsNum)
                                 model.selectionConfig
                       }
                         |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
@@ -1957,20 +1948,6 @@ updatePartOfTheModelWithChangesThatEffectTheOptionsWhenTheMouseMoves rightSlot s
                 (hasSelectedOption options)
                 (options |> selectedOptions)
     }
-
-
-updateTheFullListOfOptions : SelectionConfig -> SearchString -> List Option -> List Option
-updateTheFullListOfOptions selectionMode searchString options =
-    options
-        |> OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionMode searchString
-
-
-updateTheOptionsForTheDropdown : SelectionConfig -> List Option -> List Option
-updateTheOptionsForTheDropdown selectionMode options =
-    -- TODO This function can go I think, it just has some tests
-    options
-        |> sortOptionsBySearchFilterTotalScore
-        |> figureOutWhichOptionsToShowInTheDropdown selectionMode
 
 
 figureOutWhichOptionsToShowInTheDropdown : SelectionConfig -> List Option -> List Option
@@ -3494,23 +3471,26 @@ init flags =
                     ( value, NoEffect )
 
                 Err error ->
-                    ( TransformAndValidate.empty, ReportErrorMessage (Json.Decode.errorToString error) )
+                    ( TransformAndValidate.empty
+                    , ReportErrorMessage (Json.Decode.errorToString error)
+                    )
 
         ( maxDropdownItems, maxDropdownItemsErrorEffect ) =
             case flags.maxDropdownItems of
                 Just str ->
-                    case PositiveInt.fromString str of
-                        Just int ->
-                            ( int, NoEffect )
+                    case OutputStyle.stringToMaxDropdownItems str of
+                        Ok value ->
+                            ( value, NoEffect )
 
-                        Nothing ->
-                            ( SelectionMode.defaultMaxDropdownItems
-                            , ReportErrorMessage
-                                "Invalid value for the max-dropdown-items attribute."
+                        Err error ->
+                            ( OutputStyle.defaultMaxDropdownItems
+                            , ReportErrorMessage error
                             )
 
                 Nothing ->
-                    ( SelectionMode.defaultMaxDropdownItems, NoEffect )
+                    ( OutputStyle.defaultMaxDropdownItems
+                    , NoEffect
+                    )
 
         ( searchStringMinimumLength, searchStringMinimumLengthErrorEffect ) =
             case flags.maxDropdownItems of

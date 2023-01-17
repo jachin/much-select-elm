@@ -1278,27 +1278,23 @@ class MuchSelect extends HTMLElement {
     return this.getConfigValuePromise("max-dropdown-items");
   }
 
+  /**
+   * Set the maxium number of items to try to render in the dropdown.
+   *
+   * @param value {string}
+   */
   set maxDropdownItems(value) {
-    let newValue;
+    let maxDropdownItemsValue;
     if (typeof value === "number") {
-      newValue = Math.floor(value);
+      maxDropdownItemsValue = `${value}`;
     } else if (typeof value === "string") {
-      newValue = Math.floor(parseInt(value, 10));
+      maxDropdownItemsValue = value;
     } else {
-      throw new TypeError("Max dropdown items must be a number!");
-    }
-
-    // TODO Handle this floor in Elm.
-    let maxDropdownItems = 3;
-
-    if (newValue < 3) {
-      maxDropdownItems = 3;
-    } else {
-      maxDropdownItems = newValue;
+      throw new TypeError("Invalid type for max-dropdown-items.");
     }
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
-      app.ports.maxDropdownItemsChangedReceiver.send(maxDropdownItems)
+      app.ports.maxDropdownItemsChangedReceiver.send(maxDropdownItemsValue)
     );
   }
 

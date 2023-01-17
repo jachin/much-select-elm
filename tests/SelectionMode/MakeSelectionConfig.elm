@@ -1,26 +1,12 @@
 module SelectionMode.MakeSelectionConfig exposing (suite)
 
 import Expect
-import OutputStyle
-    exposing
-        ( CustomOptions(..)
-        , DropdownState(..)
-        , DropdownStyle(..)
-        , EventsMode(..)
-        , MaxDropdownItems(..)
-        , MultiSelectOutputStyle(..)
-        , SearchStringMinimumLength(..)
-        , SelectedItemPlacementMode(..)
-        , SingleItemRemoval(..)
-        , SingleSelectOutputStyle(..)
-        , defaultSearchStringMinimumLength
-        )
+import OutputStyle exposing (CustomOptions(..), DropdownState(..), DropdownStyle(..), EventsMode(..), MaxDropdownItems(..), MultiSelectOutputStyle(..), SearchStringMinimumLength(..), SelectedItemPlacementMode(..), SingleItemRemoval(..), SingleSelectOutputStyle(..), defaultMaxDropdownItems, defaultMaxDropdownItemsNum, defaultSearchStringMinimumLength)
 import PositiveInt
 import SelectionMode
     exposing
         ( InteractionState(..)
         , SelectionConfig(..)
-        , defaultMaxDropdownItems
         , makeSelectionConfig
         )
 import Test exposing (Test, describe, test)
@@ -42,7 +28,7 @@ suite =
                         ( False, "" )
                         Nothing
                         False
-                        defaultMaxDropdownItems
+                        (FixedMaxDropdownItems defaultMaxDropdownItemsNum)
                         True
                         defaultSearchStringMinimumLength
                         False

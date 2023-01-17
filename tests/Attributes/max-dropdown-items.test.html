@@ -53,8 +53,15 @@
           const el = /** @type {MuchSelect} */ await fixture(
             html`<much-select max-dropdown-items="0"></much-select>`
           );
-          await nextFrame();
           expect(await el.maxDropdownItems).to.equal(0);
+        });
+
+        it("changing the attribute should change the value", async () => {
+          const el = /** @type {MuchSelect} */ await fixture(
+            html`<much-select max-dropdown-items="5"></much-select>`
+          );
+          el.setAttribute("max-dropdown-items", 10);
+          expect(await el.maxDropdownItems).to.equal(10);
         });
       });
     });

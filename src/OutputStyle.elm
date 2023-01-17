@@ -11,6 +11,40 @@ type MaxDropdownItems
     | NoLimitToDropdownItems
 
 
+defaultMaxDropdownItemsNum : PositiveInt
+defaultMaxDropdownItemsNum =
+    PositiveInt.new 1000
+
+
+defaultMaxDropdownItems : MaxDropdownItems
+defaultMaxDropdownItems =
+    FixedMaxDropdownItems defaultMaxDropdownItemsNum
+
+
+minimMaxDropdownItemsNum : PositiveInt
+minimMaxDropdownItemsNum =
+    PositiveInt.new 2
+
+
+stringToMaxDropdownItems : String -> Result String MaxDropdownItems
+stringToMaxDropdownItems str =
+    case PositiveInt.fromString str of
+        Just int ->
+            if PositiveInt.isZero int then
+                Ok NoLimitToDropdownItems
+
+            else if PositiveInt.lessThan int minimMaxDropdownItemsNum then
+                Err
+                    "Invalid value for the max-dropdown-items attribute. It needs to be greater than 2"
+
+            else
+                Ok (FixedMaxDropdownItems int)
+
+        Nothing ->
+            Err
+                "Invalid value for the max-dropdown-items attribute."
+
+
 type SearchStringMinimumLength
     = FixedSearchStringMinimumLength PositiveInt
     | NoMinimumToSearchStringLength
