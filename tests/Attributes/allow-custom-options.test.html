@@ -48,6 +48,14 @@
           await nextFrame();
           expect(await el.allowCustomOptions).to.be.true;
         });
+
+        it("setting the custom option text should work", async () => {
+          const el = /** @type {MuchSelect} */ await fixture(
+            html`<much-select allow-custom-options="puffer fish"></much-select>`
+          );
+          expect(await el.allowCustomOptions).to.be.true;
+          expect(await el.customOptionHint).to.equal("puffer fish");
+        });
       });
     });
   });

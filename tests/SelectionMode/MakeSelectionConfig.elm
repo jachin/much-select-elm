@@ -10,7 +10,9 @@ import OutputStyle
         , MaxDropdownItems(..)
         , MultiSelectOutputStyle(..)
         , SearchStringMinimumLength(..)
+        , SelectedItemPlacementMode(..)
         , SingleItemRemoval(..)
+        , SingleSelectOutputStyle(..)
         )
 import PositiveInt
 import SelectionMode
@@ -21,7 +23,7 @@ import SelectionMode
         , makeSelectionConfig
         )
 import Test exposing (Test, describe, test)
-import TransformAndValidate
+import TransformAndValidate exposing (ValueTransformAndValidate(..))
 
 
 suite : Test
@@ -55,6 +57,74 @@ suite =
                                 , dropdownState = Collapsed
                                 , dropdownStyle = NoFooter
                                 , eventsMode = AllowLightDomChanges
+                                }
+                            )
+                            ( False, "" )
+                            Unfocused
+                        )
+                    )
+        , test "we should be able to setup a multi select with custom options with a custom hint" <|
+            \() ->
+                Expect.equal
+                    (makeSelectionConfig
+                        False
+                        False
+                        True
+                        True
+                        ""
+                        ( False, "" )
+                        (Just "Milk")
+                        False
+                        defaultMaxDropdownItems
+                        True
+                        2
+                        False
+                        TransformAndValidate.empty
+                    )
+                    (Ok
+                        (MultiSelectConfig
+                            (MultiSelectCustomHtml
+                                { customOptions = AllowCustomOptions (Just "Milk") (ValueTransformAndValidate [] [])
+                                , singleItemRemoval = DisableSingleItemRemoval
+                                , maxDropdownItems = FixedMaxDropdownItems (PositiveInt.new 1000)
+                                , searchStringMinimumLength = FixedSearchStringMinimumLength (PositiveInt.new 2)
+                                , dropdownState = Collapsed
+                                , dropdownStyle = NoFooter
+                                , eventsMode = AllowLightDomChanges
+                                }
+                            )
+                            ( False, "" )
+                            Unfocused
+                        )
+                    )
+        , test "we should be able to setup a single select with custom options with a custom hint" <|
+            \() ->
+                Expect.equal
+                    (makeSelectionConfig
+                        False
+                        False
+                        False
+                        True
+                        ""
+                        ( False, "" )
+                        (Just "Milk")
+                        False
+                        defaultMaxDropdownItems
+                        True
+                        2
+                        False
+                        TransformAndValidate.empty
+                    )
+                    (Ok
+                        (SingleSelectConfig
+                            (SingleSelectCustomHtml
+                                { customOptions = AllowCustomOptions (Just "Milk") (ValueTransformAndValidate [] [])
+                                , maxDropdownItems = FixedMaxDropdownItems (PositiveInt.new 1000)
+                                , searchStringMinimumLength = FixedSearchStringMinimumLength (PositiveInt.new 2)
+                                , dropdownState = Collapsed
+                                , dropdownStyle = NoFooter
+                                , eventsMode = AllowLightDomChanges
+                                , selectedItemPlacementMode = SelectedItemStaysInPlace
                                 }
                             )
                             ( False, "" )

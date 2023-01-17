@@ -12,7 +12,7 @@ import SelectionMode exposing (SelectionConfig, getCustomOptions)
 encodeConfig : SelectionConfig -> OptionSort -> SelectedValueEncoding -> RightSlot -> Json.Encode.Value
 encodeConfig selectionConfig optionSort selectedValueEncoding rightSlot =
     Json.Encode.object
-        [ ( "allows-custom-options"
+        [ ( "allow-custom-options"
           , Json.Encode.bool
                 (case getCustomOptions selectionConfig of
                     AllowCustomOptions _ _ ->
@@ -21,6 +21,19 @@ encodeConfig selectionConfig optionSort selectedValueEncoding rightSlot =
                     NoCustomOptions ->
                         False
                 )
+          )
+        , ( "custom-options-hint"
+          , case getCustomOptions selectionConfig of
+                AllowCustomOptions maybeHint _ ->
+                    case maybeHint of
+                        Just hint ->
+                            Json.Encode.string hint
+
+                        Nothing ->
+                            Json.Encode.null
+
+                NoCustomOptions ->
+                    Json.Encode.null
           )
         , ( "disabled", Json.Encode.bool (SelectionMode.isDisabled selectionConfig) )
         , ( "events-only", Json.Encode.bool (SelectionMode.isEventsOnly selectionConfig) )

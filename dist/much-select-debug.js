@@ -1438,7 +1438,7 @@ class MuchSelect extends HTMLElement {
    */
   get allowCustomOptions() {
     // TODO ensure this is a boolean value
-    return this.getConfigValuePromise("allows-custom-options");
+    return this.getConfigValuePromise("allow-custom-options");
   }
 
   set allowCustomOptions(value) {
@@ -1457,6 +1457,11 @@ class MuchSelect extends HTMLElement {
     });
   }
 
+  /**
+   * Returns a promise for the custom options hint.
+   *
+   * @returns {Promise<string>}
+   */
   get customOptionHint() {
     return this.getConfigValuePromise("custom-options-hint");
   }
@@ -1594,18 +1599,11 @@ class MuchSelect extends HTMLElement {
   }
 
   set outputStyle(value) {
-    // TODO Move this validation to Elm.
-    if (MuchSelect.isValidOutputStyle(value)) {
-      const outputStyle = value;
-
-      this.appPromise.then((app) => {
-        // noinspection JSUnresolvedVariable
-        app.ports.outputStyleChangedReceiver.send(outputStyle);
-        this._updateTransformationValidationFromTheDom();
-      });
-    } else {
-      throw new Error(`Invalid output style: ${value}`);
-    }
+    this.appPromise.then((app) => {
+      // noinspection JSUnresolvedVariable
+      app.ports.outputStyleChangedReceiver.send(value);
+      this._updateTransformationValidationFromTheDom();
+    });
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -1767,16 +1765,6 @@ class MuchSelect extends HTMLElement {
         100% { transform: rotate(360deg); }
       }
     </style>`;
-  }
-
-  /**
-   * This should tell you if a value is selected or not, whether the much-select is in single or multi select mode.
-   *
-   * @param testValue
-   * @returns {boolean}
-   */
-  isValueSelected(testValue) {
-    return this.parsedSelectedValue.includes(testValue);
   }
 
   updateOptions(options) {

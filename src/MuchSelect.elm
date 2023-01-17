@@ -1335,7 +1335,7 @@ update msg model =
                             ( { model
                                 | selectionConfig =
                                     SelectionMode.setAllowCustomOptionsWithBool
-                                        False
+                                        True
                                         (Just customOptionHint)
                                         model.selectionConfig
                               }

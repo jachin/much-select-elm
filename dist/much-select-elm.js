@@ -9490,7 +9490,7 @@ var $author$project$ConfigDump$encodeConfig = F4(
 			_List_fromArray(
 				[
 					_Utils_Tuple2(
-					'allows-custom-options',
+					'allow-custom-options',
 					$elm$json$Json$Encode$bool(
 						function () {
 							var _v0 = $author$project$SelectionMode$getCustomOptions(selectionConfig);
@@ -9500,6 +9500,22 @@ var $author$project$ConfigDump$encodeConfig = F4(
 								return false;
 							}
 						}())),
+					_Utils_Tuple2(
+					'custom-options-hint',
+					function () {
+						var _v1 = $author$project$SelectionMode$getCustomOptions(selectionConfig);
+						if (!_v1.$) {
+							var maybeHint = _v1.a;
+							if (!maybeHint.$) {
+								var hint = maybeHint.a;
+								return $elm$json$Json$Encode$string(hint);
+							} else {
+								return $elm$json$Json$Encode$null;
+							}
+						} else {
+							return $elm$json$Json$Encode$null;
+						}
+					}()),
 					_Utils_Tuple2(
 					'disabled',
 					$elm$json$Json$Encode$bool(
@@ -9516,9 +9532,9 @@ var $author$project$ConfigDump$encodeConfig = F4(
 					'max-dropdown-items',
 					$elm$json$Json$Encode$int(
 						function () {
-							var _v1 = $author$project$SelectionMode$getMaxDropdownItems(selectionConfig);
-							if (!_v1.$) {
-								var i = _v1.a;
+							var _v3 = $author$project$SelectionMode$getMaxDropdownItems(selectionConfig);
+							if (!_v3.$) {
+								var i = _v3.a;
 								return $author$project$PositiveInt$toInt(i);
 							} else {
 								return 0;
@@ -9528,8 +9544,8 @@ var $author$project$ConfigDump$encodeConfig = F4(
 					'multi-select',
 					$elm$json$Json$Encode$bool(
 						function () {
-							var _v2 = $author$project$SelectionMode$getSelectionMode(selectionConfig);
-							if (_v2 === 1) {
+							var _v4 = $author$project$SelectionMode$getSelectionMode(selectionConfig);
+							if (_v4 === 1) {
 								return true;
 							} else {
 								return false;
@@ -9552,11 +9568,11 @@ var $author$project$ConfigDump$encodeConfig = F4(
 					'search-string-minimum-length',
 					$elm$json$Json$Encode$int(
 						function () {
-							var _v3 = $author$project$SelectionMode$getSearchStringMinimumLength(selectionConfig);
-							if (_v3.$ === 1) {
+							var _v5 = $author$project$SelectionMode$getSearchStringMinimumLength(selectionConfig);
+							if (_v5.$ === 1) {
 								return 0;
 							} else {
-								var positiveInt = _v3.a;
+								var positiveInt = _v5.a;
 								return $author$project$PositiveInt$toInt(positiveInt);
 							}
 						}())),
@@ -9564,8 +9580,8 @@ var $author$project$ConfigDump$encodeConfig = F4(
 					'selected-item-stays-in-place',
 					$elm$json$Json$Encode$bool(
 						function () {
-							var _v4 = $author$project$SelectionMode$getSelectedItemPlacementMode(selectionConfig);
-							switch (_v4) {
+							var _v6 = $author$project$SelectionMode$getSelectedItemPlacementMode(selectionConfig);
+							switch (_v6) {
 								case 0:
 									return true;
 								case 1:
@@ -9586,8 +9602,8 @@ var $author$project$ConfigDump$encodeConfig = F4(
 					'single-item-removal',
 					$elm$json$Json$Encode$bool(
 						function () {
-							var _v5 = $author$project$SelectionMode$getSingleItemRemoval(selectionConfig);
-							if (!_v5) {
+							var _v7 = $author$project$SelectionMode$getSingleItemRemoval(selectionConfig);
+							if (!_v7) {
 								return true;
 							} else {
 								return false;
@@ -12669,7 +12685,7 @@ var $author$project$MuchSelect$update = F2(
 										{
 											a: A3(
 												$author$project$SelectionMode$setAllowCustomOptionsWithBool,
-												false,
+												true,
 												$elm$core$Maybe$Just(customOptionHint),
 												model.a)
 										}),
