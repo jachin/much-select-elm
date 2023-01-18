@@ -1,4 +1,4 @@
-// elm-watch hot {"version":"1.1.1","targetName":"elm-demo-production","webSocketPort":50486}
+// elm-watch hot {"version":"1.1.2","targetName":"elm-demo-production","webSocketPort":50486}
 "use strict";
 (() => {
   // node_modules/tiny-decoders/index.mjs
@@ -601,10 +601,10 @@ ${variant}`;
   __ELM_WATCH.DISCONNECT ?? (__ELM_WATCH.DISCONNECT = () => {
   });
   __ELM_WATCH.LOG_DEBUG ?? (__ELM_WATCH.LOG_DEBUG = console.debug);
-  var VERSION = "1.1.1";
+  var VERSION = "1.1.2";
   var TARGET_NAME = "elm-demo-production";
   var INITIAL_ELM_COMPILED_TIMESTAMP = Number(
-    "1672767513297"
+    "1674060401862"
   );
   var ORIGINAL_COMPILATION_MODE = "proxy";
   var ORIGINAL_BROWSER_UI_POSITION = "BottomLeft";
