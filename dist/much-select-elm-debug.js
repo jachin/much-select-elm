@@ -17036,7 +17036,14 @@ var $author$project$MuchSelect$update = F2(
 							$author$project$MuchSelect$ReportErrorMessage('Unable to select option'));
 					}
 				} else {
-					var updatedOptions = A2($author$project$OptionsUtilities$selectOptionInListByOptionValue, optionValue, model.options);
+					var updatedOptions = A2(
+						$author$project$OptionsUtilities$selectOptionInListByOptionValue,
+						optionValue,
+						A3(
+							$author$project$OptionsUtilities$moveHighlightedOptionDown,
+							model.selectionConfig,
+							model.options,
+							A2($author$project$MuchSelect$figureOutWhichOptionsToShowInTheDropdown, model.selectionConfig, model.options)));
 					var maybeNewlySelectedOption = A2($author$project$OptionsUtilities$findOptionByOptionValue, optionValue, updatedOptions);
 					if (maybeNewlySelectedOption.$ === 'Just') {
 						var newlySelectedOption = maybeNewlySelectedOption.a;
@@ -18610,6 +18617,20 @@ var $author$project$MuchSelect$onClickPreventDefault = function (message) {
 		$elm$json$Json$Decode$succeed(
 			{message: message, preventDefault: true, stopPropagation: false}));
 };
+var $author$project$MuchSelect$onClickPreventDefaultAndStopPropagation = function (message) {
+	return A2(
+		$elm$html$Html$Events$custom,
+		'click',
+		$elm$json$Json$Decode$succeed(
+			{message: message, preventDefault: true, stopPropagation: true}));
+};
+var $author$project$MuchSelect$onMouseDownStopPropagationAndPreventDefault = function (message) {
+	return A2(
+		$elm$html$Html$Events$custom,
+		'mousedown',
+		$elm$json$Json$Decode$succeed(
+			{message: message, preventDefault: true, stopPropagation: true}));
+};
 var $elm$html$Html$Events$onMouseEnter = function (msg) {
 	return A2(
 		$elm$html$Html$Events$on,
@@ -18621,6 +18642,13 @@ var $elm$html$Html$Events$onMouseLeave = function (msg) {
 		$elm$html$Html$Events$on,
 		'mouseleave',
 		$elm$json$Json$Decode$succeed(msg));
+};
+var $author$project$MuchSelect$onMouseUpStopPropagationAndPreventDefault = function (message) {
+	return A2(
+		$elm$html$Html$Events$custom,
+		'mouseup',
+		$elm$json$Json$Decode$succeed(
+			{message: message, preventDefault: true, stopPropagation: true}));
 };
 var $author$project$Option$optionDescriptionToBool = function (optionDescription) {
 	if (optionDescription.$ === 'OptionDescription') {
@@ -18736,10 +18764,10 @@ var $author$project$MuchSelect$optionToDropdownOption = F3(
 										$elm$html$Html$Events$onMouseLeave(
 										eventHandlers.mouseOutMsgConstructor(
 											$author$project$Option$getOptionValue(option))),
-										$author$project$MuchSelect$mousedownPreventDefault(
+										$author$project$MuchSelect$onMouseDownStopPropagationAndPreventDefault(
 										eventHandlers.mouseDownMsgConstructor(
 											$author$project$Option$getOptionValue(option))),
-										$author$project$MuchSelect$mouseupPreventDefault(
+										$author$project$MuchSelect$onMouseUpStopPropagationAndPreventDefault(
 										eventHandlers.mouseUpMsgConstructor(
 											$author$project$Option$getOptionValue(option))),
 										$author$project$MuchSelect$onClickPreventDefault(eventHandlers.noOpMsgConstructor),
@@ -18834,10 +18862,10 @@ var $author$project$MuchSelect$optionToDropdownOption = F3(
 										$elm$html$Html$Events$onMouseLeave(
 										eventHandlers.mouseOutMsgConstructor(
 											$author$project$Option$getOptionValue(option))),
-										$author$project$MuchSelect$mousedownPreventDefault(
+										$author$project$MuchSelect$onMouseDownStopPropagationAndPreventDefault(
 										eventHandlers.mouseDownMsgConstructor(
 											$author$project$Option$getOptionValue(option))),
-										$author$project$MuchSelect$mouseupPreventDefault(
+										$author$project$MuchSelect$onMouseUpStopPropagationAndPreventDefault(
 										eventHandlers.mouseUpMsgConstructor(
 											$author$project$Option$getOptionValue(option))),
 										A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option highlighted'),
@@ -18870,13 +18898,13 @@ var $author$project$MuchSelect$optionToDropdownOption = F3(
 										$elm$html$Html$Events$onMouseLeave(
 										eventHandlers.mouseOutMsgConstructor(
 											$author$project$Option$getOptionValue(option))),
-										$author$project$MuchSelect$mousedownPreventDefault(
+										$author$project$MuchSelect$onMouseDownStopPropagationAndPreventDefault(
 										eventHandlers.mouseDownMsgConstructor(
 											$author$project$Option$getOptionValue(option))),
-										$author$project$MuchSelect$mouseupPreventDefault(
+										$author$project$MuchSelect$onMouseUpStopPropagationAndPreventDefault(
 										eventHandlers.mouseUpMsgConstructor(
 											$author$project$Option$getOptionValue(option))),
-										$author$project$MuchSelect$onClickPreventDefault(eventHandlers.noOpMsgConstructor),
+										$author$project$MuchSelect$onClickPreventDefaultAndStopPropagation(eventHandlers.noOpMsgConstructor),
 										A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option active'),
 										$elm$html$Html$Attributes$class('option'),
 										$elm$html$Html$Attributes$class('active'),
@@ -19862,20 +19890,6 @@ var $author$project$MuchSelect$defaultLoadingIndicator = A2(
 		]),
 	_List_Nil);
 var $author$project$MuchSelect$BringInputOutOfFocus = {$: 'BringInputOutOfFocus'};
-var $author$project$MuchSelect$onMouseDownStopPropagationAndPreventDefault = function (message) {
-	return A2(
-		$elm$html$Html$Events$custom,
-		'mousedown',
-		$elm$json$Json$Decode$succeed(
-			{message: message, preventDefault: true, stopPropagation: true}));
-};
-var $author$project$MuchSelect$onMouseUpStopPropagationAndPreventDefault = function (message) {
-	return A2(
-		$elm$html$Html$Events$custom,
-		'mouseup',
-		$elm$json$Json$Decode$succeed(
-			{message: message, preventDefault: true, stopPropagation: true}));
-};
 var $author$project$MuchSelect$dropdownIndicator = F2(
 	function (interactionState, transitioning) {
 		if (interactionState.$ === 'Disabled') {
@@ -19930,13 +19944,6 @@ var $author$project$MuchSelect$dropdownIndicator = F2(
 					]));
 		}
 	});
-var $author$project$MuchSelect$onClickPreventDefaultAndStopPropagation = function (message) {
-	return A2(
-		$elm$html$Html$Events$custom,
-		'click',
-		$elm$json$Json$Decode$succeed(
-			{message: message, preventDefault: true, stopPropagation: true}));
-};
 var $author$project$MuchSelect$defaultRemoveButton = A2(
 	$elm$html$Html$button,
 	_List_Nil,
