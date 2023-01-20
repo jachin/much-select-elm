@@ -48,9 +48,6 @@ printf "$tpl" "$FILTER_WORKER_JS" > ./dist/much-select-template.js
 #  so lets clean up after ourselves.
 rm build/gen/filter-worker.js
 
-# We are all done with the gen directory, so lets clean that up too
-rmdir ./build/gen
-
 # Compile the Main elm file into JavaScript and optimize it because this
 # build is for production. So also put the out put in the dist directory.
 npx elm-esm make ./src/MuchSelect.elm --output=./dist/much-select-elm.js --optimize

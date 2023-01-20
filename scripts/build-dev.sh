@@ -43,9 +43,6 @@ printf "$tpl" "$FILTER_WORKER_JS" > ./build/much-select-template.js
 #  so lets clean up after ourselves.
 rm ./build/gen/filter-worker-dev.js
 
-# We are all done with the gen directory, so lets clean that up too
-rmdir ./build/gen
-
 # Build much select as a ESM module and put the compiled JavaScript in elm-main.js
 npx elm-esm make --debug --output=build/much-select-elm.js src/MuchSelect.elm
 
