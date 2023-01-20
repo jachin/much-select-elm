@@ -61,6 +61,8 @@
       "src",
       "-w",
       "tests",
+      "--debounce",
+      "2000",
       "--",
       "npm test"
     ],
