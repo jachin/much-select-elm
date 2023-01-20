@@ -1,6 +1,6 @@
 [
   {
-    "title": "Build much-select elm code",
+    "title": "Build much-select for development",
     "command": [
       "watchexec",
       "-w",
@@ -16,7 +16,13 @@
       "elm-watch",
       "hot",
       "elm-demo"
-    ]
+    ],
+    "defaultStatus": ["⏳", "S"],
+    "status": {
+      "⏳": ["⏳", "W"],
+      "🚨": ["🚨", "E"],
+      "✅": ["✅", "+"]
+    }
   },
   {
     "title": "Build HTML for demo/sandbox site",
@@ -48,7 +54,26 @@
     ]
   },
   {
-    "title": "Build production code",
+    "title": "Elm tests",
+    "command": [
+      "watchexec",
+      "-w",
+      "src",
+      "-w",
+      "tests",
+      "--",
+      "npm test"
+    ],
+    "defaultStatus": ["⏳", "S"],
+    "status": {
+      "Compiling": ["⏳", "W"],
+      "TEST RUN FAILED": ["🚨", "E"],
+      "failed with exit code 1": ["🚨", "E"],
+      "TEST RUN PASSED": ["✅", "+"]
+    }
+  },
+  {
+    "title": "Build much-select for production",
     "command": [
       "watchexec",
       "-w",
