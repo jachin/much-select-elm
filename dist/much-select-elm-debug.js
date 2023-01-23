@@ -18598,14 +18598,14 @@ var $elm$html$Html$Events$custom = F2(
 			event,
 			$elm$virtual_dom$VirtualDom$Custom(decoder));
 	});
-var $author$project$MuchSelect$mousedownPreventDefault = function (message) {
+var $author$project$MuchSelect$mouseDownPreventDefault = function (message) {
 	return A2(
 		$elm$html$Html$Events$custom,
 		'mousedown',
 		$elm$json$Json$Decode$succeed(
 			{message: message, preventDefault: true, stopPropagation: false}));
 };
-var $author$project$MuchSelect$mouseupPreventDefault = function (message) {
+var $author$project$MuchSelect$mouseUpPreventDefault = function (message) {
 	return A2(
 		$elm$html$Html$Events$custom,
 		'mouseup',
@@ -18752,10 +18752,10 @@ var $author$project$MuchSelect$optionToDropdownOption = F3(
 										$elm$html$Html$Events$onMouseLeave(
 										eventHandlers.mouseOutMsgConstructor(
 											$author$project$Option$getOptionValue(option))),
-										$author$project$MuchSelect$mousedownPreventDefault(
+										$author$project$MuchSelect$mouseDownPreventDefault(
 										eventHandlers.mouseDownMsgConstructor(
 											$author$project$Option$getOptionValue(option))),
-										$author$project$MuchSelect$mousedownPreventDefault(
+										$author$project$MuchSelect$mouseUpPreventDefault(
 										eventHandlers.mouseUpMsgConstructor(
 											$author$project$Option$getOptionValue(option))),
 										$author$project$MuchSelect$onClickPreventDefault(eventHandlers.noOpMsgConstructor),
@@ -18780,10 +18780,10 @@ var $author$project$MuchSelect$optionToDropdownOption = F3(
 											$elm$html$Html$Events$onMouseLeave(
 											eventHandlers.mouseOutMsgConstructor(
 												$author$project$Option$getOptionValue(option))),
-											$author$project$MuchSelect$mousedownPreventDefault(
+											$author$project$MuchSelect$mouseDownPreventDefault(
 											eventHandlers.mouseDownMsgConstructor(
 												$author$project$Option$getOptionValue(option))),
-											$author$project$MuchSelect$mouseupPreventDefault(
+											$author$project$MuchSelect$mouseUpPreventDefault(
 											eventHandlers.mouseUpMsgConstructor(
 												$author$project$Option$getOptionValue(option))),
 											A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option selected'),
@@ -18823,10 +18823,10 @@ var $author$project$MuchSelect$optionToDropdownOption = F3(
 											$elm$html$Html$Events$onMouseLeave(
 											eventHandlers.mouseOutMsgConstructor(
 												$author$project$Option$getOptionValue(option))),
-											$author$project$MuchSelect$mousedownPreventDefault(
+											$author$project$MuchSelect$mouseDownPreventDefault(
 											eventHandlers.mouseDownMsgConstructor(
 												$author$project$Option$getOptionValue(option))),
-											$author$project$MuchSelect$mouseupPreventDefault(
+											$author$project$MuchSelect$mouseUpPreventDefault(
 											eventHandlers.mouseUpMsgConstructor(
 												$author$project$Option$getOptionValue(option))),
 											A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option selected highlighted'),
@@ -18851,10 +18851,10 @@ var $author$project$MuchSelect$optionToDropdownOption = F3(
 										$elm$html$Html$Events$onMouseLeave(
 										eventHandlers.mouseOutMsgConstructor(
 											$author$project$Option$getOptionValue(option))),
-										$author$project$MuchSelect$mousedownPreventDefault(
+										$author$project$MuchSelect$mouseDownPreventDefault(
 										eventHandlers.mouseDownMsgConstructor(
 											$author$project$Option$getOptionValue(option))),
-										$author$project$MuchSelect$mousedownPreventDefault(
+										$author$project$MuchSelect$mouseUpPreventDefault(
 										eventHandlers.mouseUpMsgConstructor(
 											$author$project$Option$getOptionValue(option))),
 										A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option highlighted'),
@@ -18887,10 +18887,10 @@ var $author$project$MuchSelect$optionToDropdownOption = F3(
 										$elm$html$Html$Events$onMouseLeave(
 										eventHandlers.mouseOutMsgConstructor(
 											$author$project$Option$getOptionValue(option))),
-										$author$project$MuchSelect$mousedownPreventDefault(
+										$author$project$MuchSelect$mouseDownPreventDefault(
 										eventHandlers.mouseDownMsgConstructor(
 											$author$project$Option$getOptionValue(option))),
-										$author$project$MuchSelect$mousedownPreventDefault(
+										$author$project$MuchSelect$mouseUpPreventDefault(
 										eventHandlers.mouseUpMsgConstructor(
 											$author$project$Option$getOptionValue(option))),
 										$author$project$MuchSelect$onClickPreventDefaultAndStopPropagation(eventHandlers.noOpMsgConstructor),
@@ -19651,7 +19651,7 @@ var $author$project$MuchSelect$valueLabelHtml = F2(
 			_List_fromArray(
 				[
 					$elm$html$Html$Attributes$class('value-label'),
-					$author$project$MuchSelect$mouseupPreventDefault(
+					$author$project$MuchSelect$mouseUpPreventDefault(
 					$author$project$MuchSelect$ToggleSelectedValueHighlight(optionValue))
 				]),
 			_List_fromArray(
@@ -19667,7 +19667,7 @@ var $author$project$MuchSelect$optionToValueHtml = F2(
 					$elm$html$Html$span,
 					_List_fromArray(
 						[
-							$author$project$MuchSelect$mouseupPreventDefault(
+							$author$project$MuchSelect$mouseUpPreventDefault(
 							$author$project$MuchSelect$DeselectOptionInternal(option)),
 							$elm$html$Html$Attributes$class('remove-option')
 						]),
