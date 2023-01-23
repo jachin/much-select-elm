@@ -683,28 +683,14 @@ class MuchSelect extends HTMLElement {
   startMuchSelectObserver() {
     // Options for the observer (which mutations to observe)
     const muchSelectMutationObserverConfig = {
-      attributes: true,
+      attributes: false,
       childList: true,
       subtree: false,
       characterData: false,
     };
 
     this._muchSelectObserver = new MutationObserver((mutationsList) => {
-      mutationsList.forEach((mutation) => {
-        if (
-          mutation.type === "attributes" &&
-          mutation.attributeName === "placeholder"
-        ) {
-          // We do no need to update the options if we are updating the placeholder.
-          return;
-        }
-        if (
-          mutation.type === "attributes" &&
-          mutation.attributeName === "loading"
-        ) {
-          // We do no need to update the options if we are updating the loading attribute.
-          return;
-        }
+      mutationsList.forEach(() => {
         this._callUpdateOptionsFromDom();
       });
     });

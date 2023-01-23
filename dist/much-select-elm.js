@@ -9670,7 +9670,8 @@ var $author$project$OptionSearcher$encodeSearchParams = F4(
 				]));
 	});
 var $author$project$OptionsUtilities$filterOptionsToShowInDropdownByOptionDisplay = function (selectionConfig) {
-	if (!selectionConfig.$) {
+	var _v0 = $author$project$SelectionMode$getSelectionMode(selectionConfig);
+	if (!_v0) {
 		return $elm$core$List$filter(
 			function (option) {
 				var _v1 = $author$project$Option$getOptionDisplay(option);
@@ -10210,7 +10211,7 @@ var $author$project$OptionsUtilities$moveHighlightedOptionDown = F3(
 			var option = maybeLowerSibling.a;
 			return A2($author$project$OptionsUtilities$highlightOptionInList, option, allOptions);
 		} else {
-			var _v1 = $elm$core$List$head(visibleOptions);
+			var _v1 = A3($author$project$OptionsUtilities$findClosestHighlightableOptionGoingDown, selectionConfig, 0, visibleOptions);
 			if (!_v1.$) {
 				var firstOption = _v1.a;
 				return A2($author$project$OptionsUtilities$highlightOptionInList, firstOption, allOptions);
@@ -11739,7 +11740,15 @@ var $author$project$MuchSelect$update = F2(
 							$author$project$MuchSelect$ReportErrorMessage('Unable to select option'));
 					}
 				} else {
-					var updatedOptions = A2($author$project$OptionsUtilities$selectOptionInListByOptionValue, optionValue, model.b);
+					var visibleOptions = A2($author$project$MuchSelect$figureOutWhichOptionsToShowInTheDropdown, model.a, model.b);
+					var moveHighlightedOptionDownIfThereAreOptions = F2(
+						function (selectionConfig, options) {
+							return ($elm$core$List$length(visibleOptions) > 1) ? A2($author$project$OptionsUtilities$moveHighlightedOptionDown, selectionConfig, options) : $elm$core$Basics$identity;
+						});
+					var updatedOptions = A2(
+						$author$project$OptionsUtilities$selectOptionInListByOptionValue,
+						optionValue,
+						A3(moveHighlightedOptionDownIfThereAreOptions, model.a, model.b, visibleOptions));
 					var maybeNewlySelectedOption = A2($author$project$OptionsUtilities$findOptionByOptionValue, optionValue, updatedOptions);
 					if (!maybeNewlySelectedOption.$) {
 						var newlySelectedOption = maybeNewlySelectedOption.a;
@@ -13317,14 +13326,14 @@ var $elm$html$Html$Events$custom = F2(
 			event,
 			$elm$virtual_dom$VirtualDom$Custom(decoder));
 	});
-var $author$project$MuchSelect$mousedownPreventDefault = function (message) {
+var $author$project$MuchSelect$mouseDownPreventDefault = function (message) {
 	return A2(
 		$elm$html$Html$Events$custom,
 		'mousedown',
 		$elm$json$Json$Decode$succeed(
 			{A: message, B: true, C: false}));
 };
-var $author$project$MuchSelect$mouseupPreventDefault = function (message) {
+var $author$project$MuchSelect$mouseUpPreventDefault = function (message) {
 	return A2(
 		$elm$html$Html$Events$custom,
 		'mouseup',
@@ -13337,6 +13346,13 @@ var $author$project$MuchSelect$onClickPreventDefault = function (message) {
 		'click',
 		$elm$json$Json$Decode$succeed(
 			{A: message, B: true, C: false}));
+};
+var $author$project$MuchSelect$onClickPreventDefaultAndStopPropagation = function (message) {
+	return A2(
+		$elm$html$Html$Events$custom,
+		'click',
+		$elm$json$Json$Decode$succeed(
+			{A: message, B: true, C: true}));
 };
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
 	return {$: 0, a: a};
@@ -13477,10 +13493,10 @@ var $author$project$MuchSelect$optionToDropdownOption = F3(
 										$elm$html$Html$Events$onMouseLeave(
 										eventHandlers.ai(
 											$author$project$Option$getOptionValue(option))),
-										$author$project$MuchSelect$mousedownPreventDefault(
+										$author$project$MuchSelect$mouseDownPreventDefault(
 										eventHandlers.ah(
 											$author$project$Option$getOptionValue(option))),
-										$author$project$MuchSelect$mouseupPreventDefault(
+										$author$project$MuchSelect$mouseUpPreventDefault(
 										eventHandlers.ak(
 											$author$project$Option$getOptionValue(option))),
 										$author$project$MuchSelect$onClickPreventDefault(eventHandlers.a$),
@@ -13505,10 +13521,10 @@ var $author$project$MuchSelect$optionToDropdownOption = F3(
 											$elm$html$Html$Events$onMouseLeave(
 											eventHandlers.ai(
 												$author$project$Option$getOptionValue(option))),
-											$author$project$MuchSelect$mousedownPreventDefault(
+											$author$project$MuchSelect$mouseDownPreventDefault(
 											eventHandlers.ah(
 												$author$project$Option$getOptionValue(option))),
-											$author$project$MuchSelect$mouseupPreventDefault(
+											$author$project$MuchSelect$mouseUpPreventDefault(
 											eventHandlers.ak(
 												$author$project$Option$getOptionValue(option))),
 											A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option selected'),
@@ -13536,7 +13552,8 @@ var $author$project$MuchSelect$optionToDropdownOption = F3(
 						case 3:
 							return $elm$html$Html$text('');
 						case 5:
-							if (!selectionConfig.$) {
+							var _v2 = $author$project$SelectionMode$getSelectionMode(selectionConfig);
+							if (!_v2) {
 								return A2(
 									$elm$html$Html$div,
 									_List_fromArray(
@@ -13547,10 +13564,10 @@ var $author$project$MuchSelect$optionToDropdownOption = F3(
 											$elm$html$Html$Events$onMouseLeave(
 											eventHandlers.ai(
 												$author$project$Option$getOptionValue(option))),
-											$author$project$MuchSelect$mousedownPreventDefault(
+											$author$project$MuchSelect$mouseDownPreventDefault(
 											eventHandlers.ah(
 												$author$project$Option$getOptionValue(option))),
-											$author$project$MuchSelect$mouseupPreventDefault(
+											$author$project$MuchSelect$mouseUpPreventDefault(
 											eventHandlers.ak(
 												$author$project$Option$getOptionValue(option))),
 											A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option selected highlighted'),
@@ -13575,10 +13592,10 @@ var $author$project$MuchSelect$optionToDropdownOption = F3(
 										$elm$html$Html$Events$onMouseLeave(
 										eventHandlers.ai(
 											$author$project$Option$getOptionValue(option))),
-										$author$project$MuchSelect$mousedownPreventDefault(
+										$author$project$MuchSelect$mouseDownPreventDefault(
 										eventHandlers.ah(
 											$author$project$Option$getOptionValue(option))),
-										$author$project$MuchSelect$mouseupPreventDefault(
+										$author$project$MuchSelect$mouseUpPreventDefault(
 										eventHandlers.ak(
 											$author$project$Option$getOptionValue(option))),
 										A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option highlighted'),
@@ -13611,13 +13628,13 @@ var $author$project$MuchSelect$optionToDropdownOption = F3(
 										$elm$html$Html$Events$onMouseLeave(
 										eventHandlers.ai(
 											$author$project$Option$getOptionValue(option))),
-										$author$project$MuchSelect$mousedownPreventDefault(
+										$author$project$MuchSelect$mouseDownPreventDefault(
 										eventHandlers.ah(
 											$author$project$Option$getOptionValue(option))),
-										$author$project$MuchSelect$mouseupPreventDefault(
+										$author$project$MuchSelect$mouseUpPreventDefault(
 										eventHandlers.ak(
 											$author$project$Option$getOptionValue(option))),
-										$author$project$MuchSelect$onClickPreventDefault(eventHandlers.a$),
+										$author$project$MuchSelect$onClickPreventDefaultAndStopPropagation(eventHandlers.a$),
 										A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option active'),
 										$elm$html$Html$Attributes$class('option'),
 										$elm$html$Html$Attributes$class('active'),
@@ -14419,7 +14436,7 @@ var $author$project$MuchSelect$valueLabelHtml = F2(
 			_List_fromArray(
 				[
 					$elm$html$Html$Attributes$class('value-label'),
-					$author$project$MuchSelect$mouseupPreventDefault(
+					$author$project$MuchSelect$mouseUpPreventDefault(
 					$author$project$MuchSelect$ToggleSelectedValueHighlight(optionValue))
 				]),
 			_List_fromArray(
@@ -14435,7 +14452,7 @@ var $author$project$MuchSelect$optionToValueHtml = F2(
 					$elm$html$Html$span,
 					_List_fromArray(
 						[
-							$author$project$MuchSelect$mouseupPreventDefault(
+							$author$project$MuchSelect$mouseUpPreventDefault(
 							$author$project$MuchSelect$DeselectOptionInternal(option)),
 							$elm$html$Html$Attributes$class('remove-option')
 						]),
@@ -14721,13 +14738,6 @@ var $elm$html$Html$Events$onClick = function (msg) {
 		$elm$html$Html$Events$on,
 		'click',
 		$elm$json$Json$Decode$succeed(msg));
-};
-var $author$project$MuchSelect$onClickPreventDefaultAndStopPropagation = function (message) {
-	return A2(
-		$elm$html$Html$Events$custom,
-		'click',
-		$elm$json$Json$Decode$succeed(
-			{A: message, B: true, C: true}));
 };
 var $author$project$MuchSelect$defaultRemoveButton = A2(
 	$elm$html$Html$button,
