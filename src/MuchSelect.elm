@@ -474,11 +474,23 @@ update msg model =
 
                 SelectionMode.MultiSelect ->
                     let
+                        visibleOptions =
+                            figureOutWhichOptionsToShowInTheDropdown model.selectionConfig model.options
+
+                        moveHighlightedOptionDownIfThereAreOptions selectionConfig options =
+                            if List.length visibleOptions > 1 then
+                                moveHighlightedOptionDown selectionConfig
+                                    options
+
+                            else
+                                identity
+
                         updatedOptions =
                             selectOptionInListByOptionValue optionValue
-                                (moveHighlightedOptionDown model.selectionConfig
+                                (moveHighlightedOptionDownIfThereAreOptions
+                                    model.selectionConfig
                                     model.options
-                                    (figureOutWhichOptionsToShowInTheDropdown model.selectionConfig model.options)
+                                    visibleOptions
                                 )
 
                         maybeNewlySelectedOption =
@@ -2864,8 +2876,8 @@ optionToDropdownOption eventHandlers selectionConfig_ option_ =
                     div
                         [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
                         , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
-                        , onMouseDownStopPropagationAndPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseDownMsgConstructor)
-                        , onMouseUpStopPropagationAndPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseUpMsgConstructor)
+                        , mousedownPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseDownMsgConstructor)
+                        , mousedownPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseUpMsgConstructor)
                         , onClickPreventDefault eventHandlers.noOpMsgConstructor
                         , Html.Attributes.attribute "part" "dropdown-option"
                         , class "option"
@@ -2907,8 +2919,8 @@ optionToDropdownOption eventHandlers selectionConfig_ option_ =
                     text ""
 
                 OptionSelectedHighlighted _ ->
-                    case selectionConfig of
-                        SingleSelectConfig _ _ _ ->
+                    case SelectionMode.getSelectionMode selectionConfig of
+                        SelectionMode.SingleSelect ->
                             div
                                 [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
                                 , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
@@ -2922,15 +2934,15 @@ optionToDropdownOption eventHandlers selectionConfig_ option_ =
                                 ]
                                 [ labelHtml, descriptionHtml ]
 
-                        MultiSelectConfig _ _ _ ->
+                        SelectionMode.MultiSelect ->
                             text ""
 
                 OptionHighlighted ->
                     div
                         [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
                         , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
-                        , onMouseDownStopPropagationAndPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseDownMsgConstructor)
-                        , onMouseUpStopPropagationAndPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseUpMsgConstructor)
+                        , mousedownPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseDownMsgConstructor)
+                        , mousedownPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseUpMsgConstructor)
                         , Html.Attributes.attribute "part" "dropdown-option highlighted"
                         , class "highlighted"
                         , class "option"
@@ -2951,8 +2963,8 @@ optionToDropdownOption eventHandlers selectionConfig_ option_ =
                     div
                         [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
                         , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
-                        , onMouseDownStopPropagationAndPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseDownMsgConstructor)
-                        , onMouseUpStopPropagationAndPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseUpMsgConstructor)
+                        , mousedownPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseDownMsgConstructor)
+                        , mousedownPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseUpMsgConstructor)
                         , onClickPreventDefaultAndStopPropagation eventHandlers.noOpMsgConstructor
                         , Html.Attributes.attribute "part" "dropdown-option active"
                         , class "option"

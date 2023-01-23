@@ -63,7 +63,10 @@ moveHighlightedOptionDown selectionConfig allOptions visibleOptions =
             highlightOptionInList option allOptions
 
         Nothing ->
-            case List.head visibleOptions of
+            -- If there is not a lower sibling to highlight, jump up to the top of the list, and see
+            --  if there is a sibling to highlight at the top of the dropdown. There might not be,
+            --  the dropdown might be empty or all the options might be selected.
+            case findClosestHighlightableOptionGoingDown selectionConfig 0 visibleOptions of
                 Just firstOption ->
                     highlightOptionInList firstOption allOptions
 
@@ -1052,8 +1055,8 @@ filterOptionsToShowInDropdown selectionConfig =
 
 filterOptionsToShowInDropdownByOptionDisplay : SelectionConfig -> List Option -> List Option
 filterOptionsToShowInDropdownByOptionDisplay selectionConfig =
-    case selectionConfig of
-        SingleSelectConfig _ _ _ ->
+    case SelectionMode.getSelectionMode selectionConfig of
+        SelectionMode.SingleSelect ->
             List.filter
                 (\option ->
                     case getOptionDisplay option of
@@ -1100,7 +1103,7 @@ filterOptionsToShowInDropdownByOptionDisplay selectionConfig =
                             True
                 )
 
-        MultiSelectConfig _ _ _ ->
+        SelectionMode.MultiSelect ->
             List.filter
                 (\option ->
                     case getOptionDisplay option of

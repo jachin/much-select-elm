@@ -14977,7 +14977,8 @@ var $author$project$OptionSearcher$encodeSearchParams = F4(
 				]));
 	});
 var $author$project$OptionsUtilities$filterOptionsToShowInDropdownByOptionDisplay = function (selectionConfig) {
-	if (selectionConfig.$ === 'SingleSelectConfig') {
+	var _v0 = $author$project$SelectionMode$getSelectionMode(selectionConfig);
+	if (_v0.$ === 'SingleSelect') {
 		return $elm$core$List$filter(
 			function (option) {
 				var _v1 = $author$project$Option$getOptionDisplay(option);
@@ -15508,7 +15509,7 @@ var $author$project$OptionsUtilities$moveHighlightedOptionDown = F3(
 			var option = maybeLowerSibling.a;
 			return A2($author$project$OptionsUtilities$highlightOptionInList, option, allOptions);
 		} else {
-			var _v1 = $elm$core$List$head(visibleOptions);
+			var _v1 = A3($author$project$OptionsUtilities$findClosestHighlightableOptionGoingDown, selectionConfig, 0, visibleOptions);
 			if (_v1.$ === 'Just') {
 				var firstOption = _v1.a;
 				return A2($author$project$OptionsUtilities$highlightOptionInList, firstOption, allOptions);
@@ -17036,14 +17037,15 @@ var $author$project$MuchSelect$update = F2(
 							$author$project$MuchSelect$ReportErrorMessage('Unable to select option'));
 					}
 				} else {
+					var visibleOptions = A2($author$project$MuchSelect$figureOutWhichOptionsToShowInTheDropdown, model.selectionConfig, model.options);
+					var moveHighlightedOptionDownIfThereAreOptions = F2(
+						function (selectionConfig, options) {
+							return ($elm$core$List$length(visibleOptions) > 1) ? A2($author$project$OptionsUtilities$moveHighlightedOptionDown, selectionConfig, options) : $elm$core$Basics$identity;
+						});
 					var updatedOptions = A2(
 						$author$project$OptionsUtilities$selectOptionInListByOptionValue,
 						optionValue,
-						A3(
-							$author$project$OptionsUtilities$moveHighlightedOptionDown,
-							model.selectionConfig,
-							model.options,
-							A2($author$project$MuchSelect$figureOutWhichOptionsToShowInTheDropdown, model.selectionConfig, model.options)));
+						A3(moveHighlightedOptionDownIfThereAreOptions, model.selectionConfig, model.options, visibleOptions));
 					var maybeNewlySelectedOption = A2($author$project$OptionsUtilities$findOptionByOptionValue, optionValue, updatedOptions);
 					if (maybeNewlySelectedOption.$ === 'Just') {
 						var newlySelectedOption = maybeNewlySelectedOption.a;
@@ -18624,13 +18626,6 @@ var $author$project$MuchSelect$onClickPreventDefaultAndStopPropagation = functio
 		$elm$json$Json$Decode$succeed(
 			{message: message, preventDefault: true, stopPropagation: true}));
 };
-var $author$project$MuchSelect$onMouseDownStopPropagationAndPreventDefault = function (message) {
-	return A2(
-		$elm$html$Html$Events$custom,
-		'mousedown',
-		$elm$json$Json$Decode$succeed(
-			{message: message, preventDefault: true, stopPropagation: true}));
-};
 var $elm$html$Html$Events$onMouseEnter = function (msg) {
 	return A2(
 		$elm$html$Html$Events$on,
@@ -18642,13 +18637,6 @@ var $elm$html$Html$Events$onMouseLeave = function (msg) {
 		$elm$html$Html$Events$on,
 		'mouseleave',
 		$elm$json$Json$Decode$succeed(msg));
-};
-var $author$project$MuchSelect$onMouseUpStopPropagationAndPreventDefault = function (message) {
-	return A2(
-		$elm$html$Html$Events$custom,
-		'mouseup',
-		$elm$json$Json$Decode$succeed(
-			{message: message, preventDefault: true, stopPropagation: true}));
 };
 var $author$project$Option$optionDescriptionToBool = function (optionDescription) {
 	if (optionDescription.$ === 'OptionDescription') {
@@ -18764,10 +18752,10 @@ var $author$project$MuchSelect$optionToDropdownOption = F3(
 										$elm$html$Html$Events$onMouseLeave(
 										eventHandlers.mouseOutMsgConstructor(
 											$author$project$Option$getOptionValue(option))),
-										$author$project$MuchSelect$onMouseDownStopPropagationAndPreventDefault(
+										$author$project$MuchSelect$mousedownPreventDefault(
 										eventHandlers.mouseDownMsgConstructor(
 											$author$project$Option$getOptionValue(option))),
-										$author$project$MuchSelect$onMouseUpStopPropagationAndPreventDefault(
+										$author$project$MuchSelect$mousedownPreventDefault(
 										eventHandlers.mouseUpMsgConstructor(
 											$author$project$Option$getOptionValue(option))),
 										$author$project$MuchSelect$onClickPreventDefault(eventHandlers.noOpMsgConstructor),
@@ -18823,7 +18811,8 @@ var $author$project$MuchSelect$optionToDropdownOption = F3(
 						case 'OptionSelectedAndInvalid':
 							return $elm$html$Html$text('');
 						case 'OptionSelectedHighlighted':
-							if (selectionConfig.$ === 'SingleSelectConfig') {
+							var _v2 = $author$project$SelectionMode$getSelectionMode(selectionConfig);
+							if (_v2.$ === 'SingleSelect') {
 								return A2(
 									$elm$html$Html$div,
 									_List_fromArray(
@@ -18862,10 +18851,10 @@ var $author$project$MuchSelect$optionToDropdownOption = F3(
 										$elm$html$Html$Events$onMouseLeave(
 										eventHandlers.mouseOutMsgConstructor(
 											$author$project$Option$getOptionValue(option))),
-										$author$project$MuchSelect$onMouseDownStopPropagationAndPreventDefault(
+										$author$project$MuchSelect$mousedownPreventDefault(
 										eventHandlers.mouseDownMsgConstructor(
 											$author$project$Option$getOptionValue(option))),
-										$author$project$MuchSelect$onMouseUpStopPropagationAndPreventDefault(
+										$author$project$MuchSelect$mousedownPreventDefault(
 										eventHandlers.mouseUpMsgConstructor(
 											$author$project$Option$getOptionValue(option))),
 										A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option highlighted'),
@@ -18898,10 +18887,10 @@ var $author$project$MuchSelect$optionToDropdownOption = F3(
 										$elm$html$Html$Events$onMouseLeave(
 										eventHandlers.mouseOutMsgConstructor(
 											$author$project$Option$getOptionValue(option))),
-										$author$project$MuchSelect$onMouseDownStopPropagationAndPreventDefault(
+										$author$project$MuchSelect$mousedownPreventDefault(
 										eventHandlers.mouseDownMsgConstructor(
 											$author$project$Option$getOptionValue(option))),
-										$author$project$MuchSelect$onMouseUpStopPropagationAndPreventDefault(
+										$author$project$MuchSelect$mousedownPreventDefault(
 										eventHandlers.mouseUpMsgConstructor(
 											$author$project$Option$getOptionValue(option))),
 										$author$project$MuchSelect$onClickPreventDefaultAndStopPropagation(eventHandlers.noOpMsgConstructor),
@@ -19890,6 +19879,20 @@ var $author$project$MuchSelect$defaultLoadingIndicator = A2(
 		]),
 	_List_Nil);
 var $author$project$MuchSelect$BringInputOutOfFocus = {$: 'BringInputOutOfFocus'};
+var $author$project$MuchSelect$onMouseDownStopPropagationAndPreventDefault = function (message) {
+	return A2(
+		$elm$html$Html$Events$custom,
+		'mousedown',
+		$elm$json$Json$Decode$succeed(
+			{message: message, preventDefault: true, stopPropagation: true}));
+};
+var $author$project$MuchSelect$onMouseUpStopPropagationAndPreventDefault = function (message) {
+	return A2(
+		$elm$html$Html$Events$custom,
+		'mouseup',
+		$elm$json$Json$Decode$succeed(
+			{message: message, preventDefault: true, stopPropagation: true}));
+};
 var $author$project$MuchSelect$dropdownIndicator = F2(
 	function (interactionState, transitioning) {
 		if (interactionState.$ === 'Disabled') {
