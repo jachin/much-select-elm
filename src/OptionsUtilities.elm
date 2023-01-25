@@ -1503,6 +1503,11 @@ selectOptionsInOptionsListByString strings options =
         |> deselectEveryOptionExceptOptionsInList optionsToSelect
 
 
+selectedOptionValuesAreEqual : List String -> List Option -> Bool
+selectedOptionValuesAreEqual valuesAsStrings options =
+    (options |> selectedOptions |> optionsValues) == valuesAsStrings
+
+
 addAndSelectOptionsInOptionsListByString : List String -> List Option -> List Option
 addAndSelectOptionsInOptionsListByString strings options =
     let
