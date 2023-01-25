@@ -18226,7 +18226,12 @@ var $author$project$MuchSelect$update = F2(
 												_Utils_update(
 													model,
 													{options: newOptions})),
-											$author$project$MuchSelect$NoEffect);
+											A4(
+												$author$project$MuchSelect$makeEffectsWhenValuesChanges,
+												$author$project$SelectionMode$getEventMode(model.selectionConfig),
+												$author$project$SelectionMode$getSelectionMode(model.selectionConfig),
+												model.selectedValueEncoding,
+												$author$project$OptionsUtilities$selectedOptions(newOptions)));
 									}
 								}
 							}

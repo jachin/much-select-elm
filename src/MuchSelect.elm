@@ -1540,7 +1540,11 @@ update msg model =
                                             | options = newOptions
                                           }
                                             |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-                                        , NoEffect
+                                        , makeEffectsWhenValuesChanges
+                                            (SelectionMode.getEventMode model.selectionConfig)
+                                            (SelectionMode.getSelectionMode model.selectionConfig)
+                                            model.selectedValueEncoding
+                                            (OptionsUtilities.selectedOptions newOptions)
                                         )
 
                         Err error ->
