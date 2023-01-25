@@ -1494,50 +1494,58 @@ update msg model =
                     )
 
                 "selected-value" ->
-                    case SelectedValueEncoding.valuesFromFlags model.selectedValueEncoding newAttributeValue of
+                    case SelectedValueEncoding.stringToValueStrings model.selectedValueEncoding newAttributeValue of
                         Ok selectedValueStrings ->
-                            case selectedValueStrings of
-                                [] ->
-                                    clearAllSelectedOption model
+                            if OptionsUtilities.selectedOptionValuesAreEqual selectedValueStrings model.options then
+                                ( model, NoEffect )
 
-                                [ selectedValueString ] ->
-                                    case selectedValueString of
-                                        "" ->
-                                            clearAllSelectedOption model
+                            else
+                                case selectedValueStrings of
+                                    [] ->
+                                        clearAllSelectedOption model
 
-                                        _ ->
-                                            let
-                                                newOptions =
-                                                    model.options
-                                                        |> List.map Option.deselectOption
-                                                        |> addAndSelectOptionsInOptionsListByString
-                                                            selectedValueStrings
-                                            in
-                                            ( { model
-                                                | options = newOptions
-                                              }
-                                                |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-                                            , makeEffectsWhenValuesChanges
-                                                (SelectionMode.getEventMode model.selectionConfig)
-                                                (SelectionMode.getSelectionMode model.selectionConfig)
-                                                model.selectedValueEncoding
-                                                (OptionsUtilities.selectedOptions newOptions)
-                                            )
+                                    [ selectedValueString ] ->
+                                        case selectedValueString of
+                                            "" ->
+                                                clearAllSelectedOption model
 
-                                _ ->
-                                    let
-                                        newOptions =
-                                            model.options
-                                                |> List.map Option.deselectOption
-                                                |> addAndSelectOptionsInOptionsListByString
-                                                    selectedValueStrings
-                                    in
-                                    ( { model
-                                        | options = newOptions
-                                      }
-                                        |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
-                                    , NoEffect
-                                    )
+                                            _ ->
+                                                let
+                                                    newOptions =
+                                                        model.options
+                                                            |> List.map Option.deselectOption
+                                                            |> addAndSelectOptionsInOptionsListByString
+                                                                selectedValueStrings
+                                                in
+                                                ( { model
+                                                    | options = newOptions
+                                                  }
+                                                    |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
+                                                , makeEffectsWhenValuesChanges
+                                                    (SelectionMode.getEventMode model.selectionConfig)
+                                                    (SelectionMode.getSelectionMode model.selectionConfig)
+                                                    model.selectedValueEncoding
+                                                    (OptionsUtilities.selectedOptions newOptions)
+                                                )
+
+                                    _ ->
+                                        let
+                                            newOptions =
+                                                model.options
+                                                    |> List.map Option.deselectOption
+                                                    |> addAndSelectOptionsInOptionsListByString
+                                                        selectedValueStrings
+                                        in
+                                        ( { model
+                                            | options = newOptions
+                                          }
+                                            |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
+                                        , makeEffectsWhenValuesChanges
+                                            (SelectionMode.getEventMode model.selectionConfig)
+                                            (SelectionMode.getSelectionMode model.selectionConfig)
+                                            model.selectedValueEncoding
+                                            (OptionsUtilities.selectedOptions newOptions)
+                                        )
 
                         Err error ->
                             ( model, ReportErrorMessage error )
@@ -3565,7 +3573,7 @@ init flags =
                 |> Result.withDefault SelectedValueEncoding.defaultSelectedValueEncoding
 
         ( initialValues, initialValueErrEffect ) =
-            case SelectedValueEncoding.valuesFromFlags selectedValueEncoding flags.selectedValue of
+            case SelectedValueEncoding.stringToValueStrings selectedValueEncoding flags.selectedValue of
                 Ok values ->
                     ( values, NoEffect )
 
@@ -3843,3 +3851,88 @@ onMouseUpStopPropagation message =
             , preventDefault = False
             }
         )
+
+
+effectToDebuggingString : Effect -> String
+effectToDebuggingString effect =
+    case effect of
+        NoEffect ->
+            "NoEffect"
+
+        Batch effects ->
+            List.map effectToDebuggingString effects |> String.join " "
+
+        FocusInput ->
+            "FocusInput"
+
+        BlurInput ->
+            "BlurInput"
+
+        InputHasBeenFocused ->
+            "InputHasBeenFocused"
+
+        InputHasBeenBlurred ->
+            "InputHasBeenBlurred"
+
+        InputHasBeenKeyUp string validationStatus ->
+            "InputHasBeenKeyUp"
+
+        SearchStringTouched float ->
+            "SearchStringTouched"
+
+        UpdateOptionsInWebWorker ->
+            "UpdateOptionsInWebWorker"
+
+        SearchOptionsWithWebWorker value ->
+            "SearchOptionsWithWebWorker"
+
+        ReportValueChanged value ->
+            "ReportValueChanged"
+
+        ValueCleared ->
+            "ValueCleared"
+
+        InvalidValue value ->
+            "InvalidValue"
+
+        CustomOptionSelected strings ->
+            "CustomOptionSelected"
+
+        ReportOptionSelected value ->
+            "ReportOptionSelected"
+
+        ReportOptionDeselected value ->
+            "ReportOptionDeselected"
+
+        OptionsUpdated bool ->
+            "OptionsUpdated"
+
+        SendCustomValidationRequest ( string, int ) ->
+            "SendCustomValidationRequest"
+
+        ReportErrorMessage string ->
+            "ReportErrorMessage"
+
+        ReportReady ->
+            "ReportReady"
+
+        ReportInitialValueSet value ->
+            "ReportInitialValueSet"
+
+        FetchOptionsFromDom ->
+            "FetchOptionsFromDom"
+
+        ScrollDownToElement string ->
+            "ScrollDownToElement"
+
+        ReportAllOptions value ->
+            "ReportAllOptions"
+
+        DumpConfigState value ->
+            "DumpConfigState"
+
+        DumpSelectedValues value ->
+            "DumpSelectedValues"
+
+        ChangeTheLightDom lightDomChange ->
+            "ChangeTheLightDom"

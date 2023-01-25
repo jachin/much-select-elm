@@ -369,6 +369,16 @@ class MuchSelect extends HTMLElement {
     // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
     this.appPromise.then((app) =>
       app.ports.lightDomChange.subscribe((lightDomChange) => {
+        const eventsOnly = booleanAttributeValueToBool(
+          this.getAttribute("events-only")
+        );
+
+        if (eventsOnly) {
+          // TODO How can this happen? This should never happen.
+          // throw new Error("We're in events only mode, what are we doing??");
+          return;
+        }
+
         if (lightDomChange.changeType === "update-selected-value") {
           const selectInputSlot = this.querySelector("[slot='select-input']");
 

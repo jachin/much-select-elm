@@ -59,9 +59,9 @@ toString selectedValueEncoding =
             "json"
 
 
-valuesFromFlags : SelectedValueEncoding -> String -> Result String (List String)
-valuesFromFlags selectedValueEncoding valuesString =
-    if valuesString == "" then
+stringToValueStrings : SelectedValueEncoding -> String -> Result String (List String)
+stringToValueStrings selectedValueEncoding valuesString =
+    if valuesString == "" && selectedValueEncoding == CommaSeperated then
         Ok []
 
     else
