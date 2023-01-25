@@ -56,6 +56,7 @@ type alias Flags =
 
 type alias Model =
     { allowCustomOptions : Bool
+    , customOptionsHint : Maybe String
     , allowMultiSelect : Bool
     , outputStyle : String
     , customValidationResult : ValidationResult
@@ -139,6 +140,7 @@ type Msg
     | ToggleValidation Validator Bool
     | ToggleDisabled Bool
     | ChangeSelectedValue (List MuchSelectValue)
+    | ChangeCustomOptionsHint String
 
 
 main : Program Flags Model Msg
@@ -154,6 +156,7 @@ main =
 init : Flags -> ( Model, Cmd Msg )
 init _ =
     ( { allowCustomOptions = False
+      , customOptionsHint = Nothing
       , allowMultiSelect = False
       , outputStyle = "custom-html"
       , customValidationResult = NothingToValidate
@@ -312,6 +315,14 @@ update msg model =
         ChangeSelectedValue muchSelectValues ->
             ( { model | selectedValues = muchSelectValues }, Cmd.none )
 
+        ChangeCustomOptionsHint string ->
+            case string of
+                "" ->
+                    ( { model | customOptionsHint = Nothing }, Cmd.none )
+
+                _ ->
+                    ( { model | customOptionsHint = Just string }, Cmd.none )
+
 
 lordOfTheRingsCharacterToDemoOption : LordOfTheRingsCharacter -> DemoOption
 lordOfTheRingsCharacterToDemoOption character =
@@ -442,10 +453,15 @@ onCustomValidationRequest =
         )
 
 
-allowCustomOptionsAttribute : Bool -> Attribute msg
-allowCustomOptionsAttribute bool =
+allowCustomOptionsAttribute : Bool -> Maybe String -> Attribute msg
+allowCustomOptionsAttribute bool maybeHint =
     if bool then
-        attribute "allow-custom-options" ""
+        case maybeHint of
+            Just hint ->
+                attribute "allow-custom-options" hint
+
+            Nothing ->
+                attribute "allow-custom-options" ""
 
     else
         Html.Attributes.Extra.empty
@@ -533,7 +549,7 @@ view model =
             [ attribute "events-only" ""
             , selectedValueAttribute model.selectedValueEncoding model.selectedValues
             , selectedValueEncodingAttribute model.selectedValueEncoding
-            , allowCustomOptionsAttribute model.allowCustomOptions
+            , allowCustomOptionsAttribute model.allowCustomOptions model.customOptionsHint
             , multiSelectAttribute model.allowMultiSelect
             , outputStyleAttribute model.outputStyle
             , placeholderAttribute model.placeholder
@@ -813,6 +829,22 @@ view model =
                     ]
                     []
                 , label [ for "minimum-length-checkbox" ] [ text "Minimum Length" ]
+                ]
+            , fieldset []
+                [ legend []
+                    [ text "Custom Option Hint"
+                    ]
+                , label
+                    [ for "custom-option-hint" ]
+                    [ text "Custom Option Hint: " ]
+                , input
+                    [ type_ "text"
+                    , name "custom-option-hint"
+                    , id "custom-option-input"
+                    , disabled (not model.allowCustomOptions)
+                    , onChange ChangeCustomOptionsHint
+                    ]
+                    []
                 ]
             ]
         ]
