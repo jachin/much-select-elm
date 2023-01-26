@@ -12282,10 +12282,15 @@ var $author$project$MuchSelect$update = F2(
 				var canAddCustomOptions = _v21.a;
 				var customOptionHint = _v21.b;
 				var maybeCustomOptionHint = function () {
-					if (customOptionHint === '') {
-						return $elm$core$Maybe$Nothing;
-					} else {
-						return $elm$core$Maybe$Just(customOptionHint);
+					switch (customOptionHint) {
+						case '':
+							return $elm$core$Maybe$Nothing;
+						case 'true':
+							return $elm$core$Maybe$Nothing;
+						case 'false':
+							return $elm$core$Maybe$Nothing;
+						default:
+							return $elm$core$Maybe$Just(customOptionHint);
 					}
 				}();
 				return _Utils_Tuple2(
@@ -12721,6 +12726,14 @@ var $author$project$MuchSelect$update = F2(
 										model,
 										{
 											a: A3($author$project$SelectionMode$setAllowCustomOptionsWithBool, false, $elm$core$Maybe$Nothing, model.a)
+										}),
+									$author$project$MuchSelect$NoEffect);
+							case 'true':
+								return _Utils_Tuple2(
+									_Utils_update(
+										model,
+										{
+											a: A3($author$project$SelectionMode$setAllowCustomOptionsWithBool, true, $elm$core$Maybe$Nothing, model.a)
 										}),
 									$author$project$MuchSelect$NoEffect);
 							default:

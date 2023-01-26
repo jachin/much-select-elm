@@ -985,8 +985,16 @@ class MuchSelect extends HTMLElement {
     flags.maxDropdownItems = this.getAttribute("max-dropdown-items");
 
     if (this.hasAttribute("allow-custom-options")) {
-      flags.customOptionHint = this.getAttribute("allow-custom-options");
-      flags.allowCustomOptions = true;
+      if (this.getAttribute("allow-custom-options") === "true") {
+        flags.customOptionHint = null;
+        flags.allowCustomOptions = true;
+      } else if (this.getAttribute("allow-custom-options") === "false") {
+        flags.customOptionHint = this.getAttribute("allow-custom-options");
+        flags.allowCustomOptions = false;
+      } else {
+        flags.customOptionHint = this.getAttribute("allow-custom-options");
+        flags.allowCustomOptions = true;
+      }
     } else {
       flags.customOptionHint = null;
       flags.allowCustomOptions = false;

@@ -915,6 +915,12 @@ update msg model =
                         "" ->
                             Nothing
 
+                        "true" ->
+                            Nothing
+
+                        "false" ->
+                            Nothing
+
                         _ ->
                             Just customOptionHint
             in
@@ -1343,6 +1349,17 @@ update msg model =
                                 | selectionConfig =
                                     SelectionMode.setAllowCustomOptionsWithBool
                                         False
+                                        Nothing
+                                        model.selectionConfig
+                              }
+                            , NoEffect
+                            )
+
+                        "true" ->
+                            ( { model
+                                | selectionConfig =
+                                    SelectionMode.setAllowCustomOptionsWithBool
+                                        True
                                         Nothing
                                         model.selectionConfig
                               }
