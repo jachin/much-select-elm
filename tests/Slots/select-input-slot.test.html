@@ -4,7 +4,7 @@
 <script type="module">
   import { runTests } from "@web/test-runner-mocha";
   import { expect } from "@esm-bundle/chai";
-  import { html, fixture, nextFrame, oneEvent } from "@open-wc/testing";
+  import { html, fixture, oneEvent } from "@open-wc/testing";
 
   import MuchSelect from "../../dist/much-select-debug.js";
 
@@ -26,7 +26,7 @@
               multi-select=""
               placeholder="type or select..."
               size="large"
-              selected-value=""
+              selected-value="%5B%5D"
               selected-value-encoding="json"
               style=""
             >
