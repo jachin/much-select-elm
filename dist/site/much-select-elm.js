@@ -12767,21 +12767,35 @@ var $author$project$MuchSelect$update = F2(
 								}),
 							$author$project$MuchSelect$NoEffect);
 					case 'loading':
-						return _Utils_Tuple2(
-							_Utils_update(
-								model,
-								{
-									d: A3(
-										$author$project$RightSlot$updateRightSlotLoading,
-										true,
-										model.a,
-										$author$project$OptionsUtilities$hasSelectedOption(model.b))
-								}),
-							$author$project$MuchSelect$NoEffect);
+						if (newAttributeValue === 'false') {
+							return _Utils_Tuple2(
+								_Utils_update(
+									model,
+									{
+										d: A3(
+											$author$project$RightSlot$updateRightSlotLoading,
+											false,
+											model.a,
+											$author$project$OptionsUtilities$hasSelectedOption(model.b))
+									}),
+								$author$project$MuchSelect$NoEffect);
+						} else {
+							return _Utils_Tuple2(
+								_Utils_update(
+									model,
+									{
+										d: A3(
+											$author$project$RightSlot$updateRightSlotLoading,
+											true,
+											model.a,
+											$author$project$OptionsUtilities$hasSelectedOption(model.b))
+									}),
+								$author$project$MuchSelect$NoEffect);
+						}
 					case 'max-dropdown-items':
-						var _v34 = $author$project$OutputStyle$stringToMaxDropdownItems(newAttributeValue);
-						if (!_v34.$) {
-							var maxDropdownItems = _v34.a;
+						var _v35 = $author$project$OutputStyle$stringToMaxDropdownItems(newAttributeValue);
+						if (!_v35.$) {
+							var maxDropdownItems = _v35.a;
 							return _Utils_Tuple2(
 								$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
 									_Utils_update(
@@ -12791,7 +12805,7 @@ var $author$project$MuchSelect$update = F2(
 										})),
 								$author$project$MuchSelect$NoEffect);
 						} else {
-							var err = _v34.a;
+							var err = _v35.a;
 							return _Utils_Tuple2(
 								model,
 								$author$project$MuchSelect$ReportErrorMessage(err));
@@ -12819,24 +12833,24 @@ var $author$project$MuchSelect$update = F2(
 								}),
 							$author$project$MuchSelect$ReportReady);
 					case 'option-sorting':
-						var _v35 = $author$project$OptionSorting$stringToOptionSort(newAttributeValue);
-						if (!_v35.$) {
-							var optionSorting = _v35.a;
+						var _v36 = $author$project$OptionSorting$stringToOptionSort(newAttributeValue);
+						if (!_v36.$) {
+							var optionSorting = _v36.a;
 							return _Utils_Tuple2(
 								_Utils_update(
 									model,
 									{O: optionSorting}),
 								$author$project$MuchSelect$NoEffect);
 						} else {
-							var error = _v35.a;
+							var error = _v36.a;
 							return _Utils_Tuple2(
 								model,
 								$author$project$MuchSelect$ReportErrorMessage(error));
 						}
 					case 'output-style':
-						var _v36 = $author$project$SelectionMode$stringToOutputStyle(newAttributeValue);
-						if (!_v36.$) {
-							var outputStyle = _v36.a;
+						var _v37 = $author$project$SelectionMode$stringToOutputStyle(newAttributeValue);
+						if (!_v37.$) {
+							var outputStyle = _v37.a;
 							var newSelectionConfig = A2($author$project$SelectionMode$setOutputStyle, outputStyle, model.a);
 							return _Utils_Tuple2(
 								_Utils_update(
@@ -12873,9 +12887,9 @@ var $author$project$MuchSelect$update = F2(
 										})),
 								$author$project$MuchSelect$NoEffect);
 						} else {
-							var _v38 = $author$project$PositiveInt$fromString(newAttributeValue);
-							if (!_v38.$) {
-								var minimumLength = _v38.a;
+							var _v39 = $author$project$PositiveInt$fromString(newAttributeValue);
+							if (!_v39.$) {
+								var minimumLength = _v39.a;
 								return _Utils_Tuple2(
 									$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
 										_Utils_update(
@@ -12902,9 +12916,9 @@ var $author$project$MuchSelect$update = F2(
 								}),
 							$author$project$MuchSelect$NoEffect);
 					case 'selected-value':
-						var _v39 = A2($author$project$SelectedValueEncoding$stringToValueStrings, model.h, newAttributeValue);
-						if (!_v39.$) {
-							var selectedValueStrings = _v39.a;
+						var _v40 = A2($author$project$SelectedValueEncoding$stringToValueStrings, model.h, newAttributeValue);
+						if (!_v40.$) {
+							var selectedValueStrings = _v40.a;
 							if (A2($author$project$OptionsUtilities$selectedOptionValuesAreEqual, selectedValueStrings, model.b)) {
 								return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
 							} else {
@@ -12952,22 +12966,22 @@ var $author$project$MuchSelect$update = F2(
 								}
 							}
 						} else {
-							var error = _v39.a;
+							var error = _v40.a;
 							return _Utils_Tuple2(
 								model,
 								$author$project$MuchSelect$ReportErrorMessage(error));
 						}
 					case 'selected-value-encoding':
-						var _v42 = $author$project$SelectedValueEncoding$fromString(newAttributeValue);
-						if (!_v42.$) {
-							var selectedValueEncoding = _v42.a;
+						var _v43 = $author$project$SelectedValueEncoding$fromString(newAttributeValue);
+						if (!_v43.$) {
+							var selectedValueEncoding = _v43.a;
 							return _Utils_Tuple2(
 								_Utils_update(
 									model,
 									{h: selectedValueEncoding}),
 								$author$project$MuchSelect$NoEffect);
 						} else {
-							var error = _v42.a;
+							var error = _v43.a;
 							return _Utils_Tuple2(
 								model,
 								$author$project$MuchSelect$ReportErrorMessage(error));
