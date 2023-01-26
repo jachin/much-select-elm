@@ -8,7 +8,7 @@
   <script src="/styles.js"></script>
   <link href="/demo-styles.css" rel="stylesheet">
   <title>
-   Much Select: Output Style Switching
+   Much Select: Custom Option Label Text
   </title>
  </head>
  <body>
@@ -20,7 +20,7 @@
    </div>
    <div id="page-name">
     <h2>
-     Output Style Switching
+     Custom Option Label Text
     </h2>
    </div>
    <div id="sub-title">
@@ -111,68 +111,35 @@
   </div>
   <div class="container">
    <div class="example">
-    <div id="switch-between-datalist-and-custom-html">
-     <div id="switch-between-datalist-and-custom-html">
+    <div id="custom-option-label-text">
+     <div>
       <h3>
-       Switch between datalist and custom html Output Style
+       Set the custom option text
       </h3>
-      <much-select multi-select="" selected-value="Safari,Firefox" output-style="datalist">
+      <p>
+       You can set the value of the <code>allow-custom-options=</code> attribute to text that will be used in the dropdown.
+    The default value will be "Add (your value)...".
+      </p>
+      <much-select allow-custom-options="New Currency: ">
        <select slot="select-input">
       
        <option>
-        Firefox
+        Gold Doubloons
        </option>
        
       
        <option>
-        Chrome
+        Schrute Bucks
        </option>
        
       
        <option>
-        Safari
-       </option>
-       
-      
-       <option>
-        Edge
+        Credits
        </option>
        
     
       </select>
      </much-select>
-     <button class="dom-toggle">Click me to toggle between datalist and custom-html with the DOM</button>
-
-
-  <button class="api-toggle">Click me to toggle between datalist and custom-html with the API</button>
-     <script>
-      document
-      .querySelector("#switch-between-datalist-and-custom-html button.dom-toggle")
-      .addEventListener("click", () => {
-        const muchSelect = document.querySelector(
-          "#switch-between-datalist-and-custom-html much-select"
-        );
-        if (muchSelect.getAttribute("output-style") === "datalist") {
-          muchSelect.setAttribute("output-style", "custom-html");
-        } else {
-          muchSelect.setAttribute("output-style", "datalist");
-        }
-      });
-
-    document
-      .querySelector("#switch-between-datalist-and-custom-html button.api-toggle")
-      .addEventListener("click", async () => {
-        const muchSelect = document.querySelector(
-          "#switch-between-datalist-and-custom-html much-select"
-        );
-        const currentOutputStyle = await muchSelect.outputStyle;
-        if (currentOutputStyle === "datalist") {
-          muchSelect.outputStyle = "custom-html";
-        } else {
-          muchSelect.outputStyle = "datalist";
-        }
-      });
-     </script>
     </div>
    </div>
   </div>

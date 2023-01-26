@@ -113,7 +113,7 @@
   <div class="container">
    <div class="example">
     <div id="add-custom-options">
-     <div id="add-custom-options">
+     <div>
       <h3>
        Add Custom Options
       </h3>
@@ -149,6 +149,7 @@
       </script>
      </div>
     </div>
+    <a href="/add-custom-options">open example on its own page</a>
    </div>
    <div class="example">
     <div id="add-custom-options-2">
@@ -160,7 +161,7 @@
        If we type in an option that matches an existing option is should <em>not</em>
     show the option to add a custom option.
       </p>
-      <much-select allow-custom-options="true">
+      <much-select allow-custom-options="">
        <select slot="select-input">
       
        <option>
@@ -202,6 +203,7 @@
         .querySelector("#not-empty-single-select-value-changed-example much-select")
         .addEventListener(
           "customValueSelected",
+          // eslint-disable-next-line
           makeLogEventHandler("not-empty-single-select-custom-option-event-log")
         );
     });
@@ -211,7 +213,7 @@
   </div>
   <div class="example">
    <div id="custom-option-label-text">
-    <div id="custom-option-label-text">
+    <div>
      <h3>
       Set the custom option text
      </h3>
@@ -241,6 +243,7 @@
     </much-select>
    </div>
   </div>
+  <a href="/custom-option-label-text">open example on its own page</a>
  </div>
  <div class="example">
   <div id="custom-option-label-text-2">

@@ -397,10 +397,13 @@
     
   </select>
  </much-select>
- <button>Click me to toggle between datalist and custom-html</button>
+ <button class="dom-toggle">Click me to toggle between datalist and custom-html with the DOM</button>
+
+
+  <button class="api-toggle">Click me to toggle between datalist and custom-html with the API</button>
  <script>
   document
-      .querySelector("#switch-between-datalist-and-custom-html button")
+      .querySelector("#switch-between-datalist-and-custom-html button.dom-toggle")
       .addEventListener("click", () => {
         const muchSelect = document.querySelector(
           "#switch-between-datalist-and-custom-html much-select"
@@ -409,6 +412,20 @@
           muchSelect.setAttribute("output-style", "custom-html");
         } else {
           muchSelect.setAttribute("output-style", "datalist");
+        }
+      });
+
+    document
+      .querySelector("#switch-between-datalist-and-custom-html button.api-toggle")
+      .addEventListener("click", async () => {
+        const muchSelect = document.querySelector(
+          "#switch-between-datalist-and-custom-html much-select"
+        );
+        const currentOutputStyle = await muchSelect.outputStyle;
+        if (currentOutputStyle === "datalist") {
+          muchSelect.outputStyle = "custom-html";
+        } else {
+          muchSelect.outputStyle = "datalist";
         }
       });
  </script>

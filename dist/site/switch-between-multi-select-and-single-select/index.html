@@ -8,7 +8,7 @@
   <script src="/styles.js"></script>
   <link href="/demo-styles.css" rel="stylesheet">
   <title>
-   Much Select: Output Style Switching
+   Much Select: Switching Between Single and Multi Select
   </title>
  </head>
  <body>
@@ -20,7 +20,7 @@
    </div>
    <div id="page-name">
     <h2>
-     Output Style Switching
+     Switching Between Single and Multi Select
     </h2>
    </div>
    <div id="sub-title">
@@ -111,12 +111,15 @@
   </div>
   <div class="container">
    <div class="example">
-    <div id="switch-between-datalist-and-custom-html">
-     <div id="switch-between-datalist-and-custom-html">
+    <div id="switch-between-multi-select-and-single-select">
+     <div id="switch-between-multi-select-and-single-select">
       <h3>
-       Switch between datalist and custom html Output Style
+       Switch between multi select and single select
       </h3>
-      <much-select multi-select="" selected-value="Safari,Firefox" output-style="datalist">
+      <p>
+       Adding the <code>multi-select</code> attribute puts the <code>much-select</code> into multi select mode.
+      </p>
+      <much-select multi-select="" selected-value="Safari,Firefox">
        <select slot="select-input">
       
        <option>
@@ -141,35 +144,18 @@
     
       </select>
      </much-select>
-     <button class="dom-toggle">Click me to toggle between datalist and custom-html with the DOM</button>
-
-
-  <button class="api-toggle">Click me to toggle between datalist and custom-html with the API</button>
+     <button>Click me to toggle between single and multi select</button>
      <script>
       document
-      .querySelector("#switch-between-datalist-and-custom-html button.dom-toggle")
+      .querySelector("#switch-between-multi-select-and-single-select button")
       .addEventListener("click", () => {
         const muchSelect = document.querySelector(
-          "#switch-between-datalist-and-custom-html much-select"
+          "#switch-between-multi-select-and-single-select much-select"
         );
-        if (muchSelect.getAttribute("output-style") === "datalist") {
-          muchSelect.setAttribute("output-style", "custom-html");
+        if (muchSelect.hasAttribute("multi-select")) {
+          muchSelect.removeAttribute("multi-select");
         } else {
-          muchSelect.setAttribute("output-style", "datalist");
-        }
-      });
-
-    document
-      .querySelector("#switch-between-datalist-and-custom-html button.api-toggle")
-      .addEventListener("click", async () => {
-        const muchSelect = document.querySelector(
-          "#switch-between-datalist-and-custom-html much-select"
-        );
-        const currentOutputStyle = await muchSelect.outputStyle;
-        if (currentOutputStyle === "datalist") {
-          muchSelect.outputStyle = "custom-html";
-        } else {
-          muchSelect.outputStyle = "datalist";
+          muchSelect.setAttribute("multi-select", "");
         }
       });
      </script>
