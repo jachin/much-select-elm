@@ -136,11 +136,11 @@
           ]);
         });
 
-        it("works in multi select mode with an empty selected value", async () => {
+        it("works in multi select mode with an empty array", async () => {
           const el = /** @type {MuchSelect} */ await fixture(html`<much-select
             multi-select
             selected-value-encoding="json"
-            selected-value=""
+            selected-value="%5B%5D"
           >
           </much-select>`);
 
@@ -151,7 +151,7 @@
         it("works in select mode with an empty selected value", async () => {
           const el = /** @type {MuchSelect} */ await fixture(html`<much-select
             selected-value-encoding="json"
-            selected-value=""
+            selected-value="%22%22"
           >
           </much-select>`);
 
