@@ -18020,6 +18020,14 @@ var $author$project$MuchSelect$update = F2(
 											selectionConfig: A3($author$project$SelectionMode$setAllowCustomOptionsWithBool, false, $elm$core$Maybe$Nothing, model.selectionConfig)
 										}),
 									$author$project$MuchSelect$NoEffect);
+							case 'true':
+								return _Utils_Tuple2(
+									_Utils_update(
+										model,
+										{
+											selectionConfig: A3($author$project$SelectionMode$setAllowCustomOptionsWithBool, true, $elm$core$Maybe$Nothing, model.selectionConfig)
+										}),
+									$author$project$MuchSelect$NoEffect);
 							default:
 								var customOptionHint = newAttributeValue;
 								return _Utils_Tuple2(

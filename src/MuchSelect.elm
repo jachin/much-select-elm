@@ -1349,6 +1349,17 @@ update msg model =
                             , NoEffect
                             )
 
+                        "true" ->
+                            ( { model
+                                | selectionConfig =
+                                    SelectionMode.setAllowCustomOptionsWithBool
+                                        True
+                                        Nothing
+                                        model.selectionConfig
+                              }
+                            , NoEffect
+                            )
+
                         customOptionHint ->
                             ( { model
                                 | selectionConfig =
