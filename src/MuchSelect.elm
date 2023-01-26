@@ -915,6 +915,12 @@ update msg model =
                         "" ->
                             Nothing
 
+                        "true" ->
+                            Nothing
+
+                        "false" ->
+                            Nothing
+
                         _ ->
                             Just customOptionHint
             in
