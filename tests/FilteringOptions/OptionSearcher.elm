@@ -2,7 +2,7 @@ module FilteringOptions.OptionSearcher exposing (suite)
 
 import Expect
 import Json.Decode
-import Main exposing (figureOutWhichOptionsToShowInTheDropdown)
+import MuchSelect exposing (figureOutWhichOptionsToShowInTheDropdown)
 import Option
 import OptionSearchFilter
 import OptionSearcher exposing (doesSearchStringFindNothing)

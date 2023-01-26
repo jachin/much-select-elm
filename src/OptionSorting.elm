@@ -1,4 +1,4 @@
-module OptionSorting exposing (OptionSort(..), sortOptions, sortOptionsBySearchFilterTotalScore, stringToOptionSort)
+module OptionSorting exposing (OptionSort(..), sortOptions, sortOptionsBySearchFilterTotalScore, stringToOptionSort, toString)
 
 import List.Extra
 import Option exposing (Option, getMaybeOptionSearchFilter, getOptionGroup, getOptionLabel)
@@ -22,6 +22,16 @@ stringToOptionSort string =
 
         _ ->
             Err ("Sorting the options by \"" ++ string ++ "\" is not supported")
+
+
+toString : OptionSort -> String
+toString optionSort =
+    case optionSort of
+        NoSorting ->
+            "no-sorting"
+
+        SortByOptionLabel ->
+            "by-option-label"
 
 
 sortFunction : OptionSort -> (List Option -> List Option)

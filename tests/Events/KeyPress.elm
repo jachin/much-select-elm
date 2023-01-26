@@ -3,7 +3,7 @@ module Events.KeyPress exposing (suite)
 import Expect
 import Json.Decode
 import Json.Encode
-import Main exposing (Flags)
+import MuchSelect exposing (Flags)
 import ProgramTest exposing (ensureViewHas, expectOutgoingPortValues, fillIn, start)
 import SimulatedEffect.Cmd
 import SimulatedEffect.Ports
@@ -13,15 +13,17 @@ import Test.Html.Selector exposing (all, classes, id)
 
 element =
     ProgramTest.createElement
-        { init = Main.init
-        , update = Main.update
-        , view = Main.view
+        { init = MuchSelect.init
+        , update = MuchSelect.update
+        , view = MuchSelect.view
         }
 
 
 flagsDatalistSingle : Flags
 flagsDatalistSingle =
-    { value = Json.Encode.object []
+    { isEventsOnly = False
+    , selectedValue = ""
+    , selectedValueEncoding = Nothing
     , placeholder = ( True, "" )
     , customOptionHint = Nothing
     , allowMultiSelect = False
@@ -30,23 +32,23 @@ flagsDatalistSingle =
     , optionsJson = ""
     , optionSort = ""
     , loading = False
-    , maxDropdownItems = 2
+    , maxDropdownItems = Just "2"
     , disabled = False
     , allowCustomOptions = False
     , selectedItemStaysInPlace = True
-    , searchStringMinimumLength = 2
+    , searchStringMinimumLength = Just "2"
     , showDropdownFooter = False
     , transformationAndValidationJson = ""
     }
 
 
-simulateEffects : Main.Effect -> ProgramTest.SimulatedEffect Main.Msg
+simulateEffects : MuchSelect.Effect -> ProgramTest.SimulatedEffect MuchSelect.Msg
 simulateEffects effect =
     case effect of
-        Main.InputHasBeenKeyUp string _ ->
+        MuchSelect.InputHasBeenKeyUp string _ ->
             SimulatedEffect.Ports.send "inputKeyUp" (Json.Encode.string string)
 
-        Main.Batch effects ->
+        MuchSelect.Batch effects ->
             effects
                 |> List.map simulateEffects
                 |> SimulatedEffect.Cmd.batch

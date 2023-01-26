@@ -131,6 +131,14 @@ suite =
                     Expect.equalLists
                         [ selectOption 0 wolfClub ]
                         (addAndSelectOptionsInOptionsListByString [ "Wolf Club" ] [ selectOption 0 wolfClub ])
+            , test "should preserver the order of multiple selections" <|
+                \_ ->
+                    Expect.equalLists
+                        [ selectOption 1 heartBones, timecop1983, selectOption 0 waveshaper ]
+                        (addAndSelectOptionsInOptionsListByString
+                            [ "Waveshaper", "Heart Bones" ]
+                            [ heartBones, timecop1983, waveshaper ]
+                        )
             ]
         , describe "and merging them with a selected value"
             [ test "if a new option matches the selected option update the label and description" <|

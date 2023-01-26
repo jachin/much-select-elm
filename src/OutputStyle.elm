@@ -11,9 +11,47 @@ type MaxDropdownItems
     | NoLimitToDropdownItems
 
 
+defaultMaxDropdownItemsNum : PositiveInt
+defaultMaxDropdownItemsNum =
+    PositiveInt.new 1000
+
+
+defaultMaxDropdownItems : MaxDropdownItems
+defaultMaxDropdownItems =
+    FixedMaxDropdownItems defaultMaxDropdownItemsNum
+
+
+minimMaxDropdownItemsNum : PositiveInt
+minimMaxDropdownItemsNum =
+    PositiveInt.new 2
+
+
+stringToMaxDropdownItems : String -> Result String MaxDropdownItems
+stringToMaxDropdownItems str =
+    case PositiveInt.fromString str of
+        Just int ->
+            if PositiveInt.isZero int then
+                Ok NoLimitToDropdownItems
+
+            else if PositiveInt.lessThan int minimMaxDropdownItemsNum then
+                Err
+                    "Invalid value for the max-dropdown-items attribute. It needs to be greater than 2"
+
+            else
+                Ok (FixedMaxDropdownItems int)
+
+        Nothing ->
+            Err
+                "Invalid value for the max-dropdown-items attribute."
+
+
 type SearchStringMinimumLength
     = FixedSearchStringMinimumLength PositiveInt
     | NoMinimumToSearchStringLength
+
+
+defaultSearchStringMinimumLength =
+    FixedSearchStringMinimumLength (PositiveInt.new 2)
 
 
 encodeSearchStringMinimumLength : SearchStringMinimumLength -> Json.Encode.Value
@@ -41,6 +79,11 @@ decodeSearchStringMinimumLength =
 
 type alias CustomOptionHint =
     Maybe String
+
+
+type EventsMode
+    = EventsOnly
+    | AllowLightDomChanges
 
 
 type DropdownState
@@ -77,6 +120,7 @@ type alias SingleSelectCustomHtmlFields =
     , searchStringMinimumLength : SearchStringMinimumLength
     , dropdownState : DropdownState
     , dropdownStyle : DropdownStyle
+    , eventsMode : EventsMode
     }
 
 
@@ -88,6 +132,7 @@ defaultSingleSelectCustomHtmlFields =
     , searchStringMinimumLength = FixedSearchStringMinimumLength (PositiveInt.new 2)
     , dropdownState = Collapsed
     , dropdownStyle = NoFooter
+    , eventsMode = AllowLightDomChanges
     }
 
 
@@ -98,6 +143,7 @@ type alias MultiSelectCustomHtmlFields =
     , searchStringMinimumLength : SearchStringMinimumLength
     , dropdownState : DropdownState
     , dropdownStyle : DropdownStyle
+    , eventsMode : EventsMode
     }
 
 
@@ -109,17 +155,18 @@ defaultMultiSelectCustomHtmlFields =
     , searchStringMinimumLength = FixedSearchStringMinimumLength (PositiveInt.new 2)
     , dropdownState = Collapsed
     , dropdownStyle = NoFooter
+    , eventsMode = AllowLightDomChanges
     }
 
 
 type SingleSelectOutputStyle
     = SingleSelectCustomHtml SingleSelectCustomHtmlFields
-    | SingleSelectDatalist ValueTransformAndValidate
+    | SingleSelectDatalist EventsMode ValueTransformAndValidate
 
 
 type MultiSelectOutputStyle
     = MultiSelectCustomHtml MultiSelectCustomHtmlFields
-    | MultiSelectDataList ValueTransformAndValidate
+    | MultiSelectDataList EventsMode ValueTransformAndValidate
 
 
 singleToMulti : SingleSelectOutputStyle -> MultiSelectOutputStyle
@@ -133,10 +180,11 @@ singleToMulti singleSelectOutputStyle =
                 , searchStringMinimumLength = singleSelectCustomHtmlFields.searchStringMinimumLength
                 , dropdownState = singleSelectCustomHtmlFields.dropdownState
                 , dropdownStyle = singleSelectCustomHtmlFields.dropdownStyle
+                , eventsMode = singleSelectCustomHtmlFields.eventsMode
                 }
 
-        SingleSelectDatalist transformAndValidate ->
-            MultiSelectDataList transformAndValidate
+        SingleSelectDatalist eventsMode transformAndValidate ->
+            MultiSelectDataList eventsMode transformAndValidate
 
 
 multiToSingle : MultiSelectOutputStyle -> SingleSelectOutputStyle
@@ -150,10 +198,11 @@ multiToSingle multiSelectOutputStyle =
                 , searchStringMinimumLength = multiSelectCustomHtmlFields.searchStringMinimumLength
                 , dropdownState = multiSelectCustomHtmlFields.dropdownState
                 , dropdownStyle = multiSelectCustomHtmlFields.dropdownStyle
+                , eventsMode = multiSelectCustomHtmlFields.eventsMode
                 }
 
-        MultiSelectDataList transformAndValidate ->
-            SingleSelectDatalist transformAndValidate
+        MultiSelectDataList eventsMode transformAndValidate ->
+            SingleSelectDatalist eventsMode transformAndValidate
 
 
 getTransformAndValidateFromCustomOptions : CustomOptions -> ValueTransformAndValidate
@@ -174,3 +223,23 @@ setTransformAndValidateFromCustomOptions newTransformAndValidate customOptions =
 
         NoCustomOptions ->
             customOptions
+
+
+setEventsModeSingleSelect : EventsMode -> SingleSelectOutputStyle -> SingleSelectOutputStyle
+setEventsModeSingleSelect eventsMode singleSelectOutputStyle =
+    case singleSelectOutputStyle of
+        SingleSelectCustomHtml singleSelectCustomHtmlFields ->
+            SingleSelectCustomHtml { singleSelectCustomHtmlFields | eventsMode = eventsMode }
+
+        SingleSelectDatalist _ valueTransformAndValidate ->
+            SingleSelectDatalist eventsMode valueTransformAndValidate
+
+
+setEventsModeMultiSelect : EventsMode -> MultiSelectOutputStyle -> MultiSelectOutputStyle
+setEventsModeMultiSelect eventsMode multiSelectOutputStyle =
+    case multiSelectOutputStyle of
+        MultiSelectCustomHtml multiSelectCustomHtmlFields ->
+            MultiSelectCustomHtml { multiSelectCustomHtmlFields | eventsMode = eventsMode }
+
+        MultiSelectDataList _ valueTransformAndValidate ->
+            MultiSelectDataList eventsMode valueTransformAndValidate

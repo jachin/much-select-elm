@@ -2,11 +2,16 @@ port module Ports exposing
     ( addOptionsReceiver
     , allOptions
     , allowCustomOptionsReceiver
+    , attributeChanged
+    , attributeRemoved
     , blurInput
+    , customOptionHintReceiver
     , customOptionSelected
     , customValidationReceiver
     , deselectOptionReceiver
     , disableChangedReceiver
+    , dumpConfigState
+    , dumpSelectedValues
     , errorMessage
     , focusInput
     , initialValueSet
@@ -14,15 +19,18 @@ port module Ports exposing
     , inputFocused
     , inputKeyUp
     , invalidValue
+    , lightDomChange
     , loadingChangedReceiver
     , maxDropdownItemsChangedReceiver
     , muchSelectIsReady
     , multiSelectChangedReceiver
     , multiSelectSingleItemRemovalChangedReceiver
+    , optionDecoder
     , optionDeselected
     , optionEncoder
     , optionSelected
     , optionSortingChangedReceiver
+    , optionsDecoder
     , optionsEncoder
     , optionsReplacedReceiver
     , optionsUpdated
@@ -30,11 +38,14 @@ port module Ports exposing
     , placeholderChangedReceiver
     , removeOptionsReceiver
     , requestAllOptionsReceiver
+    , requestConfigState
+    , requestSelectedValues
     , scrollDropdownToElement
     , searchOptionsWithWebWorker
     , searchStringMinimumLengthChangedReceiver
     , selectOptionReceiver
     , selectedItemStaysInPlaceChangedReceiver
+    , selectedValueEncodingChangeReceiver
     , sendCustomValidationRequest
     , showDropdownFooterChangedReceiver
     , transformationAndValidationReceiver
@@ -97,6 +108,29 @@ optionEncoder option =
         ]
 
 
+type alias PortOption =
+    { value : String
+    , label : String
+    , isValid : Bool
+    , selectedIndex : Int
+    }
+
+
+optionsDecoder : Json.Decode.Decoder (List PortOption)
+optionsDecoder =
+    Json.Decode.list optionDecoder
+
+
+optionDecoder : Json.Decode.Decoder PortOption
+optionDecoder =
+    Json.Decode.map4
+        PortOption
+        (Json.Decode.field "value" Json.Decode.string)
+        (Json.Decode.field "label" Json.Decode.string)
+        (Json.Decode.field "isValid" Json.Decode.bool)
+        (Json.Decode.field "selectedIndex" Json.Decode.int)
+
+
 port inputKeyUp : String -> Cmd msg
 
 
@@ -121,6 +155,18 @@ port inputFocused : () -> Cmd msg
 
 
 port allOptions : Json.Decode.Value -> Cmd msg
+
+
+port requestConfigState : (() -> msg) -> Sub msg
+
+
+port dumpConfigState : Json.Decode.Value -> Cmd msg
+
+
+port requestSelectedValues : (() -> msg) -> Sub msg
+
+
+port dumpSelectedValues : Json.Decode.Value -> Cmd msg
 
 
 port updateOptionsFromDom : () -> Cmd msg
@@ -151,6 +197,15 @@ port optionsUpdated : Bool -> Cmd msg
 
 
 port scrollDropdownToElement : String -> Cmd msg
+
+
+port attributeChanged : (( String, String ) -> msg) -> Sub msg
+
+
+port attributeRemoved : (String -> msg) -> Sub msg
+
+
+port lightDomChange : Json.Decode.Value -> Cmd msg
 
 
 valuesDecoder : Json.Decode.Decoder (List String)
@@ -222,7 +277,7 @@ port searchStringMinimumLengthChangedReceiver : (Int -> msg) -> Sub msg
 port selectedItemStaysInPlaceChangedReceiver : (Bool -> msg) -> Sub msg
 
 
-port maxDropdownItemsChangedReceiver : (Int -> msg) -> Sub msg
+port maxDropdownItemsChangedReceiver : (String -> msg) -> Sub msg
 
 
 port showDropdownFooterChangedReceiver : (Bool -> msg) -> Sub msg
@@ -231,7 +286,13 @@ port showDropdownFooterChangedReceiver : (Bool -> msg) -> Sub msg
 port allowCustomOptionsReceiver : (( Bool, String ) -> msg) -> Sub msg
 
 
+port customOptionHintReceiver : (String -> msg) -> Sub msg
+
+
 port valueCasingDimensionsChangedReceiver : ({ width : Float, height : Float } -> msg) -> Sub msg
+
+
+port selectedValueEncodingChangeReceiver : (String -> msg) -> Sub msg
 
 
 port optionSortingChangedReceiver : (String -> msg) -> Sub msg

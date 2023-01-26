@@ -4,7 +4,7 @@
 <script type="module">
   import { runTests } from "@web/test-runner-mocha";
   import { expect } from "@esm-bundle/chai";
-  import { html, fixture } from "@open-wc/testing";
+  import { html, fixture, nextFrame } from "@open-wc/testing";
 
   import MuchSelect from "../../dist/much-select-debug.js";
 
@@ -21,7 +21,7 @@
           const el = /** @type {MuchSelect} */ await fixture(
             html`<much-select></much-select>`
           );
-          expect(el.searchStringMinimumLength).to.equal(2);
+          expect(await el.searchStringMinimumLength).to.equal(2);
         });
 
         it("is empty the search string minimum should be set to 0", async () => {
@@ -29,7 +29,8 @@
             html`<much-select></much-select>`
           );
           el.setAttribute("search-string-minimum-length", "");
-          expect(el.searchStringMinimumLength).to.equal(0);
+          await nextFrame();
+          expect(await el.searchStringMinimumLength).to.equal(0);
         });
 
         it("setting the attribute to a positive number should change the value", async () => {
@@ -38,7 +39,8 @@
           );
 
           el.setAttribute("search-string-minimum-length", "5");
-          expect(el.searchStringMinimumLength).to.equal(5);
+          await nextFrame();
+          expect(await el.searchStringMinimumLength).to.equal(5);
         });
 
         it("setting the attribute initially sets the minimum search string length", async () => {
@@ -46,7 +48,7 @@
             html`<much-select search-string-minimum-length="10"></much-select>`
           );
 
-          expect(el.searchStringMinimumLength).to.equal(10);
+          expect(await el.searchStringMinimumLength).to.equal(10);
         });
       });
     });

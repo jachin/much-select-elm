@@ -1,8 +1,7 @@
 module IntegrationTests.DisplayingOptions exposing (suite)
 
 import Html.Attributes
-import Json.Encode
-import Main exposing (Flags)
+import MuchSelect exposing (Flags)
 import ProgramTest
     exposing
         ( ProgramTest
@@ -17,7 +16,9 @@ import Test.Html.Selector exposing (classes, text)
 
 flagsEmptyOptionsWithOrangeSelected : Flags
 flagsEmptyOptionsWithOrangeSelected =
-    { value = Json.Encode.list Json.Encode.string [ "Orange" ]
+    { isEventsOnly = False
+    , selectedValue = "Orange"
+    , selectedValueEncoding = Nothing
     , placeholder = ( True, "What is your favorite color" )
     , customOptionHint = Nothing
     , allowMultiSelect = False
@@ -26,11 +27,11 @@ flagsEmptyOptionsWithOrangeSelected =
     , optionsJson = "[]"
     , optionSort = ""
     , loading = False
-    , maxDropdownItems = 10
+    , maxDropdownItems = Just "10"
     , disabled = False
     , allowCustomOptions = False
     , selectedItemStaysInPlace = True
-    , searchStringMinimumLength = 2
+    , searchStringMinimumLength = Nothing
     , showDropdownFooter = False
     , transformationAndValidationJson = ""
     }
@@ -97,7 +98,9 @@ booksJsonWithIndexesAndWithSelected =
 
 flagsBookOptions : Flags
 flagsBookOptions =
-    { value = Json.Encode.object []
+    { isEventsOnly = False
+    , selectedValue = ""
+    , selectedValueEncoding = Nothing
     , placeholder = ( True, "A book" )
     , customOptionHint = Nothing
     , allowMultiSelect = False
@@ -106,11 +109,11 @@ flagsBookOptions =
     , optionsJson = booksJsonWithIndexes
     , optionSort = ""
     , loading = False
-    , maxDropdownItems = 2
+    , maxDropdownItems = Just "2"
     , disabled = False
     , allowCustomOptions = False
     , selectedItemStaysInPlace = True
-    , searchStringMinimumLength = 2
+    , searchStringMinimumLength = Nothing
     , showDropdownFooter = False
     , transformationAndValidationJson = ""
     }
@@ -118,7 +121,9 @@ flagsBookOptions =
 
 flagsBookOptionsWithValue : Flags
 flagsBookOptionsWithValue =
-    { value = Json.Encode.list Json.Encode.string [ "Matilda" ]
+    { isEventsOnly = False
+    , selectedValue = "Matilda"
+    , selectedValueEncoding = Nothing
     , placeholder = ( True, "A book" )
     , customOptionHint = Nothing
     , allowMultiSelect = False
@@ -127,11 +132,11 @@ flagsBookOptionsWithValue =
     , optionsJson = booksJsonWithIndexes
     , optionSort = ""
     , loading = False
-    , maxDropdownItems = 2
+    , maxDropdownItems = Just "2"
     , disabled = False
     , allowCustomOptions = False
     , selectedItemStaysInPlace = True
-    , searchStringMinimumLength = 2
+    , searchStringMinimumLength = Nothing
     , showDropdownFooter = False
     , transformationAndValidationJson = ""
     }
@@ -139,7 +144,9 @@ flagsBookOptionsWithValue =
 
 flagsBookOptionsWithSelected : Flags
 flagsBookOptionsWithSelected =
-    { value = Json.Encode.object []
+    { isEventsOnly = False
+    , selectedValue = ""
+    , selectedValueEncoding = Nothing
     , placeholder = ( True, "A book" )
     , customOptionHint = Nothing
     , allowMultiSelect = False
@@ -148,11 +155,11 @@ flagsBookOptionsWithSelected =
     , optionsJson = booksJsonWithIndexesAndWithSelected
     , optionSort = ""
     , loading = False
-    , maxDropdownItems = 2
+    , maxDropdownItems = Just "2"
     , disabled = False
     , allowCustomOptions = False
     , selectedItemStaysInPlace = True
-    , searchStringMinimumLength = 2
+    , searchStringMinimumLength = Nothing
     , showDropdownFooter = False
     , transformationAndValidationJson = ""
     }
@@ -160,13 +167,13 @@ flagsBookOptionsWithSelected =
 
 element =
     ProgramTest.createElement
-        { init = Main.init
-        , update = Main.update
-        , view = Main.view
+        { init = MuchSelect.init
+        , update = MuchSelect.update
+        , view = MuchSelect.view
         }
 
 
-start : Flags -> ProgramTest Main.Model Main.Msg Main.Effect
+start : Flags -> ProgramTest MuchSelect.Model MuchSelect.Msg MuchSelect.Effect
 start flags =
     element
         |> ProgramTest.start

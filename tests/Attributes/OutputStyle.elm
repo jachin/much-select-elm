@@ -3,7 +3,7 @@ module Attributes.OutputStyle exposing (suite)
 import Expect
 import Json.Decode
 import Json.Encode
-import Main exposing (Flags)
+import MuchSelect exposing (Flags)
 import ProgramTest exposing (expectLastEffect, start)
 import SimulatedEffect.Cmd
 import SimulatedEffect.Ports
@@ -12,16 +12,16 @@ import Test exposing (Test, describe, test)
 
 element =
     ProgramTest.createElement
-        { init = Main.init
-        , update = Main.update
-        , view = Main.view
+        { init = MuchSelect.init
+        , update = MuchSelect.update
+        , view = MuchSelect.view
         }
 
 
-simulateEffects : Main.Effect -> ProgramTest.SimulatedEffect Main.Msg
+simulateEffects : MuchSelect.Effect -> ProgramTest.SimulatedEffect MuchSelect.Msg
 simulateEffects effect =
     case effect of
-        Main.Batch effects ->
+        MuchSelect.Batch effects ->
             effects
                 |> List.map simulateEffects
                 |> SimulatedEffect.Cmd.batch
@@ -30,16 +30,18 @@ simulateEffects effect =
             SimulatedEffect.Cmd.none
 
 
-simulateSub : Main.Model -> ProgramTest.SimulatedSub Main.Msg
+simulateSub : MuchSelect.Model -> ProgramTest.SimulatedSub MuchSelect.Msg
 simulateSub _ =
     SimulatedEffect.Ports.subscribe "outputStyleChangedReceiver"
         Json.Decode.string
-        Main.OutputStyleChanged
+        MuchSelect.OutputStyleChanged
 
 
 flagsDatalistSingle : Flags
 flagsDatalistSingle =
-    { value = Json.Encode.object []
+    { isEventsOnly = False
+    , selectedValue = ""
+    , selectedValueEncoding = Nothing
     , placeholder = ( True, "" )
     , customOptionHint = Nothing
     , allowMultiSelect = False
@@ -48,11 +50,11 @@ flagsDatalistSingle =
     , optionsJson = ""
     , optionSort = ""
     , loading = False
-    , maxDropdownItems = 2
+    , maxDropdownItems = Just "2"
     , disabled = False
     , allowCustomOptions = False
     , selectedItemStaysInPlace = True
-    , searchStringMinimumLength = 2
+    , searchStringMinimumLength = Nothing
     , showDropdownFooter = False
     , transformationAndValidationJson = ""
     }
@@ -60,7 +62,9 @@ flagsDatalistSingle =
 
 flagsCustomHtmlSingle : Flags
 flagsCustomHtmlSingle =
-    { value = Json.Encode.object []
+    { isEventsOnly = False
+    , selectedValue = ""
+    , selectedValueEncoding = Nothing
     , placeholder = ( True, "" )
     , customOptionHint = Nothing
     , allowMultiSelect = False
@@ -69,11 +73,11 @@ flagsCustomHtmlSingle =
     , optionsJson = ""
     , optionSort = ""
     , loading = False
-    , maxDropdownItems = 2
+    , maxDropdownItems = Just "2"
     , disabled = False
     , allowCustomOptions = False
     , selectedItemStaysInPlace = True
-    , searchStringMinimumLength = 2
+    , searchStringMinimumLength = Nothing
     , showDropdownFooter = False
     , transformationAndValidationJson = ""
     }
@@ -82,7 +86,7 @@ flagsCustomHtmlSingle =
 suite : Test
 suite =
     describe "Changing the output style"
-        [ test "to custom-html should work" <|
+        [ test "to custom-html should result in an effect to fetch the options from the DOM" <|
             \() ->
                 element
                     |> ProgramTest.withSimulatedEffects simulateEffects
@@ -94,13 +98,17 @@ suite =
                     |> expectLastEffect
                         (\effect ->
                             case effect of
-                                Main.FetchOptionsFromDom ->
-                                    Expect.pass
+                                MuchSelect.Batch batchEffects ->
+                                    if List.member MuchSelect.FetchOptionsFromDom batchEffects then
+                                        Expect.pass
+
+                                    else
+                                        Expect.fail "We should be fetching options from the DOM."
 
                                 _ ->
                                     Expect.fail "We should be fetching options from the DOM."
                         )
-        , test "to datalist should work" <|
+        , test "to datalist should result in an effect to fetch the options from the DOM" <|
             \() ->
                 element
                     |> ProgramTest.withSimulatedEffects simulateEffects
@@ -112,8 +120,12 @@ suite =
                     |> expectLastEffect
                         (\effect ->
                             case effect of
-                                Main.FetchOptionsFromDom ->
-                                    Expect.pass
+                                MuchSelect.Batch batchEffects ->
+                                    if List.member MuchSelect.FetchOptionsFromDom batchEffects then
+                                        Expect.pass
+
+                                    else
+                                        Expect.fail "We should be fetching options from the DOM."
 
                                 _ ->
                                     Expect.fail "We should be fetching options from the DOM."
@@ -130,7 +142,7 @@ suite =
                     |> expectLastEffect
                         (\effect ->
                             case effect of
-                                Main.ReportErrorMessage _ ->
+                                MuchSelect.ReportErrorMessage _ ->
                                     Expect.pass
 
                                 _ ->

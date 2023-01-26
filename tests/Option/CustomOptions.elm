@@ -1,12 +1,10 @@
 module Option.CustomOptions exposing (suite)
 
 import Expect
-import Main
+import MuchSelect
     exposing
         ( figureOutWhichOptionsToShowInTheDropdown
         , updateModelWithChangesThatEffectTheOptionsWithSearchString
-        , updateTheFullListOfOptions
-        , updateTheOptionsForTheDropdown
         )
 import Option exposing (newCustomOption, newOption, selectOption)
 import OptionSearcher
@@ -183,26 +181,6 @@ suite =
                         |> List.map Option.getOptionValueAsString
                     )
                     [ "cob", "Mossy Cobblestone" ]
-        , test "should show up at the top in the dropdown" <|
-            \_ ->
-                let
-                    selectionConfig =
-                        defaultSelectionConfig
-                            |> setAllowCustomOptionsWithBool True (Just "{{}}")
-                            |> setSingleItemRemoval EnableSingleItemRemoval
-                            |> SelectionMode.setMaxDropdownItems maxDropdownItemsIsTen
-                in
-                Expect.equalLists
-                    ([ birchWood
-                     ]
-                        |> updateTheFullListOfOptions
-                            selectionConfig
-                            (SearchString.update "mil")
-                        |> updateTheOptionsForTheDropdown
-                            selectionConfig
-                        |> List.map Option.getOptionValueAsString
-                    )
-                    [ "mil", "Birch Wood" ]
         , describe "updateModelWithChangesThatEffectTheOptionsWithSearchString"
             [ test "should show up at the top in the dropdown" <|
                 \_ ->
