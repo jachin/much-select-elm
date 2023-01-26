@@ -1393,15 +1393,28 @@ update msg model =
                     )
 
                 "loading" ->
-                    ( { model
-                        | rightSlot =
-                            updateRightSlotLoading
-                                True
-                                model.selectionConfig
-                                (hasSelectedOption model.options)
-                      }
-                    , NoEffect
-                    )
+                    case newAttributeValue of
+                        "false" ->
+                            ( { model
+                                | rightSlot =
+                                    updateRightSlotLoading
+                                        False
+                                        model.selectionConfig
+                                        (hasSelectedOption model.options)
+                              }
+                            , NoEffect
+                            )
+
+                        _ ->
+                            ( { model
+                                | rightSlot =
+                                    updateRightSlotLoading
+                                        True
+                                        model.selectionConfig
+                                        (hasSelectedOption model.options)
+                              }
+                            , NoEffect
+                            )
 
                 "max-dropdown-items" ->
                     case OutputStyle.stringToMaxDropdownItems newAttributeValue of
