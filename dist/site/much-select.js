@@ -437,7 +437,16 @@ class MuchSelect extends HTMLElement {
 
     // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
     this.appPromise.then((app) =>
-      app.ports.valueChanged.subscribe(this.valueChangedHandler.bind(this))
+      app.ports.valueChangedSingleSelect.subscribe(
+        this.valueChangedHandlerSingleSelect.bind(this)
+      )
+    );
+
+    // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
+    this.appPromise.then((app) =>
+      app.ports.valueChangedMultiSelectSelect.subscribe(
+        this.valueChangedHandlerMultiSelectSelect.bind(this)
+      )
     );
 
     // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
@@ -1026,16 +1035,15 @@ class MuchSelect extends HTMLElement {
   }
 
   /**
-   * This method gets called any time the Elm app changes the value of this much select.
-   * An "outgoing port" if you will.
+   * This method gets called any time the Elm app changes the value of this much select
+   * if it is in single select mode. An "outgoing port" if you will.
    *
    * The selected values always come in an array of tuples, the first part of the tuple
    * being the value, and the second part being the label.
    *
    * @param {array} valuesObjects
-   * @param {boolean} isInitialValueChange - This prevents events from being emitted while things are getting setup.
    */
-  valueChangedHandler(valuesObjects, isInitialValueChange = false) {
+  valueChangedHandlerSingleSelect(valuesObjects) {
     const isValid = valuesObjects.filter((v) => !v.isValid).length === 0;
 
     if (isValid) {
@@ -1043,65 +1051,69 @@ class MuchSelect extends HTMLElement {
     }
 
     this.updateDimensions();
-    if (
-      this.hasAttribute("multi-select") &&
-      this.getAttribute("multi-select") !== "false"
-    ) {
-      if (!isInitialValueChange) {
-        this.dispatchEvent(
-          new CustomEvent("valueChanged", {
-            bubbles: true,
-            detail: { values: valuesObjects, isValid },
-          })
-        );
-        // The change event is for backwards compatibility.
-        this.dispatchEvent(
-          new CustomEvent("change", {
-            bubbles: true,
-            detail: { values: valuesObjects, isValid },
-          })
-        );
-      }
-    } else if (valuesObjects.length === 0) {
-      if (!isInitialValueChange) {
-        // If we are in single select mode and the value is empty.
-        this.dispatchEvent(
-          new CustomEvent("valueChanged", {
-            bubbles: true,
-            detail: { value: null, values: [], isValid },
-          })
-        );
-        // The change event is for backwards compatibility.
-        this.dispatchEvent(
-          new CustomEvent("change", {
-            bubbles: true,
-            detail: { value: null, values: [], isValid },
-          })
-        );
-      }
-    } else if (valuesObjects.length === 1) {
-      if (!isInitialValueChange) {
-        // If we are in single select mode put the list of values in the event.
-        this.dispatchEvent(
-          new CustomEvent("valueChanged", {
-            bubbles: true,
-            detail: { value: valuesObjects[0], values: valuesObjects, isValid },
-          })
-        );
-        // The change event is for backwards compatibility.
-        this.dispatchEvent(
-          new CustomEvent("changed", {
-            bubbles: true,
-            detail: { value: valuesObjects, isValid },
-          })
-        );
-      }
+    if (valuesObjects.length === 0) {
+      // If we are in single select mode and the value is empty.
+      this.dispatchEvent(
+        new CustomEvent("valueChanged", {
+          bubbles: true,
+          detail: { value: null, values: [], isValid },
+        })
+      );
+      // The change event is for backwards compatibility.
+      this.dispatchEvent(
+        new CustomEvent("change", {
+          bubbles: true,
+          detail: { value: null, values: [], isValid },
+        })
+      );
     } else {
-      // If we are in single select mode and there is more than one value then something is wrong.
-      throw new TypeError(
-        `In single select mode we are expecting a single value, instead we got ${valuesObjects.length}`
+      // If we are in single select mode put the list of values in the event.
+      this.dispatchEvent(
+        new CustomEvent("valueChanged", {
+          bubbles: true,
+          detail: { value: valuesObjects[0], values: valuesObjects, isValid },
+        })
+      );
+      // The change event is for backwards compatibility.
+      this.dispatchEvent(
+        new CustomEvent("changed", {
+          bubbles: true,
+          detail: { value: valuesObjects, isValid },
+        })
       );
     }
+  }
+
+  /**
+   * This method gets called any time the Elm app changes the value of this much select
+   * if it is in multi select mode. An "outgoing port" if you will.
+   *
+   * The selected values always come in an array of tuples, the first part of the tuple
+   * being the value, and the second part being the label.
+   *
+   * @param {array} valuesObjects
+   */
+  valueChangedHandlerMultiSelectSelect(valuesObjects) {
+    const isValid = valuesObjects.filter((v) => !v.isValid).length === 0;
+
+    if (isValid) {
+      this._emitBlurOrUnfocusedValueChanged = true;
+    }
+
+    this.updateDimensions();
+    this.dispatchEvent(
+      new CustomEvent("valueChanged", {
+        bubbles: true,
+        detail: { values: valuesObjects, isValid },
+      })
+    );
+    // The change event is for backwards compatibility.
+    this.dispatchEvent(
+      new CustomEvent("change", {
+        bubbles: true,
+        detail: { values: valuesObjects, isValid },
+      })
+    );
   }
 
   customOptionSelected(values) {
