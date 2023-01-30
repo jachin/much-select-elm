@@ -12816,7 +12816,8 @@ var $author$project$Ports$updateOptionsInWebWorker = _Platform_outgoingPort(
 	function ($) {
 		return $elm$json$Json$Encode$null;
 	});
-var $author$project$Ports$valueChanged = _Platform_outgoingPort('valueChanged', $elm$core$Basics$identity);
+var $author$project$Ports$valueChangedMultiSelectSelect = _Platform_outgoingPort('valueChangedMultiSelectSelect', $elm$core$Basics$identity);
+var $author$project$Ports$valueChangedSingleSelect = _Platform_outgoingPort('valueChangedSingleSelect', $elm$core$Basics$identity);
 var $author$project$Ports$valueCleared = _Platform_outgoingPort(
 	'valueCleared',
 	function ($) {
@@ -12851,7 +12852,12 @@ var $author$project$MuchSelect$perform = function (effect) {
 			return $author$project$Ports$searchOptionsWithWebWorker(value);
 		case 'ReportValueChanged':
 			var value = effect.a;
-			return $author$project$Ports$valueChanged(value);
+			var selectionMode = effect.b;
+			if (selectionMode.$ === 'SingleSelect') {
+				return $author$project$Ports$valueChangedSingleSelect(value);
+			} else {
+				return $author$project$Ports$valueChangedMultiSelectSelect(value);
+			}
 		case 'ValueCleared':
 			return $author$project$Ports$valueCleared(_Utils_Tuple0);
 		case 'InvalidValue':
@@ -12870,9 +12876,9 @@ var $author$project$MuchSelect$perform = function (effect) {
 			var bool = effect.a;
 			return $author$project$Ports$optionsUpdated(bool);
 		case 'SendCustomValidationRequest':
-			var _v1 = effect.a;
-			var string = _v1.a;
-			var _int = _v1.b;
+			var _v2 = effect.a;
+			var string = _v2.a;
+			var _int = _v2.b;
 			return $author$project$Ports$sendCustomValidationRequest(
 				_Utils_Tuple2(string, _int));
 		case 'ReportErrorMessage':
@@ -13147,9 +13153,10 @@ var $author$project$MuchSelect$OptionsUpdated = function (a) {
 var $author$project$MuchSelect$ReportAllOptions = function (a) {
 	return {$: 'ReportAllOptions', a: a};
 };
-var $author$project$MuchSelect$ReportValueChanged = function (a) {
-	return {$: 'ReportValueChanged', a: a};
-};
+var $author$project$MuchSelect$ReportValueChanged = F2(
+	function (a, b) {
+		return {$: 'ReportValueChanged', a: a, b: b};
+	});
 var $author$project$MuchSelect$ScrollDownToElement = function (a) {
 	return {$: 'ScrollDownToElement', a: a};
 };
@@ -13795,8 +13802,10 @@ var $author$project$OptionsUtilities$optionsValues = function (options) {
 };
 var $author$project$MuchSelect$makeEffectsWhenValuesChanges = F4(
 	function (eventsMode, selectionMode, selectedValueEncoding, selectedOptions) {
-		var valueChangeCmd = $author$project$OptionsUtilities$allOptionsAreValid(selectedOptions) ? $author$project$MuchSelect$ReportValueChanged(
-			$author$project$Ports$optionsEncoder(selectedOptions)) : ($author$project$OptionsUtilities$hasAnyPendingValidation(selectedOptions) ? $author$project$MuchSelect$NoEffect : $author$project$MuchSelect$InvalidValue(
+		var valueChangeCmd = $author$project$OptionsUtilities$allOptionsAreValid(selectedOptions) ? A2(
+			$author$project$MuchSelect$ReportValueChanged,
+			$author$project$Ports$optionsEncoder(selectedOptions),
+			selectionMode) : ($author$project$OptionsUtilities$hasAnyPendingValidation(selectedOptions) ? $author$project$MuchSelect$NoEffect : $author$project$MuchSelect$InvalidValue(
 			$author$project$Ports$optionsEncoder(selectedOptions)));
 		var selectedCustomOptions = $author$project$OptionsUtilities$customSelectedOptions(selectedOptions);
 		var lightDomChangeEffect = function () {
@@ -17818,9 +17827,11 @@ var $author$project$MuchSelect$update = F2(
 						$author$project$MuchSelect$batch(
 							_List_fromArray(
 								[
-									$author$project$MuchSelect$ReportValueChanged(
+									A2(
+									$author$project$MuchSelect$ReportValueChanged,
 									$author$project$Ports$optionsEncoder(
-										$author$project$OptionsUtilities$selectedOptions(updatedOptions))),
+										$author$project$OptionsUtilities$selectedOptions(updatedOptions)),
+									$author$project$SelectionMode$getSelectionMode(model.selectionConfig)),
 									$author$project$MuchSelect$FocusInput
 								])));
 				}
