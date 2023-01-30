@@ -9,6 +9,7 @@ import MuchSelect exposing (Flags)
 import Option
 import Ports exposing (optionsEncoder)
 import ProgramTest exposing (ProgramTest)
+import SelectionMode
 import SimulatedEffect.Cmd
 import SimulatedEffect.Ports
 import Test exposing (Test, describe, test)
@@ -70,8 +71,13 @@ simulatedEffects effect =
         MuchSelect.SearchOptionsWithWebWorker value ->
             SimulatedEffect.Ports.send "searchOptionsWithWebWorker" value
 
-        MuchSelect.ReportValueChanged value ->
-            SimulatedEffect.Ports.send "valueChanged" value
+        MuchSelect.ReportValueChanged value selectionMode ->
+            case selectionMode of
+                SelectionMode.SingleSelect ->
+                    SimulatedEffect.Ports.send "valueChangedSingleSelect" value
+
+                SelectionMode.MultiSelect ->
+                    SimulatedEffect.Ports.send "valueChangedMultiSelect" value
 
         MuchSelect.ValueCleared ->
             SimulatedEffect.Ports.send "valueCleared" (Json.Encode.object [])
@@ -193,6 +199,7 @@ suite =
                                                                 |> Option.selectOption 0
                                                             ]
                                                         )
+                                                        SelectionMode.SingleSelect
                                                     )
 
                                             Nothing ->
@@ -291,6 +298,7 @@ suite =
                                                                     |> Option.selectOption 0
                                                                 ]
                                                             )
+                                                            SelectionMode.MultiSelect
                                                         )
 
                                                 Nothing ->
@@ -415,6 +423,7 @@ suite =
                                                                         |> Option.selectOption 0
                                                                     ]
                                                                 )
+                                                                SelectionMode.MultiSelect
                                                             )
 
                                                     Nothing ->
@@ -492,6 +501,7 @@ suite =
                                                                     |> Option.selectOption 0
                                                                 ]
                                                             )
+                                                            SelectionMode.MultiSelect
                                                         )
 
                                                 Nothing ->
