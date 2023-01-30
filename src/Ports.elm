@@ -53,8 +53,9 @@ port module Ports exposing
     , updateOptionsInWebWorker
     , updateSearchResultDataWithWebWorkerReceiver
     , valueCasingDimensionsChangedReceiver
-    , valueChanged
+    , valueChangedMultiSelectSelect
     , valueChangedReceiver
+    , valueChangedSingleSelect
     , valueCleared
     , valueDecoder
     , valuesDecoder
@@ -72,7 +73,10 @@ port muchSelectIsReady : () -> Cmd msg
 port errorMessage : String -> Cmd msg
 
 
-port valueChanged : Json.Encode.Value -> Cmd msg
+port valueChangedSingleSelect : Json.Encode.Value -> Cmd msg
+
+
+port valueChangedMultiSelectSelect : Json.Encode.Value -> Cmd msg
 
 
 port invalidValue : Json.Encode.Value -> Cmd msg

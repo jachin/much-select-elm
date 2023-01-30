@@ -4,23 +4,31 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" href="./favicon.ico" type="image/x-icon">
-  <title>
-   Much Select
-  </title>
-  <link href="demo-styles.css" rel="stylesheet">
-  <script src="./styles.js"></script>
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
   <script src="/styles.js"></script>
   <link href="/demo-styles.css" rel="stylesheet">
-  <title></title>
+  <title>
+   Much Select: Multi Select blurOrUnfocusedValueChanged Event
+  </title>
  </head>
  <body>
-  <include src="header.html">
-   {
-  "pageName": "Multi-Select"
-  }
-  </include>
+  <header id="header">
+   <div id="site-title">
+    <h1>
+     &lt;much-select&gt;
+    </h1>
+   </div>
+   <div id="page-name">
+    <h2>
+     Multi Select blurOrUnfocusedValueChanged Event
+    </h2>
+   </div>
+   <div id="sub-title">
+    <h3>
+     Demo and Development Playground
+    </h3>
+   </div>
+  </header>
   <div id="nav">
    <nav class="offsite-nav">
     <ol>
@@ -103,9 +111,71 @@
   </div>
   <div class="container">
    <div class="example">
-    <include src="example-partials/multi-select-blur-or-unfocused-value-change.html"></include>
+    <div id="multi-select-blur-or-unfocused-value-change">
+     <div>
+      <h3>
+       Multi Select - <code>blurOrUnfocusedValueChanged</code> Event
+      </h3>
+      <much-select multi-select="" allow-custom-options="" multi-select-single-item-removal="">
+       <select slot="select-input">
+      
+       <option value="Garbanzo">
+        Garbanzo Beans
+       </option>
+       
+      
+       <option value="Runner">
+        Runner Beans
+       </option>
+       
+      
+       <option value="Guar">
+        Guar Beans
+       </option>
+       
+      
+       <option value="Jack">
+        Jack Beans
+       </option>
+       
+    
+      </select>
+     </much-select>
+     <p>
+      Events:
+     </p>
+     <table id="multi-select-blur-or-unfocused-value-change-event-log">
+      <thead>
+       <tr>
+        <th>
+         Event
+        </th>
+        <th>
+         Details
+        </th>
+       </tr>
+      </thead>
+      <tbody></tbody>
+     </table>
+     <script>
+      window.addEventListener("load", () => {
+      document
+        .querySelector("#multi-select-blur-or-unfocused-value-change much-select")
+        .addEventListener(
+          "blurOrUnfocusedValueChanged",
+          // eslint-disable-next-line no-undef
+          makeLogEventHandler(
+            "multi-select-blur-or-unfocused-value-change-event-log"
+          )
+        );
+    });
+     </script>
+    </div>
    </div>
   </div>
-  <script src="./index.js" type="module"></script>
- </body>
+ </div>
+ <footer>
+  <script src="/index.js" type="module"></script>
+ </footer>
+</body>
 </html>

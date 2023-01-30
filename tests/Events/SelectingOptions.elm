@@ -7,6 +7,7 @@ import LightDomChange
 import MuchSelect exposing (Flags)
 import Ports
 import ProgramTest exposing (ProgramTest)
+import SelectionMode
 import SimulatedEffect.Cmd
 import SimulatedEffect.Ports
 import SimulatedEffect.Sub
@@ -97,8 +98,13 @@ simulatedEffects effect =
         MuchSelect.SearchOptionsWithWebWorker value ->
             SimulatedEffect.Ports.send "searchOptionsWithWebWorker" value
 
-        MuchSelect.ReportValueChanged value ->
-            SimulatedEffect.Ports.send "valueChanged" value
+        MuchSelect.ReportValueChanged value selectionMode ->
+            case selectionMode of
+                SelectionMode.SingleSelect ->
+                    SimulatedEffect.Ports.send "valueChangedSingleSelect" value
+
+                SelectionMode.MultiSelect ->
+                    SimulatedEffect.Ports.send "valueChangedMultiSelect" value
 
         MuchSelect.ValueCleared ->
             SimulatedEffect.Ports.send "valueCleared" (Json.Encode.object [])

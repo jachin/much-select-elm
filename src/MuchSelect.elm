@@ -150,8 +150,9 @@ import Ports
         , updateOptionsInWebWorker
         , updateSearchResultDataWithWebWorkerReceiver
         , valueCasingDimensionsChangedReceiver
-        , valueChanged
+        , valueChangedMultiSelectSelect
         , valueChangedReceiver
+        , valueChangedSingleSelect
         , valueCleared
         , valueDecoder
         , valuesDecoder
@@ -211,7 +212,7 @@ type Effect
     | SearchStringTouched Float
     | UpdateOptionsInWebWorker
     | SearchOptionsWithWebWorker Json.Decode.Value
-    | ReportValueChanged Json.Encode.Value
+    | ReportValueChanged Json.Encode.Value SelectionMode.SelectionMode
     | ValueCleared
     | InvalidValue Json.Encode.Value
     | CustomOptionSelected (List String)
@@ -1188,7 +1189,9 @@ update msg model =
                   }
                     |> updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges
                 , batch
-                    [ ReportValueChanged (updatedOptions |> selectedOptions |> Ports.optionsEncoder)
+                    [ ReportValueChanged
+                        (updatedOptions |> selectedOptions |> Ports.optionsEncoder)
+                        (SelectionMode.getSelectionMode model.selectionConfig)
 
                     -- TODO optionDeselected
                     , FocusInput
@@ -1829,8 +1832,13 @@ perform effect =
         SearchOptionsWithWebWorker value ->
             searchOptionsWithWebWorker value
 
-        ReportValueChanged value ->
-            valueChanged value
+        ReportValueChanged value selectionMode ->
+            case selectionMode of
+                SelectionMode.SingleSelect ->
+                    valueChangedSingleSelect value
+
+                SelectionMode.MultiSelect ->
+                    valueChangedMultiSelectSelect value
 
         ValueCleared ->
             valueCleared ()
@@ -3341,7 +3349,7 @@ makeEffectsWhenValuesChanges eventsMode selectionMode selectedValueEncoding sele
     let
         valueChangeCmd =
             if OptionsUtilities.allOptionsAreValid selectedOptions then
-                ReportValueChanged (Ports.optionsEncoder selectedOptions)
+                ReportValueChanged (Ports.optionsEncoder selectedOptions) selectionMode
 
             else if OptionsUtilities.hasAnyPendingValidation selectedOptions then
                 NoEffect
@@ -3916,7 +3924,7 @@ effectToDebuggingString effect =
         SearchOptionsWithWebWorker value ->
             "SearchOptionsWithWebWorker"
 
-        ReportValueChanged value ->
+        ReportValueChanged value _ ->
             "ReportValueChanged"
 
         ValueCleared ->

@@ -4,16 +4,12 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" href="./favicon.ico" type="image/x-icon">
-  <title>
-   Much Select: Simple Example
-  </title>
-  <link href="demo-styles.css" rel="stylesheet">
-  <script src="./styles.js"></script>
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
   <script src="/styles.js"></script>
   <link href="/demo-styles.css" rel="stylesheet">
-  <title></title>
+  <title>
+   Much Select: An Initial Value (No Options), Then Add Options
+  </title>
  </head>
  <body>
   <header id="header">
@@ -24,7 +20,7 @@
    </div>
    <div id="page-name">
     <h2>
-     Simple Example
+     An Initial Value (No Options), Then Add Options
     </h2>
    </div>
    <div id="sub-title">
@@ -115,9 +111,41 @@
   </div>
   <div class="container">
    <div class="example">
-    <include src="example-partials/add-options-including-the-selected-value.html"></include>
+    <div id="add-options-including-the-selected-value">
+     <div>
+      <h3>
+       An initial Value (No Options) - Then Add the Options
+      </h3>
+      <p>
+       If there is an initial value but no options initially, then we add options (async).
+      </p>
+      <p>
+       It should keep the selected value and "merge" the new option with the same value.
+      </p>
+      <button>Click me to add options via the DOM</button>
+      <much-select selected-value="Coffee"></much-select>
+      <script>
+       document
+      .querySelector("#add-options-including-the-selected-value button")
+      .addEventListener("click", () => {
+        document.querySelector(
+          "#add-options-including-the-selected-value much-select"
+        ).innerHTML = `
+        <select slot="select-input">
+          <option value="Coffee">Coffee</option>
+          <option value="Tea">Tea</option>
+          <option value="Water">Water</option>
+          <option value="Soda">Soda</option>
+        </select>
+      `;
+      });
+      </script>
+     </div>
+    </div>
    </div>
   </div>
-  <script src="./index.js" type="module"></script>
+  <footer>
+   <script src="/index.js" type="module"></script>
+  </footer>
  </body>
 </html>
