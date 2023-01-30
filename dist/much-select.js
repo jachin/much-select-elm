@@ -1045,6 +1045,11 @@ class MuchSelect extends HTMLElement {
    */
   valueChangedHandlerSingleSelect(valuesObjects) {
     const isValid = valuesObjects.filter((v) => !v.isValid).length === 0;
+
+    if (isValid) {
+      this._emitBlurOrUnfocusedValueChanged = true;
+    }
+
     this.updateDimensions();
     if (valuesObjects.length === 0) {
       // If we are in single select mode and the value is empty.
@@ -1090,6 +1095,11 @@ class MuchSelect extends HTMLElement {
    */
   valueChangedHandlerMultiSelectSelect(valuesObjects) {
     const isValid = valuesObjects.filter((v) => !v.isValid).length === 0;
+
+    if (isValid) {
+      this._emitBlurOrUnfocusedValueChanged = true;
+    }
+
     this.updateDimensions();
     this.dispatchEvent(
       new CustomEvent("valueChanged", {
