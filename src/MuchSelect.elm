@@ -478,7 +478,6 @@ update msg model =
                         visibleOptions : List Option
                         visibleOptions =
                             figureOutWhichOptionsToShowInTheDropdown model.selectionConfig model.options
-                                |> Debug.log "visibleOptions"
 
                         moveHighlightedOptionDownIfThereAreOptions : SelectionConfig -> List Option -> List Option -> List Option
                         moveHighlightedOptionDownIfThereAreOptions selectionConfig allOptions visibleOptions_ =

@@ -15427,7 +15427,6 @@ var $author$project$RightSlot$isRightSlotTransitioning = function (rightSlot) {
 			return false;
 	}
 };
-var $elm$core$Debug$log = _Debug_log;
 var $author$project$MuchSelect$ReportOptionSelected = function (a) {
 	return {$: 'ReportOptionSelected', a: a};
 };
@@ -17054,10 +17053,7 @@ var $author$project$MuchSelect$update = F2(
 							$author$project$MuchSelect$ReportErrorMessage('Unable to select option'));
 					}
 				} else {
-					var visibleOptions = A2(
-						$elm$core$Debug$log,
-						'visibleOptions',
-						A2($author$project$MuchSelect$figureOutWhichOptionsToShowInTheDropdown, model.selectionConfig, model.options));
+					var visibleOptions = A2($author$project$MuchSelect$figureOutWhichOptionsToShowInTheDropdown, model.selectionConfig, model.options);
 					var moveHighlightedOptionDownIfThereAreOptions = F3(
 						function (selectionConfig, allOptions, visibleOptions_) {
 							return ($elm$core$List$length(visibleOptions_) > 1) ? A3($author$project$OptionsUtilities$moveHighlightedOptionDown, selectionConfig, allOptions, visibleOptions_) : allOptions;
