@@ -15260,11 +15260,11 @@ var $author$project$OptionsUtilities$sortOptionsByBestScore = function (options)
 		options);
 };
 var $author$project$MuchSelect$figureOutWhichOptionsToShowInTheDropdown = F2(
-	function (selectionMode, options) {
+	function (selectionConfig, options) {
 		var optionsThatCouldBeShown = $author$project$OptionsUtilities$sortOptionsByBestScore(
-			A2($author$project$OptionsUtilities$filterOptionsToShowInDropdown, selectionMode, options));
+			A2($author$project$OptionsUtilities$filterOptionsToShowInDropdown, selectionConfig, options));
 		var lastIndexOfOptions = $elm$core$List$length(optionsThatCouldBeShown) - 1;
-		var _v0 = $author$project$SelectionMode$getMaxDropdownItems(selectionMode);
+		var _v0 = $author$project$SelectionMode$getMaxDropdownItems(selectionConfig);
 		if (_v0.$ === 'FixedMaxDropdownItems') {
 			var maxDropdownItems = _v0.a;
 			var maxNumberOfDropdownItems = $author$project$PositiveInt$toInt(maxDropdownItems);
@@ -17054,9 +17054,9 @@ var $author$project$MuchSelect$update = F2(
 					}
 				} else {
 					var visibleOptions = A2($author$project$MuchSelect$figureOutWhichOptionsToShowInTheDropdown, model.selectionConfig, model.options);
-					var moveHighlightedOptionDownIfThereAreOptions = F2(
-						function (selectionConfig, options) {
-							return ($elm$core$List$length(visibleOptions) > 1) ? A2($author$project$OptionsUtilities$moveHighlightedOptionDown, selectionConfig, options) : $elm$core$Basics$identity;
+					var moveHighlightedOptionDownIfThereAreOptions = F3(
+						function (selectionConfig, allOptions, visibleOptions_) {
+							return ($elm$core$List$length(visibleOptions_) > 1) ? A3($author$project$OptionsUtilities$moveHighlightedOptionDown, selectionConfig, allOptions, visibleOptions_) : allOptions;
 						});
 					var updatedOptions = A2(
 						$author$project$OptionsUtilities$selectOptionInListByOptionValue,
@@ -17080,7 +17080,8 @@ var $author$project$MuchSelect$update = F2(
 										$author$project$SelectionMode$getSelectionMode(model.selectionConfig),
 										model.selectedValueEncoding,
 										$author$project$OptionsUtilities$selectedOptions(updatedOptions)),
-										$author$project$MuchSelect$FocusInput
+										$author$project$MuchSelect$FocusInput,
+										$author$project$MuchSelect$SearchStringTouched(model.searchStringDebounceLength)
 									])));
 					} else {
 						return _Utils_Tuple2(

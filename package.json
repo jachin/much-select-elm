@@ -1,6 +1,6 @@
 {
   "name": "@getdrip/much-select-elm",
-  "version": "0.17.2",
+  "version": "0.17.3",
   "description": "A fancy selector web component written (mostly) in elm.",
   "type": "module",
   "module": "dist/much-select.js",
@@ -42,26 +42,26 @@
   "devDependencies": {
     "@esm-bundle/chai": "^4.3.4-fix.0",
     "@open-wc/testing": "^3.1.7",
-    "@web/test-runner": "^0.15.0",
+    "@web/test-runner": "^0.15.1",
     "@web/test-runner-commands": "^0.6.5",
     "@web/test-runner-mocha": "^0.7.5",
     "chai-dom": "^1.11.0",
-    "cypress": "^12.3.0",
+    "cypress": "^12.7.0",
     "elm-esm": "^1.1.4",
     "elm-review": "^2.9.1",
-    "elm-test": "0.19.1-revision11",
-    "elm-tooling": "^1.12.0",
+    "elm-test": "0.19.1-revision12",
+    "elm-tooling": "^1.13.0",
     "elm-watch": "^1.1.2",
-    "esbuild": "^0.17.2",
-    "eslint": "^8.32.0",
+    "esbuild": "^0.17.11",
+    "eslint": "^8.35.0",
     "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-config-prettier": "^8.6.0",
+    "eslint-config-prettier": "^8.7.0",
     "eslint-plugin-cypress": "^2.12.1",
     "eslint-plugin-html": "^7.1.0",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-prettier": "^4.2.1",
-    "prettier": "^2.8.3",
+    "prettier": "^2.8.4",
     "run-pty": "^4.0.3",
-    "terser": "^5.16.1"
+    "terser": "^5.16.6"
   }
 }

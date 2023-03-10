@@ -475,16 +475,20 @@ update msg model =
 
                 SelectionMode.MultiSelect ->
                     let
+                        visibleOptions : List Option
                         visibleOptions =
                             figureOutWhichOptionsToShowInTheDropdown model.selectionConfig model.options
 
-                        moveHighlightedOptionDownIfThereAreOptions selectionConfig options =
-                            if List.length visibleOptions > 1 then
-                                moveHighlightedOptionDown selectionConfig
-                                    options
+                        moveHighlightedOptionDownIfThereAreOptions : SelectionConfig -> List Option -> List Option -> List Option
+                        moveHighlightedOptionDownIfThereAreOptions selectionConfig allOptions visibleOptions_ =
+                            if List.length visibleOptions_ > 1 then
+                                moveHighlightedOptionDown
+                                    selectionConfig
+                                    allOptions
+                                    visibleOptions_
 
                             else
-                                identity
+                                allOptions
 
                         updatedOptions =
                             selectOptionInListByOptionValue optionValue
@@ -512,6 +516,7 @@ update msg model =
                                     model.selectedValueEncoding
                                     (selectedOptions updatedOptions)
                                 , FocusInput
+                                , SearchStringTouched model.searchStringDebounceLength
                                 ]
                             )
 
@@ -2015,17 +2020,17 @@ updatePartOfTheModelWithChangesThatEffectTheOptionsWhenTheMouseMoves rightSlot s
 
 
 figureOutWhichOptionsToShowInTheDropdown : SelectionConfig -> List Option -> List Option
-figureOutWhichOptionsToShowInTheDropdown selectionMode options =
+figureOutWhichOptionsToShowInTheDropdown selectionConfig options =
     let
         optionsThatCouldBeShown =
             options
-                |> filterOptionsToShowInDropdown selectionMode
+                |> filterOptionsToShowInDropdown selectionConfig
                 |> OptionsUtilities.sortOptionsByBestScore
 
         lastIndexOfOptions =
             List.length optionsThatCouldBeShown - 1
     in
-    case getMaxDropdownItems selectionMode of
+    case getMaxDropdownItems selectionConfig of
         OutputStyle.FixedMaxDropdownItems maxDropdownItems ->
             let
                 maxNumberOfDropdownItems =
@@ -3912,65 +3917,65 @@ effectToDebuggingString effect =
         InputHasBeenBlurred ->
             "InputHasBeenBlurred"
 
-        InputHasBeenKeyUp string validationStatus ->
+        InputHasBeenKeyUp _ _ ->
             "InputHasBeenKeyUp"
 
-        SearchStringTouched float ->
+        SearchStringTouched _ ->
             "SearchStringTouched"
 
         UpdateOptionsInWebWorker ->
             "UpdateOptionsInWebWorker"
 
-        SearchOptionsWithWebWorker value ->
+        SearchOptionsWithWebWorker _ ->
             "SearchOptionsWithWebWorker"
 
-        ReportValueChanged value _ ->
+        ReportValueChanged _ _ ->
             "ReportValueChanged"
 
         ValueCleared ->
             "ValueCleared"
 
-        InvalidValue value ->
+        InvalidValue _ ->
             "InvalidValue"
 
-        CustomOptionSelected strings ->
+        CustomOptionSelected _ ->
             "CustomOptionSelected"
 
-        ReportOptionSelected value ->
+        ReportOptionSelected _ ->
             "ReportOptionSelected"
 
-        ReportOptionDeselected value ->
+        ReportOptionDeselected _ ->
             "ReportOptionDeselected"
 
-        OptionsUpdated bool ->
+        OptionsUpdated _ ->
             "OptionsUpdated"
 
-        SendCustomValidationRequest ( string, int ) ->
+        SendCustomValidationRequest _ ->
             "SendCustomValidationRequest"
 
-        ReportErrorMessage string ->
+        ReportErrorMessage _ ->
             "ReportErrorMessage"
 
         ReportReady ->
             "ReportReady"
 
-        ReportInitialValueSet value ->
+        ReportInitialValueSet _ ->
             "ReportInitialValueSet"
 
         FetchOptionsFromDom ->
             "FetchOptionsFromDom"
 
-        ScrollDownToElement string ->
+        ScrollDownToElement _ ->
             "ScrollDownToElement"
 
-        ReportAllOptions value ->
+        ReportAllOptions _ ->
             "ReportAllOptions"
 
-        DumpConfigState value ->
+        DumpConfigState _ ->
             "DumpConfigState"
 
-        DumpSelectedValues value ->
+        DumpSelectedValues _ ->
             "DumpSelectedValues"
 
-        ChangeTheLightDom lightDomChange ->
+        ChangeTheLightDom _ ->
             "ChangeTheLightDom"
