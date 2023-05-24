@@ -1,7 +1,7 @@
 // noinspection JSFileReferences
 
 // eslint-disable-next-line import/no-unresolved
-import { Elm } from "./much-select-elm-debug.js";
+import { Elm } from "./much-select-elm.js";
 
 // eslint-disable-next-line import/no-unresolved
 import getMuchSelectTemplate from "./much-select-template.js";
@@ -423,6 +423,8 @@ class MuchSelect extends HTMLElement {
               "value",
               lightDomChange.data.rawValue
             );
+            // event listeners in the surrounding context might want to be able to detect when the value changes on this input 
+            hiddenValueInput.dispatchEvent(new Event("change", {bubbles: true}));
           }
 
           this.startMuchSelectObserver();
