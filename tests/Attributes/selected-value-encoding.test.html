@@ -73,18 +73,31 @@
           expect(await el.selectedValue).to.eql(["ho", "hum"]);
         });
 
-        it("with json should support values that include commas", async () => {
-          const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select
-              multi-select
-              selected-value="%5B%22oh%2Cwhere%22%2C%22can%20my%20%F0%9F%99%82%20be%22%5D"
-              selected-value-encoding="json"
-            ></much-select>`
-          );
-          expect(await el.rawSelectedValue).to.equal(
-            "%5B%22oh%2Cwhere%22%2C%22can%20my%20%F0%9F%99%82%20be%22%5D"
-          );
-          expect(await el.selectedValue).to.eql(["oh,where", "can my 🙂 be"]);
+        describe("with json should support values that include commas", () => {
+          it("in multi select mode", async () => {
+            const el = /** @type {MuchSelect} */ await fixture(
+              html`<much-select
+                multi-select
+                selected-value="%5B%22oh%2Cwhere%22%2C%22can%20my%20%F0%9F%99%82%20be%22%5D"
+                selected-value-encoding="json"
+              ></much-select>`
+            );
+            expect(await el.rawSelectedValue).to.equal(
+              "%5B%22oh%2Cwhere%22%2C%22can%20my%20%F0%9F%99%82%20be%22%5D"
+            );
+            expect(await el.selectedValue).to.eql(["oh,where", "can my 🙂 be"]);
+          });
+
+          it("in single select mode", async () => {
+            const el = /** @type {MuchSelect} */ await fixture(
+              html`<much-select
+                selected-value="%22buffalo,cruise%22"
+                selected-value-encoding="json"
+              ></much-select>`
+            );
+            expect(await el.rawSelectedValue).to.equal("%22buffalo%2Ccruise%22");
+            expect(await el.selectedValue).to.eql("buffalo,cruise");
+          });
         });
       });
     });
