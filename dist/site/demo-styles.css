@@ -5,6 +5,13 @@ Boring colors https://flatuicolors.com/palette/gb
 
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@500&display=swap');
 
+/*
+This seems to prevent the dramatic flash as the theme is getting setup as a page loads.
+ */
+body {
+    transition-duration: 0.5s;
+}
+
 :root {
     /* Boring colors */
     --protoss-pylon: #00a8ff;
