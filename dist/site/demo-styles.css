@@ -5,7 +5,14 @@ Boring colors https://flatuicolors.com/palette/gb
 
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@500&display=swap');
 
+/*
+This seems to prevent the dramatic flash as the theme is getting setup as a page loads.
+ */
 body {
+    transition-duration: 0.5s;
+}
+
+:root {
     /* Boring colors */
     --protoss-pylon: #00a8ff;
     --periwinkle: #9c88ff;
@@ -53,15 +60,14 @@ body {
     --much-select-height: 36px;
 }
 
-body,
-body.boring {
+#theme-switch-boring:checked ~ #page-wrapper {
     --header-font: "Andale Mono", sans-serif;
     --body-font: "Times New Roman", serif;
     --form-font: "Andale Mono", sans-serif;
     --value-font-size: 25px;
 }
 
-body.fun {
+#theme-switch-fun:checked ~ #page-wrapper {
     --header-font: "Comic Sans MS";
     --body-font: 'DM Sans', sans-serif;
     --form-font: 'DM Sans', sans-serif;
@@ -69,8 +75,7 @@ body.fun {
 }
 
 @media (prefers-color-scheme: light) {
-    body,
-    body.boring {
+    #theme-switch-boring:checked ~ #page-wrapper {
         --background-color: var(--lynx-white);
         --text-color: var(--electromagnetic);
         --link-text-color: var(--mazarine-blue);
@@ -96,7 +101,7 @@ body.fun {
         --much-select-dropdown-option-selected-background-color: var(--chain-gang-grey);
     }
 
-    body.fun {
+    #theme-switch-fun:checked ~ #page-wrapper {
         --background-color: var(--hint-of-elusive-blue);
         --text-color: var(--black-pearl);
         --link-text-color: var(--free-speech-blue);
@@ -129,8 +134,7 @@ body.fun {
 }
 
 @media (prefers-color-scheme: dark) {
-    body,
-    body.boring {
+    #theme-switch-boring:checked ~ #page-wrapper {
         --background-color: var(--electromagnetic);
         --text-color: var(--hint-of-pensive);
         --link-text-color: var(--periwinkle);
@@ -146,11 +150,9 @@ body.fun {
         --much-select-background-color: var(--electromagnetic);
         --much-select-border-color: var(--matt-purple);
         --much-select-error-border-color: var(--harley-davidson-orange);
-
-
     }
 
-    body.fun {
+    #theme-switch-fun:checked ~ #page-wrapper {
         --background-color: var(--good-night);
         --text-color: var(--vibrant-yellow);
         --link-text-color: var(--minty-green);
@@ -166,8 +168,15 @@ body.fun {
         --much-select-border-color: var(--jade-dust);
         --much-select-error-border-color: var(--sunset-orange);
     }
+}
 
-
+/* Theme switcher */
+.theme-switch { /* Hides the radio buttons */
+    position: absolute !important;
+    height: 1px;
+    width: 1px;
+    overflow: hidden;
+    clip: rect(1px, 1px, 1px, 1px);
 }
 
 body {
@@ -199,7 +208,6 @@ body {
 #header #sub-title {
     flex: 0 1 300px;
 }
-
 
 h1 {
     font-family: var(--header-font);

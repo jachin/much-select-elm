@@ -7071,29 +7071,33 @@ var $author$project$SelectedValueEncoding$stringToValueStrings = F2(
 		if ((valuesString === '') && (!selectedValueEncoding)) {
 			return $elm$core$Result$Ok(_List_Nil);
 		} else {
-			if (!selectedValueEncoding) {
-				return $elm$core$Result$Ok(
-					A2($elm$core$String$split, ',', valuesString));
+			if ((valuesString === '') && (selectedValueEncoding === 1)) {
+				return $elm$core$Result$Ok(_List_Nil);
 			} else {
-				return A2(
-					$elm$core$Result$andThen,
-					function (decodedValueString) {
-						return A2(
-							$elm$core$Result$mapError,
-							function (error) {
-								return $elm$json$Json$Decode$errorToString(error);
-							},
-							A2(
-								$elm$json$Json$Decode$decodeString,
-								$elm$json$Json$Decode$oneOf(
-									_List_fromArray(
-										[$author$project$Ports$valuesDecoder, $author$project$Ports$valueDecoder])),
-								decodedValueString));
-					},
-					A2(
-						$elm$core$Result$fromMaybe,
-						'Unable to do a percent decode on the selected value',
-						$elm$url$Url$percentDecode(valuesString)));
+				if (!selectedValueEncoding) {
+					return $elm$core$Result$Ok(
+						A2($elm$core$String$split, ',', valuesString));
+				} else {
+					return A2(
+						$elm$core$Result$andThen,
+						function (decodedValueString) {
+							return A2(
+								$elm$core$Result$mapError,
+								function (error) {
+									return $elm$json$Json$Decode$errorToString(error);
+								},
+								A2(
+									$elm$json$Json$Decode$decodeString,
+									$elm$json$Json$Decode$oneOf(
+										_List_fromArray(
+											[$author$project$Ports$valuesDecoder, $author$project$Ports$valueDecoder])),
+									decodedValueString));
+						},
+						A2(
+							$elm$core$Result$fromMaybe,
+							'Unable to do a percent decode on the selected value',
+							$elm$url$Url$percentDecode(valuesString)));
+				}
 			}
 		}
 	});
