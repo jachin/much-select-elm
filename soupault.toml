@@ -133,6 +133,12 @@
   file = "templates/nav.html"
   selector = "#nav"
 
+[widgets.theme-radio-buttons]
+widget = "include"
+file = "templates/theme-radio-buttons.html"
+selector = "#theme-radio-buttons"
+action = "replace_element"
+
 [widgets.add-and-remove-button-slots]
 widget = "include"
 file = "examples/add-and-remove-button-slots.html"
