@@ -8,131 +8,134 @@
    Much Select: Transform and Validate
   </title>
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
-  <script src="/styles.js"></script>
   <link href="/demo-styles.css" rel="stylesheet">
   <title></title>
  </head>
- <body>
-  <header id="header">
-   <div id="site-title">
-    <h1>
-     &lt;much-select&gt;
-    </h1>
-   </div>
-   <div id="page-name">
-    <h2>
-     Transform and Validate
-    </h2>
-   </div>
-   <div id="sub-title">
-    <h3>
-     Demo and Development Playground
-    </h3>
-   </div>
-  </header>
-  <div id="nav">
-   <nav class="offsite-nav">
-    <ol>
-     <li class="main-nav-item">
-      <a href="https://github.com/DripEmail/much-select-elm">Github</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="https://www.npmjs.com/package/@getdrip/much-select-elm">NPM</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="https://github.com/DripEmail/much-select-elm/wiki/Related-Projects">Related Projects/Inspiration</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="https://en.wikipedia.org/wiki/Doge_(meme)">Doge (meme)</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="https://elm-lang.org/">Elm</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="https://developer.mozilla.org/en-US/docs/Web/Web_Components">Web Components</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="https://modern-web.dev/">Modern Web</a>
-     </li>
-    </ol>
-   </nav>
-   <nav class="site-nav">
-    <ol>
-     <li class="main-nav-item">
-      <a href="/">Home</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="/attributes">Attributes</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="/initial-value">Initial Value</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="/option-api">Option API</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="/events">Events</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="/empty-options">Empty Options</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="/dropdown-options">Dropdown Options</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="/output-style-datalist">Datalist (output style)</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="/custom-options">Custom Options</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="/slots">Slots</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="/multi-select">Multi Select</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="/selected-value-encoding">Selected Value Encoding</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="/sans-css">Default CSS</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="/transform-and-validate">Transform and Validate</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="/elm-demo">Elm Demo</a>
-     </li>
-    </ol>
-   </nav>
-   <nav>
-    <button id="fun-style">fun</button>
+ <body class="loading">
+  <input type="radio" class="theme-switch" id="theme-switch-boring" name="theme-switch">
+<input type="radio" class="theme-switch" id="theme-switch-fun" name="theme-switch">
+  <div id="page-wrapper">
+   <header id="header">
+    <div id="site-title">
+     <h1>
+      &lt;much-select&gt;
+     </h1>
+    </div>
+    <div id="page-name">
+     <h2>
+      Transform and Validate
+     </h2>
+    </div>
+    <div id="sub-title">
+     <h3>
+      Demo and Development Playground
+     </h3>
+    </div>
+   </header>
+   <div id="nav">
+    <nav class="offsite-nav">
+     <ol>
+      <li class="main-nav-item">
+       <a href="https://github.com/DripEmail/much-select-elm">Github</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="https://www.npmjs.com/package/@getdrip/much-select-elm">NPM</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="https://github.com/DripEmail/much-select-elm/wiki/Related-Projects">Related Projects/Inspiration</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="https://en.wikipedia.org/wiki/Doge_(meme)">Doge (meme)</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="https://elm-lang.org/">Elm</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="https://developer.mozilla.org/en-US/docs/Web/Web_Components">Web Components</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="https://modern-web.dev/">Modern Web</a>
+      </li>
+     </ol>
+    </nav>
+    <nav class="site-nav">
+     <ol>
+      <li class="main-nav-item">
+       <a href="/">Home</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="/attributes">Attributes</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="/initial-value">Initial Value</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="/option-api">Option API</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="/events">Events</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="/empty-options">Empty Options</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="/dropdown-options">Dropdown Options</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="/output-style-datalist">Datalist (output style)</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="/custom-options">Custom Options</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="/slots">Slots</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="/multi-select">Multi Select</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="/selected-value-encoding">Selected Value Encoding</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="/sans-css">Default CSS</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="/transform-and-validate">Transform and Validate</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="/elm-demo">Elm Demo</a>
+      </li>
+     </ol>
+    </nav>
+    <nav>
+     <button id="fun-style">fun</button>
   <button id="boring-style">boring</button>
-   </nav>
-  </div>
-  <div class="container">
-   <div class="example">
-    <div id="validation-and-transformation-slot-multi-custom-html">
-     <div id="validation-and-transformation-slot-multi-custom">
-      <h3>
-       Validation and Transformation Slot
-      </h3>
-      <h4>
-       For Multi Select and Custom Options.
-      </h4>
-      <p>
-       Custom options should be transformed and validated.
-      </p>
-      <p>
-       The custom values should be turned to lower case.
-      </p>
-      <p>
-       It should only allow custom options that have no white space and are at least 3 characters long.
-      </p>
-      <p></p>
-      <much-select allow-custom-options="" multi-select="">
-       <script type="application/json" slot="transformation-validation">
-        {
+    </nav>
+    <script src="/styles.js"></script>
+   </div>
+   <div class="container">
+    <div class="example">
+     <div id="validation-and-transformation-slot-multi-custom-html">
+      <div id="validation-and-transformation-slot-multi-custom">
+       <h3>
+        Validation and Transformation Slot
+       </h3>
+       <h4>
+        For Multi Select and Custom Options.
+       </h4>
+       <p>
+        Custom options should be transformed and validated.
+       </p>
+       <p>
+        The custom values should be turned to lower case.
+       </p>
+       <p>
+        It should only allow custom options that have no white space and are at least 3 characters long.
+       </p>
+       <p></p>
+       <much-select allow-custom-options="" multi-select="">
+        <script type="application/json" slot="transformation-validation">
+         {
         "transformers": [
           {
             "name": "lowercase"
@@ -152,446 +155,529 @@
           }
         ]
       }
+        </script>
+        <select slot="select-input">
+      
+        <option>
+         African custard-apple
+        </option>
+        
+      
+        <option>
+         American beautyberry
+        </option>
+        
+      
+        <option>
+         American red raspberry
+        </option>
+        
+      
+        <option>
+         Annona aurantiaca
+        </option>
+        
+      
+        <option>
+         Annona conica
+        </option>
+        
+      
+        <option>
+         Annona coriacea
+        </option>
+        
+      
+        <option>
+         Annona cornifolia
+        </option>
+        
+      
+        <option>
+         Annona jahnii
+        </option>
+        
+      
+        <option>
+         Annona longiflora
+        </option>
+        
+      
+        <option>
+         Annona nutans
+        </option>
+        
+      
+        <option>
+         Annona paludosa
+        </option>
+        
+      
+        <option>
+         Annona stenophylla
+        </option>
+        
+      
+        <option>
+         Annonilla
+        </option>
+        
+      
+        <option>
+         Araticum-cagão
+        </option>
+        
+      
+        <option>
+         Aratincum do Para
+        </option>
+        
+      
+        <option>
+         Arctic raspberry
+        </option>
+        
+      
+        <option>
+         Armenian blackberry
+        </option>
+        
+      
+        <option>
+         Atemoya
+        </option>
+        
+      
+        <option>
+         Atherton raspberry
+        </option>
+        
+      
+        <option>
+         Balloon berry
+        </option>
+        
+      
+        <option>
+         Beach strawberry
+        </option>
+        
+      
+        <option>
+         Beach sugar apple
+        </option>
+        
+      
+        <option>
+         Biribá
+        </option>
+        
+      
+        <option>
+         Black mulberry
+        </option>
+        
+      
+        <option>
+         Black raspberry
+        </option>
+        
+      
+        <option>
+         Blackberry
+        </option>
+        
+      
+        <option>
+         Boysenberry
+        </option>
+        
+      
+        <option>
+         California blackberry
+        </option>
+        
+      
+        <option>
+         Cawesh
+        </option>
+        
+      
+        <option>
+         Cherimoya
+        </option>
+        
+      
+        <option>
+         Chinese bramble berry
+        </option>
+        
+      
+        <option>
+         Cloudberry
+        </option>
+        
+      
+        <option>
+         Creeping raspberry
+        </option>
+        
+      
+        <option>
+         Cudrang
+        </option>
+        
+      
+        <option>
+         Custard apple
+        </option>
+        
+      
+        <option>
+         Cutleaf evergreen blackberry
+        </option>
+        
+      
+        <option>
+         Delicious raspberry
+        </option>
+        
+      
+        <option>
+         Dewberry
+        </option>
+        
+      
+        <option>
+         Dwarf red blackberry
+        </option>
+        
+      
+        <option>
+         Elephant apple
+        </option>
+        
+      
+        <option>
+         Elmleaf blackberry
+        </option>
+        
+      
+        <option>
+         Emu berry
+        </option>
+        
+      
+        <option>
+         European dewberry
+        </option>
+        
+      
+        <option>
+         European red raspberry
+        </option>
+        
+      
+        <option>
+         Five-leaved bramble berry
+        </option>
+        
+      
+        <option>
+         Garden dewberry
+        </option>
+        
+      
+        <option>
+         Golden Himalayan raspberry
+        </option>
+        
+      
+        <option>
+         Gummy Bear Fruit
+        </option>
+        
+      
+        <option>
+         Hawaiian raspberry
+        </option>
+        
+      
+        <option>
+         Ilama
+        </option>
+        
+      
+        <option>
+         Japanese bramble berry
+        </option>
+        
+      
+        <option>
+         Korean blackberry
+        </option>
+        
+      
+        <option>
+         Korean raspberry
+        </option>
+        
+      
+        <option>
+         Kousa dogwood fruit
+        </option>
+        
+      
+        <option>
+         Loganberry
+        </option>
+        
+      
+        <option>
+         Marolo
+        </option>
+        
+      
+        <option>
+         Mock strawberry
+        </option>
+        
+      
+        <option>
+         Molucca bramble berry
+        </option>
+        
+      
+        <option>
+         Mora común
+        </option>
+        
+      
+        <option>
+         Mora de Castilla
+        </option>
+        
+      
+        <option>
+         Mountain raspberry
+        </option>
+        
+      
+        <option>
+         Mountain soursop
+        </option>
+        
+      
+        <option>
+         Mysore raspberry
+        </option>
+        
+      
+        <option>
+         Nepalese raspberry
+        </option>
+        
+      
+        <option>
+         Pennsylvania blackberry
+        </option>
+        
+      
+        <option>
+         Pond apple
+        </option>
+        
+      
+        <option>
+         Purple-flowered raspberry
+        </option>
+        
+      
+        <option>
+         Red mulberry
+        </option>
+        
+      
+        <option>
+         Rose hip
+        </option>
+        
+      
+        <option>
+         Roseleaf bramble berry
+        </option>
+        
+      
+        <option>
+         Salmonberry
+        </option>
+        
+      
+        <option>
+         Sawtooth blackberry
+        </option>
+        
+      
+        <option>
+         Smooth blackberry
+        </option>
+        
+      
+        <option>
+         Snow raspberry
+        </option>
+        
+      
+        <option>
+         Soncoya
+        </option>
+        
+      
+        <option>
+         Soursop
+        </option>
+        
+      
+        <option>
+         Stone bramble berry
+        </option>
+        
+      
+        <option>
+         Strawberry
+        </option>
+        
+      
+        <option>
+         Sugar-apple
+        </option>
+        
+      
+        <option>
+         Tayberry
+        </option>
+        
+      
+        <option>
+         Thimbleberry
+        </option>
+        
+      
+        <option>
+         White bark raspberry
+        </option>
+        
+      
+        <option>
+         White mulberry
+        </option>
+        
+      
+        <option>
+         White-stemmed bramble
+        </option>
+        
+      
+        <option>
+         Wild cherimoya
+        </option>
+        
+      
+        <option>
+         Wild strawberry
+        </option>
+        
+      
+        <option>
+         Wineberry
+        </option>
+        
+      
+        <option>
+         Youngberry
+        </option>
+        
+    
+       </select>
+      </much-select>
+     </div>
+    </div>
+   </div>
+   <div class="example">
+    <div id="validation-and-transformation-slot-multi-datalist">
+     <div id="validation-and-transformation-slot">
+      <h3>
+       Validation and Transformation Slot
+      </h3>
+      <h4>
+       For Multi Select with the Datalist Output Style
+      </h4>
+      <p>
+       Custom options should be transformed and validated.
+      </p>
+      <p>
+       The custom values should be turned to lower case.
+      </p>
+      <p>
+       It should only allow custom options that have no white space and are at least 3 characters long.
+      </p>
+      <much-select multi-select="" output-style="datalist">
+       <script type="application/json" slot="transformation-validation">
+        {
+        "transformers": [
+          {
+            "name": "lowercase"
+          }
+        ],
+        "validators": [
+          {
+            "name": "no-white-space",
+            "level": "error",
+            "message": "Spaces are not allow for custom fruit."
+          },
+          {
+            "name": "minimum-length",
+            "level": "error",
+            "minimum-length": 3,
+            "message": "The minimum length is 3."
+          }
+        ]
+      }
        </script>
        <select slot="select-input">
       
        <option>
-        African custard-apple
+        African locust bean
        </option>
        
       
        <option>
-        American beautyberry
+        Bilimbi
        </option>
        
       
        <option>
-        American red raspberry
+        Carob
        </option>
        
       
        <option>
-        Annona aurantiaca
+        Ice-cream bean
        </option>
        
       
        <option>
-        Annona conica
+        Monkeypod
        </option>
        
       
        <option>
-        Annona coriacea
+        Tamarind
        </option>
        
       
        <option>
-        Annona cornifolia
-       </option>
-       
-      
-       <option>
-        Annona jahnii
-       </option>
-       
-      
-       <option>
-        Annona longiflora
-       </option>
-       
-      
-       <option>
-        Annona nutans
-       </option>
-       
-      
-       <option>
-        Annona paludosa
-       </option>
-       
-      
-       <option>
-        Annona stenophylla
-       </option>
-       
-      
-       <option>
-        Annonilla
-       </option>
-       
-      
-       <option>
-        Araticum-cagão
-       </option>
-       
-      
-       <option>
-        Aratincum do Para
-       </option>
-       
-      
-       <option>
-        Arctic raspberry
-       </option>
-       
-      
-       <option>
-        Armenian blackberry
-       </option>
-       
-      
-       <option>
-        Atemoya
-       </option>
-       
-      
-       <option>
-        Atherton raspberry
-       </option>
-       
-      
-       <option>
-        Balloon berry
-       </option>
-       
-      
-       <option>
-        Beach strawberry
-       </option>
-       
-      
-       <option>
-        Beach sugar apple
-       </option>
-       
-      
-       <option>
-        Biribá
-       </option>
-       
-      
-       <option>
-        Black mulberry
-       </option>
-       
-      
-       <option>
-        Black raspberry
-       </option>
-       
-      
-       <option>
-        Blackberry
-       </option>
-       
-      
-       <option>
-        Boysenberry
-       </option>
-       
-      
-       <option>
-        California blackberry
-       </option>
-       
-      
-       <option>
-        Cawesh
-       </option>
-       
-      
-       <option>
-        Cherimoya
-       </option>
-       
-      
-       <option>
-        Chinese bramble berry
-       </option>
-       
-      
-       <option>
-        Cloudberry
-       </option>
-       
-      
-       <option>
-        Creeping raspberry
-       </option>
-       
-      
-       <option>
-        Cudrang
-       </option>
-       
-      
-       <option>
-        Custard apple
-       </option>
-       
-      
-       <option>
-        Cutleaf evergreen blackberry
-       </option>
-       
-      
-       <option>
-        Delicious raspberry
-       </option>
-       
-      
-       <option>
-        Dewberry
-       </option>
-       
-      
-       <option>
-        Dwarf red blackberry
-       </option>
-       
-      
-       <option>
-        Elephant apple
-       </option>
-       
-      
-       <option>
-        Elmleaf blackberry
-       </option>
-       
-      
-       <option>
-        Emu berry
-       </option>
-       
-      
-       <option>
-        European dewberry
-       </option>
-       
-      
-       <option>
-        European red raspberry
-       </option>
-       
-      
-       <option>
-        Five-leaved bramble berry
-       </option>
-       
-      
-       <option>
-        Garden dewberry
-       </option>
-       
-      
-       <option>
-        Golden Himalayan raspberry
-       </option>
-       
-      
-       <option>
-        Gummy Bear Fruit
-       </option>
-       
-      
-       <option>
-        Hawaiian raspberry
-       </option>
-       
-      
-       <option>
-        Ilama
-       </option>
-       
-      
-       <option>
-        Japanese bramble berry
-       </option>
-       
-      
-       <option>
-        Korean blackberry
-       </option>
-       
-      
-       <option>
-        Korean raspberry
-       </option>
-       
-      
-       <option>
-        Kousa dogwood fruit
-       </option>
-       
-      
-       <option>
-        Loganberry
-       </option>
-       
-      
-       <option>
-        Marolo
-       </option>
-       
-      
-       <option>
-        Mock strawberry
-       </option>
-       
-      
-       <option>
-        Molucca bramble berry
-       </option>
-       
-      
-       <option>
-        Mora común
-       </option>
-       
-      
-       <option>
-        Mora de Castilla
-       </option>
-       
-      
-       <option>
-        Mountain raspberry
-       </option>
-       
-      
-       <option>
-        Mountain soursop
-       </option>
-       
-      
-       <option>
-        Mysore raspberry
-       </option>
-       
-      
-       <option>
-        Nepalese raspberry
-       </option>
-       
-      
-       <option>
-        Pennsylvania blackberry
-       </option>
-       
-      
-       <option>
-        Pond apple
-       </option>
-       
-      
-       <option>
-        Purple-flowered raspberry
-       </option>
-       
-      
-       <option>
-        Red mulberry
-       </option>
-       
-      
-       <option>
-        Rose hip
-       </option>
-       
-      
-       <option>
-        Roseleaf bramble berry
-       </option>
-       
-      
-       <option>
-        Salmonberry
-       </option>
-       
-      
-       <option>
-        Sawtooth blackberry
-       </option>
-       
-      
-       <option>
-        Smooth blackberry
-       </option>
-       
-      
-       <option>
-        Snow raspberry
-       </option>
-       
-      
-       <option>
-        Soncoya
-       </option>
-       
-      
-       <option>
-        Soursop
-       </option>
-       
-      
-       <option>
-        Stone bramble berry
-       </option>
-       
-      
-       <option>
-        Strawberry
-       </option>
-       
-      
-       <option>
-        Sugar-apple
-       </option>
-       
-      
-       <option>
-        Tayberry
-       </option>
-       
-      
-       <option>
-        Thimbleberry
-       </option>
-       
-      
-       <option>
-        White bark raspberry
-       </option>
-       
-      
-       <option>
-        White mulberry
-       </option>
-       
-      
-       <option>
-        White-stemmed bramble
-       </option>
-       
-      
-       <option>
-        Wild cherimoya
-       </option>
-       
-      
-       <option>
-        Wild strawberry
-       </option>
-       
-      
-       <option>
-        Wineberry
-       </option>
-       
-      
-       <option>
-        Youngberry
+        Zig-zag vine fruit
        </option>
        
     
@@ -601,24 +687,12 @@
    </div>
   </div>
   <div class="example">
-   <div id="validation-and-transformation-slot-multi-datalist">
+   <div id="validation-and-transformation-slot-single-custom-html">
     <div id="validation-and-transformation-slot">
      <h3>
       Validation and Transformation Slot
      </h3>
-     <h4>
-      For Multi Select with the Datalist Output Style
-     </h4>
-     <p>
-      Custom options should be transformed and validated.
-     </p>
-     <p>
-      The custom values should be turned to lower case.
-     </p>
-     <p>
-      It should only allow custom options that have no white space and are at least 3 characters long.
-     </p>
-     <much-select multi-select="" output-style="datalist">
+     <much-select allow-custom-options="">
       <script type="application/json" slot="transformation-validation">
        {
         "transformers": [
@@ -634,7 +708,7 @@
           },
           {
             "name": "minimum-length",
-            "level": "error",
+            "level": "silent",
             "minimum-length": 3,
             "message": "The minimum length is 3."
           }
@@ -644,37 +718,487 @@
       <select slot="select-input">
       
       <option>
-       African locust bean
+       Almond-leaved pear
       </option>
       
       
       <option>
-       Bilimbi
+       Amelanchier intermedia
       </option>
       
       
       <option>
-       Carob
+       Amelanchier parviflora
       </option>
       
       
       <option>
-       Ice-cream bean
+       Apple
       </option>
       
       
       <option>
-       Monkeypod
+       Apricot-leaved pear
       </option>
       
       
       <option>
-       Tamarind
+       Asian pear
       </option>
       
       
       <option>
-       Zig-zag vine fruit
+       Balatá
+      </option>
+      
+      
+      <option>
+       Birchleaf pear
+      </option>
+      
+      
+      <option>
+       Callery pear
+      </option>
+      
+      
+      <option>
+       Calva crabapple
+      </option>
+      
+      
+      <option>
+       Canadian serviceberry
+      </option>
+      
+      
+      <option>
+       Caqui
+      </option>
+      
+      
+      <option>
+       Cerrado pear
+      </option>
+      
+      
+      <option>
+       Chinese crab apple
+      </option>
+      
+      
+      <option>
+       Chinese flowering apple
+      </option>
+      
+      
+      <option>
+       Chinese pearleaf crabapple
+      </option>
+      
+      
+      <option>
+       Chinese quince
+      </option>
+      
+      
+      <option>
+       Chinese serviceberry
+      </option>
+      
+      
+      <option>
+       Chinese white pear
+      </option>
+      
+      
+      <option>
+       Chokeberry
+      </option>
+      
+      
+      <option>
+       Coastal serviceberry
+      </option>
+      
+      
+      <option>
+       Cocky apple
+      </option>
+      
+      
+      <option>
+       Cut-leaf crabapple
+      </option>
+      
+      
+      <option>
+       Cut-leaf crabapple
+      </option>
+      
+      
+      <option>
+       Downy serviceberry
+      </option>
+      
+      
+      <option>
+       Dusky pear
+      </option>
+      
+      
+      <option>
+       Eastern crabapple
+      </option>
+      
+      
+      <option>
+       Eastern mayhaw
+      </option>
+      
+      
+      <option>
+       European crab apple
+      </option>
+      
+      
+      <option>
+       European wild pear
+      </option>
+      
+      
+      <option>
+       Florentine crabapple
+      </option>
+      
+      
+      <option>
+       Hall crabapple
+      </option>
+      
+      
+      <option>
+       Hawthorn
+      </option>
+      
+      
+      <option>
+       Indian wild pear
+      </option>
+      
+      
+      <option>
+       Jagua
+      </option>
+      
+      
+      <option>
+       Japanese crab
+      </option>
+      
+      
+      <option>
+       Juneberry
+      </option>
+      
+      
+      <option>
+       Kaido crab apple
+      </option>
+      
+      
+      <option>
+       Kazak pear
+      </option>
+      
+      
+      <option>
+       Khirni
+      </option>
+      
+      
+      <option>
+       Korean juneberry
+      </option>
+      
+      
+      <option>
+       Lebanese wild apple
+      </option>
+      
+      
+      <option>
+       Loquat
+      </option>
+      
+      
+      <option>
+       Lovi-lovi
+      </option>
+      
+      
+      <option>
+       Low juneberry
+      </option>
+      
+      
+      <option>
+       Low serviceberry
+      </option>
+      
+      
+      <option>
+       Malus sieversii
+      </option>
+      
+      
+      <option>
+       Malus × zumi
+      </option>
+      
+      
+      <option>
+       Manchurian crab apple
+      </option>
+      
+      
+      <option>
+       Manilkara chicle
+      </option>
+      
+      
+      <option>
+       Manilkara elata
+      </option>
+      
+      
+      <option>
+       Manilkara obovata
+      </option>
+      
+      
+      <option>
+       Massaranduba
+      </option>
+      
+      
+      <option>
+       Medlar
+      </option>
+      
+      
+      <option>
+       Mountain serviceberry
+      </option>
+      
+      
+      <option>
+       Nantucket serviceberry
+      </option>
+      
+      
+      <option>
+       Niedzwetzky's apple
+      </option>
+      
+      
+      <option>
+       Nokaidō
+      </option>
+      
+      
+      <option>
+       Oleaster-leafed pear
+      </option>
+      
+      
+      <option>
+       Pacific crabapple
+      </option>
+      
+      
+      <option>
+       Pale serviceberry
+      </option>
+      
+      
+      <option>
+       Pear
+      </option>
+      
+      
+      <option>
+       Pillar apple
+      </option>
+      
+      
+      <option>
+       Plumleaf crab apple
+      </option>
+      
+      
+      <option>
+       Plymouth pear
+      </option>
+      
+      
+      <option>
+       Prairie crabapple
+      </option>
+      
+      
+      <option>
+       Pratt's crabapple
+      </option>
+      
+      
+      <option>
+       Pyrus glabra
+      </option>
+      
+      
+      <option>
+       Pyrus regelii
+      </option>
+      
+      
+      <option>
+       Pyrus xerophila
+      </option>
+      
+      
+      <option>
+       Quince
+      </option>
+      
+      
+      <option>
+       Ramontchi
+      </option>
+      
+      
+      <option>
+       Roundleaf serviceberry
+      </option>
+      
+      
+      <option>
+       Rowan
+      </option>
+      
+      
+      <option>
+       Sapodilla
+      </option>
+      
+      
+      <option>
+       Sargent crabapple
+      </option>
+      
+      
+      <option>
+       Saskatoon
+      </option>
+      
+      
+      <option>
+       Scarlet firethorn
+      </option>
+      
+      
+      <option>
+       Shipova
+      </option>
+      
+      
+      <option>
+       Shrub apple
+      </option>
+      
+      
+      <option>
+       Siberian crab apple
+      </option>
+      
+      
+      <option>
+       Sikkim crabapple
+      </option>
+      
+      
+      <option>
+       Smooth serviceberry
+      </option>
+      
+      
+      <option>
+       Snow pear
+      </option>
+      
+      
+      <option>
+       Snowy mespilus
+      </option>
+      
+      
+      <option>
+       Sorb
+      </option>
+      
+      
+      <option>
+       Southern crabapple
+      </option>
+      
+      
+      <option>
+       Sweet crabapple
+      </option>
+      
+      
+      <option>
+       Syrian pear
+      </option>
+      
+      
+      <option>
+       Taiwan crabapple
+      </option>
+      
+      
+      <option>
+       Toringo crabapple
+      </option>
+      
+      
+      <option>
+       Toyon
+      </option>
+      
+      
+      <option>
+       Ussurian pear
+      </option>
+      
+      
+      <option>
+       Utah serviceberry
+      </option>
+      
+      
+      <option>
+       Wiegand's serviceberry
+      </option>
+      
+      
+      <option>
+       Wild dilly
+      </option>
+      
+      
+      <option>
+       Yunnan crabapple
       </option>
       
     
@@ -684,12 +1208,12 @@
   </div>
  </div>
  <div class="example">
-  <div id="validation-and-transformation-slot-single-custom-html">
+  <div id="validation-and-transformation-slot-single-datalist">
    <div id="validation-and-transformation-slot">
     <h3>
      Validation and Transformation Slot
     </h3>
-    <much-select allow-custom-options="">
+    <much-select allow-custom-options="" output-style="datalist">
      <script type="application/json" slot="transformation-validation">
       {
         "transformers": [
@@ -715,487 +1239,247 @@
      <select slot="select-input">
       
      <option>
-      Almond-leaved pear
+      Achacha
      </option>
      
       
      <option>
-      Amelanchier intermedia
+      Ackee
      </option>
      
       
      <option>
-      Amelanchier parviflora
+      Aglaia teysmanniana
      </option>
      
       
      <option>
-      Apple
+      Asam gelugur
      </option>
      
       
      <option>
-      Apricot-leaved pear
+      Asam kelubi
      </option>
      
       
      <option>
-      Asian pear
+      Bacuri
      </option>
      
       
      <option>
-      Balatá
+      Bemange
      </option>
      
       
      <option>
-      Birchleaf pear
+      Black apple
      </option>
      
       
      <option>
-      Callery pear
+      Blue tongue
      </option>
      
       
      <option>
-      Calva crabapple
+      Boquila
      </option>
      
       
      <option>
-      Canadian serviceberry
+      Burmese grape
      </option>
      
       
      <option>
-      Caqui
+      Button mangosteen
      </option>
      
       
      <option>
-      Cerrado pear
+      Cacao
      </option>
      
       
      <option>
-      Chinese crab apple
+      Charichuelo
      </option>
      
       
      <option>
-      Chinese flowering apple
+      Chocolate vine fruit
      </option>
      
       
      <option>
-      Chinese pearleaf crabapple
+      Copperleaf snowberry
      </option>
      
       
      <option>
-      Chinese quince
+      Courbaril
      </option>
      
       
      <option>
-      Chinese serviceberry
+      Cupuaçu
      </option>
      
       
      <option>
-      Chinese white pear
+      Durian
      </option>
      
       
      <option>
-      Chokeberry
+      Durio oxleyanus
      </option>
      
       
      <option>
-      Coastal serviceberry
+      Eastern teaberry
      </option>
      
       
      <option>
-      Cocky apple
+      Gấc
      </option>
      
       
      <option>
-      Cut-leaf crabapple
+      Gamboge
      </option>
      
       
      <option>
-      Cut-leaf crabapple
+      Garcinia cambogia
      </option>
      
       
      <option>
-      Downy serviceberry
+      Garcinia forbesii
      </option>
      
       
      <option>
-      Dusky pear
+      Garcinia magnifolia
      </option>
      
       
      <option>
-      Eastern crabapple
+      Garcinia pseudoguttifera
      </option>
      
       
      <option>
-      Eastern mayhaw
+      Jentik
      </option>
      
       
      <option>
-      European crab apple
+      Keluak
      </option>
      
       
      <option>
-      European wild pear
+      Kokum
      </option>
      
       
      <option>
-      Florentine crabapple
+      Kola nut
      </option>
      
       
      <option>
-      Hall crabapple
+      Kundong
      </option>
      
       
      <option>
-      Hawthorn
+      Lardizabala
      </option>
      
       
      <option>
-      Indian wild pear
+      Lemon drop mangosteen
      </option>
      
       
      <option>
-      Jagua
+      Luóhàn guǒ
      </option>
      
       
      <option>
-      Japanese crab
+      Mangosteen
      </option>
      
       
      <option>
-      Juneberry
+      Menteng
      </option>
      
       
      <option>
-      Kaido crab apple
+      Mountain snowberry
      </option>
      
       
      <option>
-      Kazak pear
+      Mundu
      </option>
      
       
      <option>
-      Khirni
+      Pawpaw
      </option>
      
       
      <option>
-      Korean juneberry
+      Red salak
      </option>
      
       
      <option>
-      Lebanese wild apple
+      Salak
      </option>
      
       
      <option>
-      Loquat
+      Santol
      </option>
      
       
      <option>
-      Lovi-lovi
+      Small-leaved tamarind
      </option>
      
       
      <option>
-      Low juneberry
+      Spanish tamarind
      </option>
      
       
      <option>
-      Low serviceberry
+      Toad tree fruit
      </option>
      
       
      <option>
-      Malus sieversii
+      Trichosanthes beccariana
      </option>
      
       
      <option>
-      Malus × zumi
+      Vanilla
      </option>
      
       
      <option>
-      Manchurian crab apple
-     </option>
-     
-      
-     <option>
-      Manilkara chicle
-     </option>
-     
-      
-     <option>
-      Manilkara elata
-     </option>
-     
-      
-     <option>
-      Manilkara obovata
-     </option>
-     
-      
-     <option>
-      Massaranduba
-     </option>
-     
-      
-     <option>
-      Medlar
-     </option>
-     
-      
-     <option>
-      Mountain serviceberry
-     </option>
-     
-      
-     <option>
-      Nantucket serviceberry
-     </option>
-     
-      
-     <option>
-      Niedzwetzky's apple
-     </option>
-     
-      
-     <option>
-      Nokaidō
-     </option>
-     
-      
-     <option>
-      Oleaster-leafed pear
-     </option>
-     
-      
-     <option>
-      Pacific crabapple
-     </option>
-     
-      
-     <option>
-      Pale serviceberry
-     </option>
-     
-      
-     <option>
-      Pear
-     </option>
-     
-      
-     <option>
-      Pillar apple
-     </option>
-     
-      
-     <option>
-      Plumleaf crab apple
-     </option>
-     
-      
-     <option>
-      Plymouth pear
-     </option>
-     
-      
-     <option>
-      Prairie crabapple
-     </option>
-     
-      
-     <option>
-      Pratt's crabapple
-     </option>
-     
-      
-     <option>
-      Pyrus glabra
-     </option>
-     
-      
-     <option>
-      Pyrus regelii
-     </option>
-     
-      
-     <option>
-      Pyrus xerophila
-     </option>
-     
-      
-     <option>
-      Quince
-     </option>
-     
-      
-     <option>
-      Ramontchi
-     </option>
-     
-      
-     <option>
-      Roundleaf serviceberry
-     </option>
-     
-      
-     <option>
-      Rowan
-     </option>
-     
-      
-     <option>
-      Sapodilla
-     </option>
-     
-      
-     <option>
-      Sargent crabapple
-     </option>
-     
-      
-     <option>
-      Saskatoon
-     </option>
-     
-      
-     <option>
-      Scarlet firethorn
-     </option>
-     
-      
-     <option>
-      Shipova
-     </option>
-     
-      
-     <option>
-      Shrub apple
-     </option>
-     
-      
-     <option>
-      Siberian crab apple
-     </option>
-     
-      
-     <option>
-      Sikkim crabapple
-     </option>
-     
-      
-     <option>
-      Smooth serviceberry
-     </option>
-     
-      
-     <option>
-      Snow pear
-     </option>
-     
-      
-     <option>
-      Snowy mespilus
-     </option>
-     
-      
-     <option>
-      Sorb
-     </option>
-     
-      
-     <option>
-      Southern crabapple
-     </option>
-     
-      
-     <option>
-      Sweet crabapple
-     </option>
-     
-      
-     <option>
-      Syrian pear
-     </option>
-     
-      
-     <option>
-      Taiwan crabapple
-     </option>
-     
-      
-     <option>
-      Toringo crabapple
-     </option>
-     
-      
-     <option>
-      Toyon
-     </option>
-     
-      
-     <option>
-      Ussurian pear
-     </option>
-     
-      
-     <option>
-      Utah serviceberry
-     </option>
-     
-      
-     <option>
-      Wiegand's serviceberry
-     </option>
-     
-      
-     <option>
-      Wild dilly
-     </option>
-     
-      
-     <option>
-      Yunnan crabapple
+      Yantok
      </option>
      
     
@@ -1205,298 +1489,17 @@
  </div>
 </div>
 <div class="example">
- <div id="validation-and-transformation-slot-single-datalist">
-  <div id="validation-and-transformation-slot">
+ <div id="validation-and-transformation-slot-custom-validation">
+  <div id="validation-and-transformation-slot-custom-validation">
    <h3>
-    Validation and Transformation Slot
+    Custom Validation
    </h3>
-   <much-select allow-custom-options="" output-style="datalist">
+   <p>
+    No milk
+   </p>
+   <much-select multi-select="" output-style="datalist">
     <script type="application/json" slot="transformation-validation">
      {
-        "transformers": [
-          {
-            "name": "lowercase"
-          }
-        ],
-        "validators": [
-          {
-            "name": "no-white-space",
-            "level": "error",
-            "message": "Spaces are not allow for custom fruit."
-          },
-          {
-            "name": "minimum-length",
-            "level": "silent",
-            "minimum-length": 3,
-            "message": "The minimum length is 3."
-          }
-        ]
-      }
-    </script>
-    <select slot="select-input">
-      
-    <option>
-     Achacha
-    </option>
-    
-      
-    <option>
-     Ackee
-    </option>
-    
-      
-    <option>
-     Aglaia teysmanniana
-    </option>
-    
-      
-    <option>
-     Asam gelugur
-    </option>
-    
-      
-    <option>
-     Asam kelubi
-    </option>
-    
-      
-    <option>
-     Bacuri
-    </option>
-    
-      
-    <option>
-     Bemange
-    </option>
-    
-      
-    <option>
-     Black apple
-    </option>
-    
-      
-    <option>
-     Blue tongue
-    </option>
-    
-      
-    <option>
-     Boquila
-    </option>
-    
-      
-    <option>
-     Burmese grape
-    </option>
-    
-      
-    <option>
-     Button mangosteen
-    </option>
-    
-      
-    <option>
-     Cacao
-    </option>
-    
-      
-    <option>
-     Charichuelo
-    </option>
-    
-      
-    <option>
-     Chocolate vine fruit
-    </option>
-    
-      
-    <option>
-     Copperleaf snowberry
-    </option>
-    
-      
-    <option>
-     Courbaril
-    </option>
-    
-      
-    <option>
-     Cupuaçu
-    </option>
-    
-      
-    <option>
-     Durian
-    </option>
-    
-      
-    <option>
-     Durio oxleyanus
-    </option>
-    
-      
-    <option>
-     Eastern teaberry
-    </option>
-    
-      
-    <option>
-     Gấc
-    </option>
-    
-      
-    <option>
-     Gamboge
-    </option>
-    
-      
-    <option>
-     Garcinia cambogia
-    </option>
-    
-      
-    <option>
-     Garcinia forbesii
-    </option>
-    
-      
-    <option>
-     Garcinia magnifolia
-    </option>
-    
-      
-    <option>
-     Garcinia pseudoguttifera
-    </option>
-    
-      
-    <option>
-     Jentik
-    </option>
-    
-      
-    <option>
-     Keluak
-    </option>
-    
-      
-    <option>
-     Kokum
-    </option>
-    
-      
-    <option>
-     Kola nut
-    </option>
-    
-      
-    <option>
-     Kundong
-    </option>
-    
-      
-    <option>
-     Lardizabala
-    </option>
-    
-      
-    <option>
-     Lemon drop mangosteen
-    </option>
-    
-      
-    <option>
-     Luóhàn guǒ
-    </option>
-    
-      
-    <option>
-     Mangosteen
-    </option>
-    
-      
-    <option>
-     Menteng
-    </option>
-    
-      
-    <option>
-     Mountain snowberry
-    </option>
-    
-      
-    <option>
-     Mundu
-    </option>
-    
-      
-    <option>
-     Pawpaw
-    </option>
-    
-      
-    <option>
-     Red salak
-    </option>
-    
-      
-    <option>
-     Salak
-    </option>
-    
-      
-    <option>
-     Santol
-    </option>
-    
-      
-    <option>
-     Small-leaved tamarind
-    </option>
-    
-      
-    <option>
-     Spanish tamarind
-    </option>
-    
-      
-    <option>
-     Toad tree fruit
-    </option>
-    
-      
-    <option>
-     Trichosanthes beccariana
-    </option>
-    
-      
-    <option>
-     Vanilla
-    </option>
-    
-      
-    <option>
-     Yantok
-    </option>
-    
-    
-   </select>
-  </much-select>
- </div>
-</div>
-</div>
-<div class="example">
-<div id="validation-and-transformation-slot-custom-validation">
- <div id="validation-and-transformation-slot-custom-validation">
-  <h3>
-   Custom Validation
-  </h3>
-  <p>
-   No milk
-  </p>
-  <much-select multi-select="" output-style="datalist">
-   <script type="application/json" slot="transformation-validation">
-    {
         "transformers": [],
         "validators": [
           {
@@ -1504,49 +1507,49 @@
           }
         ]
       }
-   </script>
-   <script type="application/json" slot="custom-validation-result"></script>
-   <select slot="select-input">
+    </script>
+    <script type="application/json" slot="custom-validation-result"></script>
+    <select slot="select-input">
       
-   <option>
-    African locust bean
-   </option>
-   
-      
-   <option>
-    Bilimbi
-   </option>
-   
-      
-   <option>
-    Carob
-   </option>
-   
-      
-   <option>
-    Ice-cream bean
-   </option>
-   
-      
-   <option>
-    Monkeypod
-   </option>
-   
-      
-   <option>
-    Tamarind
-   </option>
-   
-      
-   <option>
-    Zig-zag vine fruit
-   </option>
-   
+    <option>
+     African locust bean
+    </option>
     
-  </select>
- </much-select>
- <script>
-  const example = document.getElementById(
+      
+    <option>
+     Bilimbi
+    </option>
+    
+      
+    <option>
+     Carob
+    </option>
+    
+      
+    <option>
+     Ice-cream bean
+    </option>
+    
+      
+    <option>
+     Monkeypod
+    </option>
+    
+      
+    <option>
+     Tamarind
+    </option>
+    
+      
+    <option>
+     Zig-zag vine fruit
+    </option>
+    
+    
+   </select>
+  </much-select>
+  <script>
+   const example = document.getElementById(
       "validation-and-transformation-slot-custom-validation"
     );
     const muchSelect = example.querySelector("much-select");
@@ -1572,13 +1575,14 @@
       );
       customValidationResultSlot.innerText = JSON.stringify(result);
     });
- </script>
-</div>
+  </script>
+ </div>
 </div>
 </div>
 </div>
 <footer>
 <script src="/index.js" type="module"></script>
 </footer>
+</div>
 </body>
 </html>

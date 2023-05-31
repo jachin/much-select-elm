@@ -8,158 +8,218 @@
    Much Select: Multi-Select
   </title>
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
-  <script src="/styles.js"></script>
   <link href="/demo-styles.css" rel="stylesheet">
   <title></title>
  </head>
  <body>
-  <header id="header">
-   <div id="site-title">
-    <h1>
-     &lt;much-select&gt;
-    </h1>
-   </div>
-   <div id="page-name">
-    <h2>
-     Multi-Select
-    </h2>
-   </div>
-   <div id="sub-title">
-    <h3>
-     Demo and Development Playground
-    </h3>
-   </div>
-  </header>
-  <div id="nav">
-   <nav class="offsite-nav">
-    <ol>
-     <li class="main-nav-item">
-      <a href="https://github.com/DripEmail/much-select-elm">Github</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="https://www.npmjs.com/package/@getdrip/much-select-elm">NPM</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="https://github.com/DripEmail/much-select-elm/wiki/Related-Projects">Related Projects/Inspiration</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="https://en.wikipedia.org/wiki/Doge_(meme)">Doge (meme)</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="https://elm-lang.org/">Elm</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="https://developer.mozilla.org/en-US/docs/Web/Web_Components">Web Components</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="https://modern-web.dev/">Modern Web</a>
-     </li>
-    </ol>
-   </nav>
-   <nav class="site-nav">
-    <ol>
-     <li class="main-nav-item">
-      <a href="/">Home</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="/attributes">Attributes</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="/initial-value">Initial Value</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="/option-api">Option API</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="/events">Events</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="/empty-options">Empty Options</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="/dropdown-options">Dropdown Options</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="/output-style-datalist">Datalist (output style)</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="/custom-options">Custom Options</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="/slots">Slots</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="/multi-select">Multi Select</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="/selected-value-encoding">Selected Value Encoding</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="/sans-css">Default CSS</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="/transform-and-validate">Transform and Validate</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="/elm-demo">Elm Demo</a>
-     </li>
-    </ol>
-   </nav>
-   <nav>
-    <button id="fun-style">fun</button>
+  <input type="radio" class="theme-switch" id="theme-switch-boring" name="theme-switch">
+<input type="radio" class="theme-switch" id="theme-switch-fun" name="theme-switch">
+  <div id="page-wrapper">
+   <header id="header">
+    <div id="site-title">
+     <h1>
+      &lt;much-select&gt;
+     </h1>
+    </div>
+    <div id="page-name">
+     <h2>
+      Multi-Select
+     </h2>
+    </div>
+    <div id="sub-title">
+     <h3>
+      Demo and Development Playground
+     </h3>
+    </div>
+   </header>
+   <div id="nav">
+    <nav class="offsite-nav">
+     <ol>
+      <li class="main-nav-item">
+       <a href="https://github.com/DripEmail/much-select-elm">Github</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="https://www.npmjs.com/package/@getdrip/much-select-elm">NPM</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="https://github.com/DripEmail/much-select-elm/wiki/Related-Projects">Related Projects/Inspiration</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="https://en.wikipedia.org/wiki/Doge_(meme)">Doge (meme)</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="https://elm-lang.org/">Elm</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="https://developer.mozilla.org/en-US/docs/Web/Web_Components">Web Components</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="https://modern-web.dev/">Modern Web</a>
+      </li>
+     </ol>
+    </nav>
+    <nav class="site-nav">
+     <ol>
+      <li class="main-nav-item">
+       <a href="/">Home</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="/attributes">Attributes</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="/initial-value">Initial Value</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="/option-api">Option API</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="/events">Events</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="/empty-options">Empty Options</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="/dropdown-options">Dropdown Options</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="/output-style-datalist">Datalist (output style)</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="/custom-options">Custom Options</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="/slots">Slots</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="/multi-select">Multi Select</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="/selected-value-encoding">Selected Value Encoding</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="/sans-css">Default CSS</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="/transform-and-validate">Transform and Validate</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="/elm-demo">Elm Demo</a>
+      </li>
+     </ol>
+    </nav>
+    <nav>
+     <button id="fun-style">fun</button>
   <button id="boring-style">boring</button>
-   </nav>
-  </div>
-  <div class="container">
+    </nav>
+    <script src="/styles.js"></script>
+   </div>
+   <div class="container">
+    <div class="example">
+     <div id="multi-select">
+      <div id="simple-multi-select-example">
+       <h3>
+        Multi Select
+       </h3>
+       <p>
+        Choose some programming languages, no need to just pick 1.
+       </p>
+       <much-select multi-select="">
+        <select slot="select-input">
+      
+        <option>
+         Ada
+        </option>
+        
+      
+        <option>
+         ALGOL 68
+        </option>
+        
+      
+        <option>
+         C
+        </option>
+        
+      
+        <option>
+         C++
+        </option>
+        
+      
+        <option>
+         Objective-C
+        </option>
+        
+      
+        <option>
+         C#
+        </option>
+        
+      
+        <option>
+         Java
+        </option>
+        
+      
+        <option>
+         Go
+        </option>
+        
+    
+       </select>
+      </much-select>
+     </div>
+    </div>
+   </div>
    <div class="example">
-    <div id="multi-select">
-     <div id="simple-multi-select-example">
+    <div id="allow-custom-options">
+     <div id="allow-custom-options">
       <h3>
-       Multi Select
+       Custom Options
       </h3>
       <p>
-       Choose some programming languages, no need to just pick 1.
+       With multi select you can also add your own "custom" options with the <code>allow-custom-options=""</code> attribute.
       </p>
-      <much-select multi-select="">
+      <much-select multi-select="" allow-custom-options="">
        <select slot="select-input">
       
        <option>
-        Ada
+        Caveman
        </option>
        
       
        <option>
-        ALGOL 68
+        Bees
        </option>
        
       
        <option>
-        C
+        Cow
        </option>
        
       
        <option>
-        C++
+        Scientist
        </option>
        
       
        <option>
-        Objective-C
+        Angel
        </option>
        
       
        <option>
-        C#
+        Demon
        </option>
        
       
        <option>
-        Java
+        Shark
        </option>
        
       
        <option>
-        Go
+        Cowboy
        </option>
        
     
@@ -169,145 +229,89 @@
    </div>
   </div>
   <div class="example">
-   <div id="allow-custom-options">
-    <div id="allow-custom-options">
+   <div id="multi-select-single-item-removal">
+    <div id="multi-select-single-item-removal">
      <h3>
-      Custom Options
+      Removable Options
      </h3>
      <p>
-      With multi select you can also add your own "custom" options with the <code>allow-custom-options=""</code> attribute.
+      With multi select you can make each selected value individually removable.
      </p>
-     <much-select multi-select="" allow-custom-options="">
+     <button>Toggle the remove selected item buttons</button>
+     <much-select multi-select="" allow-custom-options="" multi-select-single-item-removal="" selected-value="Butterhead,Escarole">
       <select slot="select-input">
       
       <option>
-       Caveman
+       Arugula
       </option>
       
       
       <option>
-       Bees
+       Butterhead
       </option>
       
       
       <option>
-       Cow
+       Coral
       </option>
       
       
       <option>
-       Scientist
+       Cress
       </option>
       
       
       <option>
-       Angel
+       Endive
       </option>
       
       
       <option>
-       Demon
+       Escarole
       </option>
       
       
       <option>
-       Shark
+       Frisée
       </option>
       
       
       <option>
-       Cowboy
+       Mâche
       </option>
       
     
      </select>
     </much-select>
-   </div>
-  </div>
- </div>
- <div class="example">
-  <div id="multi-select-single-item-removal">
-   <div id="multi-select-single-item-removal">
-    <h3>
-     Removable Options
-    </h3>
-    <p>
-     With multi select you can make each selected value individually removable.
-    </p>
-    <button>Toggle the remove selected item buttons</button>
-    <much-select multi-select="" allow-custom-options="" multi-select-single-item-removal="" selected-value="Butterhead,Escarole">
-     <select slot="select-input">
-      
-     <option>
-      Arugula
-     </option>
-     
-      
-     <option>
-      Butterhead
-     </option>
-     
-      
-     <option>
-      Coral
-     </option>
-     
-      
-     <option>
-      Cress
-     </option>
-     
-      
-     <option>
-      Endive
-     </option>
-     
-      
-     <option>
-      Escarole
-     </option>
-     
-      
-     <option>
-      Frisée
-     </option>
-     
-      
-     <option>
-      Mâche
-     </option>
-     
-    
-    </select>
-   </much-select>
-   <script>
-    document
+    <script>
+     document
       .querySelector("#multi-select-single-item-removal button")
       .addEventListener("click", () => {
         document
           .querySelector("#multi-select-single-item-removal much-select")
           .toggleAttribute("multi-select-single-item-removal");
       });
-   </script>
+    </script>
+   </div>
   </div>
  </div>
-</div>
-<div class="example">
- <div id="empty-options-multi-select">
+ <div class="example">
   <div id="empty-options-multi-select">
-   <h3>
-    No Options
-   </h3>
-   <p>
-    What does the dropdown look like if you have no options
-   </p>
-   <much-select multi-select="" allow-custom-options=""></much-select>
+   <div id="empty-options-multi-select">
+    <h3>
+     No Options
+    </h3>
+    <p>
+     What does the dropdown look like if you have no options
+    </p>
+    <much-select multi-select="" allow-custom-options=""></much-select>
+   </div>
   </div>
  </div>
-</div>
 </div>
 <footer>
-<script src="/index.js" type="module"></script>
+ <script src="/index.js" type="module"></script>
 </footer>
+</div>
 </body>
 </html>

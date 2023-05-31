@@ -8,134 +8,195 @@
    Much Select: Home
   </title>
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
-  <script src="/styles.js"></script>
   <link href="/demo-styles.css" rel="stylesheet">
   <title></title>
  </head>
  <body>
-  <header id="header">
-   <div id="site-title">
-    <h1>
-     &lt;much-select&gt;
-    </h1>
-   </div>
-   <div id="page-name">
-    <h2>
-     Home
-    </h2>
-   </div>
-   <div id="sub-title">
-    <h3>
-     Demo and Development Playground
-    </h3>
-   </div>
-  </header>
-  <div id="nav">
-   <nav class="offsite-nav">
-    <ol>
-     <li class="main-nav-item">
-      <a href="https://github.com/DripEmail/much-select-elm">Github</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="https://www.npmjs.com/package/@getdrip/much-select-elm">NPM</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="https://github.com/DripEmail/much-select-elm/wiki/Related-Projects">Related Projects/Inspiration</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="https://en.wikipedia.org/wiki/Doge_(meme)">Doge (meme)</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="https://elm-lang.org/">Elm</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="https://developer.mozilla.org/en-US/docs/Web/Web_Components">Web Components</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="https://modern-web.dev/">Modern Web</a>
-     </li>
-    </ol>
-   </nav>
-   <nav class="site-nav">
-    <ol>
-     <li class="main-nav-item">
-      <a href="/">Home</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="/attributes">Attributes</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="/initial-value">Initial Value</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="/option-api">Option API</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="/events">Events</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="/empty-options">Empty Options</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="/dropdown-options">Dropdown Options</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="/output-style-datalist">Datalist (output style)</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="/custom-options">Custom Options</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="/slots">Slots</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="/multi-select">Multi Select</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="/selected-value-encoding">Selected Value Encoding</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="/sans-css">Default CSS</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="/transform-and-validate">Transform and Validate</a>
-     </li>
-     <li class="main-nav-item">
-      <a href="/elm-demo">Elm Demo</a>
-     </li>
-    </ol>
-   </nav>
-   <nav>
-    <button id="fun-style">fun</button>
+  <input type="radio" class="theme-switch" id="theme-switch-boring" name="theme-switch">
+<input type="radio" class="theme-switch" id="theme-switch-fun" name="theme-switch">
+  <div id="page-wrapper">
+   <header id="header">
+    <div id="site-title">
+     <h1>
+      &lt;much-select&gt;
+     </h1>
+    </div>
+    <div id="page-name">
+     <h2>
+      Home
+     </h2>
+    </div>
+    <div id="sub-title">
+     <h3>
+      Demo and Development Playground
+     </h3>
+    </div>
+   </header>
+   <div id="nav">
+    <nav class="offsite-nav">
+     <ol>
+      <li class="main-nav-item">
+       <a href="https://github.com/DripEmail/much-select-elm">Github</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="https://www.npmjs.com/package/@getdrip/much-select-elm">NPM</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="https://github.com/DripEmail/much-select-elm/wiki/Related-Projects">Related Projects/Inspiration</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="https://en.wikipedia.org/wiki/Doge_(meme)">Doge (meme)</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="https://elm-lang.org/">Elm</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="https://developer.mozilla.org/en-US/docs/Web/Web_Components">Web Components</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="https://modern-web.dev/">Modern Web</a>
+      </li>
+     </ol>
+    </nav>
+    <nav class="site-nav">
+     <ol>
+      <li class="main-nav-item">
+       <a href="/">Home</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="/attributes">Attributes</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="/initial-value">Initial Value</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="/option-api">Option API</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="/events">Events</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="/empty-options">Empty Options</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="/dropdown-options">Dropdown Options</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="/output-style-datalist">Datalist (output style)</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="/custom-options">Custom Options</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="/slots">Slots</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="/multi-select">Multi Select</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="/selected-value-encoding">Selected Value Encoding</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="/sans-css">Default CSS</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="/transform-and-validate">Transform and Validate</a>
+      </li>
+      <li class="main-nav-item">
+       <a href="/elm-demo">Elm Demo</a>
+      </li>
+     </ol>
+    </nav>
+    <nav>
+     <button id="fun-style">fun</button>
   <button id="boring-style">boring</button>
-   </nav>
-  </div>
-  <div class="container">
-   <div class="example">
-    <div id="simple-example">
+    </nav>
+    <script src="/styles.js"></script>
+   </div>
+   <div class="container">
+    <div class="example">
      <div id="simple-example">
+      <div id="simple-example">
+       <h3>
+        Simple Example
+       </h3>
+       <p>
+        Just selecting a single value from a list. If this is all you need to do you should probably just use a
+      <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select"><code>select</code> element</a>.
+       </p>
+       <much-select>
+        <select slot="select-input">
+      
+        <option>
+         Bricks
+        </option>
+        
+      
+        <option>
+         Sticks
+        </option>
+        
+      
+        <option>
+         Straw
+        </option>
+        
+    
+       </select>
+      </much-select>
+     </div>
+    </div>
+    <a href="/simple-example">open example on its own page</a>
+   </div>
+   <div class="example">
+    <div id="multi-select">
+     <div id="simple-multi-select-example">
       <h3>
-       Simple Example
+       Multi Select
       </h3>
       <p>
-       Just selecting a single value from a list. If this is all you need to do you should probably just use a
-      <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select"><code>select</code> element</a>.
+       Choose some programming languages, no need to just pick 1.
       </p>
-      <much-select>
+      <much-select multi-select="">
        <select slot="select-input">
       
        <option>
-        Bricks
+        Ada
        </option>
        
       
        <option>
-        Sticks
+        ALGOL 68
        </option>
        
       
        <option>
-        Straw
+        C
+       </option>
+       
+      
+       <option>
+        C++
+       </option>
+       
+      
+       <option>
+        Objective-C
+       </option>
+       
+      
+       <option>
+        C#
+       </option>
+       
+      
+       <option>
+        Java
+       </option>
+       
+      
+       <option>
+        Go
        </option>
        
     
@@ -143,168 +204,157 @@
      </much-select>
     </div>
    </div>
-   <a href="/simple-example">open example on its own page</a>
+   <a href="/multi-select-example">open example on its own page</a>
   </div>
   <div class="example">
-   <div id="multi-select">
-    <div id="simple-multi-select-example">
+   <div id="option-groups">
+    <div id="option-groups">
      <h3>
-      Multi Select
+      Option Groups
      </h3>
      <p>
-      Choose some programming languages, no need to just pick 1.
+      You can give your options a little more organization by grouping them.
      </p>
-     <much-select multi-select="">
+     <much-select>
       <select slot="select-input">
       
-      <option>
-       Ada
-      </option>
+      <optgroup label="Primary">
+       
+        
+       <option>
+        Red
+       </option>
+       
+        
+       <option>
+        Yellow
+       </option>
+       
+        
+       <option>
+        Blue
+       </option>
+       
+      
+      </optgroup>
       
       
-      <option>
-       ALGOL 68
-      </option>
+      <optgroup label="Secondary">
+       
+        
+       <option>
+        Orange
+       </option>
+       
+        
+       <option>
+        Green
+       </option>
+       
+        
+       <option>
+        Purple
+       </option>
+       
       
-      
-      <option>
-       C
-      </option>
-      
-      
-      <option>
-       C++
-      </option>
-      
-      
-      <option>
-       Objective-C
-      </option>
-      
-      
-      <option>
-       C#
-      </option>
-      
-      
-      <option>
-       Java
-      </option>
-      
-      
-      <option>
-       Go
-      </option>
+      </optgroup>
       
     
      </select>
     </much-select>
    </div>
   </div>
-  <a href="/multi-select-example">open example on its own page</a>
+  <a href="/option-groups">open example on its own page</a>
  </div>
  <div class="example">
-  <div id="option-groups">
-   <div id="option-groups">
+  <div id="options-with-descriptions">
+   <div id="option-descriptions">
     <h3>
-     Option Groups
+     Options with Descriptions
     </h3>
     <p>
-     You can give your options a little more organization by grouping them.
+     Sometimes just a human friendly label for an option isn't enough, and you'd like to add a little extra "color".
+    </p>
+    <p>
+     You can filter your results by typing, <code>&lt;much-select&gt;</code> will also use the descriptions when trying to find the option you want.
     </p>
     <much-select>
      <select slot="select-input">
       
-     <optgroup label="Primary">
-      
-        
-      <option>
-       Red
-      </option>
-      
-        
-      <option>
-       Yellow
-      </option>
-      
-        
-      <option>
-       Blue
-      </option>
-      
-      
-     </optgroup>
+     <option data-description="scarlet, vermilion, ruby, ruby red, ruby-colored, cherry">
+      Red
+     </option>
      
       
-     <optgroup label="Secondary">
+     <option data-description="yellowish, yellowy, lemon, lemony, amber, gold, golden; blond, light brown, fair, flaxen">
+      Yellow
+     </option>
+     
       
-        
-      <option>
-       Orange
-      </option>
+     <option data-description=" sky blue, azure, cobalt (blue), sapphire, cerulean, navy (blue), saxe (blue), Oxford blue, Cambridge blue, ultramarine">
+      Blue
+     </option>
+     
       
-        
-      <option>
-       Green
-      </option>
+     <option data-description="A town in France">
+      Orange
+     </option>
+     
       
-        
-      <option>
-       Purple
-      </option>
+     <option data-description="greenish, viridescent; olive green, pea green, emerald green, lime green, bottle green">
+      Green
+     </option>
+     
       
-      
-     </optgroup>
+     <option data-description="violet">
+      Purple
+     </option>
      
     
     </select>
    </much-select>
   </div>
  </div>
- <a href="/option-groups">open example on its own page</a>
 </div>
 <div class="example">
- <div id="options-with-descriptions">
-  <div id="option-descriptions">
+ <div id="labels-and-values">
+  <div id="labels-and-values">
    <h3>
-    Options with Descriptions
+    Options Label and Values
    </h3>
    <p>
-    Sometimes just a human friendly label for an option isn't enough, and you'd like to add a little extra "color".
-   </p>
-   <p>
-    You can filter your results by typing, <code>&lt;much-select&gt;</code> will also use the descriptions when trying to find the option you want.
+    The labels and values are different
    </p>
    <much-select>
     <select slot="select-input">
       
-    <option data-description="scarlet, vermilion, ruby, ruby red, ruby-colored, cherry">
-     Red
+    <option value="monkey">
+     🐒
     </option>
     
       
-    <option data-description="yellowish, yellowy, lemon, lemony, amber, gold, golden; blond, light brown, fair, flaxen">
-     Yellow
+    <option value="tree">
+     🌳
     </option>
     
       
-    <option data-description=" sky blue, azure, cobalt (blue), sapphire, cerulean, navy (blue), saxe (blue), Oxford blue, Cambridge blue, ultramarine">
-     Blue
+    <option value="panda">
+     🐼
     </option>
     
       
-    <option data-description="A town in France">
-     Orange
+    <option value="ladybug">
+     🐞
     </option>
     
       
-    <option data-description="greenish, viridescent; olive green, pea green, emerald green, lime green, bottle green">
-     Green
+    <option value="butterfly">
+     🦋
     </option>
     
       
-    <option data-description="violet">
-     Purple
+    <option value="rabbit">
+     🐇
     </option>
     
     
@@ -314,44 +364,44 @@
 </div>
 </div>
 <div class="example">
-<div id="labels-and-values">
- <div id="labels-and-values">
+<div id="selected-value">
+ <div id="selected-value-attribute">
   <h3>
-   Options Label and Values
+   An initial value
   </h3>
   <p>
-   The labels and values are different
+   Set using the <code>selected</code> attribute on the <code>&lt;much-select&gt;</code>
   </p>
-  <much-select>
+  <much-select selected-value="Blue">
    <select slot="select-input">
       
-   <option value="monkey">
-    🐒
+   <option data-description="scarlet, vermilion, ruby, ruby red, ruby-colored, cherry">
+    Red
    </option>
    
       
-   <option value="tree">
-    🌳
+   <option data-description="yellowish, yellowy, lemon, lemony, amber, gold, golden; blond, light brown, fair, flaxen">
+    Yellow
    </option>
    
       
-   <option value="panda">
-    🐼
+   <option data-description=" sky blue, azure, cobalt (blue), sapphire, cerulean, navy (blue), saxe (blue), Oxford blue, Cambridge blue, ultramarine">
+    Blue
    </option>
    
       
-   <option value="ladybug">
-    🐞
+   <option data-description="A town in France">
+    Orange
    </option>
    
       
-   <option value="butterfly">
-    🦋
+   <option data-description="greenish, viridescent; olive green, pea green, emerald green, lime green, bottle green">
+    Green
    </option>
    
       
-   <option value="rabbit">
-    🐇
+   <option data-description="violet">
+    Purple
    </option>
    
     
@@ -361,15 +411,12 @@
 </div>
 </div>
 <div class="example">
-<div id="selected-value">
-<div id="selected-value-attribute">
+<div id="placeholder">
+<div id="placeholder-attribute">
  <h3>
-  An initial value
+  A Placeholder
  </h3>
- <p>
-  Set using the <code>selected</code> attribute on the <code>&lt;much-select&gt;</code>
- </p>
- <much-select selected-value="Blue">
+ <much-select placeholder="What is your favorite color?">
   <select slot="select-input">
       
   <option data-description="scarlet, vermilion, ruby, ruby red, ruby-colored, cherry">
@@ -408,40 +455,43 @@
 </div>
 </div>
 <div class="example">
-<div id="placeholder">
-<div id="placeholder-attribute">
+<div id="disabled-much-select">
+<div id="disabled-attribute">
 <h3>
- A Placeholder
+ Disabled
 </h3>
-<much-select placeholder="What is your favorite color?">
+<p>
+ Disable the <code>&lt;much-select&gt;</code> with the <code>disabled</code> attribute.
+</p>
+<much-select disabled="disabled" output-style="datalist" multi-select="" selected-value="Red,Yellow">
  <select slot="select-input">
       
- <option data-description="scarlet, vermilion, ruby, ruby red, ruby-colored, cherry">
+ <option>
   Red
  </option>
  
       
- <option data-description="yellowish, yellowy, lemon, lemony, amber, gold, golden; blond, light brown, fair, flaxen">
+ <option>
   Yellow
  </option>
  
       
- <option data-description=" sky blue, azure, cobalt (blue), sapphire, cerulean, navy (blue), saxe (blue), Oxford blue, Cambridge blue, ultramarine">
+ <option>
   Blue
  </option>
  
       
- <option data-description="A town in France">
+ <option>
   Orange
  </option>
  
       
- <option data-description="greenish, viridescent; olive green, pea green, emerald green, lime green, bottle green">
+ <option>
   Green
  </option>
  
       
- <option data-description="violet">
+ <option>
   Purple
  </option>
  
@@ -452,15 +502,15 @@
 </div>
 </div>
 <div class="example">
-<div id="disabled-much-select">
-<div id="disabled-attribute">
+<div id="loading-indicator">
+<div id="loading-indicator">
 <h3>
-Disabled
+Loading
 </h3>
 <p>
-Disable the <code>&lt;much-select&gt;</code> with the <code>disabled</code> attribute.
+Show and hide the loading indicator with the <code>loading=""</code> attribute.
 </p>
-<much-select disabled="disabled" output-style="datalist" multi-select="" selected-value="Red,Yellow">
+<much-select loading="loading">
 <select slot="select-input">
       
 <option>
@@ -490,53 +540,6 @@ Disable the <code>&lt;much-select&gt;</code> with the <code>disabled</code> attr
       
 <option>
  Purple
-</option>
-
-    
-</select>
-</much-select>
-</div>
-</div>
-</div>
-<div class="example">
-<div id="loading-indicator">
-<div id="loading-indicator">
-<h3>
-Loading
-</h3>
-<p>
-Show and hide the loading indicator with the <code>loading=""</code> attribute.
-</p>
-<much-select loading="loading">
-<select slot="select-input">
-      
-<option>
-Red
-</option>
-
-      
-<option>
-Yellow
-</option>
-
-      
-<option>
-Blue
-</option>
-
-      
-<option>
-Orange
-</option>
-
-      
-<option>
-Green
-</option>
-
-      
-<option>
-Purple
 </option>
 
     
@@ -877,5 +880,6 @@ Purple
 <footer>
 <script src="/index.js" type="module"></script>
 </footer>
+</div>
 </body>
 </html>
