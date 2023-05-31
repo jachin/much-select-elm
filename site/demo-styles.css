@@ -53,7 +53,10 @@ body {
     --much-select-height: 36px;
 }
 
-body,
+body.loading {
+    display: none;
+}
+
 body.boring {
     --header-font: "Andale Mono", sans-serif;
     --body-font: "Times New Roman", serif;

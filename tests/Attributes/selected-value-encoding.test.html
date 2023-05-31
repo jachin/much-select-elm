@@ -73,6 +73,23 @@
           expect(await el.selectedValue).to.eql(["ho", "hum"]);
         });
 
+        it("should support an empty string with a json selected value encoding", async () => {
+          const el = /** @type {MuchSelect} */ await fixture(
+            html`<much-select
+              multi-select
+              selected-value=""
+              selected-value-encoding="json"
+            ></much-select>`
+          );
+
+          el.errorHandler = (error) => {
+            throw error;
+          };
+
+          expect(await el.rawSelectedValue).to.equal("%5B%5D");
+          expect(await el.selectedValue).to.eql([]);
+        });
+
         describe("with json should support values that include commas", () => {
           it("in multi select mode", async () => {
             const el = /** @type {MuchSelect} */ await fixture(

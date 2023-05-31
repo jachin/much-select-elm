@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const themes = ["fun", "boring"];
+  const themes = ["loading", "fun", "boring"];
 
   const setTheme = (newTheme) => {
     const body = document.querySelector("body");
