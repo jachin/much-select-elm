@@ -8,40 +8,44 @@
 </head>
 <body>
 
-<header id="header">
-  <div id="site-title">
-    <h1>&lt;much-select&gt;</h1>
-  </div>
-  <div id="page-name">
-    <h2>Elm Demo</h2>
-  </div>
-  <div id="sub-title">
-    <h3>Demo and Development Playground</h3>
-  </div>
-</header>
+<input type="radio" class="theme-switch" id="theme-switch-boring" name="theme-switch">
+<input type="radio" class="theme-switch" id="theme-switch-fun" name="theme-switch">
 
-<div id="nav"></div>
+<div id="page-wrapper">
+  <header id="header">
+    <div id="site-title">
+      <h1>&lt;much-select&gt;</h1>
+    </div>
+    <div id="page-name">
+      <h2>Elm Demo</h2>
+    </div>
+    <div id="sub-title">
+      <h3>Demo and Development Playground</h3>
+    </div>
+  </header>
 
-<div class="container">
-  <div class="example">
-    <div id="elm-demo"></div>
+  <div id="nav"></div>
+
+  <div class="container">
+    <div class="example">
+      <div id="elm-demo"></div>
+    </div>
   </div>
+
+  <script src="/elm-demo.js"></script>
+
+  <script>
+    const demoDiv = document.getElementById("elm-demo");
+
+    // noinspection JSUnresolvedVariable
+    // eslint-disable-next-line no-undef
+    window.Elm.Demo.init({
+      flags: {},
+      node: demoDiv,
+    });
+  </script>
+
+  <footer></footer>
 </div>
-
-<script src="/elm-demo.js"></script>
-
-<script>
-  const demoDiv = document.getElementById("elm-demo");
-
-  // noinspection JSUnresolvedVariable
-  // eslint-disable-next-line no-undef
-  window.Elm.Demo.init({
-    flags: {},
-    node: demoDiv,
-  });
-</script>
-
-<footer></footer>
-
 </body>
 </html>

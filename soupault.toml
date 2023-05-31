@@ -106,10 +106,13 @@
   parse = true
   exclude_page = "sans-css.html"
 
+# Insert this javascript as soon as all the elements it needs are avalible.
+# In this case that means the buttons for changing the theme and the invisible
+# radio buttons that drive the themes.
 [widgets.styles-script]
   widget = "insert_html"
   html = '<script src="/styles.js"></script>'
-  selector = "head"
+  selector = "#nav"
   parse = true
   exclude_page = "sans-css.html"
 
@@ -129,6 +132,12 @@
   widget = "include"
   file = "templates/nav.html"
   selector = "#nav"
+
+[widgets.theme-radio-buttons]
+widget = "include"
+file = "templates/theme-radio-buttons.html"
+selector = "#theme-radio-buttons"
+action = "replace_element"
 
 [widgets.add-and-remove-button-slots]
 widget = "include"

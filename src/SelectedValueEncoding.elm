@@ -64,6 +64,9 @@ stringToValueStrings selectedValueEncoding valuesString =
     if valuesString == "" && selectedValueEncoding == CommaSeperated then
         Ok []
 
+    else if valuesString == "" && selectedValueEncoding == JsonEncoded then
+        Ok []
+
     else
         case selectedValueEncoding of
             CommaSeperated ->
