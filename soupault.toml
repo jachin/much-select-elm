@@ -106,10 +106,13 @@
   parse = true
   exclude_page = "sans-css.html"
 
+# Insert this javascript as soon as all the elements it needs are avalible.
+# In this case that means the buttons for changing the theme and the invisible
+# radio buttons that drive the themes.
 [widgets.styles-script]
   widget = "insert_html"
   html = '<script src="/styles.js"></script>'
-  selector = "head"
+  selector = "#nav"
   parse = true
   exclude_page = "sans-css.html"
 
