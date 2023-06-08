@@ -23,8 +23,8 @@ type RightSlot
     | ShowAddAndRemoveButtons
 
 
-updateRightSlotWhenOptionsChange : RightSlot -> OutputStyle -> SelectionMode -> List Option -> RightSlot
-updateRightSlotWhenOptionsChange current outputStyle selectionMode selectedOptions =
+updateRightSlot : RightSlot -> OutputStyle -> SelectionMode -> List Option -> RightSlot
+updateRightSlot current outputStyle selectionMode selectedOptions =
     let
         hasSelectedOption =
             not (List.isEmpty selectedOptions)

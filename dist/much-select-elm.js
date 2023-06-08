@@ -8538,7 +8538,7 @@ var $author$project$MuchSelect$makeEffectsWhenValuesChanges = F4(
 			_List_fromArray(
 				[valueChangeCmd, customOptionCmd, clearCmd, customValidationCmd, lightDomChangeEffect]));
 	});
-var $author$project$RightSlot$updateRightSlotWhenOptionsChange = F4(
+var $author$project$RightSlot$updateRightSlot = F4(
 	function (current, outputStyle, selectionMode, selectedOptions) {
 		var hasSelectedOption = !$elm$core$List$isEmpty(selectedOptions);
 		if (!outputStyle) {
@@ -8631,7 +8631,7 @@ var $author$project$MuchSelect$clearAllSelectedOption = function (model) {
 			{
 				b: $author$project$OptionsUtilities$deselectAllOptionsInOptionsList(newOptions),
 				d: A4(
-					$author$project$RightSlot$updateRightSlotWhenOptionsChange,
+					$author$project$RightSlot$updateRightSlot,
 					model.d,
 					$author$project$SelectionMode$getOutputStyle(model.a),
 					$author$project$SelectionMode$getSelectionMode(model.a),
@@ -9271,7 +9271,7 @@ var $author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWithSea
 			{
 				b: A3($author$project$OptionSearcher$updateOrAddCustomOption, searchString, selectionConfig, options),
 				d: A4(
-					$author$project$RightSlot$updateRightSlotWhenOptionsChange,
+					$author$project$RightSlot$updateRightSlot,
 					rightSlot,
 					$author$project$SelectionMode$getOutputStyle(selectionConfig),
 					$author$project$SelectionMode$getSelectionMode(selectionConfig),
@@ -11548,7 +11548,7 @@ var $author$project$MuchSelect$updatePartOfTheModelWithChangesThatEffectTheOptio
 			model,
 			{
 				d: A4(
-					$author$project$RightSlot$updateRightSlotWhenOptionsChange,
+					$author$project$RightSlot$updateRightSlot,
 					rightSlot,
 					$author$project$SelectionMode$getOutputStyle(selectionMode),
 					$author$project$SelectionMode$getSelectionMode(selectionMode),
@@ -11899,7 +11899,7 @@ var $author$project$MuchSelect$update = F2(
 								{
 									b: updatedOptions,
 									d: A4(
-										$author$project$RightSlot$updateRightSlotWhenOptionsChange,
+										$author$project$RightSlot$updateRightSlot,
 										model.d,
 										$author$project$SelectionMode$getOutputStyle(model.a),
 										$author$project$SelectionMode$getSelectionMode(model.a),
@@ -11931,7 +11931,7 @@ var $author$project$MuchSelect$update = F2(
 								{
 									b: updatedOptions,
 									d: A4(
-										$author$project$RightSlot$updateRightSlotWhenOptionsChange,
+										$author$project$RightSlot$updateRightSlot,
 										model.d,
 										$author$project$SelectionMode$getOutputStyle(model.a),
 										$author$project$SelectionMode$getSelectionMode(model.a),
@@ -11961,7 +11961,7 @@ var $author$project$MuchSelect$update = F2(
 								{
 									b: updatedOptions,
 									d: A4(
-										$author$project$RightSlot$updateRightSlotWhenOptionsChange,
+										$author$project$RightSlot$updateRightSlot,
 										model.d,
 										$author$project$SelectionMode$getOutputStyle(model.a),
 										$author$project$SelectionMode$getSelectionMode(model.a),
@@ -12070,7 +12070,7 @@ var $author$project$MuchSelect$update = F2(
 											$author$project$SelectionMode$getSearchStringMinimumLength(model.a),
 											newOptionWithOldSelectedOption),
 										d: A4(
-											$author$project$RightSlot$updateRightSlotWhenOptionsChange,
+											$author$project$RightSlot$updateRightSlot,
 											model.d,
 											$author$project$SelectionMode$getOutputStyle(model.a),
 											$author$project$SelectionMode$getSelectionMode(model.a),
@@ -12098,7 +12098,7 @@ var $author$project$MuchSelect$update = F2(
 									{
 										b: newOptionWithOldSelectedOption,
 										d: A4(
-											$author$project$RightSlot$updateRightSlotWhenOptionsChange,
+											$author$project$RightSlot$updateRightSlot,
 											model.d,
 											$author$project$SelectionMode$getOutputStyle(model.a),
 											$author$project$SelectionMode$getSelectionMode(model.a),
@@ -12399,7 +12399,7 @@ var $author$project$MuchSelect$update = F2(
 							model,
 							{
 								d: A4(
-									$author$project$RightSlot$updateRightSlotWhenOptionsChange,
+									$author$project$RightSlot$updateRightSlot,
 									model.d,
 									$author$project$SelectionMode$getOutputStyle(newSelectionConfig),
 									$author$project$SelectionMode$getSelectionMode(newSelectionConfig),
@@ -12614,7 +12614,7 @@ var $author$project$MuchSelect$update = F2(
 							bl: indexWhereToAdd + 1,
 							b: updatedOptions,
 							d: A4(
-								$author$project$RightSlot$updateRightSlotWhenOptionsChange,
+								$author$project$RightSlot$updateRightSlot,
 								model.d,
 								$author$project$SelectionMode$getOutputStyle(model.a),
 								$author$project$SelectionMode$getSelectionMode(model.a),
@@ -12636,7 +12636,7 @@ var $author$project$MuchSelect$update = F2(
 						{
 							b: updatedOptions,
 							d: A4(
-								$author$project$RightSlot$updateRightSlotWhenOptionsChange,
+								$author$project$RightSlot$updateRightSlot,
 								model.d,
 								$author$project$SelectionMode$getOutputStyle(model.a),
 								$author$project$SelectionMode$getSelectionMode(model.a),
@@ -12709,7 +12709,7 @@ var $author$project$MuchSelect$update = F2(
 									{
 										b: updatedOptions,
 										d: A4(
-											$author$project$RightSlot$updateRightSlotWhenOptionsChange,
+											$author$project$RightSlot$updateRightSlot,
 											model.d,
 											$author$project$SelectionMode$getOutputStyle(model.a),
 											$author$project$SelectionMode$getSelectionMode(model.a),
@@ -12738,7 +12738,7 @@ var $author$project$MuchSelect$update = F2(
 									{
 										b: updatedOptions,
 										d: A4(
-											$author$project$RightSlot$updateRightSlotWhenOptionsChange,
+											$author$project$RightSlot$updateRightSlot,
 											model.d,
 											$author$project$SelectionMode$getOutputStyle(model.a),
 											$author$project$SelectionMode$getSelectionMode(model.a),
@@ -12934,7 +12934,7 @@ var $author$project$MuchSelect$update = F2(
 									model,
 									{
 										d: A4(
-											$author$project$RightSlot$updateRightSlotWhenOptionsChange,
+											$author$project$RightSlot$updateRightSlot,
 											model.d,
 											$author$project$SelectionMode$getOutputStyle(newSelectionConfig),
 											$author$project$SelectionMode$getSelectionMode(newSelectionConfig),
@@ -13176,7 +13176,7 @@ var $author$project$MuchSelect$update = F2(
 								model,
 								{
 									d: A4(
-										$author$project$RightSlot$updateRightSlotWhenOptionsChange,
+										$author$project$RightSlot$updateRightSlot,
 										model.d,
 										$author$project$SelectionMode$getOutputStyle(newSelectionConfig),
 										$author$project$SelectionMode$getSelectionMode(newSelectionConfig),

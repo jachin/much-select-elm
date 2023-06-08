@@ -163,10 +163,10 @@ import RightSlot
         ( FocusTransition(..)
         , RightSlot(..)
         , isRightSlotTransitioning
+        , updateRightSlot
         , updateRightSlotForDatalist
         , updateRightSlotLoading
         , updateRightSlotTransitioning
-        , updateRightSlotWhenOptionsChange
         )
 import SearchString exposing (SearchString)
 import SelectedValueEncoding exposing (SelectedValueEncoding)
@@ -559,7 +559,7 @@ update msg model =
                     ( { model
                         | options = updatedOptions
                         , rightSlot =
-                            updateRightSlotWhenOptionsChange
+                            updateRightSlot
                                 model.rightSlot
                                 (model.selectionConfig |> SelectionMode.getOutputStyle)
                                 (model.selectionConfig |> SelectionMode.getSelectionMode)
@@ -587,7 +587,7 @@ update msg model =
                     ( { model
                         | options = updatedOptions
                         , rightSlot =
-                            updateRightSlotWhenOptionsChange
+                            updateRightSlot
                                 model.rightSlot
                                 (model.selectionConfig |> SelectionMode.getOutputStyle)
                                 (model.selectionConfig |> SelectionMode.getSelectionMode)
@@ -614,7 +614,7 @@ update msg model =
                     ( { model
                         | options = updatedOptions
                         , rightSlot =
-                            updateRightSlotWhenOptionsChange
+                            updateRightSlot
                                 model.rightSlot
                                 (model.selectionConfig |> SelectionMode.getOutputStyle)
                                 (model.selectionConfig |> SelectionMode.getSelectionMode)
@@ -710,7 +710,7 @@ update msg model =
                                             model.searchString
                                             (SelectionMode.getSearchStringMinimumLength model.selectionConfig)
                                 , rightSlot =
-                                    updateRightSlotWhenOptionsChange
+                                    updateRightSlot
                                         model.rightSlot
                                         (model.selectionConfig |> SelectionMode.getOutputStyle)
                                         (model.selectionConfig |> SelectionMode.getSelectionMode)
@@ -740,7 +740,7 @@ update msg model =
                             ( { model
                                 | options = newOptionWithOldSelectedOption
                                 , rightSlot =
-                                    updateRightSlotWhenOptionsChange
+                                    updateRightSlot
                                         model.rightSlot
                                         (model.selectionConfig |> SelectionMode.getOutputStyle)
                                         (model.selectionConfig |> SelectionMode.getSelectionMode)
@@ -987,7 +987,7 @@ update msg model =
                     ( { model
                         | selectionConfig = newSelectionConfig
                         , rightSlot =
-                            updateRightSlotWhenOptionsChange
+                            updateRightSlot
                                 model.rightSlot
                                 (newSelectionConfig |> SelectionMode.getOutputStyle)
                                 (newSelectionConfig |> SelectionMode.getSelectionMode)
@@ -1227,7 +1227,7 @@ update msg model =
                 | focusedIndex = indexWhereToAdd + 1
                 , options = updatedOptions
                 , rightSlot =
-                    updateRightSlotWhenOptionsChange
+                    updateRightSlot
                         model.rightSlot
                         (model.selectionConfig |> SelectionMode.getOutputStyle)
                         (model.selectionConfig |> SelectionMode.getSelectionMode)
@@ -1248,7 +1248,7 @@ update msg model =
             ( { model
                 | options = updatedOptions
                 , rightSlot =
-                    updateRightSlotWhenOptionsChange
+                    updateRightSlot
                         model.rightSlot
                         (model.selectionConfig |> SelectionMode.getOutputStyle)
                         (model.selectionConfig |> SelectionMode.getSelectionMode)
@@ -1313,7 +1313,7 @@ update msg model =
                             ( { model
                                 | options = updatedOptions
                                 , rightSlot =
-                                    updateRightSlotWhenOptionsChange
+                                    updateRightSlot
                                         model.rightSlot
                                         (model.selectionConfig |> SelectionMode.getOutputStyle)
                                         (model.selectionConfig |> SelectionMode.getSelectionMode)
@@ -1338,7 +1338,7 @@ update msg model =
                             ( { model
                                 | options = updatedOptions
                                 , rightSlot =
-                                    updateRightSlotWhenOptionsChange
+                                    updateRightSlot
                                         model.rightSlot
                                         (model.selectionConfig |> SelectionMode.getOutputStyle)
                                         (model.selectionConfig |> SelectionMode.getSelectionMode)
@@ -1513,7 +1513,7 @@ update msg model =
                             ( { model
                                 | selectionConfig = newSelectionConfig
                                 , rightSlot =
-                                    updateRightSlotWhenOptionsChange
+                                    updateRightSlot
                                         model.rightSlot
                                         (newSelectionConfig |> SelectionMode.getOutputStyle)
                                         (newSelectionConfig |> SelectionMode.getSelectionMode)
@@ -1746,7 +1746,7 @@ update msg model =
                     ( { model
                         | selectionConfig = newSelectionConfig
                         , rightSlot =
-                            updateRightSlotWhenOptionsChange
+                            updateRightSlot
                                 model.rightSlot
                                 (newSelectionConfig |> SelectionMode.getOutputStyle)
                                 (newSelectionConfig |> SelectionMode.getSelectionMode)
@@ -1996,7 +1996,7 @@ clearAllSelectedOption model =
     ( { model
         | options = deselectAllOptionsInOptionsList newOptions
         , rightSlot =
-            updateRightSlotWhenOptionsChange
+            updateRightSlot
                 model.rightSlot
                 (model.selectionConfig |> SelectionMode.getOutputStyle)
                 (model.selectionConfig |> SelectionMode.getSelectionMode)
@@ -2044,7 +2044,7 @@ updateModelWithChangesThatEffectTheOptionsWithSearchString rightSlot selectionCo
     { model
         | options = updateOrAddCustomOption searchString selectionConfig options
         , rightSlot =
-            updateRightSlotWhenOptionsChange
+            updateRightSlot
                 rightSlot
                 (selectionConfig |> SelectionMode.getOutputStyle)
                 (selectionConfig |> SelectionMode.getSelectionMode)
@@ -2061,7 +2061,7 @@ updatePartOfTheModelWithChangesThatEffectTheOptionsWhenTheMouseMoves :
 updatePartOfTheModelWithChangesThatEffectTheOptionsWhenTheMouseMoves rightSlot selectionMode options model =
     { model
         | rightSlot =
-            updateRightSlotWhenOptionsChange
+            updateRightSlot
                 rightSlot
                 (selectionMode |> SelectionMode.getOutputStyle)
                 (selectionMode |> SelectionMode.getSelectionMode)
