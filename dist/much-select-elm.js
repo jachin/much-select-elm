@@ -8538,33 +8538,84 @@ var $author$project$MuchSelect$makeEffectsWhenValuesChanges = F4(
 			_List_fromArray(
 				[valueChangeCmd, customOptionCmd, clearCmd, customValidationCmd, lightDomChangeEffect]));
 	});
-var $author$project$RightSlot$updateRightSlot = F4(
-	function (current, selectionMode, hasSelectedOption, selectedOptions) {
-		var _v0 = $author$project$SelectionMode$getOutputStyle(selectionMode);
-		if (!_v0) {
-			switch (current.$) {
-				case 0:
-					if (!selectionMode.$) {
+var $author$project$RightSlot$updateRightSlotWhenOptionsChange = F4(
+	function (current, outputStyle, selectionMode, selectedOptions) {
+		var hasSelectedOption = !$elm$core$List$isEmpty(selectedOptions);
+		if (!outputStyle) {
+			if (!selectionMode) {
+				switch (current.$) {
+					case 0:
 						return $author$project$RightSlot$ShowDropdownIndicator(1);
-					} else {
-						return hasSelectedOption ? $author$project$RightSlot$ShowClearButton : $author$project$RightSlot$ShowDropdownIndicator(1);
-					}
-				case 1:
-					return $author$project$RightSlot$ShowLoadingIndicator;
-				case 2:
-					var transitioning = current.a;
-					if (!selectionMode.$) {
+					case 1:
+						return $author$project$RightSlot$ShowLoadingIndicator;
+					case 2:
+						var transitioning = current.a;
 						return $author$project$RightSlot$ShowDropdownIndicator(transitioning);
-					} else {
-						return hasSelectedOption ? $author$project$RightSlot$ShowClearButton : $author$project$RightSlot$ShowDropdownIndicator(transitioning);
-					}
-				case 3:
-					return hasSelectedOption ? $author$project$RightSlot$ShowClearButton : $author$project$RightSlot$ShowDropdownIndicator(1);
-				default:
-					return $author$project$RightSlot$ShowDropdownIndicator(1);
+					case 3:
+						return $author$project$RightSlot$ShowDropdownIndicator(1);
+					case 4:
+						return $author$project$RightSlot$ShowDropdownIndicator(1);
+					default:
+						return $author$project$RightSlot$ShowDropdownIndicator(1);
+				}
+			} else {
+				switch (current.$) {
+					case 0:
+						return hasSelectedOption ? $author$project$RightSlot$ShowClearButton : $author$project$RightSlot$ShowDropdownIndicator(1);
+					case 1:
+						return $author$project$RightSlot$ShowLoadingIndicator;
+					case 2:
+						var focusTransition = current.a;
+						return hasSelectedOption ? $author$project$RightSlot$ShowClearButton : $author$project$RightSlot$ShowDropdownIndicator(focusTransition);
+					case 3:
+						return hasSelectedOption ? $author$project$RightSlot$ShowClearButton : $author$project$RightSlot$ShowDropdownIndicator(1);
+					case 4:
+						return $author$project$RightSlot$ShowDropdownIndicator(1);
+					default:
+						return $author$project$RightSlot$ShowDropdownIndicator(1);
+				}
 			}
 		} else {
-			return $author$project$RightSlot$updateRightSlotForDatalist(selectedOptions);
+			if (!selectionMode) {
+				switch (current.$) {
+					case 0:
+						return $author$project$RightSlot$ShowNothing;
+					case 1:
+						return $author$project$RightSlot$ShowLoadingIndicator;
+					case 2:
+						return $author$project$RightSlot$ShowNothing;
+					case 3:
+						return $author$project$RightSlot$ShowNothing;
+					case 4:
+						return $author$project$RightSlot$ShowNothing;
+					default:
+						return $author$project$RightSlot$ShowNothing;
+				}
+			} else {
+				var showRemoveButtons = $elm$core$List$length(selectedOptions) > 1;
+				var showAddButtons = A2(
+					$elm$core$List$any,
+					function (option) {
+						return !$author$project$OptionValue$isEmpty(
+							$author$project$Option$getOptionValue(option));
+					},
+					selectedOptions);
+				var addAndRemoveButtonState = (showAddButtons && (!showRemoveButtons)) ? $author$project$RightSlot$ShowAddButton : ((showAddButtons && showRemoveButtons) ? $author$project$RightSlot$ShowAddAndRemoveButtons : $author$project$RightSlot$ShowNothing);
+				switch (current.$) {
+					case 0:
+						return addAndRemoveButtonState;
+					case 1:
+						return $author$project$RightSlot$ShowLoadingIndicator;
+					case 2:
+						return addAndRemoveButtonState;
+					case 3:
+						return addAndRemoveButtonState;
+					case 4:
+						return addAndRemoveButtonState;
+					default:
+						return addAndRemoveButtonState;
+				}
+			}
 		}
 	});
 var $author$project$MuchSelect$clearAllSelectedOption = function (model) {
@@ -8579,7 +8630,12 @@ var $author$project$MuchSelect$clearAllSelectedOption = function (model) {
 			model,
 			{
 				b: $author$project$OptionsUtilities$deselectAllOptionsInOptionsList(newOptions),
-				d: A4($author$project$RightSlot$updateRightSlot, model.d, model.a, false, _List_Nil),
+				d: A4(
+					$author$project$RightSlot$updateRightSlotWhenOptionsChange,
+					model.d,
+					$author$project$SelectionMode$getOutputStyle(model.a),
+					$author$project$SelectionMode$getSelectionMode(model.a),
+					_List_Nil),
 				g: $author$project$SearchString$reset
 			}),
 		$author$project$MuchSelect$batch(
@@ -9215,10 +9271,10 @@ var $author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWithSea
 			{
 				b: A3($author$project$OptionSearcher$updateOrAddCustomOption, searchString, selectionConfig, options),
 				d: A4(
-					$author$project$RightSlot$updateRightSlot,
+					$author$project$RightSlot$updateRightSlotWhenOptionsChange,
 					rightSlot,
-					selectionConfig,
-					$author$project$OptionsUtilities$hasSelectedOption(options),
+					$author$project$SelectionMode$getOutputStyle(selectionConfig),
+					$author$project$SelectionMode$getSelectionMode(selectionConfig),
 					$author$project$OptionsUtilities$selectedOptions(options))
 			});
 	});
@@ -11492,10 +11548,10 @@ var $author$project$MuchSelect$updatePartOfTheModelWithChangesThatEffectTheOptio
 			model,
 			{
 				d: A4(
-					$author$project$RightSlot$updateRightSlot,
+					$author$project$RightSlot$updateRightSlotWhenOptionsChange,
 					rightSlot,
-					selectionMode,
-					$author$project$OptionsUtilities$hasSelectedOption(options),
+					$author$project$SelectionMode$getOutputStyle(selectionMode),
+					$author$project$SelectionMode$getSelectionMode(selectionMode),
 					$author$project$OptionsUtilities$selectedOptions(options))
 			});
 	});
@@ -11843,10 +11899,10 @@ var $author$project$MuchSelect$update = F2(
 								{
 									b: updatedOptions,
 									d: A4(
-										$author$project$RightSlot$updateRightSlot,
+										$author$project$RightSlot$updateRightSlotWhenOptionsChange,
 										model.d,
-										model.a,
-										true,
+										$author$project$SelectionMode$getOutputStyle(model.a),
+										$author$project$SelectionMode$getSelectionMode(model.a),
 										$author$project$OptionsUtilities$selectedOptions(updatedOptions))
 								}),
 							$author$project$MuchSelect$batch(
@@ -11875,10 +11931,10 @@ var $author$project$MuchSelect$update = F2(
 								{
 									b: updatedOptions,
 									d: A4(
-										$author$project$RightSlot$updateRightSlot,
+										$author$project$RightSlot$updateRightSlotWhenOptionsChange,
 										model.d,
-										model.a,
-										true,
+										$author$project$SelectionMode$getOutputStyle(model.a),
+										$author$project$SelectionMode$getSelectionMode(model.a),
 										$author$project$OptionsUtilities$selectedOptions(updatedOptions))
 								}),
 							$author$project$MuchSelect$batch(
@@ -11905,10 +11961,10 @@ var $author$project$MuchSelect$update = F2(
 								{
 									b: updatedOptions,
 									d: A4(
-										$author$project$RightSlot$updateRightSlot,
+										$author$project$RightSlot$updateRightSlotWhenOptionsChange,
 										model.d,
-										model.a,
-										true,
+										$author$project$SelectionMode$getOutputStyle(model.a),
+										$author$project$SelectionMode$getSelectionMode(model.a),
 										$author$project$OptionsUtilities$selectedOptions(updatedOptions))
 								}),
 							$author$project$MuchSelect$batch(
@@ -12014,11 +12070,11 @@ var $author$project$MuchSelect$update = F2(
 											$author$project$SelectionMode$getSearchStringMinimumLength(model.a),
 											newOptionWithOldSelectedOption),
 										d: A4(
-											$author$project$RightSlot$updateRightSlot,
+											$author$project$RightSlot$updateRightSlotWhenOptionsChange,
 											model.d,
-											model.a,
-											$author$project$OptionsUtilities$hasSelectedOption(newOptionWithOldSelectedOption),
-											model.b),
+											$author$project$SelectionMode$getOutputStyle(model.a),
+											$author$project$SelectionMode$getSelectionMode(model.a),
+											$author$project$OptionsUtilities$selectedOptions(newOptionWithOldSelectedOption)),
 										u: $grotsev$elm_debouncer$Bounce$push(model.u)
 									})),
 							$author$project$MuchSelect$batch(
@@ -12042,11 +12098,11 @@ var $author$project$MuchSelect$update = F2(
 									{
 										b: newOptionWithOldSelectedOption,
 										d: A4(
-											$author$project$RightSlot$updateRightSlot,
+											$author$project$RightSlot$updateRightSlotWhenOptionsChange,
 											model.d,
-											model.a,
-											$author$project$OptionsUtilities$hasSelectedOption(newOptionWithOldSelectedOption),
-											model.b),
+											$author$project$SelectionMode$getOutputStyle(model.a),
+											$author$project$SelectionMode$getSelectionMode(model.a),
+											$author$project$OptionsUtilities$selectedOptions(newOptionWithOldSelectedOption)),
 										u: $grotsev$elm_debouncer$Bounce$push(model.u)
 									})),
 							$author$project$MuchSelect$batch(
@@ -12342,7 +12398,12 @@ var $author$project$MuchSelect$update = F2(
 						_Utils_update(
 							model,
 							{
-								d: A4($author$project$RightSlot$updateRightSlot, model.d, newSelectionConfig, true, model.b),
+								d: A4(
+									$author$project$RightSlot$updateRightSlotWhenOptionsChange,
+									model.d,
+									$author$project$SelectionMode$getOutputStyle(newSelectionConfig),
+									$author$project$SelectionMode$getSelectionMode(newSelectionConfig),
+									$author$project$OptionsUtilities$selectedOptions(model.b)),
 								a: newSelectionConfig
 							}),
 						$author$project$MuchSelect$Batch(
@@ -12553,10 +12614,10 @@ var $author$project$MuchSelect$update = F2(
 							bl: indexWhereToAdd + 1,
 							b: updatedOptions,
 							d: A4(
-								$author$project$RightSlot$updateRightSlot,
+								$author$project$RightSlot$updateRightSlotWhenOptionsChange,
 								model.d,
-								model.a,
-								true,
+								$author$project$SelectionMode$getOutputStyle(model.a),
+								$author$project$SelectionMode$getSelectionMode(model.a),
 								$author$project$OptionsUtilities$selectedOptions(updatedOptions))
 						}),
 					A4(
@@ -12575,10 +12636,10 @@ var $author$project$MuchSelect$update = F2(
 						{
 							b: updatedOptions,
 							d: A4(
-								$author$project$RightSlot$updateRightSlot,
+								$author$project$RightSlot$updateRightSlotWhenOptionsChange,
 								model.d,
-								model.a,
-								true,
+								$author$project$SelectionMode$getOutputStyle(model.a),
+								$author$project$SelectionMode$getSelectionMode(model.a),
 								$author$project$OptionsUtilities$selectedOptions(updatedOptions))
 						}),
 					A4(
@@ -12648,10 +12709,10 @@ var $author$project$MuchSelect$update = F2(
 									{
 										b: updatedOptions,
 										d: A4(
-											$author$project$RightSlot$updateRightSlot,
+											$author$project$RightSlot$updateRightSlotWhenOptionsChange,
 											model.d,
-											model.a,
-											true,
+											$author$project$SelectionMode$getOutputStyle(model.a),
+											$author$project$SelectionMode$getSelectionMode(model.a),
 											$author$project$OptionsUtilities$selectedOptions(updatedOptions))
 									}),
 								A4(
@@ -12677,10 +12738,10 @@ var $author$project$MuchSelect$update = F2(
 									{
 										b: updatedOptions,
 										d: A4(
-											$author$project$RightSlot$updateRightSlot,
+											$author$project$RightSlot$updateRightSlotWhenOptionsChange,
 											model.d,
-											model.a,
-											true,
+											$author$project$SelectionMode$getOutputStyle(model.a),
+											$author$project$SelectionMode$getSelectionMode(model.a),
 											$author$project$OptionsUtilities$selectedOptions(updatedOptions))
 									}),
 								A4(
@@ -12872,7 +12933,12 @@ var $author$project$MuchSelect$update = F2(
 								_Utils_update(
 									model,
 									{
-										d: A4($author$project$RightSlot$updateRightSlot, model.d, newSelectionConfig, true, model.b),
+										d: A4(
+											$author$project$RightSlot$updateRightSlotWhenOptionsChange,
+											model.d,
+											$author$project$SelectionMode$getOutputStyle(newSelectionConfig),
+											$author$project$SelectionMode$getSelectionMode(newSelectionConfig),
+											model.b),
 										a: newSelectionConfig
 									}),
 								$author$project$MuchSelect$FetchOptionsFromDom);
@@ -13109,7 +13175,12 @@ var $author$project$MuchSelect$update = F2(
 							_Utils_update(
 								model,
 								{
-									d: A4($author$project$RightSlot$updateRightSlot, model.d, newSelectionConfig, true, model.b),
+									d: A4(
+										$author$project$RightSlot$updateRightSlotWhenOptionsChange,
+										model.d,
+										$author$project$SelectionMode$getOutputStyle(newSelectionConfig),
+										$author$project$SelectionMode$getSelectionMode(newSelectionConfig),
+										$author$project$OptionsUtilities$selectedOptions(model.b)),
 									a: newSelectionConfig
 								}),
 							$author$project$MuchSelect$FetchOptionsFromDom);
