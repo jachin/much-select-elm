@@ -163,22 +163,137 @@ updateRightSlotForDatalist selectedOptions =
         ShowNothing
 
 
-updateRightSlotLoading : Bool -> SelectionConfig -> Bool -> RightSlot
-updateRightSlotLoading isLoading_ selectionMode hasSelectedOption =
+updateRightSlotLoading : RightSlot -> SelectionConfig -> List Option -> Bool -> RightSlot
+updateRightSlotLoading current selectionConfig selectedOptions isLoading_ =
     if isLoading_ then
         ShowLoadingIndicator
 
     else
-        case selectionMode of
-            SingleSelectConfig _ _ _ ->
-                ShowDropdownIndicator NotInFocusTransition
+        case SelectionMode.getSelectionMode selectionConfig of
+            SingleSelect ->
+                case SelectionMode.getOutputStyle selectionConfig of
+                    SelectionMode.CustomHtml ->
+                        case current of
+                            ShowNothing ->
+                                ShowDropdownIndicator NotInFocusTransition
 
-            MultiSelectConfig _ _ _ ->
-                if hasSelectedOption then
-                    ShowClearButton
+                            ShowLoadingIndicator ->
+                                if List.isEmpty selectedOptions then
+                                    ShowDropdownIndicator NotInFocusTransition
 
-                else
-                    ShowDropdownIndicator NotInFocusTransition
+                                else
+                                    ShowClearButton
+
+                            ShowDropdownIndicator focusTransition ->
+                                ShowDropdownIndicator focusTransition
+
+                            ShowClearButton ->
+                                ShowClearButton
+
+                            ShowAddButton ->
+                                if List.isEmpty selectedOptions then
+                                    ShowDropdownIndicator NotInFocusTransition
+
+                                else
+                                    ShowClearButton
+
+                            ShowAddAndRemoveButtons ->
+                                if List.isEmpty selectedOptions then
+                                    ShowDropdownIndicator NotInFocusTransition
+
+                                else
+                                    ShowClearButton
+
+                    SelectionMode.Datalist ->
+                        case current of
+                            ShowNothing ->
+                                ShowNothing
+
+                            ShowLoadingIndicator ->
+                                ShowNothing
+
+                            ShowDropdownIndicator _ ->
+                                ShowNothing
+
+                            ShowClearButton ->
+                                ShowNothing
+
+                            ShowAddButton ->
+                                ShowAddButton
+
+                            ShowAddAndRemoveButtons ->
+                                ShowAddAndRemoveButtons
+
+            MultiSelect ->
+                case SelectionMode.getOutputStyle selectionConfig of
+                    SelectionMode.CustomHtml ->
+                        case current of
+                            ShowNothing ->
+                                ShowNothing
+
+                            ShowLoadingIndicator ->
+                                if List.isEmpty selectedOptions then
+                                    ShowDropdownIndicator NotInFocusTransition
+
+                                else
+                                    ShowClearButton
+
+                            ShowDropdownIndicator focusTransition ->
+                                ShowDropdownIndicator focusTransition
+
+                            ShowClearButton ->
+                                ShowClearButton
+
+                            ShowAddButton ->
+                                if List.isEmpty selectedOptions then
+                                    ShowDropdownIndicator NotInFocusTransition
+
+                                else
+                                    ShowClearButton
+
+                            ShowAddAndRemoveButtons ->
+                                if List.isEmpty selectedOptions then
+                                    ShowDropdownIndicator NotInFocusTransition
+
+                                else
+                                    ShowClearButton
+
+                    SelectionMode.Datalist ->
+                        let
+                            showAddButtons =
+                                List.any (\option -> option |> Option.getOptionValue |> OptionValue.isEmpty |> not) selectedOptions
+
+                            showRemoveButtons =
+                                List.length selectedOptions > 1
+
+                            addAndRemoveButtonState =
+                                if showAddButtons && not showRemoveButtons then
+                                    ShowAddButton
+
+                                else if showAddButtons && showRemoveButtons then
+                                    ShowAddAndRemoveButtons
+
+                                else
+                                    ShowNothing
+                        in
+                        case current of
+                            ShowNothing ->
+                                addAndRemoveButtonState
+
+                            ShowLoadingIndicator ->
+                                addAndRemoveButtonState
+
+                            ShowDropdownIndicator _ ->
+                                addAndRemoveButtonState
+
+                            ShowClearButton ->
+                                addAndRemoveButtonState
+
+                            ShowAddButton ->
+                                addAndRemoveButtonState
+
+                            ShowAddAndRemoveButtons ->
+                                addAndRemoveButtonState
 
 
 updateRightSlotTransitioning : FocusTransition -> RightSlot -> RightSlot

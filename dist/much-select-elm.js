@@ -11608,15 +11608,89 @@ var $author$project$OptionsUtilities$updateOptionsWithNewSearchResults = F2(
 			},
 			options);
 	});
-var $author$project$RightSlot$updateRightSlotLoading = F3(
-	function (isLoading_, selectionMode, hasSelectedOption) {
+var $author$project$RightSlot$updateRightSlotLoading = F4(
+	function (current, selectionConfig, selectedOptions, isLoading_) {
 		if (isLoading_) {
 			return $author$project$RightSlot$ShowLoadingIndicator;
 		} else {
-			if (!selectionMode.$) {
-				return $author$project$RightSlot$ShowDropdownIndicator(1);
+			var _v0 = $author$project$SelectionMode$getSelectionMode(selectionConfig);
+			if (!_v0) {
+				var _v1 = $author$project$SelectionMode$getOutputStyle(selectionConfig);
+				if (!_v1) {
+					switch (current.$) {
+						case 0:
+							return $author$project$RightSlot$ShowDropdownIndicator(1);
+						case 1:
+							return $elm$core$List$isEmpty(selectedOptions) ? $author$project$RightSlot$ShowDropdownIndicator(1) : $author$project$RightSlot$ShowClearButton;
+						case 2:
+							var focusTransition = current.a;
+							return $author$project$RightSlot$ShowDropdownIndicator(focusTransition);
+						case 3:
+							return $author$project$RightSlot$ShowClearButton;
+						case 4:
+							return $elm$core$List$isEmpty(selectedOptions) ? $author$project$RightSlot$ShowDropdownIndicator(1) : $author$project$RightSlot$ShowClearButton;
+						default:
+							return $elm$core$List$isEmpty(selectedOptions) ? $author$project$RightSlot$ShowDropdownIndicator(1) : $author$project$RightSlot$ShowClearButton;
+					}
+				} else {
+					switch (current.$) {
+						case 0:
+							return $author$project$RightSlot$ShowNothing;
+						case 1:
+							return $author$project$RightSlot$ShowNothing;
+						case 2:
+							return $author$project$RightSlot$ShowNothing;
+						case 3:
+							return $author$project$RightSlot$ShowNothing;
+						case 4:
+							return $author$project$RightSlot$ShowAddButton;
+						default:
+							return $author$project$RightSlot$ShowAddAndRemoveButtons;
+					}
+				}
 			} else {
-				return hasSelectedOption ? $author$project$RightSlot$ShowClearButton : $author$project$RightSlot$ShowDropdownIndicator(1);
+				var _v4 = $author$project$SelectionMode$getOutputStyle(selectionConfig);
+				if (!_v4) {
+					switch (current.$) {
+						case 0:
+							return $author$project$RightSlot$ShowNothing;
+						case 1:
+							return $elm$core$List$isEmpty(selectedOptions) ? $author$project$RightSlot$ShowDropdownIndicator(1) : $author$project$RightSlot$ShowClearButton;
+						case 2:
+							var focusTransition = current.a;
+							return $author$project$RightSlot$ShowDropdownIndicator(focusTransition);
+						case 3:
+							return $author$project$RightSlot$ShowClearButton;
+						case 4:
+							return $elm$core$List$isEmpty(selectedOptions) ? $author$project$RightSlot$ShowDropdownIndicator(1) : $author$project$RightSlot$ShowClearButton;
+						default:
+							return $elm$core$List$isEmpty(selectedOptions) ? $author$project$RightSlot$ShowDropdownIndicator(1) : $author$project$RightSlot$ShowClearButton;
+					}
+				} else {
+					var showRemoveButtons = $elm$core$List$length(selectedOptions) > 1;
+					var showAddButtons = A2(
+						$elm$core$List$any,
+						function (option) {
+							return !$author$project$OptionValue$isEmpty(
+								$author$project$Option$getOptionValue(option));
+						},
+						selectedOptions);
+					var addAndRemoveButtonState = (showAddButtons && (!showRemoveButtons)) ? $author$project$RightSlot$ShowAddButton : ((showAddButtons && showRemoveButtons) ? $author$project$RightSlot$ShowAddAndRemoveButtons : $author$project$RightSlot$ShowNothing);
+					switch (current.$) {
+						case 0:
+							return addAndRemoveButtonState;
+						case 1:
+							return addAndRemoveButtonState;
+						case 2:
+							return addAndRemoveButtonState;
+						case 3:
+							return addAndRemoveButtonState;
+						case 4:
+							return addAndRemoveButtonState;
+						default:
+							return addAndRemoveButtonState;
+					}
+				}
 			}
 		}
 	});
@@ -12311,11 +12385,12 @@ var $author$project$MuchSelect$update = F2(
 					_Utils_update(
 						model,
 						{
-							d: A3(
+							d: A4(
 								$author$project$RightSlot$updateRightSlotLoading,
-								bool,
+								model.d,
 								model.a,
-								$author$project$OptionsUtilities$hasSelectedOption(model.b))
+								$author$project$OptionsUtilities$selectedOptions(model.b),
+								bool)
 						}),
 					$author$project$MuchSelect$NoEffect);
 			case 23:
@@ -12863,11 +12938,12 @@ var $author$project$MuchSelect$update = F2(
 								_Utils_update(
 									model,
 									{
-										d: A3(
+										d: A4(
 											$author$project$RightSlot$updateRightSlotLoading,
-											false,
+											model.d,
 											model.a,
-											$author$project$OptionsUtilities$hasSelectedOption(model.b))
+											$author$project$OptionsUtilities$selectedOptions(model.b),
+											false)
 									}),
 								$author$project$MuchSelect$NoEffect);
 						} else {
@@ -12875,11 +12951,12 @@ var $author$project$MuchSelect$update = F2(
 								_Utils_update(
 									model,
 									{
-										d: A3(
+										d: A4(
 											$author$project$RightSlot$updateRightSlotLoading,
-											true,
+											model.d,
 											model.a,
-											$author$project$OptionsUtilities$hasSelectedOption(model.b))
+											$author$project$OptionsUtilities$selectedOptions(model.b),
+											true)
 									}),
 								$author$project$MuchSelect$NoEffect);
 						}
@@ -13128,11 +13205,12 @@ var $author$project$MuchSelect$update = F2(
 							_Utils_update(
 								model,
 								{
-									d: A3(
+									d: A4(
 										$author$project$RightSlot$updateRightSlotLoading,
-										false,
+										model.d,
 										model.a,
-										$author$project$OptionsUtilities$hasSelectedOption(model.b))
+										$author$project$OptionsUtilities$selectedOptions(model.b),
+										false)
 								}),
 							$author$project$MuchSelect$NoEffect);
 					case 'max-dropdown-items':

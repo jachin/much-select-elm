@@ -891,9 +891,10 @@ update msg model =
             ( { model
                 | rightSlot =
                     updateRightSlotLoading
-                        bool
+                        model.rightSlot
                         model.selectionConfig
-                        (hasSelectedOption model.options)
+                        (selectedOptions model.options)
+                        bool
               }
             , NoEffect
             )
@@ -1460,9 +1461,10 @@ update msg model =
                             ( { model
                                 | rightSlot =
                                     updateRightSlotLoading
-                                        False
+                                        model.rightSlot
                                         model.selectionConfig
-                                        (hasSelectedOption model.options)
+                                        (selectedOptions model.options)
+                                        False
                               }
                             , NoEffect
                             )
@@ -1471,9 +1473,10 @@ update msg model =
                             ( { model
                                 | rightSlot =
                                     updateRightSlotLoading
-                                        True
+                                        model.rightSlot
                                         model.selectionConfig
-                                        (hasSelectedOption model.options)
+                                        (selectedOptions model.options)
+                                        True
                               }
                             , NoEffect
                             )
@@ -1704,9 +1707,10 @@ update msg model =
                     ( { model
                         | rightSlot =
                             updateRightSlotLoading
-                                False
+                                model.rightSlot
                                 model.selectionConfig
-                                (hasSelectedOption model.options)
+                                (model.options |> selectedOptions)
+                                False
                       }
                     , NoEffect
                     )
