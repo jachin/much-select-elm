@@ -17669,11 +17669,18 @@ var $author$project$MuchSelect$update = F2(
 					$author$project$MuchSelect$NoEffect);
 			case 'DisabledAttributeChanged':
 				var bool = msg.a;
+				var newSelectionConfig = A2($author$project$SelectionMode$setIsDisabled, bool, model.selectionConfig);
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{
-							selectionConfig: A2($author$project$SelectionMode$setIsDisabled, bool, model.selectionConfig)
+							rightSlot: A4(
+								$author$project$RightSlot$updateRightSlot,
+								model.rightSlot,
+								$author$project$SelectionMode$getOutputStyle(newSelectionConfig),
+								$author$project$SelectionMode$getSelectionMode(newSelectionConfig),
+								$author$project$OptionsUtilities$selectedOptions(model.options)),
+							selectionConfig: newSelectionConfig
 						}),
 					$author$project$MuchSelect$NoEffect);
 			case 'SelectedItemStaysInPlaceChanged':
@@ -18125,11 +18132,18 @@ var $author$project$MuchSelect$update = F2(
 									$author$project$MuchSelect$NoEffect);
 						}
 					case 'disabled':
+						var newSelectionConfig = A2($author$project$SelectionMode$setIsDisabled, true, model.selectionConfig);
 						return _Utils_Tuple2(
 							_Utils_update(
 								model,
 								{
-									selectionConfig: A2($author$project$SelectionMode$setIsDisabled, true, model.selectionConfig)
+									rightSlot: A4(
+										$author$project$RightSlot$updateRightSlot,
+										model.rightSlot,
+										$author$project$SelectionMode$getOutputStyle(newSelectionConfig),
+										$author$project$SelectionMode$getSelectionMode(newSelectionConfig),
+										$author$project$OptionsUtilities$selectedOptions(model.options)),
+									selectionConfig: newSelectionConfig
 								}),
 							$author$project$MuchSelect$NoEffect);
 					case 'events-only':

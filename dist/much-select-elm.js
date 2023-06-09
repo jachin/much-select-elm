@@ -12372,11 +12372,18 @@ var $author$project$MuchSelect$update = F2(
 					$author$project$MuchSelect$NoEffect);
 			case 26:
 				var bool = msg.a;
+				var newSelectionConfig = A2($author$project$SelectionMode$setIsDisabled, bool, model.a);
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{
-							a: A2($author$project$SelectionMode$setIsDisabled, bool, model.a)
+							d: A4(
+								$author$project$RightSlot$updateRightSlot,
+								model.d,
+								$author$project$SelectionMode$getOutputStyle(newSelectionConfig),
+								$author$project$SelectionMode$getSelectionMode(newSelectionConfig),
+								$author$project$OptionsUtilities$selectedOptions(model.b)),
+							a: newSelectionConfig
 						}),
 					$author$project$MuchSelect$NoEffect);
 			case 30:
@@ -12828,11 +12835,18 @@ var $author$project$MuchSelect$update = F2(
 									$author$project$MuchSelect$NoEffect);
 						}
 					case 'disabled':
+						var newSelectionConfig = A2($author$project$SelectionMode$setIsDisabled, true, model.a);
 						return _Utils_Tuple2(
 							_Utils_update(
 								model,
 								{
-									a: A2($author$project$SelectionMode$setIsDisabled, true, model.a)
+									d: A4(
+										$author$project$RightSlot$updateRightSlot,
+										model.d,
+										$author$project$SelectionMode$getOutputStyle(newSelectionConfig),
+										$author$project$SelectionMode$getSelectionMode(newSelectionConfig),
+										$author$project$OptionsUtilities$selectedOptions(model.b)),
+									a: newSelectionConfig
 								}),
 							$author$project$MuchSelect$NoEffect);
 					case 'events-only':

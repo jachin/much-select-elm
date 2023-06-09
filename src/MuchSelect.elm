@@ -956,11 +956,18 @@ update msg model =
             )
 
         DisabledAttributeChanged bool ->
+            let
+                newSelectionConfig =
+                    setIsDisabled bool model.selectionConfig
+            in
             ( { model
-                | selectionConfig =
-                    setIsDisabled
-                        bool
-                        model.selectionConfig
+                | selectionConfig = newSelectionConfig
+                , rightSlot =
+                    updateRightSlot
+                        model.rightSlot
+                        (newSelectionConfig |> SelectionMode.getOutputStyle)
+                        (newSelectionConfig |> SelectionMode.getSelectionMode)
+                        (model.options |> selectedOptions)
               }
             , NoEffect
             )
@@ -1421,7 +1428,19 @@ update msg model =
                             )
 
                 "disabled" ->
-                    ( { model | selectionConfig = setIsDisabled True model.selectionConfig }
+                    let
+                        newSelectionConfig =
+                            setIsDisabled True model.selectionConfig
+                    in
+                    ( { model
+                        | selectionConfig = newSelectionConfig
+                        , rightSlot =
+                            updateRightSlot
+                                model.rightSlot
+                                (newSelectionConfig |> SelectionMode.getOutputStyle)
+                                (newSelectionConfig |> SelectionMode.getSelectionMode)
+                                (model.options |> selectedOptions)
+                      }
                     , NoEffect
                     )
 
