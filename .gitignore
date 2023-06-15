@@ -1,6 +1,9 @@
 # Hot files
 /build
 
+# Sit
+/dist/site
+
 # npm
 /node_modules/
 /npm-debug.log
