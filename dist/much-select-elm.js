@@ -15571,11 +15571,11 @@ var $author$project$MuchSelect$singleSelectViewCustomHtml = F4(
 					$elm$html$Html$Events$onMouseDown($author$project$MuchSelect$NoOp)),
 					A2(
 					$elm_community$html_extra$Html$Attributes$Extra$attributeIf,
-					!$author$project$SelectionMode$isFocused(selectionConfig),
+					(!$author$project$SelectionMode$isFocused(selectionConfig)) && (!$author$project$SelectionMode$isDisabled(selectionConfig)),
 					$elm$html$Html$Events$onMouseUp($author$project$MuchSelect$BringInputInFocus)),
 					A2(
 					$elm_community$html_extra$Html$Attributes$Extra$attributeIf,
-					!$author$project$SelectionMode$isFocused(selectionConfig),
+					(!$author$project$SelectionMode$isFocused(selectionConfig)) && (!$author$project$SelectionMode$isDisabled(selectionConfig)),
 					$elm$html$Html$Events$onFocus($author$project$MuchSelect$BringInputInFocus)),
 					$author$project$MuchSelect$tabIndexAttribute(
 					$author$project$SelectionMode$isDisabled(selectionConfig)),

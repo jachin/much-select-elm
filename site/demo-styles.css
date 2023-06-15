@@ -183,7 +183,16 @@ body {
     background-color: var(--background-color);
     color: var(--text-color);
     font-family: var(--body-font);
+    margin: 0;
+    padding: 0;
 }
+
+#page-wrapper {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-family: var(--body-font);
+}
+
 
 :any-link {
     color: var(--link-text-color);

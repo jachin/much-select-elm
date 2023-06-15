@@ -2256,8 +2256,8 @@ singleSelectViewCustomHtml selectionConfig options searchString rightSlot =
 
         -- TODO On mouse down do something to provide a bit of feedback
         , attributeIf (not (isFocused selectionConfig)) (onMouseDown NoOp)
-        , attributeIf (not (isFocused selectionConfig)) (onMouseUp BringInputInFocus)
-        , attributeIf (not (isFocused selectionConfig)) (onFocus BringInputInFocus)
+        , attributeIf (not (isFocused selectionConfig) && not (isDisabled selectionConfig)) (onMouseUp BringInputInFocus)
+        , attributeIf (not (isFocused selectionConfig) && not (isDisabled selectionConfig)) (onFocus BringInputInFocus)
         , tabIndexAttribute (isDisabled selectionConfig)
         , classList
             (valueCasingClassList selectionConfig hasOptionSelected False)
