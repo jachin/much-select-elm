@@ -18,4 +18,12 @@
       <option>Notothen</option>
     </select>
   </much-select>
+
+  <script>
+    document
+      .querySelector("#single-select-json-seperated-values much-select")
+      .addEventListener("selected-value", (e) => {
+        console.log(e);
+      });
+  </script>
 </div>
