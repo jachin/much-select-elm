@@ -5,11 +5,15 @@ Boring colors https://flatuicolors.com/palette/gb
 
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@500&display=swap');
 
-/*
-This seems to prevent the dramatic flash as the theme is getting setup as a page loads.
- */
+
 body {
+    /*
+    This seems to prevent the dramatic flash as the theme is getting setup as a page loads.
+    */
     transition-duration: 0.5s;
+
+    margin: 0;
+    padding: 0;
 }
 
 :root {
@@ -58,6 +62,18 @@ body {
     --black-pearl: #1e272e;
 
     --much-select-height: 36px;
+}
+
+@media (prefers-color-scheme: light) {
+    body {
+        background-color: var(--lynx-white);
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: var(--electromagnetic);
+    }
 }
 
 #theme-switch-boring:checked ~ #page-wrapper {
@@ -179,18 +195,35 @@ body {
     clip: rect(1px, 1px, 1px, 1px);
 }
 
-body {
+#page-wrapper {
+    position: relative;
     background-color: var(--background-color);
     color: var(--text-color);
     font-family: var(--body-font);
-    margin: 0;
-    padding: 0;
 }
 
-#page-wrapper {
-    background-color: var(--background-color);
-    color: var(--text-color);
-    font-family: var(--body-font);
+@media (prefers-color-scheme: light) {
+    #page-wrapper:after {
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        height: 10em;
+        background: linear-gradient(to bottom, var(--background-color), var(--lynx-white));
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    #page-wrapper:after {
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        height: 10em;
+        background: linear-gradient(to bottom, var(--background-color), var(--electromagnetic));
+    }
 }
 
 
