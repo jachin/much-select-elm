@@ -43,7 +43,7 @@
     ]
   },
   {
-    "title": "Run web server",
+    "title": "Run web server http://localhost:1234",
     "command": [
       "python3",
       "-m",
