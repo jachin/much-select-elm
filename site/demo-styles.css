@@ -107,8 +107,11 @@ body {
 
         /* Much Select Value */
         --much-select-background-color: var(--lynx-white);
+        --much-select-value-casing-background-image: linear-gradient(to bottom, #fefefe, #f2f2f2);
         --much-select-border-color: var(--matt-purple);
         --much-select-error-border-color: var(--nasturcian-flower);
+
+        --much-select-clear-button-border-color: var(--matt-purple);
 
         /* Much Select Dropdown */
         --much-select-dropdown-option-background-color: var(--hint-of-pensive);
@@ -132,12 +135,15 @@ body {
 
         /* Much Select Value */
         --much-select-background-color: var(--hint-of-elusive-blue);
+        --much-select-value-casing-background-image: linear-gradient(to bottom, #fefefe, #f2f2f2);
         --much-select-disabled-background-color: var(--london-square);
         --much-select-error-background-color: var(--yriel-yellow);
         --much-select-border-color: var(--jade-dust);
         --much-select-hover-border-color: var(--spirio-disco-ball);
         --much-select-error-border-color: var(--nasturcian-flower);
         --much-select-disabled-border-color: var(--hint-of-elusive-blue);
+
+        --much-select-clear-button-border-color: var(--spirio-disco-ball);
 
         /* Much Select Dropdown */
         --much-select-dropdown-option-color: var(--black-pearl);
@@ -164,8 +170,19 @@ body {
         --example-border-shadow-color: var(--chain-gang-grey);
 
         --much-select-background-color: var(--electromagnetic);
+        --much-select-value-casing-background-image: linear-gradient(to bottom, var(--electromagnetic), var(--pico-void));
         --much-select-border-color: var(--matt-purple);
         --much-select-error-border-color: var(--harley-davidson-orange);
+
+        --much-select-clear-button-border-color: var(--electromagnetic);
+
+        /* Much Select Dropdown */
+        --much-select-dropdown-option-color: var(--good-night);
+        --much-select-dropdown-option-color-inverse: var(--megaman);
+        --much-select-dropdown-option-background-color: var(--hint-of-elusive-blue);
+        --much-select-dropdown-option-highlighted-background-color: var(--free-speech-blue);
+        --much-select-dropdown-option-active-background-color: var(--minty-green);
+        --much-select-dropdown-option-selected-background-color: var(--black-pearl);
     }
 
     #theme-switch-fun:checked ~ #page-wrapper {
@@ -181,8 +198,19 @@ body {
         --example-border-shadow-color: var(--highligher-pink);
 
         --much-select-background-color: var(--good-night);
+        --much-select-value-casing-background-image: linear-gradient(to bottom, var(--good-night), var(--black-pearl));
         --much-select-border-color: var(--jade-dust);
         --much-select-error-border-color: var(--sunset-orange);
+
+        --much-select-clear-button-border-color: var(--jade-dust);
+
+        /* Much Select Dropdown */
+        --much-select-dropdown-option-color: var(--yriel-yellow);
+        --much-select-dropdown-option-color-inverse: var(--vibrant-yellow);
+        --much-select-dropdown-option-background-color: var(--good-night);
+        --much-select-dropdown-option-highlighted-background-color: var(--black-pearl);
+        --much-select-dropdown-option-active-background-color: var(--london-square);
+        --much-select-dropdown-option-selected-background-color: var(--black-pearl);
     }
 }
 
@@ -342,7 +370,7 @@ button {
 
 
 much-select::part(wrapper) {
-    font: var(--form-font);
+    font-family: var(--form-font);
     margin-top: auto;
     margin-bottom: auto;
     position: relative;
@@ -362,7 +390,7 @@ much-select::part(value-casing) {
 much-select::part(value-casing output-style-custom-html) {
     background-color: var(--much-select-background-color);
     box-shadow: 1px 1px 1px 0 lightgray inset;
-    padding: 4px 3px 2px 3px;
+    padding: 0.1em 1.5em 0.1em 0.1em;
 }
 
 much-select::part(value-casing output-style-custom-html) {
@@ -412,7 +440,7 @@ much-select::part(value-casing output-style-custom-html disabled) {
 }
 
 much-select::part(value-casing output-style-custom-html single) {
-    background-image: linear-gradient(to bottom, #fefefe, #f2f2f2);
+    background-image: var(--much-select-value-casing-background-image);
     background-repeat: repeat-x;
 }
 
@@ -451,13 +479,16 @@ much-select::part(input-filter) {
 
     padding: 0;
     margin: 0;
+
+    /* Keep input filter's text from running over the dropdown indicator. */
+    padding-right: 0.8em;
 }
 
 much-select::part(input-filter):hover, much-select::part(input-filter):focus {
     /*
         We do not want an outline on the input (filter) because we want everything
         inside of the #value-casing to (kinda) act like a text input.
-        */
+    */
     outline: none;
     background: var(--much-select-background-color);
 }
@@ -529,20 +560,29 @@ much-select::part(dropdown-indicator down) {
 much-select::part(clear-button-wrapper) {
     display: block;
     position: absolute;
-    right: 3px;
-    top: 7px;
+    right: 0.2em;
+    top: 0.2em;
     cursor: pointer;
+    box-sizing: content-box;
+    padding: 0.3em 0.5em;
+
+    border-width: 1px;
+    border-style: solid;
+    border-color: transparent;
+}
+
+much-select::part(clear-button-wrapper):hover {
+    border-color: var(--much-select-clear-button-border-color);
 }
 
 much-select::part(dropdown) {
-    background-color: #EEEEEE;
     font-size: 20px;
     max-height: 300px;
-    font: var(--form-font);
+    font-family: var(--form-font);
 }
 
 much-select::part(dropdown-optgroup) {
-    background-color: gray;
+    background-color: var(--much-select-dropdown-optgroup-background-color);
     font-size: 0.85rem;
     font-weight: 300;
     font-family: var(--form-font);
