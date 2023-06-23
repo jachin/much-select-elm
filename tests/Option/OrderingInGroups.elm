@@ -1,6 +1,8 @@
 module Option.OrderingInGroups exposing (suite)
 
+import DropdownOptions
 import Expect
+import GroupedDropdownOptions
 import Option
     exposing
         ( Option(..)
@@ -12,7 +14,6 @@ import Option
         )
 import OptionLabel exposing (optionLabelToString)
 import OptionValue exposing (optionValueToString)
-import OptionsUtilities exposing (groupOptionsInOrder)
 import Test exposing (Test, describe, test)
 
 
@@ -68,27 +69,6 @@ tools =
     ]
 
 
-optionToDebuggingString : Option -> String
-optionToDebuggingString option =
-    case option of
-        Option _ optionLabel _ _ optionGroup _ ->
-            case optionGroupToString optionGroup of
-                "" ->
-                    optionLabelToString optionLabel
-
-                optionGroupString ->
-                    optionGroupString ++ " - " ++ optionLabelToString optionLabel
-
-        CustomOption _ optionLabel _ _ ->
-            optionLabelToString optionLabel
-
-        EmptyOption _ optionLabel ->
-            optionLabelToString optionLabel
-
-        DatalistOption _ optionValue ->
-            optionValueToString optionValue
-
-
 optionGroupToDebuggingString : OptionGroup -> String
 optionGroupToDebuggingString optionGroup =
     optionGroupToString optionGroup
@@ -100,13 +80,8 @@ suite =
         [ test "keep them in order but group them by their option groups" <|
             \_ ->
                 Expect.equalLists
-                    (groupOptionsInOrder tools
-                        |> List.map
-                            (\( optionGroup, options ) ->
-                                ( optionGroupToDebuggingString optionGroup
-                                , List.map optionToDebuggingString options
-                                )
-                            )
+                    (GroupedDropdownOptions.groupOptionsInOrder (DropdownOptions.test_fromOptions tools)
+                        |> GroupedDropdownOptions.test_DropdownOptionsGroupToStringAndOptions
                     )
                     ([ ( newOptionGroup "Hand Tool", [ screwDriver ] )
                      , ( newOptionGroup "Power Tool", [ drill ] )
@@ -118,7 +93,7 @@ suite =
                         |> List.map
                             (\( optionGroup, options ) ->
                                 ( optionGroupToDebuggingString optionGroup
-                                , List.map optionToDebuggingString options
+                                , List.map Option.test_optionToDebuggingString options
                                 )
                             )
                     )

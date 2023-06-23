@@ -1,10 +1,10 @@
 module Option.CustomOptions exposing (suite)
 
+import DropdownOptions exposing (figureOutWhichOptionsToShowInTheDropdown)
 import Expect
 import MuchSelect
     exposing
-        ( figureOutWhichOptionsToShowInTheDropdown
-        , updateModelWithChangesThatEffectTheOptionsWithSearchString
+        ( updateModelWithChangesThatEffectTheOptionsWithSearchString
         )
 import Option exposing (newCustomOption, newOption, selectOption)
 import OptionSearcher
@@ -109,7 +109,7 @@ suite =
                 Expect.equalLists
                     (OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionConfig (SearchString.update "monkey bread") []
                         |> figureOutWhichOptionsToShowInTheDropdown selectionConfig
-                        |> List.map Option.getOptionValueAsString
+                        |> DropdownOptions.valuesAsStrings
                     )
                     [ "monkey bread" ]
 
@@ -155,7 +155,7 @@ suite =
                         |> OptionSorting.sortOptionsBySearchFilterTotalScore
                         |> highlightFirstOptionInList
                         |> figureOutWhichOptionsToShowInTheDropdown selectionConfig
-                        |> List.map Option.getOptionValueAsString
+                        |> DropdownOptions.valuesAsStrings
                     )
                     [ "cob", "Mossy Cobblestone" ]
         , test "a custom option should show up even if it is shorter than the minimum search length" <|
@@ -178,7 +178,7 @@ suite =
                         |> OptionSorting.sortOptionsBySearchFilterTotalScore
                         |> highlightFirstOptionInList
                         |> figureOutWhichOptionsToShowInTheDropdown selectionConfig
-                        |> List.map Option.getOptionValueAsString
+                        |> DropdownOptions.valuesAsStrings
                     )
                     [ "cob", "Mossy Cobblestone" ]
         , describe "updateModelWithChangesThatEffectTheOptionsWithSearchString"

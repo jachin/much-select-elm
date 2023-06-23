@@ -1,4 +1,4 @@
-module DropdownOptions exposing (DropdownItemEventListeners, DropdownOptions, dropdownOptionsToDatalistOption, figureOutWhichOptionsToShowInTheDropdown, figureOutWhichOptionsToShowInTheDropdownThatAreNotSelected, getSearchFilters, groupInOrder, head, isEmpty, length, maybeFirstOptionSearchFilter, moveHighlightedOptionDown, moveHighlightedOptionDownIfThereAreOptions, moveHighlightedOptionUp, optionsToCustomHtml)
+module DropdownOptions exposing (DropdownItemEventListeners, DropdownOptions, dropdownOptionsToDatalistOption, figureOutWhichOptionsToShowInTheDropdown, figureOutWhichOptionsToShowInTheDropdownThatAreNotSelected, getSearchFilters, groupInOrder, head, isEmpty, length, maybeFirstOptionSearchFilter, moveHighlightedOptionDown, moveHighlightedOptionDownIfThereAreOptions, moveHighlightedOptionUp, optionsToCustomHtml, test_fromOptions, test_getOptions, valuesAsStrings)
 
 import Events exposing (mouseDownPreventDefault, mouseUpPreventDefault, onClickPreventDefault, onClickPreventDefaultAndStopPropagation)
 import Html exposing (Html, div, span, text)
@@ -124,6 +124,21 @@ length dropdownOptions =
 head : DropdownOptions -> Maybe Option
 head dropdownOptions =
     dropdownOptions |> getOptions |> List.head
+
+
+valuesAsStrings : DropdownOptions -> List String
+valuesAsStrings dropdownOptions =
+    dropdownOptions |> getOptions |> List.map Option.getOptionValueAsString
+
+
+test_getOptions : DropdownOptions -> List Option
+test_getOptions dropdownOptions =
+    getOptions dropdownOptions
+
+
+test_fromOptions : List Option -> DropdownOptions
+test_fromOptions options =
+    DropdownOptions options
 
 
 getSearchFilters : DropdownOptions -> List OptionSearchFilter

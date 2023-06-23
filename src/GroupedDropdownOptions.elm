@@ -1,19 +1,19 @@
-module GroupedDropdownOptions exposing (DropdownOptionsGroup, GroupedDropdownOptions, dropdownOptionsToDatalistHtml, getOptions, getOptionsGroup, groupOptionsInOrder, optionGroupsToHtml)
+module GroupedDropdownOptions exposing (DropdownOptionsGroup, GroupedDropdownOptions, dropdownOptionsToDatalistHtml, getOptions, getOptionsGroup, groupOptionsInOrder, optionGroupsToHtml, test_DropdownOptionsGroupToStringAndOptions)
 
 import DropdownOptions exposing (DropdownItemEventListeners, DropdownOptions, dropdownOptionsToDatalistOption, optionsToCustomHtml)
 import Html exposing (Html, div, optgroup, span, text)
 import Html.Attributes exposing (class)
-import Option exposing (OptionGroup)
+import Option exposing (Option, OptionGroup, optionGroupToString)
 import OptionPresentor exposing (tokensToHtml)
 import SelectionMode exposing (SelectionConfig)
 
 
-type DropdownOptionsGroup
-    = DropdownOptionsGroup OptionGroup DropdownOptions
-
-
 type alias GroupedDropdownOptions =
     List DropdownOptionsGroup
+
+
+type DropdownOptionsGroup
+    = DropdownOptionsGroup OptionGroup DropdownOptions
 
 
 groupOptionsInOrder : DropdownOptions -> GroupedDropdownOptions
@@ -34,6 +34,22 @@ getOptionsGroup dropdownOptionsGroup =
     case dropdownOptionsGroup of
         DropdownOptionsGroup optionGroup _ ->
             optionGroup
+
+
+test_DropdownOptionsGroupToStringAndOptions : GroupedDropdownOptions -> List ( String, List String )
+test_DropdownOptionsGroupToStringAndOptions dropdownOptionsGroups =
+    List.map
+        (\optionsGroup ->
+            ( optionsGroup
+                |> getOptionsGroup
+                |> optionGroupToString
+            , optionsGroup
+                |> getOptions
+                |> DropdownOptions.test_getOptions
+                |> List.map Option.test_optionToDebuggingString
+            )
+        )
+        dropdownOptionsGroups
 
 
 optionGroupsToHtml : DropdownItemEventListeners msg -> SelectionConfig -> GroupedDropdownOptions -> List (Html msg)

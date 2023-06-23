@@ -62,6 +62,7 @@ module Option exposing
     , setOptionSearchFilter
     , setOptionValue
     , setOptionValueErrors
+    , test_optionToDebuggingString
     , transformOptionForOutputStyle
     )
 
@@ -1112,3 +1113,24 @@ isPendingValidation option =
 isValid : Option -> Bool
 isValid option =
     not (isInvalid option || isPendingValidation option)
+
+
+test_optionToDebuggingString : Option -> String
+test_optionToDebuggingString option =
+    case option of
+        Option _ optionLabel _ _ optionGroup _ ->
+            case optionGroupToString optionGroup of
+                "" ->
+                    optionLabelToString optionLabel
+
+                optionGroupString ->
+                    optionGroupString ++ " - " ++ optionLabelToString optionLabel
+
+        CustomOption _ optionLabel _ _ ->
+            optionLabelToString optionLabel
+
+        EmptyOption _ optionLabel ->
+            optionLabelToString optionLabel
+
+        DatalistOption _ optionValue ->
+            optionValueToString optionValue

@@ -1,7 +1,7 @@
 module FilteringOptions.MaxNumberOfDropdownItems exposing (suite)
 
+import DropdownOptions exposing (figureOutWhichOptionsToShowInTheDropdown)
 import Expect
-import MuchSelect exposing (figureOutWhichOptionsToShowInTheDropdown)
 import Option exposing (newOption, setGroupWithString)
 import OptionSearcher
 import OptionsUtilities exposing (highlightOptionInList, selectOptionInList)
@@ -138,41 +138,41 @@ suite =
             [ test "it should show all the options if nothing in highlighted" <|
                 \_ ->
                     Expect.equalLists
-                        (figureOutWhichOptionsToShowInTheDropdown selectionConfigMaxDropdownItemsTen tools)
+                        (figureOutWhichOptionsToShowInTheDropdown selectionConfigMaxDropdownItemsTen tools |> DropdownOptions.test_getOptions)
                         tools
             , test "it should show no options if the list is empty" <|
                 \_ ->
                     Expect.equalLists
-                        (figureOutWhichOptionsToShowInTheDropdown selectionConfigMaxDropdownItemsTen [])
+                        (figureOutWhichOptionsToShowInTheDropdown selectionConfigMaxDropdownItemsTen [] |> DropdownOptions.test_getOptions)
                         []
             , test "it shows all the options even if something is highlighted" <|
                 \_ ->
                     Expect.equalLists
-                        (figureOutWhichOptionsToShowInTheDropdown selectionConfigMaxDropdownItemsTen (highlightOptionInList wrench tools))
+                        (figureOutWhichOptionsToShowInTheDropdown selectionConfigMaxDropdownItemsTen (highlightOptionInList wrench tools) |> DropdownOptions.test_getOptions)
                         (highlightOptionInList wrench tools)
             ]
         , describe "when we have the same number of options as the max"
             [ test "it should show all the options if nothing in highlighted" <|
                 \_ ->
                     Expect.equalLists
-                        (figureOutWhichOptionsToShowInTheDropdown selectionConfigMaxDropdownItemsNine tools)
+                        (figureOutWhichOptionsToShowInTheDropdown selectionConfigMaxDropdownItemsNine tools |> DropdownOptions.test_getOptions)
                         tools
             , test "it should show no options if the list is empty" <|
                 \_ ->
                     Expect.equalLists
-                        (figureOutWhichOptionsToShowInTheDropdown selectionConfigMaxDropdownItemsNine [])
+                        (figureOutWhichOptionsToShowInTheDropdown selectionConfigMaxDropdownItemsNine [] |> DropdownOptions.test_getOptions)
                         []
             , test "it shows all the options even if something is highlighted" <|
                 \_ ->
                     Expect.equalLists
-                        (figureOutWhichOptionsToShowInTheDropdown selectionConfigMaxDropdownItemsNine (highlightOptionInList wrench tools))
+                        (figureOutWhichOptionsToShowInTheDropdown selectionConfigMaxDropdownItemsNine (highlightOptionInList wrench tools) |> DropdownOptions.test_getOptions)
                         (highlightOptionInList wrench tools)
             ]
         , describe "when we have more options than the max (which is odd)"
             [ test "it should show all the maximum number of options starting at the start of the list if nothing in highlighted" <|
                 \_ ->
                     Expect.equalLists
-                        (figureOutWhichOptionsToShowInTheDropdown selectionConfigMaxDropdownItemsFive tools)
+                        (figureOutWhichOptionsToShowInTheDropdown selectionConfigMaxDropdownItemsFive tools |> DropdownOptions.test_getOptions)
                         [ screwDriver
                         , drill
                         , multiMeter
@@ -182,7 +182,7 @@ suite =
             , test "it shows the options around the highlighted option" <|
                 \_ ->
                     Expect.equalLists
-                        (figureOutWhichOptionsToShowInTheDropdown selectionConfigMaxDropdownItemsFive (highlightOptionInList wrench tools))
+                        (figureOutWhichOptionsToShowInTheDropdown selectionConfigMaxDropdownItemsFive (highlightOptionInList wrench tools) |> DropdownOptions.test_getOptions)
                         (highlightOptionInList wrench
                             [ multiMeter
                             , sawZaw
@@ -194,7 +194,7 @@ suite =
             , test "it shows the maximum number of options before the highlighted option if the highlighted option is the last one" <|
                 \_ ->
                     Expect.equalLists
-                        (figureOutWhichOptionsToShowInTheDropdown selectionConfigMaxDropdownItemsFive (highlightOptionInList xActoKnife tools))
+                        (figureOutWhichOptionsToShowInTheDropdown selectionConfigMaxDropdownItemsFive (highlightOptionInList xActoKnife tools) |> DropdownOptions.test_getOptions)
                         (highlightOptionInList xActoKnife
                             [ wrench
                             , hammer
@@ -206,7 +206,7 @@ suite =
             , test "it shows the maximum number of options but offset if the highlighted option is just after the first one" <|
                 \_ ->
                     Expect.equalLists
-                        (figureOutWhichOptionsToShowInTheDropdown selectionConfigMaxDropdownItemsFive (highlightOptionInList drill tools))
+                        (figureOutWhichOptionsToShowInTheDropdown selectionConfigMaxDropdownItemsFive (highlightOptionInList drill tools) |> DropdownOptions.test_getOptions)
                         (highlightOptionInList drill
                             [ screwDriver
                             , drill
@@ -218,7 +218,7 @@ suite =
             , test "it shows the maximum number of options but offset if the highlighted option is just before the last one" <|
                 \_ ->
                     Expect.equalLists
-                        (figureOutWhichOptionsToShowInTheDropdown selectionConfigMaxDropdownItemsFive (highlightOptionInList signalTester tools))
+                        (figureOutWhichOptionsToShowInTheDropdown selectionConfigMaxDropdownItemsFive (highlightOptionInList signalTester tools) |> DropdownOptions.test_getOptions)
                         (highlightOptionInList signalTester
                             [ wrench
                             , hammer
@@ -232,7 +232,7 @@ suite =
             [ test "it should show all the maximum number of options starting at the start of the list if nothing in highlighted" <|
                 \_ ->
                     Expect.equalLists
-                        (figureOutWhichOptionsToShowInTheDropdown selectionConfigMaxDropdownItemsSix tools)
+                        (figureOutWhichOptionsToShowInTheDropdown selectionConfigMaxDropdownItemsSix tools |> DropdownOptions.test_getOptions)
                         [ screwDriver
                         , drill
                         , multiMeter
@@ -252,11 +252,11 @@ suite =
                             , signalTester
                             ]
                         )
-                        (figureOutWhichOptionsToShowInTheDropdown selectionConfigMaxDropdownItemsSix (highlightOptionInList wrench tools))
+                        (figureOutWhichOptionsToShowInTheDropdown selectionConfigMaxDropdownItemsSix (highlightOptionInList wrench tools) |> DropdownOptions.test_getOptions)
             , test "it shows the maximum number of options before the highlighted option if the highlighted option is the last one" <|
                 \_ ->
                     Expect.equalLists
-                        (figureOutWhichOptionsToShowInTheDropdown selectionConfigMaxDropdownItemsSix (highlightOptionInList xActoKnife tools))
+                        (figureOutWhichOptionsToShowInTheDropdown selectionConfigMaxDropdownItemsSix (highlightOptionInList xActoKnife tools) |> DropdownOptions.test_getOptions)
                         (highlightOptionInList xActoKnife
                             [ sawZaw
                             , wrench
@@ -269,7 +269,7 @@ suite =
             , test "it shows the maximum number of options but offset if the highlighted option is just after the first one" <|
                 \_ ->
                     Expect.equalLists
-                        (figureOutWhichOptionsToShowInTheDropdown selectionConfigMaxDropdownItemsSix (highlightOptionInList drill tools))
+                        (figureOutWhichOptionsToShowInTheDropdown selectionConfigMaxDropdownItemsSix (highlightOptionInList drill tools) |> DropdownOptions.test_getOptions)
                         (highlightOptionInList drill
                             [ screwDriver
                             , drill
@@ -282,7 +282,7 @@ suite =
             , test "it shows the maximum number of options but offset if the highlighted option is just before the last one" <|
                 \_ ->
                     Expect.equalLists
-                        (figureOutWhichOptionsToShowInTheDropdown selectionConfigMaxDropdownItemsSix (highlightOptionInList signalTester tools))
+                        (figureOutWhichOptionsToShowInTheDropdown selectionConfigMaxDropdownItemsSix (highlightOptionInList signalTester tools) |> DropdownOptions.test_getOptions)
                         (highlightOptionInList signalTester
                             [ sawZaw
                             , wrench
@@ -303,7 +303,7 @@ suite =
                             , hammer
                             ]
                         )
-                        (figureOutWhichOptionsToShowInTheDropdown selectionConfigMaxDropdownItemsThree (selectOptionInList wrench tools))
+                        (figureOutWhichOptionsToShowInTheDropdown selectionConfigMaxDropdownItemsThree (selectOptionInList wrench tools) |> DropdownOptions.test_getOptions)
             ]
         , describe "when we have options that are selected and highlighted"
             [ test "it should show the options around the highlighted option" <|
@@ -320,6 +320,7 @@ suite =
                                 |> selectOptionInList xActoKnife
                                 |> highlightOptionInList wrench
                             )
+                            |> DropdownOptions.test_getOptions
                         )
             ]
         , describe "if there are strong matches"
@@ -337,6 +338,7 @@ suite =
                                     (SearchString.update "wrench")
                                 |> highlightOptionInList wrench
                             )
+                            |> DropdownOptions.test_getOptions
                         )
             ]
         ]
