@@ -18723,13 +18723,12 @@ var $author$project$MuchSelect$DropdownMouseUpOption = function (a) {
 	return {$: 'DropdownMouseUpOption', a: a};
 };
 var $author$project$DropdownOptions$getSearchFilters = function (dropdownOptions) {
-	return $elm_community$maybe_extra$Maybe$Extra$values(
-		A2(
-			$elm$core$List$map,
-			function (option) {
-				return $author$project$Option$getMaybeOptionSearchFilter(option);
-			},
-			$author$project$DropdownOptions$getOptions(dropdownOptions)));
+	return A2(
+		$elm$core$List$map,
+		function (option) {
+			return $author$project$Option$getMaybeOptionSearchFilter(option);
+		},
+		$author$project$DropdownOptions$getOptions(dropdownOptions));
 };
 var $author$project$OptionSearcher$doesSearchStringFindNothing = F3(
 	function (searchString, searchStringMinimumLength, options) {
@@ -18741,8 +18740,13 @@ var $author$project$OptionSearcher$doesSearchStringFindNothing = F3(
 				$author$project$SearchString$length(searchString),
 				$author$project$PositiveInt$toInt(num)) < 1) ? false : A2(
 				$elm$core$List$all,
-				function (optionSearchFilter) {
-					return optionSearchFilter.bestScore > 1000;
+				function (maybeOptionSearchFilter) {
+					if (maybeOptionSearchFilter.$ === 'Nothing') {
+						return false;
+					} else {
+						var optionSearchFilter = maybeOptionSearchFilter.a;
+						return optionSearchFilter.bestScore > 1000;
+					}
 				},
 				$author$project$DropdownOptions$getSearchFilters(options));
 		}
@@ -19285,7 +19289,7 @@ var $author$project$SelectionMode$showDropdown = function (selectionConfig) {
 			return false;
 	}
 };
-var $author$project$MuchSelect$dropdown = F4(
+var $author$project$MuchSelect$customHtmlDropdown = F4(
 	function (selectionMode, options, searchString, _v0) {
 		var valueCasingWidth = _v0.a;
 		var valueCasingHeight = _v0.b;
@@ -21063,7 +21067,7 @@ var $author$project$MuchSelect$view = function (model) {
 				function () {
 				var _v1 = $author$project$SelectionMode$getOutputStyle(model.selectionConfig);
 				if (_v1.$ === 'CustomHtml') {
-					return A4($author$project$MuchSelect$dropdown, model.selectionConfig, model.options, model.searchString, model.valueCasing);
+					return A4($author$project$MuchSelect$customHtmlDropdown, model.selectionConfig, model.options, model.searchString, model.valueCasing);
 				} else {
 					return $author$project$GroupedDropdownOptions$dropdownOptionsToDatalistHtml(
 						A2($author$project$DropdownOptions$figureOutWhichOptionsToShowInTheDropdownThatAreNotSelected, model.selectionConfig, model.options));

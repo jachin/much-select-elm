@@ -13428,7 +13428,6 @@ var $elm$html$Html$Attributes$classList = function (classes) {
 				$elm$core$Tuple$first,
 				A2($elm$core$List$filter, $elm$core$Tuple$second, classes))));
 };
-var $elm$html$Html$div = _VirtualDom_node('div');
 var $author$project$MuchSelect$DropdownMouseDownOption = function (a) {
 	return {$: 7, a: a};
 };
@@ -13441,14 +13440,14 @@ var $author$project$MuchSelect$DropdownMouseOverOption = function (a) {
 var $author$project$MuchSelect$DropdownMouseUpOption = function (a) {
 	return {$: 8, a: a};
 };
+var $elm$html$Html$div = _VirtualDom_node('div');
 var $author$project$DropdownOptions$getSearchFilters = function (dropdownOptions) {
-	return $elm_community$maybe_extra$Maybe$Extra$values(
-		A2(
-			$elm$core$List$map,
-			function (option) {
-				return $author$project$Option$getMaybeOptionSearchFilter(option);
-			},
-			$author$project$DropdownOptions$getOptions(dropdownOptions)));
+	return A2(
+		$elm$core$List$map,
+		function (option) {
+			return $author$project$Option$getMaybeOptionSearchFilter(option);
+		},
+		$author$project$DropdownOptions$getOptions(dropdownOptions));
 };
 var $author$project$OptionSearcher$doesSearchStringFindNothing = F3(
 	function (searchString, searchStringMinimumLength, options) {
@@ -13460,8 +13459,13 @@ var $author$project$OptionSearcher$doesSearchStringFindNothing = F3(
 				$author$project$SearchString$length(searchString),
 				$author$project$PositiveInt$toInt(num)) < 1) ? false : A2(
 				$elm$core$List$all,
-				function (optionSearchFilter) {
-					return optionSearchFilter.bc > 1000;
+				function (maybeOptionSearchFilter) {
+					if (maybeOptionSearchFilter.$ === 1) {
+						return false;
+					} else {
+						var optionSearchFilter = maybeOptionSearchFilter.a;
+						return optionSearchFilter.bc > 1000;
+					}
 				},
 				$author$project$DropdownOptions$getSearchFilters(options));
 		}
@@ -14027,7 +14031,7 @@ var $author$project$SelectionMode$showDropdown = function (selectionConfig) {
 };
 var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
 var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
-var $author$project$MuchSelect$dropdown = F4(
+var $author$project$MuchSelect$customHtmlDropdown = F4(
 	function (selectionMode, options, searchString, _v0) {
 		var valueCasingWidth = _v0.a;
 		var valueCasingHeight = _v0.b;
@@ -15858,7 +15862,7 @@ var $author$project$MuchSelect$view = function (model) {
 				function () {
 				var _v1 = $author$project$SelectionMode$getOutputStyle(model.a);
 				if (!_v1) {
-					return A4($author$project$MuchSelect$dropdown, model.a, model.b, model.g, model.a8);
+					return A4($author$project$MuchSelect$customHtmlDropdown, model.a, model.b, model.g, model.a8);
 				} else {
 					return $author$project$GroupedDropdownOptions$dropdownOptionsToDatalistHtml(
 						A2($author$project$DropdownOptions$figureOutWhichOptionsToShowInTheDropdownThatAreNotSelected, model.a, model.b));

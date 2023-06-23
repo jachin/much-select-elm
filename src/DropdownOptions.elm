@@ -141,7 +141,7 @@ test_fromOptions options =
     DropdownOptions options
 
 
-getSearchFilters : DropdownOptions -> List OptionSearchFilter
+getSearchFilters : DropdownOptions -> List (Maybe OptionSearchFilter)
 getSearchFilters dropdownOptions =
     dropdownOptions
         |> getOptions
@@ -149,7 +149,6 @@ getSearchFilters dropdownOptions =
             (\option ->
                 Option.getMaybeOptionSearchFilter option
             )
-        |> Maybe.Extra.values
 
 
 groupInOrder : DropdownOptions -> List ( OptionGroup, DropdownOptions )

@@ -983,7 +983,8 @@ findHighlightedOrSelectedOptionIndex options =
 
 filterOptionsToShowInDropdown : SelectionConfig -> List Option -> List Option
 filterOptionsToShowInDropdown selectionConfig =
-    filterOptionsToShowInDropdownByOptionDisplay selectionConfig >> filterOptionsToShowInDropdownBySearchScore
+    filterOptionsToShowInDropdownByOptionDisplay selectionConfig
+        >> filterOptionsToShowInDropdownBySearchScore
 
 
 filterOptionsToShowInDropdownByOptionDisplay : SelectionConfig -> List Option -> List Option

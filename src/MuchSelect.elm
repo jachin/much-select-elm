@@ -2105,7 +2105,7 @@ view model =
                 model.rightSlot
         , case getOutputStyle model.selectionConfig of
             CustomHtml ->
-                dropdown
+                customHtmlDropdown
                     model.selectionConfig
                     model.options
                     model.searchString
@@ -2756,8 +2756,8 @@ type alias DropdownItemEventListeners msg =
     }
 
 
-dropdown : SelectionConfig -> List Option -> SearchString -> ValueCasing -> Html Msg
-dropdown selectionMode options searchString (ValueCasing valueCasingWidth valueCasingHeight) =
+customHtmlDropdown : SelectionConfig -> List Option -> SearchString -> ValueCasing -> Html Msg
+customHtmlDropdown selectionMode options searchString (ValueCasing valueCasingWidth valueCasingHeight) =
     let
         optionsForTheDropdown =
             figureOutWhichOptionsToShowInTheDropdown selectionMode options

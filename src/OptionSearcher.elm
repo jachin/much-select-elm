@@ -229,8 +229,13 @@ doesSearchStringFindNothing searchString searchStringMinimumLength options =
                 options
                     |> getSearchFilters
                     |> List.all
-                        (\optionSearchFilter ->
-                            optionSearchFilter.bestScore > 1000
+                        (\maybeOptionSearchFilter ->
+                            case maybeOptionSearchFilter of
+                                Nothing ->
+                                    False
+
+                                Just optionSearchFilter ->
+                                    optionSearchFilter.bestScore > 1000
                         )
 
 
