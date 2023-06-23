@@ -113,6 +113,7 @@ dataListOptionGroupToHtml groupedDropdownOptions =
                     dropdownOptionsToDatalistOption dropdownOptions
 
                 optionGroupAsString ->
+                    -- TODO I don't think this case "does" anything. `DatalistOption` does hot have an option group.
                     [ optgroup
                         [ Html.Attributes.attribute "label" optionGroupAsString ]
                         (dropdownOptionsToDatalistOption dropdownOptions)

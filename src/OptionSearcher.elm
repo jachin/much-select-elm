@@ -18,6 +18,7 @@ import TransformAndValidate
 
 updateOptionsWithSearchStringAndCustomOption : SelectionConfig -> SearchString -> List Option -> List Option
 updateOptionsWithSearchStringAndCustomOption selectionConfig searchString options =
+    -- TODO This function is only used in tests. It should be removed.
     options
         |> updateOrAddCustomOption searchString selectionConfig
         |> updateOptionsWithSearchString searchString (selectionConfig |> getSearchStringMinimumLength)
