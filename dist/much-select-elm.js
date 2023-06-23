@@ -13511,11 +13511,12 @@ var $author$project$DropdownOptions$groupInOrder = function (dropdownOptions) {
 	return A2(
 		$elm$core$List$map,
 		function (_v0) {
-			var option = _v0.a;
-			var options_ = _v0.b;
+			var firstOption = _v0.a;
+			var restOfOptions = _v0.b;
 			return _Utils_Tuple2(
-				$author$project$Option$getOptionGroup(option),
-				$author$project$DropdownOptions$DropdownOptions(options_));
+				$author$project$Option$getOptionGroup(firstOption),
+				$author$project$DropdownOptions$DropdownOptions(
+					A2($elm$core$List$cons, firstOption, restOfOptions)));
 		},
 		A2(
 			$elm_community$list_extra$List$Extra$groupWhile,

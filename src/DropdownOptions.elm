@@ -160,7 +160,12 @@ groupInOrder dropdownOptions =
             getOptionGroup optionA == getOptionGroup optionB
     in
     List.Extra.groupWhile helper (getOptions dropdownOptions)
-        |> List.map (\( option, options_ ) -> ( getOptionGroup option, DropdownOptions options_ ))
+        |> List.map
+            (\( firstOption, restOfOptions ) ->
+                ( getOptionGroup firstOption
+                , DropdownOptions (firstOption :: restOfOptions)
+                )
+            )
 
 
 maybeFirstOptionSearchFilter : DropdownOptions -> Maybe OptionSearchFilter

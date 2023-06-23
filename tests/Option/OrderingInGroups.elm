@@ -12,8 +12,6 @@ import Option
         , optionGroupToString
         , setGroupWithString
         )
-import OptionLabel exposing (optionLabelToString)
-import OptionValue exposing (optionValueToString)
 import Test exposing (Test, describe, test)
 
 
