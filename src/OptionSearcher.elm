@@ -1,5 +1,6 @@
 module OptionSearcher exposing (decodeSearchParams, doesSearchStringFindNothing, encodeSearchParams, simpleMatch, updateOptionsWithSearchString, updateOptionsWithSearchStringAndCustomOption, updateOrAddCustomOption, updateSearchResultInOption)
 
+import DropdownOptions exposing (DropdownOptions, getSearchFilters)
 import Fuzzy exposing (Result, match)
 import Json.Decode
 import Json.Encode
@@ -214,7 +215,7 @@ updateOptionsWithSearchString searchString searchStringMinimumLength options =
                 )
 
 
-doesSearchStringFindNothing : SearchString -> SearchStringMinimumLength -> List Option -> Bool
+doesSearchStringFindNothing : SearchString -> SearchStringMinimumLength -> DropdownOptions -> Bool
 doesSearchStringFindNothing searchString searchStringMinimumLength options =
     case searchStringMinimumLength of
         NoMinimumToSearchStringLength ->
@@ -225,16 +226,12 @@ doesSearchStringFindNothing searchString searchStringMinimumLength options =
                 False
 
             else
-                List.all
-                    (\option ->
-                        case Option.getMaybeOptionSearchFilter option of
-                            Just optionSearchFilter ->
-                                optionSearchFilter.bestScore > 1000
-
-                            Nothing ->
-                                False
-                    )
-                    options
+                options
+                    |> getSearchFilters
+                    |> List.all
+                        (\optionSearchFilter ->
+                            optionSearchFilter.bestScore > 1000
+                        )
 
 
 encodeSearchParams : SearchString -> SearchStringMinimumLength -> Int -> Bool -> Json.Encode.Value
