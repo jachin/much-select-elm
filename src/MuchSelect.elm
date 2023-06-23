@@ -3,9 +3,30 @@ module MuchSelect exposing (..)
 import Bounce exposing (Bounce)
 import Browser
 import ConfigDump
-import DropdownOptions exposing (DropdownOptions, figureOutWhichOptionsToShowInTheDropdown, moveHighlightedOptionDown, moveHighlightedOptionUp)
-import Events exposing (mouseUpPreventDefault, onClickPreventDefaultAndStopPropagation, onMouseDownStopPropagation, onMouseDownStopPropagationAndPreventDefault, onMouseUpStopPropagation, onMouseUpStopPropagationAndPreventDefault)
-import GroupedDropdownOptions exposing (DropdownOptionsGroup, GroupedDropdownOptions, groupOptionsInOrder, optionGroupsToHtml)
+import DomStateCache exposing (DomStateCache)
+import DropdownOptions
+    exposing
+        ( DropdownOptions
+        , figureOutWhichOptionsToShowInTheDropdown
+        , moveHighlightedOptionDown
+        , moveHighlightedOptionUp
+        )
+import Events
+    exposing
+        ( mouseUpPreventDefault
+        , onClickPreventDefaultAndStopPropagation
+        , onMouseDownStopPropagation
+        , onMouseDownStopPropagationAndPreventDefault
+        , onMouseUpStopPropagation
+        , onMouseUpStopPropagationAndPreventDefault
+        )
+import GroupedDropdownOptions
+    exposing
+        ( DropdownOptionsGroup
+        , GroupedDropdownOptions
+        , groupOptionsInOrder
+        , optionGroupsToHtml
+        )
 import Html exposing (Html, button, div, input, li, node, span, text, ul)
 import Html.Attributes
     exposing
@@ -297,6 +318,7 @@ type alias Model =
     , rightSlot : RightSlot
     , valueCasing : ValueCasing
     , selectedValueEncoding : SelectedValueEncoding
+    , domStateCache : DomStateCache
     }
 
 
@@ -1373,6 +1395,10 @@ update msg model =
                                         True
                                         Nothing
                                         model.selectionConfig
+                                , domStateCache =
+                                    DomStateCache.updateAllowCustomOptions
+                                        DomStateCache.CustomOptionsAllowed
+                                        model.domStateCache
                               }
                             , NoEffect
                             )
@@ -1384,6 +1410,10 @@ update msg model =
                                         False
                                         Nothing
                                         model.selectionConfig
+                                , domStateCache =
+                                    DomStateCache.updateAllowCustomOptions
+                                        DomStateCache.CustomOptionsNotAllowed
+                                        model.domStateCache
                               }
                             , NoEffect
                             )
@@ -1395,6 +1425,10 @@ update msg model =
                                         True
                                         Nothing
                                         model.selectionConfig
+                                , domStateCache =
+                                    DomStateCache.updateAllowCustomOptions
+                                        DomStateCache.CustomOptionsAllowed
+                                        model.domStateCache
                               }
                             , NoEffect
                             )
@@ -1406,6 +1440,10 @@ update msg model =
                                         True
                                         (Just customOptionHint)
                                         model.selectionConfig
+                                , domStateCache =
+                                    DomStateCache.updateAllowCustomOptions
+                                        (DomStateCache.CustomOptionsAllowedWithHint customOptionHint)
+                                        model.domStateCache
                               }
                             , NoEffect
                             )
@@ -3475,6 +3513,20 @@ init flags =
       -- TODO Should the value casing's initial values be passed in as flags?
       , valueCasing = ValueCasing 100 45
       , selectedValueEncoding = selectedValueEncoding
+      , domStateCache =
+            { allowCustomOptions =
+                case SelectionMode.getCustomOptions selectionConfig of
+                    OutputStyle.AllowCustomOptions maybeHint _ ->
+                        case maybeHint of
+                            Just hint ->
+                                DomStateCache.CustomOptionsAllowedWithHint hint
+
+                            Nothing ->
+                                DomStateCache.CustomOptionsAllowed
+
+                    OutputStyle.NoCustomOptions ->
+                        DomStateCache.CustomOptionsNotAllowed
+            }
       }
     , batch
         [ errorEffect
