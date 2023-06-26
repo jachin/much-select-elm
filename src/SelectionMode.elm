@@ -48,6 +48,7 @@ module SelectionMode exposing
     , stringToOutputStyle
     )
 
+import DomStateCache exposing (DomStateCache)
 import OutputStyle
     exposing
         ( CustomOptionHint
@@ -323,8 +324,21 @@ getOutputStyle selectionConfig =
                     Datalist
 
 
-setOutputStyle : OutputStyle -> SelectionConfig -> SelectionConfig
-setOutputStyle outputStyle selectionConfig =
+getCustomOptionsFromDomStateCache : DomStateCache -> CustomOptions
+getCustomOptionsFromDomStateCache domStateCache =
+    case domStateCache.allowCustomOptions of
+        DomStateCache.CustomOptionsNotAllowed ->
+            NoCustomOptions
+
+        DomStateCache.CustomOptionsAllowed ->
+            AllowCustomOptions Nothing TransformAndValidate.empty
+
+        DomStateCache.CustomOptionsAllowedWithHint string ->
+            AllowCustomOptions (Just string) TransformAndValidate.empty
+
+
+setOutputStyle : DomStateCache -> OutputStyle -> SelectionConfig -> SelectionConfig
+setOutputStyle domStateCache outputStyle selectionConfig =
     -- TODO when changing output styles we should try to account for as much as we can, including seeing if we can
     --   - get the options in the right shape
     --   - any attribute that are set that might be relevant for the new output style
@@ -337,7 +351,14 @@ setOutputStyle outputStyle selectionConfig =
                             selectionConfig
 
                         SingleSelectDatalist _ _ ->
-                            SingleSelectConfig (SingleSelectCustomHtml defaultSingleSelectCustomHtmlFields) placeholder interactionState
+                            let
+                                customOptions =
+                                    getCustomOptionsFromDomStateCache domStateCache
+
+                                singleSelectCustomHtmlFields =
+                                    { defaultSingleSelectCustomHtmlFields | customOptions = customOptions }
+                            in
+                            SingleSelectConfig (SingleSelectCustomHtml singleSelectCustomHtmlFields) placeholder interactionState
 
                 MultiSelectConfig multiSelectOutputStyle placeholder interactionState ->
                     case multiSelectOutputStyle of
@@ -345,7 +366,14 @@ setOutputStyle outputStyle selectionConfig =
                             selectionConfig
 
                         MultiSelectDataList _ _ ->
-                            MultiSelectConfig (MultiSelectCustomHtml defaultMultiSelectCustomHtmlFields) placeholder interactionState
+                            let
+                                customOptions =
+                                    getCustomOptionsFromDomStateCache domStateCache
+
+                                multiSelectCustomHtmlFields =
+                                    { defaultMultiSelectCustomHtmlFields | customOptions = customOptions }
+                            in
+                            MultiSelectConfig (MultiSelectCustomHtml multiSelectCustomHtmlFields) placeholder interactionState
 
         Datalist ->
             case selectionConfig of

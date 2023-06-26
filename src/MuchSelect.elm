@@ -988,6 +988,7 @@ update msg model =
                     let
                         newSelectionConfig =
                             SelectionMode.setOutputStyle
+                                model.domStateCache
                                 outputStyle
                                 model.selectionConfig
                     in
@@ -1549,6 +1550,7 @@ update msg model =
                             let
                                 newSelectionConfig =
                                     SelectionMode.setOutputStyle
+                                        model.domStateCache
                                         outputStyle
                                         model.selectionConfig
                             in
@@ -1560,6 +1562,16 @@ update msg model =
                                         (newSelectionConfig |> SelectionMode.getOutputStyle)
                                         (newSelectionConfig |> SelectionMode.getSelectionMode)
                                         model.options
+                                , domStateCache =
+                                    DomStateCache.updateOutputStyle
+                                        (case outputStyle of
+                                            Datalist ->
+                                                DomStateCache.OutputStyleDatalist
+
+                                            CustomHtml ->
+                                                DomStateCache.OutputStyleCustomHtml
+                                        )
+                                        model.domStateCache
                               }
                             , FetchOptionsFromDom
                             )
@@ -1783,6 +1795,7 @@ update msg model =
                     let
                         newSelectionConfig =
                             SelectionMode.setOutputStyle
+                                model.domStateCache
                                 CustomHtml
                                 model.selectionConfig
                     in
@@ -3535,6 +3548,13 @@ init flags =
 
                     OutputStyle.NoCustomOptions ->
                         DomStateCache.CustomOptionsNotAllowed
+            , outputStyle =
+                case SelectionMode.getOutputStyle selectionConfig of
+                    CustomHtml ->
+                        DomStateCache.OutputStyleCustomHtml
+
+                    Datalist ->
+                        DomStateCache.OutputStyleDatalist
             }
       }
     , batch

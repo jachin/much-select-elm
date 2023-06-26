@@ -10595,6 +10595,8 @@ var $author$project$MuchSelect$NoEffect = {$: 'NoEffect'};
 var $author$project$OutputStyle$NoMinimumToSearchStringLength = {$: 'NoMinimumToSearchStringLength'};
 var $author$project$OptionSorting$NoSorting = {$: 'NoSorting'};
 var $author$project$RightSlot$NotInFocusTransition = {$: 'NotInFocusTransition'};
+var $author$project$DomStateCache$OutputStyleCustomHtml = {$: 'OutputStyleCustomHtml'};
+var $author$project$DomStateCache$OutputStyleDatalist = {$: 'OutputStyleDatalist'};
 var $author$project$MuchSelect$ReportErrorMessage = function (a) {
 	return {$: 'ReportErrorMessage', a: a};
 };
@@ -12655,8 +12657,8 @@ var $author$project$MuchSelect$init = function (flags) {
 	var optionsWithInitialValueSelected = _v12.a;
 	var errorEffect = _v12.b;
 	var optionsWithInitialValueSelectedSorted = function () {
-		var _v21 = $author$project$SelectionMode$getOutputStyle(selectionConfig);
-		if (_v21.$ === 'CustomHtml') {
+		var _v22 = $author$project$SelectionMode$getOutputStyle(selectionConfig);
+		if (_v22.$ === 'CustomHtml') {
 			return A2($author$project$OptionSorting$sortOptions, optionSort, optionsWithInitialValueSelected);
 		} else {
 			return $author$project$OptionsUtilities$organizeNewDatalistOptions(optionsWithInitialValueSelected);
@@ -12678,6 +12680,14 @@ var $author$project$MuchSelect$init = function (flags) {
 					} else {
 						return $author$project$DomStateCache$CustomOptionsNotAllowed;
 					}
+				}(),
+				outputStyle: function () {
+					var _v18 = $author$project$SelectionMode$getOutputStyle(selectionConfig);
+					if (_v18.$ === 'CustomHtml') {
+						return $author$project$DomStateCache$OutputStyleCustomHtml;
+					} else {
+						return $author$project$DomStateCache$OutputStyleDatalist;
+					}
 				}()
 			},
 			focusedIndex: 0,
@@ -12691,17 +12701,17 @@ var $author$project$MuchSelect$init = function (flags) {
 				if (flags.loading) {
 					return $author$project$RightSlot$ShowLoadingIndicator;
 				} else {
-					var _v18 = $author$project$SelectionMode$getOutputStyle(selectionConfig);
-					if (_v18.$ === 'CustomHtml') {
-						var _v19 = $author$project$SelectionMode$getSelectionMode(selectionConfig);
-						if (_v19.$ === 'SingleSelect') {
+					var _v19 = $author$project$SelectionMode$getOutputStyle(selectionConfig);
+					if (_v19.$ === 'CustomHtml') {
+						var _v20 = $author$project$SelectionMode$getSelectionMode(selectionConfig);
+						if (_v20.$ === 'SingleSelect') {
 							return $author$project$RightSlot$ShowDropdownIndicator($author$project$RightSlot$NotInFocusTransition);
 						} else {
 							return $author$project$OptionsUtilities$hasSelectedOption(optionsWithInitialValueSelected) ? $author$project$RightSlot$ShowClearButton : $author$project$RightSlot$ShowDropdownIndicator($author$project$RightSlot$NotInFocusTransition);
 						}
 					} else {
-						var _v20 = $author$project$SelectionMode$getSelectionMode(selectionConfig);
-						if (_v20.$ === 'SingleSelect') {
+						var _v21 = $author$project$SelectionMode$getSelectionMode(selectionConfig);
+						if (_v21.$ === 'SingleSelect') {
 							return $author$project$RightSlot$ShowNothing;
 						} else {
 							return $author$project$RightSlot$updateRightSlotForDatalist(optionsWithInitialValueSelectedSorted);
@@ -16275,8 +16285,23 @@ var $author$project$OutputStyle$defaultSingleSelectCustomHtmlFields = {
 		$author$project$PositiveInt$new(2)),
 	selectedItemPlacementMode: $author$project$OutputStyle$SelectedItemStaysInPlace
 };
-var $author$project$SelectionMode$setOutputStyle = F2(
-	function (outputStyle, selectionConfig) {
+var $author$project$SelectionMode$getCustomOptionsFromDomStateCache = function (domStateCache) {
+	var _v0 = domStateCache.allowCustomOptions;
+	switch (_v0.$) {
+		case 'CustomOptionsNotAllowed':
+			return $author$project$OutputStyle$NoCustomOptions;
+		case 'CustomOptionsAllowed':
+			return A2($author$project$OutputStyle$AllowCustomOptions, $elm$core$Maybe$Nothing, $author$project$TransformAndValidate$empty);
+		default:
+			var string = _v0.a;
+			return A2(
+				$author$project$OutputStyle$AllowCustomOptions,
+				$elm$core$Maybe$Just(string),
+				$author$project$TransformAndValidate$empty);
+	}
+};
+var $author$project$SelectionMode$setOutputStyle = F3(
+	function (domStateCache, outputStyle, selectionConfig) {
 		if (outputStyle.$ === 'CustomHtml') {
 			if (selectionConfig.$ === 'SingleSelectConfig') {
 				var singleSelectOutputStyle = selectionConfig.a;
@@ -16285,9 +16310,13 @@ var $author$project$SelectionMode$setOutputStyle = F2(
 				if (singleSelectOutputStyle.$ === 'SingleSelectCustomHtml') {
 					return selectionConfig;
 				} else {
+					var customOptions = $author$project$SelectionMode$getCustomOptionsFromDomStateCache(domStateCache);
+					var singleSelectCustomHtmlFields = _Utils_update(
+						$author$project$OutputStyle$defaultSingleSelectCustomHtmlFields,
+						{customOptions: customOptions});
 					return A3(
 						$author$project$SelectionMode$SingleSelectConfig,
-						$author$project$OutputStyle$SingleSelectCustomHtml($author$project$OutputStyle$defaultSingleSelectCustomHtmlFields),
+						$author$project$OutputStyle$SingleSelectCustomHtml(singleSelectCustomHtmlFields),
 						placeholder,
 						interactionState);
 				}
@@ -16298,9 +16327,13 @@ var $author$project$SelectionMode$setOutputStyle = F2(
 				if (multiSelectOutputStyle.$ === 'MultiSelectCustomHtml') {
 					return selectionConfig;
 				} else {
+					var customOptions = $author$project$SelectionMode$getCustomOptionsFromDomStateCache(domStateCache);
+					var multiSelectCustomHtmlFields = _Utils_update(
+						$author$project$OutputStyle$defaultMultiSelectCustomHtmlFields,
+						{customOptions: customOptions});
 					return A3(
 						$author$project$SelectionMode$MultiSelectConfig,
-						$author$project$OutputStyle$MultiSelectCustomHtml($author$project$OutputStyle$defaultMultiSelectCustomHtmlFields),
+						$author$project$OutputStyle$MultiSelectCustomHtml(multiSelectCustomHtmlFields),
 						placeholder,
 						interactionState);
 				}
@@ -16966,6 +16999,12 @@ var $author$project$OptionsUtilities$updateOptionsWithNewSearchResults = F2(
 				}
 			},
 			options);
+	});
+var $author$project$DomStateCache$updateOutputStyle = F2(
+	function (outputStyleAttribute, domStateCache) {
+		return _Utils_update(
+			domStateCache,
+			{outputStyle: outputStyleAttribute});
 	});
 var $author$project$RightSlot$updateRightSlotLoading = F4(
 	function (current, selectionConfig, selectedOptions, isLoading_) {
@@ -17829,7 +17868,7 @@ var $author$project$MuchSelect$update = F2(
 				var _v23 = $author$project$SelectionMode$stringToOutputStyle(newOutputStyleString);
 				if (_v23.$ === 'Ok') {
 					var outputStyle = _v23.a;
-					var newSelectionConfig = A2($author$project$SelectionMode$setOutputStyle, outputStyle, model.selectionConfig);
+					var newSelectionConfig = A3($author$project$SelectionMode$setOutputStyle, model.domStateCache, outputStyle, model.selectionConfig);
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
@@ -18381,11 +18420,21 @@ var $author$project$MuchSelect$update = F2(
 						var _v38 = $author$project$SelectionMode$stringToOutputStyle(newAttributeValue);
 						if (_v38.$ === 'Ok') {
 							var outputStyle = _v38.a;
-							var newSelectionConfig = A2($author$project$SelectionMode$setOutputStyle, outputStyle, model.selectionConfig);
+							var newSelectionConfig = A3($author$project$SelectionMode$setOutputStyle, model.domStateCache, outputStyle, model.selectionConfig);
 							return _Utils_Tuple2(
 								_Utils_update(
 									model,
 									{
+										domStateCache: A2(
+											$author$project$DomStateCache$updateOutputStyle,
+											function () {
+												if (outputStyle.$ === 'Datalist') {
+													return $author$project$DomStateCache$OutputStyleDatalist;
+												} else {
+													return $author$project$DomStateCache$OutputStyleCustomHtml;
+												}
+											}(),
+											model.domStateCache),
 										rightSlot: A4(
 											$author$project$RightSlot$updateRightSlot,
 											model.rightSlot,
@@ -18422,9 +18471,9 @@ var $author$project$MuchSelect$update = F2(
 										})),
 								$author$project$MuchSelect$NoEffect);
 						} else {
-							var _v40 = $author$project$PositiveInt$fromString(newAttributeValue);
-							if (_v40.$ === 'Just') {
-								var minimumLength = _v40.a;
+							var _v41 = $author$project$PositiveInt$fromString(newAttributeValue);
+							if (_v41.$ === 'Just') {
+								var minimumLength = _v41.a;
 								return _Utils_Tuple2(
 									$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
 										_Utils_update(
@@ -18451,9 +18500,9 @@ var $author$project$MuchSelect$update = F2(
 								}),
 							$author$project$MuchSelect$NoEffect);
 					case 'selected-value':
-						var _v41 = A2($author$project$SelectedValueEncoding$stringToValueStrings, model.selectedValueEncoding, newAttributeValue);
-						if (_v41.$ === 'Ok') {
-							var selectedValueStrings = _v41.a;
+						var _v42 = A2($author$project$SelectedValueEncoding$stringToValueStrings, model.selectedValueEncoding, newAttributeValue);
+						if (_v42.$ === 'Ok') {
+							var selectedValueStrings = _v42.a;
 							if (A2($author$project$OptionsUtilities$selectedOptionValuesAreEqual, selectedValueStrings, model.options)) {
 								return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
 							} else {
@@ -18501,22 +18550,22 @@ var $author$project$MuchSelect$update = F2(
 								}
 							}
 						} else {
-							var error = _v41.a;
+							var error = _v42.a;
 							return _Utils_Tuple2(
 								model,
 								$author$project$MuchSelect$ReportErrorMessage(error));
 						}
 					case 'selected-value-encoding':
-						var _v44 = $author$project$SelectedValueEncoding$fromString(newAttributeValue);
-						if (_v44.$ === 'Ok') {
-							var selectedValueEncoding = _v44.a;
+						var _v45 = $author$project$SelectedValueEncoding$fromString(newAttributeValue);
+						if (_v45.$ === 'Ok') {
+							var selectedValueEncoding = _v45.a;
 							return _Utils_Tuple2(
 								_Utils_update(
 									model,
 									{selectedValueEncoding: selectedValueEncoding}),
 								$author$project$MuchSelect$NoEffect);
 						} else {
-							var error = _v44.a;
+							var error = _v45.a;
 							return _Utils_Tuple2(
 								model,
 								$author$project$MuchSelect$ReportErrorMessage(error));
@@ -18624,7 +18673,7 @@ var $author$project$MuchSelect$update = F2(
 								{optionSort: $author$project$OptionSorting$NoSorting}),
 							$author$project$MuchSelect$NoEffect);
 					case 'output-style':
-						var newSelectionConfig = A2($author$project$SelectionMode$setOutputStyle, $author$project$SelectionMode$CustomHtml, model.selectionConfig);
+						var newSelectionConfig = A3($author$project$SelectionMode$setOutputStyle, model.domStateCache, $author$project$SelectionMode$CustomHtml, model.selectionConfig);
 						return _Utils_Tuple2(
 							_Utils_update(
 								model,
