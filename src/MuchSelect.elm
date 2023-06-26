@@ -2400,6 +2400,14 @@ valueCasingClassList selectionConfig hasOptionSelected hasAnError =
 
                 Datalist ->
                     False
+
+        allowsCustomOptions =
+            case SelectionMode.getCustomOptions selectionConfig of
+                OutputStyle.AllowCustomOptions _ _ ->
+                    True
+
+                OutputStyle.NoCustomOptions ->
+                    False
     in
     [ ( "has-option-selected", hasOptionSelected )
     , ( "no-option-selected", not hasOptionSelected )
@@ -2409,6 +2417,7 @@ valueCasingClassList selectionConfig hasOptionSelected hasAnError =
     , ( "focused", isFocused_ )
     , ( "not-focused", not isFocused_ )
     , ( "show-placeholder", showPlaceholder )
+    , ( "allows-custom-options", allowsCustomOptions )
     , ( "error", hasAnError )
     ]
 

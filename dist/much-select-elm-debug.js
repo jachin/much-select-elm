@@ -20439,16 +20439,16 @@ var $author$project$MuchSelect$tabIndexAttribute = function (disabled) {
 var $author$project$MuchSelect$valueCasingClassList = F3(
 	function (selectionConfig, hasOptionSelected, hasAnError) {
 		var selectionModeClass = function () {
-			var _v2 = $author$project$SelectionMode$getSelectionMode(selectionConfig);
-			if (_v2.$ === 'SingleSelect') {
+			var _v3 = $author$project$SelectionMode$getSelectionMode(selectionConfig);
+			if (_v3.$ === 'SingleSelect') {
 				return _Utils_Tuple2('single', true);
 			} else {
 				return _Utils_Tuple2('multi', true);
 			}
 		}();
 		var outputStyleClass = function () {
-			var _v1 = $author$project$SelectionMode$getOutputStyle(selectionConfig);
-			if (_v1.$ === 'CustomHtml') {
+			var _v2 = $author$project$SelectionMode$getOutputStyle(selectionConfig);
+			if (_v2.$ === 'CustomHtml') {
 				return _Utils_Tuple2('output-style-custom-html', true);
 			} else {
 				return _Utils_Tuple2('output-style-datalist', true);
@@ -20456,9 +20456,17 @@ var $author$project$MuchSelect$valueCasingClassList = F3(
 		}();
 		var isFocused_ = $author$project$SelectionMode$isFocused(selectionConfig);
 		var showPlaceholder = function () {
-			var _v0 = $author$project$SelectionMode$getOutputStyle(selectionConfig);
-			if (_v0.$ === 'CustomHtml') {
+			var _v1 = $author$project$SelectionMode$getOutputStyle(selectionConfig);
+			if (_v1.$ === 'CustomHtml') {
 				return (!hasOptionSelected) && (!isFocused_);
+			} else {
+				return false;
+			}
+		}();
+		var allowsCustomOptions = function () {
+			var _v0 = $author$project$SelectionMode$getCustomOptions(selectionConfig);
+			if (_v0.$ === 'AllowCustomOptions') {
+				return true;
 			} else {
 				return false;
 			}
@@ -20475,6 +20483,7 @@ var $author$project$MuchSelect$valueCasingClassList = F3(
 				_Utils_Tuple2('focused', isFocused_),
 				_Utils_Tuple2('not-focused', !isFocused_),
 				_Utils_Tuple2('show-placeholder', showPlaceholder),
+				_Utils_Tuple2('allows-custom-options', allowsCustomOptions),
 				_Utils_Tuple2('error', hasAnError)
 			]);
 	});
