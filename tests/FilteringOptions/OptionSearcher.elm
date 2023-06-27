@@ -1,8 +1,8 @@
 module FilteringOptions.OptionSearcher exposing (suite)
 
+import DropdownOptions exposing (figureOutWhichOptionsToShowInTheDropdown)
 import Expect
 import Json.Decode
-import MuchSelect exposing (figureOutWhichOptionsToShowInTheDropdown)
 import Option
 import OptionSearchFilter
 import OptionSearcher exposing (doesSearchStringFindNothing)
@@ -79,7 +79,7 @@ suite =
                             (SearchString.update "frog")
                             (frogs ++ monnies)
                             |> figureOutWhichOptionsToShowInTheDropdown selectionConfig
-                            |> List.length
+                            |> DropdownOptions.length
                         )
                         4
             , test "if some of the search string matches the group we should make sure the dropdown contains just the options that should be there" <|
@@ -100,7 +100,7 @@ suite =
                             (frogs ++ monnies)
                             |> sortOptionsBySearchFilterTotalScore
                             |> figureOutWhichOptionsToShowInTheDropdown selectionConfig
-                            |> List.head
+                            |> DropdownOptions.head
                             |> Maybe.map Option.getOptionValueAsString
                         )
                         (Just "Glass Frog")
@@ -112,7 +112,7 @@ suite =
                             (frogs ++ monnies)
                             |> sortOptionsBySearchFilterTotalScore
                             |> figureOutWhichOptionsToShowInTheDropdown selectionConfig
-                            |> List.head
+                            |> DropdownOptions.head
                             |> Maybe.map Option.getOptionValueAsString
                         )
                         (Just "Minervarya pentali")
@@ -124,7 +124,7 @@ suite =
                             (frogs ++ monnies)
                             |> sortOptionsBySearchFilterTotalScore
                             |> figureOutWhichOptionsToShowInTheDropdown selectionConfig
-                            |> List.head
+                            |> DropdownOptions.head
                             |> Maybe.map Option.getOptionValueAsString
                         )
                         (Just "Ougyiya")

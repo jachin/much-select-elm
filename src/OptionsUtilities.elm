@@ -1,6 +1,6 @@
 module OptionsUtilities exposing (..)
 
-import List.Extra exposing (groupWhile)
+import List.Extra
 import Maybe.Extra
 import Option
     exposing
@@ -9,7 +9,6 @@ import Option
         , deselectOption
         , getMaybeOptionSearchFilter
         , getOptionDisplay
-        , getOptionGroup
         , getOptionLabel
         , getOptionSelectedIndex
         , getOptionValue
@@ -50,30 +49,6 @@ import SortRank exposing (SortRank)
 import TransformAndValidate exposing (ValidationErrorMessage, ValidationFailureMessage)
 
 
-moveHighlightedOptionDown : SelectionConfig -> List Option -> List Option -> List Option
-moveHighlightedOptionDown selectionConfig allOptions visibleOptions =
-    let
-        maybeLowerSibling =
-            visibleOptions
-                |> findHighlightedOrSelectedOptionIndex
-                |> Maybe.andThen (\index -> findClosestHighlightableOptionGoingDown selectionConfig index visibleOptions)
-    in
-    case maybeLowerSibling of
-        Just option ->
-            highlightOptionInList option allOptions
-
-        Nothing ->
-            -- If there is not a lower sibling to highlight, jump up to the top of the list, and see
-            --  if there is a sibling to highlight at the top of the dropdown. There might not be,
-            --  the dropdown might be empty or all the options might be selected.
-            case findClosestHighlightableOptionGoingDown selectionConfig 0 visibleOptions of
-                Just firstOption ->
-                    highlightOptionInList firstOption allOptions
-
-                Nothing ->
-                    allOptions
-
-
 findClosestHighlightableOptionGoingUp : SelectionConfig -> Int -> List Option -> Maybe Option
 findClosestHighlightableOptionGoingUp selectionConfig index options =
     List.Extra.splitAt index options
@@ -82,42 +57,11 @@ findClosestHighlightableOptionGoingUp selectionConfig index options =
         |> List.Extra.find (optionIsHighlightable selectionConfig)
 
 
-moveHighlightedOptionUp : SelectionConfig -> List Option -> List Option -> List Option
-moveHighlightedOptionUp selectionConfig allOptions visibleOptions =
-    let
-        maybeHigherSibling =
-            visibleOptions
-                |> findHighlightedOrSelectedOptionIndex
-                |> Maybe.andThen (\index -> findClosestHighlightableOptionGoingUp selectionConfig index visibleOptions)
-    in
-    case maybeHigherSibling of
-        Just option ->
-            highlightOptionInList option allOptions
-
-        Nothing ->
-            case List.head visibleOptions of
-                Just firstOption ->
-                    highlightOptionInList firstOption allOptions
-
-                Nothing ->
-                    allOptions
-
-
 findClosestHighlightableOptionGoingDown : SelectionConfig -> Int -> List Option -> Maybe Option
 findClosestHighlightableOptionGoingDown selectionConfig index options =
     List.Extra.splitAt index options
         |> Tuple.second
         |> List.Extra.find (optionIsHighlightable selectionConfig)
-
-
-adjustHighlightedOptionAfterSearch : List Option -> List Option -> List Option
-adjustHighlightedOptionAfterSearch allOptions visibleOptions =
-    case List.head visibleOptions of
-        Just firstOption ->
-            highlightOptionInList firstOption allOptions
-
-        Nothing ->
-            allOptions
 
 
 selectOptionInList : Option -> List Option -> List Option
@@ -925,17 +869,6 @@ customOptions options =
     List.filter isCustomOption options
 
 
-groupOptionsInOrder : List Option -> List ( OptionGroup, List Option )
-groupOptionsInOrder options =
-    let
-        helper : Option -> Option -> Bool
-        helper optionA optionB =
-            getOptionGroup optionA == getOptionGroup optionB
-    in
-    groupWhile helper options
-        |> List.map (\( first, rest ) -> ( getOptionGroup first, first :: rest ))
-
-
 optionListContainsOptionWithValueString : String -> List Option -> Bool
 optionListContainsOptionWithValueString valueString options =
     let
@@ -1050,7 +983,8 @@ findHighlightedOrSelectedOptionIndex options =
 
 filterOptionsToShowInDropdown : SelectionConfig -> List Option -> List Option
 filterOptionsToShowInDropdown selectionConfig =
-    filterOptionsToShowInDropdownByOptionDisplay selectionConfig >> filterOptionsToShowInDropdownBySearchScore
+    filterOptionsToShowInDropdownByOptionDisplay selectionConfig
+        >> filterOptionsToShowInDropdownBySearchScore
 
 
 filterOptionsToShowInDropdownByOptionDisplay : SelectionConfig -> List Option -> List Option

@@ -1,8 +1,8 @@
 module Option.Highlighting exposing (suite)
 
+import DropdownOptions exposing (moveHighlightedOptionDown, moveHighlightedOptionUp)
 import Expect
 import Option
-import OptionsUtilities exposing (moveHighlightedOptionDown, moveHighlightedOptionUp)
 import SelectionMode
 import Test exposing (Test, describe, test)
 
@@ -21,7 +21,7 @@ suite =
                             ]
                     in
                     Expect.equal
-                        (moveHighlightedOptionDown SelectionMode.defaultSelectionConfig options options)
+                        (moveHighlightedOptionDown SelectionMode.defaultSelectionConfig options)
                         [ Option.newOption "one" Nothing |> Option.highlightOption
                         , Option.newOption "two" Nothing
                         , Option.newOption "three" Nothing
@@ -36,7 +36,7 @@ suite =
                             ]
                     in
                     Expect.equal
-                        (moveHighlightedOptionDown SelectionMode.defaultSelectionConfig options options)
+                        (moveHighlightedOptionDown SelectionMode.defaultSelectionConfig options)
                         [ Option.newOption "one" Nothing
                         , Option.newOption "two" Nothing |> Option.selectOption 0 |> Option.highlightOption
                         , Option.newOption "three" Nothing
@@ -52,7 +52,7 @@ suite =
                             ]
                     in
                     Expect.equal
-                        (moveHighlightedOptionDown SelectionMode.defaultSelectionConfig options options)
+                        (moveHighlightedOptionDown SelectionMode.defaultSelectionConfig options)
                         [ Option.newOption "one" Nothing
                         , Option.newDisabledOption "two" Nothing
                         , Option.newDisabledOption "three" Nothing
@@ -70,7 +70,7 @@ suite =
                             ]
                     in
                     Expect.equal
-                        (moveHighlightedOptionUp SelectionMode.defaultSelectionConfig options options)
+                        (moveHighlightedOptionUp SelectionMode.defaultSelectionConfig options)
                         [ Option.newOption "one" Nothing |> Option.highlightOption
                         , Option.newOption "two" Nothing
                         , Option.newOption "three" Nothing
@@ -85,7 +85,7 @@ suite =
                             ]
                     in
                     Expect.equal
-                        (moveHighlightedOptionUp SelectionMode.defaultSelectionConfig options options)
+                        (moveHighlightedOptionUp SelectionMode.defaultSelectionConfig options)
                         [ Option.newOption "one" Nothing
                         , Option.newOption "two" Nothing |> Option.selectOption 0 |> Option.highlightOption
                         , Option.newOption "three" Nothing
@@ -101,7 +101,7 @@ suite =
                             ]
                     in
                     Expect.equal
-                        (moveHighlightedOptionUp SelectionMode.defaultSelectionConfig options options)
+                        (moveHighlightedOptionUp SelectionMode.defaultSelectionConfig options)
                         [ Option.newOption "one" Nothing |> Option.highlightOption
                         , Option.newDisabledOption "two" Nothing
                         , Option.newDisabledOption "three" Nothing
@@ -119,7 +119,7 @@ suite =
                             ]
                     in
                     Expect.equal
-                        (moveHighlightedOptionUp SelectionMode.defaultSelectionConfig options options)
+                        (moveHighlightedOptionUp SelectionMode.defaultSelectionConfig options)
                         [ Option.newOption "one" Nothing
                         , Option.newOption "two" Nothing |> Option.highlightOption
                         , Option.newOption "three" Nothing

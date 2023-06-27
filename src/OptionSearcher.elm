@@ -1,5 +1,6 @@
 module OptionSearcher exposing (decodeSearchParams, doesSearchStringFindNothing, encodeSearchParams, simpleMatch, updateOptionsWithSearchString, updateOptionsWithSearchStringAndCustomOption, updateOrAddCustomOption, updateSearchResultInOption)
 
+import DropdownOptions exposing (DropdownOptions, getSearchFilters)
 import Fuzzy exposing (Result, match)
 import Json.Decode
 import Json.Encode
@@ -17,6 +18,7 @@ import TransformAndValidate
 
 updateOptionsWithSearchStringAndCustomOption : SelectionConfig -> SearchString -> List Option -> List Option
 updateOptionsWithSearchStringAndCustomOption selectionConfig searchString options =
+    -- TODO This function is only used in tests. It should be removed.
     options
         |> updateOrAddCustomOption searchString selectionConfig
         |> updateOptionsWithSearchString searchString (selectionConfig |> getSearchStringMinimumLength)
@@ -214,7 +216,7 @@ updateOptionsWithSearchString searchString searchStringMinimumLength options =
                 )
 
 
-doesSearchStringFindNothing : SearchString -> SearchStringMinimumLength -> List Option -> Bool
+doesSearchStringFindNothing : SearchString -> SearchStringMinimumLength -> DropdownOptions -> Bool
 doesSearchStringFindNothing searchString searchStringMinimumLength options =
     case searchStringMinimumLength of
         NoMinimumToSearchStringLength ->
@@ -225,16 +227,17 @@ doesSearchStringFindNothing searchString searchStringMinimumLength options =
                 False
 
             else
-                List.all
-                    (\option ->
-                        case Option.getMaybeOptionSearchFilter option of
-                            Just optionSearchFilter ->
-                                optionSearchFilter.bestScore > 1000
+                options
+                    |> getSearchFilters
+                    |> List.all
+                        (\maybeOptionSearchFilter ->
+                            case maybeOptionSearchFilter of
+                                Nothing ->
+                                    False
 
-                            Nothing ->
-                                False
-                    )
-                    options
+                                Just optionSearchFilter ->
+                                    optionSearchFilter.bestScore > 1000
+                        )
 
 
 encodeSearchParams : SearchString -> SearchStringMinimumLength -> Int -> Bool -> Json.Encode.Value
