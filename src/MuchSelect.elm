@@ -1462,6 +1462,10 @@ update msg model =
                                 (newSelectionConfig |> SelectionMode.getOutputStyle)
                                 (newSelectionConfig |> SelectionMode.getSelectionMode)
                                 (model.options |> selectedOptions)
+                        , domStateCache =
+                            DomStateCache.updateDisabledAttribute
+                                DomStateCache.HasDisabledAttribute
+                                model.domStateCache
                       }
                     , NoEffect
                     )
@@ -1716,12 +1720,22 @@ update msg model =
                                 False
                                 Nothing
                                 model.selectionConfig
+                        , domStateCache =
+                            DomStateCache.updateAllowCustomOptions
+                                DomStateCache.CustomOptionsNotAllowed
+                                model.domStateCache
                       }
                     , NoEffect
                     )
 
                 "disabled" ->
-                    ( { model | selectionConfig = setIsDisabled False model.selectionConfig }
+                    ( { model
+                        | selectionConfig = setIsDisabled False model.selectionConfig
+                        , domStateCache =
+                            DomStateCache.updateDisabledAttribute
+                                DomStateCache.NoDisabledAttribute
+                                model.domStateCache
+                      }
                     , NoEffect
                     )
 
@@ -3535,27 +3549,7 @@ init flags =
       -- TODO Should the value casing's initial values be passed in as flags?
       , valueCasing = ValueCasing 100 45
       , selectedValueEncoding = selectedValueEncoding
-      , domStateCache =
-            { allowCustomOptions =
-                case SelectionMode.getCustomOptions selectionConfig of
-                    OutputStyle.AllowCustomOptions maybeHint _ ->
-                        case maybeHint of
-                            Just hint ->
-                                DomStateCache.CustomOptionsAllowedWithHint hint
-
-                            Nothing ->
-                                DomStateCache.CustomOptionsAllowed
-
-                    OutputStyle.NoCustomOptions ->
-                        DomStateCache.CustomOptionsNotAllowed
-            , outputStyle =
-                case SelectionMode.getOutputStyle selectionConfig of
-                    CustomHtml ->
-                        DomStateCache.OutputStyleCustomHtml
-
-                    Datalist ->
-                        DomStateCache.OutputStyleDatalist
-            }
+      , domStateCache = SelectionMode.initDomStateCache selectionConfig
       }
     , batch
         [ errorEffect

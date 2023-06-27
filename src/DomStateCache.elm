@@ -1,9 +1,13 @@
-module DomStateCache exposing (CustomOptionsAttribute(..), DomStateCache, OutputStyleAttribute(..), updateAllowCustomOptions, updateOutputStyle)
+module DomStateCache exposing (CustomOptionsAttribute(..), DisabledAttribute(..), DomStateCache, OutputStyleAttribute(..), updateAllowCustomOptions, updateDisabledAttribute, updateOutputStyle)
 
 
 type alias DomStateCache =
     { allowCustomOptions : CustomOptionsAttribute
     , outputStyle : OutputStyleAttribute
+    , disabled : DisabledAttribute
+
+    -- loading
+    -- show-dropdown-footer
     }
 
 
@@ -18,6 +22,11 @@ type OutputStyleAttribute
     | OutputStyleCustomHtml
 
 
+type DisabledAttribute
+    = HasDisabledAttribute
+    | NoDisabledAttribute
+
+
 updateAllowCustomOptions : CustomOptionsAttribute -> DomStateCache -> DomStateCache
 updateAllowCustomOptions customOptions domStateCache =
     { domStateCache | allowCustomOptions = customOptions }
@@ -26,3 +35,8 @@ updateAllowCustomOptions customOptions domStateCache =
 updateOutputStyle : OutputStyleAttribute -> DomStateCache -> DomStateCache
 updateOutputStyle outputStyleAttribute domStateCache =
     { domStateCache | outputStyle = outputStyleAttribute }
+
+
+updateDisabledAttribute : DisabledAttribute -> DomStateCache -> DomStateCache
+updateDisabledAttribute disabledAttribute domStateCache =
+    { domStateCache | disabled = disabledAttribute }
