@@ -3,9 +3,30 @@ module MuchSelect exposing (..)
 import Bounce exposing (Bounce)
 import Browser
 import ConfigDump
-import DropdownOptions exposing (DropdownOptions, figureOutWhichOptionsToShowInTheDropdown, moveHighlightedOptionDown, moveHighlightedOptionUp)
-import Events exposing (mouseUpPreventDefault, onClickPreventDefaultAndStopPropagation, onMouseDownStopPropagation, onMouseDownStopPropagationAndPreventDefault, onMouseUpStopPropagation, onMouseUpStopPropagationAndPreventDefault)
-import GroupedDropdownOptions exposing (DropdownOptionsGroup, GroupedDropdownOptions, groupOptionsInOrder, optionGroupsToHtml)
+import DomStateCache exposing (DomStateCache)
+import DropdownOptions
+    exposing
+        ( DropdownOptions
+        , figureOutWhichOptionsToShowInTheDropdown
+        , moveHighlightedOptionDown
+        , moveHighlightedOptionUp
+        )
+import Events
+    exposing
+        ( mouseUpPreventDefault
+        , onClickPreventDefaultAndStopPropagation
+        , onMouseDownStopPropagation
+        , onMouseDownStopPropagationAndPreventDefault
+        , onMouseUpStopPropagation
+        , onMouseUpStopPropagationAndPreventDefault
+        )
+import GroupedDropdownOptions
+    exposing
+        ( DropdownOptionsGroup
+        , GroupedDropdownOptions
+        , groupOptionsInOrder
+        , optionGroupsToHtml
+        )
 import Html exposing (Html, button, div, input, li, node, span, text, ul)
 import Html.Attributes
     exposing
@@ -297,6 +318,7 @@ type alias Model =
     , rightSlot : RightSlot
     , valueCasing : ValueCasing
     , selectedValueEncoding : SelectedValueEncoding
+    , domStateCache : DomStateCache
     }
 
 
@@ -966,6 +988,7 @@ update msg model =
                     let
                         newSelectionConfig =
                             SelectionMode.setOutputStyle
+                                model.domStateCache
                                 outputStyle
                                 model.selectionConfig
                     in
@@ -1373,6 +1396,10 @@ update msg model =
                                         True
                                         Nothing
                                         model.selectionConfig
+                                , domStateCache =
+                                    DomStateCache.updateAllowCustomOptions
+                                        DomStateCache.CustomOptionsAllowed
+                                        model.domStateCache
                               }
                             , NoEffect
                             )
@@ -1384,6 +1411,10 @@ update msg model =
                                         False
                                         Nothing
                                         model.selectionConfig
+                                , domStateCache =
+                                    DomStateCache.updateAllowCustomOptions
+                                        DomStateCache.CustomOptionsNotAllowed
+                                        model.domStateCache
                               }
                             , NoEffect
                             )
@@ -1395,6 +1426,10 @@ update msg model =
                                         True
                                         Nothing
                                         model.selectionConfig
+                                , domStateCache =
+                                    DomStateCache.updateAllowCustomOptions
+                                        DomStateCache.CustomOptionsAllowed
+                                        model.domStateCache
                               }
                             , NoEffect
                             )
@@ -1406,6 +1441,10 @@ update msg model =
                                         True
                                         (Just customOptionHint)
                                         model.selectionConfig
+                                , domStateCache =
+                                    DomStateCache.updateAllowCustomOptions
+                                        (DomStateCache.CustomOptionsAllowedWithHint customOptionHint)
+                                        model.domStateCache
                               }
                             , NoEffect
                             )
@@ -1423,6 +1462,10 @@ update msg model =
                                 (newSelectionConfig |> SelectionMode.getOutputStyle)
                                 (newSelectionConfig |> SelectionMode.getSelectionMode)
                                 (model.options |> selectedOptions)
+                        , domStateCache =
+                            DomStateCache.updateDisabledAttribute
+                                DomStateCache.HasDisabledAttribute
+                                model.domStateCache
                       }
                     , NoEffect
                     )
@@ -1511,6 +1554,7 @@ update msg model =
                             let
                                 newSelectionConfig =
                                     SelectionMode.setOutputStyle
+                                        model.domStateCache
                                         outputStyle
                                         model.selectionConfig
                             in
@@ -1522,6 +1566,16 @@ update msg model =
                                         (newSelectionConfig |> SelectionMode.getOutputStyle)
                                         (newSelectionConfig |> SelectionMode.getSelectionMode)
                                         model.options
+                                , domStateCache =
+                                    DomStateCache.updateOutputStyle
+                                        (case outputStyle of
+                                            Datalist ->
+                                                DomStateCache.OutputStyleDatalist
+
+                                            CustomHtml ->
+                                                DomStateCache.OutputStyleCustomHtml
+                                        )
+                                        model.domStateCache
                               }
                             , FetchOptionsFromDom
                             )
@@ -1666,12 +1720,22 @@ update msg model =
                                 False
                                 Nothing
                                 model.selectionConfig
+                        , domStateCache =
+                            DomStateCache.updateAllowCustomOptions
+                                DomStateCache.CustomOptionsNotAllowed
+                                model.domStateCache
                       }
                     , NoEffect
                     )
 
                 "disabled" ->
-                    ( { model | selectionConfig = setIsDisabled False model.selectionConfig }
+                    ( { model
+                        | selectionConfig = setIsDisabled False model.selectionConfig
+                        , domStateCache =
+                            DomStateCache.updateDisabledAttribute
+                                DomStateCache.NoDisabledAttribute
+                                model.domStateCache
+                      }
                     , NoEffect
                     )
 
@@ -1745,6 +1809,7 @@ update msg model =
                     let
                         newSelectionConfig =
                             SelectionMode.setOutputStyle
+                                model.domStateCache
                                 CustomHtml
                                 model.selectionConfig
                     in
@@ -2362,6 +2427,14 @@ valueCasingClassList selectionConfig hasOptionSelected hasAnError =
 
                 Datalist ->
                     False
+
+        allowsCustomOptions =
+            case SelectionMode.getCustomOptions selectionConfig of
+                OutputStyle.AllowCustomOptions _ _ ->
+                    True
+
+                OutputStyle.NoCustomOptions ->
+                    False
     in
     [ ( "has-option-selected", hasOptionSelected )
     , ( "no-option-selected", not hasOptionSelected )
@@ -2371,6 +2444,7 @@ valueCasingClassList selectionConfig hasOptionSelected hasAnError =
     , ( "focused", isFocused_ )
     , ( "not-focused", not isFocused_ )
     , ( "show-placeholder", showPlaceholder )
+    , ( "allows-custom-options", allowsCustomOptions )
     , ( "error", hasAnError )
     ]
 
@@ -3475,6 +3549,7 @@ init flags =
       -- TODO Should the value casing's initial values be passed in as flags?
       , valueCasing = ValueCasing 100 45
       , selectedValueEncoding = selectedValueEncoding
+      , domStateCache = SelectionMode.initDomStateCache selectionConfig
       }
     , batch
         [ errorEffect

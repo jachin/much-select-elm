@@ -11316,6 +11316,90 @@ var $grotsev$elm_debouncer$Bounce$Bounce = function (a) {
 	return {$: 'Bounce', a: a};
 };
 var $grotsev$elm_debouncer$Bounce$init = $grotsev$elm_debouncer$Bounce$Bounce(0);
+var $author$project$DomStateCache$CustomOptionsAllowed = {$: 'CustomOptionsAllowed'};
+var $author$project$DomStateCache$CustomOptionsAllowedWithHint = function (a) {
+	return {$: 'CustomOptionsAllowedWithHint', a: a};
+};
+var $author$project$DomStateCache$CustomOptionsNotAllowed = {$: 'CustomOptionsNotAllowed'};
+var $author$project$DomStateCache$HasDisabledAttribute = {$: 'HasDisabledAttribute'};
+var $author$project$DomStateCache$NoDisabledAttribute = {$: 'NoDisabledAttribute'};
+var $author$project$DomStateCache$OutputStyleCustomHtml = {$: 'OutputStyleCustomHtml'};
+var $author$project$DomStateCache$OutputStyleDatalist = {$: 'OutputStyleDatalist'};
+var $author$project$OutputStyle$AllowCustomOptions = F2(
+	function (a, b) {
+		return {$: 'AllowCustomOptions', a: a, b: b};
+	});
+var $author$project$SelectionMode$getCustomOptions = function (selectionConfig) {
+	if (selectionConfig.$ === 'SingleSelectConfig') {
+		var singleSelectOutputStyle = selectionConfig.a;
+		if (singleSelectOutputStyle.$ === 'SingleSelectCustomHtml') {
+			var singleSelectCustomHtmlFields = singleSelectOutputStyle.a;
+			return singleSelectCustomHtmlFields.customOptions;
+		} else {
+			var transformAndValidate = singleSelectOutputStyle.b;
+			return A2($author$project$OutputStyle$AllowCustomOptions, $elm$core$Maybe$Nothing, transformAndValidate);
+		}
+	} else {
+		var multiSelectOutputStyle = selectionConfig.a;
+		if (multiSelectOutputStyle.$ === 'MultiSelectCustomHtml') {
+			var multiSelectCustomHtmlFields = multiSelectOutputStyle.a;
+			return multiSelectCustomHtmlFields.customOptions;
+		} else {
+			var transformAndValidate = multiSelectOutputStyle.b;
+			return A2($author$project$OutputStyle$AllowCustomOptions, $elm$core$Maybe$Nothing, transformAndValidate);
+		}
+	}
+};
+var $author$project$SelectionMode$isDisabled = function (selectionConfig) {
+	if (selectionConfig.$ === 'SingleSelectConfig') {
+		var interactionState = selectionConfig.c;
+		switch (interactionState.$) {
+			case 'Focused':
+				return false;
+			case 'Unfocused':
+				return false;
+			default:
+				return true;
+		}
+	} else {
+		var interactionState = selectionConfig.c;
+		switch (interactionState.$) {
+			case 'Focused':
+				return false;
+			case 'Unfocused':
+				return false;
+			default:
+				return true;
+		}
+	}
+};
+var $author$project$SelectionMode$initDomStateCache = function (selectionConfig) {
+	return {
+		allowCustomOptions: function () {
+			var _v0 = $author$project$SelectionMode$getCustomOptions(selectionConfig);
+			if (_v0.$ === 'AllowCustomOptions') {
+				var maybeHint = _v0.a;
+				if (maybeHint.$ === 'Just') {
+					var hint = maybeHint.a;
+					return $author$project$DomStateCache$CustomOptionsAllowedWithHint(hint);
+				} else {
+					return $author$project$DomStateCache$CustomOptionsAllowed;
+				}
+			} else {
+				return $author$project$DomStateCache$CustomOptionsNotAllowed;
+			}
+		}(),
+		disabled: $author$project$SelectionMode$isDisabled(selectionConfig) ? $author$project$DomStateCache$HasDisabledAttribute : $author$project$DomStateCache$NoDisabledAttribute,
+		outputStyle: function () {
+			var _v2 = $author$project$SelectionMode$getOutputStyle(selectionConfig);
+			if (_v2.$ === 'CustomHtml') {
+				return $author$project$DomStateCache$OutputStyleCustomHtml;
+			} else {
+				return $author$project$DomStateCache$OutputStyleDatalist;
+			}
+		}()
+	};
+};
 var $author$project$Option$isEmptyOption = function (option) {
 	switch (option.$) {
 		case 'Option':
@@ -11614,10 +11698,6 @@ var $elm$core$Result$andThen = F2(
 			var msg = result.a;
 			return $elm$core$Result$Err(msg);
 		}
-	});
-var $author$project$OutputStyle$AllowCustomOptions = F2(
-	function (a, b) {
-		return {$: 'AllowCustomOptions', a: a, b: b};
 	});
 var $author$project$OutputStyle$DisableSingleItemRemoval = {$: 'DisableSingleItemRemoval'};
 var $author$project$OutputStyle$EnableSingleItemRemoval = {$: 'EnableSingleItemRemoval'};
@@ -12638,6 +12718,7 @@ var $author$project$MuchSelect$init = function (flags) {
 	}();
 	return _Utils_Tuple2(
 		{
+			domStateCache: $author$project$SelectionMode$initDomStateCache(selectionConfig),
 			focusedIndex: 0,
 			initialValue: initialValues,
 			optionSort: A2(
@@ -14201,27 +14282,6 @@ var $author$project$SelectionMode$getCustomOptionHint = function (selectionConfi
 		}
 	}
 };
-var $author$project$SelectionMode$getCustomOptions = function (selectionConfig) {
-	if (selectionConfig.$ === 'SingleSelectConfig') {
-		var singleSelectOutputStyle = selectionConfig.a;
-		if (singleSelectOutputStyle.$ === 'SingleSelectCustomHtml') {
-			var singleSelectCustomHtmlFields = singleSelectOutputStyle.a;
-			return singleSelectCustomHtmlFields.customOptions;
-		} else {
-			var transformAndValidate = singleSelectOutputStyle.b;
-			return A2($author$project$OutputStyle$AllowCustomOptions, $elm$core$Maybe$Nothing, transformAndValidate);
-		}
-	} else {
-		var multiSelectOutputStyle = selectionConfig.a;
-		if (multiSelectOutputStyle.$ === 'MultiSelectCustomHtml') {
-			var multiSelectCustomHtmlFields = multiSelectOutputStyle.a;
-			return multiSelectCustomHtmlFields.customOptions;
-		} else {
-			var transformAndValidate = multiSelectOutputStyle.b;
-			return A2($author$project$OutputStyle$AllowCustomOptions, $elm$core$Maybe$Nothing, transformAndValidate);
-		}
-	}
-};
 var $author$project$SearchString$length = function (_v0) {
 	var str = _v0.a;
 	return $elm$core$String$length(str);
@@ -14687,29 +14747,6 @@ var $author$project$SelectionMode$getSingleItemRemoval = function (selectionConf
 			return multiSelectCustomHtmlFields.singleItemRemoval;
 		} else {
 			return $author$project$OutputStyle$EnableSingleItemRemoval;
-		}
-	}
-};
-var $author$project$SelectionMode$isDisabled = function (selectionConfig) {
-	if (selectionConfig.$ === 'SingleSelectConfig') {
-		var interactionState = selectionConfig.c;
-		switch (interactionState.$) {
-			case 'Focused':
-				return false;
-			case 'Unfocused':
-				return false;
-			default:
-				return true;
-		}
-	} else {
-		var interactionState = selectionConfig.c;
-		switch (interactionState.$) {
-			case 'Focused':
-				return false;
-			case 'Unfocused':
-				return false;
-			default:
-				return true;
 		}
 	}
 };
@@ -16254,8 +16291,23 @@ var $author$project$OutputStyle$defaultSingleSelectCustomHtmlFields = {
 		$author$project$PositiveInt$new(2)),
 	selectedItemPlacementMode: $author$project$OutputStyle$SelectedItemStaysInPlace
 };
-var $author$project$SelectionMode$setOutputStyle = F2(
-	function (outputStyle, selectionConfig) {
+var $author$project$SelectionMode$getCustomOptionsFromDomStateCache = function (domStateCache) {
+	var _v0 = domStateCache.allowCustomOptions;
+	switch (_v0.$) {
+		case 'CustomOptionsNotAllowed':
+			return $author$project$OutputStyle$NoCustomOptions;
+		case 'CustomOptionsAllowed':
+			return A2($author$project$OutputStyle$AllowCustomOptions, $elm$core$Maybe$Nothing, $author$project$TransformAndValidate$empty);
+		default:
+			var string = _v0.a;
+			return A2(
+				$author$project$OutputStyle$AllowCustomOptions,
+				$elm$core$Maybe$Just(string),
+				$author$project$TransformAndValidate$empty);
+	}
+};
+var $author$project$SelectionMode$setOutputStyle = F3(
+	function (domStateCache, outputStyle, selectionConfig) {
 		if (outputStyle.$ === 'CustomHtml') {
 			if (selectionConfig.$ === 'SingleSelectConfig') {
 				var singleSelectOutputStyle = selectionConfig.a;
@@ -16264,9 +16316,13 @@ var $author$project$SelectionMode$setOutputStyle = F2(
 				if (singleSelectOutputStyle.$ === 'SingleSelectCustomHtml') {
 					return selectionConfig;
 				} else {
+					var customOptions = $author$project$SelectionMode$getCustomOptionsFromDomStateCache(domStateCache);
+					var singleSelectCustomHtmlFields = _Utils_update(
+						$author$project$OutputStyle$defaultSingleSelectCustomHtmlFields,
+						{customOptions: customOptions});
 					return A3(
 						$author$project$SelectionMode$SingleSelectConfig,
-						$author$project$OutputStyle$SingleSelectCustomHtml($author$project$OutputStyle$defaultSingleSelectCustomHtmlFields),
+						$author$project$OutputStyle$SingleSelectCustomHtml(singleSelectCustomHtmlFields),
 						placeholder,
 						interactionState);
 				}
@@ -16277,9 +16333,13 @@ var $author$project$SelectionMode$setOutputStyle = F2(
 				if (multiSelectOutputStyle.$ === 'MultiSelectCustomHtml') {
 					return selectionConfig;
 				} else {
+					var customOptions = $author$project$SelectionMode$getCustomOptionsFromDomStateCache(domStateCache);
+					var multiSelectCustomHtmlFields = _Utils_update(
+						$author$project$OutputStyle$defaultMultiSelectCustomHtmlFields,
+						{customOptions: customOptions});
 					return A3(
 						$author$project$SelectionMode$MultiSelectConfig,
-						$author$project$OutputStyle$MultiSelectCustomHtml($author$project$OutputStyle$defaultMultiSelectCustomHtmlFields),
+						$author$project$OutputStyle$MultiSelectCustomHtml(multiSelectCustomHtmlFields),
 						placeholder,
 						interactionState);
 				}
@@ -16714,6 +16774,12 @@ var $author$project$OptionsUtilities$updateAge = F4(
 			return A2($author$project$OptionsUtilities$setAge, $author$project$OptionDisplay$MatureOption, options);
 		}
 	});
+var $author$project$DomStateCache$updateAllowCustomOptions = F2(
+	function (customOptions, domStateCache) {
+		return _Utils_update(
+			domStateCache,
+			{allowCustomOptions: customOptions});
+	});
 var $author$project$Option$hasSelectedItemIndex = F2(
 	function (selectedItemIndex, option) {
 		return _Utils_eq(
@@ -16874,6 +16940,12 @@ var $author$project$OptionsUtilities$updateDatalistOptionsWithValueAndErrors = F
 			A3($author$project$Option$newSelectedDatalistOptionWithErrors, errors, optionValue, selectedValueIndex),
 			options);
 	});
+var $author$project$DomStateCache$updateDisabledAttribute = F2(
+	function (disabledAttribute, domStateCache) {
+		return _Utils_update(
+			domStateCache,
+			{disabled: disabledAttribute});
+	});
 var $author$project$MuchSelect$updatePartOfTheModelWithChangesThatEffectTheOptionsWhenTheMouseMoves = F4(
 	function (rightSlot, selectionMode, options, model) {
 		return _Utils_update(
@@ -16939,6 +17011,12 @@ var $author$project$OptionsUtilities$updateOptionsWithNewSearchResults = F2(
 				}
 			},
 			options);
+	});
+var $author$project$DomStateCache$updateOutputStyle = F2(
+	function (outputStyleAttribute, domStateCache) {
+		return _Utils_update(
+			domStateCache,
+			{outputStyle: outputStyleAttribute});
 	});
 var $author$project$RightSlot$updateRightSlotLoading = F4(
 	function (current, selectionConfig, selectedOptions, isLoading_) {
@@ -17802,7 +17880,7 @@ var $author$project$MuchSelect$update = F2(
 				var _v23 = $author$project$SelectionMode$stringToOutputStyle(newOutputStyleString);
 				if (_v23.$ === 'Ok') {
 					var outputStyle = _v23.a;
-					var newSelectionConfig = A2($author$project$SelectionMode$setOutputStyle, outputStyle, model.selectionConfig);
+					var newSelectionConfig = A3($author$project$SelectionMode$setOutputStyle, model.domStateCache, outputStyle, model.selectionConfig);
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
@@ -18204,6 +18282,7 @@ var $author$project$MuchSelect$update = F2(
 									_Utils_update(
 										model,
 										{
+											domStateCache: A2($author$project$DomStateCache$updateAllowCustomOptions, $author$project$DomStateCache$CustomOptionsAllowed, model.domStateCache),
 											selectionConfig: A3($author$project$SelectionMode$setAllowCustomOptionsWithBool, true, $elm$core$Maybe$Nothing, model.selectionConfig)
 										}),
 									$author$project$MuchSelect$NoEffect);
@@ -18212,6 +18291,7 @@ var $author$project$MuchSelect$update = F2(
 									_Utils_update(
 										model,
 										{
+											domStateCache: A2($author$project$DomStateCache$updateAllowCustomOptions, $author$project$DomStateCache$CustomOptionsNotAllowed, model.domStateCache),
 											selectionConfig: A3($author$project$SelectionMode$setAllowCustomOptionsWithBool, false, $elm$core$Maybe$Nothing, model.selectionConfig)
 										}),
 									$author$project$MuchSelect$NoEffect);
@@ -18220,6 +18300,7 @@ var $author$project$MuchSelect$update = F2(
 									_Utils_update(
 										model,
 										{
+											domStateCache: A2($author$project$DomStateCache$updateAllowCustomOptions, $author$project$DomStateCache$CustomOptionsAllowed, model.domStateCache),
 											selectionConfig: A3($author$project$SelectionMode$setAllowCustomOptionsWithBool, true, $elm$core$Maybe$Nothing, model.selectionConfig)
 										}),
 									$author$project$MuchSelect$NoEffect);
@@ -18229,6 +18310,10 @@ var $author$project$MuchSelect$update = F2(
 									_Utils_update(
 										model,
 										{
+											domStateCache: A2(
+												$author$project$DomStateCache$updateAllowCustomOptions,
+												$author$project$DomStateCache$CustomOptionsAllowedWithHint(customOptionHint),
+												model.domStateCache),
 											selectionConfig: A3(
 												$author$project$SelectionMode$setAllowCustomOptionsWithBool,
 												true,
@@ -18243,6 +18328,7 @@ var $author$project$MuchSelect$update = F2(
 							_Utils_update(
 								model,
 								{
+									domStateCache: A2($author$project$DomStateCache$updateDisabledAttribute, $author$project$DomStateCache$HasDisabledAttribute, model.domStateCache),
 									rightSlot: A4(
 										$author$project$RightSlot$updateRightSlot,
 										model.rightSlot,
@@ -18347,11 +18433,21 @@ var $author$project$MuchSelect$update = F2(
 						var _v38 = $author$project$SelectionMode$stringToOutputStyle(newAttributeValue);
 						if (_v38.$ === 'Ok') {
 							var outputStyle = _v38.a;
-							var newSelectionConfig = A2($author$project$SelectionMode$setOutputStyle, outputStyle, model.selectionConfig);
+							var newSelectionConfig = A3($author$project$SelectionMode$setOutputStyle, model.domStateCache, outputStyle, model.selectionConfig);
 							return _Utils_Tuple2(
 								_Utils_update(
 									model,
 									{
+										domStateCache: A2(
+											$author$project$DomStateCache$updateOutputStyle,
+											function () {
+												if (outputStyle.$ === 'Datalist') {
+													return $author$project$DomStateCache$OutputStyleDatalist;
+												} else {
+													return $author$project$DomStateCache$OutputStyleCustomHtml;
+												}
+											}(),
+											model.domStateCache),
 										rightSlot: A4(
 											$author$project$RightSlot$updateRightSlot,
 											model.rightSlot,
@@ -18388,9 +18484,9 @@ var $author$project$MuchSelect$update = F2(
 										})),
 								$author$project$MuchSelect$NoEffect);
 						} else {
-							var _v40 = $author$project$PositiveInt$fromString(newAttributeValue);
-							if (_v40.$ === 'Just') {
-								var minimumLength = _v40.a;
+							var _v41 = $author$project$PositiveInt$fromString(newAttributeValue);
+							if (_v41.$ === 'Just') {
+								var minimumLength = _v41.a;
 								return _Utils_Tuple2(
 									$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
 										_Utils_update(
@@ -18417,9 +18513,9 @@ var $author$project$MuchSelect$update = F2(
 								}),
 							$author$project$MuchSelect$NoEffect);
 					case 'selected-value':
-						var _v41 = A2($author$project$SelectedValueEncoding$stringToValueStrings, model.selectedValueEncoding, newAttributeValue);
-						if (_v41.$ === 'Ok') {
-							var selectedValueStrings = _v41.a;
+						var _v42 = A2($author$project$SelectedValueEncoding$stringToValueStrings, model.selectedValueEncoding, newAttributeValue);
+						if (_v42.$ === 'Ok') {
+							var selectedValueStrings = _v42.a;
 							if (A2($author$project$OptionsUtilities$selectedOptionValuesAreEqual, selectedValueStrings, model.options)) {
 								return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
 							} else {
@@ -18467,22 +18563,22 @@ var $author$project$MuchSelect$update = F2(
 								}
 							}
 						} else {
-							var error = _v41.a;
+							var error = _v42.a;
 							return _Utils_Tuple2(
 								model,
 								$author$project$MuchSelect$ReportErrorMessage(error));
 						}
 					case 'selected-value-encoding':
-						var _v44 = $author$project$SelectedValueEncoding$fromString(newAttributeValue);
-						if (_v44.$ === 'Ok') {
-							var selectedValueEncoding = _v44.a;
+						var _v45 = $author$project$SelectedValueEncoding$fromString(newAttributeValue);
+						if (_v45.$ === 'Ok') {
+							var selectedValueEncoding = _v45.a;
 							return _Utils_Tuple2(
 								_Utils_update(
 									model,
 									{selectedValueEncoding: selectedValueEncoding}),
 								$author$project$MuchSelect$NoEffect);
 						} else {
-							var error = _v44.a;
+							var error = _v45.a;
 							return _Utils_Tuple2(
 								model,
 								$author$project$MuchSelect$ReportErrorMessage(error));
@@ -18509,6 +18605,7 @@ var $author$project$MuchSelect$update = F2(
 							_Utils_update(
 								model,
 								{
+									domStateCache: A2($author$project$DomStateCache$updateAllowCustomOptions, $author$project$DomStateCache$CustomOptionsNotAllowed, model.domStateCache),
 									selectionConfig: A3($author$project$SelectionMode$setAllowCustomOptionsWithBool, false, $elm$core$Maybe$Nothing, model.selectionConfig)
 								}),
 							$author$project$MuchSelect$NoEffect);
@@ -18517,6 +18614,7 @@ var $author$project$MuchSelect$update = F2(
 							_Utils_update(
 								model,
 								{
+									domStateCache: A2($author$project$DomStateCache$updateDisabledAttribute, $author$project$DomStateCache$NoDisabledAttribute, model.domStateCache),
 									selectionConfig: A2($author$project$SelectionMode$setIsDisabled, false, model.selectionConfig)
 								}),
 							$author$project$MuchSelect$NoEffect);
@@ -18590,7 +18688,7 @@ var $author$project$MuchSelect$update = F2(
 								{optionSort: $author$project$OptionSorting$NoSorting}),
 							$author$project$MuchSelect$NoEffect);
 					case 'output-style':
-						var newSelectionConfig = A2($author$project$SelectionMode$setOutputStyle, $author$project$SelectionMode$CustomHtml, model.selectionConfig);
+						var newSelectionConfig = A3($author$project$SelectionMode$setOutputStyle, model.domStateCache, $author$project$SelectionMode$CustomHtml, model.selectionConfig);
 						return _Utils_Tuple2(
 							_Utils_update(
 								model,
@@ -20405,16 +20503,16 @@ var $author$project$MuchSelect$tabIndexAttribute = function (disabled) {
 var $author$project$MuchSelect$valueCasingClassList = F3(
 	function (selectionConfig, hasOptionSelected, hasAnError) {
 		var selectionModeClass = function () {
-			var _v2 = $author$project$SelectionMode$getSelectionMode(selectionConfig);
-			if (_v2.$ === 'SingleSelect') {
+			var _v3 = $author$project$SelectionMode$getSelectionMode(selectionConfig);
+			if (_v3.$ === 'SingleSelect') {
 				return _Utils_Tuple2('single', true);
 			} else {
 				return _Utils_Tuple2('multi', true);
 			}
 		}();
 		var outputStyleClass = function () {
-			var _v1 = $author$project$SelectionMode$getOutputStyle(selectionConfig);
-			if (_v1.$ === 'CustomHtml') {
+			var _v2 = $author$project$SelectionMode$getOutputStyle(selectionConfig);
+			if (_v2.$ === 'CustomHtml') {
 				return _Utils_Tuple2('output-style-custom-html', true);
 			} else {
 				return _Utils_Tuple2('output-style-datalist', true);
@@ -20422,9 +20520,17 @@ var $author$project$MuchSelect$valueCasingClassList = F3(
 		}();
 		var isFocused_ = $author$project$SelectionMode$isFocused(selectionConfig);
 		var showPlaceholder = function () {
-			var _v0 = $author$project$SelectionMode$getOutputStyle(selectionConfig);
-			if (_v0.$ === 'CustomHtml') {
+			var _v1 = $author$project$SelectionMode$getOutputStyle(selectionConfig);
+			if (_v1.$ === 'CustomHtml') {
 				return (!hasOptionSelected) && (!isFocused_);
+			} else {
+				return false;
+			}
+		}();
+		var allowsCustomOptions = function () {
+			var _v0 = $author$project$SelectionMode$getCustomOptions(selectionConfig);
+			if (_v0.$ === 'AllowCustomOptions') {
+				return true;
 			} else {
 				return false;
 			}
@@ -20441,6 +20547,7 @@ var $author$project$MuchSelect$valueCasingClassList = F3(
 				_Utils_Tuple2('focused', isFocused_),
 				_Utils_Tuple2('not-focused', !isFocused_),
 				_Utils_Tuple2('show-placeholder', showPlaceholder),
+				_Utils_Tuple2('allows-custom-options', allowsCustomOptions),
 				_Utils_Tuple2('error', hasAnError)
 			]);
 	});
