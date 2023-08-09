@@ -69,9 +69,14 @@ search string option =
 updateSearchResultInOption : SearchString -> Option -> Option
 updateSearchResultInOption searchString option =
     let
+        -- if the searchString has a trailing space it doesn't match with certain types of options
+        trimedSearchString =
+            SearchString.toString searchString
+                |> String.trim
+
         searchResult : OptionSearchResult
         searchResult =
-            search (SearchString.toString searchString) option
+            search trimedSearchString option
 
         labelTokens =
             tokenize (option |> Option.getOptionLabel |> optionLabelToString) searchResult.labelMatch
