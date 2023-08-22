@@ -47,7 +47,7 @@ const buildOptionsFromSelectElement = (selectElement) => {
 
 /**
  *
- * @param optionElements {Element[]}
+ * @param optionElements {NodeListOf<Element>}
  * @returns {object[]}
  */
 const buildOptionsFromMuchSelectOptionElements = (optionElements) => {
@@ -59,7 +59,6 @@ const buildOptionsFromMuchSelectOptionElements = (optionElements) => {
     option.index = optionIndex;
     options.push(option);
   });
-  console.log("options", options);
   return options;
 };
 
@@ -1053,7 +1052,7 @@ class MuchSelect extends HTMLElement {
     const muchSelectOptionElements =
       this.querySelectorAll("much-select-option");
 
-    if (selectElement && muchSelectOptionElements) {
+    if (selectElement && muchSelectOptionElements.length > 0) {
       throw new Error(
         "Much Select does not support mixing the select-input slot and much-select-option elements. To define the options you need to pick one or the other."
       );
