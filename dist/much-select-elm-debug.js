@@ -10663,6 +10663,9 @@ var $author$project$Option$getOptionValue = function (option) {
 			return value;
 		case 'EmptyOption':
 			return $author$project$OptionValue$EmptyOptionValue;
+		case 'DatalistOption':
+			var optionValue = option.b;
+			return optionValue;
 		default:
 			var optionValue = option.b;
 			return optionValue;
@@ -10721,6 +10724,9 @@ var $author$project$Option$isOptionSelected = function (option) {
 		case 'EmptyOption':
 			var optionDisplay = option.a;
 			return $author$project$OptionDisplay$isSelected(optionDisplay);
+		case 'DatalistOption':
+			var optionDisplay = option.a;
+			return $author$project$OptionDisplay$isSelected(optionDisplay);
 		default:
 			var optionDisplay = option.a;
 			return $author$project$OptionDisplay$isSelected(optionDisplay);
@@ -10770,6 +10776,10 @@ var $author$project$Option$EmptyOption = F2(
 	function (a, b) {
 		return {$: 'EmptyOption', a: a, b: b};
 	});
+var $author$project$Option$SlottedOption = F3(
+	function (a, b, c) {
+		return {$: 'SlottedOption', a: a, b: b, c: c};
+	});
 var $author$project$Option$setOptionDisplay = F2(
 	function (optionDisplay, option) {
 		switch (option.$) {
@@ -10788,9 +10798,13 @@ var $author$project$Option$setOptionDisplay = F2(
 			case 'EmptyOption':
 				var optionLabel = option.b;
 				return A2($author$project$Option$EmptyOption, optionDisplay, optionLabel);
-			default:
+			case 'DatalistOption':
 				var optionValue = option.b;
 				return A2($author$project$Option$DatalistOption, optionDisplay, optionValue);
+			default:
+				var optionValue = option.b;
+				var optionSlot = option.c;
+				return A3($author$project$Option$SlottedOption, optionDisplay, optionValue, optionSlot);
 		}
 	});
 var $author$project$Option$removeHighlightFromOption = function (option) {
@@ -10813,8 +10827,14 @@ var $author$project$Option$removeHighlightFromOption = function (option) {
 				$author$project$Option$setOptionDisplay,
 				$author$project$OptionDisplay$removeHighlight(display),
 				option);
-		default:
+		case 'DatalistOption':
 			return option;
+		default:
+			var optionDisplay = option.a;
+			return A2(
+				$author$project$Option$setOptionDisplay,
+				$author$project$OptionDisplay$removeHighlight(optionDisplay),
+				option);
 	}
 };
 var $author$project$Option$getOptionDisplay = function (option) {
@@ -10826,6 +10846,9 @@ var $author$project$Option$getOptionDisplay = function (option) {
 			var display = option.a;
 			return display;
 		case 'EmptyOption':
+			var display = option.a;
+			return display;
+		case 'DatalistOption':
 			var display = option.a;
 			return display;
 		default:
@@ -10903,12 +10926,14 @@ var $author$project$Option$setLabelWithString = F3(
 					$author$project$Option$EmptyOption,
 					optionDisplay,
 					A2($author$project$OptionLabel$newWithCleanLabel, string, maybeCleanString));
-			default:
+			case 'DatalistOption':
 				var optionDisplay = option.a;
 				return A2(
 					$author$project$Option$DatalistOption,
 					optionDisplay,
 					$author$project$OptionValue$stringToOptionValue(string));
+			default:
+				return option;
 		}
 	});
 var $author$project$OptionsUtilities$selectOptionInListByOptionValueWithIndex = F3(
@@ -10932,6 +10957,8 @@ var $author$project$OptionsUtilities$selectOptionInListByOptionValueWithIndex = 
 								return A2($author$project$Option$selectOption, index, option_);
 							}
 						case 'EmptyOption':
+							return A2($author$project$Option$selectOption, index, option_);
+						case 'DatalistOption':
 							return A2($author$project$Option$selectOption, index, option_);
 						default:
 							return A2($author$project$Option$selectOption, index, option_);
@@ -11287,6 +11314,9 @@ var $author$project$Option$getOptionSelectedIndex = function (option) {
 		case 'EmptyOption':
 			var optionDisplay = option.a;
 			return $author$project$OptionDisplay$getSelectedIndex(optionDisplay);
+		case 'DatalistOption':
+			var optionDisplay = option.a;
+			return $author$project$OptionDisplay$getSelectedIndex(optionDisplay);
 		default:
 			var optionDisplay = option.a;
 			return $author$project$OptionDisplay$getSelectedIndex(optionDisplay);
@@ -11408,13 +11438,15 @@ var $author$project$Option$isEmptyOption = function (option) {
 			return false;
 		case 'EmptyOption':
 			return true;
-		default:
+		case 'DatalistOption':
 			var optionValue = option.b;
 			if (optionValue.$ === 'OptionValue') {
 				return false;
 			} else {
 				return true;
 			}
+		default:
+			return false;
 	}
 };
 var $elm$core$List$any = F2(
@@ -11486,10 +11518,12 @@ var $author$project$Option$getOptionLabel = function (option) {
 		case 'EmptyOption':
 			var label = option.b;
 			return label;
-		default:
+		case 'DatalistOption':
 			var optionValue = option.b;
 			return $author$project$OptionLabel$new(
 				$author$project$OptionValue$optionValueToString(optionValue));
+		default:
+			return $author$project$OptionLabel$new('');
 	}
 };
 var $elm$json$Json$Encode$int = _Json_wrap;
@@ -12009,6 +12043,18 @@ var $author$project$Option$decodeOptionWithoutAValue = function (age) {
 		},
 		A2($elm$json$Json$Decode$field, 'value', $author$project$Option$valueDecoder));
 };
+var $author$project$OptionSlot$OptionSlot = function (a) {
+	return {$: 'OptionSlot', a: a};
+};
+var $author$project$OptionSlot$decoder = A2($elm$json$Json$Decode$map, $author$project$OptionSlot$OptionSlot, $elm$json$Json$Decode$string);
+var $author$project$Option$decodeSlottedOption = function (age) {
+	return A4(
+		$elm$json$Json$Decode$map3,
+		$author$project$Option$SlottedOption,
+		$author$project$OptionDisplay$decoder(age),
+		A2($elm$json$Json$Decode$field, 'value', $author$project$Option$valueDecoder),
+		A2($elm$json$Json$Decode$field, 'slot', $author$project$OptionSlot$decoder));
+};
 var $author$project$Option$decoder = F2(
 	function (age, outputStyle) {
 		if (outputStyle.$ === 'CustomHtml') {
@@ -12016,7 +12062,8 @@ var $author$project$Option$decoder = F2(
 				_List_fromArray(
 					[
 						$author$project$Option$decodeOptionWithoutAValue(age),
-						$author$project$Option$decodeOptionWithAValue(age)
+						$author$project$Option$decodeOptionWithAValue(age),
+						$author$project$Option$decodeSlottedOption(age)
 					]));
 		} else {
 			return $author$project$Option$decodeOptionForDatalist;
@@ -12233,6 +12280,8 @@ var $author$project$OptionsUtilities$selectOptionInListByOptionValue = F2(
 							}
 						case 'EmptyOption':
 							return A2($author$project$Option$selectOption, nextSelectedIndex, option_);
+						case 'DatalistOption':
+							return A2($author$project$Option$selectOption, nextSelectedIndex, option_);
 						default:
 							return A2($author$project$Option$selectOption, nextSelectedIndex, option_);
 					}
@@ -12330,6 +12379,8 @@ var $author$project$Option$getOptionGroup = function (option) {
 		case 'CustomOption':
 			return $author$project$Option$NoOptionGroup;
 		case 'EmptyOption':
+			return $author$project$Option$NoOptionGroup;
+		case 'DatalistOption':
 			return $author$project$Option$NoOptionGroup;
 		default:
 			return $author$project$Option$NoOptionGroup;
@@ -13294,8 +13345,10 @@ var $author$project$OptionsUtilities$activateOptionInListByOptionValue = F2(
 							return $author$project$Option$activateOption(option_);
 						case 'EmptyOption':
 							return $author$project$Option$activateOption(option_);
-						default:
+						case 'DatalistOption':
 							return option_;
+						default:
+							return $author$project$Option$activateOption(option_);
 					}
 				} else {
 					if ($author$project$Option$isOptionSelected(option_)) {
@@ -13361,6 +13414,8 @@ var $author$project$Option$getOptionDescription = function (option) {
 		case 'CustomOption':
 			return $author$project$Option$NoDescription;
 		case 'EmptyOption':
+			return $author$project$Option$NoDescription;
+		case 'DatalistOption':
 			return $author$project$Option$NoDescription;
 		default:
 			return $author$project$Option$NoDescription;
@@ -13432,6 +13487,8 @@ var $author$project$Option$setDescription = F2(
 				var optionDisplay = option.a;
 				var optionLabel = option.b;
 				return A2($author$project$Option$EmptyOption, optionDisplay, optionLabel);
+			case 'DatalistOption':
+				return option;
 			default:
 				return option;
 		}
@@ -13456,6 +13513,8 @@ var $author$project$Option$setGroup = F2(
 				var optionDisplay = option.a;
 				var optionLabel = option.b;
 				return A2($author$project$Option$EmptyOption, optionDisplay, optionLabel);
+			case 'DatalistOption':
+				return option;
 			default:
 				return option;
 		}
@@ -13483,13 +13542,15 @@ var $author$project$Option$setLabel = F2(
 			case 'EmptyOption':
 				var optionDisplay = option.a;
 				return A2($author$project$Option$EmptyOption, optionDisplay, label);
-			default:
+			case 'DatalistOption':
 				var optionDisplay = option.a;
 				return A2(
 					$author$project$Option$DatalistOption,
 					optionDisplay,
 					$author$project$OptionValue$stringToOptionValue(
 						$author$project$OptionLabel$optionLabelToString(label)));
+			default:
+				return option;
 		}
 	});
 var $author$project$OptionDisplay$OptionSelectedAndInvalid = F2(
@@ -13545,11 +13606,16 @@ var $author$project$Option$setOptionSelectedIndex = F2(
 					$author$project$Option$setOptionDisplay,
 					A2($author$project$OptionDisplay$setSelectedIndex, selectedIndex, optionDisplay),
 					option);
-			default:
+			case 'DatalistOption':
 				var optionDisplay = option.a;
 				return A2(
 					$author$project$Option$setOptionDisplay,
 					A2($author$project$OptionDisplay$setSelectedIndex, selectedIndex, optionDisplay),
+					option);
+			default:
+				return A2(
+					$author$project$Option$setOptionDisplay,
+					A2($author$project$OptionDisplay$setSelectedIndex, selectedIndex, $author$project$OptionDisplay$default),
 					option);
 		}
 	});
@@ -13803,6 +13869,8 @@ var $author$project$Option$isCustomOption = function (option) {
 		case 'CustomOption':
 			return true;
 		case 'EmptyOption':
+			return false;
+		case 'DatalistOption':
 			return false;
 		default:
 			return false;
@@ -14094,6 +14162,8 @@ var $author$project$OptionsUtilities$selectSingleOptionInList = F2(
 							}
 						case 'EmptyOption':
 							return A2($author$project$Option$selectOption, 0, option_);
+						case 'DatalistOption':
+							return A2($author$project$Option$selectOption, 0, option_);
 						default:
 							return A2($author$project$Option$selectOption, 0, option_);
 					}
@@ -14173,8 +14243,33 @@ var $author$project$OptionsUtilities$deselectAllSelectedHighlightedOptions = fun
 					}
 				case 'EmptyOption':
 					return option_;
-				default:
+				case 'DatalistOption':
 					return option_;
+				default:
+					var optionDisplay = option_.a;
+					switch (optionDisplay.$) {
+						case 'OptionShown':
+							return option_;
+						case 'OptionHidden':
+							return option_;
+						case 'OptionSelected':
+							return option_;
+						case 'OptionSelectedPendingValidation':
+							return option_;
+						case 'OptionSelectedAndInvalid':
+							return option_;
+						case 'OptionSelectedHighlighted':
+							return A2(
+								$author$project$Option$setOptionDisplay,
+								$author$project$OptionDisplay$OptionShown($author$project$OptionDisplay$MatureOption),
+								option_);
+						case 'OptionHighlighted':
+							return option_;
+						case 'OptionDisabled':
+							return option_;
+						default:
+							return option_;
+					}
 			}
 		},
 		options);
@@ -15116,6 +15211,8 @@ var $author$project$Option$getMaybeOptionSearchFilter = function (option) {
 			return maybeOptionSearchFilter;
 		case 'EmptyOption':
 			return $elm$core$Maybe$Nothing;
+		case 'DatalistOption':
+			return $elm$core$Maybe$Nothing;
 		default:
 			return $elm$core$Maybe$Nothing;
 	}
@@ -15249,8 +15346,11 @@ var $author$project$Option$isOptionHighlighted = function (option) {
 		case 'EmptyOption':
 			var display = option.a;
 			return $author$project$OptionDisplay$isHighlighted(display);
-		default:
+		case 'DatalistOption':
 			return false;
+		default:
+			var optionDisplay = option.a;
+			return $author$project$OptionDisplay$isHighlighted(optionDisplay);
 	}
 };
 var $author$project$OptionsUtilities$findHighlightedOptionIndex = function (options) {
@@ -15453,8 +15553,11 @@ var $author$project$Option$isOptionSelectedHighlighted = function (option) {
 		case 'EmptyOption':
 			var optionDisplay = option.a;
 			return $author$project$OptionDisplay$isHighlightedSelected(optionDisplay);
-		default:
+		case 'DatalistOption':
 			return false;
+		default:
+			var optionDisplay = option.a;
+			return $author$project$OptionDisplay$isHighlightedSelected(optionDisplay);
 	}
 };
 var $author$project$OptionsUtilities$hasSelectedHighlightedOptions = function (options) {
@@ -15508,8 +15611,14 @@ var $author$project$Option$highlightOption = function (option) {
 				$author$project$Option$setOptionDisplay,
 				$author$project$OptionDisplay$addHighlight(display),
 				option);
-		default:
+		case 'DatalistOption':
 			return option;
+		default:
+			var optionDisplay = option.a;
+			return A2(
+				$author$project$Option$setOptionDisplay,
+				$author$project$OptionDisplay$addHighlight(optionDisplay),
+				option);
 	}
 };
 var $author$project$OptionsUtilities$highlightOptionInList = F2(
@@ -15617,8 +15726,14 @@ var $author$project$Option$optionIsHighlightable = F2(
 					$author$project$OptionDisplay$isHighlightable,
 					$author$project$SelectionMode$getSelectionMode(selectionConfig),
 					display);
-			default:
+			case 'DatalistOption':
 				return false;
+			default:
+				var optionDisplay = option.a;
+				return A2(
+					$author$project$OptionDisplay$isHighlightable,
+					$author$project$SelectionMode$getSelectionMode(selectionConfig),
+					optionDisplay);
 		}
 	});
 var $elm_community$list_extra$List$Extra$splitAt = F2(
@@ -15826,6 +15941,8 @@ var $author$project$Option$transformOptionForOutputStyle = F2(
 							$author$project$Option$NoDescription,
 							$author$project$Option$NoOptionGroup,
 							$elm$core$Maybe$Nothing));
+				case 'EmptyOption':
+					return $elm$core$Maybe$Just(option);
 				default:
 					return $elm$core$Maybe$Just(option);
 			}
@@ -15843,6 +15960,8 @@ var $author$project$Option$transformOptionForOutputStyle = F2(
 						A2($author$project$Option$DatalistOption, optionDisplay, optionValue));
 				case 'DatalistOption':
 					return $elm$core$Maybe$Just(option);
+				case 'EmptyOption':
+					return $elm$core$Maybe$Nothing;
 				default:
 					return $elm$core$Maybe$Nothing;
 			}
@@ -15922,6 +16041,8 @@ var $author$project$OptionsUtilities$selectEmptyOption = function (options) {
 					return $author$project$Option$deselectOption(option_);
 				case 'EmptyOption':
 					return A2($author$project$Option$selectOption, 0, option_);
+				case 'DatalistOption':
+					return $author$project$Option$deselectOption(option_);
 				default:
 					return $author$project$Option$deselectOption(option_);
 			}
@@ -15955,8 +16076,16 @@ var $author$project$OptionsUtilities$selectHighlightedOption = F2(
 						} else {
 							return $author$project$OptionsUtilities$selectEmptyOption(options);
 						}
-					default:
+					case 'DatalistOption':
 						return options;
+					default:
+						var optionValue = option.b;
+						if (selectionMode.$ === 'MultiSelectConfig') {
+							return $author$project$OptionsUtilities$clearAnyUnselectedCustomOptions(
+								A2($author$project$OptionsUtilities$selectOptionInListByOptionValue, optionValue, options));
+						} else {
+							return A2($author$project$OptionsUtilities$selectSingleOptionInList, optionValue, options);
+						}
 				}
 			} else {
 				return options;
@@ -16661,8 +16790,43 @@ var $author$project$OptionsUtilities$toggleSelectedHighlightByOptionValue = F2(
 						}
 					case 'EmptyOption':
 						return option_;
-					default:
+					case 'DatalistOption':
 						return option_;
+					default:
+						var optionDisplay = option_.a;
+						var optionValue_ = option_.b;
+						if (_Utils_eq(optionValue, optionValue_)) {
+							switch (optionDisplay.$) {
+								case 'OptionShown':
+									return option_;
+								case 'OptionHidden':
+									return option_;
+								case 'OptionSelected':
+									var selectedIndex = optionDisplay.a;
+									return A2(
+										$author$project$Option$setOptionDisplay,
+										$author$project$OptionDisplay$OptionSelectedHighlighted(selectedIndex),
+										option_);
+								case 'OptionSelectedPendingValidation':
+									return option_;
+								case 'OptionSelectedAndInvalid':
+									return option_;
+								case 'OptionSelectedHighlighted':
+									var selectedIndex = optionDisplay.a;
+									return A2(
+										$author$project$Option$setOptionDisplay,
+										A2($author$project$OptionDisplay$OptionSelected, selectedIndex, $author$project$OptionDisplay$MatureOption),
+										option_);
+								case 'OptionHighlighted':
+									return option_;
+								case 'OptionDisabled':
+									return option_;
+								default:
+									return option_;
+							}
+						} else {
+							return option_;
+						}
 				}
 			},
 			options);
@@ -16814,10 +16978,14 @@ var $author$project$Option$setOptionValue = F2(
 			case 'DatalistOption':
 				var optionDisplay = option.a;
 				return A2($author$project$Option$DatalistOption, optionDisplay, optionValue);
-			default:
+			case 'EmptyOption':
 				var optionDisplay = option.a;
 				var optionLabel = option.b;
 				return A2($author$project$Option$EmptyOption, optionDisplay, optionLabel);
+			default:
+				var optionDisplay = option.a;
+				var optionSlot = option.c;
+				return A3($author$project$Option$SlottedOption, optionDisplay, optionValue, optionSlot);
 		}
 	});
 var $author$project$OptionsUtilities$updateDatalistOptionWithValueBySelectedValueIndexPendingValidation = F3(
@@ -16981,6 +17149,8 @@ var $author$project$Option$setOptionSearchFilter = F2(
 				var optionDisplay = option.a;
 				var optionLabel = option.b;
 				return A2($author$project$Option$EmptyOption, optionDisplay, optionLabel);
+			case 'DatalistOption':
+				return option;
 			default:
 				return option;
 		}
@@ -19021,16 +19191,18 @@ var $author$project$OptionPresentor$tokensToHtml = function (list) {
 		},
 		list);
 };
+var $author$project$DropdownOptions$valueDataAttribute = function (option) {
+	return A2(
+		$elm$html$Html$Attributes$attribute,
+		'data-value',
+		$author$project$Option$getOptionValueAsString(option));
+};
 var $author$project$DropdownOptions$optionToCustomHtml = F3(
 	function (eventHandlers, selectionConfig_, option_) {
 		return A3(
 			$elm$html$Html$Lazy$lazy2,
 			F2(
 				function (selectionConfig, option) {
-					var valueDataAttribute = A2(
-						$elm$html$Html$Attributes$attribute,
-						'data-value',
-						$author$project$Option$getOptionValueAsString(option));
 					var labelHtml = function () {
 						var _v4 = $author$project$Option$getMaybeOptionSearchFilter(option);
 						if (_v4.$ === 'Just') {
@@ -19118,7 +19290,7 @@ var $author$project$DropdownOptions$optionToCustomHtml = F3(
 										$author$project$Events$onClickPreventDefault(eventHandlers.noOpMsgConstructor),
 										A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option'),
 										$elm$html$Html$Attributes$class('option'),
-										valueDataAttribute
+										$author$project$DropdownOptions$valueDataAttribute(option)
 									]),
 								_List_fromArray(
 									[labelHtml, descriptionHtml]));
@@ -19146,7 +19318,7 @@ var $author$project$DropdownOptions$optionToCustomHtml = F3(
 											A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option selected'),
 											$elm$html$Html$Attributes$class('selected'),
 											$elm$html$Html$Attributes$class('option'),
-											valueDataAttribute
+											$author$project$DropdownOptions$valueDataAttribute(option)
 										]),
 									_List_fromArray(
 										[labelHtml, descriptionHtml]));
@@ -19161,7 +19333,7 @@ var $author$project$DropdownOptions$optionToCustomHtml = F3(
 										A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option disabled'),
 										$elm$html$Html$Attributes$class('disabled'),
 										$elm$html$Html$Attributes$class('option'),
-										valueDataAttribute
+										$author$project$DropdownOptions$valueDataAttribute(option)
 									]),
 								_List_fromArray(
 									[labelHtml, descriptionHtml]));
@@ -19190,7 +19362,7 @@ var $author$project$DropdownOptions$optionToCustomHtml = F3(
 											$elm$html$Html$Attributes$class('selected'),
 											$elm$html$Html$Attributes$class('highlighted'),
 											$elm$html$Html$Attributes$class('option'),
-											valueDataAttribute
+											$author$project$DropdownOptions$valueDataAttribute(option)
 										]),
 									_List_fromArray(
 										[labelHtml, descriptionHtml]));
@@ -19217,7 +19389,7 @@ var $author$project$DropdownOptions$optionToCustomHtml = F3(
 										A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option highlighted'),
 										$elm$html$Html$Attributes$class('highlighted'),
 										$elm$html$Html$Attributes$class('option'),
-										valueDataAttribute
+										$author$project$DropdownOptions$valueDataAttribute(option)
 									]),
 								_List_fromArray(
 									[labelHtml, descriptionHtml]));
@@ -19229,7 +19401,7 @@ var $author$project$DropdownOptions$optionToCustomHtml = F3(
 										A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option disabled'),
 										$elm$html$Html$Attributes$class('disabled'),
 										$elm$html$Html$Attributes$class('option'),
-										valueDataAttribute
+										$author$project$DropdownOptions$valueDataAttribute(option)
 									]),
 								_List_fromArray(
 									[labelHtml, descriptionHtml]));
@@ -19255,7 +19427,7 @@ var $author$project$DropdownOptions$optionToCustomHtml = F3(
 										$elm$html$Html$Attributes$class('option'),
 										$elm$html$Html$Attributes$class('active'),
 										$elm$html$Html$Attributes$class('highlighted'),
-										valueDataAttribute
+										$author$project$DropdownOptions$valueDataAttribute(option)
 									]),
 								_List_fromArray(
 									[labelHtml, descriptionHtml]));
@@ -19552,6 +19724,18 @@ var $author$project$SelectionMode$isSingleSelect = function (selectionMode) {
 	} else {
 		return false;
 	}
+};
+var $author$project$OptionList$isSlottedOptionList = function (options) {
+	return A2(
+		$elm$core$List$all,
+		function (option) {
+			if (option.$ === 'SlottedOption') {
+				return true;
+			} else {
+				return false;
+			}
+		},
+		options);
 };
 var $ohanhi$keyboard$Keyboard$ArrowDown = {$: 'ArrowDown'};
 var $ohanhi$keyboard$Keyboard$ArrowUp = {$: 'ArrowUp'};
@@ -20256,8 +20440,64 @@ var $author$project$MuchSelect$optionToValueHtml = F2(
 					default:
 						return $elm$html$Html$text('');
 				}
-			default:
+			case 'DatalistOption':
 				return $elm$html$Html$text('');
+			default:
+				var optionDisplay = option.a;
+				var optionValue = option.b;
+				switch (optionDisplay.$) {
+					case 'OptionShown':
+						return $elm$html$Html$text('');
+					case 'OptionHidden':
+						return $elm$html$Html$text('');
+					case 'OptionSelected':
+						return A2(
+							$elm$html$Html$div,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('value'),
+									partAttr
+								]),
+							_List_fromArray(
+								[
+									A2(
+									$author$project$MuchSelect$valueLabelHtml,
+									$author$project$OptionValue$optionValueToString(optionValue),
+									optionValue),
+									removalHtml
+								]));
+					case 'OptionSelectedAndInvalid':
+						return $elm$html$Html$text('');
+					case 'OptionSelectedPendingValidation':
+						return $elm$html$Html$text('');
+					case 'OptionSelectedHighlighted':
+						return A2(
+							$elm$html$Html$div,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$classList(
+									_List_fromArray(
+										[
+											_Utils_Tuple2('value', true),
+											_Utils_Tuple2('highlighted-value', true)
+										])),
+									highlightPartAttr
+								]),
+							_List_fromArray(
+								[
+									A2(
+									$author$project$MuchSelect$valueLabelHtml,
+									$author$project$OptionValue$optionValueToString(optionValue),
+									optionValue),
+									removalHtml
+								]));
+					case 'OptionHighlighted':
+						return $elm$html$Html$text('');
+					case 'OptionActivated':
+						return $elm$html$Html$text('');
+					default:
+						return $elm$html$Html$text('');
+				}
 		}
 	});
 var $author$project$MuchSelect$optionsToValuesHtml = F2(
@@ -21145,6 +21385,424 @@ var $author$project$MuchSelect$singleSelectView = F4(
 			return A2($author$project$MuchSelect$singleSelectViewDatalistHtml, selectionMode, options);
 		}
 	});
+var $author$project$OptionSlot$empty = $author$project$OptionSlot$OptionSlot('');
+var $author$project$Option$getSlot = function (option) {
+	switch (option.$) {
+		case 'Option':
+			return $author$project$OptionSlot$empty;
+		case 'CustomOption':
+			return $author$project$OptionSlot$empty;
+		case 'EmptyOption':
+			return $author$project$OptionSlot$empty;
+		case 'DatalistOption':
+			return $author$project$OptionSlot$empty;
+		default:
+			var slot = option.c;
+			return slot;
+	}
+};
+var $author$project$OptionSlot$toSlotNameAttribute = function (optionSlot) {
+	var string = optionSlot.a;
+	return (string === '') ? $elm_community$html_extra$Html$Attributes$Extra$empty : A2($elm$html$Html$Attributes$attribute, 'name', string);
+};
+var $author$project$DropdownOptions$optionToSlottedOptionHtml = F2(
+	function (eventHandlers, option) {
+		var _v0 = $author$project$Option$getOptionDisplay(option);
+		switch (_v0.$) {
+			case 'OptionShown':
+				var optionAge = _v0.a;
+				return A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Events$onMouseEnter(
+							eventHandlers.mouseOverMsgConstructor(
+								$author$project$Option$getOptionValue(option))),
+							$elm$html$Html$Events$onMouseLeave(
+							eventHandlers.mouseOutMsgConstructor(
+								$author$project$Option$getOptionValue(option))),
+							$author$project$Events$mouseDownPreventDefault(
+							eventHandlers.mouseDownMsgConstructor(
+								$author$project$Option$getOptionValue(option))),
+							$author$project$Events$mouseUpPreventDefault(
+							eventHandlers.mouseUpMsgConstructor(
+								$author$project$Option$getOptionValue(option))),
+							$author$project$Events$onClickPreventDefault(eventHandlers.noOpMsgConstructor),
+							A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option'),
+							$elm$html$Html$Attributes$class('option'),
+							$author$project$DropdownOptions$valueDataAttribute(option)
+						]),
+					_List_fromArray(
+						[
+							A3(
+							$elm$html$Html$node,
+							'slot',
+							_List_fromArray(
+								[
+									$author$project$OptionSlot$toSlotNameAttribute(
+									$author$project$Option$getSlot(option))
+								]),
+							_List_Nil)
+						]));
+			case 'OptionHidden':
+				return $elm$html$Html$text('');
+			case 'OptionSelected':
+				var _int = _v0.a;
+				var optionAge = _v0.b;
+				return A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Events$onMouseEnter(
+							eventHandlers.mouseOverMsgConstructor(
+								$author$project$Option$getOptionValue(option))),
+							$elm$html$Html$Events$onMouseLeave(
+							eventHandlers.mouseOutMsgConstructor(
+								$author$project$Option$getOptionValue(option))),
+							$author$project$Events$mouseDownPreventDefault(
+							eventHandlers.mouseDownMsgConstructor(
+								$author$project$Option$getOptionValue(option))),
+							$author$project$Events$mouseUpPreventDefault(
+							eventHandlers.mouseUpMsgConstructor(
+								$author$project$Option$getOptionValue(option))),
+							$author$project$Events$onClickPreventDefault(eventHandlers.noOpMsgConstructor),
+							A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option'),
+							$elm$html$Html$Attributes$class('option'),
+							$author$project$DropdownOptions$valueDataAttribute(option)
+						]),
+					_List_fromArray(
+						[
+							A3(
+							$elm$html$Html$node,
+							'slot',
+							_List_fromArray(
+								[
+									$author$project$OptionSlot$toSlotNameAttribute(
+									$author$project$Option$getSlot(option))
+								]),
+							_List_Nil)
+						]));
+			case 'OptionSelectedAndInvalid':
+				var _int = _v0.a;
+				var validationFailureMessages = _v0.b;
+				return A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Events$onMouseEnter(
+							eventHandlers.mouseOverMsgConstructor(
+								$author$project$Option$getOptionValue(option))),
+							$elm$html$Html$Events$onMouseLeave(
+							eventHandlers.mouseOutMsgConstructor(
+								$author$project$Option$getOptionValue(option))),
+							$author$project$Events$mouseDownPreventDefault(
+							eventHandlers.mouseDownMsgConstructor(
+								$author$project$Option$getOptionValue(option))),
+							$author$project$Events$mouseUpPreventDefault(
+							eventHandlers.mouseUpMsgConstructor(
+								$author$project$Option$getOptionValue(option))),
+							$author$project$Events$onClickPreventDefault(eventHandlers.noOpMsgConstructor),
+							A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option'),
+							$elm$html$Html$Attributes$class('option'),
+							$author$project$DropdownOptions$valueDataAttribute(option)
+						]),
+					_List_fromArray(
+						[
+							A3(
+							$elm$html$Html$node,
+							'slot',
+							_List_fromArray(
+								[
+									$author$project$OptionSlot$toSlotNameAttribute(
+									$author$project$Option$getSlot(option))
+								]),
+							_List_Nil)
+						]));
+			case 'OptionSelectedPendingValidation':
+				var _int = _v0.a;
+				return A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Events$onMouseEnter(
+							eventHandlers.mouseOverMsgConstructor(
+								$author$project$Option$getOptionValue(option))),
+							$elm$html$Html$Events$onMouseLeave(
+							eventHandlers.mouseOutMsgConstructor(
+								$author$project$Option$getOptionValue(option))),
+							$author$project$Events$mouseDownPreventDefault(
+							eventHandlers.mouseDownMsgConstructor(
+								$author$project$Option$getOptionValue(option))),
+							$author$project$Events$mouseUpPreventDefault(
+							eventHandlers.mouseUpMsgConstructor(
+								$author$project$Option$getOptionValue(option))),
+							$author$project$Events$onClickPreventDefault(eventHandlers.noOpMsgConstructor),
+							A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option'),
+							$elm$html$Html$Attributes$class('option'),
+							$author$project$DropdownOptions$valueDataAttribute(option)
+						]),
+					_List_fromArray(
+						[
+							A3(
+							$elm$html$Html$node,
+							'slot',
+							_List_fromArray(
+								[
+									$author$project$OptionSlot$toSlotNameAttribute(
+									$author$project$Option$getSlot(option))
+								]),
+							_List_Nil)
+						]));
+			case 'OptionSelectedHighlighted':
+				var _int = _v0.a;
+				return A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Events$onMouseEnter(
+							eventHandlers.mouseOverMsgConstructor(
+								$author$project$Option$getOptionValue(option))),
+							$elm$html$Html$Events$onMouseLeave(
+							eventHandlers.mouseOutMsgConstructor(
+								$author$project$Option$getOptionValue(option))),
+							$author$project$Events$mouseDownPreventDefault(
+							eventHandlers.mouseDownMsgConstructor(
+								$author$project$Option$getOptionValue(option))),
+							$author$project$Events$mouseUpPreventDefault(
+							eventHandlers.mouseUpMsgConstructor(
+								$author$project$Option$getOptionValue(option))),
+							$author$project$Events$onClickPreventDefault(eventHandlers.noOpMsgConstructor),
+							A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option'),
+							$elm$html$Html$Attributes$class('option'),
+							$author$project$DropdownOptions$valueDataAttribute(option)
+						]),
+					_List_fromArray(
+						[
+							A3(
+							$elm$html$Html$node,
+							'slot',
+							_List_fromArray(
+								[
+									$author$project$OptionSlot$toSlotNameAttribute(
+									$author$project$Option$getSlot(option))
+								]),
+							_List_Nil)
+						]));
+			case 'OptionHighlighted':
+				return A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Events$onMouseEnter(
+							eventHandlers.mouseOverMsgConstructor(
+								$author$project$Option$getOptionValue(option))),
+							$elm$html$Html$Events$onMouseLeave(
+							eventHandlers.mouseOutMsgConstructor(
+								$author$project$Option$getOptionValue(option))),
+							$author$project$Events$mouseDownPreventDefault(
+							eventHandlers.mouseDownMsgConstructor(
+								$author$project$Option$getOptionValue(option))),
+							$author$project$Events$mouseUpPreventDefault(
+							eventHandlers.mouseUpMsgConstructor(
+								$author$project$Option$getOptionValue(option))),
+							$author$project$Events$onClickPreventDefault(eventHandlers.noOpMsgConstructor),
+							A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option'),
+							$elm$html$Html$Attributes$class('option'),
+							$author$project$DropdownOptions$valueDataAttribute(option)
+						]),
+					_List_fromArray(
+						[
+							A3(
+							$elm$html$Html$node,
+							'slot',
+							_List_fromArray(
+								[
+									$author$project$OptionSlot$toSlotNameAttribute(
+									$author$project$Option$getSlot(option))
+								]),
+							_List_Nil)
+						]));
+			case 'OptionActivated':
+				return A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Events$onMouseEnter(
+							eventHandlers.mouseOverMsgConstructor(
+								$author$project$Option$getOptionValue(option))),
+							$elm$html$Html$Events$onMouseLeave(
+							eventHandlers.mouseOutMsgConstructor(
+								$author$project$Option$getOptionValue(option))),
+							$author$project$Events$mouseDownPreventDefault(
+							eventHandlers.mouseDownMsgConstructor(
+								$author$project$Option$getOptionValue(option))),
+							$author$project$Events$mouseUpPreventDefault(
+							eventHandlers.mouseUpMsgConstructor(
+								$author$project$Option$getOptionValue(option))),
+							$author$project$Events$onClickPreventDefault(eventHandlers.noOpMsgConstructor),
+							A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option'),
+							$elm$html$Html$Attributes$class('option'),
+							$author$project$DropdownOptions$valueDataAttribute(option)
+						]),
+					_List_fromArray(
+						[
+							A3(
+							$elm$html$Html$node,
+							'slot',
+							_List_fromArray(
+								[
+									$author$project$OptionSlot$toSlotNameAttribute(
+									$author$project$Option$getSlot(option))
+								]),
+							_List_Nil)
+						]));
+			default:
+				var optionAge = _v0.a;
+				return A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Events$onMouseEnter(
+							eventHandlers.mouseOverMsgConstructor(
+								$author$project$Option$getOptionValue(option))),
+							$elm$html$Html$Events$onMouseLeave(
+							eventHandlers.mouseOutMsgConstructor(
+								$author$project$Option$getOptionValue(option))),
+							$author$project$Events$mouseDownPreventDefault(
+							eventHandlers.mouseDownMsgConstructor(
+								$author$project$Option$getOptionValue(option))),
+							$author$project$Events$mouseUpPreventDefault(
+							eventHandlers.mouseUpMsgConstructor(
+								$author$project$Option$getOptionValue(option))),
+							$author$project$Events$onClickPreventDefault(eventHandlers.noOpMsgConstructor),
+							A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option'),
+							$elm$html$Html$Attributes$class('option'),
+							$author$project$DropdownOptions$valueDataAttribute(option)
+						]),
+					_List_fromArray(
+						[
+							A3(
+							$elm$html$Html$node,
+							'slot',
+							_List_fromArray(
+								[
+									$author$project$OptionSlot$toSlotNameAttribute(
+									$author$project$Option$getSlot(option))
+								]),
+							_List_Nil)
+						]));
+		}
+	});
+var $author$project$DropdownOptions$dropdownOptionsToSlottedOptionsHtml = F2(
+	function (eventHandlers, options) {
+		return A2(
+			$elm$core$List$map,
+			$author$project$DropdownOptions$optionToSlottedOptionHtml(eventHandlers),
+			$author$project$DropdownOptions$getOptions(options));
+	});
+var $author$project$MuchSelect$slottedDropdown = F4(
+	function (selectionConfig, options, searchString, _v0) {
+		var valueCasingWidth = _v0.a;
+		var valueCasingHeight = _v0.b;
+		var optionsForTheDropdown = A2($author$project$DropdownOptions$figureOutWhichOptionsToShowInTheDropdown, selectionConfig, options);
+		var optionsHtml = $author$project$DropdownOptions$isEmpty(optionsForTheDropdown) ? _List_fromArray(
+			[
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('option disabled')
+					]),
+				_List_fromArray(
+					[
+						A3(
+						$elm$html$Html$node,
+						'slot',
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$name('no-options')
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('No available options')
+							]))
+					]))
+			]) : (A3(
+			$author$project$OptionSearcher$doesSearchStringFindNothing,
+			searchString,
+			$author$project$SelectionMode$getSearchStringMinimumLength(selectionConfig),
+			optionsForTheDropdown) ? _List_fromArray(
+			[
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('option disabled')
+					]),
+				_List_fromArray(
+					[
+						A3(
+						$elm$html$Html$node,
+						'slot',
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$name('no-filtered-options')
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('This filter returned no results.')
+							]))
+					]))
+			]) : A2(
+			$author$project$DropdownOptions$dropdownOptionsToSlottedOptionsHtml,
+			{mouseDownMsgConstructor: $author$project$MuchSelect$DropdownMouseDownOption, mouseOutMsgConstructor: $author$project$MuchSelect$DropdownMouseOutOption, mouseOverMsgConstructor: $author$project$MuchSelect$DropdownMouseOverOption, mouseUpMsgConstructor: $author$project$MuchSelect$DropdownMouseUpOption, noOpMsgConstructor: $author$project$MuchSelect$NoOp},
+			optionsForTheDropdown));
+		var dropdownFooterHtml = ($author$project$SelectionMode$showDropdownFooter(selectionConfig) && (_Utils_cmp(
+			$author$project$DropdownOptions$length(optionsForTheDropdown),
+			$elm$core$List$length(options)) < 0)) ? A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$id('dropdown-footer'),
+					A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-footer')
+				]),
+			_List_fromArray(
+				[
+					$elm$html$Html$text(
+					'showing ' + ($elm$core$String$fromInt(
+						$author$project$DropdownOptions$length(optionsForTheDropdown)) + (' of ' + ($elm$core$String$fromInt(
+						$elm$core$List$length(options)) + ' options'))))
+				])) : $elm$html$Html$text('');
+		return $author$project$SelectionMode$isDisabled(selectionConfig) ? $elm$html$Html$text('') : A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$id('dropdown'),
+					A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown'),
+					$elm$html$Html$Attributes$classList(
+					_List_fromArray(
+						[
+							_Utils_Tuple2(
+							'showing',
+							$author$project$SelectionMode$showDropdown(selectionConfig)),
+							_Utils_Tuple2(
+							'hiding',
+							!$author$project$SelectionMode$showDropdown(selectionConfig))
+						])),
+					A2(
+					$elm$html$Html$Attributes$style,
+					'top',
+					$elm$core$String$fromFloat(valueCasingHeight) + 'px'),
+					A2(
+					$elm$html$Html$Attributes$style,
+					'width',
+					$elm$core$String$fromFloat(valueCasingWidth) + 'px')
+				]),
+			_Utils_ap(
+				optionsHtml,
+				_List_fromArray(
+					[dropdownFooterHtml])));
+	});
 var $author$project$MuchSelect$view = function (model) {
 	return A2(
 		$elm$html$Html$div,
@@ -21174,7 +21832,7 @@ var $author$project$MuchSelect$view = function (model) {
 				function () {
 				var _v1 = $author$project$SelectionMode$getOutputStyle(model.selectionConfig);
 				if (_v1.$ === 'CustomHtml') {
-					return A4($author$project$MuchSelect$customHtmlDropdown, model.selectionConfig, model.options, model.searchString, model.valueCasing);
+					return $author$project$OptionList$isSlottedOptionList(model.options) ? A4($author$project$MuchSelect$slottedDropdown, model.selectionConfig, model.options, model.searchString, model.valueCasing) : A4($author$project$MuchSelect$customHtmlDropdown, model.selectionConfig, model.options, model.searchString, model.valueCasing);
 				} else {
 					return $author$project$GroupedDropdownOptions$dropdownOptionsToDatalistHtml(
 						A2($author$project$DropdownOptions$figureOutWhichOptionsToShowInTheDropdownThatAreNotSelected, model.selectionConfig, model.options));
@@ -21333,7 +21991,7 @@ _Platform_export({'MuchSelect':{'init':$author$project$MuchSelect$main(
 				},
 				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
 		},
-		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))({"versions":{"elm":"0.19.1"},"types":{"message":"MuchSelect.Msg","aliases":{"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"},"OptionSearchFilter.OptionSearchFilter":{"args":[],"type":"{ totalScore : Basics.Int, bestScore : Basics.Int, labelTokens : List.List ( Basics.Bool, String.String ), descriptionTokens : List.List ( Basics.Bool, String.String ), groupTokens : List.List ( Basics.Bool, String.String ) }"}},"unions":{"MuchSelect.Msg":{"args":[],"tags":{"NoOp":[],"BringInputInFocus":[],"BringInputOutOfFocus":[],"InputBlur":[],"InputFocus":[],"DropdownMouseOverOption":["OptionValue.OptionValue"],"DropdownMouseOutOption":["OptionValue.OptionValue"],"DropdownMouseDownOption":["OptionValue.OptionValue"],"DropdownMouseUpOption":["OptionValue.OptionValue"],"UpdateSearchString":["String.String"],"SearchStringSteady":[],"UpdateOptionValueValue":["Basics.Int","String.String"],"TextInputOnInput":["String.String"],"ValueChanged":["Json.Decode.Value"],"OptionsReplaced":["Json.Decode.Value"],"OptionSortingChanged":["String.String"],"AddOptions":["Json.Decode.Value"],"RemoveOptions":["Json.Decode.Value"],"SelectOption":["Json.Decode.Value"],"DeselectOption":["Json.Decode.Value"],"DeselectOptionInternal":["Option.Option"],"PlaceholderAttributeChanged":["( Basics.Bool, String.String )"],"LoadingAttributeChanged":["Basics.Bool"],"MaxDropdownItemsChanged":["String.String"],"ShowDropdownFooterChanged":["Basics.Bool"],"AllowCustomOptionsChanged":["( Basics.Bool, String.String )"],"DisabledAttributeChanged":["Basics.Bool"],"MultiSelectAttributeChanged":["Basics.Bool"],"MultiSelectSingleItemRemovalAttributeChanged":["Basics.Bool"],"SearchStringMinimumLengthAttributeChanged":["Basics.Int"],"SelectedItemStaysInPlaceChanged":["Basics.Bool"],"OutputStyleChanged":["String.String"],"SelectHighlightedOption":[],"DeleteInputForSingleSelect":[],"EscapeKeyInInputFilter":[],"MoveHighlightedOptionUp":[],"MoveHighlightedOptionDown":[],"ValueCasingWidthUpdate":["{ width : Basics.Float, height : Basics.Float }"],"ClearAllSelectedOptions":[],"ToggleSelectedValueHighlight":["OptionValue.OptionValue"],"DeleteKeydownForMultiSelect":[],"AddMultiSelectValue":["Basics.Int"],"RemoveMultiSelectValue":["Basics.Int"],"RequestAllOptions":[],"UpdateSearchResultsForOptions":["Json.Encode.Value"],"CustomValidationResponse":["Json.Encode.Value"],"UpdateTransformationAndValidation":["Json.Encode.Value"],"AttributeChanged":["( String.String, String.String )"],"AttributeRemoved":["String.String"],"CustomOptionHintChanged":["String.String"],"SelectedValueEncodingChanged":["String.String"],"RequestConfigState":[],"RequestSelectedValues":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Option.Option":{"args":[],"tags":{"Option":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Option.OptionDescription","Option.OptionGroup","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"CustomOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"DatalistOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue"],"EmptyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel"]}},"OptionValue.OptionValue":{"args":[],"tags":{"OptionValue":["String.String"],"EmptyOptionValue":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"List.List":{"args":["a"],"tags":{}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Option.OptionDescription":{"args":[],"tags":{"OptionDescription":["String.String","Maybe.Maybe String.String"],"NoDescription":[]}},"OptionDisplay.OptionDisplay":{"args":[],"tags":{"OptionShown":["OptionDisplay.OptionAge"],"OptionHidden":[],"OptionSelected":["Basics.Int","OptionDisplay.OptionAge"],"OptionSelectedAndInvalid":["Basics.Int","List.List TransformAndValidate.ValidationFailureMessage"],"OptionSelectedPendingValidation":["Basics.Int"],"OptionSelectedHighlighted":["Basics.Int"],"OptionHighlighted":[],"OptionActivated":[],"OptionDisabled":["OptionDisplay.OptionAge"]}},"Option.OptionGroup":{"args":[],"tags":{"OptionGroup":["String.String"],"NoOptionGroup":[]}},"OptionLabel.OptionLabel":{"args":[],"tags":{"OptionLabel":["String.String","Maybe.Maybe String.String","SortRank.SortRank"]}},"OptionDisplay.OptionAge":{"args":[],"tags":{"NewOption":[],"MatureOption":[]}},"SortRank.SortRank":{"args":[],"tags":{"Auto":["PositiveInt.PositiveInt"],"Manual":["PositiveInt.PositiveInt"],"NoSortRank":[]}},"TransformAndValidate.ValidationFailureMessage":{"args":[],"tags":{"ValidationFailureMessage":["TransformAndValidate.ValidationReportLevel","TransformAndValidate.ValidationErrorMessage"]}},"PositiveInt.PositiveInt":{"args":[],"tags":{"PositiveInt":["Basics.Int"]}},"TransformAndValidate.ValidationErrorMessage":{"args":[],"tags":{"ValidationErrorMessage":["String.String"]}},"TransformAndValidate.ValidationReportLevel":{"args":[],"tags":{"SilentError":[],"ShowError":[]}}}}})}});}(this));
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))({"versions":{"elm":"0.19.1"},"types":{"message":"MuchSelect.Msg","aliases":{"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"},"OptionSearchFilter.OptionSearchFilter":{"args":[],"type":"{ totalScore : Basics.Int, bestScore : Basics.Int, labelTokens : List.List ( Basics.Bool, String.String ), descriptionTokens : List.List ( Basics.Bool, String.String ), groupTokens : List.List ( Basics.Bool, String.String ) }"}},"unions":{"MuchSelect.Msg":{"args":[],"tags":{"NoOp":[],"BringInputInFocus":[],"BringInputOutOfFocus":[],"InputBlur":[],"InputFocus":[],"DropdownMouseOverOption":["OptionValue.OptionValue"],"DropdownMouseOutOption":["OptionValue.OptionValue"],"DropdownMouseDownOption":["OptionValue.OptionValue"],"DropdownMouseUpOption":["OptionValue.OptionValue"],"UpdateSearchString":["String.String"],"SearchStringSteady":[],"UpdateOptionValueValue":["Basics.Int","String.String"],"TextInputOnInput":["String.String"],"ValueChanged":["Json.Decode.Value"],"OptionsReplaced":["Json.Decode.Value"],"OptionSortingChanged":["String.String"],"AddOptions":["Json.Decode.Value"],"RemoveOptions":["Json.Decode.Value"],"SelectOption":["Json.Decode.Value"],"DeselectOption":["Json.Decode.Value"],"DeselectOptionInternal":["Option.Option"],"PlaceholderAttributeChanged":["( Basics.Bool, String.String )"],"LoadingAttributeChanged":["Basics.Bool"],"MaxDropdownItemsChanged":["String.String"],"ShowDropdownFooterChanged":["Basics.Bool"],"AllowCustomOptionsChanged":["( Basics.Bool, String.String )"],"DisabledAttributeChanged":["Basics.Bool"],"MultiSelectAttributeChanged":["Basics.Bool"],"MultiSelectSingleItemRemovalAttributeChanged":["Basics.Bool"],"SearchStringMinimumLengthAttributeChanged":["Basics.Int"],"SelectedItemStaysInPlaceChanged":["Basics.Bool"],"OutputStyleChanged":["String.String"],"SelectHighlightedOption":[],"DeleteInputForSingleSelect":[],"EscapeKeyInInputFilter":[],"MoveHighlightedOptionUp":[],"MoveHighlightedOptionDown":[],"ValueCasingWidthUpdate":["{ width : Basics.Float, height : Basics.Float }"],"ClearAllSelectedOptions":[],"ToggleSelectedValueHighlight":["OptionValue.OptionValue"],"DeleteKeydownForMultiSelect":[],"AddMultiSelectValue":["Basics.Int"],"RemoveMultiSelectValue":["Basics.Int"],"RequestAllOptions":[],"UpdateSearchResultsForOptions":["Json.Encode.Value"],"CustomValidationResponse":["Json.Encode.Value"],"UpdateTransformationAndValidation":["Json.Encode.Value"],"AttributeChanged":["( String.String, String.String )"],"AttributeRemoved":["String.String"],"CustomOptionHintChanged":["String.String"],"SelectedValueEncodingChanged":["String.String"],"RequestConfigState":[],"RequestSelectedValues":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Option.Option":{"args":[],"tags":{"Option":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Option.OptionDescription","Option.OptionGroup","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"CustomOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"DatalistOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue"],"SlottedOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue","OptionSlot.OptionSlot"],"EmptyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel"]}},"OptionValue.OptionValue":{"args":[],"tags":{"OptionValue":["String.String"],"EmptyOptionValue":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"List.List":{"args":["a"],"tags":{}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Option.OptionDescription":{"args":[],"tags":{"OptionDescription":["String.String","Maybe.Maybe String.String"],"NoDescription":[]}},"OptionDisplay.OptionDisplay":{"args":[],"tags":{"OptionShown":["OptionDisplay.OptionAge"],"OptionHidden":[],"OptionSelected":["Basics.Int","OptionDisplay.OptionAge"],"OptionSelectedAndInvalid":["Basics.Int","List.List TransformAndValidate.ValidationFailureMessage"],"OptionSelectedPendingValidation":["Basics.Int"],"OptionSelectedHighlighted":["Basics.Int"],"OptionHighlighted":[],"OptionActivated":[],"OptionDisabled":["OptionDisplay.OptionAge"]}},"Option.OptionGroup":{"args":[],"tags":{"OptionGroup":["String.String"],"NoOptionGroup":[]}},"OptionLabel.OptionLabel":{"args":[],"tags":{"OptionLabel":["String.String","Maybe.Maybe String.String","SortRank.SortRank"]}},"OptionSlot.OptionSlot":{"args":[],"tags":{"OptionSlot":["String.String"]}},"OptionDisplay.OptionAge":{"args":[],"tags":{"NewOption":[],"MatureOption":[]}},"SortRank.SortRank":{"args":[],"tags":{"Auto":["PositiveInt.PositiveInt"],"Manual":["PositiveInt.PositiveInt"],"NoSortRank":[]}},"TransformAndValidate.ValidationFailureMessage":{"args":[],"tags":{"ValidationFailureMessage":["TransformAndValidate.ValidationReportLevel","TransformAndValidate.ValidationErrorMessage"]}},"PositiveInt.PositiveInt":{"args":[],"tags":{"PositiveInt":["Basics.Int"]}},"TransformAndValidate.ValidationErrorMessage":{"args":[],"tags":{"ValidationErrorMessage":["String.String"]}},"TransformAndValidate.ValidationReportLevel":{"args":[],"tags":{"SilentError":[],"ShowError":[]}}}}})}});}(this));
 */
 export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
 	A2(
@@ -21473,5 +22131,5 @@ export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
 				},
 				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
 		},
-		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))({"versions":{"elm":"0.19.1"},"types":{"message":"MuchSelect.Msg","aliases":{"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"},"OptionSearchFilter.OptionSearchFilter":{"args":[],"type":"{ totalScore : Basics.Int, bestScore : Basics.Int, labelTokens : List.List ( Basics.Bool, String.String ), descriptionTokens : List.List ( Basics.Bool, String.String ), groupTokens : List.List ( Basics.Bool, String.String ) }"}},"unions":{"MuchSelect.Msg":{"args":[],"tags":{"NoOp":[],"BringInputInFocus":[],"BringInputOutOfFocus":[],"InputBlur":[],"InputFocus":[],"DropdownMouseOverOption":["OptionValue.OptionValue"],"DropdownMouseOutOption":["OptionValue.OptionValue"],"DropdownMouseDownOption":["OptionValue.OptionValue"],"DropdownMouseUpOption":["OptionValue.OptionValue"],"UpdateSearchString":["String.String"],"SearchStringSteady":[],"UpdateOptionValueValue":["Basics.Int","String.String"],"TextInputOnInput":["String.String"],"ValueChanged":["Json.Decode.Value"],"OptionsReplaced":["Json.Decode.Value"],"OptionSortingChanged":["String.String"],"AddOptions":["Json.Decode.Value"],"RemoveOptions":["Json.Decode.Value"],"SelectOption":["Json.Decode.Value"],"DeselectOption":["Json.Decode.Value"],"DeselectOptionInternal":["Option.Option"],"PlaceholderAttributeChanged":["( Basics.Bool, String.String )"],"LoadingAttributeChanged":["Basics.Bool"],"MaxDropdownItemsChanged":["String.String"],"ShowDropdownFooterChanged":["Basics.Bool"],"AllowCustomOptionsChanged":["( Basics.Bool, String.String )"],"DisabledAttributeChanged":["Basics.Bool"],"MultiSelectAttributeChanged":["Basics.Bool"],"MultiSelectSingleItemRemovalAttributeChanged":["Basics.Bool"],"SearchStringMinimumLengthAttributeChanged":["Basics.Int"],"SelectedItemStaysInPlaceChanged":["Basics.Bool"],"OutputStyleChanged":["String.String"],"SelectHighlightedOption":[],"DeleteInputForSingleSelect":[],"EscapeKeyInInputFilter":[],"MoveHighlightedOptionUp":[],"MoveHighlightedOptionDown":[],"ValueCasingWidthUpdate":["{ width : Basics.Float, height : Basics.Float }"],"ClearAllSelectedOptions":[],"ToggleSelectedValueHighlight":["OptionValue.OptionValue"],"DeleteKeydownForMultiSelect":[],"AddMultiSelectValue":["Basics.Int"],"RemoveMultiSelectValue":["Basics.Int"],"RequestAllOptions":[],"UpdateSearchResultsForOptions":["Json.Encode.Value"],"CustomValidationResponse":["Json.Encode.Value"],"UpdateTransformationAndValidation":["Json.Encode.Value"],"AttributeChanged":["( String.String, String.String )"],"AttributeRemoved":["String.String"],"CustomOptionHintChanged":["String.String"],"SelectedValueEncodingChanged":["String.String"],"RequestConfigState":[],"RequestSelectedValues":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Option.Option":{"args":[],"tags":{"Option":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Option.OptionDescription","Option.OptionGroup","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"CustomOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"DatalistOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue"],"EmptyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel"]}},"OptionValue.OptionValue":{"args":[],"tags":{"OptionValue":["String.String"],"EmptyOptionValue":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"List.List":{"args":["a"],"tags":{}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Option.OptionDescription":{"args":[],"tags":{"OptionDescription":["String.String","Maybe.Maybe String.String"],"NoDescription":[]}},"OptionDisplay.OptionDisplay":{"args":[],"tags":{"OptionShown":["OptionDisplay.OptionAge"],"OptionHidden":[],"OptionSelected":["Basics.Int","OptionDisplay.OptionAge"],"OptionSelectedAndInvalid":["Basics.Int","List.List TransformAndValidate.ValidationFailureMessage"],"OptionSelectedPendingValidation":["Basics.Int"],"OptionSelectedHighlighted":["Basics.Int"],"OptionHighlighted":[],"OptionActivated":[],"OptionDisabled":["OptionDisplay.OptionAge"]}},"Option.OptionGroup":{"args":[],"tags":{"OptionGroup":["String.String"],"NoOptionGroup":[]}},"OptionLabel.OptionLabel":{"args":[],"tags":{"OptionLabel":["String.String","Maybe.Maybe String.String","SortRank.SortRank"]}},"OptionDisplay.OptionAge":{"args":[],"tags":{"NewOption":[],"MatureOption":[]}},"SortRank.SortRank":{"args":[],"tags":{"Auto":["PositiveInt.PositiveInt"],"Manual":["PositiveInt.PositiveInt"],"NoSortRank":[]}},"TransformAndValidate.ValidationFailureMessage":{"args":[],"tags":{"ValidationFailureMessage":["TransformAndValidate.ValidationReportLevel","TransformAndValidate.ValidationErrorMessage"]}},"PositiveInt.PositiveInt":{"args":[],"tags":{"PositiveInt":["Basics.Int"]}},"TransformAndValidate.ValidationErrorMessage":{"args":[],"tags":{"ValidationErrorMessage":["String.String"]}},"TransformAndValidate.ValidationReportLevel":{"args":[],"tags":{"SilentError":[],"ShowError":[]}}}}})}};
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))({"versions":{"elm":"0.19.1"},"types":{"message":"MuchSelect.Msg","aliases":{"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"},"OptionSearchFilter.OptionSearchFilter":{"args":[],"type":"{ totalScore : Basics.Int, bestScore : Basics.Int, labelTokens : List.List ( Basics.Bool, String.String ), descriptionTokens : List.List ( Basics.Bool, String.String ), groupTokens : List.List ( Basics.Bool, String.String ) }"}},"unions":{"MuchSelect.Msg":{"args":[],"tags":{"NoOp":[],"BringInputInFocus":[],"BringInputOutOfFocus":[],"InputBlur":[],"InputFocus":[],"DropdownMouseOverOption":["OptionValue.OptionValue"],"DropdownMouseOutOption":["OptionValue.OptionValue"],"DropdownMouseDownOption":["OptionValue.OptionValue"],"DropdownMouseUpOption":["OptionValue.OptionValue"],"UpdateSearchString":["String.String"],"SearchStringSteady":[],"UpdateOptionValueValue":["Basics.Int","String.String"],"TextInputOnInput":["String.String"],"ValueChanged":["Json.Decode.Value"],"OptionsReplaced":["Json.Decode.Value"],"OptionSortingChanged":["String.String"],"AddOptions":["Json.Decode.Value"],"RemoveOptions":["Json.Decode.Value"],"SelectOption":["Json.Decode.Value"],"DeselectOption":["Json.Decode.Value"],"DeselectOptionInternal":["Option.Option"],"PlaceholderAttributeChanged":["( Basics.Bool, String.String )"],"LoadingAttributeChanged":["Basics.Bool"],"MaxDropdownItemsChanged":["String.String"],"ShowDropdownFooterChanged":["Basics.Bool"],"AllowCustomOptionsChanged":["( Basics.Bool, String.String )"],"DisabledAttributeChanged":["Basics.Bool"],"MultiSelectAttributeChanged":["Basics.Bool"],"MultiSelectSingleItemRemovalAttributeChanged":["Basics.Bool"],"SearchStringMinimumLengthAttributeChanged":["Basics.Int"],"SelectedItemStaysInPlaceChanged":["Basics.Bool"],"OutputStyleChanged":["String.String"],"SelectHighlightedOption":[],"DeleteInputForSingleSelect":[],"EscapeKeyInInputFilter":[],"MoveHighlightedOptionUp":[],"MoveHighlightedOptionDown":[],"ValueCasingWidthUpdate":["{ width : Basics.Float, height : Basics.Float }"],"ClearAllSelectedOptions":[],"ToggleSelectedValueHighlight":["OptionValue.OptionValue"],"DeleteKeydownForMultiSelect":[],"AddMultiSelectValue":["Basics.Int"],"RemoveMultiSelectValue":["Basics.Int"],"RequestAllOptions":[],"UpdateSearchResultsForOptions":["Json.Encode.Value"],"CustomValidationResponse":["Json.Encode.Value"],"UpdateTransformationAndValidation":["Json.Encode.Value"],"AttributeChanged":["( String.String, String.String )"],"AttributeRemoved":["String.String"],"CustomOptionHintChanged":["String.String"],"SelectedValueEncodingChanged":["String.String"],"RequestConfigState":[],"RequestSelectedValues":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Option.Option":{"args":[],"tags":{"Option":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Option.OptionDescription","Option.OptionGroup","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"CustomOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"DatalistOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue"],"SlottedOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue","OptionSlot.OptionSlot"],"EmptyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel"]}},"OptionValue.OptionValue":{"args":[],"tags":{"OptionValue":["String.String"],"EmptyOptionValue":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"List.List":{"args":["a"],"tags":{}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Option.OptionDescription":{"args":[],"tags":{"OptionDescription":["String.String","Maybe.Maybe String.String"],"NoDescription":[]}},"OptionDisplay.OptionDisplay":{"args":[],"tags":{"OptionShown":["OptionDisplay.OptionAge"],"OptionHidden":[],"OptionSelected":["Basics.Int","OptionDisplay.OptionAge"],"OptionSelectedAndInvalid":["Basics.Int","List.List TransformAndValidate.ValidationFailureMessage"],"OptionSelectedPendingValidation":["Basics.Int"],"OptionSelectedHighlighted":["Basics.Int"],"OptionHighlighted":[],"OptionActivated":[],"OptionDisabled":["OptionDisplay.OptionAge"]}},"Option.OptionGroup":{"args":[],"tags":{"OptionGroup":["String.String"],"NoOptionGroup":[]}},"OptionLabel.OptionLabel":{"args":[],"tags":{"OptionLabel":["String.String","Maybe.Maybe String.String","SortRank.SortRank"]}},"OptionSlot.OptionSlot":{"args":[],"tags":{"OptionSlot":["String.String"]}},"OptionDisplay.OptionAge":{"args":[],"tags":{"NewOption":[],"MatureOption":[]}},"SortRank.SortRank":{"args":[],"tags":{"Auto":["PositiveInt.PositiveInt"],"Manual":["PositiveInt.PositiveInt"],"NoSortRank":[]}},"TransformAndValidate.ValidationFailureMessage":{"args":[],"tags":{"ValidationFailureMessage":["TransformAndValidate.ValidationReportLevel","TransformAndValidate.ValidationErrorMessage"]}},"PositiveInt.PositiveInt":{"args":[],"tags":{"PositiveInt":["Basics.Int"]}},"TransformAndValidate.ValidationErrorMessage":{"args":[],"tags":{"ValidationErrorMessage":["String.String"]}},"TransformAndValidate.ValidationReportLevel":{"args":[],"tags":{"SilentError":[],"ShowError":[]}}}}})}};
   

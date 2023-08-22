@@ -8,6 +8,12 @@ import getMuchSelectTemplate from "./much-select-template.js";
 
 import asciiFold from "./ascii-fold.js";
 
+/**
+ * Take a select element, and parse the data out of it into an array of objects.
+ *
+ * @param selectElement {Element}
+ * @returns {object[]}
+ */
 const buildOptionsFromSelectElement = (selectElement) => {
   const options = [];
   const optionElements = selectElement.querySelectorAll("option");
@@ -36,6 +42,24 @@ const buildOptionsFromSelectElement = (selectElement) => {
     option.disabled = optionElement.hasAttribute("disabled");
     options.push(option);
   });
+  return options;
+};
+
+/**
+ *
+ * @param optionElements {Element[]}
+ * @returns {object[]}
+ */
+const buildOptionsFromMuchSelectOptionElements = (optionElements) => {
+  const options = [];
+  optionElements.forEach((optionElement, optionIndex) => {
+    const option = {};
+    option.value = optionElement.getAttribute("option-value");
+    option.slot = optionElement.getAttribute("slot");
+    option.index = optionIndex;
+    options.push(option);
+  });
+  console.log("options", options);
   return options;
 };
 
@@ -867,6 +891,15 @@ class MuchSelect extends HTMLElement {
     if (selectElement) {
       const optionsJson = buildOptionsFromSelectElement(selectElement);
       this._callOptionChanged(optionsJson);
+    } else {
+      const muchSelectOptionElements =
+        this.querySelectorAll("much-select-option");
+      if (muchSelectOptionElements) {
+        const optionsJson = buildOptionsFromMuchSelectOptionElements(
+          muchSelectOptionElements
+        );
+        this._callOptionChanged(optionsJson);
+      }
     }
   }
 
@@ -1017,6 +1050,15 @@ class MuchSelect extends HTMLElement {
     }
 
     const selectElement = this.querySelector("select[slot='select-input']");
+    const muchSelectOptionElements =
+      this.querySelectorAll("much-select-option");
+
+    if (selectElement && muchSelectOptionElements) {
+      throw new Error(
+        "Much Select does not support mixing the select-input slot and much-select-option elements. To define the options you need to pick one or the other."
+      );
+    }
+
     if (this.hasAttribute("selected-value")) {
       if (selectElement && selectElement.querySelector("option[selected]")) {
         throw new Error(
@@ -1033,6 +1075,10 @@ class MuchSelect extends HTMLElement {
     if (selectElement) {
       flags.optionsJson = JSON.stringify(
         buildOptionsFromSelectElement(selectElement)
+      );
+    } else if (muchSelectOptionElements) {
+      flags.optionsJson = JSON.stringify(
+        buildOptionsFromMuchSelectOptionElements(muchSelectOptionElements)
       );
     } else {
       flags.optionsJson = JSON.stringify([]);

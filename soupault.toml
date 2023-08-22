@@ -209,6 +209,11 @@ widget = "include"
 file = "examples/change-the-dom.html"
 selector = ".example #change-the-dom"
 
+[widgets.custom-element-options]
+widget = "include"
+file = "examples/custom-element-options.html"
+selector = ".example #custom-element-options"
+
 [widgets.custom-option-label-text-2]
 widget = "include"
 file = "examples/custom-option-label-text-2.html"

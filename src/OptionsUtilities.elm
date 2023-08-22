@@ -194,6 +194,9 @@ selectOptionInListByOptionValue value options =
                     DatalistOption _ _ ->
                         Option.selectOption nextSelectedIndex option_
 
+                    SlottedOption _ _ _ ->
+                        Option.selectOption nextSelectedIndex option_
+
             else if isOptionSelected option_ then
                 option_
 
@@ -227,6 +230,9 @@ activateOptionInListByOptionValue value options =
                     DatalistOption _ _ ->
                         option_
 
+                    SlottedOption _ _ _ ->
+                        Option.activateOption option_
+
             else if isOptionSelected option_ then
                 option_
 
@@ -258,6 +264,9 @@ selectOptionInListByOptionValueWithIndex index value options =
                         Option.selectOption index option_
 
                     DatalistOption _ _ ->
+                        Option.selectOption index option_
+
+                    SlottedOption _ _ _ ->
                         Option.selectOption index option_
 
             else if isOptionSelected option_ then
@@ -327,6 +336,15 @@ selectHighlightedOption selectionMode options =
                             DatalistOption _ _ ->
                                 options
 
+                            SlottedOption _ optionValue _ ->
+                                case selectionMode of
+                                    MultiSelectConfig _ _ _ ->
+                                        selectOptionInListByOptionValue optionValue options
+                                            |> clearAnyUnselectedCustomOptions
+
+                                    SingleSelectConfig _ _ _ ->
+                                        selectSingleOptionInList optionValue options
+
                     Nothing ->
                         options
            )
@@ -354,6 +372,9 @@ selectSingleOptionInList value options =
                             Option.selectOption 0 option_
 
                         DatalistOption _ _ ->
+                            Option.selectOption 0 option_
+
+                        SlottedOption _ _ _ ->
                             Option.selectOption 0 option_
 
                 else
@@ -384,6 +405,9 @@ selectSingleOptionInListResult optionValue options =
                                 Option.selectOption 0 option_
 
                             DatalistOption _ _ ->
+                                Option.selectOption 0 option_
+
+                            SlottedOption _ _ _ ->
                                 Option.selectOption 0 option_
 
                     else
@@ -434,6 +458,9 @@ selectEmptyOption options =
                         Option.selectOption 0 option_
 
                     DatalistOption _ _ ->
+                        deselectOption option_
+
+                    SlottedOption _ _ _ ->
                         deselectOption option_
             )
 
@@ -652,6 +679,39 @@ toggleSelectedHighlightByOptionValue options optionValue =
 
                     DatalistOption _ _ ->
                         option_
+
+                    SlottedOption optionDisplay optionValue_ _ ->
+                        if optionValue == optionValue_ then
+                            case optionDisplay of
+                                OptionShown _ ->
+                                    option_
+
+                                OptionHidden ->
+                                    option_
+
+                                OptionSelected selectedIndex _ ->
+                                    option_ |> setOptionDisplay (OptionSelectedHighlighted selectedIndex)
+
+                                OptionSelectedPendingValidation _ ->
+                                    option_
+
+                                OptionSelectedAndInvalid _ _ ->
+                                    option_
+
+                                OptionSelectedHighlighted selectedIndex ->
+                                    option_ |> setOptionDisplay (OptionSelected selectedIndex OptionDisplay.MatureOption)
+
+                                OptionHighlighted ->
+                                    option_
+
+                                OptionDisabled _ ->
+                                    option_
+
+                                OptionActivated ->
+                                    option_
+
+                        else
+                            option_
             )
 
 
@@ -724,6 +784,35 @@ deselectAllSelectedHighlightedOptions options =
 
                     DatalistOption _ _ ->
                         option_
+
+                    SlottedOption optionDisplay _ _ ->
+                        case optionDisplay of
+                            OptionShown _ ->
+                                option_
+
+                            OptionHidden ->
+                                option_
+
+                            OptionSelected _ _ ->
+                                option_
+
+                            OptionSelectedPendingValidation _ ->
+                                option_
+
+                            OptionSelectedAndInvalid _ _ ->
+                                option_
+
+                            OptionSelectedHighlighted _ ->
+                                option_ |> setOptionDisplay (OptionShown OptionDisplay.MatureOption)
+
+                            OptionHighlighted ->
+                                option_
+
+                            OptionDisabled _ ->
+                                option_
+
+                            OptionActivated ->
+                                option_
             )
 
 

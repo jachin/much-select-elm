@@ -1,7 +1,7 @@
-module DropdownOptions exposing (DropdownItemEventListeners, DropdownOptions, dropdownOptionsToDatalistOption, figureOutWhichOptionsToShowInTheDropdown, figureOutWhichOptionsToShowInTheDropdownThatAreNotSelected, getSearchFilters, groupInOrder, head, isEmpty, length, maybeFirstOptionSearchFilter, moveHighlightedOptionDown, moveHighlightedOptionDownIfThereAreOptions, moveHighlightedOptionUp, optionsToCustomHtml, test_fromOptions, test_getOptions, valuesAsStrings)
+module DropdownOptions exposing (DropdownItemEventListeners, DropdownOptions, dropdownOptionsToDatalistOption, dropdownOptionsToSlottedOptionsHtml, figureOutWhichOptionsToShowInTheDropdown, figureOutWhichOptionsToShowInTheDropdownThatAreNotSelected, getSearchFilters, groupInOrder, head, isEmpty, length, maybeFirstOptionSearchFilter, moveHighlightedOptionDown, moveHighlightedOptionDownIfThereAreOptions, moveHighlightedOptionUp, optionsToCustomHtml, test_fromOptions, test_getOptions, valuesAsStrings)
 
 import Events exposing (mouseDownPreventDefault, mouseUpPreventDefault, onClickPreventDefault, onClickPreventDefaultAndStopPropagation)
-import Html exposing (Html, div, span, text)
+import Html exposing (Html, div, node, span, text)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onMouseEnter, onMouseLeave)
 import Html.Lazy
@@ -12,6 +12,7 @@ import OptionDisplay exposing (OptionDisplay(..))
 import OptionLabel exposing (optionLabelToString)
 import OptionPresentor exposing (tokensToHtml)
 import OptionSearchFilter exposing (OptionSearchFilter)
+import OptionSlot
 import OptionValue exposing (OptionValue)
 import OptionsUtilities exposing (filterOptionsToShowInDropdown, findClosestHighlightableOptionGoingDown, findClosestHighlightableOptionGoingUp, findHighlightedOrSelectedOptionIndex, highlightOptionInList)
 import OutputStyle
@@ -264,6 +265,11 @@ optionsToCustomHtml dropdownItemEventListeners selectionConfig dropdownOptions =
             List.map (optionToCustomHtml dropdownItemEventListeners selectionConfig) options
 
 
+valueDataAttribute : Option -> Html.Attribute msg
+valueDataAttribute option =
+    Html.Attributes.attribute "data-value" (Option.getOptionValueAsString option)
+
+
 optionToCustomHtml :
     DropdownItemEventListeners msg
     -> SelectionConfig
@@ -309,9 +315,6 @@ optionToCustomHtml eventHandlers selectionConfig_ option_ =
 
                         Nothing ->
                             span [] [ Option.getOptionLabel option |> optionLabelToString |> text ]
-
-                valueDataAttribute =
-                    Html.Attributes.attribute "data-value" (Option.getOptionValueAsString option)
             in
             case Option.getOptionDisplay option of
                 OptionShown _ ->
@@ -323,7 +326,7 @@ optionToCustomHtml eventHandlers selectionConfig_ option_ =
                         , onClickPreventDefault eventHandlers.noOpMsgConstructor
                         , Html.Attributes.attribute "part" "dropdown-option"
                         , class "option"
-                        , valueDataAttribute
+                        , valueDataAttribute option
                         ]
                         [ labelHtml, descriptionHtml ]
 
@@ -341,7 +344,7 @@ optionToCustomHtml eventHandlers selectionConfig_ option_ =
                                 , Html.Attributes.attribute "part" "dropdown-option selected"
                                 , class "selected"
                                 , class "option"
-                                , valueDataAttribute
+                                , valueDataAttribute option
                                 ]
                                 [ labelHtml, descriptionHtml ]
 
@@ -353,7 +356,7 @@ optionToCustomHtml eventHandlers selectionConfig_ option_ =
                         [ Html.Attributes.attribute "part" "dropdown-option disabled"
                         , class "disabled"
                         , class "option"
-                        , valueDataAttribute
+                        , valueDataAttribute option
                         ]
                         [ labelHtml, descriptionHtml ]
 
@@ -372,7 +375,7 @@ optionToCustomHtml eventHandlers selectionConfig_ option_ =
                                 , class "selected"
                                 , class "highlighted"
                                 , class "option"
-                                , valueDataAttribute
+                                , valueDataAttribute option
                                 ]
                                 [ labelHtml, descriptionHtml ]
 
@@ -388,7 +391,7 @@ optionToCustomHtml eventHandlers selectionConfig_ option_ =
                         , Html.Attributes.attribute "part" "dropdown-option highlighted"
                         , class "highlighted"
                         , class "option"
-                        , valueDataAttribute
+                        , valueDataAttribute option
                         ]
                         [ labelHtml, descriptionHtml ]
 
@@ -397,7 +400,7 @@ optionToCustomHtml eventHandlers selectionConfig_ option_ =
                         [ Html.Attributes.attribute "part" "dropdown-option disabled"
                         , class "disabled"
                         , class "option"
-                        , valueDataAttribute
+                        , valueDataAttribute option
                         ]
                         [ labelHtml, descriptionHtml ]
 
@@ -412,7 +415,7 @@ optionToCustomHtml eventHandlers selectionConfig_ option_ =
                         , class "option"
                         , class "active"
                         , class "highlighted"
-                        , valueDataAttribute
+                        , valueDataAttribute option
                         ]
                         [ labelHtml, descriptionHtml ]
         )
@@ -428,3 +431,119 @@ dropdownOptionsToDatalistOption dropdownOptions =
 optionToDatalistOption : Option -> Html msg
 optionToDatalistOption option =
     Html.option [ Html.Attributes.value (Option.getOptionValueAsString option) ] []
+
+
+dropdownOptionsToSlottedOptionsHtml : DropdownItemEventListeners msg -> DropdownOptions -> List (Html msg)
+dropdownOptionsToSlottedOptionsHtml eventHandlers options =
+    List.map (optionToSlottedOptionHtml eventHandlers) (getOptions options)
+
+
+optionToSlottedOptionHtml : DropdownItemEventListeners msg -> Option -> Html msg
+optionToSlottedOptionHtml eventHandlers option =
+    case Option.getOptionDisplay option of
+        OptionShown optionAge ->
+            div
+                [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
+                , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
+                , mouseDownPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseDownMsgConstructor)
+                , mouseUpPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseUpMsgConstructor)
+                , onClickPreventDefault eventHandlers.noOpMsgConstructor
+                , Html.Attributes.attribute "part" "dropdown-option"
+                , class "option"
+                , valueDataAttribute option
+                ]
+                [ node "slot" [ option |> Option.getSlot |> OptionSlot.toSlotNameAttribute ] [] ]
+
+        OptionHidden ->
+            text ""
+
+        OptionSelected int optionAge ->
+            div
+                [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
+                , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
+                , mouseDownPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseDownMsgConstructor)
+                , mouseUpPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseUpMsgConstructor)
+                , onClickPreventDefault eventHandlers.noOpMsgConstructor
+                , Html.Attributes.attribute "part" "dropdown-option"
+                , class "option"
+                , valueDataAttribute option
+                ]
+                [ node "slot" [ option |> Option.getSlot |> OptionSlot.toSlotNameAttribute ] [] ]
+
+        OptionSelectedAndInvalid int validationFailureMessages ->
+            div
+                [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
+                , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
+                , mouseDownPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseDownMsgConstructor)
+                , mouseUpPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseUpMsgConstructor)
+                , onClickPreventDefault eventHandlers.noOpMsgConstructor
+                , Html.Attributes.attribute "part" "dropdown-option"
+                , class "option"
+                , valueDataAttribute option
+                ]
+                [ node "slot" [ option |> Option.getSlot |> OptionSlot.toSlotNameAttribute ] [] ]
+
+        OptionSelectedPendingValidation int ->
+            div
+                [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
+                , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
+                , mouseDownPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseDownMsgConstructor)
+                , mouseUpPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseUpMsgConstructor)
+                , onClickPreventDefault eventHandlers.noOpMsgConstructor
+                , Html.Attributes.attribute "part" "dropdown-option"
+                , class "option"
+                , valueDataAttribute option
+                ]
+                [ node "slot" [ option |> Option.getSlot |> OptionSlot.toSlotNameAttribute ] [] ]
+
+        OptionSelectedHighlighted int ->
+            div
+                [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
+                , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
+                , mouseDownPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseDownMsgConstructor)
+                , mouseUpPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseUpMsgConstructor)
+                , onClickPreventDefault eventHandlers.noOpMsgConstructor
+                , Html.Attributes.attribute "part" "dropdown-option"
+                , class "option"
+                , valueDataAttribute option
+                ]
+                [ node "slot" [ option |> Option.getSlot |> OptionSlot.toSlotNameAttribute ] [] ]
+
+        OptionHighlighted ->
+            div
+                [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
+                , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
+                , mouseDownPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseDownMsgConstructor)
+                , mouseUpPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseUpMsgConstructor)
+                , onClickPreventDefault eventHandlers.noOpMsgConstructor
+                , Html.Attributes.attribute "part" "dropdown-option"
+                , class "option"
+                , valueDataAttribute option
+                ]
+                [ node "slot" [ option |> Option.getSlot |> OptionSlot.toSlotNameAttribute ] [] ]
+
+        OptionActivated ->
+            div
+                [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
+                , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
+                , mouseDownPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseDownMsgConstructor)
+                , mouseUpPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseUpMsgConstructor)
+                , onClickPreventDefault eventHandlers.noOpMsgConstructor
+                , Html.Attributes.attribute "part" "dropdown-option"
+                , class "option"
+                , valueDataAttribute option
+                ]
+                [ node "slot" [ option |> Option.getSlot |> OptionSlot.toSlotNameAttribute ] [] ]
+
+        OptionDisabled optionAge ->
+            div
+                [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
+                , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
+                , mouseDownPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseDownMsgConstructor)
+                , mouseUpPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseUpMsgConstructor)
+                , onClickPreventDefault eventHandlers.noOpMsgConstructor
+                , Html.Attributes.attribute "part" "dropdown-option"
+                , class "option"
+                , valueDataAttribute option
+                ]
+                [ node "slot" [ option |> Option.getSlot |> OptionSlot.toSlotNameAttribute ] [] ]

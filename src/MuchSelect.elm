@@ -66,6 +66,7 @@ import Option
         )
 import OptionDisplay exposing (OptionDisplay(..))
 import OptionLabel exposing (OptionLabel(..))
+import OptionList
 import OptionSearcher exposing (doesSearchStringFindNothing, updateOrAddCustomOption)
 import OptionSorting
     exposing
@@ -2170,11 +2171,19 @@ view model =
                 model.rightSlot
         , case getOutputStyle model.selectionConfig of
             CustomHtml ->
-                customHtmlDropdown
-                    model.selectionConfig
-                    model.options
-                    model.searchString
-                    model.valueCasing
+                if OptionList.isSlottedOptionList model.options then
+                    slottedDropdown
+                        model.selectionConfig
+                        model.options
+                        model.searchString
+                        model.valueCasing
+
+                else
+                    customHtmlDropdown
+                        model.selectionConfig
+                        model.options
+                        model.searchString
+                        model.valueCasing
 
             Datalist ->
                 GroupedDropdownOptions.dropdownOptionsToDatalistHtml (DropdownOptions.figureOutWhichOptionsToShowInTheDropdownThatAreNotSelected model.selectionConfig model.options)
@@ -2894,6 +2903,68 @@ customHtmlDropdown selectionMode options searchString (ValueCasing valueCasingWi
             (optionsHtml ++ [ dropdownFooterHtml ])
 
 
+slottedDropdown : SelectionConfig -> List Option -> SearchString -> ValueCasing -> Html Msg
+slottedDropdown selectionConfig options searchString (ValueCasing valueCasingWidth valueCasingHeight) =
+    let
+        optionsForTheDropdown =
+            figureOutWhichOptionsToShowInTheDropdown selectionConfig options
+
+        optionsHtml =
+            -- TODO We should probably do something different if we are in a loading state
+            if DropdownOptions.isEmpty optionsForTheDropdown then
+                [ div [ class "option disabled" ] [ node "slot" [ name "no-options" ] [ text "No available options" ] ] ]
+
+            else if doesSearchStringFindNothing searchString (getSearchStringMinimumLength selectionConfig) optionsForTheDropdown then
+                [ div [ class "option disabled" ] [ node "slot" [ name "no-filtered-options" ] [ text "This filter returned no results." ] ] ]
+
+            else
+                optionsForTheDropdown
+                    |> DropdownOptions.dropdownOptionsToSlottedOptionsHtml
+                        { mouseOverMsgConstructor = DropdownMouseOverOption
+                        , mouseOutMsgConstructor = DropdownMouseOutOption
+                        , mouseDownMsgConstructor = DropdownMouseDownOption
+                        , mouseUpMsgConstructor = DropdownMouseUpOption
+                        , noOpMsgConstructor = NoOp
+                        }
+
+        dropdownFooterHtml =
+            if showDropdownFooter selectionConfig && DropdownOptions.length optionsForTheDropdown < List.length options then
+                div
+                    [ id "dropdown-footer"
+                    , Html.Attributes.attribute "part" "dropdown-footer"
+                    ]
+                    [ text
+                        ("showing "
+                            ++ (optionsForTheDropdown |> DropdownOptions.length |> String.fromInt)
+                            ++ " of "
+                            ++ (options |> List.length |> String.fromInt)
+                            ++ " options"
+                        )
+                    ]
+
+            else
+                text ""
+    in
+    if isDisabled selectionConfig then
+        text ""
+
+    else
+        div
+            [ id "dropdown"
+            , Html.Attributes.attribute "part" "dropdown"
+            , classList
+                [ ( "showing", showDropdown selectionConfig )
+                , ( "hiding", not (showDropdown selectionConfig) )
+                ]
+            , style "top"
+                (String.fromFloat valueCasingHeight ++ "px")
+            , style
+                "width"
+                (String.fromFloat valueCasingWidth ++ "px")
+            ]
+            (optionsHtml ++ [ dropdownFooterHtml ])
+
+
 optionsToValuesHtml : List Option -> SingleItemRemoval -> List (Html Msg)
 optionsToValuesHtml options enableSingleItemRemoval =
     options
@@ -3031,6 +3102,46 @@ optionToValueHtml enableSingleItemRemoval option =
 
         DatalistOption _ _ ->
             text ""
+
+        SlottedOption optionDisplay optionValue _ ->
+            case optionDisplay of
+                OptionShown _ ->
+                    text ""
+
+                OptionHidden ->
+                    text ""
+
+                OptionSelected _ _ ->
+                    div
+                        [ class "value"
+                        , partAttr
+                        ]
+                        [ valueLabelHtml (OptionValue.optionValueToString optionValue) optionValue, removalHtml ]
+
+                OptionSelectedAndInvalid _ _ ->
+                    text ""
+
+                OptionSelectedPendingValidation _ ->
+                    text ""
+
+                OptionSelectedHighlighted _ ->
+                    div
+                        [ classList
+                            [ ( "value", True )
+                            , ( "highlighted-value", True )
+                            ]
+                        , highlightPartAttr
+                        ]
+                        [ valueLabelHtml (OptionValue.optionValueToString optionValue) optionValue, removalHtml ]
+
+                OptionHighlighted ->
+                    text ""
+
+                OptionActivated ->
+                    text ""
+
+                OptionDisabled _ ->
+                    text ""
 
 
 valueLabelHtml : String -> OptionValue -> Html Msg

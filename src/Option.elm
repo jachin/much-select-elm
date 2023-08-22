@@ -19,6 +19,7 @@ module Option exposing
     , getOptionValidationErrors
     , getOptionValue
     , getOptionValueAsString
+    , getSlot
     , hasSelectedItemIndex
     , highlightOption
     , isCustomOption
@@ -71,6 +72,7 @@ import Json.Encode
 import OptionDisplay exposing (OptionDisplay)
 import OptionLabel exposing (OptionLabel(..), labelDecoder, optionLabelToString)
 import OptionSearchFilter exposing (OptionSearchFilter, OptionSearchFilterWithValue, OptionSearchResult)
+import OptionSlot exposing (OptionSlot)
 import OptionValue exposing (OptionValue(..), optionValueToString, stringToOptionValue)
 import SelectionMode exposing (OutputStyle(..), SelectionConfig)
 import SortRank exposing (SortRank(..))
@@ -81,6 +83,7 @@ type Option
     = Option OptionDisplay OptionLabel OptionValue OptionDescription OptionGroup (Maybe OptionSearchFilter)
     | CustomOption OptionDisplay OptionLabel OptionValue (Maybe OptionSearchFilter)
     | DatalistOption OptionDisplay OptionValue
+    | SlottedOption OptionDisplay OptionValue OptionSlot
     | EmptyOption OptionDisplay OptionLabel
 
 
@@ -98,6 +101,9 @@ getOptionLabel option =
 
         DatalistOption _ optionValue ->
             optionValue |> optionValueToString |> OptionLabel.new
+
+        SlottedOption _ _ _ ->
+            OptionLabel.new ""
 
 
 type OptionDescription
@@ -169,6 +175,9 @@ getOptionGroup option =
         DatalistOption _ _ ->
             NoOptionGroup
 
+        SlottedOption _ _ _ ->
+            NoOptionGroup
+
 
 newOption : String -> Maybe String -> Option
 newOption value maybeCleanLabel =
@@ -238,6 +247,9 @@ setOptionValue optionValue option =
         EmptyOption optionDisplay optionLabel ->
             EmptyOption optionDisplay optionLabel
 
+        SlottedOption optionDisplay _ optionSlot ->
+            SlottedOption optionDisplay optionValue optionSlot
+
 
 setLabelWithString : String -> Maybe String -> Option -> Option
 setLabelWithString string maybeCleanString option =
@@ -263,6 +275,9 @@ setLabelWithString string maybeCleanString option =
 
         DatalistOption optionDisplay _ ->
             DatalistOption optionDisplay (stringToOptionValue string)
+
+        SlottedOption _ _ _ ->
+            option
 
 
 setLabel : OptionLabel -> Option -> Option
@@ -291,6 +306,9 @@ setLabel label option =
         DatalistOption optionDisplay _ ->
             DatalistOption optionDisplay (stringToOptionValue (OptionLabel.optionLabelToString label))
 
+        SlottedOption _ _ _ ->
+            option
+
 
 setDescriptionWithString : String -> Option -> Option
 setDescriptionWithString string option =
@@ -314,6 +332,9 @@ setDescriptionWithString string option =
             EmptyOption optionDisplay optionLabel
 
         DatalistOption _ _ ->
+            option
+
+        SlottedOption _ _ _ ->
             option
 
 
@@ -341,6 +362,9 @@ setDescription description option =
         DatalistOption _ _ ->
             option
 
+        SlottedOption _ _ _ ->
+            option
+
 
 setGroup : OptionGroup -> Option -> Option
 setGroup optionGroup option =
@@ -363,6 +387,9 @@ setGroup optionGroup option =
             EmptyOption optionDisplay optionLabel
 
         DatalistOption _ _ ->
+            option
+
+        SlottedOption _ _ _ ->
             option
 
 
@@ -389,6 +416,9 @@ setGroupWithString string option =
         DatalistOption _ _ ->
             option
 
+        SlottedOption _ _ _ ->
+            option
+
 
 setOptionDisplay : OptionDisplay -> Option -> Option
 setOptionDisplay optionDisplay option =
@@ -413,6 +443,9 @@ setOptionDisplay optionDisplay option =
 
         DatalistOption _ optionValue ->
             DatalistOption optionDisplay optionValue
+
+        SlottedOption _ optionValue optionSlot ->
+            SlottedOption optionDisplay optionValue optionSlot
 
 
 setOptionDisplayAge : OptionDisplay.OptionAge -> Option -> Option
@@ -445,6 +478,9 @@ setOptionSearchFilter maybeOptionSearchFilter option =
                 optionLabel
 
         DatalistOption _ _ ->
+            option
+
+        SlottedOption _ _ _ ->
             option
 
 
@@ -488,6 +524,9 @@ isOptionSelected option =
         DatalistOption optionDisplay _ ->
             OptionDisplay.isSelected optionDisplay
 
+        SlottedOption optionDisplay _ _ ->
+            OptionDisplay.isSelected optionDisplay
+
 
 getOptionDisplay : Option -> OptionDisplay
 getOptionDisplay option =
@@ -502,6 +541,9 @@ getOptionDisplay option =
             display
 
         DatalistOption display _ ->
+            display
+
+        SlottedOption display _ _ ->
             display
 
 
@@ -520,6 +562,9 @@ getOptionSelectedIndex option =
         DatalistOption optionDisplay _ ->
             OptionDisplay.getSelectedIndex optionDisplay
 
+        SlottedOption optionDisplay _ _ ->
+            OptionDisplay.getSelectedIndex optionDisplay
+
 
 setOptionSelectedIndex : Int -> Option -> Option
 setOptionSelectedIndex selectedIndex option =
@@ -535,6 +580,9 @@ setOptionSelectedIndex selectedIndex option =
 
         DatalistOption optionDisplay _ ->
             setOptionDisplay (OptionDisplay.setSelectedIndex selectedIndex optionDisplay) option
+
+        SlottedOption _ _ _ ->
+            setOptionDisplay (OptionDisplay.setSelectedIndex selectedIndex OptionDisplay.default) option
 
 
 hasSelectedItemIndex : Int -> Option -> Bool
@@ -555,6 +603,9 @@ getOptionValue option =
             EmptyOptionValue
 
         DatalistOption _ optionValue ->
+            optionValue
+
+        SlottedOption _ optionValue _ ->
             optionValue
 
 
@@ -603,6 +654,9 @@ getOptionDescription option =
         DatalistOption _ _ ->
             NoDescription
 
+        SlottedOption _ _ _ ->
+            NoDescription
+
 
 getMaybeOptionSearchFilter : Option -> Maybe OptionSearchFilter
 getMaybeOptionSearchFilter option =
@@ -617,6 +671,9 @@ getMaybeOptionSearchFilter option =
             Nothing
 
         DatalistOption _ _ ->
+            Nothing
+
+        SlottedOption _ _ _ ->
             Nothing
 
 
@@ -752,6 +809,9 @@ highlightOption option =
         DatalistOption _ _ ->
             option
 
+        SlottedOption optionDisplay _ _ ->
+            setOptionDisplay (OptionDisplay.addHighlight optionDisplay) option
+
 
 removeHighlightFromOption : Option -> Option
 removeHighlightFromOption option =
@@ -767,6 +827,9 @@ removeHighlightFromOption option =
 
         DatalistOption _ _ ->
             option
+
+        SlottedOption optionDisplay _ _ ->
+            setOptionDisplay (OptionDisplay.removeHighlight optionDisplay) option
 
 
 isOptionHighlighted : Option -> Bool
@@ -784,6 +847,9 @@ isOptionHighlighted option =
         DatalistOption _ _ ->
             False
 
+        SlottedOption optionDisplay _ _ ->
+            OptionDisplay.isHighlighted optionDisplay
+
 
 optionIsHighlightable : SelectionConfig -> Option -> Bool
 optionIsHighlightable selectionConfig option =
@@ -799,6 +865,9 @@ optionIsHighlightable selectionConfig option =
 
         DatalistOption _ _ ->
             False
+
+        SlottedOption optionDisplay _ _ ->
+            OptionDisplay.isHighlightable (SelectionMode.getSelectionMode selectionConfig) optionDisplay
 
 
 selectOption : Int -> Option -> Option
@@ -826,6 +895,9 @@ isOptionSelectedHighlighted option =
         DatalistOption _ _ ->
             False
 
+        SlottedOption optionDisplay _ _ ->
+            OptionDisplay.isHighlightedSelected optionDisplay
+
 
 activateOption : Option -> Option
 activateOption option =
@@ -851,6 +923,9 @@ isEmptyOption option =
 
                 EmptyOptionValue ->
                     True
+
+        SlottedOption _ _ _ ->
+            False
 
 
 isEmptyOptionOrHasEmptyValue : Option -> Bool
@@ -878,6 +953,9 @@ isCustomOption option =
         DatalistOption _ _ ->
             False
 
+        SlottedOption _ _ _ ->
+            False
+
 
 optionsDecoder : OptionDisplay.OptionAge -> OutputStyle -> Json.Decode.Decoder (List Option)
 optionsDecoder age outputStyle =
@@ -891,6 +969,7 @@ decoder age outputStyle =
             Json.Decode.oneOf
                 [ decodeOptionWithoutAValue age
                 , decodeOptionWithAValue age
+                , decodeSlottedOption age
                 ]
 
         Datalist ->
@@ -928,6 +1007,18 @@ decodeOptionWithAValue age =
         descriptionDecoder
         optionGroupDecoder
         (Json.Decode.succeed Nothing)
+
+
+decodeSlottedOption : OptionDisplay.OptionAge -> Json.Decode.Decoder Option
+decodeSlottedOption age =
+    Json.Decode.map3
+        SlottedOption
+        (OptionDisplay.decoder age)
+        (Json.Decode.field
+            "value"
+            valueDecoder
+        )
+        (Json.Decode.field "slot" OptionSlot.decoder)
 
 
 decodeOptionForDatalist : Json.Decode.Decoder Option
@@ -1064,6 +1155,9 @@ transformOptionForOutputStyle outputStyle option =
                 EmptyOption _ _ ->
                     Just option
 
+                SlottedOption _ _ _ ->
+                    Just option
+
         SelectionMode.Datalist ->
             case option of
                 Option optionDisplay _ optionValue _ _ _ ->
@@ -1076,6 +1170,9 @@ transformOptionForOutputStyle outputStyle option =
                     Just option
 
                 EmptyOption _ _ ->
+                    Nothing
+
+                SlottedOption _ _ _ ->
                     Nothing
 
 
@@ -1115,6 +1212,25 @@ isValid option =
     not (isInvalid option || isPendingValidation option)
 
 
+getSlot : Option -> OptionSlot
+getSlot option =
+    case option of
+        Option _ _ _ _ _ _ ->
+            OptionSlot.empty
+
+        CustomOption _ _ _ _ ->
+            OptionSlot.empty
+
+        EmptyOption _ _ ->
+            OptionSlot.empty
+
+        DatalistOption _ _ ->
+            OptionSlot.empty
+
+        SlottedOption _ _ slot ->
+            slot
+
+
 test_optionToDebuggingString : Option -> String
 test_optionToDebuggingString option =
     case option of
@@ -1133,4 +1249,7 @@ test_optionToDebuggingString option =
             optionLabelToString optionLabel
 
         DatalistOption _ optionValue ->
+            optionValueToString optionValue
+
+        SlottedOption _ optionValue _ ->
             optionValueToString optionValue
