@@ -106,6 +106,9 @@ optionToDebuggingString option =
         DatalistOption _ optionValue ->
             optionValueToString optionValue
 
+        SlottedOption _ optionValue _ ->
+            optionValueToString optionValue
+
 
 suite : Test
 suite =
