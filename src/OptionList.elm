@@ -1,10 +1,10 @@
 module OptionList exposing (isSlottedOptionList)
 
-import Option exposing (Option)
+import Option exposing (FancyOption, Option)
 
 
 type OptionList
-    = FancyOptionList (List Option)
+    = FancyOptionList (List FancyOption)
     | DatalistOptionList (List Option)
     | SlottedOptionList (List Option)
 

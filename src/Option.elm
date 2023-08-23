@@ -1,8 +1,11 @@
 module Option exposing
-    ( Option(..)
+    ( DatalistOption(..)
+    , FancyOption(..)
+    , Option(..)
     , OptionDescription
     , OptionGroup
     , SearchResults
+    , SlottedOption(..)
     , activateOption
     , decodeSearchResults
     , decoder
@@ -87,6 +90,14 @@ type Option
     | EmptyOption OptionDisplay OptionLabel
 
 
+type DatalistOption
+    = DatalistOption OptionDisplay OptionValue
+
+
+type SlottedOption
+    = SlottedOption OptionDisplay OptionValue OptionSlot
+
+
 getOptionLabel : Option -> OptionLabel
 getOptionLabel option =
     case option of
@@ -106,79 +117,6 @@ getOptionLabel option =
             OptionLabel.new ""
 
 
-type OptionDescription
-    = OptionDescription String (Maybe String)
-    | NoDescription
-
-
-optionDescriptionToString : OptionDescription -> String
-optionDescriptionToString optionDescription =
-    case optionDescription of
-        OptionDescription string _ ->
-            string
-
-        NoDescription ->
-            ""
-
-
-optionDescriptionToSearchString : OptionDescription -> String
-optionDescriptionToSearchString optionDescription =
-    case optionDescription of
-        OptionDescription description maybeCleanDescription ->
-            case maybeCleanDescription of
-                Just cleanDescription ->
-                    cleanDescription
-
-                Nothing ->
-                    String.toLower description
-
-        NoDescription ->
-            ""
-
-
-optionDescriptionToBool : OptionDescription -> Bool
-optionDescriptionToBool optionDescription =
-    case optionDescription of
-        OptionDescription _ _ ->
-            True
-
-        NoDescription ->
-            False
-
-
-type OptionGroup
-    = OptionGroup String
-    | NoOptionGroup
-
-
-newOptionGroup : String -> OptionGroup
-newOptionGroup string =
-    if string == "" then
-        NoOptionGroup
-
-    else
-        OptionGroup string
-
-
-getOptionGroup : Option -> OptionGroup
-getOptionGroup option =
-    case option of
-        FancyOption _ _ _ _ optionGroup _ ->
-            optionGroup
-
-        CustomOption _ _ _ _ ->
-            NoOptionGroup
-
-        EmptyOption _ _ ->
-            NoOptionGroup
-
-        DatalistOption _ _ ->
-            NoOptionGroup
-
-        SlottedOption _ _ _ ->
-            NoOptionGroup
-
-
 newOption : String -> Maybe String -> Option
 newOption value maybeCleanLabel =
     case value of
@@ -193,43 +131,6 @@ newOption value maybeCleanLabel =
                 NoDescription
                 NoOptionGroup
                 Nothing
-
-
-newCustomOption : String -> Maybe String -> Option
-newCustomOption value maybeCleanLabel =
-    CustomOption
-        OptionDisplay.default
-        (OptionLabel.newWithCleanLabel value maybeCleanLabel)
-        (OptionValue value)
-        Nothing
-
-
-newSelectedDatalistOption : OptionValue -> Int -> Option
-newSelectedDatalistOption optionValue selectedIndex =
-    DatalistOption
-        (OptionDisplay.selected selectedIndex)
-        optionValue
-
-
-newSelectedDatalistOptionWithErrors : List ValidationFailureMessage -> OptionValue -> Int -> Option
-newSelectedDatalistOptionWithErrors errors optionValue selectedIndex =
-    DatalistOption
-        (OptionDisplay.selectedAndInvalid selectedIndex errors)
-        optionValue
-
-
-newSelectedDatalistOptionPendingValidation : OptionValue -> Int -> Option
-newSelectedDatalistOptionPendingValidation optionValue selectedIndex =
-    DatalistOption
-        (OptionDisplay.selectedAndPendingValidation selectedIndex)
-        optionValue
-
-
-newDatalistOption : OptionValue -> Option
-newDatalistOption optionValue =
-    DatalistOption
-        OptionDisplay.default
-        optionValue
 
 
 setOptionValue : OptionValue -> Option -> Option
@@ -616,26 +517,6 @@ getOptionValueAsString option =
             string
 
         EmptyOptionValue ->
-            ""
-
-
-optionGroupToString : OptionGroup -> String
-optionGroupToString optionGroup =
-    case optionGroup of
-        OptionGroup string ->
-            string
-
-        NoOptionGroup ->
-            ""
-
-
-optionGroupToSearchString : OptionGroup -> String
-optionGroupToSearchString optionGroup =
-    case optionGroup of
-        OptionGroup string ->
-            String.toLower string
-
-        NoOptionGroup ->
             ""
 
 
@@ -1043,25 +924,6 @@ valueDecoder =
                     str ->
                         Json.Decode.succeed (OptionValue str)
             )
-
-
-descriptionDecoder : Json.Decode.Decoder OptionDescription
-descriptionDecoder =
-    Json.Decode.oneOf
-        [ Json.Decode.map2 OptionDescription
-            (Json.Decode.field "description" Json.Decode.string)
-            (Json.Decode.field "descriptionClean" (Json.Decode.nullable Json.Decode.string))
-        , Json.Decode.succeed NoDescription
-        ]
-
-
-optionGroupDecoder : Json.Decode.Decoder OptionGroup
-optionGroupDecoder =
-    Json.Decode.oneOf
-        [ Json.Decode.field "group" Json.Decode.string
-            |> Json.Decode.map OptionGroup
-        , Json.Decode.succeed NoOptionGroup
-        ]
 
 
 encode : Option -> Json.Decode.Value
