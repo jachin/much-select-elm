@@ -62,7 +62,6 @@ import List.Extra
 import Option
     exposing
         ( Option(..)
-        , OptionGroup
         )
 import OptionDisplay exposing (OptionDisplay(..))
 import OptionLabel exposing (OptionLabel(..))

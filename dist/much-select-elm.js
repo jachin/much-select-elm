@@ -1,5 +1,5 @@
-// -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- (function(scope){
-// -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- 'use strict';
+// -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- (function(scope){
+// -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- 'use strict';
 
 function F(arity, fun, wrapper) {
   wrapper.a = arity;
@@ -2348,6 +2348,39 @@ function _Platform_setupIncomingPort(name, sendToApp)
 /*
 /*
 /*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
 function _Platform_export(exports)
 {
 	scope['Elm']
@@ -2387,7 +2420,73 @@ function _Platform_export(exports)
 */
 */
 */
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
 
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
 /*
 /*
 /*
@@ -2463,8 +2562,74 @@ function _Platform_mergeExportsProd(obj, exports)
 */
 */
 */
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
 
 
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
 /*
 /*
 /*
@@ -2536,7 +2701,73 @@ function _Platform_export_UNUSED(exports)
 */
 */
 */
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
 
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
 /*
 /*
 /*
@@ -2580,6 +2811,39 @@ function _Platform_mergeExportsDebug(moduleName, obj, exports)
 			: (obj[name] = exports[name]);
 	}
 }
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
 */
 */
 */
@@ -16851,6 +17115,39 @@ var $author$project$MuchSelect$main = $elm$browser$Browser$element(
 /*
 /*
 /*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
 _Platform_export({'MuchSelect':{'init':$author$project$MuchSelect$main(
 	A2(
 		$elm$json$Json$Decode$andThen,
@@ -17022,6 +17319,4659 @@ _Platform_export({'MuchSelect':{'init':$author$project$MuchSelect$main(
 */
 */
 */
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{bT: allowCustomOptions, bb: allowMultiSelect, bg: customOptionHint, b2: disabled, bj: enableMultiSelectSingleItemRemoval, bq: isEventsOnly, bs: loading, a0: maxDropdownItems, Q: optionSort, bz: optionsJson, cs: outputStyle, bA: placeholder, cH: searchStringMinimumLength, bF: selectedItemStaysInPlace, bG: selectedValue, h: selectedValueEncoding, bI: showDropdownFooter, bN: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))(0)}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{bT: allowCustomOptions, bb: allowMultiSelect, bg: customOptionHint, b2: disabled, bj: enableMultiSelectSingleItemRemoval, bq: isEventsOnly, bs: loading, a0: maxDropdownItems, Q: optionSort, bz: optionsJson, cs: outputStyle, bA: placeholder, cH: searchStringMinimumLength, bF: selectedItemStaysInPlace, bG: selectedValue, h: selectedValueEncoding, bI: showDropdownFooter, bN: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))(0)}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{bT: allowCustomOptions, bb: allowMultiSelect, bg: customOptionHint, b2: disabled, bj: enableMultiSelectSingleItemRemoval, bq: isEventsOnly, bs: loading, a0: maxDropdownItems, Q: optionSort, bz: optionsJson, cs: outputStyle, bA: placeholder, cH: searchStringMinimumLength, bF: selectedItemStaysInPlace, bG: selectedValue, h: selectedValueEncoding, bI: showDropdownFooter, bN: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))(0)}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{bT: allowCustomOptions, bb: allowMultiSelect, bg: customOptionHint, b2: disabled, bj: enableMultiSelectSingleItemRemoval, bq: isEventsOnly, bs: loading, a0: maxDropdownItems, Q: optionSort, bz: optionsJson, cs: outputStyle, bA: placeholder, cH: searchStringMinimumLength, bF: selectedItemStaysInPlace, bG: selectedValue, h: selectedValueEncoding, bI: showDropdownFooter, bN: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))(0)}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{bT: allowCustomOptions, bb: allowMultiSelect, bg: customOptionHint, b2: disabled, bj: enableMultiSelectSingleItemRemoval, bq: isEventsOnly, bs: loading, a0: maxDropdownItems, Q: optionSort, bz: optionsJson, cs: outputStyle, bA: placeholder, cH: searchStringMinimumLength, bF: selectedItemStaysInPlace, bG: selectedValue, h: selectedValueEncoding, bI: showDropdownFooter, bN: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))(0)}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{bT: allowCustomOptions, bb: allowMultiSelect, bg: customOptionHint, b2: disabled, bj: enableMultiSelectSingleItemRemoval, bq: isEventsOnly, bs: loading, a0: maxDropdownItems, Q: optionSort, bz: optionsJson, cs: outputStyle, bA: placeholder, cH: searchStringMinimumLength, bF: selectedItemStaysInPlace, bG: selectedValue, h: selectedValueEncoding, bI: showDropdownFooter, bN: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))(0)}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{bT: allowCustomOptions, bb: allowMultiSelect, bg: customOptionHint, b2: disabled, bj: enableMultiSelectSingleItemRemoval, bq: isEventsOnly, bs: loading, a0: maxDropdownItems, Q: optionSort, bz: optionsJson, cs: outputStyle, bA: placeholder, cH: searchStringMinimumLength, bF: selectedItemStaysInPlace, bG: selectedValue, h: selectedValueEncoding, bI: showDropdownFooter, bN: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))(0)}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{bT: allowCustomOptions, bb: allowMultiSelect, bg: customOptionHint, b2: disabled, bj: enableMultiSelectSingleItemRemoval, bq: isEventsOnly, bs: loading, a0: maxDropdownItems, Q: optionSort, bz: optionsJson, cs: outputStyle, bA: placeholder, cH: searchStringMinimumLength, bF: selectedItemStaysInPlace, bG: selectedValue, h: selectedValueEncoding, bI: showDropdownFooter, bN: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))(0)}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{bT: allowCustomOptions, bb: allowMultiSelect, bg: customOptionHint, b2: disabled, bj: enableMultiSelectSingleItemRemoval, bq: isEventsOnly, bs: loading, a0: maxDropdownItems, Q: optionSort, bz: optionsJson, cs: outputStyle, bA: placeholder, cH: searchStringMinimumLength, bF: selectedItemStaysInPlace, bG: selectedValue, h: selectedValueEncoding, bI: showDropdownFooter, bN: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))(0)}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{bT: allowCustomOptions, bb: allowMultiSelect, bg: customOptionHint, b2: disabled, bj: enableMultiSelectSingleItemRemoval, bq: isEventsOnly, bs: loading, a0: maxDropdownItems, Q: optionSort, bz: optionsJson, cs: outputStyle, bA: placeholder, cH: searchStringMinimumLength, bF: selectedItemStaysInPlace, bG: selectedValue, h: selectedValueEncoding, bI: showDropdownFooter, bN: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))(0)}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{bT: allowCustomOptions, bb: allowMultiSelect, bg: customOptionHint, b2: disabled, bj: enableMultiSelectSingleItemRemoval, bq: isEventsOnly, bs: loading, a0: maxDropdownItems, Q: optionSort, bz: optionsJson, cs: outputStyle, bA: placeholder, cH: searchStringMinimumLength, bF: selectedItemStaysInPlace, bG: selectedValue, h: selectedValueEncoding, bI: showDropdownFooter, bN: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))(0)}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{bT: allowCustomOptions, bb: allowMultiSelect, bg: customOptionHint, b2: disabled, bj: enableMultiSelectSingleItemRemoval, bq: isEventsOnly, bs: loading, a0: maxDropdownItems, Q: optionSort, bz: optionsJson, cs: outputStyle, bA: placeholder, cH: searchStringMinimumLength, bF: selectedItemStaysInPlace, bG: selectedValue, h: selectedValueEncoding, bI: showDropdownFooter, bN: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))(0)}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{bT: allowCustomOptions, bb: allowMultiSelect, bg: customOptionHint, b2: disabled, bj: enableMultiSelectSingleItemRemoval, bq: isEventsOnly, bs: loading, a0: maxDropdownItems, Q: optionSort, bz: optionsJson, cs: outputStyle, bA: placeholder, cH: searchStringMinimumLength, bF: selectedItemStaysInPlace, bG: selectedValue, h: selectedValueEncoding, bI: showDropdownFooter, bN: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))(0)}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{bT: allowCustomOptions, bb: allowMultiSelect, bg: customOptionHint, b2: disabled, bj: enableMultiSelectSingleItemRemoval, bq: isEventsOnly, bs: loading, a0: maxDropdownItems, Q: optionSort, bz: optionsJson, cs: outputStyle, bA: placeholder, cH: searchStringMinimumLength, bF: selectedItemStaysInPlace, bG: selectedValue, h: selectedValueEncoding, bI: showDropdownFooter, bN: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))(0)}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{bT: allowCustomOptions, bb: allowMultiSelect, bg: customOptionHint, b2: disabled, bj: enableMultiSelectSingleItemRemoval, bq: isEventsOnly, bs: loading, a0: maxDropdownItems, Q: optionSort, bz: optionsJson, cs: outputStyle, bA: placeholder, cH: searchStringMinimumLength, bF: selectedItemStaysInPlace, bG: selectedValue, h: selectedValueEncoding, bI: showDropdownFooter, bN: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))(0)}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{bT: allowCustomOptions, bb: allowMultiSelect, bg: customOptionHint, b2: disabled, bj: enableMultiSelectSingleItemRemoval, bq: isEventsOnly, bs: loading, a0: maxDropdownItems, Q: optionSort, bz: optionsJson, cs: outputStyle, bA: placeholder, cH: searchStringMinimumLength, bF: selectedItemStaysInPlace, bG: selectedValue, h: selectedValueEncoding, bI: showDropdownFooter, bN: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))(0)}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{bT: allowCustomOptions, bb: allowMultiSelect, bg: customOptionHint, b2: disabled, bj: enableMultiSelectSingleItemRemoval, bq: isEventsOnly, bs: loading, a0: maxDropdownItems, Q: optionSort, bz: optionsJson, cs: outputStyle, bA: placeholder, cH: searchStringMinimumLength, bF: selectedItemStaysInPlace, bG: selectedValue, h: selectedValueEncoding, bI: showDropdownFooter, bN: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))(0)}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{bT: allowCustomOptions, bb: allowMultiSelect, bg: customOptionHint, b2: disabled, bj: enableMultiSelectSingleItemRemoval, bq: isEventsOnly, bs: loading, a0: maxDropdownItems, Q: optionSort, bz: optionsJson, cs: outputStyle, bA: placeholder, cH: searchStringMinimumLength, bF: selectedItemStaysInPlace, bG: selectedValue, h: selectedValueEncoding, bI: showDropdownFooter, bN: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))(0)}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{bT: allowCustomOptions, bb: allowMultiSelect, bg: customOptionHint, b2: disabled, bj: enableMultiSelectSingleItemRemoval, bq: isEventsOnly, bs: loading, a0: maxDropdownItems, Q: optionSort, bz: optionsJson, cs: outputStyle, bA: placeholder, cH: searchStringMinimumLength, bF: selectedItemStaysInPlace, bG: selectedValue, h: selectedValueEncoding, bI: showDropdownFooter, bN: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))(0)}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{bT: allowCustomOptions, bb: allowMultiSelect, bg: customOptionHint, b2: disabled, bj: enableMultiSelectSingleItemRemoval, bq: isEventsOnly, bs: loading, a0: maxDropdownItems, Q: optionSort, bz: optionsJson, cs: outputStyle, bA: placeholder, cH: searchStringMinimumLength, bF: selectedItemStaysInPlace, bG: selectedValue, h: selectedValueEncoding, bI: showDropdownFooter, bN: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))(0)}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{bT: allowCustomOptions, bb: allowMultiSelect, bg: customOptionHint, b2: disabled, bj: enableMultiSelectSingleItemRemoval, bq: isEventsOnly, bs: loading, a0: maxDropdownItems, Q: optionSort, bz: optionsJson, cs: outputStyle, bA: placeholder, cH: searchStringMinimumLength, bF: selectedItemStaysInPlace, bG: selectedValue, h: selectedValueEncoding, bI: showDropdownFooter, bN: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))(0)}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{bT: allowCustomOptions, bb: allowMultiSelect, bg: customOptionHint, b2: disabled, bj: enableMultiSelectSingleItemRemoval, bq: isEventsOnly, bs: loading, a0: maxDropdownItems, Q: optionSort, bz: optionsJson, cs: outputStyle, bA: placeholder, cH: searchStringMinimumLength, bF: selectedItemStaysInPlace, bG: selectedValue, h: selectedValueEncoding, bI: showDropdownFooter, bN: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))(0)}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{bT: allowCustomOptions, bb: allowMultiSelect, bg: customOptionHint, b2: disabled, bj: enableMultiSelectSingleItemRemoval, bq: isEventsOnly, bs: loading, a0: maxDropdownItems, Q: optionSort, bz: optionsJson, cs: outputStyle, bA: placeholder, cH: searchStringMinimumLength, bF: selectedItemStaysInPlace, bG: selectedValue, h: selectedValueEncoding, bI: showDropdownFooter, bN: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))(0)}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{bT: allowCustomOptions, bb: allowMultiSelect, bg: customOptionHint, b2: disabled, bj: enableMultiSelectSingleItemRemoval, bq: isEventsOnly, bs: loading, a0: maxDropdownItems, Q: optionSort, bz: optionsJson, cs: outputStyle, bA: placeholder, cH: searchStringMinimumLength, bF: selectedItemStaysInPlace, bG: selectedValue, h: selectedValueEncoding, bI: showDropdownFooter, bN: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))(0)}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{bT: allowCustomOptions, bb: allowMultiSelect, bg: customOptionHint, b2: disabled, bj: enableMultiSelectSingleItemRemoval, bq: isEventsOnly, bs: loading, a0: maxDropdownItems, Q: optionSort, bz: optionsJson, cs: outputStyle, bA: placeholder, cH: searchStringMinimumLength, bF: selectedItemStaysInPlace, bG: selectedValue, h: selectedValueEncoding, bI: showDropdownFooter, bN: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))(0)}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{bT: allowCustomOptions, bb: allowMultiSelect, bg: customOptionHint, b2: disabled, bj: enableMultiSelectSingleItemRemoval, bq: isEventsOnly, bs: loading, a0: maxDropdownItems, Q: optionSort, bz: optionsJson, cs: outputStyle, bA: placeholder, cH: searchStringMinimumLength, bF: selectedItemStaysInPlace, bG: selectedValue, h: selectedValueEncoding, bI: showDropdownFooter, bN: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))(0)}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{bT: allowCustomOptions, bb: allowMultiSelect, bg: customOptionHint, b2: disabled, bj: enableMultiSelectSingleItemRemoval, bq: isEventsOnly, bs: loading, a0: maxDropdownItems, Q: optionSort, bz: optionsJson, cs: outputStyle, bA: placeholder, cH: searchStringMinimumLength, bF: selectedItemStaysInPlace, bG: selectedValue, h: selectedValueEncoding, bI: showDropdownFooter, bN: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))(0)}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{bT: allowCustomOptions, bb: allowMultiSelect, bg: customOptionHint, b2: disabled, bj: enableMultiSelectSingleItemRemoval, bq: isEventsOnly, bs: loading, a0: maxDropdownItems, Q: optionSort, bz: optionsJson, cs: outputStyle, bA: placeholder, cH: searchStringMinimumLength, bF: selectedItemStaysInPlace, bG: selectedValue, h: selectedValueEncoding, bI: showDropdownFooter, bN: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))(0)}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{bT: allowCustomOptions, bb: allowMultiSelect, bg: customOptionHint, b2: disabled, bj: enableMultiSelectSingleItemRemoval, bq: isEventsOnly, bs: loading, a0: maxDropdownItems, Q: optionSort, bz: optionsJson, cs: outputStyle, bA: placeholder, cH: searchStringMinimumLength, bF: selectedItemStaysInPlace, bG: selectedValue, h: selectedValueEncoding, bI: showDropdownFooter, bN: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))(0)}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{bT: allowCustomOptions, bb: allowMultiSelect, bg: customOptionHint, b2: disabled, bj: enableMultiSelectSingleItemRemoval, bq: isEventsOnly, bs: loading, a0: maxDropdownItems, Q: optionSort, bz: optionsJson, cs: outputStyle, bA: placeholder, cH: searchStringMinimumLength, bF: selectedItemStaysInPlace, bG: selectedValue, h: selectedValueEncoding, bI: showDropdownFooter, bN: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))(0)}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{bT: allowCustomOptions, bb: allowMultiSelect, bg: customOptionHint, b2: disabled, bj: enableMultiSelectSingleItemRemoval, bq: isEventsOnly, bs: loading, a0: maxDropdownItems, Q: optionSort, bz: optionsJson, cs: outputStyle, bA: placeholder, cH: searchStringMinimumLength, bF: selectedItemStaysInPlace, bG: selectedValue, h: selectedValueEncoding, bI: showDropdownFooter, bN: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))(0)}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{bT: allowCustomOptions, bb: allowMultiSelect, bg: customOptionHint, b2: disabled, bj: enableMultiSelectSingleItemRemoval, bq: isEventsOnly, bs: loading, a0: maxDropdownItems, Q: optionSort, bz: optionsJson, cs: outputStyle, bA: placeholder, cH: searchStringMinimumLength, bF: selectedItemStaysInPlace, bG: selectedValue, h: selectedValueEncoding, bI: showDropdownFooter, bN: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))(0)}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{bT: allowCustomOptions, bb: allowMultiSelect, bg: customOptionHint, b2: disabled, bj: enableMultiSelectSingleItemRemoval, bq: isEventsOnly, bs: loading, a0: maxDropdownItems, Q: optionSort, bz: optionsJson, cs: outputStyle, bA: placeholder, cH: searchStringMinimumLength, bF: selectedItemStaysInPlace, bG: selectedValue, h: selectedValueEncoding, bI: showDropdownFooter, bN: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))(0)}};
+  
 export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
 	A2(
 		$elm$json$Json$Decode$andThen,

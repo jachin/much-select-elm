@@ -1,9 +1,10 @@
-module OptionSlot exposing (OptionSlot, decoder, empty, toSlotNameAttribute)
+module OptionSlot exposing (OptionSlot, decoder, empty, encode, toSlotNameAttribute)
 
 import Html
 import Html.Attributes
 import Html.Attributes.Extra
 import Json.Decode exposing (Decoder)
+import Json.Encode
 
 
 type OptionSlot
@@ -21,6 +22,13 @@ decoder : Decoder OptionSlot
 decoder =
     Json.Decode.string
         |> Json.Decode.map OptionSlot
+
+
+encode : OptionSlot -> Json.Encode.Value
+encode optionSlot =
+    case optionSlot of
+        OptionSlot string ->
+            Json.Encode.string string
 
 
 empty : OptionSlot

@@ -1,4 +1,4 @@
-module FancyOption exposing (FancyOption, activateOption, deselect, getMaybeOptionSearchFilter, getOptionDescription, getOptionDisplay, getOptionGroup, getOptionLabel, getOptionSelectedIndex, getOptionValue, getOptionValueAsString, hasSelectedItemIndex, highlightOption, isCustomOption, isEmptyOption, isEmptyOptionOrHasEmptyValue, isOptionHighlighted, isOptionSelectedHighlighted, merge, new, newCustomOption, optionIsHighlightable, optionToValueLabelTuple, removeHighlightFromOption, select, setDescription, setDescriptionWithString, setGroupWithString, setLabel, setLabelWithString, setOptionDisplay, setOptionDisplayAge, setOptionGroup, setOptionSelectedIndex, setOptionValue)
+module FancyOption exposing (FancyOption, activateOption, deselect, getMaybeOptionSearchFilter, getOptionDescription, getOptionDisplay, getOptionGroup, getOptionLabel, getOptionSelectedIndex, getOptionValue, getOptionValueAsString, hasSelectedItemIndex, highlightOption, isCustomOption, isEmptyOption, isEmptyOptionOrHasEmptyValue, isOptionHighlighted, isOptionSelectedHighlighted, isSelected, merge, new, newCustomOption, newDisabledOption, newSelectedOption, optionIsHighlightable, optionToValueLabelTuple, removeHighlightFromOption, select, setDescription, setDescriptionWithString, setGroupWithString, setLabel, setLabelWithString, setOptionDisplay, setOptionDisplayAge, setOptionGroup, setOptionSearchFilter, setOptionSelectedIndex, setOptionValue)
 
 import Json.Decode
 import Json.Encode
@@ -42,6 +42,40 @@ newCustomOption value maybeCleanLabel =
         Nothing
 
 
+newSelectedOption : Int -> String -> Maybe String -> FancyOption
+newSelectedOption index string maybeString =
+    FancyOption
+        (OptionDisplay.select index OptionDisplay.default)
+        (OptionLabel.newWithCleanLabel string maybeString)
+        (OptionValue string)
+        OptionDescription.noDescription
+        NoOptionGroup
+        Nothing
+
+
+newDisabledOption : String -> Maybe String -> FancyOption
+newDisabledOption valueString maybeString =
+    FancyOption OptionDisplay.disabled
+        (OptionLabel.newWithCleanLabel valueString maybeString)
+        (OptionValue valueString)
+        OptionDescription.noDescription
+        NoOptionGroup
+        Nothing
+
+
+getOptionDisplay : FancyOption -> OptionDisplay
+getOptionDisplay option =
+    case option of
+        FancyOption display _ _ _ _ _ ->
+            display
+
+        CustomFancyOption optionDisplay _ _ _ ->
+            optionDisplay
+
+        EmptyFancyOption optionDisplay _ ->
+            optionDisplay
+
+
 setOptionDisplay : OptionDisplay -> FancyOption -> FancyOption
 setOptionDisplay optionDisplay option =
     case option of
@@ -59,19 +93,6 @@ setOptionDisplay optionDisplay option =
 
         EmptyFancyOption _ optionLabel ->
             EmptyFancyOption optionDisplay optionLabel
-
-
-getOptionDisplay : FancyOption -> OptionDisplay
-getOptionDisplay option =
-    case option of
-        FancyOption display _ _ _ _ _ ->
-            display
-
-        CustomFancyOption optionDisplay _ _ _ ->
-            optionDisplay
-
-        EmptyFancyOption optionDisplay _ ->
-            optionDisplay
 
 
 isSelected : FancyOption -> Bool
@@ -273,6 +294,19 @@ getMaybeOptionSearchFilter option =
 
         EmptyFancyOption _ _ ->
             Nothing
+
+
+setOptionSearchFilter : Maybe OptionSearchFilter -> FancyOption -> FancyOption
+setOptionSearchFilter optionSearchFilter option =
+    case option of
+        FancyOption optionDisplay optionLabel optionValue optionDescription optionGroup _ ->
+            FancyOption optionDisplay optionLabel optionValue optionDescription optionGroup optionSearchFilter
+
+        CustomFancyOption optionDisplay optionLabel optionValue _ ->
+            CustomFancyOption optionDisplay optionLabel optionValue optionSearchFilter
+
+        EmptyFancyOption optionDisplay optionLabel ->
+            option
 
 
 merge : FancyOption -> FancyOption -> FancyOption
