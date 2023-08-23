@@ -19316,8 +19316,7 @@ var $author$project$DropdownOptions$optionToCustomHtml = F3(
 											eventHandlers.mouseUpMsgConstructor(
 												$author$project$Option$getOptionValue(option))),
 											A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option selected'),
-											$elm$html$Html$Attributes$class('selected'),
-											$elm$html$Html$Attributes$class('option'),
+											$elm$html$Html$Attributes$class('option selected'),
 											$author$project$DropdownOptions$valueDataAttribute(option)
 										]),
 									_List_fromArray(
@@ -19330,9 +19329,8 @@ var $author$project$DropdownOptions$optionToCustomHtml = F3(
 								$elm$html$Html$div,
 								_List_fromArray(
 									[
-										A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option disabled'),
-										$elm$html$Html$Attributes$class('disabled'),
-										$elm$html$Html$Attributes$class('option'),
+										A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option disabled pending-validation'),
+										$elm$html$Html$Attributes$class('option disabled pending-validation'),
 										$author$project$DropdownOptions$valueDataAttribute(option)
 									]),
 								_List_fromArray(
@@ -19359,9 +19357,7 @@ var $author$project$DropdownOptions$optionToCustomHtml = F3(
 											eventHandlers.mouseUpMsgConstructor(
 												$author$project$Option$getOptionValue(option))),
 											A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option selected highlighted'),
-											$elm$html$Html$Attributes$class('selected'),
-											$elm$html$Html$Attributes$class('highlighted'),
-											$elm$html$Html$Attributes$class('option'),
+											$elm$html$Html$Attributes$class('option selected highlighted'),
 											$author$project$DropdownOptions$valueDataAttribute(option)
 										]),
 									_List_fromArray(
@@ -19387,8 +19383,7 @@ var $author$project$DropdownOptions$optionToCustomHtml = F3(
 										eventHandlers.mouseUpMsgConstructor(
 											$author$project$Option$getOptionValue(option))),
 										A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option highlighted'),
-										$elm$html$Html$Attributes$class('highlighted'),
-										$elm$html$Html$Attributes$class('option'),
+										$elm$html$Html$Attributes$class('option highlighted'),
 										$author$project$DropdownOptions$valueDataAttribute(option)
 									]),
 								_List_fromArray(
@@ -19399,8 +19394,7 @@ var $author$project$DropdownOptions$optionToCustomHtml = F3(
 								_List_fromArray(
 									[
 										A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option disabled'),
-										$elm$html$Html$Attributes$class('disabled'),
-										$elm$html$Html$Attributes$class('option'),
+										$elm$html$Html$Attributes$class('option disabled'),
 										$author$project$DropdownOptions$valueDataAttribute(option)
 									]),
 								_List_fromArray(
@@ -19423,10 +19417,8 @@ var $author$project$DropdownOptions$optionToCustomHtml = F3(
 										eventHandlers.mouseUpMsgConstructor(
 											$author$project$Option$getOptionValue(option))),
 										$author$project$Events$onClickPreventDefaultAndStopPropagation(eventHandlers.noOpMsgConstructor),
-										A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option active'),
-										$elm$html$Html$Attributes$class('option'),
-										$elm$html$Html$Attributes$class('active'),
-										$elm$html$Html$Attributes$class('highlighted'),
+										A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option active highlighted'),
+										$elm$html$Html$Attributes$class('option active highlighted'),
 										$author$project$DropdownOptions$valueDataAttribute(option)
 									]),
 								_List_fromArray(
@@ -21410,7 +21402,6 @@ var $author$project$DropdownOptions$optionToSlottedOptionHtml = F2(
 		var _v0 = $author$project$Option$getOptionDisplay(option);
 		switch (_v0.$) {
 			case 'OptionShown':
-				var optionAge = _v0.a;
 				return A2(
 					$elm$html$Html$div,
 					_List_fromArray(
@@ -21447,8 +21438,6 @@ var $author$project$DropdownOptions$optionToSlottedOptionHtml = F2(
 			case 'OptionHidden':
 				return $elm$html$Html$text('');
 			case 'OptionSelected':
-				var _int = _v0.a;
-				var optionAge = _v0.b;
 				return A2(
 					$elm$html$Html$div,
 					_List_fromArray(
@@ -21466,8 +21455,8 @@ var $author$project$DropdownOptions$optionToSlottedOptionHtml = F2(
 							eventHandlers.mouseUpMsgConstructor(
 								$author$project$Option$getOptionValue(option))),
 							$author$project$Events$onClickPreventDefault(eventHandlers.noOpMsgConstructor),
-							A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option'),
-							$elm$html$Html$Attributes$class('option'),
+							A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option selected'),
+							$elm$html$Html$Attributes$class('option selected'),
 							$author$project$DropdownOptions$valueDataAttribute(option)
 						]),
 					_List_fromArray(
@@ -21483,62 +21472,14 @@ var $author$project$DropdownOptions$optionToSlottedOptionHtml = F2(
 							_List_Nil)
 						]));
 			case 'OptionSelectedAndInvalid':
-				var _int = _v0.a;
-				var validationFailureMessages = _v0.b;
-				return A2(
-					$elm$html$Html$div,
-					_List_fromArray(
-						[
-							$elm$html$Html$Events$onMouseEnter(
-							eventHandlers.mouseOverMsgConstructor(
-								$author$project$Option$getOptionValue(option))),
-							$elm$html$Html$Events$onMouseLeave(
-							eventHandlers.mouseOutMsgConstructor(
-								$author$project$Option$getOptionValue(option))),
-							$author$project$Events$mouseDownPreventDefault(
-							eventHandlers.mouseDownMsgConstructor(
-								$author$project$Option$getOptionValue(option))),
-							$author$project$Events$mouseUpPreventDefault(
-							eventHandlers.mouseUpMsgConstructor(
-								$author$project$Option$getOptionValue(option))),
-							$author$project$Events$onClickPreventDefault(eventHandlers.noOpMsgConstructor),
-							A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option'),
-							$elm$html$Html$Attributes$class('option'),
-							$author$project$DropdownOptions$valueDataAttribute(option)
-						]),
-					_List_fromArray(
-						[
-							A3(
-							$elm$html$Html$node,
-							'slot',
-							_List_fromArray(
-								[
-									$author$project$OptionSlot$toSlotNameAttribute(
-									$author$project$Option$getSlot(option))
-								]),
-							_List_Nil)
-						]));
+				return $elm$html$Html$text('');
 			case 'OptionSelectedPendingValidation':
-				var _int = _v0.a;
 				return A2(
 					$elm$html$Html$div,
 					_List_fromArray(
 						[
-							$elm$html$Html$Events$onMouseEnter(
-							eventHandlers.mouseOverMsgConstructor(
-								$author$project$Option$getOptionValue(option))),
-							$elm$html$Html$Events$onMouseLeave(
-							eventHandlers.mouseOutMsgConstructor(
-								$author$project$Option$getOptionValue(option))),
-							$author$project$Events$mouseDownPreventDefault(
-							eventHandlers.mouseDownMsgConstructor(
-								$author$project$Option$getOptionValue(option))),
-							$author$project$Events$mouseUpPreventDefault(
-							eventHandlers.mouseUpMsgConstructor(
-								$author$project$Option$getOptionValue(option))),
-							$author$project$Events$onClickPreventDefault(eventHandlers.noOpMsgConstructor),
-							A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option'),
-							$elm$html$Html$Attributes$class('option'),
+							A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option disabled pending-validation'),
+							$elm$html$Html$Attributes$class('option disabled pending-validation'),
 							$author$project$DropdownOptions$valueDataAttribute(option)
 						]),
 					_List_fromArray(
@@ -21554,7 +21495,6 @@ var $author$project$DropdownOptions$optionToSlottedOptionHtml = F2(
 							_List_Nil)
 						]));
 			case 'OptionSelectedHighlighted':
-				var _int = _v0.a;
 				return A2(
 					$elm$html$Html$div,
 					_List_fromArray(
@@ -21572,8 +21512,8 @@ var $author$project$DropdownOptions$optionToSlottedOptionHtml = F2(
 							eventHandlers.mouseUpMsgConstructor(
 								$author$project$Option$getOptionValue(option))),
 							$author$project$Events$onClickPreventDefault(eventHandlers.noOpMsgConstructor),
-							A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option'),
-							$elm$html$Html$Attributes$class('option'),
+							A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option selected highlighted'),
+							$elm$html$Html$Attributes$class('option selected highlighted'),
 							$author$project$DropdownOptions$valueDataAttribute(option)
 						]),
 					_List_fromArray(
@@ -21606,8 +21546,8 @@ var $author$project$DropdownOptions$optionToSlottedOptionHtml = F2(
 							eventHandlers.mouseUpMsgConstructor(
 								$author$project$Option$getOptionValue(option))),
 							$author$project$Events$onClickPreventDefault(eventHandlers.noOpMsgConstructor),
-							A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option'),
-							$elm$html$Html$Attributes$class('option'),
+							A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option selected highlighted'),
+							$elm$html$Html$Attributes$class('option highlighted'),
 							$author$project$DropdownOptions$valueDataAttribute(option)
 						]),
 					_List_fromArray(
@@ -21640,8 +21580,8 @@ var $author$project$DropdownOptions$optionToSlottedOptionHtml = F2(
 							eventHandlers.mouseUpMsgConstructor(
 								$author$project$Option$getOptionValue(option))),
 							$author$project$Events$onClickPreventDefault(eventHandlers.noOpMsgConstructor),
-							A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option'),
-							$elm$html$Html$Attributes$class('option'),
+							A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option active highlighted'),
+							$elm$html$Html$Attributes$class('option active highlighted'),
 							$author$project$DropdownOptions$valueDataAttribute(option)
 						]),
 					_List_fromArray(
@@ -21657,26 +21597,12 @@ var $author$project$DropdownOptions$optionToSlottedOptionHtml = F2(
 							_List_Nil)
 						]));
 			default:
-				var optionAge = _v0.a;
 				return A2(
 					$elm$html$Html$div,
 					_List_fromArray(
 						[
-							$elm$html$Html$Events$onMouseEnter(
-							eventHandlers.mouseOverMsgConstructor(
-								$author$project$Option$getOptionValue(option))),
-							$elm$html$Html$Events$onMouseLeave(
-							eventHandlers.mouseOutMsgConstructor(
-								$author$project$Option$getOptionValue(option))),
-							$author$project$Events$mouseDownPreventDefault(
-							eventHandlers.mouseDownMsgConstructor(
-								$author$project$Option$getOptionValue(option))),
-							$author$project$Events$mouseUpPreventDefault(
-							eventHandlers.mouseUpMsgConstructor(
-								$author$project$Option$getOptionValue(option))),
-							$author$project$Events$onClickPreventDefault(eventHandlers.noOpMsgConstructor),
-							A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option'),
-							$elm$html$Html$Attributes$class('option'),
+							A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option disabled'),
+							$elm$html$Html$Attributes$class('option disabled'),
 							$author$project$DropdownOptions$valueDataAttribute(option)
 						]),
 					_List_fromArray(
