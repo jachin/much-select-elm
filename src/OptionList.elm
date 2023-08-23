@@ -3,6 +3,12 @@ module OptionList exposing (isSlottedOptionList)
 import Option exposing (Option)
 
 
+type OptionList
+    = FancyOptionList (List Option)
+    | DatalistOptionList (List Option)
+    | SlottedOptionList (List Option)
+
+
 isSlottedOptionList : List Option -> Bool
 isSlottedOptionList options =
     List.all

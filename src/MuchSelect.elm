@@ -2991,7 +2991,7 @@ optionToValueHtml enableSingleItemRemoval option =
             Html.Attributes.attribute "part" "value highlighted-value"
     in
     case option of
-        Option display optionLabel optionValue _ _ _ ->
+        FancyOption display optionLabel optionValue _ _ _ ->
             case display of
                 OptionShown _ ->
                     text ""

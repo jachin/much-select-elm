@@ -5205,12 +5205,12 @@ var $author$project$MuchSelect$ValueCasing = F2(
 	function (a, b) {
 		return {$: 0, a: a, b: b};
 	});
-var $author$project$Option$NoDescription = {$: 1};
-var $author$project$Option$NoOptionGroup = {$: 1};
-var $author$project$Option$Option = F6(
+var $author$project$Option$FancyOption = F6(
 	function (a, b, c, d, e, f) {
 		return {$: 0, a: a, b: b, c: c, d: d, e: e, f: f};
 	});
+var $author$project$Option$NoDescription = {$: 1};
+var $author$project$Option$NoOptionGroup = {$: 1};
 var $author$project$OptionValue$OptionValue = function (a) {
 	return {$: 0, a: a};
 };
@@ -5233,7 +5233,7 @@ var $author$project$OptionDisplay$selected = function (index) {
 var $author$project$Option$newSelectedOption = F3(
 	function (index, string, maybeCleanLabel) {
 		return A6(
-			$author$project$Option$Option,
+			$author$project$Option$FancyOption,
 			$author$project$OptionDisplay$selected(index),
 			A2($author$project$OptionLabel$newWithCleanLabel, string, maybeCleanLabel),
 			$author$project$OptionValue$OptionValue(string),
@@ -5397,7 +5397,7 @@ var $author$project$Option$setOptionDisplay = F2(
 				var optionDescription = option.d;
 				var optionGroup = option.e;
 				var search = option.f;
-				return A6($author$project$Option$Option, optionDisplay, optionLabel, optionValue, optionDescription, optionGroup, search);
+				return A6($author$project$Option$FancyOption, optionDisplay, optionLabel, optionValue, optionDescription, optionGroup, search);
 			case 1:
 				var optionLabel = option.b;
 				var optionValue = option.c;
@@ -5512,7 +5512,7 @@ var $author$project$Option$setLabelWithString = F3(
 				var group = option.e;
 				var search = option.f;
 				return A6(
-					$author$project$Option$Option,
+					$author$project$Option$FancyOption,
 					optionDisplay,
 					A2($author$project$OptionLabel$newWithCleanLabel, string, maybeCleanString),
 					optionValue,
@@ -6503,7 +6503,7 @@ var $author$project$Option$newOption = F2(
 				A2($author$project$OptionLabel$newWithCleanLabel, '', maybeCleanLabel));
 		} else {
 			return A6(
-				$author$project$Option$Option,
+				$author$project$Option$FancyOption,
 				$author$project$OptionDisplay$default,
 				A2($author$project$OptionLabel$newWithCleanLabel, value, maybeCleanLabel),
 				$author$project$OptionValue$OptionValue(value),
@@ -6656,7 +6656,7 @@ var $author$project$Option$optionGroupDecoder = $elm$json$Json$Decode$oneOf(
 var $author$project$Option$decodeOptionWithAValue = function (age) {
 	return A7(
 		$elm$json$Json$Decode$map6,
-		$author$project$Option$Option,
+		$author$project$Option$FancyOption,
 		$author$project$OptionDisplay$decoder(age),
 		$author$project$OptionLabel$labelDecoder,
 		A2($elm$json$Json$Decode$field, 'value', $author$project$Option$valueDecoder),
@@ -8135,7 +8135,7 @@ var $author$project$Option$setDescription = F2(
 				var optionValue = option.c;
 				var group = option.e;
 				var search = option.f;
-				return A6($author$project$Option$Option, optionDisplay, label, optionValue, description, group, search);
+				return A6($author$project$Option$FancyOption, optionDisplay, label, optionValue, description, group, search);
 			case 1:
 				var optionDisplay = option.a;
 				var optionLabel = option.b;
@@ -8161,7 +8161,7 @@ var $author$project$Option$setGroup = F2(
 				var optionValue = option.c;
 				var description = option.d;
 				var search = option.f;
-				return A6($author$project$Option$Option, optionDisplay, label, optionValue, description, optionGroup, search);
+				return A6($author$project$Option$FancyOption, optionDisplay, label, optionValue, description, optionGroup, search);
 			case 1:
 				var optionDisplay = option.a;
 				var optionLabel = option.b;
@@ -8187,7 +8187,7 @@ var $author$project$Option$setLabel = F2(
 				var description = option.d;
 				var group = option.e;
 				var search = option.f;
-				return A6($author$project$Option$Option, optionDisplay, label, optionValue, description, group, search);
+				return A6($author$project$Option$FancyOption, optionDisplay, label, optionValue, description, group, search);
 			case 1:
 				var optionDisplay = option.a;
 				var search = option.d;
@@ -10634,7 +10634,7 @@ var $author$project$Option$transformOptionForOutputStyle = F2(
 					var optionValue = option.b;
 					return $elm$core$Maybe$Just(
 						A6(
-							$author$project$Option$Option,
+							$author$project$Option$FancyOption,
 							optionDisplay,
 							$author$project$OptionLabel$new(
 								$author$project$OptionValue$optionValueToString(optionValue)),
@@ -11670,7 +11670,7 @@ var $author$project$Option$setOptionValue = F2(
 				var optionDescription = option.d;
 				var optionGroup = option.e;
 				var maybeOptionSearchFilter = option.f;
-				return A6($author$project$Option$Option, optionDisplay, optionLabel, optionValue, optionDescription, optionGroup, maybeOptionSearchFilter);
+				return A6($author$project$Option$FancyOption, optionDisplay, optionLabel, optionValue, optionDescription, optionGroup, maybeOptionSearchFilter);
 			case 1:
 				var optionDisplay = option.a;
 				var optionLabel = option.b;
@@ -11840,7 +11840,7 @@ var $author$project$Option$setOptionSearchFilter = F2(
 				var optionValue = option.c;
 				var optionDescription = option.d;
 				var optionGroup = option.e;
-				return A6($author$project$Option$Option, optionDisplay, optionLabel, optionValue, optionDescription, optionGroup, maybeOptionSearchFilter);
+				return A6($author$project$Option$FancyOption, optionDisplay, optionLabel, optionValue, optionDescription, optionGroup, maybeOptionSearchFilter);
 			case 1:
 				var optionDisplay = option.a;
 				var optionLabel = option.b;

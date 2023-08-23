@@ -80,7 +80,7 @@ import TransformAndValidate exposing (ValidationErrorMessage, ValidationFailureM
 
 
 type Option
-    = Option OptionDisplay OptionLabel OptionValue OptionDescription OptionGroup (Maybe OptionSearchFilter)
+    = FancyOption OptionDisplay OptionLabel OptionValue OptionDescription OptionGroup (Maybe OptionSearchFilter)
     | CustomOption OptionDisplay OptionLabel OptionValue (Maybe OptionSearchFilter)
     | DatalistOption OptionDisplay OptionValue
     | SlottedOption OptionDisplay OptionValue OptionSlot
@@ -90,7 +90,7 @@ type Option
 getOptionLabel : Option -> OptionLabel
 getOptionLabel option =
     case option of
-        Option _ label _ _ _ _ ->
+        FancyOption _ label _ _ _ _ ->
             label
 
         CustomOption _ label _ _ ->
@@ -163,7 +163,7 @@ newOptionGroup string =
 getOptionGroup : Option -> OptionGroup
 getOptionGroup option =
     case option of
-        Option _ _ _ _ optionGroup _ ->
+        FancyOption _ _ _ _ optionGroup _ ->
             optionGroup
 
         CustomOption _ _ _ _ ->
@@ -186,7 +186,7 @@ newOption value maybeCleanLabel =
             EmptyOption OptionDisplay.default (OptionLabel.newWithCleanLabel "" maybeCleanLabel)
 
         _ ->
-            Option
+            FancyOption
                 OptionDisplay.default
                 (OptionLabel.newWithCleanLabel value maybeCleanLabel)
                 (OptionValue value)
@@ -235,8 +235,8 @@ newDatalistOption optionValue =
 setOptionValue : OptionValue -> Option -> Option
 setOptionValue optionValue option =
     case option of
-        Option optionDisplay optionLabel _ optionDescription optionGroup maybeOptionSearchFilter ->
-            Option optionDisplay optionLabel optionValue optionDescription optionGroup maybeOptionSearchFilter
+        FancyOption optionDisplay optionLabel _ optionDescription optionGroup maybeOptionSearchFilter ->
+            FancyOption optionDisplay optionLabel optionValue optionDescription optionGroup maybeOptionSearchFilter
 
         CustomOption optionDisplay optionLabel _ maybeOptionSearchFilter ->
             CustomOption optionDisplay optionLabel optionValue maybeOptionSearchFilter
@@ -254,8 +254,8 @@ setOptionValue optionValue option =
 setLabelWithString : String -> Maybe String -> Option -> Option
 setLabelWithString string maybeCleanString option =
     case option of
-        Option optionDisplay _ optionValue description group search ->
-            Option
+        FancyOption optionDisplay _ optionValue description group search ->
+            FancyOption
                 optionDisplay
                 (OptionLabel.newWithCleanLabel string maybeCleanString)
                 optionValue
@@ -283,8 +283,8 @@ setLabelWithString string maybeCleanString option =
 setLabel : OptionLabel -> Option -> Option
 setLabel label option =
     case option of
-        Option optionDisplay _ optionValue description group search ->
-            Option
+        FancyOption optionDisplay _ optionValue description group search ->
+            FancyOption
                 optionDisplay
                 label
                 optionValue
@@ -313,8 +313,8 @@ setLabel label option =
 setDescriptionWithString : String -> Option -> Option
 setDescriptionWithString string option =
     case option of
-        Option optionDisplay label optionValue _ group search ->
-            Option optionDisplay
+        FancyOption optionDisplay label optionValue _ group search ->
+            FancyOption optionDisplay
                 label
                 optionValue
                 (OptionDescription string Nothing)
@@ -341,8 +341,8 @@ setDescriptionWithString string option =
 setDescription : OptionDescription -> Option -> Option
 setDescription description option =
     case option of
-        Option optionDisplay label optionValue _ group search ->
-            Option optionDisplay
+        FancyOption optionDisplay label optionValue _ group search ->
+            FancyOption optionDisplay
                 label
                 optionValue
                 description
@@ -369,8 +369,8 @@ setDescription description option =
 setGroup : OptionGroup -> Option -> Option
 setGroup optionGroup option =
     case option of
-        Option optionDisplay label optionValue description _ search ->
-            Option optionDisplay
+        FancyOption optionDisplay label optionValue description _ search ->
+            FancyOption optionDisplay
                 label
                 optionValue
                 description
@@ -396,8 +396,8 @@ setGroup optionGroup option =
 setGroupWithString : String -> Option -> Option
 setGroupWithString string option =
     case option of
-        Option optionDisplay label optionValue description _ search ->
-            Option optionDisplay
+        FancyOption optionDisplay label optionValue description _ search ->
+            FancyOption optionDisplay
                 label
                 optionValue
                 description
@@ -423,8 +423,8 @@ setGroupWithString string option =
 setOptionDisplay : OptionDisplay -> Option -> Option
 setOptionDisplay optionDisplay option =
     case option of
-        Option _ optionLabel optionValue optionDescription optionGroup search ->
-            Option
+        FancyOption _ optionLabel optionValue optionDescription optionGroup search ->
+            FancyOption
                 optionDisplay
                 optionLabel
                 optionValue
@@ -456,8 +456,8 @@ setOptionDisplayAge optionAge option =
 setOptionSearchFilter : Maybe OptionSearchFilter -> Option -> Option
 setOptionSearchFilter maybeOptionSearchFilter option =
     case option of
-        Option optionDisplay optionLabel optionValue optionDescription optionGroup _ ->
-            Option
+        FancyOption optionDisplay optionLabel optionValue optionDescription optionGroup _ ->
+            FancyOption
                 optionDisplay
                 optionLabel
                 optionValue
@@ -491,7 +491,7 @@ setMaybeSortRank maybeSortRank option =
 
 newSelectedOption : Int -> String -> Maybe String -> Option
 newSelectedOption index string maybeCleanLabel =
-    Option (OptionDisplay.selected index)
+    FancyOption (OptionDisplay.selected index)
         (OptionLabel.newWithCleanLabel string maybeCleanLabel)
         (OptionValue string)
         NoDescription
@@ -501,7 +501,7 @@ newSelectedOption index string maybeCleanLabel =
 
 newDisabledOption : String -> Maybe String -> Option
 newDisabledOption string maybeCleanLabel =
-    Option OptionDisplay.disabled
+    FancyOption OptionDisplay.disabled
         (OptionLabel.newWithCleanLabel string maybeCleanLabel)
         (OptionValue string)
         NoDescription
@@ -512,7 +512,7 @@ newDisabledOption string maybeCleanLabel =
 isOptionSelected : Option -> Bool
 isOptionSelected option =
     case option of
-        Option optionDisplay _ _ _ _ _ ->
+        FancyOption optionDisplay _ _ _ _ _ ->
             OptionDisplay.isSelected optionDisplay
 
         CustomOption optionDisplay _ _ _ ->
@@ -531,7 +531,7 @@ isOptionSelected option =
 getOptionDisplay : Option -> OptionDisplay
 getOptionDisplay option =
     case option of
-        Option display _ _ _ _ _ ->
+        FancyOption display _ _ _ _ _ ->
             display
 
         CustomOption display _ _ _ ->
@@ -550,7 +550,7 @@ getOptionDisplay option =
 getOptionSelectedIndex : Option -> Int
 getOptionSelectedIndex option =
     case option of
-        Option optionDisplay _ _ _ _ _ ->
+        FancyOption optionDisplay _ _ _ _ _ ->
             OptionDisplay.getSelectedIndex optionDisplay
 
         CustomOption optionDisplay _ _ _ ->
@@ -569,7 +569,7 @@ getOptionSelectedIndex option =
 setOptionSelectedIndex : Int -> Option -> Option
 setOptionSelectedIndex selectedIndex option =
     case option of
-        Option optionDisplay _ _ _ _ _ ->
+        FancyOption optionDisplay _ _ _ _ _ ->
             setOptionDisplay (OptionDisplay.setSelectedIndex selectedIndex optionDisplay) option
 
         CustomOption optionDisplay _ _ _ ->
@@ -593,7 +593,7 @@ hasSelectedItemIndex selectedItemIndex option =
 getOptionValue : Option -> OptionValue
 getOptionValue option =
     case option of
-        Option _ _ value _ _ _ ->
+        FancyOption _ _ value _ _ _ ->
             value
 
         CustomOption _ _ value _ ->
@@ -642,7 +642,7 @@ optionGroupToSearchString optionGroup =
 getOptionDescription : Option -> OptionDescription
 getOptionDescription option =
     case option of
-        Option _ _ _ optionDescription _ _ ->
+        FancyOption _ _ _ optionDescription _ _ ->
             optionDescription
 
         CustomOption _ _ _ _ ->
@@ -661,7 +661,7 @@ getOptionDescription option =
 getMaybeOptionSearchFilter : Option -> Maybe OptionSearchFilter
 getMaybeOptionSearchFilter option =
     case option of
-        Option _ _ _ _ _ maybeOptionSearchFilter ->
+        FancyOption _ _ _ _ _ maybeOptionSearchFilter ->
             maybeOptionSearchFilter
 
         CustomOption _ _ _ maybeOptionSearchFilter ->
@@ -797,7 +797,7 @@ optionValuesEqual option optionValue =
 highlightOption : Option -> Option
 highlightOption option =
     case option of
-        Option display _ _ _ _ _ ->
+        FancyOption display _ _ _ _ _ ->
             setOptionDisplay (OptionDisplay.addHighlight display) option
 
         CustomOption display _ _ _ ->
@@ -816,7 +816,7 @@ highlightOption option =
 removeHighlightFromOption : Option -> Option
 removeHighlightFromOption option =
     case option of
-        Option display _ _ _ _ _ ->
+        FancyOption display _ _ _ _ _ ->
             setOptionDisplay (OptionDisplay.removeHighlight display) option
 
         CustomOption display _ _ _ ->
@@ -835,7 +835,7 @@ removeHighlightFromOption option =
 isOptionHighlighted : Option -> Bool
 isOptionHighlighted option =
     case option of
-        Option display _ _ _ _ _ ->
+        FancyOption display _ _ _ _ _ ->
             OptionDisplay.isHighlighted display
 
         CustomOption display _ _ _ ->
@@ -854,7 +854,7 @@ isOptionHighlighted option =
 optionIsHighlightable : SelectionConfig -> Option -> Bool
 optionIsHighlightable selectionConfig option =
     case option of
-        Option display _ _ _ _ _ ->
+        FancyOption display _ _ _ _ _ ->
             OptionDisplay.isHighlightable (SelectionMode.getSelectionMode selectionConfig) display
 
         CustomOption display _ _ _ ->
@@ -883,7 +883,7 @@ deselectOption option =
 isOptionSelectedHighlighted : Option -> Bool
 isOptionSelectedHighlighted option =
     case option of
-        Option optionDisplay _ _ _ _ _ ->
+        FancyOption optionDisplay _ _ _ _ _ ->
             OptionDisplay.isHighlightedSelected optionDisplay
 
         CustomOption optionDisplay _ _ _ ->
@@ -907,7 +907,7 @@ activateOption option =
 isEmptyOption : Option -> Bool
 isEmptyOption option =
     case option of
-        Option _ _ _ _ _ _ ->
+        FancyOption _ _ _ _ _ _ ->
             False
 
         CustomOption _ _ _ _ ->
@@ -941,7 +941,7 @@ optionToValueLabelTuple option =
 isCustomOption : Option -> Bool
 isCustomOption option =
     case option of
-        Option _ _ _ _ _ _ ->
+        FancyOption _ _ _ _ _ _ ->
             False
 
         CustomOption _ _ _ _ ->
@@ -997,7 +997,7 @@ decodeOptionWithoutAValue age =
 
 decodeOptionWithAValue : OptionDisplay.OptionAge -> Json.Decode.Decoder Option
 decodeOptionWithAValue age =
-    Json.Decode.map6 Option
+    Json.Decode.map6 FancyOption
         (OptionDisplay.decoder age)
         labelDecoder
         (Json.Decode.field
@@ -1134,7 +1134,7 @@ transformOptionForOutputStyle outputStyle option =
     case outputStyle of
         SelectionMode.CustomHtml ->
             case option of
-                Option _ _ _ _ _ _ ->
+                FancyOption _ _ _ _ _ _ ->
                     Just option
 
                 CustomOption _ _ _ _ ->
@@ -1142,7 +1142,7 @@ transformOptionForOutputStyle outputStyle option =
 
                 DatalistOption optionDisplay optionValue ->
                     Just
-                        (Option optionDisplay
+                        (FancyOption optionDisplay
                             (OptionLabel.new
                                 (OptionValue.optionValueToString optionValue)
                             )
@@ -1160,7 +1160,7 @@ transformOptionForOutputStyle outputStyle option =
 
         SelectionMode.Datalist ->
             case option of
-                Option optionDisplay _ optionValue _ _ _ ->
+                FancyOption optionDisplay _ optionValue _ _ _ ->
                     Just (DatalistOption optionDisplay optionValue)
 
                 CustomOption optionDisplay _ optionValue _ ->
@@ -1215,7 +1215,7 @@ isValid option =
 getSlot : Option -> OptionSlot
 getSlot option =
     case option of
-        Option _ _ _ _ _ _ ->
+        FancyOption _ _ _ _ _ _ ->
             OptionSlot.empty
 
         CustomOption _ _ _ _ ->
@@ -1234,7 +1234,7 @@ getSlot option =
 test_optionToDebuggingString : Option -> String
 test_optionToDebuggingString option =
     case option of
-        Option _ optionLabel _ _ optionGroup _ ->
+        FancyOption _ optionLabel _ _ optionGroup _ ->
             case optionGroupToString optionGroup of
                 "" ->
                     optionLabelToString optionLabel

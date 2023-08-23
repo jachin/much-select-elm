@@ -176,7 +176,7 @@ selectOptionInListByOptionValue value options =
         (\option_ ->
             if optionValuesEqual option_ value then
                 case option_ of
-                    Option _ _ _ _ _ _ ->
+                    FancyOption _ _ _ _ _ _ ->
                         Option.selectOption nextSelectedIndex option_
 
                     CustomOption _ _ _ _ ->
@@ -218,7 +218,7 @@ activateOptionInListByOptionValue value options =
         (\option_ ->
             if optionValuesEqual option_ value then
                 case option_ of
-                    Option _ _ _ _ _ _ ->
+                    FancyOption _ _ _ _ _ _ ->
                         Option.activateOption option_
 
                     CustomOption _ _ _ _ ->
@@ -248,7 +248,7 @@ selectOptionInListByOptionValueWithIndex index value options =
         (\option_ ->
             if optionValuesEqual option_ value then
                 case option_ of
-                    Option _ _ _ _ _ _ ->
+                    FancyOption _ _ _ _ _ _ ->
                         Option.selectOption index option_
 
                     CustomOption _ _ _ _ ->
@@ -308,7 +308,7 @@ selectHighlightedOption selectionMode options =
                 case maybeOption of
                     Just option ->
                         case option of
-                            Option _ _ value _ _ _ ->
+                            FancyOption _ _ value _ _ _ ->
                                 case selectionMode of
                                     MultiSelectConfig _ _ _ ->
                                         selectOptionInListByOptionValue value options
@@ -357,7 +357,7 @@ selectSingleOptionInList value options =
             (\option_ ->
                 if optionValuesEqual option_ value then
                     case option_ of
-                        Option _ _ _ _ _ _ ->
+                        FancyOption _ _ _ _ _ _ ->
                             Option.selectOption 0 option_
 
                         CustomOption _ _ optionValue _ ->
@@ -390,7 +390,7 @@ selectSingleOptionInListResult optionValue options =
                 (\option_ ->
                     if optionValuesEqual option_ optionValue then
                         case option_ of
-                            Option _ _ _ _ _ _ ->
+                            FancyOption _ _ _ _ _ _ ->
                                 Option.selectOption 0 option_
 
                             CustomOption _ _ optionValue_ _ ->
@@ -448,7 +448,7 @@ selectEmptyOption options =
         |> List.map
             (\option_ ->
                 case option_ of
-                    Option _ _ _ _ _ _ ->
+                    FancyOption _ _ _ _ _ _ ->
                         deselectOption option_
 
                     CustomOption _ _ _ _ ->
@@ -608,7 +608,7 @@ toggleSelectedHighlightByOptionValue options optionValue =
         |> List.map
             (\option_ ->
                 case option_ of
-                    Option optionDisplay _ optionValue_ _ _ _ ->
+                    FancyOption optionDisplay _ optionValue_ _ _ _ ->
                         if optionValue == optionValue_ then
                             case optionDisplay of
                                 OptionShown _ ->
@@ -721,7 +721,7 @@ deselectAllSelectedHighlightedOptions options =
         |> List.map
             (\option_ ->
                 case option_ of
-                    Option optionDisplay _ _ _ _ _ ->
+                    FancyOption optionDisplay _ _ _ _ _ ->
                         case optionDisplay of
                             OptionShown _ ->
                                 option_

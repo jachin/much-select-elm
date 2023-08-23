@@ -89,7 +89,7 @@ tools =
 optionToDebuggingString : Option -> String
 optionToDebuggingString option =
     case option of
-        Option _ optionLabel _ _ optionGroup _ ->
+        FancyOption _ optionLabel _ _ optionGroup _ ->
             case optionGroupToString optionGroup of
                 "" ->
                     optionLabelToString optionLabel

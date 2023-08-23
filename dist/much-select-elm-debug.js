@@ -10605,12 +10605,12 @@ var $author$project$MuchSelect$ValueCasing = F2(
 	function (a, b) {
 		return {$: 'ValueCasing', a: a, b: b};
 	});
+var $author$project$Option$FancyOption = F6(
+	function (a, b, c, d, e, f) {
+		return {$: 'FancyOption', a: a, b: b, c: c, d: d, e: e, f: f};
+	});
 var $author$project$Option$NoDescription = {$: 'NoDescription'};
 var $author$project$Option$NoOptionGroup = {$: 'NoOptionGroup'};
-var $author$project$Option$Option = F6(
-	function (a, b, c, d, e, f) {
-		return {$: 'Option', a: a, b: b, c: c, d: d, e: e, f: f};
-	});
 var $author$project$OptionValue$OptionValue = function (a) {
 	return {$: 'OptionValue', a: a};
 };
@@ -10633,7 +10633,7 @@ var $author$project$OptionDisplay$selected = function (index) {
 var $author$project$Option$newSelectedOption = F3(
 	function (index, string, maybeCleanLabel) {
 		return A6(
-			$author$project$Option$Option,
+			$author$project$Option$FancyOption,
 			$author$project$OptionDisplay$selected(index),
 			A2($author$project$OptionLabel$newWithCleanLabel, string, maybeCleanLabel),
 			$author$project$OptionValue$OptionValue(string),
@@ -10655,7 +10655,7 @@ var $elm$core$List$filter = F2(
 var $author$project$OptionValue$EmptyOptionValue = {$: 'EmptyOptionValue'};
 var $author$project$Option$getOptionValue = function (option) {
 	switch (option.$) {
-		case 'Option':
+		case 'FancyOption':
 			var value = option.c;
 			return value;
 		case 'CustomOption':
@@ -10715,7 +10715,7 @@ var $author$project$OptionDisplay$isSelected = function (optionDisplay) {
 };
 var $author$project$Option$isOptionSelected = function (option) {
 	switch (option.$) {
-		case 'Option':
+		case 'FancyOption':
 			var optionDisplay = option.a;
 			return $author$project$OptionDisplay$isSelected(optionDisplay);
 		case 'CustomOption':
@@ -10783,13 +10783,13 @@ var $author$project$Option$SlottedOption = F3(
 var $author$project$Option$setOptionDisplay = F2(
 	function (optionDisplay, option) {
 		switch (option.$) {
-			case 'Option':
+			case 'FancyOption':
 				var optionLabel = option.b;
 				var optionValue = option.c;
 				var optionDescription = option.d;
 				var optionGroup = option.e;
 				var search = option.f;
-				return A6($author$project$Option$Option, optionDisplay, optionLabel, optionValue, optionDescription, optionGroup, search);
+				return A6($author$project$Option$FancyOption, optionDisplay, optionLabel, optionValue, optionDescription, optionGroup, search);
 			case 'CustomOption':
 				var optionLabel = option.b;
 				var optionValue = option.c;
@@ -10809,7 +10809,7 @@ var $author$project$Option$setOptionDisplay = F2(
 	});
 var $author$project$Option$removeHighlightFromOption = function (option) {
 	switch (option.$) {
-		case 'Option':
+		case 'FancyOption':
 			var display = option.a;
 			return A2(
 				$author$project$Option$setOptionDisplay,
@@ -10839,7 +10839,7 @@ var $author$project$Option$removeHighlightFromOption = function (option) {
 };
 var $author$project$Option$getOptionDisplay = function (option) {
 	switch (option.$) {
-		case 'Option':
+		case 'FancyOption':
 			var display = option.a;
 			return display;
 		case 'CustomOption':
@@ -10897,14 +10897,14 @@ var $author$project$Option$selectOption = F2(
 var $author$project$Option$setLabelWithString = F3(
 	function (string, maybeCleanString, option) {
 		switch (option.$) {
-			case 'Option':
+			case 'FancyOption':
 				var optionDisplay = option.a;
 				var optionValue = option.c;
 				var description = option.d;
 				var group = option.e;
 				var search = option.f;
 				return A6(
-					$author$project$Option$Option,
+					$author$project$Option$FancyOption,
 					optionDisplay,
 					A2($author$project$OptionLabel$newWithCleanLabel, string, maybeCleanString),
 					optionValue,
@@ -10943,7 +10943,7 @@ var $author$project$OptionsUtilities$selectOptionInListByOptionValueWithIndex = 
 			function (option_) {
 				if (A2($author$project$Option$optionValuesEqual, option_, value)) {
 					switch (option_.$) {
-						case 'Option':
+						case 'FancyOption':
 							return A2($author$project$Option$selectOption, index, option_);
 						case 'CustomOption':
 							if (value.$ === 'OptionValue') {
@@ -11305,7 +11305,7 @@ var $author$project$OptionDisplay$getSelectedIndex = function (optionDisplay) {
 };
 var $author$project$Option$getOptionSelectedIndex = function (option) {
 	switch (option.$) {
-		case 'Option':
+		case 'FancyOption':
 			var optionDisplay = option.a;
 			return $author$project$OptionDisplay$getSelectedIndex(optionDisplay);
 		case 'CustomOption':
@@ -11432,7 +11432,7 @@ var $author$project$SelectionMode$initDomStateCache = function (selectionConfig)
 };
 var $author$project$Option$isEmptyOption = function (option) {
 	switch (option.$) {
-		case 'Option':
+		case 'FancyOption':
 			return false;
 		case 'CustomOption':
 			return false;
@@ -11509,7 +11509,7 @@ var $author$project$OptionLabel$new = function (string) {
 };
 var $author$project$Option$getOptionLabel = function (option) {
 	switch (option.$) {
-		case 'Option':
+		case 'FancyOption':
 			var label = option.b;
 			return label;
 		case 'CustomOption':
@@ -11866,7 +11866,7 @@ var $author$project$Option$newOption = F2(
 				A2($author$project$OptionLabel$newWithCleanLabel, '', maybeCleanLabel));
 		} else {
 			return A6(
-				$author$project$Option$Option,
+				$author$project$Option$FancyOption,
 				$author$project$OptionDisplay$default,
 				A2($author$project$OptionLabel$newWithCleanLabel, value, maybeCleanLabel),
 				$author$project$OptionValue$OptionValue(value),
@@ -12019,7 +12019,7 @@ var $author$project$Option$optionGroupDecoder = $elm$json$Json$Decode$oneOf(
 var $author$project$Option$decodeOptionWithAValue = function (age) {
 	return A7(
 		$elm$json$Json$Decode$map6,
-		$author$project$Option$Option,
+		$author$project$Option$FancyOption,
 		$author$project$OptionDisplay$decoder(age),
 		$author$project$OptionLabel$labelDecoder,
 		A2($elm$json$Json$Decode$field, 'value', $author$project$Option$valueDecoder),
@@ -12265,7 +12265,7 @@ var $author$project$OptionsUtilities$selectOptionInListByOptionValue = F2(
 			function (option_) {
 				if (A2($author$project$Option$optionValuesEqual, option_, value)) {
 					switch (option_.$) {
-						case 'Option':
+						case 'FancyOption':
 							return A2($author$project$Option$selectOption, nextSelectedIndex, option_);
 						case 'CustomOption':
 							if (value.$ === 'OptionValue') {
@@ -12373,7 +12373,7 @@ var $elm_community$list_extra$List$Extra$gatherWith = F2(
 	});
 var $author$project$Option$getOptionGroup = function (option) {
 	switch (option.$) {
-		case 'Option':
+		case 'FancyOption':
 			var optionGroup = option.e;
 			return optionGroup;
 		case 'CustomOption':
@@ -13339,7 +13339,7 @@ var $author$project$OptionsUtilities$activateOptionInListByOptionValue = F2(
 			function (option_) {
 				if (A2($author$project$Option$optionValuesEqual, option_, value)) {
 					switch (option_.$) {
-						case 'Option':
+						case 'FancyOption':
 							return $author$project$Option$activateOption(option_);
 						case 'CustomOption':
 							return $author$project$Option$activateOption(option_);
@@ -13408,7 +13408,7 @@ var $author$project$OptionsUtilities$isOptionInListOfOptionsByValue = F2(
 	});
 var $author$project$Option$getOptionDescription = function (option) {
 	switch (option.$) {
-		case 'Option':
+		case 'FancyOption':
 			var optionDescription = option.d;
 			return optionDescription;
 		case 'CustomOption':
@@ -13470,13 +13470,13 @@ var $author$project$Option$orSelectedIndex = F2(
 var $author$project$Option$setDescription = F2(
 	function (description, option) {
 		switch (option.$) {
-			case 'Option':
+			case 'FancyOption':
 				var optionDisplay = option.a;
 				var label = option.b;
 				var optionValue = option.c;
 				var group = option.e;
 				var search = option.f;
-				return A6($author$project$Option$Option, optionDisplay, label, optionValue, description, group, search);
+				return A6($author$project$Option$FancyOption, optionDisplay, label, optionValue, description, group, search);
 			case 'CustomOption':
 				var optionDisplay = option.a;
 				var optionLabel = option.b;
@@ -13496,13 +13496,13 @@ var $author$project$Option$setDescription = F2(
 var $author$project$Option$setGroup = F2(
 	function (optionGroup, option) {
 		switch (option.$) {
-			case 'Option':
+			case 'FancyOption':
 				var optionDisplay = option.a;
 				var label = option.b;
 				var optionValue = option.c;
 				var description = option.d;
 				var search = option.f;
-				return A6($author$project$Option$Option, optionDisplay, label, optionValue, description, optionGroup, search);
+				return A6($author$project$Option$FancyOption, optionDisplay, label, optionValue, description, optionGroup, search);
 			case 'CustomOption':
 				var optionDisplay = option.a;
 				var optionLabel = option.b;
@@ -13522,13 +13522,13 @@ var $author$project$Option$setGroup = F2(
 var $author$project$Option$setLabel = F2(
 	function (label, option) {
 		switch (option.$) {
-			case 'Option':
+			case 'FancyOption':
 				var optionDisplay = option.a;
 				var optionValue = option.c;
 				var description = option.d;
 				var group = option.e;
 				var search = option.f;
-				return A6($author$project$Option$Option, optionDisplay, label, optionValue, description, group, search);
+				return A6($author$project$Option$FancyOption, optionDisplay, label, optionValue, description, group, search);
 			case 'CustomOption':
 				var optionDisplay = option.a;
 				var search = option.d;
@@ -13588,7 +13588,7 @@ var $author$project$OptionDisplay$setSelectedIndex = F2(
 var $author$project$Option$setOptionSelectedIndex = F2(
 	function (selectedIndex, option) {
 		switch (option.$) {
-			case 'Option':
+			case 'FancyOption':
 				var optionDisplay = option.a;
 				return A2(
 					$author$project$Option$setOptionDisplay,
@@ -13864,7 +13864,7 @@ var $author$project$OptionsUtilities$allOptionsAreValid = function (options) {
 };
 var $author$project$Option$isCustomOption = function (option) {
 	switch (option.$) {
-		case 'Option':
+		case 'FancyOption':
 			return false;
 		case 'CustomOption':
 			return true;
@@ -14146,7 +14146,7 @@ var $author$project$OptionsUtilities$selectSingleOptionInList = F2(
 			function (option_) {
 				if (A2($author$project$Option$optionValuesEqual, option_, value)) {
 					switch (option_.$) {
-						case 'Option':
+						case 'FancyOption':
 							return A2($author$project$Option$selectOption, 0, option_);
 						case 'CustomOption':
 							var optionValue = option_.c;
@@ -14191,7 +14191,7 @@ var $author$project$OptionsUtilities$deselectAllSelectedHighlightedOptions = fun
 		$elm$core$List$map,
 		function (option_) {
 			switch (option_.$) {
-				case 'Option':
+				case 'FancyOption':
 					var optionDisplay = option_.a;
 					switch (optionDisplay.$) {
 						case 'OptionShown':
@@ -15203,7 +15203,7 @@ var $author$project$OptionsUtilities$filterOptionsToShowInDropdownByOptionDispla
 var $author$project$OptionSearchFilter$impossiblyLowScore = 1000000;
 var $author$project$Option$getMaybeOptionSearchFilter = function (option) {
 	switch (option.$) {
-		case 'Option':
+		case 'FancyOption':
 			var maybeOptionSearchFilter = option.f;
 			return maybeOptionSearchFilter;
 		case 'CustomOption':
@@ -15337,7 +15337,7 @@ var $author$project$OptionDisplay$isHighlighted = function (optionDisplay) {
 };
 var $author$project$Option$isOptionHighlighted = function (option) {
 	switch (option.$) {
-		case 'Option':
+		case 'FancyOption':
 			var display = option.a;
 			return $author$project$OptionDisplay$isHighlighted(display);
 		case 'CustomOption':
@@ -15544,7 +15544,7 @@ var $author$project$OptionDisplay$isHighlightedSelected = function (optionDispla
 };
 var $author$project$Option$isOptionSelectedHighlighted = function (option) {
 	switch (option.$) {
-		case 'Option':
+		case 'FancyOption':
 			var optionDisplay = option.a;
 			return $author$project$OptionDisplay$isHighlightedSelected(optionDisplay);
 		case 'CustomOption':
@@ -15593,7 +15593,7 @@ var $author$project$OptionDisplay$addHighlight = function (optionDisplay) {
 };
 var $author$project$Option$highlightOption = function (option) {
 	switch (option.$) {
-		case 'Option':
+		case 'FancyOption':
 			var display = option.a;
 			return A2(
 				$author$project$Option$setOptionDisplay,
@@ -15708,7 +15708,7 @@ var $author$project$OptionDisplay$isHighlightable = F2(
 var $author$project$Option$optionIsHighlightable = F2(
 	function (selectionConfig, option) {
 		switch (option.$) {
-			case 'Option':
+			case 'FancyOption':
 				var display = option.a;
 				return A2(
 					$author$project$OptionDisplay$isHighlightable,
@@ -15924,7 +15924,7 @@ var $author$project$Option$transformOptionForOutputStyle = F2(
 	function (outputStyle, option) {
 		if (outputStyle.$ === 'CustomHtml') {
 			switch (option.$) {
-				case 'Option':
+				case 'FancyOption':
 					return $elm$core$Maybe$Just(option);
 				case 'CustomOption':
 					return $elm$core$Maybe$Just(option);
@@ -15933,7 +15933,7 @@ var $author$project$Option$transformOptionForOutputStyle = F2(
 					var optionValue = option.b;
 					return $elm$core$Maybe$Just(
 						A6(
-							$author$project$Option$Option,
+							$author$project$Option$FancyOption,
 							optionDisplay,
 							$author$project$OptionLabel$new(
 								$author$project$OptionValue$optionValueToString(optionValue)),
@@ -15948,7 +15948,7 @@ var $author$project$Option$transformOptionForOutputStyle = F2(
 			}
 		} else {
 			switch (option.$) {
-				case 'Option':
+				case 'FancyOption':
 					var optionDisplay = option.a;
 					var optionValue = option.c;
 					return $elm$core$Maybe$Just(
@@ -16035,7 +16035,7 @@ var $author$project$OptionsUtilities$selectEmptyOption = function (options) {
 		$elm$core$List$map,
 		function (option_) {
 			switch (option_.$) {
-				case 'Option':
+				case 'FancyOption':
 					return $author$project$Option$deselectOption(option_);
 				case 'CustomOption':
 					return $author$project$Option$deselectOption(option_);
@@ -16055,7 +16055,7 @@ var $author$project$OptionsUtilities$selectHighlightedOption = F2(
 			if (maybeOption.$ === 'Just') {
 				var option = maybeOption.a;
 				switch (option.$) {
-					case 'Option':
+					case 'FancyOption':
 						var value = option.c;
 						if (selectionMode.$ === 'MultiSelectConfig') {
 							return $author$project$OptionsUtilities$clearAnyUnselectedCustomOptions(
@@ -16718,7 +16718,7 @@ var $author$project$OptionsUtilities$toggleSelectedHighlightByOptionValue = F2(
 			$elm$core$List$map,
 			function (option_) {
 				switch (option_.$) {
-					case 'Option':
+					case 'FancyOption':
 						var optionDisplay = option_.a;
 						var optionValue_ = option_.c;
 						if (_Utils_eq(optionValue, optionValue_)) {
@@ -16963,13 +16963,13 @@ var $author$project$Option$newSelectedDatalistOptionPendingValidation = F2(
 var $author$project$Option$setOptionValue = F2(
 	function (optionValue, option) {
 		switch (option.$) {
-			case 'Option':
+			case 'FancyOption':
 				var optionDisplay = option.a;
 				var optionLabel = option.b;
 				var optionDescription = option.d;
 				var optionGroup = option.e;
 				var maybeOptionSearchFilter = option.f;
-				return A6($author$project$Option$Option, optionDisplay, optionLabel, optionValue, optionDescription, optionGroup, maybeOptionSearchFilter);
+				return A6($author$project$Option$FancyOption, optionDisplay, optionLabel, optionValue, optionDescription, optionGroup, maybeOptionSearchFilter);
 			case 'CustomOption':
 				var optionDisplay = option.a;
 				var optionLabel = option.b;
@@ -17133,13 +17133,13 @@ var $author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenThe
 var $author$project$Option$setOptionSearchFilter = F2(
 	function (maybeOptionSearchFilter, option) {
 		switch (option.$) {
-			case 'Option':
+			case 'FancyOption':
 				var optionDisplay = option.a;
 				var optionLabel = option.b;
 				var optionValue = option.c;
 				var optionDescription = option.d;
 				var optionGroup = option.e;
-				return A6($author$project$Option$Option, optionDisplay, optionLabel, optionValue, optionDescription, optionGroup, maybeOptionSearchFilter);
+				return A6($author$project$Option$FancyOption, optionDisplay, optionLabel, optionValue, optionDescription, optionGroup, maybeOptionSearchFilter);
 			case 'CustomOption':
 				var optionDisplay = option.a;
 				var optionLabel = option.b;
@@ -20284,7 +20284,7 @@ var $author$project$MuchSelect$optionToValueHtml = F2(
 		var partAttr = A2($elm$html$Html$Attributes$attribute, 'part', 'value');
 		var highlightPartAttr = A2($elm$html$Html$Attributes$attribute, 'part', 'value highlighted-value');
 		switch (option.$) {
-			case 'Option':
+			case 'FancyOption':
 				var display = option.a;
 				var optionLabel = option.b;
 				var optionValue = option.c;
@@ -21380,7 +21380,7 @@ var $author$project$MuchSelect$singleSelectView = F4(
 var $author$project$OptionSlot$empty = $author$project$OptionSlot$OptionSlot('');
 var $author$project$Option$getSlot = function (option) {
 	switch (option.$) {
-		case 'Option':
+		case 'FancyOption':
 			return $author$project$OptionSlot$empty;
 		case 'CustomOption':
 			return $author$project$OptionSlot$empty;
@@ -21917,7 +21917,7 @@ _Platform_export({'MuchSelect':{'init':$author$project$MuchSelect$main(
 				},
 				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
 		},
-		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))({"versions":{"elm":"0.19.1"},"types":{"message":"MuchSelect.Msg","aliases":{"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"},"OptionSearchFilter.OptionSearchFilter":{"args":[],"type":"{ totalScore : Basics.Int, bestScore : Basics.Int, labelTokens : List.List ( Basics.Bool, String.String ), descriptionTokens : List.List ( Basics.Bool, String.String ), groupTokens : List.List ( Basics.Bool, String.String ) }"}},"unions":{"MuchSelect.Msg":{"args":[],"tags":{"NoOp":[],"BringInputInFocus":[],"BringInputOutOfFocus":[],"InputBlur":[],"InputFocus":[],"DropdownMouseOverOption":["OptionValue.OptionValue"],"DropdownMouseOutOption":["OptionValue.OptionValue"],"DropdownMouseDownOption":["OptionValue.OptionValue"],"DropdownMouseUpOption":["OptionValue.OptionValue"],"UpdateSearchString":["String.String"],"SearchStringSteady":[],"UpdateOptionValueValue":["Basics.Int","String.String"],"TextInputOnInput":["String.String"],"ValueChanged":["Json.Decode.Value"],"OptionsReplaced":["Json.Decode.Value"],"OptionSortingChanged":["String.String"],"AddOptions":["Json.Decode.Value"],"RemoveOptions":["Json.Decode.Value"],"SelectOption":["Json.Decode.Value"],"DeselectOption":["Json.Decode.Value"],"DeselectOptionInternal":["Option.Option"],"PlaceholderAttributeChanged":["( Basics.Bool, String.String )"],"LoadingAttributeChanged":["Basics.Bool"],"MaxDropdownItemsChanged":["String.String"],"ShowDropdownFooterChanged":["Basics.Bool"],"AllowCustomOptionsChanged":["( Basics.Bool, String.String )"],"DisabledAttributeChanged":["Basics.Bool"],"MultiSelectAttributeChanged":["Basics.Bool"],"MultiSelectSingleItemRemovalAttributeChanged":["Basics.Bool"],"SearchStringMinimumLengthAttributeChanged":["Basics.Int"],"SelectedItemStaysInPlaceChanged":["Basics.Bool"],"OutputStyleChanged":["String.String"],"SelectHighlightedOption":[],"DeleteInputForSingleSelect":[],"EscapeKeyInInputFilter":[],"MoveHighlightedOptionUp":[],"MoveHighlightedOptionDown":[],"ValueCasingWidthUpdate":["{ width : Basics.Float, height : Basics.Float }"],"ClearAllSelectedOptions":[],"ToggleSelectedValueHighlight":["OptionValue.OptionValue"],"DeleteKeydownForMultiSelect":[],"AddMultiSelectValue":["Basics.Int"],"RemoveMultiSelectValue":["Basics.Int"],"RequestAllOptions":[],"UpdateSearchResultsForOptions":["Json.Encode.Value"],"CustomValidationResponse":["Json.Encode.Value"],"UpdateTransformationAndValidation":["Json.Encode.Value"],"AttributeChanged":["( String.String, String.String )"],"AttributeRemoved":["String.String"],"CustomOptionHintChanged":["String.String"],"SelectedValueEncodingChanged":["String.String"],"RequestConfigState":[],"RequestSelectedValues":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Option.Option":{"args":[],"tags":{"Option":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Option.OptionDescription","Option.OptionGroup","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"CustomOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"DatalistOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue"],"SlottedOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue","OptionSlot.OptionSlot"],"EmptyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel"]}},"OptionValue.OptionValue":{"args":[],"tags":{"OptionValue":["String.String"],"EmptyOptionValue":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"List.List":{"args":["a"],"tags":{}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Option.OptionDescription":{"args":[],"tags":{"OptionDescription":["String.String","Maybe.Maybe String.String"],"NoDescription":[]}},"OptionDisplay.OptionDisplay":{"args":[],"tags":{"OptionShown":["OptionDisplay.OptionAge"],"OptionHidden":[],"OptionSelected":["Basics.Int","OptionDisplay.OptionAge"],"OptionSelectedAndInvalid":["Basics.Int","List.List TransformAndValidate.ValidationFailureMessage"],"OptionSelectedPendingValidation":["Basics.Int"],"OptionSelectedHighlighted":["Basics.Int"],"OptionHighlighted":[],"OptionActivated":[],"OptionDisabled":["OptionDisplay.OptionAge"]}},"Option.OptionGroup":{"args":[],"tags":{"OptionGroup":["String.String"],"NoOptionGroup":[]}},"OptionLabel.OptionLabel":{"args":[],"tags":{"OptionLabel":["String.String","Maybe.Maybe String.String","SortRank.SortRank"]}},"OptionSlot.OptionSlot":{"args":[],"tags":{"OptionSlot":["String.String"]}},"OptionDisplay.OptionAge":{"args":[],"tags":{"NewOption":[],"MatureOption":[]}},"SortRank.SortRank":{"args":[],"tags":{"Auto":["PositiveInt.PositiveInt"],"Manual":["PositiveInt.PositiveInt"],"NoSortRank":[]}},"TransformAndValidate.ValidationFailureMessage":{"args":[],"tags":{"ValidationFailureMessage":["TransformAndValidate.ValidationReportLevel","TransformAndValidate.ValidationErrorMessage"]}},"PositiveInt.PositiveInt":{"args":[],"tags":{"PositiveInt":["Basics.Int"]}},"TransformAndValidate.ValidationErrorMessage":{"args":[],"tags":{"ValidationErrorMessage":["String.String"]}},"TransformAndValidate.ValidationReportLevel":{"args":[],"tags":{"SilentError":[],"ShowError":[]}}}}})}});}(this));
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))({"versions":{"elm":"0.19.1"},"types":{"message":"MuchSelect.Msg","aliases":{"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"},"OptionSearchFilter.OptionSearchFilter":{"args":[],"type":"{ totalScore : Basics.Int, bestScore : Basics.Int, labelTokens : List.List ( Basics.Bool, String.String ), descriptionTokens : List.List ( Basics.Bool, String.String ), groupTokens : List.List ( Basics.Bool, String.String ) }"}},"unions":{"MuchSelect.Msg":{"args":[],"tags":{"NoOp":[],"BringInputInFocus":[],"BringInputOutOfFocus":[],"InputBlur":[],"InputFocus":[],"DropdownMouseOverOption":["OptionValue.OptionValue"],"DropdownMouseOutOption":["OptionValue.OptionValue"],"DropdownMouseDownOption":["OptionValue.OptionValue"],"DropdownMouseUpOption":["OptionValue.OptionValue"],"UpdateSearchString":["String.String"],"SearchStringSteady":[],"UpdateOptionValueValue":["Basics.Int","String.String"],"TextInputOnInput":["String.String"],"ValueChanged":["Json.Decode.Value"],"OptionsReplaced":["Json.Decode.Value"],"OptionSortingChanged":["String.String"],"AddOptions":["Json.Decode.Value"],"RemoveOptions":["Json.Decode.Value"],"SelectOption":["Json.Decode.Value"],"DeselectOption":["Json.Decode.Value"],"DeselectOptionInternal":["Option.Option"],"PlaceholderAttributeChanged":["( Basics.Bool, String.String )"],"LoadingAttributeChanged":["Basics.Bool"],"MaxDropdownItemsChanged":["String.String"],"ShowDropdownFooterChanged":["Basics.Bool"],"AllowCustomOptionsChanged":["( Basics.Bool, String.String )"],"DisabledAttributeChanged":["Basics.Bool"],"MultiSelectAttributeChanged":["Basics.Bool"],"MultiSelectSingleItemRemovalAttributeChanged":["Basics.Bool"],"SearchStringMinimumLengthAttributeChanged":["Basics.Int"],"SelectedItemStaysInPlaceChanged":["Basics.Bool"],"OutputStyleChanged":["String.String"],"SelectHighlightedOption":[],"DeleteInputForSingleSelect":[],"EscapeKeyInInputFilter":[],"MoveHighlightedOptionUp":[],"MoveHighlightedOptionDown":[],"ValueCasingWidthUpdate":["{ width : Basics.Float, height : Basics.Float }"],"ClearAllSelectedOptions":[],"ToggleSelectedValueHighlight":["OptionValue.OptionValue"],"DeleteKeydownForMultiSelect":[],"AddMultiSelectValue":["Basics.Int"],"RemoveMultiSelectValue":["Basics.Int"],"RequestAllOptions":[],"UpdateSearchResultsForOptions":["Json.Encode.Value"],"CustomValidationResponse":["Json.Encode.Value"],"UpdateTransformationAndValidation":["Json.Encode.Value"],"AttributeChanged":["( String.String, String.String )"],"AttributeRemoved":["String.String"],"CustomOptionHintChanged":["String.String"],"SelectedValueEncodingChanged":["String.String"],"RequestConfigState":[],"RequestSelectedValues":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Option.Option":{"args":[],"tags":{"FancyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Option.OptionDescription","Option.OptionGroup","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"CustomOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"DatalistOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue"],"SlottedOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue","OptionSlot.OptionSlot"],"EmptyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel"]}},"OptionValue.OptionValue":{"args":[],"tags":{"OptionValue":["String.String"],"EmptyOptionValue":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"List.List":{"args":["a"],"tags":{}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Option.OptionDescription":{"args":[],"tags":{"OptionDescription":["String.String","Maybe.Maybe String.String"],"NoDescription":[]}},"OptionDisplay.OptionDisplay":{"args":[],"tags":{"OptionShown":["OptionDisplay.OptionAge"],"OptionHidden":[],"OptionSelected":["Basics.Int","OptionDisplay.OptionAge"],"OptionSelectedAndInvalid":["Basics.Int","List.List TransformAndValidate.ValidationFailureMessage"],"OptionSelectedPendingValidation":["Basics.Int"],"OptionSelectedHighlighted":["Basics.Int"],"OptionHighlighted":[],"OptionActivated":[],"OptionDisabled":["OptionDisplay.OptionAge"]}},"Option.OptionGroup":{"args":[],"tags":{"OptionGroup":["String.String"],"NoOptionGroup":[]}},"OptionLabel.OptionLabel":{"args":[],"tags":{"OptionLabel":["String.String","Maybe.Maybe String.String","SortRank.SortRank"]}},"OptionSlot.OptionSlot":{"args":[],"tags":{"OptionSlot":["String.String"]}},"OptionDisplay.OptionAge":{"args":[],"tags":{"NewOption":[],"MatureOption":[]}},"SortRank.SortRank":{"args":[],"tags":{"Auto":["PositiveInt.PositiveInt"],"Manual":["PositiveInt.PositiveInt"],"NoSortRank":[]}},"TransformAndValidate.ValidationFailureMessage":{"args":[],"tags":{"ValidationFailureMessage":["TransformAndValidate.ValidationReportLevel","TransformAndValidate.ValidationErrorMessage"]}},"PositiveInt.PositiveInt":{"args":[],"tags":{"PositiveInt":["Basics.Int"]}},"TransformAndValidate.ValidationErrorMessage":{"args":[],"tags":{"ValidationErrorMessage":["String.String"]}},"TransformAndValidate.ValidationReportLevel":{"args":[],"tags":{"SilentError":[],"ShowError":[]}}}}})}});}(this));
 */
 export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
 	A2(
@@ -22057,5 +22057,5 @@ export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
 				},
 				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
 		},
-		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))({"versions":{"elm":"0.19.1"},"types":{"message":"MuchSelect.Msg","aliases":{"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"},"OptionSearchFilter.OptionSearchFilter":{"args":[],"type":"{ totalScore : Basics.Int, bestScore : Basics.Int, labelTokens : List.List ( Basics.Bool, String.String ), descriptionTokens : List.List ( Basics.Bool, String.String ), groupTokens : List.List ( Basics.Bool, String.String ) }"}},"unions":{"MuchSelect.Msg":{"args":[],"tags":{"NoOp":[],"BringInputInFocus":[],"BringInputOutOfFocus":[],"InputBlur":[],"InputFocus":[],"DropdownMouseOverOption":["OptionValue.OptionValue"],"DropdownMouseOutOption":["OptionValue.OptionValue"],"DropdownMouseDownOption":["OptionValue.OptionValue"],"DropdownMouseUpOption":["OptionValue.OptionValue"],"UpdateSearchString":["String.String"],"SearchStringSteady":[],"UpdateOptionValueValue":["Basics.Int","String.String"],"TextInputOnInput":["String.String"],"ValueChanged":["Json.Decode.Value"],"OptionsReplaced":["Json.Decode.Value"],"OptionSortingChanged":["String.String"],"AddOptions":["Json.Decode.Value"],"RemoveOptions":["Json.Decode.Value"],"SelectOption":["Json.Decode.Value"],"DeselectOption":["Json.Decode.Value"],"DeselectOptionInternal":["Option.Option"],"PlaceholderAttributeChanged":["( Basics.Bool, String.String )"],"LoadingAttributeChanged":["Basics.Bool"],"MaxDropdownItemsChanged":["String.String"],"ShowDropdownFooterChanged":["Basics.Bool"],"AllowCustomOptionsChanged":["( Basics.Bool, String.String )"],"DisabledAttributeChanged":["Basics.Bool"],"MultiSelectAttributeChanged":["Basics.Bool"],"MultiSelectSingleItemRemovalAttributeChanged":["Basics.Bool"],"SearchStringMinimumLengthAttributeChanged":["Basics.Int"],"SelectedItemStaysInPlaceChanged":["Basics.Bool"],"OutputStyleChanged":["String.String"],"SelectHighlightedOption":[],"DeleteInputForSingleSelect":[],"EscapeKeyInInputFilter":[],"MoveHighlightedOptionUp":[],"MoveHighlightedOptionDown":[],"ValueCasingWidthUpdate":["{ width : Basics.Float, height : Basics.Float }"],"ClearAllSelectedOptions":[],"ToggleSelectedValueHighlight":["OptionValue.OptionValue"],"DeleteKeydownForMultiSelect":[],"AddMultiSelectValue":["Basics.Int"],"RemoveMultiSelectValue":["Basics.Int"],"RequestAllOptions":[],"UpdateSearchResultsForOptions":["Json.Encode.Value"],"CustomValidationResponse":["Json.Encode.Value"],"UpdateTransformationAndValidation":["Json.Encode.Value"],"AttributeChanged":["( String.String, String.String )"],"AttributeRemoved":["String.String"],"CustomOptionHintChanged":["String.String"],"SelectedValueEncodingChanged":["String.String"],"RequestConfigState":[],"RequestSelectedValues":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Option.Option":{"args":[],"tags":{"Option":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Option.OptionDescription","Option.OptionGroup","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"CustomOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"DatalistOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue"],"SlottedOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue","OptionSlot.OptionSlot"],"EmptyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel"]}},"OptionValue.OptionValue":{"args":[],"tags":{"OptionValue":["String.String"],"EmptyOptionValue":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"List.List":{"args":["a"],"tags":{}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Option.OptionDescription":{"args":[],"tags":{"OptionDescription":["String.String","Maybe.Maybe String.String"],"NoDescription":[]}},"OptionDisplay.OptionDisplay":{"args":[],"tags":{"OptionShown":["OptionDisplay.OptionAge"],"OptionHidden":[],"OptionSelected":["Basics.Int","OptionDisplay.OptionAge"],"OptionSelectedAndInvalid":["Basics.Int","List.List TransformAndValidate.ValidationFailureMessage"],"OptionSelectedPendingValidation":["Basics.Int"],"OptionSelectedHighlighted":["Basics.Int"],"OptionHighlighted":[],"OptionActivated":[],"OptionDisabled":["OptionDisplay.OptionAge"]}},"Option.OptionGroup":{"args":[],"tags":{"OptionGroup":["String.String"],"NoOptionGroup":[]}},"OptionLabel.OptionLabel":{"args":[],"tags":{"OptionLabel":["String.String","Maybe.Maybe String.String","SortRank.SortRank"]}},"OptionSlot.OptionSlot":{"args":[],"tags":{"OptionSlot":["String.String"]}},"OptionDisplay.OptionAge":{"args":[],"tags":{"NewOption":[],"MatureOption":[]}},"SortRank.SortRank":{"args":[],"tags":{"Auto":["PositiveInt.PositiveInt"],"Manual":["PositiveInt.PositiveInt"],"NoSortRank":[]}},"TransformAndValidate.ValidationFailureMessage":{"args":[],"tags":{"ValidationFailureMessage":["TransformAndValidate.ValidationReportLevel","TransformAndValidate.ValidationErrorMessage"]}},"PositiveInt.PositiveInt":{"args":[],"tags":{"PositiveInt":["Basics.Int"]}},"TransformAndValidate.ValidationErrorMessage":{"args":[],"tags":{"ValidationErrorMessage":["String.String"]}},"TransformAndValidate.ValidationReportLevel":{"args":[],"tags":{"SilentError":[],"ShowError":[]}}}}})}};
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))({"versions":{"elm":"0.19.1"},"types":{"message":"MuchSelect.Msg","aliases":{"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"},"OptionSearchFilter.OptionSearchFilter":{"args":[],"type":"{ totalScore : Basics.Int, bestScore : Basics.Int, labelTokens : List.List ( Basics.Bool, String.String ), descriptionTokens : List.List ( Basics.Bool, String.String ), groupTokens : List.List ( Basics.Bool, String.String ) }"}},"unions":{"MuchSelect.Msg":{"args":[],"tags":{"NoOp":[],"BringInputInFocus":[],"BringInputOutOfFocus":[],"InputBlur":[],"InputFocus":[],"DropdownMouseOverOption":["OptionValue.OptionValue"],"DropdownMouseOutOption":["OptionValue.OptionValue"],"DropdownMouseDownOption":["OptionValue.OptionValue"],"DropdownMouseUpOption":["OptionValue.OptionValue"],"UpdateSearchString":["String.String"],"SearchStringSteady":[],"UpdateOptionValueValue":["Basics.Int","String.String"],"TextInputOnInput":["String.String"],"ValueChanged":["Json.Decode.Value"],"OptionsReplaced":["Json.Decode.Value"],"OptionSortingChanged":["String.String"],"AddOptions":["Json.Decode.Value"],"RemoveOptions":["Json.Decode.Value"],"SelectOption":["Json.Decode.Value"],"DeselectOption":["Json.Decode.Value"],"DeselectOptionInternal":["Option.Option"],"PlaceholderAttributeChanged":["( Basics.Bool, String.String )"],"LoadingAttributeChanged":["Basics.Bool"],"MaxDropdownItemsChanged":["String.String"],"ShowDropdownFooterChanged":["Basics.Bool"],"AllowCustomOptionsChanged":["( Basics.Bool, String.String )"],"DisabledAttributeChanged":["Basics.Bool"],"MultiSelectAttributeChanged":["Basics.Bool"],"MultiSelectSingleItemRemovalAttributeChanged":["Basics.Bool"],"SearchStringMinimumLengthAttributeChanged":["Basics.Int"],"SelectedItemStaysInPlaceChanged":["Basics.Bool"],"OutputStyleChanged":["String.String"],"SelectHighlightedOption":[],"DeleteInputForSingleSelect":[],"EscapeKeyInInputFilter":[],"MoveHighlightedOptionUp":[],"MoveHighlightedOptionDown":[],"ValueCasingWidthUpdate":["{ width : Basics.Float, height : Basics.Float }"],"ClearAllSelectedOptions":[],"ToggleSelectedValueHighlight":["OptionValue.OptionValue"],"DeleteKeydownForMultiSelect":[],"AddMultiSelectValue":["Basics.Int"],"RemoveMultiSelectValue":["Basics.Int"],"RequestAllOptions":[],"UpdateSearchResultsForOptions":["Json.Encode.Value"],"CustomValidationResponse":["Json.Encode.Value"],"UpdateTransformationAndValidation":["Json.Encode.Value"],"AttributeChanged":["( String.String, String.String )"],"AttributeRemoved":["String.String"],"CustomOptionHintChanged":["String.String"],"SelectedValueEncodingChanged":["String.String"],"RequestConfigState":[],"RequestSelectedValues":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Option.Option":{"args":[],"tags":{"FancyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Option.OptionDescription","Option.OptionGroup","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"CustomOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"DatalistOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue"],"SlottedOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue","OptionSlot.OptionSlot"],"EmptyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel"]}},"OptionValue.OptionValue":{"args":[],"tags":{"OptionValue":["String.String"],"EmptyOptionValue":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"List.List":{"args":["a"],"tags":{}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Option.OptionDescription":{"args":[],"tags":{"OptionDescription":["String.String","Maybe.Maybe String.String"],"NoDescription":[]}},"OptionDisplay.OptionDisplay":{"args":[],"tags":{"OptionShown":["OptionDisplay.OptionAge"],"OptionHidden":[],"OptionSelected":["Basics.Int","OptionDisplay.OptionAge"],"OptionSelectedAndInvalid":["Basics.Int","List.List TransformAndValidate.ValidationFailureMessage"],"OptionSelectedPendingValidation":["Basics.Int"],"OptionSelectedHighlighted":["Basics.Int"],"OptionHighlighted":[],"OptionActivated":[],"OptionDisabled":["OptionDisplay.OptionAge"]}},"Option.OptionGroup":{"args":[],"tags":{"OptionGroup":["String.String"],"NoOptionGroup":[]}},"OptionLabel.OptionLabel":{"args":[],"tags":{"OptionLabel":["String.String","Maybe.Maybe String.String","SortRank.SortRank"]}},"OptionSlot.OptionSlot":{"args":[],"tags":{"OptionSlot":["String.String"]}},"OptionDisplay.OptionAge":{"args":[],"tags":{"NewOption":[],"MatureOption":[]}},"SortRank.SortRank":{"args":[],"tags":{"Auto":["PositiveInt.PositiveInt"],"Manual":["PositiveInt.PositiveInt"],"NoSortRank":[]}},"TransformAndValidate.ValidationFailureMessage":{"args":[],"tags":{"ValidationFailureMessage":["TransformAndValidate.ValidationReportLevel","TransformAndValidate.ValidationErrorMessage"]}},"PositiveInt.PositiveInt":{"args":[],"tags":{"PositiveInt":["Basics.Int"]}},"TransformAndValidate.ValidationErrorMessage":{"args":[],"tags":{"ValidationErrorMessage":["String.String"]}},"TransformAndValidate.ValidationReportLevel":{"args":[],"tags":{"SilentError":[],"ShowError":[]}}}}})}};
   
