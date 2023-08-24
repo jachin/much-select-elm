@@ -1,4 +1,4 @@
-module FancyOption exposing (FancyOption, activateOption, deselect, getMaybeOptionSearchFilter, getOptionDescription, getOptionDisplay, getOptionGroup, getOptionLabel, getOptionSelectedIndex, getOptionValue, getOptionValueAsString, hasSelectedItemIndex, highlightOption, isCustomOption, isEmptyOption, isEmptyOptionOrHasEmptyValue, isOptionHighlighted, isOptionSelectedHighlighted, isSelected, merge, new, newCustomOption, newDisabledOption, newSelectedOption, optionIsHighlightable, optionToValueLabelTuple, removeHighlightFromOption, select, setDescription, setDescriptionWithString, setGroupWithString, setLabel, setLabelWithString, setOptionDisplay, setOptionDisplayAge, setOptionGroup, setOptionSearchFilter, setOptionSelectedIndex, setOptionValue)
+module FancyOption exposing (FancyOption, activateOption, decoder, deselect, encode, getMaybeOptionSearchFilter, getOptionDescription, getOptionDisplay, getOptionGroup, getOptionLabel, getOptionSelectedIndex, getOptionValue, getOptionValueAsString, hasSelectedItemIndex, highlightOption, isCustomOption, isEmptyOption, isEmptyOptionOrHasEmptyValue, isOptionHighlighted, isOptionSelectedHighlighted, isSelected, merge, new, newCustomOption, newDisabledOption, newSelectedOption, optionIsHighlightable, optionToValueLabelTuple, removeHighlightFromOption, select, setDescription, setDescriptionWithString, setGroupWithString, setLabel, setLabelWithString, setOptionDisplay, setOptionDisplayAge, setOptionGroup, setOptionSearchFilter, setOptionSelectedIndex, setOptionValue, test_optionToDebuggingString)
 
 import Json.Decode
 import Json.Encode
@@ -529,3 +529,13 @@ encode option =
         , ( "descriptionClean", Json.Encode.string (getOptionDescription option |> OptionDescription.toSearchString) )
         , ( "isSelected", Json.Encode.bool (isSelected option) )
         ]
+
+
+test_optionToDebuggingString : FancyOption -> String
+test_optionToDebuggingString fancyOption =
+    case fancyOption |> getOptionGroup |> OptionGroup.toString of
+        "" ->
+            fancyOption |> getOptionLabel |> optionLabelToString
+
+        group ->
+            group ++ " - " ++ (fancyOption |> getOptionLabel |> optionLabelToString)

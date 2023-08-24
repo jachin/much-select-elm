@@ -1,4 +1,4 @@
-module SlottedOption exposing (SlottedOption, getOptionDisplay, new, setOptionDisplay, isSelected, getOptionSelectedIndex, hasSelectedItemIndex, setOptionSelectedIndex, getOptionValue, getOptionValueAsString, setOptionValue, highlightOption, removeHighlightFromOption, isOptionHighlighted, optionIsHighlightable, isOptionSelectedHighlighted)
+module SlottedOption exposing (SlottedOption, decoder, encode, getOptionDisplay, getOptionSelectedIndex, getOptionSlot, getOptionValue, getOptionValueAsString, hasSelectedItemIndex, highlightOption, isOptionHighlighted, isOptionSelectedHighlighted, isSelected, new, optionIsHighlightable, removeHighlightFromOption, setOptionDisplay, setOptionSelectedIndex, setOptionValue, test_optionToDebuggingString)
 
 import Json.Decode
 import Json.Encode
@@ -25,7 +25,6 @@ getOptionDisplay slottedOption =
     case slottedOption of
         SlottedOption optionDisplay _ _ ->
             optionDisplay
-
 
 
 isOptionSelectedHighlighted : SlottedOption -> Bool
@@ -78,6 +77,7 @@ setOptionValue optionValue slottedOption =
         SlottedOption optionDisplay _ optionSlot ->
             SlottedOption optionDisplay optionValue optionSlot
 
+
 highlightOption : SlottedOption -> SlottedOption
 highlightOption option =
     setOptionDisplay (OptionDisplay.addHighlight (getOptionDisplay option)) option
@@ -108,7 +108,6 @@ deselect option =
     setOptionDisplay (OptionDisplay.deselect (getOptionDisplay option)) option
 
 
-
 getOptionSlot : SlottedOption -> OptionSlot
 getOptionSlot slottedOption =
     case slottedOption of
@@ -119,18 +118,23 @@ getOptionSlot slottedOption =
 decoder : OptionDisplay.OptionAge -> Json.Decode.Decoder SlottedOption
 decoder age =
     Json.Decode.map3
-            SlottedOption
-            (OptionDisplay.decoder age)
-            (Json.Decode.field
-                "value"
-                OptionValue.decoder
-            )
-            (Json.Decode.field "slot" OptionSlot.decoder)
+        SlottedOption
+        (OptionDisplay.decoder age)
+        (Json.Decode.field
+            "value"
+            OptionValue.decoder
+        )
+        (Json.Decode.field "slot" OptionSlot.decoder)
 
 
-encoder : SlottedOption -> Json.Encode.Value
-encoder option =
-     Json.Encode.object
-            [ ( "value", Json.Encode.string (getOptionValueAsString option)
-             , ( "slot", Json.Encode.string (OptionSlot.encode (getOptionSlot option))
-            ]
+encode : SlottedOption -> Json.Encode.Value
+encode option =
+    Json.Encode.object
+        [ ( "value", Json.Encode.string (getOptionValueAsString option) )
+        , ( "slot", OptionSlot.encode (getOptionSlot option) )
+        ]
+
+
+test_optionToDebuggingString : SlottedOption -> String
+test_optionToDebuggingString slottedOption =
+    slottedOption |> getOptionValue |> OptionValue.optionValueToString

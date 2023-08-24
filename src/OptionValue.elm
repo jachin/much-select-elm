@@ -1,7 +1,8 @@
-module OptionValue exposing (OptionValue(..), isEmpty, length, optionValueToString, stringToOptionValue, decoder)
-
+module OptionValue exposing (OptionValue(..), decoder, isEmpty, length, optionValueToString, stringToOptionValue)
 
 import Json.Decode
+
+
 type OptionValue
     = OptionValue String
     | EmptyOptionValue
@@ -58,3 +59,4 @@ decoder =
 
                     str ->
                         Json.Decode.succeed (OptionValue str)
+            )

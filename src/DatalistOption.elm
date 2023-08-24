@@ -1,7 +1,9 @@
-module DatalistOption exposing (DatalistOption, decoder, deselect, getOptionDisplay, getOptionLabel, getOptionSelectedIndex, getOptionValue, getOptionValueAsString, hasSelectedIndex, isSelected, merge, new, newSelectedDatalistOption, newSelectedDatalistOptionPendingValidation, newSelectedDatalistOptionWithErrors, select, setOptionDisplay, setOptionDisplayAge, setOptionSelectedIndex, setOptionValue)
+module DatalistOption exposing (DatalistOption, decoder, deselect, encode, getOptionDisplay, getOptionLabel, getOptionSelectedIndex, getOptionValue, getOptionValueAsString, hasSelectedIndex, isSelected, merge, new, newSelectedDatalistOption, newSelectedDatalistOptionPendingValidation, newSelectedDatalistOptionWithErrors, select, setOptionDisplay, setOptionDisplayAge, setOptionSelectedIndex, setOptionValue, test_optionToDebuggingString)
 
 import Json.Decode
+import Json.Encode
 import OptionDisplay exposing (OptionDisplay)
+import OptionGroup
 import OptionLabel exposing (OptionLabel)
 import OptionValue exposing (OptionValue)
 import TransformAndValidate exposing (ValidationFailureMessage)
@@ -120,11 +122,26 @@ deselect option =
     setOptionDisplay (OptionDisplay.deselect (getOptionDisplay option)) option
 
 
-decoder : OptionDisplay.OptionAge -> Json.Decode.Decoder DatalistOption
-decoder age =
+decoder : Json.Decode.Decoder DatalistOption
+decoder =
     Json.Decode.map2 DatalistOption
         (OptionDisplay.decoder OptionDisplay.MatureOption)
         (Json.Decode.field
             "value"
             OptionValue.decoder
         )
+
+
+encode : DatalistOption -> Json.Decode.Value
+encode option =
+    Json.Encode.object
+        [ ( "value", Json.Encode.string (getOptionValueAsString option) )
+        , ( "label", Json.Encode.string (getOptionLabel option |> OptionLabel.optionLabelToString) )
+        , ( "labelClean", Json.Encode.string (getOptionLabel option |> OptionLabel.optionLabelToSearchString) )
+        , ( "isSelected", Json.Encode.bool (isSelected option) )
+        ]
+
+
+test_optionToDebuggingString : DatalistOption -> String
+test_optionToDebuggingString datalistOption =
+    datalistOption |> getOptionValue |> OptionValue.optionValueToString

@@ -1,5 +1,5 @@
-// -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- (function(scope){
-// -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- 'use strict';
+// -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- (function(scope){
+// -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- // -- 'use strict';
 
 function F(arity, fun, wrapper) {
   wrapper.a = arity;
@@ -2381,6 +2381,28 @@ function _Platform_setupIncomingPort(name, sendToApp)
 /*
 /*
 /*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
 function _Platform_export_UNUSED(exports)
 {
 	scope['Elm']
@@ -2453,7 +2475,51 @@ function _Platform_export_UNUSED(exports)
 */
 */
 */
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
 
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
 /*
 /*
 /*
@@ -2595,8 +2661,52 @@ function _Platform_mergeExportsProd(obj, exports)
 */
 */
 */
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
 
 
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
 /*
 /*
 /*
@@ -2734,7 +2844,51 @@ function _Platform_export(exports)
 */
 */
 */
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
 
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
 /*
 /*
 /*
@@ -2811,6 +2965,28 @@ function _Platform_mergeExportsDebug(moduleName, obj, exports)
 			: (obj[name] = exports[name]);
 	}
 }
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
 */
 */
 */
@@ -22355,6 +22531,28 @@ var $author$project$MuchSelect$main = $elm$browser$Browser$element(
 /*
 /*
 /*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
+/*
 _Platform_export({'MuchSelect':{'init':$author$project$MuchSelect$main(
 	A2(
 		$elm$json$Json$Decode$andThen,
@@ -22559,6 +22757,3108 @@ _Platform_export({'MuchSelect':{'init':$author$project$MuchSelect$main(
 */
 */
 */
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+*/
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{allowCustomOptions: allowCustomOptions, allowMultiSelect: allowMultiSelect, customOptionHint: customOptionHint, disabled: disabled, enableMultiSelectSingleItemRemoval: enableMultiSelectSingleItemRemoval, isEventsOnly: isEventsOnly, loading: loading, maxDropdownItems: maxDropdownItems, optionSort: optionSort, optionsJson: optionsJson, outputStyle: outputStyle, placeholder: placeholder, searchStringMinimumLength: searchStringMinimumLength, selectedItemStaysInPlace: selectedItemStaysInPlace, selectedValue: selectedValue, selectedValueEncoding: selectedValueEncoding, showDropdownFooter: showDropdownFooter, transformationAndValidationJson: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))({"versions":{"elm":"0.19.1"},"types":{"message":"MuchSelect.Msg","aliases":{"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"},"OptionSearchFilter.OptionSearchFilter":{"args":[],"type":"{ totalScore : Basics.Int, bestScore : Basics.Int, labelTokens : List.List ( Basics.Bool, String.String ), descriptionTokens : List.List ( Basics.Bool, String.String ), groupTokens : List.List ( Basics.Bool, String.String ) }"}},"unions":{"MuchSelect.Msg":{"args":[],"tags":{"NoOp":[],"BringInputInFocus":[],"BringInputOutOfFocus":[],"InputBlur":[],"InputFocus":[],"DropdownMouseOverOption":["OptionValue.OptionValue"],"DropdownMouseOutOption":["OptionValue.OptionValue"],"DropdownMouseDownOption":["OptionValue.OptionValue"],"DropdownMouseUpOption":["OptionValue.OptionValue"],"UpdateSearchString":["String.String"],"SearchStringSteady":[],"UpdateOptionValueValue":["Basics.Int","String.String"],"TextInputOnInput":["String.String"],"ValueChanged":["Json.Decode.Value"],"OptionsReplaced":["Json.Decode.Value"],"OptionSortingChanged":["String.String"],"AddOptions":["Json.Decode.Value"],"RemoveOptions":["Json.Decode.Value"],"SelectOption":["Json.Decode.Value"],"DeselectOption":["Json.Decode.Value"],"DeselectOptionInternal":["Option.Option"],"PlaceholderAttributeChanged":["( Basics.Bool, String.String )"],"LoadingAttributeChanged":["Basics.Bool"],"MaxDropdownItemsChanged":["String.String"],"ShowDropdownFooterChanged":["Basics.Bool"],"AllowCustomOptionsChanged":["( Basics.Bool, String.String )"],"DisabledAttributeChanged":["Basics.Bool"],"MultiSelectAttributeChanged":["Basics.Bool"],"MultiSelectSingleItemRemovalAttributeChanged":["Basics.Bool"],"SearchStringMinimumLengthAttributeChanged":["Basics.Int"],"SelectedItemStaysInPlaceChanged":["Basics.Bool"],"OutputStyleChanged":["String.String"],"SelectHighlightedOption":[],"DeleteInputForSingleSelect":[],"EscapeKeyInInputFilter":[],"MoveHighlightedOptionUp":[],"MoveHighlightedOptionDown":[],"ValueCasingWidthUpdate":["{ width : Basics.Float, height : Basics.Float }"],"ClearAllSelectedOptions":[],"ToggleSelectedValueHighlight":["OptionValue.OptionValue"],"DeleteKeydownForMultiSelect":[],"AddMultiSelectValue":["Basics.Int"],"RemoveMultiSelectValue":["Basics.Int"],"RequestAllOptions":[],"UpdateSearchResultsForOptions":["Json.Encode.Value"],"CustomValidationResponse":["Json.Encode.Value"],"UpdateTransformationAndValidation":["Json.Encode.Value"],"AttributeChanged":["( String.String, String.String )"],"AttributeRemoved":["String.String"],"CustomOptionHintChanged":["String.String"],"SelectedValueEncodingChanged":["String.String"],"RequestConfigState":[],"RequestSelectedValues":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Option.Option":{"args":[],"tags":{"FancyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Option.OptionDescription","Option.OptionGroup","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"CustomOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"DatalistOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue"],"SlottedOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue","OptionSlot.OptionSlot"],"EmptyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel"]}},"OptionValue.OptionValue":{"args":[],"tags":{"OptionValue":["String.String"],"EmptyOptionValue":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"List.List":{"args":["a"],"tags":{}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Option.OptionDescription":{"args":[],"tags":{"OptionDescription":["String.String","Maybe.Maybe String.String"],"NoDescription":[]}},"OptionDisplay.OptionDisplay":{"args":[],"tags":{"OptionShown":["OptionDisplay.OptionAge"],"OptionHidden":[],"OptionSelected":["Basics.Int","OptionDisplay.OptionAge"],"OptionSelectedAndInvalid":["Basics.Int","List.List TransformAndValidate.ValidationFailureMessage"],"OptionSelectedPendingValidation":["Basics.Int"],"OptionSelectedHighlighted":["Basics.Int"],"OptionHighlighted":[],"OptionActivated":[],"OptionDisabled":["OptionDisplay.OptionAge"]}},"Option.OptionGroup":{"args":[],"tags":{"OptionGroup":["String.String"],"NoOptionGroup":[]}},"OptionLabel.OptionLabel":{"args":[],"tags":{"OptionLabel":["String.String","Maybe.Maybe String.String","SortRank.SortRank"]}},"OptionSlot.OptionSlot":{"args":[],"tags":{"OptionSlot":["String.String"]}},"OptionDisplay.OptionAge":{"args":[],"tags":{"NewOption":[],"MatureOption":[]}},"SortRank.SortRank":{"args":[],"tags":{"Auto":["PositiveInt.PositiveInt"],"Manual":["PositiveInt.PositiveInt"],"NoSortRank":[]}},"TransformAndValidate.ValidationFailureMessage":{"args":[],"tags":{"ValidationFailureMessage":["TransformAndValidate.ValidationReportLevel","TransformAndValidate.ValidationErrorMessage"]}},"PositiveInt.PositiveInt":{"args":[],"tags":{"PositiveInt":["Basics.Int"]}},"TransformAndValidate.ValidationErrorMessage":{"args":[],"tags":{"ValidationErrorMessage":["String.String"]}},"TransformAndValidate.ValidationReportLevel":{"args":[],"tags":{"SilentError":[],"ShowError":[]}}}}})}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{allowCustomOptions: allowCustomOptions, allowMultiSelect: allowMultiSelect, customOptionHint: customOptionHint, disabled: disabled, enableMultiSelectSingleItemRemoval: enableMultiSelectSingleItemRemoval, isEventsOnly: isEventsOnly, loading: loading, maxDropdownItems: maxDropdownItems, optionSort: optionSort, optionsJson: optionsJson, outputStyle: outputStyle, placeholder: placeholder, searchStringMinimumLength: searchStringMinimumLength, selectedItemStaysInPlace: selectedItemStaysInPlace, selectedValue: selectedValue, selectedValueEncoding: selectedValueEncoding, showDropdownFooter: showDropdownFooter, transformationAndValidationJson: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))({"versions":{"elm":"0.19.1"},"types":{"message":"MuchSelect.Msg","aliases":{"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"},"OptionSearchFilter.OptionSearchFilter":{"args":[],"type":"{ totalScore : Basics.Int, bestScore : Basics.Int, labelTokens : List.List ( Basics.Bool, String.String ), descriptionTokens : List.List ( Basics.Bool, String.String ), groupTokens : List.List ( Basics.Bool, String.String ) }"}},"unions":{"MuchSelect.Msg":{"args":[],"tags":{"NoOp":[],"BringInputInFocus":[],"BringInputOutOfFocus":[],"InputBlur":[],"InputFocus":[],"DropdownMouseOverOption":["OptionValue.OptionValue"],"DropdownMouseOutOption":["OptionValue.OptionValue"],"DropdownMouseDownOption":["OptionValue.OptionValue"],"DropdownMouseUpOption":["OptionValue.OptionValue"],"UpdateSearchString":["String.String"],"SearchStringSteady":[],"UpdateOptionValueValue":["Basics.Int","String.String"],"TextInputOnInput":["String.String"],"ValueChanged":["Json.Decode.Value"],"OptionsReplaced":["Json.Decode.Value"],"OptionSortingChanged":["String.String"],"AddOptions":["Json.Decode.Value"],"RemoveOptions":["Json.Decode.Value"],"SelectOption":["Json.Decode.Value"],"DeselectOption":["Json.Decode.Value"],"DeselectOptionInternal":["Option.Option"],"PlaceholderAttributeChanged":["( Basics.Bool, String.String )"],"LoadingAttributeChanged":["Basics.Bool"],"MaxDropdownItemsChanged":["String.String"],"ShowDropdownFooterChanged":["Basics.Bool"],"AllowCustomOptionsChanged":["( Basics.Bool, String.String )"],"DisabledAttributeChanged":["Basics.Bool"],"MultiSelectAttributeChanged":["Basics.Bool"],"MultiSelectSingleItemRemovalAttributeChanged":["Basics.Bool"],"SearchStringMinimumLengthAttributeChanged":["Basics.Int"],"SelectedItemStaysInPlaceChanged":["Basics.Bool"],"OutputStyleChanged":["String.String"],"SelectHighlightedOption":[],"DeleteInputForSingleSelect":[],"EscapeKeyInInputFilter":[],"MoveHighlightedOptionUp":[],"MoveHighlightedOptionDown":[],"ValueCasingWidthUpdate":["{ width : Basics.Float, height : Basics.Float }"],"ClearAllSelectedOptions":[],"ToggleSelectedValueHighlight":["OptionValue.OptionValue"],"DeleteKeydownForMultiSelect":[],"AddMultiSelectValue":["Basics.Int"],"RemoveMultiSelectValue":["Basics.Int"],"RequestAllOptions":[],"UpdateSearchResultsForOptions":["Json.Encode.Value"],"CustomValidationResponse":["Json.Encode.Value"],"UpdateTransformationAndValidation":["Json.Encode.Value"],"AttributeChanged":["( String.String, String.String )"],"AttributeRemoved":["String.String"],"CustomOptionHintChanged":["String.String"],"SelectedValueEncodingChanged":["String.String"],"RequestConfigState":[],"RequestSelectedValues":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Option.Option":{"args":[],"tags":{"FancyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Option.OptionDescription","Option.OptionGroup","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"CustomOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"DatalistOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue"],"SlottedOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue","OptionSlot.OptionSlot"],"EmptyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel"]}},"OptionValue.OptionValue":{"args":[],"tags":{"OptionValue":["String.String"],"EmptyOptionValue":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"List.List":{"args":["a"],"tags":{}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Option.OptionDescription":{"args":[],"tags":{"OptionDescription":["String.String","Maybe.Maybe String.String"],"NoDescription":[]}},"OptionDisplay.OptionDisplay":{"args":[],"tags":{"OptionShown":["OptionDisplay.OptionAge"],"OptionHidden":[],"OptionSelected":["Basics.Int","OptionDisplay.OptionAge"],"OptionSelectedAndInvalid":["Basics.Int","List.List TransformAndValidate.ValidationFailureMessage"],"OptionSelectedPendingValidation":["Basics.Int"],"OptionSelectedHighlighted":["Basics.Int"],"OptionHighlighted":[],"OptionActivated":[],"OptionDisabled":["OptionDisplay.OptionAge"]}},"Option.OptionGroup":{"args":[],"tags":{"OptionGroup":["String.String"],"NoOptionGroup":[]}},"OptionLabel.OptionLabel":{"args":[],"tags":{"OptionLabel":["String.String","Maybe.Maybe String.String","SortRank.SortRank"]}},"OptionSlot.OptionSlot":{"args":[],"tags":{"OptionSlot":["String.String"]}},"OptionDisplay.OptionAge":{"args":[],"tags":{"NewOption":[],"MatureOption":[]}},"SortRank.SortRank":{"args":[],"tags":{"Auto":["PositiveInt.PositiveInt"],"Manual":["PositiveInt.PositiveInt"],"NoSortRank":[]}},"TransformAndValidate.ValidationFailureMessage":{"args":[],"tags":{"ValidationFailureMessage":["TransformAndValidate.ValidationReportLevel","TransformAndValidate.ValidationErrorMessage"]}},"PositiveInt.PositiveInt":{"args":[],"tags":{"PositiveInt":["Basics.Int"]}},"TransformAndValidate.ValidationErrorMessage":{"args":[],"tags":{"ValidationErrorMessage":["String.String"]}},"TransformAndValidate.ValidationReportLevel":{"args":[],"tags":{"SilentError":[],"ShowError":[]}}}}})}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{allowCustomOptions: allowCustomOptions, allowMultiSelect: allowMultiSelect, customOptionHint: customOptionHint, disabled: disabled, enableMultiSelectSingleItemRemoval: enableMultiSelectSingleItemRemoval, isEventsOnly: isEventsOnly, loading: loading, maxDropdownItems: maxDropdownItems, optionSort: optionSort, optionsJson: optionsJson, outputStyle: outputStyle, placeholder: placeholder, searchStringMinimumLength: searchStringMinimumLength, selectedItemStaysInPlace: selectedItemStaysInPlace, selectedValue: selectedValue, selectedValueEncoding: selectedValueEncoding, showDropdownFooter: showDropdownFooter, transformationAndValidationJson: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))({"versions":{"elm":"0.19.1"},"types":{"message":"MuchSelect.Msg","aliases":{"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"},"OptionSearchFilter.OptionSearchFilter":{"args":[],"type":"{ totalScore : Basics.Int, bestScore : Basics.Int, labelTokens : List.List ( Basics.Bool, String.String ), descriptionTokens : List.List ( Basics.Bool, String.String ), groupTokens : List.List ( Basics.Bool, String.String ) }"}},"unions":{"MuchSelect.Msg":{"args":[],"tags":{"NoOp":[],"BringInputInFocus":[],"BringInputOutOfFocus":[],"InputBlur":[],"InputFocus":[],"DropdownMouseOverOption":["OptionValue.OptionValue"],"DropdownMouseOutOption":["OptionValue.OptionValue"],"DropdownMouseDownOption":["OptionValue.OptionValue"],"DropdownMouseUpOption":["OptionValue.OptionValue"],"UpdateSearchString":["String.String"],"SearchStringSteady":[],"UpdateOptionValueValue":["Basics.Int","String.String"],"TextInputOnInput":["String.String"],"ValueChanged":["Json.Decode.Value"],"OptionsReplaced":["Json.Decode.Value"],"OptionSortingChanged":["String.String"],"AddOptions":["Json.Decode.Value"],"RemoveOptions":["Json.Decode.Value"],"SelectOption":["Json.Decode.Value"],"DeselectOption":["Json.Decode.Value"],"DeselectOptionInternal":["Option.Option"],"PlaceholderAttributeChanged":["( Basics.Bool, String.String )"],"LoadingAttributeChanged":["Basics.Bool"],"MaxDropdownItemsChanged":["String.String"],"ShowDropdownFooterChanged":["Basics.Bool"],"AllowCustomOptionsChanged":["( Basics.Bool, String.String )"],"DisabledAttributeChanged":["Basics.Bool"],"MultiSelectAttributeChanged":["Basics.Bool"],"MultiSelectSingleItemRemovalAttributeChanged":["Basics.Bool"],"SearchStringMinimumLengthAttributeChanged":["Basics.Int"],"SelectedItemStaysInPlaceChanged":["Basics.Bool"],"OutputStyleChanged":["String.String"],"SelectHighlightedOption":[],"DeleteInputForSingleSelect":[],"EscapeKeyInInputFilter":[],"MoveHighlightedOptionUp":[],"MoveHighlightedOptionDown":[],"ValueCasingWidthUpdate":["{ width : Basics.Float, height : Basics.Float }"],"ClearAllSelectedOptions":[],"ToggleSelectedValueHighlight":["OptionValue.OptionValue"],"DeleteKeydownForMultiSelect":[],"AddMultiSelectValue":["Basics.Int"],"RemoveMultiSelectValue":["Basics.Int"],"RequestAllOptions":[],"UpdateSearchResultsForOptions":["Json.Encode.Value"],"CustomValidationResponse":["Json.Encode.Value"],"UpdateTransformationAndValidation":["Json.Encode.Value"],"AttributeChanged":["( String.String, String.String )"],"AttributeRemoved":["String.String"],"CustomOptionHintChanged":["String.String"],"SelectedValueEncodingChanged":["String.String"],"RequestConfigState":[],"RequestSelectedValues":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Option.Option":{"args":[],"tags":{"FancyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Option.OptionDescription","Option.OptionGroup","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"CustomOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"DatalistOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue"],"SlottedOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue","OptionSlot.OptionSlot"],"EmptyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel"]}},"OptionValue.OptionValue":{"args":[],"tags":{"OptionValue":["String.String"],"EmptyOptionValue":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"List.List":{"args":["a"],"tags":{}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Option.OptionDescription":{"args":[],"tags":{"OptionDescription":["String.String","Maybe.Maybe String.String"],"NoDescription":[]}},"OptionDisplay.OptionDisplay":{"args":[],"tags":{"OptionShown":["OptionDisplay.OptionAge"],"OptionHidden":[],"OptionSelected":["Basics.Int","OptionDisplay.OptionAge"],"OptionSelectedAndInvalid":["Basics.Int","List.List TransformAndValidate.ValidationFailureMessage"],"OptionSelectedPendingValidation":["Basics.Int"],"OptionSelectedHighlighted":["Basics.Int"],"OptionHighlighted":[],"OptionActivated":[],"OptionDisabled":["OptionDisplay.OptionAge"]}},"Option.OptionGroup":{"args":[],"tags":{"OptionGroup":["String.String"],"NoOptionGroup":[]}},"OptionLabel.OptionLabel":{"args":[],"tags":{"OptionLabel":["String.String","Maybe.Maybe String.String","SortRank.SortRank"]}},"OptionSlot.OptionSlot":{"args":[],"tags":{"OptionSlot":["String.String"]}},"OptionDisplay.OptionAge":{"args":[],"tags":{"NewOption":[],"MatureOption":[]}},"SortRank.SortRank":{"args":[],"tags":{"Auto":["PositiveInt.PositiveInt"],"Manual":["PositiveInt.PositiveInt"],"NoSortRank":[]}},"TransformAndValidate.ValidationFailureMessage":{"args":[],"tags":{"ValidationFailureMessage":["TransformAndValidate.ValidationReportLevel","TransformAndValidate.ValidationErrorMessage"]}},"PositiveInt.PositiveInt":{"args":[],"tags":{"PositiveInt":["Basics.Int"]}},"TransformAndValidate.ValidationErrorMessage":{"args":[],"tags":{"ValidationErrorMessage":["String.String"]}},"TransformAndValidate.ValidationReportLevel":{"args":[],"tags":{"SilentError":[],"ShowError":[]}}}}})}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{allowCustomOptions: allowCustomOptions, allowMultiSelect: allowMultiSelect, customOptionHint: customOptionHint, disabled: disabled, enableMultiSelectSingleItemRemoval: enableMultiSelectSingleItemRemoval, isEventsOnly: isEventsOnly, loading: loading, maxDropdownItems: maxDropdownItems, optionSort: optionSort, optionsJson: optionsJson, outputStyle: outputStyle, placeholder: placeholder, searchStringMinimumLength: searchStringMinimumLength, selectedItemStaysInPlace: selectedItemStaysInPlace, selectedValue: selectedValue, selectedValueEncoding: selectedValueEncoding, showDropdownFooter: showDropdownFooter, transformationAndValidationJson: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))({"versions":{"elm":"0.19.1"},"types":{"message":"MuchSelect.Msg","aliases":{"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"},"OptionSearchFilter.OptionSearchFilter":{"args":[],"type":"{ totalScore : Basics.Int, bestScore : Basics.Int, labelTokens : List.List ( Basics.Bool, String.String ), descriptionTokens : List.List ( Basics.Bool, String.String ), groupTokens : List.List ( Basics.Bool, String.String ) }"}},"unions":{"MuchSelect.Msg":{"args":[],"tags":{"NoOp":[],"BringInputInFocus":[],"BringInputOutOfFocus":[],"InputBlur":[],"InputFocus":[],"DropdownMouseOverOption":["OptionValue.OptionValue"],"DropdownMouseOutOption":["OptionValue.OptionValue"],"DropdownMouseDownOption":["OptionValue.OptionValue"],"DropdownMouseUpOption":["OptionValue.OptionValue"],"UpdateSearchString":["String.String"],"SearchStringSteady":[],"UpdateOptionValueValue":["Basics.Int","String.String"],"TextInputOnInput":["String.String"],"ValueChanged":["Json.Decode.Value"],"OptionsReplaced":["Json.Decode.Value"],"OptionSortingChanged":["String.String"],"AddOptions":["Json.Decode.Value"],"RemoveOptions":["Json.Decode.Value"],"SelectOption":["Json.Decode.Value"],"DeselectOption":["Json.Decode.Value"],"DeselectOptionInternal":["Option.Option"],"PlaceholderAttributeChanged":["( Basics.Bool, String.String )"],"LoadingAttributeChanged":["Basics.Bool"],"MaxDropdownItemsChanged":["String.String"],"ShowDropdownFooterChanged":["Basics.Bool"],"AllowCustomOptionsChanged":["( Basics.Bool, String.String )"],"DisabledAttributeChanged":["Basics.Bool"],"MultiSelectAttributeChanged":["Basics.Bool"],"MultiSelectSingleItemRemovalAttributeChanged":["Basics.Bool"],"SearchStringMinimumLengthAttributeChanged":["Basics.Int"],"SelectedItemStaysInPlaceChanged":["Basics.Bool"],"OutputStyleChanged":["String.String"],"SelectHighlightedOption":[],"DeleteInputForSingleSelect":[],"EscapeKeyInInputFilter":[],"MoveHighlightedOptionUp":[],"MoveHighlightedOptionDown":[],"ValueCasingWidthUpdate":["{ width : Basics.Float, height : Basics.Float }"],"ClearAllSelectedOptions":[],"ToggleSelectedValueHighlight":["OptionValue.OptionValue"],"DeleteKeydownForMultiSelect":[],"AddMultiSelectValue":["Basics.Int"],"RemoveMultiSelectValue":["Basics.Int"],"RequestAllOptions":[],"UpdateSearchResultsForOptions":["Json.Encode.Value"],"CustomValidationResponse":["Json.Encode.Value"],"UpdateTransformationAndValidation":["Json.Encode.Value"],"AttributeChanged":["( String.String, String.String )"],"AttributeRemoved":["String.String"],"CustomOptionHintChanged":["String.String"],"SelectedValueEncodingChanged":["String.String"],"RequestConfigState":[],"RequestSelectedValues":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Option.Option":{"args":[],"tags":{"FancyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Option.OptionDescription","Option.OptionGroup","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"CustomOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"DatalistOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue"],"SlottedOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue","OptionSlot.OptionSlot"],"EmptyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel"]}},"OptionValue.OptionValue":{"args":[],"tags":{"OptionValue":["String.String"],"EmptyOptionValue":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"List.List":{"args":["a"],"tags":{}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Option.OptionDescription":{"args":[],"tags":{"OptionDescription":["String.String","Maybe.Maybe String.String"],"NoDescription":[]}},"OptionDisplay.OptionDisplay":{"args":[],"tags":{"OptionShown":["OptionDisplay.OptionAge"],"OptionHidden":[],"OptionSelected":["Basics.Int","OptionDisplay.OptionAge"],"OptionSelectedAndInvalid":["Basics.Int","List.List TransformAndValidate.ValidationFailureMessage"],"OptionSelectedPendingValidation":["Basics.Int"],"OptionSelectedHighlighted":["Basics.Int"],"OptionHighlighted":[],"OptionActivated":[],"OptionDisabled":["OptionDisplay.OptionAge"]}},"Option.OptionGroup":{"args":[],"tags":{"OptionGroup":["String.String"],"NoOptionGroup":[]}},"OptionLabel.OptionLabel":{"args":[],"tags":{"OptionLabel":["String.String","Maybe.Maybe String.String","SortRank.SortRank"]}},"OptionSlot.OptionSlot":{"args":[],"tags":{"OptionSlot":["String.String"]}},"OptionDisplay.OptionAge":{"args":[],"tags":{"NewOption":[],"MatureOption":[]}},"SortRank.SortRank":{"args":[],"tags":{"Auto":["PositiveInt.PositiveInt"],"Manual":["PositiveInt.PositiveInt"],"NoSortRank":[]}},"TransformAndValidate.ValidationFailureMessage":{"args":[],"tags":{"ValidationFailureMessage":["TransformAndValidate.ValidationReportLevel","TransformAndValidate.ValidationErrorMessage"]}},"PositiveInt.PositiveInt":{"args":[],"tags":{"PositiveInt":["Basics.Int"]}},"TransformAndValidate.ValidationErrorMessage":{"args":[],"tags":{"ValidationErrorMessage":["String.String"]}},"TransformAndValidate.ValidationReportLevel":{"args":[],"tags":{"SilentError":[],"ShowError":[]}}}}})}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{allowCustomOptions: allowCustomOptions, allowMultiSelect: allowMultiSelect, customOptionHint: customOptionHint, disabled: disabled, enableMultiSelectSingleItemRemoval: enableMultiSelectSingleItemRemoval, isEventsOnly: isEventsOnly, loading: loading, maxDropdownItems: maxDropdownItems, optionSort: optionSort, optionsJson: optionsJson, outputStyle: outputStyle, placeholder: placeholder, searchStringMinimumLength: searchStringMinimumLength, selectedItemStaysInPlace: selectedItemStaysInPlace, selectedValue: selectedValue, selectedValueEncoding: selectedValueEncoding, showDropdownFooter: showDropdownFooter, transformationAndValidationJson: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))({"versions":{"elm":"0.19.1"},"types":{"message":"MuchSelect.Msg","aliases":{"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"},"OptionSearchFilter.OptionSearchFilter":{"args":[],"type":"{ totalScore : Basics.Int, bestScore : Basics.Int, labelTokens : List.List ( Basics.Bool, String.String ), descriptionTokens : List.List ( Basics.Bool, String.String ), groupTokens : List.List ( Basics.Bool, String.String ) }"}},"unions":{"MuchSelect.Msg":{"args":[],"tags":{"NoOp":[],"BringInputInFocus":[],"BringInputOutOfFocus":[],"InputBlur":[],"InputFocus":[],"DropdownMouseOverOption":["OptionValue.OptionValue"],"DropdownMouseOutOption":["OptionValue.OptionValue"],"DropdownMouseDownOption":["OptionValue.OptionValue"],"DropdownMouseUpOption":["OptionValue.OptionValue"],"UpdateSearchString":["String.String"],"SearchStringSteady":[],"UpdateOptionValueValue":["Basics.Int","String.String"],"TextInputOnInput":["String.String"],"ValueChanged":["Json.Decode.Value"],"OptionsReplaced":["Json.Decode.Value"],"OptionSortingChanged":["String.String"],"AddOptions":["Json.Decode.Value"],"RemoveOptions":["Json.Decode.Value"],"SelectOption":["Json.Decode.Value"],"DeselectOption":["Json.Decode.Value"],"DeselectOptionInternal":["Option.Option"],"PlaceholderAttributeChanged":["( Basics.Bool, String.String )"],"LoadingAttributeChanged":["Basics.Bool"],"MaxDropdownItemsChanged":["String.String"],"ShowDropdownFooterChanged":["Basics.Bool"],"AllowCustomOptionsChanged":["( Basics.Bool, String.String )"],"DisabledAttributeChanged":["Basics.Bool"],"MultiSelectAttributeChanged":["Basics.Bool"],"MultiSelectSingleItemRemovalAttributeChanged":["Basics.Bool"],"SearchStringMinimumLengthAttributeChanged":["Basics.Int"],"SelectedItemStaysInPlaceChanged":["Basics.Bool"],"OutputStyleChanged":["String.String"],"SelectHighlightedOption":[],"DeleteInputForSingleSelect":[],"EscapeKeyInInputFilter":[],"MoveHighlightedOptionUp":[],"MoveHighlightedOptionDown":[],"ValueCasingWidthUpdate":["{ width : Basics.Float, height : Basics.Float }"],"ClearAllSelectedOptions":[],"ToggleSelectedValueHighlight":["OptionValue.OptionValue"],"DeleteKeydownForMultiSelect":[],"AddMultiSelectValue":["Basics.Int"],"RemoveMultiSelectValue":["Basics.Int"],"RequestAllOptions":[],"UpdateSearchResultsForOptions":["Json.Encode.Value"],"CustomValidationResponse":["Json.Encode.Value"],"UpdateTransformationAndValidation":["Json.Encode.Value"],"AttributeChanged":["( String.String, String.String )"],"AttributeRemoved":["String.String"],"CustomOptionHintChanged":["String.String"],"SelectedValueEncodingChanged":["String.String"],"RequestConfigState":[],"RequestSelectedValues":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Option.Option":{"args":[],"tags":{"FancyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Option.OptionDescription","Option.OptionGroup","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"CustomOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"DatalistOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue"],"SlottedOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue","OptionSlot.OptionSlot"],"EmptyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel"]}},"OptionValue.OptionValue":{"args":[],"tags":{"OptionValue":["String.String"],"EmptyOptionValue":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"List.List":{"args":["a"],"tags":{}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Option.OptionDescription":{"args":[],"tags":{"OptionDescription":["String.String","Maybe.Maybe String.String"],"NoDescription":[]}},"OptionDisplay.OptionDisplay":{"args":[],"tags":{"OptionShown":["OptionDisplay.OptionAge"],"OptionHidden":[],"OptionSelected":["Basics.Int","OptionDisplay.OptionAge"],"OptionSelectedAndInvalid":["Basics.Int","List.List TransformAndValidate.ValidationFailureMessage"],"OptionSelectedPendingValidation":["Basics.Int"],"OptionSelectedHighlighted":["Basics.Int"],"OptionHighlighted":[],"OptionActivated":[],"OptionDisabled":["OptionDisplay.OptionAge"]}},"Option.OptionGroup":{"args":[],"tags":{"OptionGroup":["String.String"],"NoOptionGroup":[]}},"OptionLabel.OptionLabel":{"args":[],"tags":{"OptionLabel":["String.String","Maybe.Maybe String.String","SortRank.SortRank"]}},"OptionSlot.OptionSlot":{"args":[],"tags":{"OptionSlot":["String.String"]}},"OptionDisplay.OptionAge":{"args":[],"tags":{"NewOption":[],"MatureOption":[]}},"SortRank.SortRank":{"args":[],"tags":{"Auto":["PositiveInt.PositiveInt"],"Manual":["PositiveInt.PositiveInt"],"NoSortRank":[]}},"TransformAndValidate.ValidationFailureMessage":{"args":[],"tags":{"ValidationFailureMessage":["TransformAndValidate.ValidationReportLevel","TransformAndValidate.ValidationErrorMessage"]}},"PositiveInt.PositiveInt":{"args":[],"tags":{"PositiveInt":["Basics.Int"]}},"TransformAndValidate.ValidationErrorMessage":{"args":[],"tags":{"ValidationErrorMessage":["String.String"]}},"TransformAndValidate.ValidationReportLevel":{"args":[],"tags":{"SilentError":[],"ShowError":[]}}}}})}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{allowCustomOptions: allowCustomOptions, allowMultiSelect: allowMultiSelect, customOptionHint: customOptionHint, disabled: disabled, enableMultiSelectSingleItemRemoval: enableMultiSelectSingleItemRemoval, isEventsOnly: isEventsOnly, loading: loading, maxDropdownItems: maxDropdownItems, optionSort: optionSort, optionsJson: optionsJson, outputStyle: outputStyle, placeholder: placeholder, searchStringMinimumLength: searchStringMinimumLength, selectedItemStaysInPlace: selectedItemStaysInPlace, selectedValue: selectedValue, selectedValueEncoding: selectedValueEncoding, showDropdownFooter: showDropdownFooter, transformationAndValidationJson: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))({"versions":{"elm":"0.19.1"},"types":{"message":"MuchSelect.Msg","aliases":{"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"},"OptionSearchFilter.OptionSearchFilter":{"args":[],"type":"{ totalScore : Basics.Int, bestScore : Basics.Int, labelTokens : List.List ( Basics.Bool, String.String ), descriptionTokens : List.List ( Basics.Bool, String.String ), groupTokens : List.List ( Basics.Bool, String.String ) }"}},"unions":{"MuchSelect.Msg":{"args":[],"tags":{"NoOp":[],"BringInputInFocus":[],"BringInputOutOfFocus":[],"InputBlur":[],"InputFocus":[],"DropdownMouseOverOption":["OptionValue.OptionValue"],"DropdownMouseOutOption":["OptionValue.OptionValue"],"DropdownMouseDownOption":["OptionValue.OptionValue"],"DropdownMouseUpOption":["OptionValue.OptionValue"],"UpdateSearchString":["String.String"],"SearchStringSteady":[],"UpdateOptionValueValue":["Basics.Int","String.String"],"TextInputOnInput":["String.String"],"ValueChanged":["Json.Decode.Value"],"OptionsReplaced":["Json.Decode.Value"],"OptionSortingChanged":["String.String"],"AddOptions":["Json.Decode.Value"],"RemoveOptions":["Json.Decode.Value"],"SelectOption":["Json.Decode.Value"],"DeselectOption":["Json.Decode.Value"],"DeselectOptionInternal":["Option.Option"],"PlaceholderAttributeChanged":["( Basics.Bool, String.String )"],"LoadingAttributeChanged":["Basics.Bool"],"MaxDropdownItemsChanged":["String.String"],"ShowDropdownFooterChanged":["Basics.Bool"],"AllowCustomOptionsChanged":["( Basics.Bool, String.String )"],"DisabledAttributeChanged":["Basics.Bool"],"MultiSelectAttributeChanged":["Basics.Bool"],"MultiSelectSingleItemRemovalAttributeChanged":["Basics.Bool"],"SearchStringMinimumLengthAttributeChanged":["Basics.Int"],"SelectedItemStaysInPlaceChanged":["Basics.Bool"],"OutputStyleChanged":["String.String"],"SelectHighlightedOption":[],"DeleteInputForSingleSelect":[],"EscapeKeyInInputFilter":[],"MoveHighlightedOptionUp":[],"MoveHighlightedOptionDown":[],"ValueCasingWidthUpdate":["{ width : Basics.Float, height : Basics.Float }"],"ClearAllSelectedOptions":[],"ToggleSelectedValueHighlight":["OptionValue.OptionValue"],"DeleteKeydownForMultiSelect":[],"AddMultiSelectValue":["Basics.Int"],"RemoveMultiSelectValue":["Basics.Int"],"RequestAllOptions":[],"UpdateSearchResultsForOptions":["Json.Encode.Value"],"CustomValidationResponse":["Json.Encode.Value"],"UpdateTransformationAndValidation":["Json.Encode.Value"],"AttributeChanged":["( String.String, String.String )"],"AttributeRemoved":["String.String"],"CustomOptionHintChanged":["String.String"],"SelectedValueEncodingChanged":["String.String"],"RequestConfigState":[],"RequestSelectedValues":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Option.Option":{"args":[],"tags":{"FancyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Option.OptionDescription","Option.OptionGroup","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"CustomOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"DatalistOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue"],"SlottedOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue","OptionSlot.OptionSlot"],"EmptyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel"]}},"OptionValue.OptionValue":{"args":[],"tags":{"OptionValue":["String.String"],"EmptyOptionValue":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"List.List":{"args":["a"],"tags":{}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Option.OptionDescription":{"args":[],"tags":{"OptionDescription":["String.String","Maybe.Maybe String.String"],"NoDescription":[]}},"OptionDisplay.OptionDisplay":{"args":[],"tags":{"OptionShown":["OptionDisplay.OptionAge"],"OptionHidden":[],"OptionSelected":["Basics.Int","OptionDisplay.OptionAge"],"OptionSelectedAndInvalid":["Basics.Int","List.List TransformAndValidate.ValidationFailureMessage"],"OptionSelectedPendingValidation":["Basics.Int"],"OptionSelectedHighlighted":["Basics.Int"],"OptionHighlighted":[],"OptionActivated":[],"OptionDisabled":["OptionDisplay.OptionAge"]}},"Option.OptionGroup":{"args":[],"tags":{"OptionGroup":["String.String"],"NoOptionGroup":[]}},"OptionLabel.OptionLabel":{"args":[],"tags":{"OptionLabel":["String.String","Maybe.Maybe String.String","SortRank.SortRank"]}},"OptionSlot.OptionSlot":{"args":[],"tags":{"OptionSlot":["String.String"]}},"OptionDisplay.OptionAge":{"args":[],"tags":{"NewOption":[],"MatureOption":[]}},"SortRank.SortRank":{"args":[],"tags":{"Auto":["PositiveInt.PositiveInt"],"Manual":["PositiveInt.PositiveInt"],"NoSortRank":[]}},"TransformAndValidate.ValidationFailureMessage":{"args":[],"tags":{"ValidationFailureMessage":["TransformAndValidate.ValidationReportLevel","TransformAndValidate.ValidationErrorMessage"]}},"PositiveInt.PositiveInt":{"args":[],"tags":{"PositiveInt":["Basics.Int"]}},"TransformAndValidate.ValidationErrorMessage":{"args":[],"tags":{"ValidationErrorMessage":["String.String"]}},"TransformAndValidate.ValidationReportLevel":{"args":[],"tags":{"SilentError":[],"ShowError":[]}}}}})}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{allowCustomOptions: allowCustomOptions, allowMultiSelect: allowMultiSelect, customOptionHint: customOptionHint, disabled: disabled, enableMultiSelectSingleItemRemoval: enableMultiSelectSingleItemRemoval, isEventsOnly: isEventsOnly, loading: loading, maxDropdownItems: maxDropdownItems, optionSort: optionSort, optionsJson: optionsJson, outputStyle: outputStyle, placeholder: placeholder, searchStringMinimumLength: searchStringMinimumLength, selectedItemStaysInPlace: selectedItemStaysInPlace, selectedValue: selectedValue, selectedValueEncoding: selectedValueEncoding, showDropdownFooter: showDropdownFooter, transformationAndValidationJson: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))({"versions":{"elm":"0.19.1"},"types":{"message":"MuchSelect.Msg","aliases":{"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"},"OptionSearchFilter.OptionSearchFilter":{"args":[],"type":"{ totalScore : Basics.Int, bestScore : Basics.Int, labelTokens : List.List ( Basics.Bool, String.String ), descriptionTokens : List.List ( Basics.Bool, String.String ), groupTokens : List.List ( Basics.Bool, String.String ) }"}},"unions":{"MuchSelect.Msg":{"args":[],"tags":{"NoOp":[],"BringInputInFocus":[],"BringInputOutOfFocus":[],"InputBlur":[],"InputFocus":[],"DropdownMouseOverOption":["OptionValue.OptionValue"],"DropdownMouseOutOption":["OptionValue.OptionValue"],"DropdownMouseDownOption":["OptionValue.OptionValue"],"DropdownMouseUpOption":["OptionValue.OptionValue"],"UpdateSearchString":["String.String"],"SearchStringSteady":[],"UpdateOptionValueValue":["Basics.Int","String.String"],"TextInputOnInput":["String.String"],"ValueChanged":["Json.Decode.Value"],"OptionsReplaced":["Json.Decode.Value"],"OptionSortingChanged":["String.String"],"AddOptions":["Json.Decode.Value"],"RemoveOptions":["Json.Decode.Value"],"SelectOption":["Json.Decode.Value"],"DeselectOption":["Json.Decode.Value"],"DeselectOptionInternal":["Option.Option"],"PlaceholderAttributeChanged":["( Basics.Bool, String.String )"],"LoadingAttributeChanged":["Basics.Bool"],"MaxDropdownItemsChanged":["String.String"],"ShowDropdownFooterChanged":["Basics.Bool"],"AllowCustomOptionsChanged":["( Basics.Bool, String.String )"],"DisabledAttributeChanged":["Basics.Bool"],"MultiSelectAttributeChanged":["Basics.Bool"],"MultiSelectSingleItemRemovalAttributeChanged":["Basics.Bool"],"SearchStringMinimumLengthAttributeChanged":["Basics.Int"],"SelectedItemStaysInPlaceChanged":["Basics.Bool"],"OutputStyleChanged":["String.String"],"SelectHighlightedOption":[],"DeleteInputForSingleSelect":[],"EscapeKeyInInputFilter":[],"MoveHighlightedOptionUp":[],"MoveHighlightedOptionDown":[],"ValueCasingWidthUpdate":["{ width : Basics.Float, height : Basics.Float }"],"ClearAllSelectedOptions":[],"ToggleSelectedValueHighlight":["OptionValue.OptionValue"],"DeleteKeydownForMultiSelect":[],"AddMultiSelectValue":["Basics.Int"],"RemoveMultiSelectValue":["Basics.Int"],"RequestAllOptions":[],"UpdateSearchResultsForOptions":["Json.Encode.Value"],"CustomValidationResponse":["Json.Encode.Value"],"UpdateTransformationAndValidation":["Json.Encode.Value"],"AttributeChanged":["( String.String, String.String )"],"AttributeRemoved":["String.String"],"CustomOptionHintChanged":["String.String"],"SelectedValueEncodingChanged":["String.String"],"RequestConfigState":[],"RequestSelectedValues":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Option.Option":{"args":[],"tags":{"FancyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Option.OptionDescription","Option.OptionGroup","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"CustomOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"DatalistOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue"],"SlottedOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue","OptionSlot.OptionSlot"],"EmptyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel"]}},"OptionValue.OptionValue":{"args":[],"tags":{"OptionValue":["String.String"],"EmptyOptionValue":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"List.List":{"args":["a"],"tags":{}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Option.OptionDescription":{"args":[],"tags":{"OptionDescription":["String.String","Maybe.Maybe String.String"],"NoDescription":[]}},"OptionDisplay.OptionDisplay":{"args":[],"tags":{"OptionShown":["OptionDisplay.OptionAge"],"OptionHidden":[],"OptionSelected":["Basics.Int","OptionDisplay.OptionAge"],"OptionSelectedAndInvalid":["Basics.Int","List.List TransformAndValidate.ValidationFailureMessage"],"OptionSelectedPendingValidation":["Basics.Int"],"OptionSelectedHighlighted":["Basics.Int"],"OptionHighlighted":[],"OptionActivated":[],"OptionDisabled":["OptionDisplay.OptionAge"]}},"Option.OptionGroup":{"args":[],"tags":{"OptionGroup":["String.String"],"NoOptionGroup":[]}},"OptionLabel.OptionLabel":{"args":[],"tags":{"OptionLabel":["String.String","Maybe.Maybe String.String","SortRank.SortRank"]}},"OptionSlot.OptionSlot":{"args":[],"tags":{"OptionSlot":["String.String"]}},"OptionDisplay.OptionAge":{"args":[],"tags":{"NewOption":[],"MatureOption":[]}},"SortRank.SortRank":{"args":[],"tags":{"Auto":["PositiveInt.PositiveInt"],"Manual":["PositiveInt.PositiveInt"],"NoSortRank":[]}},"TransformAndValidate.ValidationFailureMessage":{"args":[],"tags":{"ValidationFailureMessage":["TransformAndValidate.ValidationReportLevel","TransformAndValidate.ValidationErrorMessage"]}},"PositiveInt.PositiveInt":{"args":[],"tags":{"PositiveInt":["Basics.Int"]}},"TransformAndValidate.ValidationErrorMessage":{"args":[],"tags":{"ValidationErrorMessage":["String.String"]}},"TransformAndValidate.ValidationReportLevel":{"args":[],"tags":{"SilentError":[],"ShowError":[]}}}}})}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{allowCustomOptions: allowCustomOptions, allowMultiSelect: allowMultiSelect, customOptionHint: customOptionHint, disabled: disabled, enableMultiSelectSingleItemRemoval: enableMultiSelectSingleItemRemoval, isEventsOnly: isEventsOnly, loading: loading, maxDropdownItems: maxDropdownItems, optionSort: optionSort, optionsJson: optionsJson, outputStyle: outputStyle, placeholder: placeholder, searchStringMinimumLength: searchStringMinimumLength, selectedItemStaysInPlace: selectedItemStaysInPlace, selectedValue: selectedValue, selectedValueEncoding: selectedValueEncoding, showDropdownFooter: showDropdownFooter, transformationAndValidationJson: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))({"versions":{"elm":"0.19.1"},"types":{"message":"MuchSelect.Msg","aliases":{"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"},"OptionSearchFilter.OptionSearchFilter":{"args":[],"type":"{ totalScore : Basics.Int, bestScore : Basics.Int, labelTokens : List.List ( Basics.Bool, String.String ), descriptionTokens : List.List ( Basics.Bool, String.String ), groupTokens : List.List ( Basics.Bool, String.String ) }"}},"unions":{"MuchSelect.Msg":{"args":[],"tags":{"NoOp":[],"BringInputInFocus":[],"BringInputOutOfFocus":[],"InputBlur":[],"InputFocus":[],"DropdownMouseOverOption":["OptionValue.OptionValue"],"DropdownMouseOutOption":["OptionValue.OptionValue"],"DropdownMouseDownOption":["OptionValue.OptionValue"],"DropdownMouseUpOption":["OptionValue.OptionValue"],"UpdateSearchString":["String.String"],"SearchStringSteady":[],"UpdateOptionValueValue":["Basics.Int","String.String"],"TextInputOnInput":["String.String"],"ValueChanged":["Json.Decode.Value"],"OptionsReplaced":["Json.Decode.Value"],"OptionSortingChanged":["String.String"],"AddOptions":["Json.Decode.Value"],"RemoveOptions":["Json.Decode.Value"],"SelectOption":["Json.Decode.Value"],"DeselectOption":["Json.Decode.Value"],"DeselectOptionInternal":["Option.Option"],"PlaceholderAttributeChanged":["( Basics.Bool, String.String )"],"LoadingAttributeChanged":["Basics.Bool"],"MaxDropdownItemsChanged":["String.String"],"ShowDropdownFooterChanged":["Basics.Bool"],"AllowCustomOptionsChanged":["( Basics.Bool, String.String )"],"DisabledAttributeChanged":["Basics.Bool"],"MultiSelectAttributeChanged":["Basics.Bool"],"MultiSelectSingleItemRemovalAttributeChanged":["Basics.Bool"],"SearchStringMinimumLengthAttributeChanged":["Basics.Int"],"SelectedItemStaysInPlaceChanged":["Basics.Bool"],"OutputStyleChanged":["String.String"],"SelectHighlightedOption":[],"DeleteInputForSingleSelect":[],"EscapeKeyInInputFilter":[],"MoveHighlightedOptionUp":[],"MoveHighlightedOptionDown":[],"ValueCasingWidthUpdate":["{ width : Basics.Float, height : Basics.Float }"],"ClearAllSelectedOptions":[],"ToggleSelectedValueHighlight":["OptionValue.OptionValue"],"DeleteKeydownForMultiSelect":[],"AddMultiSelectValue":["Basics.Int"],"RemoveMultiSelectValue":["Basics.Int"],"RequestAllOptions":[],"UpdateSearchResultsForOptions":["Json.Encode.Value"],"CustomValidationResponse":["Json.Encode.Value"],"UpdateTransformationAndValidation":["Json.Encode.Value"],"AttributeChanged":["( String.String, String.String )"],"AttributeRemoved":["String.String"],"CustomOptionHintChanged":["String.String"],"SelectedValueEncodingChanged":["String.String"],"RequestConfigState":[],"RequestSelectedValues":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Option.Option":{"args":[],"tags":{"FancyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Option.OptionDescription","Option.OptionGroup","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"CustomOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"DatalistOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue"],"SlottedOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue","OptionSlot.OptionSlot"],"EmptyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel"]}},"OptionValue.OptionValue":{"args":[],"tags":{"OptionValue":["String.String"],"EmptyOptionValue":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"List.List":{"args":["a"],"tags":{}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Option.OptionDescription":{"args":[],"tags":{"OptionDescription":["String.String","Maybe.Maybe String.String"],"NoDescription":[]}},"OptionDisplay.OptionDisplay":{"args":[],"tags":{"OptionShown":["OptionDisplay.OptionAge"],"OptionHidden":[],"OptionSelected":["Basics.Int","OptionDisplay.OptionAge"],"OptionSelectedAndInvalid":["Basics.Int","List.List TransformAndValidate.ValidationFailureMessage"],"OptionSelectedPendingValidation":["Basics.Int"],"OptionSelectedHighlighted":["Basics.Int"],"OptionHighlighted":[],"OptionActivated":[],"OptionDisabled":["OptionDisplay.OptionAge"]}},"Option.OptionGroup":{"args":[],"tags":{"OptionGroup":["String.String"],"NoOptionGroup":[]}},"OptionLabel.OptionLabel":{"args":[],"tags":{"OptionLabel":["String.String","Maybe.Maybe String.String","SortRank.SortRank"]}},"OptionSlot.OptionSlot":{"args":[],"tags":{"OptionSlot":["String.String"]}},"OptionDisplay.OptionAge":{"args":[],"tags":{"NewOption":[],"MatureOption":[]}},"SortRank.SortRank":{"args":[],"tags":{"Auto":["PositiveInt.PositiveInt"],"Manual":["PositiveInt.PositiveInt"],"NoSortRank":[]}},"TransformAndValidate.ValidationFailureMessage":{"args":[],"tags":{"ValidationFailureMessage":["TransformAndValidate.ValidationReportLevel","TransformAndValidate.ValidationErrorMessage"]}},"PositiveInt.PositiveInt":{"args":[],"tags":{"PositiveInt":["Basics.Int"]}},"TransformAndValidate.ValidationErrorMessage":{"args":[],"tags":{"ValidationErrorMessage":["String.String"]}},"TransformAndValidate.ValidationReportLevel":{"args":[],"tags":{"SilentError":[],"ShowError":[]}}}}})}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{allowCustomOptions: allowCustomOptions, allowMultiSelect: allowMultiSelect, customOptionHint: customOptionHint, disabled: disabled, enableMultiSelectSingleItemRemoval: enableMultiSelectSingleItemRemoval, isEventsOnly: isEventsOnly, loading: loading, maxDropdownItems: maxDropdownItems, optionSort: optionSort, optionsJson: optionsJson, outputStyle: outputStyle, placeholder: placeholder, searchStringMinimumLength: searchStringMinimumLength, selectedItemStaysInPlace: selectedItemStaysInPlace, selectedValue: selectedValue, selectedValueEncoding: selectedValueEncoding, showDropdownFooter: showDropdownFooter, transformationAndValidationJson: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))({"versions":{"elm":"0.19.1"},"types":{"message":"MuchSelect.Msg","aliases":{"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"},"OptionSearchFilter.OptionSearchFilter":{"args":[],"type":"{ totalScore : Basics.Int, bestScore : Basics.Int, labelTokens : List.List ( Basics.Bool, String.String ), descriptionTokens : List.List ( Basics.Bool, String.String ), groupTokens : List.List ( Basics.Bool, String.String ) }"}},"unions":{"MuchSelect.Msg":{"args":[],"tags":{"NoOp":[],"BringInputInFocus":[],"BringInputOutOfFocus":[],"InputBlur":[],"InputFocus":[],"DropdownMouseOverOption":["OptionValue.OptionValue"],"DropdownMouseOutOption":["OptionValue.OptionValue"],"DropdownMouseDownOption":["OptionValue.OptionValue"],"DropdownMouseUpOption":["OptionValue.OptionValue"],"UpdateSearchString":["String.String"],"SearchStringSteady":[],"UpdateOptionValueValue":["Basics.Int","String.String"],"TextInputOnInput":["String.String"],"ValueChanged":["Json.Decode.Value"],"OptionsReplaced":["Json.Decode.Value"],"OptionSortingChanged":["String.String"],"AddOptions":["Json.Decode.Value"],"RemoveOptions":["Json.Decode.Value"],"SelectOption":["Json.Decode.Value"],"DeselectOption":["Json.Decode.Value"],"DeselectOptionInternal":["Option.Option"],"PlaceholderAttributeChanged":["( Basics.Bool, String.String )"],"LoadingAttributeChanged":["Basics.Bool"],"MaxDropdownItemsChanged":["String.String"],"ShowDropdownFooterChanged":["Basics.Bool"],"AllowCustomOptionsChanged":["( Basics.Bool, String.String )"],"DisabledAttributeChanged":["Basics.Bool"],"MultiSelectAttributeChanged":["Basics.Bool"],"MultiSelectSingleItemRemovalAttributeChanged":["Basics.Bool"],"SearchStringMinimumLengthAttributeChanged":["Basics.Int"],"SelectedItemStaysInPlaceChanged":["Basics.Bool"],"OutputStyleChanged":["String.String"],"SelectHighlightedOption":[],"DeleteInputForSingleSelect":[],"EscapeKeyInInputFilter":[],"MoveHighlightedOptionUp":[],"MoveHighlightedOptionDown":[],"ValueCasingWidthUpdate":["{ width : Basics.Float, height : Basics.Float }"],"ClearAllSelectedOptions":[],"ToggleSelectedValueHighlight":["OptionValue.OptionValue"],"DeleteKeydownForMultiSelect":[],"AddMultiSelectValue":["Basics.Int"],"RemoveMultiSelectValue":["Basics.Int"],"RequestAllOptions":[],"UpdateSearchResultsForOptions":["Json.Encode.Value"],"CustomValidationResponse":["Json.Encode.Value"],"UpdateTransformationAndValidation":["Json.Encode.Value"],"AttributeChanged":["( String.String, String.String )"],"AttributeRemoved":["String.String"],"CustomOptionHintChanged":["String.String"],"SelectedValueEncodingChanged":["String.String"],"RequestConfigState":[],"RequestSelectedValues":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Option.Option":{"args":[],"tags":{"FancyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Option.OptionDescription","Option.OptionGroup","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"CustomOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"DatalistOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue"],"SlottedOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue","OptionSlot.OptionSlot"],"EmptyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel"]}},"OptionValue.OptionValue":{"args":[],"tags":{"OptionValue":["String.String"],"EmptyOptionValue":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"List.List":{"args":["a"],"tags":{}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Option.OptionDescription":{"args":[],"tags":{"OptionDescription":["String.String","Maybe.Maybe String.String"],"NoDescription":[]}},"OptionDisplay.OptionDisplay":{"args":[],"tags":{"OptionShown":["OptionDisplay.OptionAge"],"OptionHidden":[],"OptionSelected":["Basics.Int","OptionDisplay.OptionAge"],"OptionSelectedAndInvalid":["Basics.Int","List.List TransformAndValidate.ValidationFailureMessage"],"OptionSelectedPendingValidation":["Basics.Int"],"OptionSelectedHighlighted":["Basics.Int"],"OptionHighlighted":[],"OptionActivated":[],"OptionDisabled":["OptionDisplay.OptionAge"]}},"Option.OptionGroup":{"args":[],"tags":{"OptionGroup":["String.String"],"NoOptionGroup":[]}},"OptionLabel.OptionLabel":{"args":[],"tags":{"OptionLabel":["String.String","Maybe.Maybe String.String","SortRank.SortRank"]}},"OptionSlot.OptionSlot":{"args":[],"tags":{"OptionSlot":["String.String"]}},"OptionDisplay.OptionAge":{"args":[],"tags":{"NewOption":[],"MatureOption":[]}},"SortRank.SortRank":{"args":[],"tags":{"Auto":["PositiveInt.PositiveInt"],"Manual":["PositiveInt.PositiveInt"],"NoSortRank":[]}},"TransformAndValidate.ValidationFailureMessage":{"args":[],"tags":{"ValidationFailureMessage":["TransformAndValidate.ValidationReportLevel","TransformAndValidate.ValidationErrorMessage"]}},"PositiveInt.PositiveInt":{"args":[],"tags":{"PositiveInt":["Basics.Int"]}},"TransformAndValidate.ValidationErrorMessage":{"args":[],"tags":{"ValidationErrorMessage":["String.String"]}},"TransformAndValidate.ValidationReportLevel":{"args":[],"tags":{"SilentError":[],"ShowError":[]}}}}})}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{allowCustomOptions: allowCustomOptions, allowMultiSelect: allowMultiSelect, customOptionHint: customOptionHint, disabled: disabled, enableMultiSelectSingleItemRemoval: enableMultiSelectSingleItemRemoval, isEventsOnly: isEventsOnly, loading: loading, maxDropdownItems: maxDropdownItems, optionSort: optionSort, optionsJson: optionsJson, outputStyle: outputStyle, placeholder: placeholder, searchStringMinimumLength: searchStringMinimumLength, selectedItemStaysInPlace: selectedItemStaysInPlace, selectedValue: selectedValue, selectedValueEncoding: selectedValueEncoding, showDropdownFooter: showDropdownFooter, transformationAndValidationJson: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))({"versions":{"elm":"0.19.1"},"types":{"message":"MuchSelect.Msg","aliases":{"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"},"OptionSearchFilter.OptionSearchFilter":{"args":[],"type":"{ totalScore : Basics.Int, bestScore : Basics.Int, labelTokens : List.List ( Basics.Bool, String.String ), descriptionTokens : List.List ( Basics.Bool, String.String ), groupTokens : List.List ( Basics.Bool, String.String ) }"}},"unions":{"MuchSelect.Msg":{"args":[],"tags":{"NoOp":[],"BringInputInFocus":[],"BringInputOutOfFocus":[],"InputBlur":[],"InputFocus":[],"DropdownMouseOverOption":["OptionValue.OptionValue"],"DropdownMouseOutOption":["OptionValue.OptionValue"],"DropdownMouseDownOption":["OptionValue.OptionValue"],"DropdownMouseUpOption":["OptionValue.OptionValue"],"UpdateSearchString":["String.String"],"SearchStringSteady":[],"UpdateOptionValueValue":["Basics.Int","String.String"],"TextInputOnInput":["String.String"],"ValueChanged":["Json.Decode.Value"],"OptionsReplaced":["Json.Decode.Value"],"OptionSortingChanged":["String.String"],"AddOptions":["Json.Decode.Value"],"RemoveOptions":["Json.Decode.Value"],"SelectOption":["Json.Decode.Value"],"DeselectOption":["Json.Decode.Value"],"DeselectOptionInternal":["Option.Option"],"PlaceholderAttributeChanged":["( Basics.Bool, String.String )"],"LoadingAttributeChanged":["Basics.Bool"],"MaxDropdownItemsChanged":["String.String"],"ShowDropdownFooterChanged":["Basics.Bool"],"AllowCustomOptionsChanged":["( Basics.Bool, String.String )"],"DisabledAttributeChanged":["Basics.Bool"],"MultiSelectAttributeChanged":["Basics.Bool"],"MultiSelectSingleItemRemovalAttributeChanged":["Basics.Bool"],"SearchStringMinimumLengthAttributeChanged":["Basics.Int"],"SelectedItemStaysInPlaceChanged":["Basics.Bool"],"OutputStyleChanged":["String.String"],"SelectHighlightedOption":[],"DeleteInputForSingleSelect":[],"EscapeKeyInInputFilter":[],"MoveHighlightedOptionUp":[],"MoveHighlightedOptionDown":[],"ValueCasingWidthUpdate":["{ width : Basics.Float, height : Basics.Float }"],"ClearAllSelectedOptions":[],"ToggleSelectedValueHighlight":["OptionValue.OptionValue"],"DeleteKeydownForMultiSelect":[],"AddMultiSelectValue":["Basics.Int"],"RemoveMultiSelectValue":["Basics.Int"],"RequestAllOptions":[],"UpdateSearchResultsForOptions":["Json.Encode.Value"],"CustomValidationResponse":["Json.Encode.Value"],"UpdateTransformationAndValidation":["Json.Encode.Value"],"AttributeChanged":["( String.String, String.String )"],"AttributeRemoved":["String.String"],"CustomOptionHintChanged":["String.String"],"SelectedValueEncodingChanged":["String.String"],"RequestConfigState":[],"RequestSelectedValues":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Option.Option":{"args":[],"tags":{"FancyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Option.OptionDescription","Option.OptionGroup","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"CustomOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"DatalistOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue"],"SlottedOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue","OptionSlot.OptionSlot"],"EmptyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel"]}},"OptionValue.OptionValue":{"args":[],"tags":{"OptionValue":["String.String"],"EmptyOptionValue":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"List.List":{"args":["a"],"tags":{}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Option.OptionDescription":{"args":[],"tags":{"OptionDescription":["String.String","Maybe.Maybe String.String"],"NoDescription":[]}},"OptionDisplay.OptionDisplay":{"args":[],"tags":{"OptionShown":["OptionDisplay.OptionAge"],"OptionHidden":[],"OptionSelected":["Basics.Int","OptionDisplay.OptionAge"],"OptionSelectedAndInvalid":["Basics.Int","List.List TransformAndValidate.ValidationFailureMessage"],"OptionSelectedPendingValidation":["Basics.Int"],"OptionSelectedHighlighted":["Basics.Int"],"OptionHighlighted":[],"OptionActivated":[],"OptionDisabled":["OptionDisplay.OptionAge"]}},"Option.OptionGroup":{"args":[],"tags":{"OptionGroup":["String.String"],"NoOptionGroup":[]}},"OptionLabel.OptionLabel":{"args":[],"tags":{"OptionLabel":["String.String","Maybe.Maybe String.String","SortRank.SortRank"]}},"OptionSlot.OptionSlot":{"args":[],"tags":{"OptionSlot":["String.String"]}},"OptionDisplay.OptionAge":{"args":[],"tags":{"NewOption":[],"MatureOption":[]}},"SortRank.SortRank":{"args":[],"tags":{"Auto":["PositiveInt.PositiveInt"],"Manual":["PositiveInt.PositiveInt"],"NoSortRank":[]}},"TransformAndValidate.ValidationFailureMessage":{"args":[],"tags":{"ValidationFailureMessage":["TransformAndValidate.ValidationReportLevel","TransformAndValidate.ValidationErrorMessage"]}},"PositiveInt.PositiveInt":{"args":[],"tags":{"PositiveInt":["Basics.Int"]}},"TransformAndValidate.ValidationErrorMessage":{"args":[],"tags":{"ValidationErrorMessage":["String.String"]}},"TransformAndValidate.ValidationReportLevel":{"args":[],"tags":{"SilentError":[],"ShowError":[]}}}}})}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{allowCustomOptions: allowCustomOptions, allowMultiSelect: allowMultiSelect, customOptionHint: customOptionHint, disabled: disabled, enableMultiSelectSingleItemRemoval: enableMultiSelectSingleItemRemoval, isEventsOnly: isEventsOnly, loading: loading, maxDropdownItems: maxDropdownItems, optionSort: optionSort, optionsJson: optionsJson, outputStyle: outputStyle, placeholder: placeholder, searchStringMinimumLength: searchStringMinimumLength, selectedItemStaysInPlace: selectedItemStaysInPlace, selectedValue: selectedValue, selectedValueEncoding: selectedValueEncoding, showDropdownFooter: showDropdownFooter, transformationAndValidationJson: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))({"versions":{"elm":"0.19.1"},"types":{"message":"MuchSelect.Msg","aliases":{"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"},"OptionSearchFilter.OptionSearchFilter":{"args":[],"type":"{ totalScore : Basics.Int, bestScore : Basics.Int, labelTokens : List.List ( Basics.Bool, String.String ), descriptionTokens : List.List ( Basics.Bool, String.String ), groupTokens : List.List ( Basics.Bool, String.String ) }"}},"unions":{"MuchSelect.Msg":{"args":[],"tags":{"NoOp":[],"BringInputInFocus":[],"BringInputOutOfFocus":[],"InputBlur":[],"InputFocus":[],"DropdownMouseOverOption":["OptionValue.OptionValue"],"DropdownMouseOutOption":["OptionValue.OptionValue"],"DropdownMouseDownOption":["OptionValue.OptionValue"],"DropdownMouseUpOption":["OptionValue.OptionValue"],"UpdateSearchString":["String.String"],"SearchStringSteady":[],"UpdateOptionValueValue":["Basics.Int","String.String"],"TextInputOnInput":["String.String"],"ValueChanged":["Json.Decode.Value"],"OptionsReplaced":["Json.Decode.Value"],"OptionSortingChanged":["String.String"],"AddOptions":["Json.Decode.Value"],"RemoveOptions":["Json.Decode.Value"],"SelectOption":["Json.Decode.Value"],"DeselectOption":["Json.Decode.Value"],"DeselectOptionInternal":["Option.Option"],"PlaceholderAttributeChanged":["( Basics.Bool, String.String )"],"LoadingAttributeChanged":["Basics.Bool"],"MaxDropdownItemsChanged":["String.String"],"ShowDropdownFooterChanged":["Basics.Bool"],"AllowCustomOptionsChanged":["( Basics.Bool, String.String )"],"DisabledAttributeChanged":["Basics.Bool"],"MultiSelectAttributeChanged":["Basics.Bool"],"MultiSelectSingleItemRemovalAttributeChanged":["Basics.Bool"],"SearchStringMinimumLengthAttributeChanged":["Basics.Int"],"SelectedItemStaysInPlaceChanged":["Basics.Bool"],"OutputStyleChanged":["String.String"],"SelectHighlightedOption":[],"DeleteInputForSingleSelect":[],"EscapeKeyInInputFilter":[],"MoveHighlightedOptionUp":[],"MoveHighlightedOptionDown":[],"ValueCasingWidthUpdate":["{ width : Basics.Float, height : Basics.Float }"],"ClearAllSelectedOptions":[],"ToggleSelectedValueHighlight":["OptionValue.OptionValue"],"DeleteKeydownForMultiSelect":[],"AddMultiSelectValue":["Basics.Int"],"RemoveMultiSelectValue":["Basics.Int"],"RequestAllOptions":[],"UpdateSearchResultsForOptions":["Json.Encode.Value"],"CustomValidationResponse":["Json.Encode.Value"],"UpdateTransformationAndValidation":["Json.Encode.Value"],"AttributeChanged":["( String.String, String.String )"],"AttributeRemoved":["String.String"],"CustomOptionHintChanged":["String.String"],"SelectedValueEncodingChanged":["String.String"],"RequestConfigState":[],"RequestSelectedValues":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Option.Option":{"args":[],"tags":{"FancyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Option.OptionDescription","Option.OptionGroup","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"CustomOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"DatalistOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue"],"SlottedOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue","OptionSlot.OptionSlot"],"EmptyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel"]}},"OptionValue.OptionValue":{"args":[],"tags":{"OptionValue":["String.String"],"EmptyOptionValue":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"List.List":{"args":["a"],"tags":{}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Option.OptionDescription":{"args":[],"tags":{"OptionDescription":["String.String","Maybe.Maybe String.String"],"NoDescription":[]}},"OptionDisplay.OptionDisplay":{"args":[],"tags":{"OptionShown":["OptionDisplay.OptionAge"],"OptionHidden":[],"OptionSelected":["Basics.Int","OptionDisplay.OptionAge"],"OptionSelectedAndInvalid":["Basics.Int","List.List TransformAndValidate.ValidationFailureMessage"],"OptionSelectedPendingValidation":["Basics.Int"],"OptionSelectedHighlighted":["Basics.Int"],"OptionHighlighted":[],"OptionActivated":[],"OptionDisabled":["OptionDisplay.OptionAge"]}},"Option.OptionGroup":{"args":[],"tags":{"OptionGroup":["String.String"],"NoOptionGroup":[]}},"OptionLabel.OptionLabel":{"args":[],"tags":{"OptionLabel":["String.String","Maybe.Maybe String.String","SortRank.SortRank"]}},"OptionSlot.OptionSlot":{"args":[],"tags":{"OptionSlot":["String.String"]}},"OptionDisplay.OptionAge":{"args":[],"tags":{"NewOption":[],"MatureOption":[]}},"SortRank.SortRank":{"args":[],"tags":{"Auto":["PositiveInt.PositiveInt"],"Manual":["PositiveInt.PositiveInt"],"NoSortRank":[]}},"TransformAndValidate.ValidationFailureMessage":{"args":[],"tags":{"ValidationFailureMessage":["TransformAndValidate.ValidationReportLevel","TransformAndValidate.ValidationErrorMessage"]}},"PositiveInt.PositiveInt":{"args":[],"tags":{"PositiveInt":["Basics.Int"]}},"TransformAndValidate.ValidationErrorMessage":{"args":[],"tags":{"ValidationErrorMessage":["String.String"]}},"TransformAndValidate.ValidationReportLevel":{"args":[],"tags":{"SilentError":[],"ShowError":[]}}}}})}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{allowCustomOptions: allowCustomOptions, allowMultiSelect: allowMultiSelect, customOptionHint: customOptionHint, disabled: disabled, enableMultiSelectSingleItemRemoval: enableMultiSelectSingleItemRemoval, isEventsOnly: isEventsOnly, loading: loading, maxDropdownItems: maxDropdownItems, optionSort: optionSort, optionsJson: optionsJson, outputStyle: outputStyle, placeholder: placeholder, searchStringMinimumLength: searchStringMinimumLength, selectedItemStaysInPlace: selectedItemStaysInPlace, selectedValue: selectedValue, selectedValueEncoding: selectedValueEncoding, showDropdownFooter: showDropdownFooter, transformationAndValidationJson: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))({"versions":{"elm":"0.19.1"},"types":{"message":"MuchSelect.Msg","aliases":{"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"},"OptionSearchFilter.OptionSearchFilter":{"args":[],"type":"{ totalScore : Basics.Int, bestScore : Basics.Int, labelTokens : List.List ( Basics.Bool, String.String ), descriptionTokens : List.List ( Basics.Bool, String.String ), groupTokens : List.List ( Basics.Bool, String.String ) }"}},"unions":{"MuchSelect.Msg":{"args":[],"tags":{"NoOp":[],"BringInputInFocus":[],"BringInputOutOfFocus":[],"InputBlur":[],"InputFocus":[],"DropdownMouseOverOption":["OptionValue.OptionValue"],"DropdownMouseOutOption":["OptionValue.OptionValue"],"DropdownMouseDownOption":["OptionValue.OptionValue"],"DropdownMouseUpOption":["OptionValue.OptionValue"],"UpdateSearchString":["String.String"],"SearchStringSteady":[],"UpdateOptionValueValue":["Basics.Int","String.String"],"TextInputOnInput":["String.String"],"ValueChanged":["Json.Decode.Value"],"OptionsReplaced":["Json.Decode.Value"],"OptionSortingChanged":["String.String"],"AddOptions":["Json.Decode.Value"],"RemoveOptions":["Json.Decode.Value"],"SelectOption":["Json.Decode.Value"],"DeselectOption":["Json.Decode.Value"],"DeselectOptionInternal":["Option.Option"],"PlaceholderAttributeChanged":["( Basics.Bool, String.String )"],"LoadingAttributeChanged":["Basics.Bool"],"MaxDropdownItemsChanged":["String.String"],"ShowDropdownFooterChanged":["Basics.Bool"],"AllowCustomOptionsChanged":["( Basics.Bool, String.String )"],"DisabledAttributeChanged":["Basics.Bool"],"MultiSelectAttributeChanged":["Basics.Bool"],"MultiSelectSingleItemRemovalAttributeChanged":["Basics.Bool"],"SearchStringMinimumLengthAttributeChanged":["Basics.Int"],"SelectedItemStaysInPlaceChanged":["Basics.Bool"],"OutputStyleChanged":["String.String"],"SelectHighlightedOption":[],"DeleteInputForSingleSelect":[],"EscapeKeyInInputFilter":[],"MoveHighlightedOptionUp":[],"MoveHighlightedOptionDown":[],"ValueCasingWidthUpdate":["{ width : Basics.Float, height : Basics.Float }"],"ClearAllSelectedOptions":[],"ToggleSelectedValueHighlight":["OptionValue.OptionValue"],"DeleteKeydownForMultiSelect":[],"AddMultiSelectValue":["Basics.Int"],"RemoveMultiSelectValue":["Basics.Int"],"RequestAllOptions":[],"UpdateSearchResultsForOptions":["Json.Encode.Value"],"CustomValidationResponse":["Json.Encode.Value"],"UpdateTransformationAndValidation":["Json.Encode.Value"],"AttributeChanged":["( String.String, String.String )"],"AttributeRemoved":["String.String"],"CustomOptionHintChanged":["String.String"],"SelectedValueEncodingChanged":["String.String"],"RequestConfigState":[],"RequestSelectedValues":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Option.Option":{"args":[],"tags":{"FancyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Option.OptionDescription","Option.OptionGroup","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"CustomOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"DatalistOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue"],"SlottedOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue","OptionSlot.OptionSlot"],"EmptyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel"]}},"OptionValue.OptionValue":{"args":[],"tags":{"OptionValue":["String.String"],"EmptyOptionValue":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"List.List":{"args":["a"],"tags":{}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Option.OptionDescription":{"args":[],"tags":{"OptionDescription":["String.String","Maybe.Maybe String.String"],"NoDescription":[]}},"OptionDisplay.OptionDisplay":{"args":[],"tags":{"OptionShown":["OptionDisplay.OptionAge"],"OptionHidden":[],"OptionSelected":["Basics.Int","OptionDisplay.OptionAge"],"OptionSelectedAndInvalid":["Basics.Int","List.List TransformAndValidate.ValidationFailureMessage"],"OptionSelectedPendingValidation":["Basics.Int"],"OptionSelectedHighlighted":["Basics.Int"],"OptionHighlighted":[],"OptionActivated":[],"OptionDisabled":["OptionDisplay.OptionAge"]}},"Option.OptionGroup":{"args":[],"tags":{"OptionGroup":["String.String"],"NoOptionGroup":[]}},"OptionLabel.OptionLabel":{"args":[],"tags":{"OptionLabel":["String.String","Maybe.Maybe String.String","SortRank.SortRank"]}},"OptionSlot.OptionSlot":{"args":[],"tags":{"OptionSlot":["String.String"]}},"OptionDisplay.OptionAge":{"args":[],"tags":{"NewOption":[],"MatureOption":[]}},"SortRank.SortRank":{"args":[],"tags":{"Auto":["PositiveInt.PositiveInt"],"Manual":["PositiveInt.PositiveInt"],"NoSortRank":[]}},"TransformAndValidate.ValidationFailureMessage":{"args":[],"tags":{"ValidationFailureMessage":["TransformAndValidate.ValidationReportLevel","TransformAndValidate.ValidationErrorMessage"]}},"PositiveInt.PositiveInt":{"args":[],"tags":{"PositiveInt":["Basics.Int"]}},"TransformAndValidate.ValidationErrorMessage":{"args":[],"tags":{"ValidationErrorMessage":["String.String"]}},"TransformAndValidate.ValidationReportLevel":{"args":[],"tags":{"SilentError":[],"ShowError":[]}}}}})}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{allowCustomOptions: allowCustomOptions, allowMultiSelect: allowMultiSelect, customOptionHint: customOptionHint, disabled: disabled, enableMultiSelectSingleItemRemoval: enableMultiSelectSingleItemRemoval, isEventsOnly: isEventsOnly, loading: loading, maxDropdownItems: maxDropdownItems, optionSort: optionSort, optionsJson: optionsJson, outputStyle: outputStyle, placeholder: placeholder, searchStringMinimumLength: searchStringMinimumLength, selectedItemStaysInPlace: selectedItemStaysInPlace, selectedValue: selectedValue, selectedValueEncoding: selectedValueEncoding, showDropdownFooter: showDropdownFooter, transformationAndValidationJson: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))({"versions":{"elm":"0.19.1"},"types":{"message":"MuchSelect.Msg","aliases":{"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"},"OptionSearchFilter.OptionSearchFilter":{"args":[],"type":"{ totalScore : Basics.Int, bestScore : Basics.Int, labelTokens : List.List ( Basics.Bool, String.String ), descriptionTokens : List.List ( Basics.Bool, String.String ), groupTokens : List.List ( Basics.Bool, String.String ) }"}},"unions":{"MuchSelect.Msg":{"args":[],"tags":{"NoOp":[],"BringInputInFocus":[],"BringInputOutOfFocus":[],"InputBlur":[],"InputFocus":[],"DropdownMouseOverOption":["OptionValue.OptionValue"],"DropdownMouseOutOption":["OptionValue.OptionValue"],"DropdownMouseDownOption":["OptionValue.OptionValue"],"DropdownMouseUpOption":["OptionValue.OptionValue"],"UpdateSearchString":["String.String"],"SearchStringSteady":[],"UpdateOptionValueValue":["Basics.Int","String.String"],"TextInputOnInput":["String.String"],"ValueChanged":["Json.Decode.Value"],"OptionsReplaced":["Json.Decode.Value"],"OptionSortingChanged":["String.String"],"AddOptions":["Json.Decode.Value"],"RemoveOptions":["Json.Decode.Value"],"SelectOption":["Json.Decode.Value"],"DeselectOption":["Json.Decode.Value"],"DeselectOptionInternal":["Option.Option"],"PlaceholderAttributeChanged":["( Basics.Bool, String.String )"],"LoadingAttributeChanged":["Basics.Bool"],"MaxDropdownItemsChanged":["String.String"],"ShowDropdownFooterChanged":["Basics.Bool"],"AllowCustomOptionsChanged":["( Basics.Bool, String.String )"],"DisabledAttributeChanged":["Basics.Bool"],"MultiSelectAttributeChanged":["Basics.Bool"],"MultiSelectSingleItemRemovalAttributeChanged":["Basics.Bool"],"SearchStringMinimumLengthAttributeChanged":["Basics.Int"],"SelectedItemStaysInPlaceChanged":["Basics.Bool"],"OutputStyleChanged":["String.String"],"SelectHighlightedOption":[],"DeleteInputForSingleSelect":[],"EscapeKeyInInputFilter":[],"MoveHighlightedOptionUp":[],"MoveHighlightedOptionDown":[],"ValueCasingWidthUpdate":["{ width : Basics.Float, height : Basics.Float }"],"ClearAllSelectedOptions":[],"ToggleSelectedValueHighlight":["OptionValue.OptionValue"],"DeleteKeydownForMultiSelect":[],"AddMultiSelectValue":["Basics.Int"],"RemoveMultiSelectValue":["Basics.Int"],"RequestAllOptions":[],"UpdateSearchResultsForOptions":["Json.Encode.Value"],"CustomValidationResponse":["Json.Encode.Value"],"UpdateTransformationAndValidation":["Json.Encode.Value"],"AttributeChanged":["( String.String, String.String )"],"AttributeRemoved":["String.String"],"CustomOptionHintChanged":["String.String"],"SelectedValueEncodingChanged":["String.String"],"RequestConfigState":[],"RequestSelectedValues":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Option.Option":{"args":[],"tags":{"FancyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Option.OptionDescription","Option.OptionGroup","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"CustomOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"DatalistOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue"],"SlottedOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue","OptionSlot.OptionSlot"],"EmptyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel"]}},"OptionValue.OptionValue":{"args":[],"tags":{"OptionValue":["String.String"],"EmptyOptionValue":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"List.List":{"args":["a"],"tags":{}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Option.OptionDescription":{"args":[],"tags":{"OptionDescription":["String.String","Maybe.Maybe String.String"],"NoDescription":[]}},"OptionDisplay.OptionDisplay":{"args":[],"tags":{"OptionShown":["OptionDisplay.OptionAge"],"OptionHidden":[],"OptionSelected":["Basics.Int","OptionDisplay.OptionAge"],"OptionSelectedAndInvalid":["Basics.Int","List.List TransformAndValidate.ValidationFailureMessage"],"OptionSelectedPendingValidation":["Basics.Int"],"OptionSelectedHighlighted":["Basics.Int"],"OptionHighlighted":[],"OptionActivated":[],"OptionDisabled":["OptionDisplay.OptionAge"]}},"Option.OptionGroup":{"args":[],"tags":{"OptionGroup":["String.String"],"NoOptionGroup":[]}},"OptionLabel.OptionLabel":{"args":[],"tags":{"OptionLabel":["String.String","Maybe.Maybe String.String","SortRank.SortRank"]}},"OptionSlot.OptionSlot":{"args":[],"tags":{"OptionSlot":["String.String"]}},"OptionDisplay.OptionAge":{"args":[],"tags":{"NewOption":[],"MatureOption":[]}},"SortRank.SortRank":{"args":[],"tags":{"Auto":["PositiveInt.PositiveInt"],"Manual":["PositiveInt.PositiveInt"],"NoSortRank":[]}},"TransformAndValidate.ValidationFailureMessage":{"args":[],"tags":{"ValidationFailureMessage":["TransformAndValidate.ValidationReportLevel","TransformAndValidate.ValidationErrorMessage"]}},"PositiveInt.PositiveInt":{"args":[],"tags":{"PositiveInt":["Basics.Int"]}},"TransformAndValidate.ValidationErrorMessage":{"args":[],"tags":{"ValidationErrorMessage":["String.String"]}},"TransformAndValidate.ValidationReportLevel":{"args":[],"tags":{"SilentError":[],"ShowError":[]}}}}})}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{allowCustomOptions: allowCustomOptions, allowMultiSelect: allowMultiSelect, customOptionHint: customOptionHint, disabled: disabled, enableMultiSelectSingleItemRemoval: enableMultiSelectSingleItemRemoval, isEventsOnly: isEventsOnly, loading: loading, maxDropdownItems: maxDropdownItems, optionSort: optionSort, optionsJson: optionsJson, outputStyle: outputStyle, placeholder: placeholder, searchStringMinimumLength: searchStringMinimumLength, selectedItemStaysInPlace: selectedItemStaysInPlace, selectedValue: selectedValue, selectedValueEncoding: selectedValueEncoding, showDropdownFooter: showDropdownFooter, transformationAndValidationJson: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))({"versions":{"elm":"0.19.1"},"types":{"message":"MuchSelect.Msg","aliases":{"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"},"OptionSearchFilter.OptionSearchFilter":{"args":[],"type":"{ totalScore : Basics.Int, bestScore : Basics.Int, labelTokens : List.List ( Basics.Bool, String.String ), descriptionTokens : List.List ( Basics.Bool, String.String ), groupTokens : List.List ( Basics.Bool, String.String ) }"}},"unions":{"MuchSelect.Msg":{"args":[],"tags":{"NoOp":[],"BringInputInFocus":[],"BringInputOutOfFocus":[],"InputBlur":[],"InputFocus":[],"DropdownMouseOverOption":["OptionValue.OptionValue"],"DropdownMouseOutOption":["OptionValue.OptionValue"],"DropdownMouseDownOption":["OptionValue.OptionValue"],"DropdownMouseUpOption":["OptionValue.OptionValue"],"UpdateSearchString":["String.String"],"SearchStringSteady":[],"UpdateOptionValueValue":["Basics.Int","String.String"],"TextInputOnInput":["String.String"],"ValueChanged":["Json.Decode.Value"],"OptionsReplaced":["Json.Decode.Value"],"OptionSortingChanged":["String.String"],"AddOptions":["Json.Decode.Value"],"RemoveOptions":["Json.Decode.Value"],"SelectOption":["Json.Decode.Value"],"DeselectOption":["Json.Decode.Value"],"DeselectOptionInternal":["Option.Option"],"PlaceholderAttributeChanged":["( Basics.Bool, String.String )"],"LoadingAttributeChanged":["Basics.Bool"],"MaxDropdownItemsChanged":["String.String"],"ShowDropdownFooterChanged":["Basics.Bool"],"AllowCustomOptionsChanged":["( Basics.Bool, String.String )"],"DisabledAttributeChanged":["Basics.Bool"],"MultiSelectAttributeChanged":["Basics.Bool"],"MultiSelectSingleItemRemovalAttributeChanged":["Basics.Bool"],"SearchStringMinimumLengthAttributeChanged":["Basics.Int"],"SelectedItemStaysInPlaceChanged":["Basics.Bool"],"OutputStyleChanged":["String.String"],"SelectHighlightedOption":[],"DeleteInputForSingleSelect":[],"EscapeKeyInInputFilter":[],"MoveHighlightedOptionUp":[],"MoveHighlightedOptionDown":[],"ValueCasingWidthUpdate":["{ width : Basics.Float, height : Basics.Float }"],"ClearAllSelectedOptions":[],"ToggleSelectedValueHighlight":["OptionValue.OptionValue"],"DeleteKeydownForMultiSelect":[],"AddMultiSelectValue":["Basics.Int"],"RemoveMultiSelectValue":["Basics.Int"],"RequestAllOptions":[],"UpdateSearchResultsForOptions":["Json.Encode.Value"],"CustomValidationResponse":["Json.Encode.Value"],"UpdateTransformationAndValidation":["Json.Encode.Value"],"AttributeChanged":["( String.String, String.String )"],"AttributeRemoved":["String.String"],"CustomOptionHintChanged":["String.String"],"SelectedValueEncodingChanged":["String.String"],"RequestConfigState":[],"RequestSelectedValues":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Option.Option":{"args":[],"tags":{"FancyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Option.OptionDescription","Option.OptionGroup","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"CustomOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"DatalistOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue"],"SlottedOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue","OptionSlot.OptionSlot"],"EmptyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel"]}},"OptionValue.OptionValue":{"args":[],"tags":{"OptionValue":["String.String"],"EmptyOptionValue":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"List.List":{"args":["a"],"tags":{}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Option.OptionDescription":{"args":[],"tags":{"OptionDescription":["String.String","Maybe.Maybe String.String"],"NoDescription":[]}},"OptionDisplay.OptionDisplay":{"args":[],"tags":{"OptionShown":["OptionDisplay.OptionAge"],"OptionHidden":[],"OptionSelected":["Basics.Int","OptionDisplay.OptionAge"],"OptionSelectedAndInvalid":["Basics.Int","List.List TransformAndValidate.ValidationFailureMessage"],"OptionSelectedPendingValidation":["Basics.Int"],"OptionSelectedHighlighted":["Basics.Int"],"OptionHighlighted":[],"OptionActivated":[],"OptionDisabled":["OptionDisplay.OptionAge"]}},"Option.OptionGroup":{"args":[],"tags":{"OptionGroup":["String.String"],"NoOptionGroup":[]}},"OptionLabel.OptionLabel":{"args":[],"tags":{"OptionLabel":["String.String","Maybe.Maybe String.String","SortRank.SortRank"]}},"OptionSlot.OptionSlot":{"args":[],"tags":{"OptionSlot":["String.String"]}},"OptionDisplay.OptionAge":{"args":[],"tags":{"NewOption":[],"MatureOption":[]}},"SortRank.SortRank":{"args":[],"tags":{"Auto":["PositiveInt.PositiveInt"],"Manual":["PositiveInt.PositiveInt"],"NoSortRank":[]}},"TransformAndValidate.ValidationFailureMessage":{"args":[],"tags":{"ValidationFailureMessage":["TransformAndValidate.ValidationReportLevel","TransformAndValidate.ValidationErrorMessage"]}},"PositiveInt.PositiveInt":{"args":[],"tags":{"PositiveInt":["Basics.Int"]}},"TransformAndValidate.ValidationErrorMessage":{"args":[],"tags":{"ValidationErrorMessage":["String.String"]}},"TransformAndValidate.ValidationReportLevel":{"args":[],"tags":{"SilentError":[],"ShowError":[]}}}}})}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{allowCustomOptions: allowCustomOptions, allowMultiSelect: allowMultiSelect, customOptionHint: customOptionHint, disabled: disabled, enableMultiSelectSingleItemRemoval: enableMultiSelectSingleItemRemoval, isEventsOnly: isEventsOnly, loading: loading, maxDropdownItems: maxDropdownItems, optionSort: optionSort, optionsJson: optionsJson, outputStyle: outputStyle, placeholder: placeholder, searchStringMinimumLength: searchStringMinimumLength, selectedItemStaysInPlace: selectedItemStaysInPlace, selectedValue: selectedValue, selectedValueEncoding: selectedValueEncoding, showDropdownFooter: showDropdownFooter, transformationAndValidationJson: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))({"versions":{"elm":"0.19.1"},"types":{"message":"MuchSelect.Msg","aliases":{"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"},"OptionSearchFilter.OptionSearchFilter":{"args":[],"type":"{ totalScore : Basics.Int, bestScore : Basics.Int, labelTokens : List.List ( Basics.Bool, String.String ), descriptionTokens : List.List ( Basics.Bool, String.String ), groupTokens : List.List ( Basics.Bool, String.String ) }"}},"unions":{"MuchSelect.Msg":{"args":[],"tags":{"NoOp":[],"BringInputInFocus":[],"BringInputOutOfFocus":[],"InputBlur":[],"InputFocus":[],"DropdownMouseOverOption":["OptionValue.OptionValue"],"DropdownMouseOutOption":["OptionValue.OptionValue"],"DropdownMouseDownOption":["OptionValue.OptionValue"],"DropdownMouseUpOption":["OptionValue.OptionValue"],"UpdateSearchString":["String.String"],"SearchStringSteady":[],"UpdateOptionValueValue":["Basics.Int","String.String"],"TextInputOnInput":["String.String"],"ValueChanged":["Json.Decode.Value"],"OptionsReplaced":["Json.Decode.Value"],"OptionSortingChanged":["String.String"],"AddOptions":["Json.Decode.Value"],"RemoveOptions":["Json.Decode.Value"],"SelectOption":["Json.Decode.Value"],"DeselectOption":["Json.Decode.Value"],"DeselectOptionInternal":["Option.Option"],"PlaceholderAttributeChanged":["( Basics.Bool, String.String )"],"LoadingAttributeChanged":["Basics.Bool"],"MaxDropdownItemsChanged":["String.String"],"ShowDropdownFooterChanged":["Basics.Bool"],"AllowCustomOptionsChanged":["( Basics.Bool, String.String )"],"DisabledAttributeChanged":["Basics.Bool"],"MultiSelectAttributeChanged":["Basics.Bool"],"MultiSelectSingleItemRemovalAttributeChanged":["Basics.Bool"],"SearchStringMinimumLengthAttributeChanged":["Basics.Int"],"SelectedItemStaysInPlaceChanged":["Basics.Bool"],"OutputStyleChanged":["String.String"],"SelectHighlightedOption":[],"DeleteInputForSingleSelect":[],"EscapeKeyInInputFilter":[],"MoveHighlightedOptionUp":[],"MoveHighlightedOptionDown":[],"ValueCasingWidthUpdate":["{ width : Basics.Float, height : Basics.Float }"],"ClearAllSelectedOptions":[],"ToggleSelectedValueHighlight":["OptionValue.OptionValue"],"DeleteKeydownForMultiSelect":[],"AddMultiSelectValue":["Basics.Int"],"RemoveMultiSelectValue":["Basics.Int"],"RequestAllOptions":[],"UpdateSearchResultsForOptions":["Json.Encode.Value"],"CustomValidationResponse":["Json.Encode.Value"],"UpdateTransformationAndValidation":["Json.Encode.Value"],"AttributeChanged":["( String.String, String.String )"],"AttributeRemoved":["String.String"],"CustomOptionHintChanged":["String.String"],"SelectedValueEncodingChanged":["String.String"],"RequestConfigState":[],"RequestSelectedValues":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Option.Option":{"args":[],"tags":{"FancyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Option.OptionDescription","Option.OptionGroup","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"CustomOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"DatalistOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue"],"SlottedOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue","OptionSlot.OptionSlot"],"EmptyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel"]}},"OptionValue.OptionValue":{"args":[],"tags":{"OptionValue":["String.String"],"EmptyOptionValue":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"List.List":{"args":["a"],"tags":{}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Option.OptionDescription":{"args":[],"tags":{"OptionDescription":["String.String","Maybe.Maybe String.String"],"NoDescription":[]}},"OptionDisplay.OptionDisplay":{"args":[],"tags":{"OptionShown":["OptionDisplay.OptionAge"],"OptionHidden":[],"OptionSelected":["Basics.Int","OptionDisplay.OptionAge"],"OptionSelectedAndInvalid":["Basics.Int","List.List TransformAndValidate.ValidationFailureMessage"],"OptionSelectedPendingValidation":["Basics.Int"],"OptionSelectedHighlighted":["Basics.Int"],"OptionHighlighted":[],"OptionActivated":[],"OptionDisabled":["OptionDisplay.OptionAge"]}},"Option.OptionGroup":{"args":[],"tags":{"OptionGroup":["String.String"],"NoOptionGroup":[]}},"OptionLabel.OptionLabel":{"args":[],"tags":{"OptionLabel":["String.String","Maybe.Maybe String.String","SortRank.SortRank"]}},"OptionSlot.OptionSlot":{"args":[],"tags":{"OptionSlot":["String.String"]}},"OptionDisplay.OptionAge":{"args":[],"tags":{"NewOption":[],"MatureOption":[]}},"SortRank.SortRank":{"args":[],"tags":{"Auto":["PositiveInt.PositiveInt"],"Manual":["PositiveInt.PositiveInt"],"NoSortRank":[]}},"TransformAndValidate.ValidationFailureMessage":{"args":[],"tags":{"ValidationFailureMessage":["TransformAndValidate.ValidationReportLevel","TransformAndValidate.ValidationErrorMessage"]}},"PositiveInt.PositiveInt":{"args":[],"tags":{"PositiveInt":["Basics.Int"]}},"TransformAndValidate.ValidationErrorMessage":{"args":[],"tags":{"ValidationErrorMessage":["String.String"]}},"TransformAndValidate.ValidationReportLevel":{"args":[],"tags":{"SilentError":[],"ShowError":[]}}}}})}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{allowCustomOptions: allowCustomOptions, allowMultiSelect: allowMultiSelect, customOptionHint: customOptionHint, disabled: disabled, enableMultiSelectSingleItemRemoval: enableMultiSelectSingleItemRemoval, isEventsOnly: isEventsOnly, loading: loading, maxDropdownItems: maxDropdownItems, optionSort: optionSort, optionsJson: optionsJson, outputStyle: outputStyle, placeholder: placeholder, searchStringMinimumLength: searchStringMinimumLength, selectedItemStaysInPlace: selectedItemStaysInPlace, selectedValue: selectedValue, selectedValueEncoding: selectedValueEncoding, showDropdownFooter: showDropdownFooter, transformationAndValidationJson: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))({"versions":{"elm":"0.19.1"},"types":{"message":"MuchSelect.Msg","aliases":{"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"},"OptionSearchFilter.OptionSearchFilter":{"args":[],"type":"{ totalScore : Basics.Int, bestScore : Basics.Int, labelTokens : List.List ( Basics.Bool, String.String ), descriptionTokens : List.List ( Basics.Bool, String.String ), groupTokens : List.List ( Basics.Bool, String.String ) }"}},"unions":{"MuchSelect.Msg":{"args":[],"tags":{"NoOp":[],"BringInputInFocus":[],"BringInputOutOfFocus":[],"InputBlur":[],"InputFocus":[],"DropdownMouseOverOption":["OptionValue.OptionValue"],"DropdownMouseOutOption":["OptionValue.OptionValue"],"DropdownMouseDownOption":["OptionValue.OptionValue"],"DropdownMouseUpOption":["OptionValue.OptionValue"],"UpdateSearchString":["String.String"],"SearchStringSteady":[],"UpdateOptionValueValue":["Basics.Int","String.String"],"TextInputOnInput":["String.String"],"ValueChanged":["Json.Decode.Value"],"OptionsReplaced":["Json.Decode.Value"],"OptionSortingChanged":["String.String"],"AddOptions":["Json.Decode.Value"],"RemoveOptions":["Json.Decode.Value"],"SelectOption":["Json.Decode.Value"],"DeselectOption":["Json.Decode.Value"],"DeselectOptionInternal":["Option.Option"],"PlaceholderAttributeChanged":["( Basics.Bool, String.String )"],"LoadingAttributeChanged":["Basics.Bool"],"MaxDropdownItemsChanged":["String.String"],"ShowDropdownFooterChanged":["Basics.Bool"],"AllowCustomOptionsChanged":["( Basics.Bool, String.String )"],"DisabledAttributeChanged":["Basics.Bool"],"MultiSelectAttributeChanged":["Basics.Bool"],"MultiSelectSingleItemRemovalAttributeChanged":["Basics.Bool"],"SearchStringMinimumLengthAttributeChanged":["Basics.Int"],"SelectedItemStaysInPlaceChanged":["Basics.Bool"],"OutputStyleChanged":["String.String"],"SelectHighlightedOption":[],"DeleteInputForSingleSelect":[],"EscapeKeyInInputFilter":[],"MoveHighlightedOptionUp":[],"MoveHighlightedOptionDown":[],"ValueCasingWidthUpdate":["{ width : Basics.Float, height : Basics.Float }"],"ClearAllSelectedOptions":[],"ToggleSelectedValueHighlight":["OptionValue.OptionValue"],"DeleteKeydownForMultiSelect":[],"AddMultiSelectValue":["Basics.Int"],"RemoveMultiSelectValue":["Basics.Int"],"RequestAllOptions":[],"UpdateSearchResultsForOptions":["Json.Encode.Value"],"CustomValidationResponse":["Json.Encode.Value"],"UpdateTransformationAndValidation":["Json.Encode.Value"],"AttributeChanged":["( String.String, String.String )"],"AttributeRemoved":["String.String"],"CustomOptionHintChanged":["String.String"],"SelectedValueEncodingChanged":["String.String"],"RequestConfigState":[],"RequestSelectedValues":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Option.Option":{"args":[],"tags":{"FancyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Option.OptionDescription","Option.OptionGroup","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"CustomOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"DatalistOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue"],"SlottedOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue","OptionSlot.OptionSlot"],"EmptyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel"]}},"OptionValue.OptionValue":{"args":[],"tags":{"OptionValue":["String.String"],"EmptyOptionValue":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"List.List":{"args":["a"],"tags":{}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Option.OptionDescription":{"args":[],"tags":{"OptionDescription":["String.String","Maybe.Maybe String.String"],"NoDescription":[]}},"OptionDisplay.OptionDisplay":{"args":[],"tags":{"OptionShown":["OptionDisplay.OptionAge"],"OptionHidden":[],"OptionSelected":["Basics.Int","OptionDisplay.OptionAge"],"OptionSelectedAndInvalid":["Basics.Int","List.List TransformAndValidate.ValidationFailureMessage"],"OptionSelectedPendingValidation":["Basics.Int"],"OptionSelectedHighlighted":["Basics.Int"],"OptionHighlighted":[],"OptionActivated":[],"OptionDisabled":["OptionDisplay.OptionAge"]}},"Option.OptionGroup":{"args":[],"tags":{"OptionGroup":["String.String"],"NoOptionGroup":[]}},"OptionLabel.OptionLabel":{"args":[],"tags":{"OptionLabel":["String.String","Maybe.Maybe String.String","SortRank.SortRank"]}},"OptionSlot.OptionSlot":{"args":[],"tags":{"OptionSlot":["String.String"]}},"OptionDisplay.OptionAge":{"args":[],"tags":{"NewOption":[],"MatureOption":[]}},"SortRank.SortRank":{"args":[],"tags":{"Auto":["PositiveInt.PositiveInt"],"Manual":["PositiveInt.PositiveInt"],"NoSortRank":[]}},"TransformAndValidate.ValidationFailureMessage":{"args":[],"tags":{"ValidationFailureMessage":["TransformAndValidate.ValidationReportLevel","TransformAndValidate.ValidationErrorMessage"]}},"PositiveInt.PositiveInt":{"args":[],"tags":{"PositiveInt":["Basics.Int"]}},"TransformAndValidate.ValidationErrorMessage":{"args":[],"tags":{"ValidationErrorMessage":["String.String"]}},"TransformAndValidate.ValidationReportLevel":{"args":[],"tags":{"SilentError":[],"ShowError":[]}}}}})}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{allowCustomOptions: allowCustomOptions, allowMultiSelect: allowMultiSelect, customOptionHint: customOptionHint, disabled: disabled, enableMultiSelectSingleItemRemoval: enableMultiSelectSingleItemRemoval, isEventsOnly: isEventsOnly, loading: loading, maxDropdownItems: maxDropdownItems, optionSort: optionSort, optionsJson: optionsJson, outputStyle: outputStyle, placeholder: placeholder, searchStringMinimumLength: searchStringMinimumLength, selectedItemStaysInPlace: selectedItemStaysInPlace, selectedValue: selectedValue, selectedValueEncoding: selectedValueEncoding, showDropdownFooter: showDropdownFooter, transformationAndValidationJson: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))({"versions":{"elm":"0.19.1"},"types":{"message":"MuchSelect.Msg","aliases":{"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"},"OptionSearchFilter.OptionSearchFilter":{"args":[],"type":"{ totalScore : Basics.Int, bestScore : Basics.Int, labelTokens : List.List ( Basics.Bool, String.String ), descriptionTokens : List.List ( Basics.Bool, String.String ), groupTokens : List.List ( Basics.Bool, String.String ) }"}},"unions":{"MuchSelect.Msg":{"args":[],"tags":{"NoOp":[],"BringInputInFocus":[],"BringInputOutOfFocus":[],"InputBlur":[],"InputFocus":[],"DropdownMouseOverOption":["OptionValue.OptionValue"],"DropdownMouseOutOption":["OptionValue.OptionValue"],"DropdownMouseDownOption":["OptionValue.OptionValue"],"DropdownMouseUpOption":["OptionValue.OptionValue"],"UpdateSearchString":["String.String"],"SearchStringSteady":[],"UpdateOptionValueValue":["Basics.Int","String.String"],"TextInputOnInput":["String.String"],"ValueChanged":["Json.Decode.Value"],"OptionsReplaced":["Json.Decode.Value"],"OptionSortingChanged":["String.String"],"AddOptions":["Json.Decode.Value"],"RemoveOptions":["Json.Decode.Value"],"SelectOption":["Json.Decode.Value"],"DeselectOption":["Json.Decode.Value"],"DeselectOptionInternal":["Option.Option"],"PlaceholderAttributeChanged":["( Basics.Bool, String.String )"],"LoadingAttributeChanged":["Basics.Bool"],"MaxDropdownItemsChanged":["String.String"],"ShowDropdownFooterChanged":["Basics.Bool"],"AllowCustomOptionsChanged":["( Basics.Bool, String.String )"],"DisabledAttributeChanged":["Basics.Bool"],"MultiSelectAttributeChanged":["Basics.Bool"],"MultiSelectSingleItemRemovalAttributeChanged":["Basics.Bool"],"SearchStringMinimumLengthAttributeChanged":["Basics.Int"],"SelectedItemStaysInPlaceChanged":["Basics.Bool"],"OutputStyleChanged":["String.String"],"SelectHighlightedOption":[],"DeleteInputForSingleSelect":[],"EscapeKeyInInputFilter":[],"MoveHighlightedOptionUp":[],"MoveHighlightedOptionDown":[],"ValueCasingWidthUpdate":["{ width : Basics.Float, height : Basics.Float }"],"ClearAllSelectedOptions":[],"ToggleSelectedValueHighlight":["OptionValue.OptionValue"],"DeleteKeydownForMultiSelect":[],"AddMultiSelectValue":["Basics.Int"],"RemoveMultiSelectValue":["Basics.Int"],"RequestAllOptions":[],"UpdateSearchResultsForOptions":["Json.Encode.Value"],"CustomValidationResponse":["Json.Encode.Value"],"UpdateTransformationAndValidation":["Json.Encode.Value"],"AttributeChanged":["( String.String, String.String )"],"AttributeRemoved":["String.String"],"CustomOptionHintChanged":["String.String"],"SelectedValueEncodingChanged":["String.String"],"RequestConfigState":[],"RequestSelectedValues":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Option.Option":{"args":[],"tags":{"FancyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Option.OptionDescription","Option.OptionGroup","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"CustomOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"DatalistOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue"],"SlottedOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue","OptionSlot.OptionSlot"],"EmptyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel"]}},"OptionValue.OptionValue":{"args":[],"tags":{"OptionValue":["String.String"],"EmptyOptionValue":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"List.List":{"args":["a"],"tags":{}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Option.OptionDescription":{"args":[],"tags":{"OptionDescription":["String.String","Maybe.Maybe String.String"],"NoDescription":[]}},"OptionDisplay.OptionDisplay":{"args":[],"tags":{"OptionShown":["OptionDisplay.OptionAge"],"OptionHidden":[],"OptionSelected":["Basics.Int","OptionDisplay.OptionAge"],"OptionSelectedAndInvalid":["Basics.Int","List.List TransformAndValidate.ValidationFailureMessage"],"OptionSelectedPendingValidation":["Basics.Int"],"OptionSelectedHighlighted":["Basics.Int"],"OptionHighlighted":[],"OptionActivated":[],"OptionDisabled":["OptionDisplay.OptionAge"]}},"Option.OptionGroup":{"args":[],"tags":{"OptionGroup":["String.String"],"NoOptionGroup":[]}},"OptionLabel.OptionLabel":{"args":[],"tags":{"OptionLabel":["String.String","Maybe.Maybe String.String","SortRank.SortRank"]}},"OptionSlot.OptionSlot":{"args":[],"tags":{"OptionSlot":["String.String"]}},"OptionDisplay.OptionAge":{"args":[],"tags":{"NewOption":[],"MatureOption":[]}},"SortRank.SortRank":{"args":[],"tags":{"Auto":["PositiveInt.PositiveInt"],"Manual":["PositiveInt.PositiveInt"],"NoSortRank":[]}},"TransformAndValidate.ValidationFailureMessage":{"args":[],"tags":{"ValidationFailureMessage":["TransformAndValidate.ValidationReportLevel","TransformAndValidate.ValidationErrorMessage"]}},"PositiveInt.PositiveInt":{"args":[],"tags":{"PositiveInt":["Basics.Int"]}},"TransformAndValidate.ValidationErrorMessage":{"args":[],"tags":{"ValidationErrorMessage":["String.String"]}},"TransformAndValidate.ValidationReportLevel":{"args":[],"tags":{"SilentError":[],"ShowError":[]}}}}})}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{allowCustomOptions: allowCustomOptions, allowMultiSelect: allowMultiSelect, customOptionHint: customOptionHint, disabled: disabled, enableMultiSelectSingleItemRemoval: enableMultiSelectSingleItemRemoval, isEventsOnly: isEventsOnly, loading: loading, maxDropdownItems: maxDropdownItems, optionSort: optionSort, optionsJson: optionsJson, outputStyle: outputStyle, placeholder: placeholder, searchStringMinimumLength: searchStringMinimumLength, selectedItemStaysInPlace: selectedItemStaysInPlace, selectedValue: selectedValue, selectedValueEncoding: selectedValueEncoding, showDropdownFooter: showDropdownFooter, transformationAndValidationJson: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))({"versions":{"elm":"0.19.1"},"types":{"message":"MuchSelect.Msg","aliases":{"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"},"OptionSearchFilter.OptionSearchFilter":{"args":[],"type":"{ totalScore : Basics.Int, bestScore : Basics.Int, labelTokens : List.List ( Basics.Bool, String.String ), descriptionTokens : List.List ( Basics.Bool, String.String ), groupTokens : List.List ( Basics.Bool, String.String ) }"}},"unions":{"MuchSelect.Msg":{"args":[],"tags":{"NoOp":[],"BringInputInFocus":[],"BringInputOutOfFocus":[],"InputBlur":[],"InputFocus":[],"DropdownMouseOverOption":["OptionValue.OptionValue"],"DropdownMouseOutOption":["OptionValue.OptionValue"],"DropdownMouseDownOption":["OptionValue.OptionValue"],"DropdownMouseUpOption":["OptionValue.OptionValue"],"UpdateSearchString":["String.String"],"SearchStringSteady":[],"UpdateOptionValueValue":["Basics.Int","String.String"],"TextInputOnInput":["String.String"],"ValueChanged":["Json.Decode.Value"],"OptionsReplaced":["Json.Decode.Value"],"OptionSortingChanged":["String.String"],"AddOptions":["Json.Decode.Value"],"RemoveOptions":["Json.Decode.Value"],"SelectOption":["Json.Decode.Value"],"DeselectOption":["Json.Decode.Value"],"DeselectOptionInternal":["Option.Option"],"PlaceholderAttributeChanged":["( Basics.Bool, String.String )"],"LoadingAttributeChanged":["Basics.Bool"],"MaxDropdownItemsChanged":["String.String"],"ShowDropdownFooterChanged":["Basics.Bool"],"AllowCustomOptionsChanged":["( Basics.Bool, String.String )"],"DisabledAttributeChanged":["Basics.Bool"],"MultiSelectAttributeChanged":["Basics.Bool"],"MultiSelectSingleItemRemovalAttributeChanged":["Basics.Bool"],"SearchStringMinimumLengthAttributeChanged":["Basics.Int"],"SelectedItemStaysInPlaceChanged":["Basics.Bool"],"OutputStyleChanged":["String.String"],"SelectHighlightedOption":[],"DeleteInputForSingleSelect":[],"EscapeKeyInInputFilter":[],"MoveHighlightedOptionUp":[],"MoveHighlightedOptionDown":[],"ValueCasingWidthUpdate":["{ width : Basics.Float, height : Basics.Float }"],"ClearAllSelectedOptions":[],"ToggleSelectedValueHighlight":["OptionValue.OptionValue"],"DeleteKeydownForMultiSelect":[],"AddMultiSelectValue":["Basics.Int"],"RemoveMultiSelectValue":["Basics.Int"],"RequestAllOptions":[],"UpdateSearchResultsForOptions":["Json.Encode.Value"],"CustomValidationResponse":["Json.Encode.Value"],"UpdateTransformationAndValidation":["Json.Encode.Value"],"AttributeChanged":["( String.String, String.String )"],"AttributeRemoved":["String.String"],"CustomOptionHintChanged":["String.String"],"SelectedValueEncodingChanged":["String.String"],"RequestConfigState":[],"RequestSelectedValues":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Option.Option":{"args":[],"tags":{"FancyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Option.OptionDescription","Option.OptionGroup","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"CustomOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"DatalistOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue"],"SlottedOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue","OptionSlot.OptionSlot"],"EmptyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel"]}},"OptionValue.OptionValue":{"args":[],"tags":{"OptionValue":["String.String"],"EmptyOptionValue":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"List.List":{"args":["a"],"tags":{}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Option.OptionDescription":{"args":[],"tags":{"OptionDescription":["String.String","Maybe.Maybe String.String"],"NoDescription":[]}},"OptionDisplay.OptionDisplay":{"args":[],"tags":{"OptionShown":["OptionDisplay.OptionAge"],"OptionHidden":[],"OptionSelected":["Basics.Int","OptionDisplay.OptionAge"],"OptionSelectedAndInvalid":["Basics.Int","List.List TransformAndValidate.ValidationFailureMessage"],"OptionSelectedPendingValidation":["Basics.Int"],"OptionSelectedHighlighted":["Basics.Int"],"OptionHighlighted":[],"OptionActivated":[],"OptionDisabled":["OptionDisplay.OptionAge"]}},"Option.OptionGroup":{"args":[],"tags":{"OptionGroup":["String.String"],"NoOptionGroup":[]}},"OptionLabel.OptionLabel":{"args":[],"tags":{"OptionLabel":["String.String","Maybe.Maybe String.String","SortRank.SortRank"]}},"OptionSlot.OptionSlot":{"args":[],"tags":{"OptionSlot":["String.String"]}},"OptionDisplay.OptionAge":{"args":[],"tags":{"NewOption":[],"MatureOption":[]}},"SortRank.SortRank":{"args":[],"tags":{"Auto":["PositiveInt.PositiveInt"],"Manual":["PositiveInt.PositiveInt"],"NoSortRank":[]}},"TransformAndValidate.ValidationFailureMessage":{"args":[],"tags":{"ValidationFailureMessage":["TransformAndValidate.ValidationReportLevel","TransformAndValidate.ValidationErrorMessage"]}},"PositiveInt.PositiveInt":{"args":[],"tags":{"PositiveInt":["Basics.Int"]}},"TransformAndValidate.ValidationErrorMessage":{"args":[],"tags":{"ValidationErrorMessage":["String.String"]}},"TransformAndValidate.ValidationReportLevel":{"args":[],"tags":{"SilentError":[],"ShowError":[]}}}}})}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{allowCustomOptions: allowCustomOptions, allowMultiSelect: allowMultiSelect, customOptionHint: customOptionHint, disabled: disabled, enableMultiSelectSingleItemRemoval: enableMultiSelectSingleItemRemoval, isEventsOnly: isEventsOnly, loading: loading, maxDropdownItems: maxDropdownItems, optionSort: optionSort, optionsJson: optionsJson, outputStyle: outputStyle, placeholder: placeholder, searchStringMinimumLength: searchStringMinimumLength, selectedItemStaysInPlace: selectedItemStaysInPlace, selectedValue: selectedValue, selectedValueEncoding: selectedValueEncoding, showDropdownFooter: showDropdownFooter, transformationAndValidationJson: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))({"versions":{"elm":"0.19.1"},"types":{"message":"MuchSelect.Msg","aliases":{"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"},"OptionSearchFilter.OptionSearchFilter":{"args":[],"type":"{ totalScore : Basics.Int, bestScore : Basics.Int, labelTokens : List.List ( Basics.Bool, String.String ), descriptionTokens : List.List ( Basics.Bool, String.String ), groupTokens : List.List ( Basics.Bool, String.String ) }"}},"unions":{"MuchSelect.Msg":{"args":[],"tags":{"NoOp":[],"BringInputInFocus":[],"BringInputOutOfFocus":[],"InputBlur":[],"InputFocus":[],"DropdownMouseOverOption":["OptionValue.OptionValue"],"DropdownMouseOutOption":["OptionValue.OptionValue"],"DropdownMouseDownOption":["OptionValue.OptionValue"],"DropdownMouseUpOption":["OptionValue.OptionValue"],"UpdateSearchString":["String.String"],"SearchStringSteady":[],"UpdateOptionValueValue":["Basics.Int","String.String"],"TextInputOnInput":["String.String"],"ValueChanged":["Json.Decode.Value"],"OptionsReplaced":["Json.Decode.Value"],"OptionSortingChanged":["String.String"],"AddOptions":["Json.Decode.Value"],"RemoveOptions":["Json.Decode.Value"],"SelectOption":["Json.Decode.Value"],"DeselectOption":["Json.Decode.Value"],"DeselectOptionInternal":["Option.Option"],"PlaceholderAttributeChanged":["( Basics.Bool, String.String )"],"LoadingAttributeChanged":["Basics.Bool"],"MaxDropdownItemsChanged":["String.String"],"ShowDropdownFooterChanged":["Basics.Bool"],"AllowCustomOptionsChanged":["( Basics.Bool, String.String )"],"DisabledAttributeChanged":["Basics.Bool"],"MultiSelectAttributeChanged":["Basics.Bool"],"MultiSelectSingleItemRemovalAttributeChanged":["Basics.Bool"],"SearchStringMinimumLengthAttributeChanged":["Basics.Int"],"SelectedItemStaysInPlaceChanged":["Basics.Bool"],"OutputStyleChanged":["String.String"],"SelectHighlightedOption":[],"DeleteInputForSingleSelect":[],"EscapeKeyInInputFilter":[],"MoveHighlightedOptionUp":[],"MoveHighlightedOptionDown":[],"ValueCasingWidthUpdate":["{ width : Basics.Float, height : Basics.Float }"],"ClearAllSelectedOptions":[],"ToggleSelectedValueHighlight":["OptionValue.OptionValue"],"DeleteKeydownForMultiSelect":[],"AddMultiSelectValue":["Basics.Int"],"RemoveMultiSelectValue":["Basics.Int"],"RequestAllOptions":[],"UpdateSearchResultsForOptions":["Json.Encode.Value"],"CustomValidationResponse":["Json.Encode.Value"],"UpdateTransformationAndValidation":["Json.Encode.Value"],"AttributeChanged":["( String.String, String.String )"],"AttributeRemoved":["String.String"],"CustomOptionHintChanged":["String.String"],"SelectedValueEncodingChanged":["String.String"],"RequestConfigState":[],"RequestSelectedValues":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Option.Option":{"args":[],"tags":{"FancyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Option.OptionDescription","Option.OptionGroup","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"CustomOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"DatalistOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue"],"SlottedOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue","OptionSlot.OptionSlot"],"EmptyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel"]}},"OptionValue.OptionValue":{"args":[],"tags":{"OptionValue":["String.String"],"EmptyOptionValue":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"List.List":{"args":["a"],"tags":{}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Option.OptionDescription":{"args":[],"tags":{"OptionDescription":["String.String","Maybe.Maybe String.String"],"NoDescription":[]}},"OptionDisplay.OptionDisplay":{"args":[],"tags":{"OptionShown":["OptionDisplay.OptionAge"],"OptionHidden":[],"OptionSelected":["Basics.Int","OptionDisplay.OptionAge"],"OptionSelectedAndInvalid":["Basics.Int","List.List TransformAndValidate.ValidationFailureMessage"],"OptionSelectedPendingValidation":["Basics.Int"],"OptionSelectedHighlighted":["Basics.Int"],"OptionHighlighted":[],"OptionActivated":[],"OptionDisabled":["OptionDisplay.OptionAge"]}},"Option.OptionGroup":{"args":[],"tags":{"OptionGroup":["String.String"],"NoOptionGroup":[]}},"OptionLabel.OptionLabel":{"args":[],"tags":{"OptionLabel":["String.String","Maybe.Maybe String.String","SortRank.SortRank"]}},"OptionSlot.OptionSlot":{"args":[],"tags":{"OptionSlot":["String.String"]}},"OptionDisplay.OptionAge":{"args":[],"tags":{"NewOption":[],"MatureOption":[]}},"SortRank.SortRank":{"args":[],"tags":{"Auto":["PositiveInt.PositiveInt"],"Manual":["PositiveInt.PositiveInt"],"NoSortRank":[]}},"TransformAndValidate.ValidationFailureMessage":{"args":[],"tags":{"ValidationFailureMessage":["TransformAndValidate.ValidationReportLevel","TransformAndValidate.ValidationErrorMessage"]}},"PositiveInt.PositiveInt":{"args":[],"tags":{"PositiveInt":["Basics.Int"]}},"TransformAndValidate.ValidationErrorMessage":{"args":[],"tags":{"ValidationErrorMessage":["String.String"]}},"TransformAndValidate.ValidationReportLevel":{"args":[],"tags":{"SilentError":[],"ShowError":[]}}}}})}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{allowCustomOptions: allowCustomOptions, allowMultiSelect: allowMultiSelect, customOptionHint: customOptionHint, disabled: disabled, enableMultiSelectSingleItemRemoval: enableMultiSelectSingleItemRemoval, isEventsOnly: isEventsOnly, loading: loading, maxDropdownItems: maxDropdownItems, optionSort: optionSort, optionsJson: optionsJson, outputStyle: outputStyle, placeholder: placeholder, searchStringMinimumLength: searchStringMinimumLength, selectedItemStaysInPlace: selectedItemStaysInPlace, selectedValue: selectedValue, selectedValueEncoding: selectedValueEncoding, showDropdownFooter: showDropdownFooter, transformationAndValidationJson: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))({"versions":{"elm":"0.19.1"},"types":{"message":"MuchSelect.Msg","aliases":{"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"},"OptionSearchFilter.OptionSearchFilter":{"args":[],"type":"{ totalScore : Basics.Int, bestScore : Basics.Int, labelTokens : List.List ( Basics.Bool, String.String ), descriptionTokens : List.List ( Basics.Bool, String.String ), groupTokens : List.List ( Basics.Bool, String.String ) }"}},"unions":{"MuchSelect.Msg":{"args":[],"tags":{"NoOp":[],"BringInputInFocus":[],"BringInputOutOfFocus":[],"InputBlur":[],"InputFocus":[],"DropdownMouseOverOption":["OptionValue.OptionValue"],"DropdownMouseOutOption":["OptionValue.OptionValue"],"DropdownMouseDownOption":["OptionValue.OptionValue"],"DropdownMouseUpOption":["OptionValue.OptionValue"],"UpdateSearchString":["String.String"],"SearchStringSteady":[],"UpdateOptionValueValue":["Basics.Int","String.String"],"TextInputOnInput":["String.String"],"ValueChanged":["Json.Decode.Value"],"OptionsReplaced":["Json.Decode.Value"],"OptionSortingChanged":["String.String"],"AddOptions":["Json.Decode.Value"],"RemoveOptions":["Json.Decode.Value"],"SelectOption":["Json.Decode.Value"],"DeselectOption":["Json.Decode.Value"],"DeselectOptionInternal":["Option.Option"],"PlaceholderAttributeChanged":["( Basics.Bool, String.String )"],"LoadingAttributeChanged":["Basics.Bool"],"MaxDropdownItemsChanged":["String.String"],"ShowDropdownFooterChanged":["Basics.Bool"],"AllowCustomOptionsChanged":["( Basics.Bool, String.String )"],"DisabledAttributeChanged":["Basics.Bool"],"MultiSelectAttributeChanged":["Basics.Bool"],"MultiSelectSingleItemRemovalAttributeChanged":["Basics.Bool"],"SearchStringMinimumLengthAttributeChanged":["Basics.Int"],"SelectedItemStaysInPlaceChanged":["Basics.Bool"],"OutputStyleChanged":["String.String"],"SelectHighlightedOption":[],"DeleteInputForSingleSelect":[],"EscapeKeyInInputFilter":[],"MoveHighlightedOptionUp":[],"MoveHighlightedOptionDown":[],"ValueCasingWidthUpdate":["{ width : Basics.Float, height : Basics.Float }"],"ClearAllSelectedOptions":[],"ToggleSelectedValueHighlight":["OptionValue.OptionValue"],"DeleteKeydownForMultiSelect":[],"AddMultiSelectValue":["Basics.Int"],"RemoveMultiSelectValue":["Basics.Int"],"RequestAllOptions":[],"UpdateSearchResultsForOptions":["Json.Encode.Value"],"CustomValidationResponse":["Json.Encode.Value"],"UpdateTransformationAndValidation":["Json.Encode.Value"],"AttributeChanged":["( String.String, String.String )"],"AttributeRemoved":["String.String"],"CustomOptionHintChanged":["String.String"],"SelectedValueEncodingChanged":["String.String"],"RequestConfigState":[],"RequestSelectedValues":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Option.Option":{"args":[],"tags":{"FancyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Option.OptionDescription","Option.OptionGroup","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"CustomOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"DatalistOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue"],"SlottedOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue","OptionSlot.OptionSlot"],"EmptyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel"]}},"OptionValue.OptionValue":{"args":[],"tags":{"OptionValue":["String.String"],"EmptyOptionValue":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"List.List":{"args":["a"],"tags":{}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Option.OptionDescription":{"args":[],"tags":{"OptionDescription":["String.String","Maybe.Maybe String.String"],"NoDescription":[]}},"OptionDisplay.OptionDisplay":{"args":[],"tags":{"OptionShown":["OptionDisplay.OptionAge"],"OptionHidden":[],"OptionSelected":["Basics.Int","OptionDisplay.OptionAge"],"OptionSelectedAndInvalid":["Basics.Int","List.List TransformAndValidate.ValidationFailureMessage"],"OptionSelectedPendingValidation":["Basics.Int"],"OptionSelectedHighlighted":["Basics.Int"],"OptionHighlighted":[],"OptionActivated":[],"OptionDisabled":["OptionDisplay.OptionAge"]}},"Option.OptionGroup":{"args":[],"tags":{"OptionGroup":["String.String"],"NoOptionGroup":[]}},"OptionLabel.OptionLabel":{"args":[],"tags":{"OptionLabel":["String.String","Maybe.Maybe String.String","SortRank.SortRank"]}},"OptionSlot.OptionSlot":{"args":[],"tags":{"OptionSlot":["String.String"]}},"OptionDisplay.OptionAge":{"args":[],"tags":{"NewOption":[],"MatureOption":[]}},"SortRank.SortRank":{"args":[],"tags":{"Auto":["PositiveInt.PositiveInt"],"Manual":["PositiveInt.PositiveInt"],"NoSortRank":[]}},"TransformAndValidate.ValidationFailureMessage":{"args":[],"tags":{"ValidationFailureMessage":["TransformAndValidate.ValidationReportLevel","TransformAndValidate.ValidationErrorMessage"]}},"PositiveInt.PositiveInt":{"args":[],"tags":{"PositiveInt":["Basics.Int"]}},"TransformAndValidate.ValidationErrorMessage":{"args":[],"tags":{"ValidationErrorMessage":["String.String"]}},"TransformAndValidate.ValidationReportLevel":{"args":[],"tags":{"SilentError":[],"ShowError":[]}}}}})}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{allowCustomOptions: allowCustomOptions, allowMultiSelect: allowMultiSelect, customOptionHint: customOptionHint, disabled: disabled, enableMultiSelectSingleItemRemoval: enableMultiSelectSingleItemRemoval, isEventsOnly: isEventsOnly, loading: loading, maxDropdownItems: maxDropdownItems, optionSort: optionSort, optionsJson: optionsJson, outputStyle: outputStyle, placeholder: placeholder, searchStringMinimumLength: searchStringMinimumLength, selectedItemStaysInPlace: selectedItemStaysInPlace, selectedValue: selectedValue, selectedValueEncoding: selectedValueEncoding, showDropdownFooter: showDropdownFooter, transformationAndValidationJson: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))({"versions":{"elm":"0.19.1"},"types":{"message":"MuchSelect.Msg","aliases":{"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"},"OptionSearchFilter.OptionSearchFilter":{"args":[],"type":"{ totalScore : Basics.Int, bestScore : Basics.Int, labelTokens : List.List ( Basics.Bool, String.String ), descriptionTokens : List.List ( Basics.Bool, String.String ), groupTokens : List.List ( Basics.Bool, String.String ) }"}},"unions":{"MuchSelect.Msg":{"args":[],"tags":{"NoOp":[],"BringInputInFocus":[],"BringInputOutOfFocus":[],"InputBlur":[],"InputFocus":[],"DropdownMouseOverOption":["OptionValue.OptionValue"],"DropdownMouseOutOption":["OptionValue.OptionValue"],"DropdownMouseDownOption":["OptionValue.OptionValue"],"DropdownMouseUpOption":["OptionValue.OptionValue"],"UpdateSearchString":["String.String"],"SearchStringSteady":[],"UpdateOptionValueValue":["Basics.Int","String.String"],"TextInputOnInput":["String.String"],"ValueChanged":["Json.Decode.Value"],"OptionsReplaced":["Json.Decode.Value"],"OptionSortingChanged":["String.String"],"AddOptions":["Json.Decode.Value"],"RemoveOptions":["Json.Decode.Value"],"SelectOption":["Json.Decode.Value"],"DeselectOption":["Json.Decode.Value"],"DeselectOptionInternal":["Option.Option"],"PlaceholderAttributeChanged":["( Basics.Bool, String.String )"],"LoadingAttributeChanged":["Basics.Bool"],"MaxDropdownItemsChanged":["String.String"],"ShowDropdownFooterChanged":["Basics.Bool"],"AllowCustomOptionsChanged":["( Basics.Bool, String.String )"],"DisabledAttributeChanged":["Basics.Bool"],"MultiSelectAttributeChanged":["Basics.Bool"],"MultiSelectSingleItemRemovalAttributeChanged":["Basics.Bool"],"SearchStringMinimumLengthAttributeChanged":["Basics.Int"],"SelectedItemStaysInPlaceChanged":["Basics.Bool"],"OutputStyleChanged":["String.String"],"SelectHighlightedOption":[],"DeleteInputForSingleSelect":[],"EscapeKeyInInputFilter":[],"MoveHighlightedOptionUp":[],"MoveHighlightedOptionDown":[],"ValueCasingWidthUpdate":["{ width : Basics.Float, height : Basics.Float }"],"ClearAllSelectedOptions":[],"ToggleSelectedValueHighlight":["OptionValue.OptionValue"],"DeleteKeydownForMultiSelect":[],"AddMultiSelectValue":["Basics.Int"],"RemoveMultiSelectValue":["Basics.Int"],"RequestAllOptions":[],"UpdateSearchResultsForOptions":["Json.Encode.Value"],"CustomValidationResponse":["Json.Encode.Value"],"UpdateTransformationAndValidation":["Json.Encode.Value"],"AttributeChanged":["( String.String, String.String )"],"AttributeRemoved":["String.String"],"CustomOptionHintChanged":["String.String"],"SelectedValueEncodingChanged":["String.String"],"RequestConfigState":[],"RequestSelectedValues":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Option.Option":{"args":[],"tags":{"FancyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Option.OptionDescription","Option.OptionGroup","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"CustomOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"DatalistOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue"],"SlottedOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue","OptionSlot.OptionSlot"],"EmptyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel"]}},"OptionValue.OptionValue":{"args":[],"tags":{"OptionValue":["String.String"],"EmptyOptionValue":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"List.List":{"args":["a"],"tags":{}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Option.OptionDescription":{"args":[],"tags":{"OptionDescription":["String.String","Maybe.Maybe String.String"],"NoDescription":[]}},"OptionDisplay.OptionDisplay":{"args":[],"tags":{"OptionShown":["OptionDisplay.OptionAge"],"OptionHidden":[],"OptionSelected":["Basics.Int","OptionDisplay.OptionAge"],"OptionSelectedAndInvalid":["Basics.Int","List.List TransformAndValidate.ValidationFailureMessage"],"OptionSelectedPendingValidation":["Basics.Int"],"OptionSelectedHighlighted":["Basics.Int"],"OptionHighlighted":[],"OptionActivated":[],"OptionDisabled":["OptionDisplay.OptionAge"]}},"Option.OptionGroup":{"args":[],"tags":{"OptionGroup":["String.String"],"NoOptionGroup":[]}},"OptionLabel.OptionLabel":{"args":[],"tags":{"OptionLabel":["String.String","Maybe.Maybe String.String","SortRank.SortRank"]}},"OptionSlot.OptionSlot":{"args":[],"tags":{"OptionSlot":["String.String"]}},"OptionDisplay.OptionAge":{"args":[],"tags":{"NewOption":[],"MatureOption":[]}},"SortRank.SortRank":{"args":[],"tags":{"Auto":["PositiveInt.PositiveInt"],"Manual":["PositiveInt.PositiveInt"],"NoSortRank":[]}},"TransformAndValidate.ValidationFailureMessage":{"args":[],"tags":{"ValidationFailureMessage":["TransformAndValidate.ValidationReportLevel","TransformAndValidate.ValidationErrorMessage"]}},"PositiveInt.PositiveInt":{"args":[],"tags":{"PositiveInt":["Basics.Int"]}},"TransformAndValidate.ValidationErrorMessage":{"args":[],"tags":{"ValidationErrorMessage":["String.String"]}},"TransformAndValidate.ValidationReportLevel":{"args":[],"tags":{"SilentError":[],"ShowError":[]}}}}})}};
+  
+export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (transformationAndValidationJson) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (showDropdownFooter) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (selectedValueEncoding) {
+							return A2(
+								$elm$json$Json$Decode$andThen,
+								function (selectedValue) {
+									return A2(
+										$elm$json$Json$Decode$andThen,
+										function (selectedItemStaysInPlace) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (searchStringMinimumLength) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (placeholder) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (outputStyle) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (optionsJson) {
+																			return A2(
+																				$elm$json$Json$Decode$andThen,
+																				function (optionSort) {
+																					return A2(
+																						$elm$json$Json$Decode$andThen,
+																						function (maxDropdownItems) {
+																							return A2(
+																								$elm$json$Json$Decode$andThen,
+																								function (loading) {
+																									return A2(
+																										$elm$json$Json$Decode$andThen,
+																										function (isEventsOnly) {
+																											return A2(
+																												$elm$json$Json$Decode$andThen,
+																												function (enableMultiSelectSingleItemRemoval) {
+																													return A2(
+																														$elm$json$Json$Decode$andThen,
+																														function (disabled) {
+																															return A2(
+																																$elm$json$Json$Decode$andThen,
+																																function (customOptionHint) {
+																																	return A2(
+																																		$elm$json$Json$Decode$andThen,
+																																		function (allowMultiSelect) {
+																																			return A2(
+																																				$elm$json$Json$Decode$andThen,
+																																				function (allowCustomOptions) {
+																																					return $elm$json$Json$Decode$succeed(
+																																						{allowCustomOptions: allowCustomOptions, allowMultiSelect: allowMultiSelect, customOptionHint: customOptionHint, disabled: disabled, enableMultiSelectSingleItemRemoval: enableMultiSelectSingleItemRemoval, isEventsOnly: isEventsOnly, loading: loading, maxDropdownItems: maxDropdownItems, optionSort: optionSort, optionsJson: optionsJson, outputStyle: outputStyle, placeholder: placeholder, searchStringMinimumLength: searchStringMinimumLength, selectedItemStaysInPlace: selectedItemStaysInPlace, selectedValue: selectedValue, selectedValueEncoding: selectedValueEncoding, showDropdownFooter: showDropdownFooter, transformationAndValidationJson: transformationAndValidationJson});
+																																				},
+																																				A2($elm$json$Json$Decode$field, 'allowCustomOptions', $elm$json$Json$Decode$bool));
+																																		},
+																																		A2($elm$json$Json$Decode$field, 'allowMultiSelect', $elm$json$Json$Decode$bool));
+																																},
+																																A2(
+																																	$elm$json$Json$Decode$field,
+																																	'customOptionHint',
+																																	$elm$json$Json$Decode$oneOf(
+																																		_List_fromArray(
+																																			[
+																																				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																																				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																																			]))));
+																														},
+																														A2($elm$json$Json$Decode$field, 'disabled', $elm$json$Json$Decode$bool));
+																												},
+																												A2($elm$json$Json$Decode$field, 'enableMultiSelectSingleItemRemoval', $elm$json$Json$Decode$bool));
+																										},
+																										A2($elm$json$Json$Decode$field, 'isEventsOnly', $elm$json$Json$Decode$bool));
+																								},
+																								A2($elm$json$Json$Decode$field, 'loading', $elm$json$Json$Decode$bool));
+																						},
+																						A2(
+																							$elm$json$Json$Decode$field,
+																							'maxDropdownItems',
+																							$elm$json$Json$Decode$oneOf(
+																								_List_fromArray(
+																									[
+																										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+																									]))));
+																				},
+																				A2($elm$json$Json$Decode$field, 'optionSort', $elm$json$Json$Decode$string));
+																		},
+																		A2($elm$json$Json$Decode$field, 'optionsJson', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'outputStyle', $elm$json$Json$Decode$string));
+														},
+														A2(
+															$elm$json$Json$Decode$field,
+															'placeholder',
+															A2(
+																$elm$json$Json$Decode$andThen,
+																function (_v0) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (_v1) {
+																			return $elm$json$Json$Decode$succeed(
+																				_Utils_Tuple2(_v0, _v1));
+																		},
+																		A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$bool))));
+												},
+												A2(
+													$elm$json$Json$Decode$field,
+													'searchStringMinimumLength',
+													$elm$json$Json$Decode$oneOf(
+														_List_fromArray(
+															[
+																$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+																A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+															]))));
+										},
+										A2($elm$json$Json$Decode$field, 'selectedItemStaysInPlace', $elm$json$Json$Decode$bool));
+								},
+								A2($elm$json$Json$Decode$field, 'selectedValue', $elm$json$Json$Decode$string));
+						},
+						A2(
+							$elm$json$Json$Decode$field,
+							'selectedValueEncoding',
+							$elm$json$Json$Decode$oneOf(
+								_List_fromArray(
+									[
+										$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+										A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+									]))));
+				},
+				A2($elm$json$Json$Decode$field, 'showDropdownFooter', $elm$json$Json$Decode$bool));
+		},
+		A2($elm$json$Json$Decode$field, 'transformationAndValidationJson', $elm$json$Json$Decode$string)))({"versions":{"elm":"0.19.1"},"types":{"message":"MuchSelect.Msg","aliases":{"Json.Decode.Value":{"args":[],"type":"Json.Encode.Value"},"OptionSearchFilter.OptionSearchFilter":{"args":[],"type":"{ totalScore : Basics.Int, bestScore : Basics.Int, labelTokens : List.List ( Basics.Bool, String.String ), descriptionTokens : List.List ( Basics.Bool, String.String ), groupTokens : List.List ( Basics.Bool, String.String ) }"}},"unions":{"MuchSelect.Msg":{"args":[],"tags":{"NoOp":[],"BringInputInFocus":[],"BringInputOutOfFocus":[],"InputBlur":[],"InputFocus":[],"DropdownMouseOverOption":["OptionValue.OptionValue"],"DropdownMouseOutOption":["OptionValue.OptionValue"],"DropdownMouseDownOption":["OptionValue.OptionValue"],"DropdownMouseUpOption":["OptionValue.OptionValue"],"UpdateSearchString":["String.String"],"SearchStringSteady":[],"UpdateOptionValueValue":["Basics.Int","String.String"],"TextInputOnInput":["String.String"],"ValueChanged":["Json.Decode.Value"],"OptionsReplaced":["Json.Decode.Value"],"OptionSortingChanged":["String.String"],"AddOptions":["Json.Decode.Value"],"RemoveOptions":["Json.Decode.Value"],"SelectOption":["Json.Decode.Value"],"DeselectOption":["Json.Decode.Value"],"DeselectOptionInternal":["Option.Option"],"PlaceholderAttributeChanged":["( Basics.Bool, String.String )"],"LoadingAttributeChanged":["Basics.Bool"],"MaxDropdownItemsChanged":["String.String"],"ShowDropdownFooterChanged":["Basics.Bool"],"AllowCustomOptionsChanged":["( Basics.Bool, String.String )"],"DisabledAttributeChanged":["Basics.Bool"],"MultiSelectAttributeChanged":["Basics.Bool"],"MultiSelectSingleItemRemovalAttributeChanged":["Basics.Bool"],"SearchStringMinimumLengthAttributeChanged":["Basics.Int"],"SelectedItemStaysInPlaceChanged":["Basics.Bool"],"OutputStyleChanged":["String.String"],"SelectHighlightedOption":[],"DeleteInputForSingleSelect":[],"EscapeKeyInInputFilter":[],"MoveHighlightedOptionUp":[],"MoveHighlightedOptionDown":[],"ValueCasingWidthUpdate":["{ width : Basics.Float, height : Basics.Float }"],"ClearAllSelectedOptions":[],"ToggleSelectedValueHighlight":["OptionValue.OptionValue"],"DeleteKeydownForMultiSelect":[],"AddMultiSelectValue":["Basics.Int"],"RemoveMultiSelectValue":["Basics.Int"],"RequestAllOptions":[],"UpdateSearchResultsForOptions":["Json.Encode.Value"],"CustomValidationResponse":["Json.Encode.Value"],"UpdateTransformationAndValidation":["Json.Encode.Value"],"AttributeChanged":["( String.String, String.String )"],"AttributeRemoved":["String.String"],"CustomOptionHintChanged":["String.String"],"SelectedValueEncodingChanged":["String.String"],"RequestConfigState":[],"RequestSelectedValues":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Option.Option":{"args":[],"tags":{"FancyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Option.OptionDescription","Option.OptionGroup","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"CustomOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel","OptionValue.OptionValue","Maybe.Maybe OptionSearchFilter.OptionSearchFilter"],"DatalistOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue"],"SlottedOption":["OptionDisplay.OptionDisplay","OptionValue.OptionValue","OptionSlot.OptionSlot"],"EmptyOption":["OptionDisplay.OptionDisplay","OptionLabel.OptionLabel"]}},"OptionValue.OptionValue":{"args":[],"tags":{"OptionValue":["String.String"],"EmptyOptionValue":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"List.List":{"args":["a"],"tags":{}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Option.OptionDescription":{"args":[],"tags":{"OptionDescription":["String.String","Maybe.Maybe String.String"],"NoDescription":[]}},"OptionDisplay.OptionDisplay":{"args":[],"tags":{"OptionShown":["OptionDisplay.OptionAge"],"OptionHidden":[],"OptionSelected":["Basics.Int","OptionDisplay.OptionAge"],"OptionSelectedAndInvalid":["Basics.Int","List.List TransformAndValidate.ValidationFailureMessage"],"OptionSelectedPendingValidation":["Basics.Int"],"OptionSelectedHighlighted":["Basics.Int"],"OptionHighlighted":[],"OptionActivated":[],"OptionDisabled":["OptionDisplay.OptionAge"]}},"Option.OptionGroup":{"args":[],"tags":{"OptionGroup":["String.String"],"NoOptionGroup":[]}},"OptionLabel.OptionLabel":{"args":[],"tags":{"OptionLabel":["String.String","Maybe.Maybe String.String","SortRank.SortRank"]}},"OptionSlot.OptionSlot":{"args":[],"tags":{"OptionSlot":["String.String"]}},"OptionDisplay.OptionAge":{"args":[],"tags":{"NewOption":[],"MatureOption":[]}},"SortRank.SortRank":{"args":[],"tags":{"Auto":["PositiveInt.PositiveInt"],"Manual":["PositiveInt.PositiveInt"],"NoSortRank":[]}},"TransformAndValidate.ValidationFailureMessage":{"args":[],"tags":{"ValidationFailureMessage":["TransformAndValidate.ValidationReportLevel","TransformAndValidate.ValidationErrorMessage"]}},"PositiveInt.PositiveInt":{"args":[],"tags":{"PositiveInt":["Basics.Int"]}},"TransformAndValidate.ValidationErrorMessage":{"args":[],"tags":{"ValidationErrorMessage":["String.String"]}},"TransformAndValidate.ValidationReportLevel":{"args":[],"tags":{"SilentError":[],"ShowError":[]}}}}})}};
+  
 export const Elm = {'MuchSelect':{'init':$author$project$MuchSelect$main(
 	A2(
 		$elm$json$Json$Decode$andThen,

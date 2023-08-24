@@ -1,7 +1,6 @@
 module Option exposing
     ( Option(..)
     , SearchResults
-    , SlottedOption(..)
     , activateOption
     , decodeSearchResults
     , decoder
@@ -35,7 +34,6 @@ module Option exposing
     , optionIsHighlightable
     , optionToValueLabelTuple
     , optionValuesEqual
-    , optionsDecoder
     , removeHighlightFromOption
     , selectOption
     , setDescriptionWithString
@@ -73,10 +71,6 @@ type Option
     = FancyOption FancyOption.FancyOption
     | DatalistOption DatalistOption.DatalistOption
     | SlottedOption SlottedOption.SlottedOption
-
-
-type SlottedOption
-    = SlottedOption OptionDisplay OptionValue OptionSlot
 
 
 setOptionValue : OptionValue -> Option -> Option
@@ -449,105 +443,26 @@ isCustomOption option =
             False
 
 
-optionsDecoder : OptionDisplay.OptionAge -> OutputStyle -> Json.Decode.Decoder (List Option)
-optionsDecoder age outputStyle =
-    Json.Decode.list (decoder age outputStyle)
-
-
-decoder : OptionDisplay.OptionAge -> OutputStyle -> Json.Decode.Decoder Option
-decoder age outputStyle =
-    case outputStyle of
-        CustomHtml ->
-            Json.Decode.oneOf
-                [ decodeOptionWithoutAValue age
-                , decodeOptionWithAValue age
-                , decodeSlottedOption age
-                ]
-
-        Datalist ->
-            decodeOptionForDatalist
-
-
-decodeOptionWithoutAValue : OptionDisplay.OptionAge -> Json.Decode.Decoder Option
-decodeOptionWithoutAValue age =
-    Json.Decode.field
-        "value"
-        valueDecoder
-        |> Json.Decode.andThen
-            (\value ->
-                case value of
-                    OptionValue _ ->
-                        Json.Decode.fail "It can not be an option without a value because it has a value."
-
-                    EmptyOptionValue ->
-                        Json.Decode.map2
-                            EmptyOption
-                            (OptionDisplay.decoder age)
-                            labelDecoder
-            )
-
-
-decodeOptionWithAValue : OptionDisplay.OptionAge -> Json.Decode.Decoder Option
-decodeOptionWithAValue age =
-    Json.Decode.map6 FancyOption
-        (OptionDisplay.decoder age)
-        labelDecoder
-        (Json.Decode.field
-            "value"
-            valueDecoder
-        )
-        descriptionDecoder
-        optionGroupDecoder
-        (Json.Decode.succeed Nothing)
-
-
-decodeSlottedOption : OptionDisplay.OptionAge -> Json.Decode.Decoder Option
-decodeSlottedOption age =
-    Json.Decode.map3
-        SlottedOption
-        (OptionDisplay.decoder age)
-        (Json.Decode.field
-            "value"
-            valueDecoder
-        )
-        (Json.Decode.field "slot" OptionSlot.decoder)
-
-
-decodeOptionForDatalist : Json.Decode.Decoder Option
-decodeOptionForDatalist =
-    Json.Decode.map2 DatalistOption
-        (OptionDisplay.decoder OptionDisplay.MatureOption)
-        (Json.Decode.field
-            "value"
-            valueDecoder
-        )
-
-
-valueDecoder : Json.Decode.Decoder OptionValue
-valueDecoder =
-    Json.Decode.string
-        |> Json.Decode.andThen
-            (\valueStr ->
-                case String.trim valueStr of
-                    "" ->
-                        Json.Decode.succeed EmptyOptionValue
-
-                    str ->
-                        Json.Decode.succeed (OptionValue str)
-            )
+decoder : OptionDisplay.OptionAge -> Json.Decode.Decoder Option
+decoder age =
+    Json.Decode.oneOf
+        [ Json.Decode.map FancyOption (FancyOption.decoder age)
+        , Json.Decode.map DatalistOption DatalistOption.decoder
+        , Json.Decode.map SlottedOption (SlottedOption.decoder age)
+        ]
 
 
 encode : Option -> Json.Decode.Value
 encode option =
-    Json.Encode.object
-        [ ( "value", Json.Encode.string (getOptionValueAsString option) )
-        , ( "label", Json.Encode.string (getOptionLabel option |> optionLabelToString) )
-        , ( "labelClean", Json.Encode.string (getOptionLabel option |> OptionLabel.optionLabelToSearchString) )
-        , ( "group", Json.Encode.string (getOptionGroup option |> optionGroupToString) )
-        , ( "description", Json.Encode.string (getOptionDescription option |> optionDescriptionToString) )
-        , ( "descriptionClean", Json.Encode.string (getOptionDescription option |> optionDescriptionToSearchString) )
-        , ( "isSelected", Json.Encode.bool (isOptionSelected option) )
-        ]
+    case option of
+        FancyOption fancyOption ->
+            FancyOption.encode fancyOption
+
+        DatalistOption datalistOption ->
+            DatalistOption.encode datalistOption
+
+        SlottedOption slottedOption ->
+            SlottedOption.encode slottedOption
 
 
 type alias SearchResults =
@@ -591,7 +506,7 @@ decodeSearchResults =
                     (\value searchFilter ->
                         { value = value, maybeSearchFilter = searchFilter }
                     )
-                    (Json.Decode.field "value" valueDecoder)
+                    (Json.Decode.field "value" OptionValue.decoder)
                     (Json.Decode.field "searchFilter"
                         (Json.Decode.nullable OptionSearchFilter.decode)
                     )
@@ -607,45 +522,35 @@ transformOptionForOutputStyle outputStyle option =
     case outputStyle of
         SelectionMode.CustomHtml ->
             case option of
-                FancyOption _ _ _ _ _ _ ->
+                FancyOption _ ->
                     Just option
 
-                CustomOption _ _ _ _ ->
-                    Just option
+                DatalistOption dataListOption ->
+                    FancyOption.new
+                        (DatalistOption.getOptionValueAsString dataListOption)
+                        (DatalistOption.getOptionValueAsString dataListOption |> Just)
+                        |> FancyOption.setOptionDisplay (DatalistOption.getOptionDisplay dataListOption)
+                        |> FancyOption.setOptionValue (DatalistOption.getOptionValue dataListOption)
+                        |> FancyOption
+                        |> Just
 
-                DatalistOption optionDisplay optionValue ->
-                    Just
-                        (FancyOption optionDisplay
-                            (OptionLabel.new
-                                (OptionValue.optionValueToString optionValue)
-                            )
-                            optionValue
-                            NoDescription
-                            NoOptionGroup
-                            Nothing
-                        )
-
-                EmptyOption _ _ ->
-                    Just option
-
-                SlottedOption _ _ _ ->
-                    Just option
+                SlottedOption _ ->
+                    Nothing
 
         SelectionMode.Datalist ->
             case option of
-                FancyOption optionDisplay _ optionValue _ _ _ ->
-                    Just (DatalistOption optionDisplay optionValue)
+                FancyOption fancyOption ->
+                    fancyOption
+                        |> FancyOption.getOptionValue
+                        |> DatalistOption.new
+                        |> DatalistOption.setOptionDisplay (FancyOption.getOptionDisplay fancyOption)
+                        |> DatalistOption
+                        |> Just
 
-                CustomOption optionDisplay _ optionValue _ ->
-                    Just (DatalistOption optionDisplay optionValue)
-
-                DatalistOption _ _ ->
+                DatalistOption _ ->
                     Just option
 
-                EmptyOption _ _ ->
-                    Nothing
-
-                SlottedOption _ _ _ ->
+                SlottedOption _ ->
                     Nothing
 
 
@@ -688,41 +593,24 @@ isValid option =
 getSlot : Option -> OptionSlot
 getSlot option =
     case option of
-        FancyOption _ _ _ _ _ _ ->
+        FancyOption _ ->
             OptionSlot.empty
 
-        CustomOption _ _ _ _ ->
+        DatalistOption _ ->
             OptionSlot.empty
 
-        EmptyOption _ _ ->
-            OptionSlot.empty
-
-        DatalistOption _ _ ->
-            OptionSlot.empty
-
-        SlottedOption _ _ slot ->
-            slot
+        SlottedOption slottedOption ->
+            SlottedOption.getOptionSlot slottedOption
 
 
 test_optionToDebuggingString : Option -> String
 test_optionToDebuggingString option =
     case option of
-        FancyOption _ optionLabel _ _ optionGroup _ ->
-            case optionGroupToString optionGroup of
-                "" ->
-                    optionLabelToString optionLabel
+        FancyOption fancyOption ->
+            FancyOption.test_optionToDebuggingString fancyOption
 
-                optionGroupString ->
-                    optionGroupString ++ " - " ++ optionLabelToString optionLabel
+        DatalistOption datalistOption ->
+            DatalistOption.test_optionToDebuggingString datalistOption
 
-        CustomOption _ optionLabel _ _ ->
-            optionLabelToString optionLabel
-
-        EmptyOption _ optionLabel ->
-            optionLabelToString optionLabel
-
-        DatalistOption _ optionValue ->
-            optionValueToString optionValue
-
-        SlottedOption _ optionValue _ ->
-            optionValueToString optionValue
+        SlottedOption slottedOption ->
+            SlottedOption.test_optionToDebuggingString slottedOption

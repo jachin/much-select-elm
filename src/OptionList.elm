@@ -1,23 +1,11 @@
-module OptionList exposing (isSlottedOptionList)
+module OptionList exposing (OptionList(..))
 
-import Option exposing (FancyOption, Option)
+import DatalistOption exposing (DatalistOption)
+import FancyOption exposing (FancyOption)
+import SlottedOption exposing (SlottedOption)
 
 
 type OptionList
     = FancyOptionList (List FancyOption)
-    | DatalistOptionList (List Option)
-    | SlottedOptionList (List Option)
-
-
-isSlottedOptionList : List Option -> Bool
-isSlottedOptionList options =
-    List.all
-        (\option ->
-            case option of
-                Option.SlottedOption _ _ _ ->
-                    True
-
-                _ ->
-                    False
-        )
-        options
+    | DatalistOptionList (List DatalistOption)
+    | SlottedOptionList (List SlottedOption)
