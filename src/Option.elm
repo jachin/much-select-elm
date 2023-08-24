@@ -2,9 +2,11 @@ module Option exposing
     ( Option(..)
     , SearchResults
     , activateOption
+    , activateOptionIfEqualRemoveHighlightElse
     , decodeSearchResults
     , decoder
     , deselectOption
+    , deselectOptionIfEqual
     , encode
     , encodeSearchResults
     , equal
@@ -29,11 +31,14 @@ module Option exposing
     , isOptionValueInListOfStrings
     , isPendingValidation
     , isValid
+    , merge
     , newDisabledOption
     , newSelectedOption
+    , optionEqualsOptionValue
     , optionIsHighlightable
     , optionToValueLabelTuple
     , optionValuesEqual
+    , optionsHaveEqualValues
     , removeHighlightFromOption
     , selectOption
     , setDescriptionWithString
@@ -47,6 +52,7 @@ module Option exposing
     , setOptionValue
     , setOptionValueErrors
     , test_optionToDebuggingString
+    , toggleHighlight
     , transformOptionForOutputStyle
     )
 
@@ -322,9 +328,19 @@ isOptionValueInListOfStrings possibleValues option =
     List.any (\possibleValue -> getOptionValueAsString option == possibleValue) possibleValues
 
 
-optionValuesEqual : Option -> OptionValue -> Bool
-optionValuesEqual option optionValue =
-    getOptionValue option == optionValue
+optionValuesEqual : OptionValue -> OptionValue -> Bool
+optionValuesEqual a b =
+    a == b
+
+
+optionsHaveEqualValues : Option -> Option -> Bool
+optionsHaveEqualValues a b =
+    optionValuesEqual (getOptionValue a) (getOptionValue b)
+
+
+optionEqualsOptionValue : OptionValue -> Option -> Bool
+optionEqualsOptionValue optionValue option =
+    optionValuesEqual (getOptionValue option) optionValue
 
 
 highlightOption : Option -> Option
@@ -351,6 +367,15 @@ removeHighlightFromOption option =
 
         SlottedOption slottedOption ->
             SlottedOption (SlottedOption.removeHighlightFromOption slottedOption)
+
+
+toggleHighlight : Option -> Option
+toggleHighlight option =
+    if isOptionHighlighted option then
+        removeHighlightFromOption option
+
+    else
+        highlightOption option
 
 
 isOptionHighlighted : Option -> Bool
@@ -389,6 +414,15 @@ deselectOption option =
     setOptionDisplay (OptionDisplay.deselect (getOptionDisplay option)) option
 
 
+deselectOptionIfEqual : OptionValue -> Option -> Option
+deselectOptionIfEqual optionValue option =
+    if optionValuesEqual option optionValue then
+        deselectOption option
+
+    else
+        option
+
+
 isOptionSelectedHighlighted : Option -> Bool
 isOptionSelectedHighlighted option =
     case option of
@@ -405,6 +439,15 @@ isOptionSelectedHighlighted option =
 activateOption : Option -> Option
 activateOption option =
     setOptionDisplay (getOptionDisplay option |> OptionDisplay.activate) option
+
+
+activateOptionIfEqualRemoveHighlightElse : OptionValue -> Option -> Option
+activateOptionIfEqualRemoveHighlightElse optionValue option =
+    if optionValuesEqual option optionValue then
+        activateOption option
+
+    else
+        option
 
 
 isEmptyOption : Option -> Bool
@@ -601,6 +644,24 @@ getSlot option =
 
         SlottedOption slottedOption ->
             SlottedOption.getOptionSlot slottedOption
+
+
+merge : Option -> Option -> Option
+merge optionA optionB =
+    case optionA of
+        FancyOption fancyOptionA ->
+            case optionB of
+                FancyOption fancyOptionB ->
+                    FancyOption (FancyOption.merge fancyOptionA fancyOptionA)
+
+                _ ->
+                    optionA
+
+        DatalistOption _ ->
+            optionA
+
+        SlottedOption _ ->
+            optionA
 
 
 test_optionToDebuggingString : Option -> String
