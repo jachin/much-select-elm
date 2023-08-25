@@ -6,22 +6,24 @@ import Html.Attributes exposing (class)
 import Html.Events exposing (onMouseEnter, onMouseLeave)
 import Html.Lazy
 import List.Extra
-import Option exposing (Option, OptionGroup, getOptionGroup)
+import Option exposing (Option)
+import OptionDescription
 import OptionDisplay exposing (OptionDisplay(..))
+import OptionGroup exposing (OptionGroup)
 import OptionLabel exposing (optionLabelToString)
+import OptionList exposing (OptionList)
 import OptionPresentor exposing (tokensToHtml)
 import OptionSearchFilter exposing (OptionSearchFilter)
 import OptionSlot
 import OptionValue exposing (OptionValue)
-import OptionsUtilities exposing (filterOptionsToShowInDropdown, findClosestHighlightableOptionGoingDown, findClosestHighlightableOptionGoingUp, findHighlightedOrSelectedOptionIndex, highlightOptionInList)
 import OutputStyle
 import PositiveInt
 import SelectionMode exposing (SelectionConfig, getMaxDropdownItems)
 
 
 type DropdownOptions
-    = DropdownOptions (List Option)
-    | DropdownOptionsThatAreNotSelected (List Option)
+    = DropdownOptions OptionList
+    | DropdownOptionsThatAreNotSelected OptionList
 
 
 {-| This function is responsible for figuring out which options should be shown in the dropdown.
@@ -30,16 +32,16 @@ Once it does it's work it wraps it in a special type, flagging this list of opti
 the options that are supposed to be shown in the dropdown.
 
 -}
-figureOutWhichOptionsToShowInTheDropdown : SelectionConfig -> List Option -> DropdownOptions
-figureOutWhichOptionsToShowInTheDropdown selectionConfig options =
+figureOutWhichOptionsToShowInTheDropdown : SelectionConfig -> OptionList -> DropdownOptions
+figureOutWhichOptionsToShowInTheDropdown selectionConfig optionList =
     let
         optionsThatCouldBeShown =
-            options
+            optionList
                 |> filterOptionsToShowInDropdown selectionConfig
-                |> OptionsUtilities.sortOptionsByBestScore
+                |> OptionList.sortOptionsByBestScore
 
         lastIndexOfOptions =
-            List.length optionsThatCouldBeShown - 1
+            OptionList.length optionsThatCouldBeShown - 1
     in
     case getMaxDropdownItems selectionConfig of
         OutputStyle.FixedMaxDropdownItems maxDropdownItems ->
@@ -47,19 +49,19 @@ figureOutWhichOptionsToShowInTheDropdown selectionConfig options =
                 maxNumberOfDropdownItems =
                     PositiveInt.toInt maxDropdownItems
             in
-            if List.length optionsThatCouldBeShown <= maxNumberOfDropdownItems then
+            if OptionList.length optionsThatCouldBeShown <= maxNumberOfDropdownItems then
                 DropdownOptions optionsThatCouldBeShown
 
             else
-                case findHighlightedOrSelectedOptionIndex optionsThatCouldBeShown of
+                case OptionList.findHighlightedOrSelectedOptionIndex optionsThatCouldBeShown of
                     Just index ->
                         case index of
                             0 ->
-                                DropdownOptions (List.take maxNumberOfDropdownItems optionsThatCouldBeShown)
+                                DropdownOptions (OptionList.take maxNumberOfDropdownItems optionsThatCouldBeShown)
 
                             _ ->
-                                if index == List.length optionsThatCouldBeShown - 1 then
-                                    DropdownOptions (List.drop (List.length options - maxNumberOfDropdownItems) optionsThatCouldBeShown)
+                                if index == OptionList.length optionsThatCouldBeShown - 1 then
+                                    DropdownOptions (OptionList.drop (OptionList.length optionList - maxNumberOfDropdownItems) optionsThatCouldBeShown)
 
                                 else
                                     let
@@ -76,32 +78,151 @@ figureOutWhichOptionsToShowInTheDropdown selectionConfig options =
                                     in
                                     if index + half > lastIndexOfOptions then
                                         -- The "window" runs off the "tail" of the list, so just take the last options
-                                        DropdownOptions (List.drop (List.length options - maxNumberOfDropdownItems) optionsThatCouldBeShown)
+                                        DropdownOptions (OptionList.drop (OptionList.length optionList - maxNumberOfDropdownItems) optionsThatCouldBeShown)
 
                                     else if index - half < 0 then
                                         -- The "window" runs off the "head" of the list, so just take the first options
-                                        DropdownOptions (List.take maxNumberOfDropdownItems optionsThatCouldBeShown)
+                                        DropdownOptions (OptionList.take maxNumberOfDropdownItems optionsThatCouldBeShown)
 
                                     else
-                                        DropdownOptions (options |> List.drop (index + 1 - half) |> List.take maxNumberOfDropdownItems)
+                                        DropdownOptions (optionList |> OptionList.drop (index + 1 - half) |> OptionList.take maxNumberOfDropdownItems)
 
                     Nothing ->
-                        DropdownOptions (List.take maxNumberOfDropdownItems options)
+                        DropdownOptions (OptionList.take maxNumberOfDropdownItems optionList)
 
         OutputStyle.NoLimitToDropdownItems ->
             DropdownOptions optionsThatCouldBeShown
 
 
-figureOutWhichOptionsToShowInTheDropdownThatAreNotSelected : SelectionConfig -> List Option -> DropdownOptions
-figureOutWhichOptionsToShowInTheDropdownThatAreNotSelected selectionConfig options =
+figureOutWhichOptionsToShowInTheDropdownThatAreNotSelected : SelectionConfig -> OptionList -> DropdownOptions
+figureOutWhichOptionsToShowInTheDropdownThatAreNotSelected selectionConfig optionList =
     let
         visibleOptions =
-            figureOutWhichOptionsToShowInTheDropdown selectionConfig options |> getOptions
+            figureOutWhichOptionsToShowInTheDropdown selectionConfig optionList |> getOptions
     in
-    DropdownOptionsThatAreNotSelected (OptionsUtilities.notSelectedOptions visibleOptions)
+    DropdownOptionsThatAreNotSelected (OptionList.unselectedOptions visibleOptions)
 
 
-getOptions : DropdownOptions -> List Option
+filterOptionsToShowInDropdown : SelectionConfig -> OptionList -> OptionList
+filterOptionsToShowInDropdown selectionConfig =
+    filterOptionsToShowInDropdownByOptionDisplay selectionConfig
+        >> filterOptionsToShowInDropdownBySearchScore
+
+
+filterOptionsToShowInDropdownByOptionDisplay : SelectionConfig -> OptionList -> OptionList
+filterOptionsToShowInDropdownByOptionDisplay selectionConfig =
+    case SelectionMode.getSelectionMode selectionConfig of
+        SelectionMode.SingleSelect ->
+            OptionList.filter
+                (\option ->
+                    case Option.getOptionDisplay option of
+                        OptionShown age ->
+                            case age of
+                                OptionDisplay.NewOption ->
+                                    False
+
+                                OptionDisplay.MatureOption ->
+                                    True
+
+                        OptionHidden ->
+                            False
+
+                        OptionSelected _ age ->
+                            case age of
+                                OptionDisplay.NewOption ->
+                                    False
+
+                                OptionDisplay.MatureOption ->
+                                    True
+
+                        OptionSelectedPendingValidation _ ->
+                            True
+
+                        OptionSelectedAndInvalid _ _ ->
+                            False
+
+                        OptionSelectedHighlighted _ ->
+                            True
+
+                        OptionHighlighted ->
+                            True
+
+                        OptionDisabled age ->
+                            case age of
+                                OptionDisplay.NewOption ->
+                                    False
+
+                                OptionDisplay.MatureOption ->
+                                    True
+
+                        OptionActivated ->
+                            True
+                )
+
+        SelectionMode.MultiSelect ->
+            OptionList.filter
+                (\option ->
+                    case Option.getOptionDisplay option of
+                        OptionShown age ->
+                            case age of
+                                OptionDisplay.NewOption ->
+                                    False
+
+                                OptionDisplay.MatureOption ->
+                                    True
+
+                        OptionHidden ->
+                            False
+
+                        OptionSelected _ age ->
+                            case age of
+                                OptionDisplay.NewOption ->
+                                    False
+
+                                OptionDisplay.MatureOption ->
+                                    True
+
+                        OptionSelectedPendingValidation _ ->
+                            True
+
+                        OptionSelectedAndInvalid _ _ ->
+                            False
+
+                        OptionSelectedHighlighted _ ->
+                            False
+
+                        OptionHighlighted ->
+                            True
+
+                        OptionDisabled age ->
+                            case age of
+                                OptionDisplay.NewOption ->
+                                    False
+
+                                OptionDisplay.MatureOption ->
+                                    True
+
+                        OptionActivated ->
+                            True
+                )
+
+
+filterOptionsToShowInDropdownBySearchScore : OptionList -> OptionList
+filterOptionsToShowInDropdownBySearchScore optionList =
+    case OptionList.findLowestSearchScore optionList of
+        Just lowScore ->
+            OptionList.filter
+                (\option ->
+                    Option.isOptionBelowScore (OptionSearchFilter.lowScoreCutOff lowScore) option
+                        || Option.isCustomOption option
+                )
+                optionList
+
+        Nothing ->
+            optionList
+
+
+getOptions : DropdownOptions -> OptionList
 getOptions dropdownOptions =
     case dropdownOptions of
         DropdownOptions options ->
@@ -113,30 +234,30 @@ getOptions dropdownOptions =
 
 isEmpty : DropdownOptions -> Bool
 isEmpty dropdownOptions =
-    dropdownOptions |> getOptions |> List.isEmpty
+    dropdownOptions |> getOptions |> OptionList.isEmpty
 
 
 length : DropdownOptions -> Int
 length dropdownOptions =
-    dropdownOptions |> getOptions |> List.length
+    dropdownOptions |> getOptions |> OptionList.length
 
 
 head : DropdownOptions -> Maybe Option
 head dropdownOptions =
-    dropdownOptions |> getOptions |> List.head
+    dropdownOptions |> getOptions |> OptionList.head
 
 
 valuesAsStrings : DropdownOptions -> List String
 valuesAsStrings dropdownOptions =
-    dropdownOptions |> getOptions |> List.map Option.getOptionValueAsString
+    dropdownOptions |> getOptions |> OptionList.getOptions |> List.map Option.getOptionValueAsString
 
 
-test_getOptions : DropdownOptions -> List Option
+test_getOptions : DropdownOptions -> OptionList
 test_getOptions dropdownOptions =
     getOptions dropdownOptions
 
 
-test_fromOptions : List Option -> DropdownOptions
+test_fromOptions : OptionList -> DropdownOptions
 test_fromOptions options =
     DropdownOptions options
 
@@ -145,6 +266,7 @@ getSearchFilters : DropdownOptions -> List (Maybe OptionSearchFilter)
 getSearchFilters dropdownOptions =
     dropdownOptions
         |> getOptions
+        |> OptionList.getOptions
         |> List.map
             (\option ->
                 Option.getMaybeOptionSearchFilter option
@@ -156,13 +278,13 @@ groupInOrder dropdownOptions =
     let
         helper : Option -> Option -> Bool
         helper optionA optionB =
-            getOptionGroup optionA == getOptionGroup optionB
+            Option.getOptionGroup optionA == Option.getOptionGroup optionB
     in
-    List.Extra.groupWhile helper (getOptions dropdownOptions)
+    List.Extra.groupWhile helper (dropdownOptions |> getOptions |> OptionList.getOptions)
         |> List.map
             (\( firstOption, restOfOptions ) ->
-                ( getOptionGroup firstOption
-                , DropdownOptions (firstOption :: restOfOptions)
+                ( Option.getOptionGroup firstOption
+                , DropdownOptions (OptionList.optionsPlusOne firstOption restOfOptions)
                 )
             )
 
@@ -171,39 +293,39 @@ maybeFirstOptionSearchFilter : DropdownOptions -> Maybe OptionSearchFilter
 maybeFirstOptionSearchFilter dropdownOptions =
     case dropdownOptions of
         DropdownOptions options ->
-            List.head options
+            OptionList.head options
                 |> Maybe.andThen Option.getMaybeOptionSearchFilter
 
         DropdownOptionsThatAreNotSelected options ->
-            List.head options
+            OptionList.head options
                 |> Maybe.andThen Option.getMaybeOptionSearchFilter
 
 
-moveHighlightedOptionUp : SelectionConfig -> List Option -> List Option
-moveHighlightedOptionUp selectionConfig allOptions =
+moveHighlightedOptionUp : SelectionConfig -> OptionList -> OptionList
+moveHighlightedOptionUp selectionConfig optionList =
     let
         visibleOptions =
-            figureOutWhichOptionsToShowInTheDropdown selectionConfig allOptions |> getOptions
+            figureOutWhichOptionsToShowInTheDropdown selectionConfig optionList |> getOptions
 
         maybeHigherSibling =
             visibleOptions
-                |> findHighlightedOrSelectedOptionIndex
-                |> Maybe.andThen (\index -> findClosestHighlightableOptionGoingUp selectionConfig index visibleOptions)
+                |> OptionList.findHighlightedOrSelectedOptionIndex
+                |> Maybe.andThen (\index -> OptionList.findClosestHighlightableOptionGoingUp selectionConfig index visibleOptions)
     in
     case maybeHigherSibling of
         Just option ->
-            highlightOptionInList option allOptions
+            OptionList.highlightOption option optionList
 
         Nothing ->
-            case List.head visibleOptions of
+            case OptionList.head visibleOptions of
                 Just firstOption ->
-                    highlightOptionInList firstOption allOptions
+                    OptionList.highlightOption firstOption optionList
 
                 Nothing ->
-                    allOptions
+                    optionList
 
 
-moveHighlightedOptionDown : SelectionConfig -> List Option -> List Option
+moveHighlightedOptionDown : SelectionConfig -> OptionList -> OptionList
 moveHighlightedOptionDown selectionConfig allOptions =
     let
         visibleOptions =
@@ -211,26 +333,26 @@ moveHighlightedOptionDown selectionConfig allOptions =
 
         maybeLowerSibling =
             visibleOptions
-                |> findHighlightedOrSelectedOptionIndex
-                |> Maybe.andThen (\index -> findClosestHighlightableOptionGoingDown selectionConfig index visibleOptions)
+                |> OptionList.findHighlightedOrSelectedOptionIndex
+                |> Maybe.andThen (\index -> OptionList.findClosestHighlightableOptionGoingDown selectionConfig index visibleOptions)
     in
     case maybeLowerSibling of
         Just option ->
-            highlightOptionInList option allOptions
+            OptionList.highlightOption option allOptions
 
         Nothing ->
             -- If there is not a lower sibling to highlight, jump up to the top of the list, and see
             --  if there is a sibling to highlight at the top of the dropdown. There might not be,
             --  the dropdown might be empty or all the options might be selected.
-            case findClosestHighlightableOptionGoingDown selectionConfig 0 visibleOptions of
+            case OptionList.findClosestHighlightableOptionGoingDown selectionConfig 0 visibleOptions of
                 Just firstOption ->
-                    highlightOptionInList firstOption allOptions
+                    OptionList.highlightOption firstOption allOptions
 
                 Nothing ->
                     allOptions
 
 
-moveHighlightedOptionDownIfThereAreOptions : SelectionConfig -> List Option -> List Option
+moveHighlightedOptionDownIfThereAreOptions : SelectionConfig -> OptionList -> OptionList
 moveHighlightedOptionDownIfThereAreOptions selectionConfig options =
     let
         visibleOptions =
@@ -258,10 +380,10 @@ optionsToCustomHtml : DropdownItemEventListeners msg -> SelectionConfig -> Dropd
 optionsToCustomHtml dropdownItemEventListeners selectionConfig dropdownOptions =
     case dropdownOptions of
         DropdownOptions options ->
-            List.map (optionToCustomHtml dropdownItemEventListeners selectionConfig) options
+            OptionList.andMap (optionToCustomHtml dropdownItemEventListeners selectionConfig) options
 
         DropdownOptionsThatAreNotSelected options ->
-            List.map (optionToCustomHtml dropdownItemEventListeners selectionConfig) options
+            OptionList.andMap (optionToCustomHtml dropdownItemEventListeners selectionConfig) options
 
 
 valueDataAttribute : Option -> Html.Attribute msg
@@ -280,7 +402,7 @@ optionToCustomHtml eventHandlers selectionConfig_ option_ =
             let
                 descriptionHtml : Html msg
                 descriptionHtml =
-                    if option |> Option.getOptionDescription |> Option.optionDescriptionToBool then
+                    if option |> Option.hasDescription then
                         case Option.getMaybeOptionSearchFilter option of
                             Just optionSearchFilter ->
                                 div
@@ -298,7 +420,7 @@ optionToCustomHtml eventHandlers selectionConfig_ option_ =
                                     [ span []
                                         [ option
                                             |> Option.getOptionDescription
-                                            |> Option.optionDescriptionToString
+                                            |> OptionDescription.toString
                                             |> text
                                         ]
                                     ]
@@ -416,7 +538,7 @@ optionToCustomHtml eventHandlers selectionConfig_ option_ =
 
 dropdownOptionsToDatalistOption : DropdownOptions -> List (Html msg)
 dropdownOptionsToDatalistOption dropdownOptions =
-    List.map optionToDatalistOption (getOptions dropdownOptions)
+    OptionList.andMap optionToDatalistOption (getOptions dropdownOptions)
 
 
 optionToDatalistOption : Option -> Html msg
@@ -426,7 +548,7 @@ optionToDatalistOption option =
 
 dropdownOptionsToSlottedOptionsHtml : DropdownItemEventListeners msg -> DropdownOptions -> List (Html msg)
 dropdownOptionsToSlottedOptionsHtml eventHandlers options =
-    List.map (optionToSlottedOptionHtml eventHandlers) (getOptions options)
+    OptionList.andMap (optionToSlottedOptionHtml eventHandlers) (getOptions options)
 
 
 optionToSlottedOptionHtml : DropdownItemEventListeners msg -> Option -> Html msg

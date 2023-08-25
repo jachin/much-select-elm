@@ -1,4 +1,4 @@
-module OptionValue exposing (OptionValue(..), decoder, isEmpty, length, optionValueToString, stringToOptionValue)
+module OptionValue exposing (OptionValue(..), decoder, equals, isEmpty, length, optionValueToString, stringToOptionValue)
 
 import Json.Decode
 
@@ -36,6 +36,11 @@ length optionValue =
 
         EmptyOptionValue ->
             0
+
+
+equals : OptionValue -> OptionValue -> Bool
+equals a b =
+    a == b
 
 
 isEmpty : OptionValue -> Bool

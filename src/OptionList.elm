@@ -1,14 +1,20 @@
-module OptionList exposing (OptionList(..), activateOptionInListByOptionValue, findClosestHighlightableOptionGoingDown, findClosestHighlightableOptionGoingUp, selectOptionByOptionValueWithIndex, selectOptionIByValueStringWithIndex, selectOptionInList)
+module OptionList exposing (OptionList(..), activateOptionInListByOptionValue, andMap, append, appendOptions, drop, filter, findClosestHighlightableOptionGoingDown, findClosestHighlightableOptionGoingUp, findHighlightedOption, findHighlightedOptionIndex, findHighlightedOrSelectedOptionIndex, findLowestSearchScore, getOptions, head, highlightFirstOptionInList, highlightOption, highlightOptionByValue, isEmpty, length, map, optionsPlusOne, prependCustomOption, removeHighlightedOptionByValue, selectOptionByOptionValueWithIndex, selectOptionIByValueStringWithIndex, selectOptionInList, sortOptionsByBestScore, take, toggleSelectedHighlightByOptionValue, unselectedOptions, updateDatalistOptionWithValueBySelectedValueIndex, updateDatalistOptionsWithValue, updateDatalistOptionsWithValueAndErrors)
 
 import DatalistOption
 import FancyOption
 import List.Extra
+import Maybe.Extra
 import Option exposing (Option)
+import OptionDisplay
 import OptionLabel exposing (OptionLabel)
+import OptionSearchFilter exposing (OptionSearchFilterWithValue)
 import OptionValue exposing (OptionValue)
+import OutputStyle exposing (SelectedItemPlacementMode(..))
+import PositiveInt
 import SearchString exposing (SearchString)
 import SelectionMode exposing (SelectionConfig, SelectionMode(..))
 import SortRank exposing (SortRank)
+import TransformAndValidate exposing (ValidationFailureMessage)
 
 
 type OptionList
@@ -43,6 +49,19 @@ map function optionList =
             SlottedOptionList (List.map function options)
 
 
+andMap : (Option -> a) -> OptionList -> List a
+andMap function optionList =
+    case optionList of
+        FancyOptionList options ->
+            List.map function options
+
+        DatalistOptionList options ->
+            List.map function options
+
+        SlottedOptionList options ->
+            List.map function options
+
+
 indexedMap : (Int -> Option -> Option) -> OptionList -> OptionList
 indexedMap function optionList =
     case optionList of
@@ -54,6 +73,19 @@ indexedMap function optionList =
 
         SlottedOptionList options ->
             SlottedOptionList (List.indexedMap function options)
+
+
+mapValues : (Option -> Maybe Option) -> OptionList -> OptionList
+mapValues function optionList =
+    case optionList of
+        FancyOptionList options ->
+            FancyOptionList (List.map function options |> Maybe.Extra.values)
+
+        DatalistOptionList options ->
+            DatalistOptionList (List.map function options |> Maybe.Extra.values)
+
+        SlottedOptionList options ->
+            SlottedOptionList (List.map function options |> Maybe.Extra.values)
 
 
 head : OptionList -> Maybe Option
@@ -93,6 +125,19 @@ length optionList =
 
         SlottedOptionList options ->
             List.length options
+
+
+isEmpty : OptionList -> Bool
+isEmpty optionList =
+    case optionList of
+        FancyOptionList options ->
+            List.isEmpty options
+
+        DatalistOptionList options ->
+            List.isEmpty options
+
+        SlottedOptionList options ->
+            List.isEmpty options
 
 
 foldl : (Option -> b -> b) -> b -> OptionList -> b
@@ -160,6 +205,19 @@ any function optionList =
             List.any function options
 
 
+all : (Option -> Bool) -> OptionList -> Bool
+all function optionList =
+    case optionList of
+        FancyOptionList options ->
+            List.all function options
+
+        DatalistOptionList options ->
+            List.all function options
+
+        SlottedOptionList options ->
+            List.all function options
+
+
 uniqueBy : (Option -> comparable) -> OptionList -> OptionList
 uniqueBy function optionList =
     case optionList of
@@ -186,9 +244,27 @@ find function optionList =
             List.Extra.find function options
 
 
+findIndex : (Option -> Bool) -> OptionList -> Maybe Int
+findIndex function optionList =
+    case optionList of
+        FancyOptionList options ->
+            List.Extra.findIndex function options
+
+        DatalistOptionList options ->
+            List.Extra.findIndex function options
+
+        SlottedOptionList options ->
+            List.Extra.findIndex function options
+
+
 findByValue : OptionValue -> OptionList -> Maybe Option
 findByValue optionValue optionList =
     find (Option.optionEqualsOptionValue optionValue) optionList
+
+
+findOptionByValue : Option -> OptionList -> Maybe Option
+findOptionByValue option optionList =
+    findByValue (Option.getOptionValue option) optionList
 
 
 append : OptionList -> OptionList -> OptionList
@@ -219,6 +295,68 @@ append optionListA optionListB =
                     optionListA
 
 
+appendOptions : List Option -> List Option -> OptionList
+appendOptions optionsA optionsB =
+    if isFancyOptions optionsA then
+        FancyOptionList (optionsA ++ optionsB)
+
+    else if isDatalistOptions optionsA then
+        DatalistOptionList (optionsA ++ optionsB)
+
+    else if isSlottedOptions optionsA then
+        SlottedOptionList (optionsA ++ optionsB)
+
+    else
+        FancyOptionList []
+
+
+optionsPlusOne : Option -> List Option -> OptionList
+optionsPlusOne option options =
+    appendOptions [ option ] options
+
+
+isFancyOptions : List Option -> Bool
+isFancyOptions options =
+    List.all
+        (\option ->
+            case option of
+                Option.FancyOption _ ->
+                    True
+
+                _ ->
+                    False
+        )
+        options
+
+
+isDatalistOptions : List Option -> Bool
+isDatalistOptions options =
+    List.all
+        (\option ->
+            case option of
+                Option.DatalistOption _ ->
+                    True
+
+                _ ->
+                    False
+        )
+        options
+
+
+isSlottedOptions : List Option -> Bool
+isSlottedOptions options =
+    List.all
+        (\option ->
+            case option of
+                Option.SlottedOption _ ->
+                    True
+
+                _ ->
+                    False
+        )
+        options
+
+
 take : Int -> OptionList -> OptionList
 take int optionList =
     case optionList of
@@ -235,6 +373,22 @@ take int optionList =
                 |> SlottedOptionList
 
 
+drop : Int -> OptionList -> OptionList
+drop int optionList =
+    case optionList of
+        FancyOptionList options ->
+            List.drop int options
+                |> FancyOptionList
+
+        DatalistOptionList options ->
+            List.drop int options
+                |> DatalistOptionList
+
+        SlottedOptionList options ->
+            List.drop int options
+                |> SlottedOptionList
+
+
 findClosestHighlightableOptionGoingUp : SelectionConfig -> Int -> OptionList -> Maybe Option
 findClosestHighlightableOptionGoingUp selectionConfig index list =
     List.Extra.splitAt index (getOptions list)
@@ -248,6 +402,26 @@ findClosestHighlightableOptionGoingDown selectionConfig index list =
     List.Extra.splitAt index (getOptions list)
         |> Tuple.second
         |> List.Extra.find (Option.optionIsHighlightable selectionConfig)
+
+
+findHighlightedOption : OptionList -> Maybe Option
+findHighlightedOption optionList =
+    find (\option -> Option.isOptionHighlighted option) optionList
+
+
+findHighlightedOptionIndex : OptionList -> Maybe Int
+findHighlightedOptionIndex optionList =
+    findIndex (\option -> Option.isOptionHighlighted option) optionList
+
+
+findHighlightedOrSelectedOptionIndex : OptionList -> Maybe Int
+findHighlightedOrSelectedOptionIndex optionList =
+    case findHighlightedOptionIndex optionList of
+        Just index ->
+            Just index
+
+        Nothing ->
+            findSelectedOptionIndex optionList
 
 
 selectOptionInList : Option -> OptionList -> OptionList
@@ -565,14 +739,19 @@ clearAnyUnselectedCustomOptions optionsList =
     filter (\option -> not (Option.isCustomOption option && not (Option.isOptionSelected option))) optionsList
 
 
-isOptionValueInListOfOptionsByValue : OptionValue -> OptionList -> Bool
-isOptionValueInListOfOptionsByValue optionValue optionsList =
+hasOptionValue : OptionValue -> OptionList -> Bool
+hasOptionValue optionValue optionsList =
     any (Option.optionEqualsOptionValue optionValue) optionsList
 
 
-isOptionInListOfOptionsByValue : Option -> OptionList -> Bool
-isOptionInListOfOptionsByValue option optionsList =
-    isOptionValueInListOfOptionsByValue (Option.getOptionValue option) optionsList
+hasOptionByValue : Option -> OptionList -> Bool
+hasOptionByValue option optionsList =
+    hasOptionValue (Option.getOptionValue option) optionsList
+
+
+hasOptionByValueString : String -> OptionList -> Bool
+hasOptionByValueString string optionList =
+    hasOptionValue (OptionValue.stringToOptionValue string) optionList
 
 
 equal : OptionList -> OptionList -> Bool
@@ -597,7 +776,7 @@ addAdditionalOptionsToOptionList currentOptions newOptions =
 
         reallyNewOptions : OptionList
         reallyNewOptions =
-            filter (\newOption_ -> not (isOptionInListOfOptionsByValue newOption_ currentOptions)) newOptions
+            filter (\newOption_ -> not (hasOptionByValue newOption_ currentOptions)) newOptions
     in
     append reallyNewOptions currentOptionsWithUpdates
 
@@ -653,7 +832,7 @@ findHighestAutoSortRank optionList =
 
 removeOptionsFromOptionList : OptionList -> OptionList -> OptionList
 removeOptionsFromOptionList optionList optionsToRemove =
-    filter (\option -> not (isOptionInListOfOptionsByValue option optionsToRemove)) optionList
+    filter (\option -> not (hasOptionByValue option optionsToRemove)) optionList
 
 
 removeOptionFromOptionListBySelectedIndex : Int -> OptionList -> OptionList
@@ -680,6 +859,15 @@ removeEmptyOptions optionList =
     filter (Option.isEmptyOption >> not) optionList
 
 
+removeHighlightedOptionByValue : OptionValue -> OptionList -> OptionList
+removeHighlightedOptionByValue optionValue optionList =
+    filter
+        (\option_ ->
+            Option.optionEqualsOptionValue optionValue option_ && Option.isOptionHighlighted option_
+        )
+        optionList
+
+
 reIndexSelectedOptions : OptionList -> OptionList
 reIndexSelectedOptions optionList =
     let
@@ -693,11 +881,6 @@ reIndexSelectedOptions optionList =
     in
     indexedMap (\index option -> Option.selectOption index option) selectedOptions_
         |> append nonSelectedOptions
-
-
-unhighlightSelectedOptions : OptionList -> OptionList
-unhighlightSelectedOptions optionList =
-    map Option.removeHighlightFromOption optionList
 
 
 deselectOptions : OptionList -> OptionList -> OptionList
@@ -765,8 +948,41 @@ findSelectedOption optionList =
     find Option.isOptionSelected optionList
 
 
-toggleSelectedHighlightByOptionValue : OptionList -> OptionValue -> List Option
-toggleSelectedHighlightByOptionValue optionList optionValue =
+findSelectedOptionIndex : OptionList -> Maybe Int
+findSelectedOptionIndex optionList =
+    findIndex Option.isOptionSelected optionList
+
+
+highlightOptionByValue : OptionValue -> OptionList -> OptionList
+highlightOptionByValue optionValue optionList =
+    optionList
+        |> map
+            (\option ->
+                if Option.optionEqualsOptionValue optionValue option then
+                    Option.highlightOption option
+
+                else
+                    option
+            )
+
+
+highlightOption : Option -> OptionList -> OptionList
+highlightOption option optionList =
+    highlightOptionByValue (Option.getOptionValue option) optionList
+
+
+highlightFirstOptionInList : OptionList -> OptionList
+highlightFirstOptionInList options =
+    case head options of
+        Just firstOption ->
+            highlightOption firstOption options
+
+        Nothing ->
+            options
+
+
+toggleSelectedHighlightByOptionValue : OptionValue -> OptionList -> OptionList
+toggleSelectedHighlightByOptionValue optionValue optionList =
     optionList
         |> map
             (\option ->
@@ -776,12 +992,16 @@ toggleSelectedHighlightByOptionValue optionList optionValue =
                 else
                     option
             )
-        |> getOptions
 
 
 hasSelectedHighlightedOptions : OptionList -> Bool
 hasSelectedHighlightedOptions optionList =
     any Option.isOptionSelectedHighlighted optionList
+
+
+unhighlightSelectedOptions : OptionList -> OptionList
+unhighlightSelectedOptions optionList =
+    map Option.removeHighlightFromOption optionList
 
 
 {-|
@@ -863,3 +1083,511 @@ updatedDatalistSelectedOptions selectedValues optionList =
                 |> removeEmptyOptions
     in
     append selectedOptions_ optionsForTheDatasetHints
+
+
+prependCustomOption : Maybe String -> SearchString -> OptionList -> OptionList
+prependCustomOption maybeCustomOptionHint searchString options =
+    let
+        label : String
+        label =
+            case maybeCustomOptionHint of
+                Just customOptionHint ->
+                    let
+                        parts =
+                            String.split "{{}}" customOptionHint
+                    in
+                    case parts of
+                        [] ->
+                            "Add " ++ SearchString.toString searchString ++ "…"
+
+                        [ _ ] ->
+                            customOptionHint ++ SearchString.toString searchString
+
+                        first :: second :: _ ->
+                            first ++ SearchString.toString searchString ++ second
+
+                Nothing ->
+                    "Add " ++ SearchString.toString searchString ++ "…"
+    in
+    append
+        (FancyOptionList
+            [ Option.FancyOption
+                (FancyOption.newCustomOption label (Just label))
+            ]
+        )
+        options
+
+
+findLowestSearchScore : OptionList -> Maybe Int
+findLowestSearchScore optionList =
+    let
+        lowSore =
+            optionList
+                |> filter (\option -> not (Option.isCustomOption option))
+                |> optionSearchResultsBestScore
+                |> List.foldl
+                    (\optionBestScore lowScore ->
+                        if optionBestScore < lowScore then
+                            optionBestScore
+
+                        else
+                            lowScore
+                    )
+                    OptionSearchFilter.impossiblyLowScore
+    in
+    if lowSore == OptionSearchFilter.impossiblyLowScore then
+        Nothing
+
+    else
+        Just lowSore
+
+
+optionSearchResultsBestScore : OptionList -> List Int
+optionSearchResultsBestScore optionList =
+    optionList
+        |> getOptions
+        |> List.map Option.getMaybeOptionSearchFilter
+        |> Maybe.Extra.values
+        |> List.map .bestScore
+
+
+sortOptionsByBestScore : OptionList -> OptionList
+sortOptionsByBestScore optionList =
+    sortBy
+        (\option ->
+            if Option.isCustomOption option then
+                1
+
+            else
+                Option.getMaybeOptionSearchFilter option
+                    |> Maybe.map .bestScore
+                    |> Maybe.withDefault OptionSearchFilter.impossiblyLowScore
+        )
+        optionList
+
+
+updateDatalistOptionsWithValue : OptionValue -> Int -> OptionList -> OptionList
+updateDatalistOptionsWithValue optionValue selectedValueIndex optionList =
+    if any (Option.hasSelectedItemIndex selectedValueIndex) optionList then
+        updateDatalistOptionWithValueBySelectedValueIndex [] optionValue selectedValueIndex optionList
+
+    else
+        append
+            (DatalistOptionList
+                [ Option.DatalistOption (DatalistOption.newSelectedDatalistOption optionValue selectedValueIndex)
+                ]
+            )
+            optionList
+
+
+updateDatalistOptionsWithPendingValidation : OptionValue -> Int -> OptionList -> OptionList
+updateDatalistOptionsWithPendingValidation optionValue selectedValueIndex optionList =
+    if any (Option.hasSelectedItemIndex selectedValueIndex) optionList then
+        updateDatalistOptionWithValueBySelectedValueIndexPendingValidation optionValue selectedValueIndex optionList
+
+    else
+        append
+            (DatalistOptionList
+                [ Option.DatalistOption
+                    (DatalistOption.newSelectedDatalistOptionPendingValidation optionValue selectedValueIndex)
+                ]
+            )
+            optionList
+
+
+updateDatalistOptionsWithValueAndErrors : List ValidationFailureMessage -> OptionValue -> Int -> OptionList -> OptionList
+updateDatalistOptionsWithValueAndErrors errors optionValue selectedValueIndex optionList =
+    if any (Option.hasSelectedItemIndex selectedValueIndex) optionList then
+        updateDatalistOptionWithValueBySelectedValueIndex errors optionValue selectedValueIndex optionList
+
+    else
+        append
+            (DatalistOptionList
+                [ Option.DatalistOption
+                    (DatalistOption.newSelectedDatalistOptionWithErrors errors optionValue selectedValueIndex)
+                ]
+            )
+            optionList
+
+
+updateDatalistOptionWithValueBySelectedValueIndex : List ValidationFailureMessage -> OptionValue -> Int -> OptionList -> OptionList
+updateDatalistOptionWithValueBySelectedValueIndex errors optionValue selectedIndex optionList =
+    if List.isEmpty errors then
+        map
+            (\option ->
+                if Option.getOptionSelectedIndex option == selectedIndex then
+                    Option.setOptionValue optionValue option
+                        |> Option.setOptionDisplay (OptionDisplay.OptionSelected selectedIndex OptionDisplay.MatureOption)
+
+                else
+                    option
+            )
+            optionList
+
+    else
+        map
+            (\option ->
+                if Option.getOptionSelectedIndex option == selectedIndex then
+                    option
+                        |> Option.setOptionValue optionValue
+                        |> Option.setOptionValueErrors errors
+
+                else
+                    option
+            )
+            optionList
+
+
+updateDatalistOptionWithValueBySelectedValueIndexPendingValidation : OptionValue -> Int -> OptionList -> OptionList
+updateDatalistOptionWithValueBySelectedValueIndexPendingValidation optionValue selectedIndex optionList =
+    map
+        (\option ->
+            if Option.getOptionSelectedIndex option == selectedIndex then
+                Option.setOptionValue optionValue option
+                    |> Option.setOptionDisplay (OptionDisplay.OptionSelectedPendingValidation selectedIndex)
+
+            else
+                option
+        )
+        optionList
+
+
+addNewEmptyOptionAtIndex : Int -> OptionList -> OptionList
+addNewEmptyOptionAtIndex index optionList =
+    let
+        firstPart =
+            take index optionList
+
+        secondPart =
+            drop index optionList
+    in
+    append
+        (append
+            firstPart
+            (DatalistOptionList
+                [ Option.DatalistOption
+                    (DatalistOption.new OptionValue.EmptyOptionValue)
+                ]
+            )
+        )
+        secondPart
+        |> reIndexSelectedOptions
+
+
+replaceOptions : SelectionConfig -> OptionList -> OptionList -> OptionList
+replaceOptions selectionConfig oldOptions newOptions =
+    let
+        oldSelectedOptions : OptionList
+        oldSelectedOptions =
+            case SelectionMode.getSelectionMode selectionConfig of
+                SelectionMode.SingleSelect ->
+                    if hasSelectedOption newOptions then
+                        case oldOptions of
+                            FancyOptionList _ ->
+                                FancyOptionList []
+
+                            DatalistOptionList _ ->
+                                DatalistOptionList []
+
+                            SlottedOptionList _ ->
+                                SlottedOptionList []
+
+                    else
+                        selectedOptions oldOptions
+
+                SelectionMode.MultiSelect ->
+                    selectedOptions oldOptions
+                        |> transformOptionsToOutputStyle (SelectionMode.getOutputStyle selectionConfig)
+    in
+    case SelectionMode.getOutputStyle selectionConfig of
+        SelectionMode.CustomHtml ->
+            case SelectionMode.getSelectionMode selectionConfig of
+                SelectionMode.SingleSelect ->
+                    mergeTwoListsOfOptionsPreservingSelectedOptions
+                        (SelectionMode.getSelectionMode selectionConfig)
+                        (SelectionMode.getSelectedItemPlacementMode selectionConfig)
+                        oldSelectedOptions
+                        newOptions
+
+                SelectionMode.MultiSelect ->
+                    mergeTwoListsOfOptionsPreservingSelectedOptions
+                        (SelectionMode.getSelectionMode selectionConfig)
+                        SelectedItemStaysInPlace
+                        oldSelectedOptions
+                        newOptions
+
+        SelectionMode.Datalist ->
+            let
+                optionsForTheDatasetHints =
+                    newOptions
+                        |> filter (Option.isOptionSelected >> not)
+                        |> map Option.deselectOption
+                        |> uniqueBy Option.getOptionValueAsString
+                        |> removeEmptyOptions
+
+                --TODO add any new selected options from the new options.
+                -- This is only going to be helpful when changing the selected attribute options in the DOM
+                newSelectedOptions =
+                    oldSelectedOptions
+            in
+            append newSelectedOptions optionsForTheDatasetHints
+
+
+{-| This function is a little strange but here's what it does. It takes 2 lists of options.
+First it looks to see if any option values the second list match any option values in the first list
+If they do it takes the label, description, and group from the option in second list and uses it to update
+the option in the first list.
+
+Then it concatenates the 2 lists together and filters them by unique option value, dropping identical
+values later in the list.
+
+The idea here is that the label, description, and group can be updated for existing option and new options
+can be added at the same time.
+
+One place this comes up is when we have an initial value for a MuchSelect, and then later the "full" list of options
+comes in, including the extra stuff (like label, description, and group).
+|
+
+-}
+mergeTwoListsOfOptionsPreservingSelectedOptions : SelectionMode.SelectionMode -> SelectedItemPlacementMode -> OptionList -> OptionList -> OptionList
+mergeTwoListsOfOptionsPreservingSelectedOptions selectionMode selectedItemPlacementMode optionsA optionsB =
+    let
+        updatedOptionsA =
+            map
+                (\optionA ->
+                    case findOptionByValue optionA optionsB of
+                        Just optionB ->
+                            Option.merge optionA optionB
+
+                        Nothing ->
+                            optionA
+                )
+                optionsA
+
+        updatedOptionsB =
+            map
+                (\optionB ->
+                    case findOptionByValue optionB optionsA of
+                        Just optionA ->
+                            Option.merge optionA optionB
+
+                        Nothing ->
+                            optionB
+                )
+                optionsB
+
+        superList =
+            case selectedItemPlacementMode of
+                SelectedItemStaysInPlace ->
+                    append updatedOptionsB updatedOptionsA
+
+                SelectedItemMovesToTheTop ->
+                    append updatedOptionsA updatedOptionsB
+
+                SelectedItemIsHidden ->
+                    append updatedOptionsB updatedOptionsA
+
+        newOptions =
+            uniqueBy Option.getOptionValueAsString superList
+    in
+    setSelectedOptionInNewOptions selectionMode superList newOptions
+
+
+{-| This takes a list of strings and a list of options.
+Then it selects any matching options (looking at values of the options).
+
+It also deselects any options that are NOT in the the list of string.
+
+-}
+selectOptionsInOptionsListByString : List String -> OptionList -> OptionList
+selectOptionsInOptionsListByString strings options =
+    let
+        optionsToSelect : List Option
+        optionsToSelect =
+            filter (Option.isOptionValueInListOfStrings strings) options
+                |> getOptions
+    in
+    selectOptions optionsToSelect options
+        |> deselectEveryOptionExceptOptionsInList optionsToSelect
+
+
+setSelectedOptionInNewOptions : SelectionMode.SelectionMode -> OptionList -> OptionList -> OptionList
+setSelectedOptionInNewOptions selectionMode oldOptions newOptions =
+    let
+        oldSelectedOption : OptionList
+        oldSelectedOption =
+            oldOptions |> selectedOptions
+
+        newSelectedOptions : OptionList
+        newSelectedOptions =
+            filter (\newOption_ -> hasOptionByValue newOption_ oldSelectedOption) newOptions
+    in
+    case selectionMode of
+        SelectionMode.SingleSelect ->
+            newOptions
+                |> deselectAll
+                |> selectOptions (take 1 newSelectedOptions |> getOptions)
+
+        SelectionMode.MultiSelect ->
+            selectOptions (newSelectedOptions |> getOptions) newOptions
+
+
+transformOptionsToOutputStyle : SelectionMode.OutputStyle -> OptionList -> OptionList
+transformOptionsToOutputStyle outputStyle options =
+    mapValues (Option.transformOptionForOutputStyle outputStyle) options
+
+
+selectedOptionsToTuple : OptionList -> List ( String, String )
+selectedOptionsToTuple optionList =
+    optionList |> selectedOptions |> getOptions |> List.map Option.optionToValueLabelTuple
+
+
+{-| Take a list of string that are the values of options and an existing options list.
+For each of these strings, if there is already an option with the same value, select it.
+If there is not an option with the same value, create a new option with the value,
+add it to the end of list of options and select it.
+
+This function should be refactored because there is not enough information here to create
+slotted lists. It should probably fail in the OptionsList type is not something this supports.
+
+-}
+addAndSelectOptionsInOptionsListByString : List String -> OptionList -> OptionList
+addAndSelectOptionsInOptionsListByString strings optionList =
+    let
+        helper : Int -> List String -> OptionList -> OptionList
+        helper index valueStrings optionList_ =
+            case valueStrings of
+                [] ->
+                    optionList_
+
+                [ valueString ] ->
+                    if hasOptionByValueString valueString optionList_ then
+                        selectOptionIByValueStringWithIndex index valueString optionList_
+
+                    else
+                        let
+                            maybeSelectedOptions =
+                                case optionList_ of
+                                    FancyOptionList _ ->
+                                        Just
+                                            (FancyOptionList
+                                                [ Option.FancyOption
+                                                    (FancyOption.newCustomOption valueString (Just valueString)
+                                                        |> FancyOption.select index
+                                                    )
+                                                ]
+                                            )
+
+                                    DatalistOptionList _ ->
+                                        Just
+                                            (DatalistOptionList
+                                                [ Option.DatalistOption
+                                                    (DatalistOption.newSelectedDatalistOption (OptionValue.stringToOptionValue valueString) index)
+                                                ]
+                                            )
+
+                                    SlottedOptionList _ ->
+                                        Nothing
+                        in
+                        case maybeSelectedOptions of
+                            Just selectedOptionsList_ ->
+                                append optionList_ selectedOptionsList_
+
+                            Nothing ->
+                                optionList_
+
+                valueString :: restOfValueStrings ->
+                    if hasOptionByValueString valueString optionList_ then
+                        helper (index + 1) restOfValueStrings (selectOptionIByValueStringWithIndex index valueString optionList_)
+
+                    else
+                        let
+                            maybeSelectedOptions =
+                                case optionList_ of
+                                    FancyOptionList _ ->
+                                        Just
+                                            (FancyOptionList
+                                                [ Option.FancyOption
+                                                    (FancyOption.newCustomOption valueString (Just valueString)
+                                                        |> FancyOption.select index
+                                                    )
+                                                ]
+                                            )
+
+                                    DatalistOptionList _ ->
+                                        Just
+                                            (DatalistOptionList
+                                                [ Option.DatalistOption
+                                                    (DatalistOption.newSelectedDatalistOption (OptionValue.stringToOptionValue valueString) index)
+                                                ]
+                                            )
+
+                                    SlottedOptionList _ ->
+                                        Nothing
+                        in
+                        case maybeSelectedOptions of
+                            Just selectedOptionsList_ ->
+                                helper (index + 1) restOfValueStrings (append optionList_ selectedOptionsList_)
+
+                            Nothing ->
+                                optionList_
+    in
+    helper 0 strings optionList
+
+
+updateOptionsWithNewSearchResults : List OptionSearchFilterWithValue -> OptionList -> OptionList
+updateOptionsWithNewSearchResults optionSearchFilterWithValues optionList =
+    let
+        findNewSearchFilterResult : OptionValue -> List OptionSearchFilterWithValue -> Maybe OptionSearchFilterWithValue
+        findNewSearchFilterResult optionValue results =
+            List.Extra.find (\result -> result.value == optionValue) results
+    in
+    map
+        (\option ->
+            case findNewSearchFilterResult (Option.getOptionValue option) optionSearchFilterWithValues of
+                Just result ->
+                    Option.setOptionSearchFilter result.maybeSearchFilter option
+
+                Nothing ->
+                    Option.setOptionSearchFilter Nothing option
+        )
+        optionList
+
+
+allOptionsAreValid : OptionList -> Bool
+allOptionsAreValid optionList =
+    all Option.isValid optionList
+
+
+hasAnyPendingValidation : OptionList -> Bool
+hasAnyPendingValidation optionList =
+    any Option.isPendingValidation optionList
+
+
+hasAnyValidationErrors : OptionList -> Bool
+hasAnyValidationErrors optionList =
+    any Option.isInvalid optionList
+
+
+setAge : OptionDisplay.OptionAge -> OptionList -> OptionList
+setAge optionAge optionList =
+    map (Option.setOptionDisplayAge optionAge) optionList
+
+
+updateAge : SelectionMode.OutputStyle -> SearchString -> OutputStyle.SearchStringMinimumLength -> OptionList -> OptionList
+updateAge outputStyle searchString searchStringMinimumLength optionList =
+    case outputStyle of
+        SelectionMode.CustomHtml ->
+            case searchStringMinimumLength of
+                OutputStyle.FixedSearchStringMinimumLength min ->
+                    if SearchString.length searchString > PositiveInt.toInt min then
+                        optionList
+
+                    else
+                        setAge OptionDisplay.MatureOption optionList
+
+                OutputStyle.NoMinimumToSearchStringLength ->
+                    optionList
+
+        SelectionMode.Datalist ->
+            setAge OptionDisplay.MatureOption optionList

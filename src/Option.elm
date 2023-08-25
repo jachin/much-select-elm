@@ -13,18 +13,21 @@ module Option exposing
     , getMaybeOptionSearchFilter
     , getOptionDescription
     , getOptionDisplay
+    , getOptionGroup
     , getOptionLabel
     , getOptionSelectedIndex
     , getOptionValidationErrors
     , getOptionValue
     , getOptionValueAsString
     , getSlot
+    , hasDescription
     , hasSelectedItemIndex
     , highlightOption
     , isCustomOption
     , isEmptyOption
     , isEmptyOptionOrHasEmptyValue
     , isInvalid
+    , isOptionBelowScore
     , isOptionHighlighted
     , isOptionSelected
     , isOptionSelectedHighlighted
@@ -37,7 +40,6 @@ module Option exposing
     , optionEqualsOptionValue
     , optionIsHighlightable
     , optionToValueLabelTuple
-    , optionValuesEqual
     , optionsHaveEqualValues
     , removeHighlightFromOption
     , selectOption
@@ -63,10 +65,10 @@ import Json.Encode
 import OptionDescription exposing (OptionDescription)
 import OptionDisplay exposing (OptionDisplay)
 import OptionGroup exposing (OptionGroup)
-import OptionLabel exposing (OptionLabel(..), labelDecoder, optionLabelToString)
+import OptionLabel exposing (OptionLabel(..), optionLabelToString)
 import OptionSearchFilter exposing (OptionSearchFilter, OptionSearchFilterWithValue, OptionSearchResult)
 import OptionSlot exposing (OptionSlot)
-import OptionValue exposing (OptionValue(..), optionValueToString)
+import OptionValue exposing (OptionValue(..))
 import SelectionMode exposing (OutputStyle(..), SelectionConfig)
 import SlottedOption
 import SortRank exposing (SortRank(..))
@@ -310,6 +312,11 @@ getOptionDescription option =
             OptionDescription.noDescription
 
 
+hasDescription : Option -> Bool
+hasDescription option =
+    option |> getOptionDescription |> OptionDescription.toBool
+
+
 getMaybeOptionSearchFilter : Option -> Maybe OptionSearchFilter
 getMaybeOptionSearchFilter option =
     case option of
@@ -323,24 +330,29 @@ getMaybeOptionSearchFilter option =
             Nothing
 
 
+isOptionBelowScore : Int -> Option -> Bool
+isOptionBelowScore score option =
+    case getMaybeOptionSearchFilter option of
+        Just optionSearchFilter ->
+            score >= optionSearchFilter.bestScore
+
+        Nothing ->
+            False
+
+
 isOptionValueInListOfStrings : List String -> Option -> Bool
 isOptionValueInListOfStrings possibleValues option =
     List.any (\possibleValue -> getOptionValueAsString option == possibleValue) possibleValues
 
 
-optionValuesEqual : OptionValue -> OptionValue -> Bool
-optionValuesEqual a b =
-    a == b
-
-
 optionsHaveEqualValues : Option -> Option -> Bool
 optionsHaveEqualValues a b =
-    optionValuesEqual (getOptionValue a) (getOptionValue b)
+    OptionValue.equals (getOptionValue a) (getOptionValue b)
 
 
 optionEqualsOptionValue : OptionValue -> Option -> Bool
 optionEqualsOptionValue optionValue option =
-    optionValuesEqual (getOptionValue option) optionValue
+    OptionValue.equals (getOptionValue option) optionValue
 
 
 highlightOption : Option -> Option
@@ -416,7 +428,7 @@ deselectOption option =
 
 deselectOptionIfEqual : OptionValue -> Option -> Option
 deselectOptionIfEqual optionValue option =
-    if optionValuesEqual option optionValue then
+    if optionEqualsOptionValue optionValue option then
         deselectOption option
 
     else
@@ -443,7 +455,7 @@ activateOption option =
 
 activateOptionIfEqualRemoveHighlightElse : OptionValue -> Option -> Option
 activateOptionIfEqualRemoveHighlightElse optionValue option =
-    if optionValuesEqual option optionValue then
+    if optionEqualsOptionValue optionValue option then
         activateOption option
 
     else
@@ -484,6 +496,19 @@ isCustomOption option =
 
         SlottedOption _ ->
             False
+
+
+getOptionGroup : Option -> OptionGroup
+getOptionGroup option =
+    case option of
+        FancyOption fancyOption ->
+            FancyOption.getOptionGroup fancyOption
+
+        DatalistOption _ ->
+            OptionGroup.new ""
+
+        SlottedOption _ ->
+            OptionGroup.new ""
 
 
 decoder : OptionDisplay.OptionAge -> Json.Decode.Decoder Option
@@ -652,7 +677,7 @@ merge optionA optionB =
         FancyOption fancyOptionA ->
             case optionB of
                 FancyOption fancyOptionB ->
-                    FancyOption (FancyOption.merge fancyOptionA fancyOptionA)
+                    FancyOption (FancyOption.merge fancyOptionA fancyOptionB)
 
                 _ ->
                     optionA
