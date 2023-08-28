@@ -3,7 +3,7 @@ module SelectedValueEncoding exposing (..)
 import Json.Decode
 import Json.Encode
 import Option exposing (Option)
-import OptionsUtilities exposing (findSelectedOption, selectedOptions)
+import OptionList exposing (OptionList)
 import Ports exposing (valueDecoder, valuesDecoder)
 import SelectionMode exposing (SelectionMode)
 import Url exposing (percentDecode, percentEncode)
@@ -83,11 +83,11 @@ stringToValueStrings selectedValueEncoding valuesString =
                         )
 
 
-selectedValue : SelectionMode -> List Option -> Json.Encode.Value
-selectedValue selectionMode options =
+selectedValue : SelectionMode -> OptionList -> Json.Encode.Value
+selectedValue selectionMode optionList =
     case selectionMode of
         SelectionMode.SingleSelect ->
-            case findSelectedOption options of
+            case OptionList.findSelectedOption optionList of
                 Just selectedOption ->
                     let
                         valueAsString =
@@ -102,18 +102,18 @@ selectedValue selectionMode options =
         SelectionMode.MultiSelect ->
             let
                 selectedValues =
-                    selectedOptions options
-                        |> List.map Option.getOptionValueAsString
+                    OptionList.selectedOptions optionList
+                        |> OptionList.andMap Option.getOptionValueAsString
             in
             Json.Encode.list Json.Encode.string
                 selectedValues
 
 
-rawSelectedValue : SelectionMode -> SelectedValueEncoding -> List Option -> Json.Encode.Value
-rawSelectedValue selectionMode selectedValueEncoding options =
+rawSelectedValue : SelectionMode -> SelectedValueEncoding -> OptionList -> Json.Encode.Value
+rawSelectedValue selectionMode selectedValueEncoding optionList =
     case selectionMode of
         SelectionMode.SingleSelect ->
-            case findSelectedOption options of
+            case OptionList.findSelectedOption optionList of
                 Just selectedOption ->
                     let
                         valueAsString =
@@ -144,8 +144,8 @@ rawSelectedValue selectionMode selectedValueEncoding options =
         SelectionMode.MultiSelect ->
             let
                 selectedValues =
-                    selectedOptions options
-                        |> List.map Option.getOptionValueAsString
+                    OptionList.selectedOptions optionList
+                        |> OptionList.andMap Option.getOptionValueAsString
             in
             case selectedValueEncoding of
                 JsonEncoded ->

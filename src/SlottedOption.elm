@@ -1,10 +1,14 @@
-module SlottedOption exposing (SlottedOption, decoder, encode, getOptionDisplay, getOptionSelectedIndex, getOptionSlot, getOptionValue, getOptionValueAsString, hasSelectedItemIndex, highlightOption, isOptionHighlighted, isOptionSelectedHighlighted, isSelected, new, optionIsHighlightable, removeHighlightFromOption, setOptionDisplay, setOptionSelectedIndex, setOptionValue, test_optionToDebuggingString)
+module SlottedOption exposing (SlottedOption, decoder, decoderWithAge, encode, getOptionDisplay, getOptionSelectedIndex, getOptionSlot, getOptionValue, getOptionValueAsString, hasSelectedItemIndex, highlightOption, isOptionHighlighted, isOptionSelectedHighlighted, isSelected, new, optionIsHighlightable, removeHighlightFromOption, setOptionDisplay, setOptionSelectedIndex, setOptionValue, test_optionToDebuggingString, toValueHtml)
 
+import Events exposing (mouseUpPreventDefault)
+import Html exposing (Html, div, span, text)
+import Html.Attributes exposing (class, classList)
 import Json.Decode
 import Json.Encode
-import OptionDisplay exposing (OptionDisplay)
+import OptionDisplay exposing (OptionDisplay(..))
 import OptionSlot exposing (OptionSlot)
 import OptionValue exposing (OptionValue)
+import OutputStyle exposing (SingleItemRemoval(..))
 import SelectionMode exposing (SelectionConfig)
 
 
@@ -115,8 +119,13 @@ getOptionSlot slottedOption =
             optionSlot
 
 
-decoder : OptionDisplay.OptionAge -> Json.Decode.Decoder SlottedOption
-decoder age =
+decoder : Json.Decode.Decoder SlottedOption
+decoder =
+    decoderWithAge OptionDisplay.MatureOption
+
+
+decoderWithAge : OptionDisplay.OptionAge -> Json.Decode.Decoder SlottedOption
+decoderWithAge age =
     Json.Decode.map3
         SlottedOption
         (OptionDisplay.decoder age)
@@ -138,3 +147,82 @@ encode option =
 test_optionToDebuggingString : SlottedOption -> String
 test_optionToDebuggingString slottedOption =
     slottedOption |> getOptionValue |> OptionValue.optionValueToString
+
+
+toValueHtml : (OptionValue -> msg) -> (OptionValue -> msg) -> SingleItemRemoval -> SlottedOption -> Html msg
+toValueHtml toggleSelectedMsg deselectOptionInternal enableSingleItemRemoval option =
+    let
+        removalHtml optionValue =
+            case enableSingleItemRemoval of
+                EnableSingleItemRemoval ->
+                    span [ mouseUpPreventDefault <| deselectOptionInternal optionValue, class "remove-option" ] [ text "" ]
+
+                DisableSingleItemRemoval ->
+                    text ""
+
+        partAttr =
+            Html.Attributes.attribute "part" "value"
+
+        highlightPartAttr =
+            Html.Attributes.attribute "part" "value highlighted-value"
+    in
+    case option of
+        SlottedOption optionDisplay optionValue optionSlot ->
+            case optionDisplay of
+                OptionShown optionAge ->
+                    text ""
+
+                OptionHidden ->
+                    text ""
+
+                OptionSelected _ _ ->
+                    div
+                        [ class "value"
+                        , partAttr
+                        ]
+                        [ valueLabelHtml
+                            toggleSelectedMsg
+                            (OptionValue.optionValueToString optionValue)
+                            optionValue
+                        , removalHtml optionValue
+                        ]
+
+                OptionSelectedAndInvalid int validationFailureMessages ->
+                    text ""
+
+                OptionSelectedPendingValidation int ->
+                    text ""
+
+                OptionSelectedHighlighted int ->
+                    div
+                        [ classList
+                            [ ( "value", True )
+                            , ( "highlighted-value", True )
+                            ]
+                        , highlightPartAttr
+                        ]
+                        [ valueLabelHtml
+                            toggleSelectedMsg
+                            (OptionValue.optionValueToString optionValue)
+                            optionValue
+                        , removalHtml optionValue
+                        ]
+
+                OptionHighlighted ->
+                    text ""
+
+                OptionActivated ->
+                    text ""
+
+                OptionDisabled _ ->
+                    text ""
+
+
+valueLabelHtml : (OptionValue -> msg) -> String -> OptionValue -> Html msg
+valueLabelHtml toggleSelectedMsg labelText optionValue =
+    span
+        [ class "value-label"
+        , mouseUpPreventDefault
+            (toggleSelectedMsg optionValue)
+        ]
+        [ text labelText ]

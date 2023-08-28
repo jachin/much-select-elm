@@ -1,13 +1,17 @@
-module FancyOption exposing (FancyOption, activateOption, decoder, deselect, encode, getMaybeOptionSearchFilter, getOptionDescription, getOptionDisplay, getOptionGroup, getOptionLabel, getOptionSelectedIndex, getOptionValue, getOptionValueAsString, hasSelectedItemIndex, highlightOption, isCustomOption, isEmptyOption, isEmptyOptionOrHasEmptyValue, isOptionHighlighted, isOptionSelectedHighlighted, isSelected, merge, new, newCustomOption, newDisabledOption, newSelectedOption, optionIsHighlightable, optionToValueLabelTuple, removeHighlightFromOption, select, setDescription, setDescriptionWithString, setGroupWithString, setLabel, setLabelWithString, setOptionDisplay, setOptionDisplayAge, setOptionGroup, setOptionSearchFilter, setOptionSelectedIndex, setOptionValue, test_optionToDebuggingString)
+module FancyOption exposing (FancyOption, activateOption, decoder, decoderWithAge, deselect, encode, getMaybeOptionSearchFilter, getOptionDescription, getOptionDisplay, getOptionGroup, getOptionLabel, getOptionSelectedIndex, getOptionValue, getOptionValueAsString, hasSelectedItemIndex, highlightOption, isCustomOption, isEmptyOption, isEmptyOptionOrHasEmptyValue, isOptionHighlighted, isOptionSelectedHighlighted, isSelected, merge, new, newCustomOption, newDisabledOption, newSelectedOption, optionIsHighlightable, optionToValueLabelTuple, removeHighlightFromOption, select, setDescription, setDescriptionWithString, setGroupWithString, setLabel, setLabelWithString, setOptionDisplay, setOptionDisplayAge, setOptionGroup, setOptionSearchFilter, setOptionSelectedIndex, setOptionValue, test_optionToDebuggingString, toValueHtml)
 
+import Events exposing (mouseUpPreventDefault)
+import Html exposing (Html, div, span, text)
+import Html.Attributes exposing (class, classList)
 import Json.Decode
 import Json.Encode
 import OptionDescription exposing (OptionDescription(..))
-import OptionDisplay exposing (OptionDisplay)
+import OptionDisplay exposing (OptionDisplay(..))
 import OptionGroup exposing (OptionGroup(..))
 import OptionLabel exposing (OptionLabel, optionLabelToString)
 import OptionSearchFilter exposing (OptionSearchFilter)
 import OptionValue exposing (OptionValue(..))
+import OutputStyle exposing (SingleItemRemoval(..))
 import SelectionMode exposing (OutputStyle, SelectionConfig)
 
 
@@ -305,7 +309,7 @@ setOptionSearchFilter optionSearchFilter option =
         CustomFancyOption optionDisplay optionLabel optionValue _ ->
             CustomFancyOption optionDisplay optionLabel optionValue optionSearchFilter
 
-        EmptyFancyOption optionDisplay optionLabel ->
+        EmptyFancyOption _ _ ->
             option
 
 
@@ -477,11 +481,16 @@ isCustomOption option =
             False
 
 
-decoder : OptionDisplay.OptionAge -> Json.Decode.Decoder FancyOption
-decoder age =
+decoder : Json.Decode.Decoder FancyOption
+decoder =
+    decoderWithAge OptionDisplay.MatureOption
+
+
+decoderWithAge : OptionDisplay.OptionAge -> Json.Decode.Decoder FancyOption
+decoderWithAge optionAge =
     Json.Decode.oneOf
-        [ decodeOptionWithoutAValue age
-        , decodeOptionWithAValue age
+        [ decodeOptionWithoutAValue optionAge
+        , decodeOptionWithAValue optionAge
         ]
 
 
@@ -539,3 +548,141 @@ test_optionToDebuggingString fancyOption =
 
         group ->
             group ++ " - " ++ (fancyOption |> getOptionLabel |> optionLabelToString)
+
+
+toValueHtml : (OptionValue -> msg) -> (OptionValue -> msg) -> SingleItemRemoval -> FancyOption -> Html msg
+toValueHtml toggleSelectedMsg deselectOptionInternal enableSingleItemRemoval fancyOption =
+    let
+        removalHtml optionValue =
+            case enableSingleItemRemoval of
+                EnableSingleItemRemoval ->
+                    span [ mouseUpPreventDefault <| deselectOptionInternal optionValue, class "remove-option" ] [ text "" ]
+
+                DisableSingleItemRemoval ->
+                    text ""
+
+        partAttr =
+            Html.Attributes.attribute "part" "value"
+
+        highlightPartAttr =
+            Html.Attributes.attribute "part" "value highlighted-value"
+    in
+    case fancyOption of
+        FancyOption optionDisplay optionLabel optionValue optionDescription optionGroup maybeOptionSearchFilter ->
+            case optionDisplay of
+                OptionShown _ ->
+                    text ""
+
+                OptionHidden ->
+                    text ""
+
+                OptionSelected _ _ ->
+                    div
+                        [ class "value"
+                        , partAttr
+                        ]
+                        [ valueLabelHtml toggleSelectedMsg (OptionLabel.getLabelString optionLabel) optionValue, removalHtml optionValue ]
+
+                OptionSelectedAndInvalid _ _ ->
+                    text ""
+
+                OptionSelectedPendingValidation _ ->
+                    text ""
+
+                OptionSelectedHighlighted int ->
+                    div
+                        [ classList
+                            [ ( "value", True )
+                            , ( "highlighted-value", True )
+                            ]
+                        , highlightPartAttr
+                        ]
+                        [ valueLabelHtml toggleSelectedMsg (OptionLabel.getLabelString optionLabel) optionValue, removalHtml optionValue ]
+
+                OptionHighlighted ->
+                    text ""
+
+                OptionActivated ->
+                    text ""
+
+                OptionDisabled _ ->
+                    text ""
+
+        CustomFancyOption optionDisplay optionLabel optionValue maybeOptionSearchFilter ->
+            case optionDisplay of
+                OptionShown _ ->
+                    text ""
+
+                OptionHidden ->
+                    text ""
+
+                OptionSelected _ _ ->
+                    div
+                        [ class "value"
+                        , partAttr
+                        ]
+                        [ valueLabelHtml toggleSelectedMsg (OptionLabel.getLabelString optionLabel) optionValue, removalHtml optionValue ]
+
+                OptionSelectedAndInvalid _ _ ->
+                    text ""
+
+                OptionSelectedPendingValidation _ ->
+                    text ""
+
+                OptionSelectedHighlighted _ ->
+                    div
+                        [ classList
+                            [ ( "value", True )
+                            , ( "highlighted-value", True )
+                            ]
+                        , highlightPartAttr
+                        ]
+                        [ valueLabelHtml toggleSelectedMsg (OptionLabel.getLabelString optionLabel) optionValue, removalHtml optionValue ]
+
+                OptionHighlighted ->
+                    text ""
+
+                OptionActivated ->
+                    text ""
+
+                OptionDisabled _ ->
+                    text ""
+
+        EmptyFancyOption optionDisplay optionLabel ->
+            case optionDisplay of
+                OptionShown _ ->
+                    text ""
+
+                OptionHidden ->
+                    text ""
+
+                OptionSelected _ _ ->
+                    div [ class "value", partAttr ] [ text (OptionLabel.getLabelString optionLabel) ]
+
+                OptionSelectedAndInvalid _ _ ->
+                    text ""
+
+                OptionSelectedPendingValidation _ ->
+                    text ""
+
+                OptionSelectedHighlighted _ ->
+                    text ""
+
+                OptionHighlighted ->
+                    text ""
+
+                OptionActivated ->
+                    text ""
+
+                OptionDisabled _ ->
+                    text ""
+
+
+valueLabelHtml : (OptionValue -> msg) -> String -> OptionValue -> Html msg
+valueLabelHtml toggleSelectedMsg labelText optionValue =
+    span
+        [ class "value-label"
+        , mouseUpPreventDefault
+            (toggleSelectedMsg optionValue)
+        ]
+        [ text labelText ]

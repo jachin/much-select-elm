@@ -5,6 +5,8 @@ module Option exposing
     , activateOptionIfEqualRemoveHighlightElse
     , decodeSearchResults
     , decoder
+    , decoderWithAge
+    , decoderWithAgeAndOutputStyle
     , deselectOption
     , deselectOptionIfEqual
     , encode
@@ -69,7 +71,7 @@ import OptionLabel exposing (OptionLabel(..), optionLabelToString)
 import OptionSearchFilter exposing (OptionSearchFilter, OptionSearchFilterWithValue, OptionSearchResult)
 import OptionSlot exposing (OptionSlot)
 import OptionValue exposing (OptionValue(..))
-import SelectionMode exposing (OutputStyle(..), SelectionConfig)
+import SelectionMode exposing (OutputStyle(..), SelectionConfig, SelectionMode(..))
 import SlottedOption
 import SortRank exposing (SortRank(..))
 import TransformAndValidate exposing (ValidationErrorMessage, ValidationFailureMessage)
@@ -514,10 +516,32 @@ getOptionGroup option =
 decoder : OptionDisplay.OptionAge -> Json.Decode.Decoder Option
 decoder age =
     Json.Decode.oneOf
-        [ Json.Decode.map FancyOption (FancyOption.decoder age)
+        [ Json.Decode.map FancyOption FancyOption.decoder
         , Json.Decode.map DatalistOption DatalistOption.decoder
-        , Json.Decode.map SlottedOption (SlottedOption.decoder age)
+        , Json.Decode.map SlottedOption SlottedOption.decoder
         ]
+
+
+decoderWithAge : OptionDisplay.OptionAge -> Json.Decode.Decoder Option
+decoderWithAge optionAge =
+    Json.Decode.oneOf
+        [ Json.Decode.map FancyOption (FancyOption.decoderWithAge optionAge)
+        , Json.Decode.map DatalistOption DatalistOption.decoder
+        , Json.Decode.map SlottedOption (SlottedOption.decoderWithAge optionAge)
+        ]
+
+
+decoderWithAgeAndOutputStyle : OptionDisplay.OptionAge -> OutputStyle -> Json.Decode.Decoder Option
+decoderWithAgeAndOutputStyle optionAge outputStyle =
+    case outputStyle of
+        CustomHtml ->
+            Json.Decode.oneOf
+                [ Json.Decode.map FancyOption (FancyOption.decoderWithAge optionAge)
+                , Json.Decode.map SlottedOption (SlottedOption.decoderWithAge optionAge)
+                ]
+
+        Datalist ->
+            Json.Decode.map DatalistOption DatalistOption.decoder
 
 
 encode : Option -> Json.Decode.Value

@@ -1,18 +1,21 @@
-module OptionList exposing (OptionList(..), activateOptionInListByOptionValue, andMap, append, appendOptions, drop, filter, findClosestHighlightableOptionGoingDown, findClosestHighlightableOptionGoingUp, findHighlightedOption, findHighlightedOptionIndex, findHighlightedOrSelectedOptionIndex, findLowestSearchScore, getOptions, head, highlightFirstOptionInList, highlightOption, highlightOptionByValue, isEmpty, length, map, optionsPlusOne, prependCustomOption, removeHighlightedOptionByValue, selectOptionByOptionValueWithIndex, selectOptionIByValueStringWithIndex, selectOptionInList, sortOptionsByBestScore, take, toggleSelectedHighlightByOptionValue, unselectedOptions, updateDatalistOptionWithValueBySelectedValueIndex, updateDatalistOptionsWithValue, updateDatalistOptionsWithValueAndErrors)
+module OptionList exposing (OptionList(..), activateOptionInListByOptionValue, addAdditionalOptionsToOptionList, addAdditionalOptionsToOptionListWithAutoSortRank, addAdditionalSelectedOptionWithStringValue, addAndSelectOptionsInOptionsListByString, addNewEmptyOptionAtIndex, all, allOptionsAreValid, andMap, any, append, appendOptions, cleanupEmptySelectedOptions, concatMap, customSelectedOptions, decoder, deselectAllButTheFirstSelectedOptionInList, deselectAllOptions, deselectAllSelectedHighlightedOptions, deselectLastSelectedOption, deselectOption, deselectOptionByValue, deselectOptions, drop, encode, filter, findByValue, findClosestHighlightableOptionGoingDown, findClosestHighlightableOptionGoingUp, findHighlightedOption, findHighlightedOptionIndex, findHighlightedOrSelectedOptionIndex, findLowestSearchScore, findOptionByValue, findSelectedOption, getOptions, hasAnyPendingValidation, hasAnyValidationErrors, hasOptionByValueString, hasSelectedHighlightedOptions, hasSelectedOption, head, highlightFirstOptionInList, highlightOption, highlightOptionByValue, isEmpty, isSlottedOptionList, length, map, optionsPlusOne, optionsValuesAsStrings, organizeNewDatalistOptions, prependCustomOption, removeHighlightedOptionByValue, removeOptionFromOptionListBySelectedIndex, removeOptionsFromOptionList, removeUnselectedCustomOptions, replaceOptions, selectHighlightedOption, selectOption, selectOptionByOptionValue, selectOptionByOptionValueWithIndex, selectOptionIByValueStringWithIndex, selectOptionsInOptionsListByString, selectSingleOption, selectSingleOptionByValue, selectedOptionValuesAreEqual, selectedOptions, selectedOptionsToTuple, setAge, sort, sortBy, sortOptionsByBestScore, take, toggleSelectedHighlightByOptionValue, unhighlightSelectedOptions, uniqueBy, unselectedOptions, updateAge, updateDatalistOptionWithValueBySelectedValueIndex, updateDatalistOptionsWithPendingValidation, updateDatalistOptionsWithValue, updateDatalistOptionsWithValueAndErrors, updateOptionsWithNewSearchResults, updatedDatalistSelectedOptions)
 
 import DatalistOption
 import FancyOption
+import Json.Decode
+import Json.Encode
 import List.Extra
 import Maybe.Extra
 import Option exposing (Option)
 import OptionDisplay
 import OptionLabel exposing (OptionLabel)
 import OptionSearchFilter exposing (OptionSearchFilterWithValue)
+import OptionSorting exposing (OptionSort)
 import OptionValue exposing (OptionValue)
 import OutputStyle exposing (SelectedItemPlacementMode(..))
 import PositiveInt
 import SearchString exposing (SearchString)
-import SelectionMode exposing (SelectionConfig, SelectionMode(..))
+import SelectionMode exposing (OutputStyle(..), SelectionConfig, SelectionMode(..))
 import SortRank exposing (SortRank)
 import TransformAndValidate exposing (ValidationFailureMessage)
 
@@ -60,6 +63,12 @@ andMap function optionList =
 
         SlottedOptionList options ->
             List.map function options
+
+
+concatMap : (Option -> List a) -> OptionList -> List a
+concatMap function optionList =
+    andMap function optionList
+        |> List.concat
 
 
 indexedMap : (Int -> Option -> Option) -> OptionList -> OptionList
@@ -177,6 +186,19 @@ filter function optionList =
 
         SlottedOptionList options ->
             SlottedOptionList (List.filter function options)
+
+
+sort : OptionSort -> OptionList -> OptionList
+sort sorting optionList =
+    case optionList of
+        FancyOptionList options ->
+            FancyOptionList (List.sortBy (Option.getOptionLabel >> OptionLabel.optionLabelToString) options)
+
+        DatalistOptionList options ->
+            DatalistOptionList (List.sortBy (Option.getOptionLabel >> OptionLabel.optionLabelToString) options)
+
+        SlottedOptionList options ->
+            SlottedOptionList (List.sortBy (Option.getOptionLabel >> OptionLabel.optionLabelToString) options)
 
 
 sortBy : (Option -> comparable) -> OptionList -> OptionList
@@ -297,13 +319,13 @@ append optionListA optionListB =
 
 appendOptions : List Option -> List Option -> OptionList
 appendOptions optionsA optionsB =
-    if isFancyOptions optionsA then
+    if allFancyOptions optionsA then
         FancyOptionList (optionsA ++ optionsB)
 
-    else if isDatalistOptions optionsA then
+    else if allDatalistOptions optionsA then
         DatalistOptionList (optionsA ++ optionsB)
 
-    else if isSlottedOptions optionsA then
+    else if allSlottedOptions optionsA then
         SlottedOptionList (optionsA ++ optionsB)
 
     else
@@ -315,8 +337,8 @@ optionsPlusOne option options =
     appendOptions [ option ] options
 
 
-isFancyOptions : List Option -> Bool
-isFancyOptions options =
+allFancyOptions : List Option -> Bool
+allFancyOptions options =
     List.all
         (\option ->
             case option of
@@ -329,8 +351,8 @@ isFancyOptions options =
         options
 
 
-isDatalistOptions : List Option -> Bool
-isDatalistOptions options =
+allDatalistOptions : List Option -> Bool
+allDatalistOptions options =
     List.all
         (\option ->
             case option of
@@ -343,8 +365,8 @@ isDatalistOptions options =
         options
 
 
-isSlottedOptions : List Option -> Bool
-isSlottedOptions options =
+allSlottedOptions : List Option -> Bool
+allSlottedOptions options =
     List.all
         (\option ->
             case option of
@@ -424,13 +446,6 @@ findHighlightedOrSelectedOptionIndex optionList =
             findSelectedOptionIndex optionList
 
 
-selectOptionInList : Option -> OptionList -> OptionList
-selectOptionInList option list =
-    selectOptionByOptionValue
-        (Option.getOptionValue option)
-        list
-
-
 selectedOptions : OptionList -> OptionList
 selectedOptions options =
     options
@@ -452,6 +467,11 @@ customOptions optionList =
 customSelectedOptions : OptionList -> OptionList
 customSelectedOptions =
     customOptions >> selectedOptions
+
+
+optionsValuesAsStrings : OptionList -> List String
+optionsValuesAsStrings optionList =
+    andMap Option.getOptionValueAsString optionList
 
 
 hasSelectedOption : OptionList -> Bool
@@ -759,6 +779,48 @@ equal optionListA optionListB =
     getOptions optionListA == getOptions optionListB
 
 
+addAdditionalSelectedOptionWithStringValue : String -> OptionList -> OptionList
+addAdditionalSelectedOptionWithStringValue string optionList =
+    case optionList of
+        FancyOptionList _ ->
+            let
+                newOption =
+                    FancyOption.new string Nothing
+                        |> FancyOption.select 0
+                        |> Option.FancyOption
+            in
+            addAdditionalOption newOption optionList
+
+        DatalistOptionList _ ->
+            let
+                newOption =
+                    DatalistOption.newSelectedDatalistOption (OptionValue.stringToOptionValue string) 0
+                        |> Option.DatalistOption
+            in
+            addAdditionalOption newOption optionList
+
+        SlottedOptionList _ ->
+            -- TODO This situation is tricky because we don't know what the slot should be.
+            optionList
+
+
+addAdditionalOption : Option -> OptionList -> OptionList
+addAdditionalOption option optionList =
+    if optionTypeMatches option optionList then
+        case optionList of
+            FancyOptionList options ->
+                FancyOptionList (option :: options)
+
+            DatalistOptionList options ->
+                DatalistOptionList (option :: options)
+
+            SlottedOptionList options ->
+                SlottedOptionList (option :: options)
+
+    else
+        optionList
+
+
 addAdditionalOptionsToOptionList : OptionList -> OptionList -> OptionList
 addAdditionalOptionsToOptionList currentOptions newOptions =
     let
@@ -905,15 +967,25 @@ deselectOptions optionsToDeselect allOptions =
 
 deselectOption : Option -> OptionList -> OptionList
 deselectOption option optionList =
+    deselectOptionByValue (Option.getOptionValue option) optionList
+
+
+deselectOptionByValue : OptionValue -> OptionList -> OptionList
+deselectOptionByValue optionValue optionList =
     map
         (\option_ ->
-            if Option.optionEqualsOptionValue (Option.getOptionValue option) option_ then
+            if Option.optionEqualsOptionValue optionValue option_ then
                 Option.deselectOption option_
 
             else
                 option_
         )
         optionList
+
+
+deselectAllOptions : OptionList -> OptionList
+deselectAllOptions optionList =
+    map Option.deselectOption optionList
 
 
 deselectAllSelectedHighlightedOptions : OptionList -> OptionList
@@ -1535,6 +1607,17 @@ addAndSelectOptionsInOptionsListByString strings optionList =
     helper 0 strings optionList
 
 
+selectedOptionValuesAreEqual : List String -> OptionList -> Bool
+selectedOptionValuesAreEqual valuesAsStrings options =
+    (options
+        |> selectedOptions
+        |> getOptions
+        |> List.map Option.getOptionValue
+        |> List.map OptionValue.optionValueToString
+    )
+        == valuesAsStrings
+
+
 updateOptionsWithNewSearchResults : List OptionSearchFilterWithValue -> OptionList -> OptionList
 updateOptionsWithNewSearchResults optionSearchFilterWithValues optionList =
     let
@@ -1591,3 +1674,94 @@ updateAge outputStyle searchString searchStringMinimumLength optionList =
 
         SelectionMode.Datalist ->
             setAge OptionDisplay.MatureOption optionList
+
+
+determineListType : List Option -> Result String OptionList
+determineListType options =
+    if allFancyOptions options then
+        FancyOptionList [] |> Ok
+
+    else if allDatalistOptions options then
+        DatalistOptionList [] |> Ok
+
+    else if allSlottedOptions options then
+        SlottedOptionList [] |> Ok
+
+    else
+        Err "The list of options must be all FancyOptions, all DatalistOptions, or all SlottedOptions"
+
+
+isSlottedOptionList : OptionList -> Bool
+isSlottedOptionList optionList =
+    case optionList of
+        SlottedOptionList _ ->
+            True
+
+        _ ->
+            False
+
+
+decoder : OptionDisplay.OptionAge -> OutputStyle -> Json.Decode.Decoder OptionList
+decoder optionAge outputStyle =
+    case outputStyle of
+        CustomHtml ->
+            Json.Decode.list (Option.decoder optionAge)
+                |> Json.Decode.andThen
+                    (\options ->
+                        case determineListType options of
+                            Ok optionList ->
+                                case optionList of
+                                    FancyOptionList _ ->
+                                        Json.Decode.succeed (FancyOptionList options)
+
+                                    DatalistOptionList _ ->
+                                        Json.Decode.succeed (DatalistOptionList options)
+
+                                    SlottedOptionList _ ->
+                                        Json.Decode.succeed (SlottedOptionList options)
+
+                            Err err ->
+                                Json.Decode.fail err
+                    )
+
+        Datalist ->
+            Json.Decode.map DatalistOptionList
+                (Json.Decode.list
+                    (Json.Decode.map
+                        Option.DatalistOption
+                        DatalistOption.decoder
+                    )
+                )
+
+
+encode : OptionList -> Json.Encode.Value
+encode optionList =
+    Json.Encode.list Option.encode (getOptions optionList)
+
+
+optionTypeMatches : Option -> OptionList -> Bool
+optionTypeMatches option optionList =
+    case optionList of
+        FancyOptionList _ ->
+            case option of
+                Option.FancyOption _ ->
+                    True
+
+                _ ->
+                    False
+
+        DatalistOptionList _ ->
+            case option of
+                Option.DatalistOption _ ->
+                    True
+
+                _ ->
+                    False
+
+        SlottedOptionList _ ->
+            case option of
+                Option.SlottedOption _ ->
+                    True
+
+                _ ->
+                    False

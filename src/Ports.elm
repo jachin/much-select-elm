@@ -65,6 +65,7 @@ import Json.Decode
 import Json.Encode
 import Option exposing (Option)
 import OptionLabel
+import OptionList exposing (OptionList)
 
 
 port muchSelectIsReady : () -> Cmd msg
@@ -97,9 +98,9 @@ port optionSelected : Json.Encode.Value -> Cmd msg
 port optionDeselected : Json.Encode.Value -> Cmd msg
 
 
-optionsEncoder : List Option -> Json.Encode.Value
-optionsEncoder options =
-    Json.Encode.list optionEncoder options
+optionsEncoder : OptionList -> Json.Encode.Value
+optionsEncoder optionList =
+    optionList |> OptionList.getOptions |> Json.Encode.list optionEncoder
 
 
 optionEncoder : Option -> Json.Encode.Value
