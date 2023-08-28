@@ -55,6 +55,7 @@ module Option exposing
     , setOptionSearchFilter
     , setOptionValue
     , setOptionValueErrors
+    , test_newFancyOption
     , test_optionToDebuggingString
     , toggleHighlight
     , transformOptionForOutputStyle
@@ -715,3 +716,8 @@ test_optionToDebuggingString option =
 
         SlottedOption slottedOption ->
             SlottedOption.test_optionToDebuggingString slottedOption
+
+
+test_newFancyOption : String -> Maybe String -> Option
+test_newFancyOption string maybeString =
+    FancyOption (FancyOption.new string maybeString)

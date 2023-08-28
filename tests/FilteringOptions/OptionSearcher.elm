@@ -22,37 +22,37 @@ selectionConfig =
 
 
 minervaryaPentali =
-    Option.newOption "Minervarya pentali" Nothing
+    test_newFancyOption "Minervarya pentali" Nothing
         |> Option.setGroupWithString "Frog"
 
 
 paedophryneAmauensis =
-    Option.newOption "Paedophryne Amauensis" Nothing
+    test_newFancyOption "Paedophryne Amauensis" Nothing
         |> Option.setGroupWithString "Frog"
 
 
 glassFrog =
-    Option.newOption "Glass Frog" Nothing
+    test_newFancyOption "Glass Frog" Nothing
         |> Option.setGroupWithString "Frog"
 
 
 venezuelaPebbleToad =
-    Option.newOption "Venezuela Pebble Toad" Nothing
+    test_newFancyOption "Venezuela Pebble Toad" Nothing
         |> Option.setGroupWithString "Frog"
 
 
 dinar =
-    Option.newOption "Dinar" Nothing
+    test_newFancyOption "Dinar" Nothing
         |> Option.setGroupWithString "Money"
 
 
 ouguiya =
-    Option.newOption "Ougyiya" Nothing
+    test_newFancyOption "Ougyiya" Nothing
         |> Option.setGroupWithString "Money"
 
 
 pound =
-    Option.newOption "Pound" Nothing
+    test_newFancyOption "Pound" Nothing
         |> Option.setGroupWithString "Money"
 
 
@@ -173,8 +173,8 @@ suite =
                         (OptionSearcher.updateOptionsWithSearchStringAndCustomOption
                             (SelectionMode.setSearchStringMinimumLength NoMinimumToSearchStringLength selectionConfig)
                             (SearchString.update "win")
-                            [ Option.newOption "LevelUp2021_SwagWinnersFinal" Nothing
-                            , Option.newOption "Q2 2021 Webinar Registrants" Nothing
+                            [ test_newFancyOption "LevelUp2021_SwagWinnersFinal" Nothing
+                            , test_newFancyOption "Q2 2021 Webinar Registrants" Nothing
                             ]
                             |> OptionsUtilities.sortOptionsByBestScore
                             |> List.head

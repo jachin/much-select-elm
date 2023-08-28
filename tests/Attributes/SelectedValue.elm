@@ -195,7 +195,7 @@ suite =
                                                 Expect.equal firstLastEffect
                                                     (MuchSelect.ReportValueChanged
                                                         (optionsEncoder
-                                                            [ Option.newOption "pilot" Nothing
+                                                            [ test_newFancyOption "pilot" Nothing
                                                                 |> Option.selectOption 0
                                                             ]
                                                         )
@@ -294,7 +294,7 @@ suite =
                                                     Expect.equal firstLastEffect
                                                         (MuchSelect.ReportValueChanged
                                                             (optionsEncoder
-                                                                [ Option.newOption "pilot" Nothing
+                                                                [ test_newFancyOption "pilot" Nothing
                                                                     |> Option.selectOption 0
                                                                 ]
                                                             )
@@ -419,7 +419,7 @@ suite =
                                                         Expect.equal firstLastEffect
                                                             (MuchSelect.ReportValueChanged
                                                                 (optionsEncoder
-                                                                    [ Option.newOption "pilot" Nothing
+                                                                    [ test_newFancyOption "pilot" Nothing
                                                                         |> Option.selectOption 0
                                                                     ]
                                                                 )
@@ -497,7 +497,7 @@ suite =
                                                     Expect.equal firstLastEffect
                                                         (MuchSelect.ReportValueChanged
                                                             (optionsEncoder
-                                                                [ Option.newOption "pilot" Nothing
+                                                                [ test_newFancyOption "pilot" Nothing
                                                                     |> Option.selectOption 0
                                                                 ]
                                                             )

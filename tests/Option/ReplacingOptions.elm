@@ -9,15 +9,15 @@ import Test exposing (Test, describe, test)
 
 
 futureCop =
-    Option.newOption "Future Cop!" Nothing
+    test_newFancyOption "Future Cop!" Nothing
 
 
 theMidnight =
-    Option.newOption "The Midnight" Nothing
+    test_newFancyOption "The Midnight" Nothing
 
 
 thirdEyeBlind =
-    Option.newOption "Third Eye Blind" Nothing
+    test_newFancyOption "Third Eye Blind" Nothing
 
 
 selectionConfig =
