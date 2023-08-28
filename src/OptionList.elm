@@ -1,4 +1,4 @@
-module OptionList exposing (OptionList(..), activateOptionInListByOptionValue, addAdditionalOptionsToOptionList, addAdditionalOptionsToOptionListWithAutoSortRank, addAdditionalSelectedOptionWithStringValue, addAndSelectOptionsInOptionsListByString, addNewEmptyOptionAtIndex, all, allOptionsAreValid, andMap, any, append, appendOptions, cleanupEmptySelectedOptions, concatMap, customSelectedOptions, decoder, deselectAllButTheFirstSelectedOptionInList, deselectAllOptions, deselectAllSelectedHighlightedOptions, deselectLastSelectedOption, deselectOption, deselectOptionByValue, deselectOptions, drop, encode, filter, findByValue, findClosestHighlightableOptionGoingDown, findClosestHighlightableOptionGoingUp, findHighlightedOption, findHighlightedOptionIndex, findHighlightedOrSelectedOptionIndex, findLowestSearchScore, findOptionByValue, findSelectedOption, getOptions, hasAnyPendingValidation, hasAnyValidationErrors, hasOptionByValueString, hasSelectedHighlightedOptions, hasSelectedOption, head, highlightFirstOptionInList, highlightOption, highlightOptionByValue, isEmpty, isSlottedOptionList, length, map, optionsPlusOne, optionsValuesAsStrings, organizeNewDatalistOptions, prependCustomOption, removeHighlightedOptionByValue, removeOptionFromOptionListBySelectedIndex, removeOptionsFromOptionList, removeUnselectedCustomOptions, replaceOptions, selectHighlightedOption, selectOption, selectOptionByOptionValue, selectOptionByOptionValueWithIndex, selectOptionIByValueStringWithIndex, selectOptionsInOptionsListByString, selectSingleOption, selectSingleOptionByValue, selectedOptionValuesAreEqual, selectedOptions, selectedOptionsToTuple, setAge, sort, sortBy, sortOptionsByBestScore, take, toggleSelectedHighlightByOptionValue, unhighlightSelectedOptions, uniqueBy, unselectedOptions, updateAge, updateDatalistOptionWithValueBySelectedValueIndex, updateDatalistOptionsWithPendingValidation, updateDatalistOptionsWithValue, updateDatalistOptionsWithValueAndErrors, updateOptionsWithNewSearchResults, updatedDatalistSelectedOptions)
+module OptionList exposing (OptionList(..), activateOptionInListByOptionValue, addAdditionalOptionsToOptionList, addAdditionalOptionsToOptionListWithAutoSortRank, addAdditionalSelectedOptionWithStringValue, addAndSelectOptionsInOptionsListByString, addNewEmptyOptionAtIndex, all, allOptionsAreValid, andMap, any, append, appendOptions, cleanupEmptySelectedOptions, concatMap, customSelectedOptions, decoder, deselectAllButTheFirstSelectedOptionInList, deselectAllOptions, deselectAllSelectedHighlightedOptions, deselectLastSelectedOption, deselectOption, deselectOptionByValue, deselectOptions, drop, encode, encodeSearchResults, filter, findByValue, findClosestHighlightableOptionGoingDown, findClosestHighlightableOptionGoingUp, findHighlightedOption, findHighlightedOptionIndex, findHighlightedOrSelectedOptionIndex, findLowestSearchScore, findOptionByValue, findSelectedOption, getOptions, hasAnyPendingValidation, hasAnyValidationErrors, hasOptionByValueString, hasSelectedHighlightedOptions, hasSelectedOption, head, highlightFirstOptionInList, highlightOption, highlightOptionByValue, isEmpty, isSlottedOptionList, length, map, optionsPlusOne, optionsValuesAsStrings, organizeNewDatalistOptions, prependCustomOption, removeHighlightedOptionByValue, removeOptionFromOptionListBySelectedIndex, removeOptionsFromOptionList, removeUnselectedCustomOptions, replaceOptions, selectHighlightedOption, selectOption, selectOptionByOptionValue, selectOptionByOptionValueWithIndex, selectOptionIByValueStringWithIndex, selectOptionsInOptionsListByString, selectSingleOption, selectSingleOptionByValue, selectedOptionValuesAreEqual, selectedOptions, selectedOptionsToTuple, setAge, sort, sortBy, sortOptionsByBestScore, take, toggleSelectedHighlightByOptionValue, unhighlightSelectedOptions, uniqueBy, unselectedOptions, updateAge, updateDatalistOptionWithValueBySelectedValueIndex, updateDatalistOptionsWithPendingValidation, updateDatalistOptionsWithValue, updateDatalistOptionsWithValueAndErrors, updateOptionsWithNewSearchResults, updatedDatalistSelectedOptions)
 
 import DatalistOption
 import FancyOption
@@ -603,7 +603,7 @@ selectOptionByOptionValueWithIndex index optionValue optionList =
 
 selectOptionIByValueStringWithIndex : Int -> String -> OptionList -> OptionList
 selectOptionIByValueStringWithIndex int string optionList =
-    selectOptionByOptionValueWithIndex int (OptionValue string) optionList
+    selectOptionByOptionValueWithIndex int (OptionValue.stringToOptionValue string) optionList
 
 
 selectOptions : List Option -> OptionList -> OptionList
@@ -1737,6 +1737,15 @@ decoder optionAge outputStyle =
 encode : OptionList -> Json.Encode.Value
 encode optionList =
     Json.Encode.list Option.encode (getOptions optionList)
+
+
+encodeSearchResults : OptionList -> Int -> Bool -> Json.Encode.Value
+encodeSearchResults optionList nonce isClearingList =
+    Json.Encode.object
+        [ ( "searchNonce", Json.Encode.int nonce )
+        , ( "clearingSearch", Json.Encode.bool isClearingList )
+        , ( "options", Json.Encode.list Option.encodeSearchResult (getOptions optionList) )
+        ]
 
 
 optionTypeMatches : Option -> OptionList -> Bool

@@ -10,7 +10,7 @@ module Option exposing
     , deselectOption
     , deselectOptionIfEqual
     , encode
-    , encodeSearchResults
+    , encodeSearchResult
     , equal
     , getMaybeOptionSearchFilter
     , getOptionDescription
@@ -562,15 +562,6 @@ type alias SearchResults =
     , searchNonce : Int
     , isClearingSearch : Bool
     }
-
-
-encodeSearchResults : List Option -> Int -> Bool -> Json.Encode.Value
-encodeSearchResults options nonce isClearingList =
-    Json.Encode.object
-        [ ( "searchNonce", Json.Encode.int nonce )
-        , ( "clearingSearch", Json.Encode.bool isClearingList )
-        , ( "options", Json.Encode.list encodeSearchResult options )
-        ]
 
 
 encodeSearchResult : Option -> Json.Encode.Value

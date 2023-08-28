@@ -3420,7 +3420,7 @@ init flags =
                             ( optionsWithInitialValues, NoEffect )
 
                 Err error ->
-                    ( [], ReportErrorMessage (Json.Decode.errorToString error) )
+                    ( OptionList.FancyOptionList [], ReportErrorMessage (Json.Decode.errorToString error) )
 
         optionsWithInitialValueSelectedSorted =
             case SelectionMode.getOutputStyle selectionConfig of
