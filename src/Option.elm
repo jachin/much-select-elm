@@ -55,6 +55,8 @@ module Option exposing
     , setOptionSearchFilter
     , setOptionValue
     , setOptionValueErrors
+    , test_newDatalistOption
+    , test_newEmptyDatalistOption
     , test_newFancyOption
     , test_optionToDebuggingString
     , toggleHighlight
@@ -721,3 +723,13 @@ test_optionToDebuggingString option =
 test_newFancyOption : String -> Maybe String -> Option
 test_newFancyOption string maybeString =
     FancyOption (FancyOption.new string maybeString)
+
+
+test_newDatalistOption : String -> Option
+test_newDatalistOption string =
+    DatalistOption (DatalistOption.new (OptionValue.stringToOptionValue string))
+
+
+test_newEmptyDatalistOption : Option
+test_newEmptyDatalistOption =
+    DatalistOption (DatalistOption.new OptionValue.EmptyOptionValue)

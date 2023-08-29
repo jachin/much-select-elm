@@ -91,13 +91,6 @@ three =
     FixedMaxDropdownItems (PositiveInt.new 3)
 
 
-equalOptionListValues : List Option.Option -> List Option.Option -> Expect.Expectation
-equalOptionListValues optionsA optionsB =
-    Expect.equalLists
-        (List.map Option.getOptionValue optionsA)
-        (List.map Option.getOptionValue optionsB)
-
-
 selectionConfig =
     defaultSelectionConfig
 
