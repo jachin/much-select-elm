@@ -6,7 +6,8 @@ import Json.Encode
 import LightDomChange exposing (LightDomChange(..))
 import List.Extra
 import MuchSelect exposing (Flags)
-import Option
+import Option exposing (test_newFancyOption)
+import OptionList exposing (OptionList(..))
 import Ports exposing (optionsEncoder)
 import ProgramTest exposing (ProgramTest)
 import SelectionMode
@@ -195,9 +196,11 @@ suite =
                                                 Expect.equal firstLastEffect
                                                     (MuchSelect.ReportValueChanged
                                                         (optionsEncoder
-                                                            [ test_newFancyOption "pilot" Nothing
-                                                                |> Option.selectOption 0
-                                                            ]
+                                                            (FancyOptionList
+                                                                [ test_newFancyOption "pilot" Nothing
+                                                                    |> Option.selectOption 0
+                                                                ]
+                                                            )
                                                         )
                                                         SelectionMode.SingleSelect
                                                     )
@@ -294,9 +297,11 @@ suite =
                                                     Expect.equal firstLastEffect
                                                         (MuchSelect.ReportValueChanged
                                                             (optionsEncoder
-                                                                [ test_newFancyOption "pilot" Nothing
-                                                                    |> Option.selectOption 0
-                                                                ]
+                                                                (FancyOptionList
+                                                                    [ test_newFancyOption "pilot" Nothing
+                                                                        |> Option.selectOption 0
+                                                                    ]
+                                                                )
                                                             )
                                                             SelectionMode.MultiSelect
                                                         )
@@ -419,9 +424,11 @@ suite =
                                                         Expect.equal firstLastEffect
                                                             (MuchSelect.ReportValueChanged
                                                                 (optionsEncoder
-                                                                    [ test_newFancyOption "pilot" Nothing
-                                                                        |> Option.selectOption 0
-                                                                    ]
+                                                                    (FancyOptionList
+                                                                        [ test_newFancyOption "pilot" Nothing
+                                                                            |> Option.selectOption 0
+                                                                        ]
+                                                                    )
                                                                 )
                                                                 SelectionMode.MultiSelect
                                                             )
@@ -497,9 +504,11 @@ suite =
                                                     Expect.equal firstLastEffect
                                                         (MuchSelect.ReportValueChanged
                                                             (optionsEncoder
-                                                                [ test_newFancyOption "pilot" Nothing
-                                                                    |> Option.selectOption 0
-                                                                ]
+                                                                (FancyOptionList
+                                                                    [ test_newFancyOption "pilot" Nothing
+                                                                        |> Option.selectOption 0
+                                                                    ]
+                                                                )
                                                             )
                                                             SelectionMode.MultiSelect
                                                         )
