@@ -3,11 +3,11 @@ module FilteringOptions.OptionSearcher exposing (suite)
 import DropdownOptions exposing (figureOutWhichOptionsToShowInTheDropdown)
 import Expect
 import Json.Decode
-import Option
+import Option exposing (test_newFancyOption)
+import OptionList exposing (OptionList(..), getOptions, sortOptionsByBestScore)
 import OptionSearchFilter
 import OptionSearcher exposing (doesSearchStringFindNothing)
 import OptionSorting exposing (sortOptionsBySearchFilterTotalScore)
-import OptionsUtilities
 import OutputStyle exposing (MaxDropdownItems(..), SearchStringMinimumLength(..))
 import PositiveInt
 import SearchString
@@ -77,7 +77,7 @@ suite =
                     Expect.equal
                         (OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionConfig
                             (SearchString.update "frog")
-                            (frogs ++ monnies)
+                            (FancyOptionList (frogs ++ monnies))
                             |> figureOutWhichOptionsToShowInTheDropdown selectionConfig
                             |> DropdownOptions.length
                         )
@@ -87,7 +87,7 @@ suite =
                     Expect.equal
                         (OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionConfig
                             (SearchString.update "frog")
-                            (frogs ++ monnies)
+                            (FancyOptionList (frogs ++ monnies))
                             |> figureOutWhichOptionsToShowInTheDropdown selectionConfig
                             |> doesSearchStringFindNothing (SearchString.update "frog") searchStringMinLengthTwo
                         )
@@ -97,8 +97,10 @@ suite =
                     Expect.equal
                         (OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionConfig
                             (SearchString.update "frog")
-                            (frogs ++ monnies)
+                            (FancyOptionList (frogs ++ monnies))
+                            |> getOptions
                             |> sortOptionsBySearchFilterTotalScore
+                            |> FancyOptionList
                             |> figureOutWhichOptionsToShowInTheDropdown selectionConfig
                             |> DropdownOptions.head
                             |> Maybe.map Option.getOptionValueAsString
@@ -109,8 +111,10 @@ suite =
                     Expect.equal
                         (OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionConfig
                             (SearchString.update "pent")
-                            (frogs ++ monnies)
+                            (FancyOptionList (frogs ++ monnies))
+                            |> getOptions
                             |> sortOptionsBySearchFilterTotalScore
+                            |> FancyOptionList
                             |> figureOutWhichOptionsToShowInTheDropdown selectionConfig
                             |> DropdownOptions.head
                             |> Maybe.map Option.getOptionValueAsString
@@ -121,8 +125,10 @@ suite =
                     Expect.equal
                         (OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionConfig
                             (SearchString.update "yiya")
-                            (frogs ++ monnies)
+                            (FancyOptionList (frogs ++ monnies))
+                            |> getOptions
                             |> sortOptionsBySearchFilterTotalScore
+                            |> FancyOptionList
                             |> figureOutWhichOptionsToShowInTheDropdown selectionConfig
                             |> DropdownOptions.head
                             |> Maybe.map Option.getOptionValueAsString
@@ -134,7 +140,8 @@ suite =
                         (OptionSearcher.updateOptionsWithSearchStringAndCustomOption
                             (SelectionMode.setSearchStringMinimumLength NoMinimumToSearchStringLength selectionConfig)
                             SearchString.reset
-                            [ pound |> Option.setDescriptionWithString "quid" ]
+                            (FancyOptionList [ pound |> Option.setDescriptionWithString "quid" ])
+                            |> getOptions
                             |> List.head
                             |> Maybe.andThen Option.getMaybeOptionSearchFilter
                             |> Maybe.map .labelTokens
@@ -147,7 +154,8 @@ suite =
                         (OptionSearcher.updateOptionsWithSearchStringAndCustomOption
                             (SelectionMode.setSearchStringMinimumLength NoMinimumToSearchStringLength selectionConfig)
                             SearchString.reset
-                            [ pound |> Option.setDescriptionWithString "quid" ]
+                            (FancyOptionList [ pound |> Option.setDescriptionWithString "quid" ])
+                            |> getOptions
                             |> List.head
                             |> Maybe.andThen Option.getMaybeOptionSearchFilter
                             |> Maybe.map .descriptionTokens
@@ -160,7 +168,8 @@ suite =
                         (OptionSearcher.updateOptionsWithSearchStringAndCustomOption
                             (SelectionMode.setSearchStringMinimumLength NoMinimumToSearchStringLength selectionConfig)
                             SearchString.reset
-                            [ pound |> Option.setDescriptionWithString "quid" ]
+                            (FancyOptionList [ pound |> Option.setDescriptionWithString "quid" ])
+                            |> getOptions
                             |> List.head
                             |> Maybe.andThen Option.getMaybeOptionSearchFilter
                             |> Maybe.map .groupTokens
@@ -173,10 +182,13 @@ suite =
                         (OptionSearcher.updateOptionsWithSearchStringAndCustomOption
                             (SelectionMode.setSearchStringMinimumLength NoMinimumToSearchStringLength selectionConfig)
                             (SearchString.update "win")
-                            [ test_newFancyOption "LevelUp2021_SwagWinnersFinal" Nothing
-                            , test_newFancyOption "Q2 2021 Webinar Registrants" Nothing
-                            ]
-                            |> OptionsUtilities.sortOptionsByBestScore
+                            (FancyOptionList
+                                [ test_newFancyOption "LevelUp2021_SwagWinnersFinal" Nothing
+                                , test_newFancyOption "Q2 2021 Webinar Registrants" Nothing
+                                ]
+                            )
+                            |> sortOptionsByBestScore
+                            |> getOptions
                             |> List.head
                             |> Maybe.map Option.getOptionValueAsString
                         )
@@ -189,7 +201,8 @@ suite =
                         (OptionSearcher.updateOptionsWithSearchStringAndCustomOption
                             (SelectionMode.setSearchStringMinimumLength NoMinimumToSearchStringLength selectionConfig)
                             SearchString.reset
-                            [ pound |> Option.setDescriptionWithString "quid" ]
+                            (FancyOptionList [ pound |> Option.setDescriptionWithString "quid" ])
+                            |> getOptions
                             |> List.head
                             |> Maybe.andThen Option.getMaybeOptionSearchFilter
                             |> Maybe.map OptionSearchFilter.encode

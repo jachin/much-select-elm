@@ -1,8 +1,8 @@
 module Option.ReplacingOptions exposing (suite)
 
 import Expect
-import Option
-import OptionsUtilities exposing (mergeTwoListsOfOptionsPreservingSelectedOptions, replaceOptions)
+import Option exposing (test_newFancyOption)
+import OptionList exposing (OptionList(..))
 import OutputStyle
 import SelectionMode
 import Test exposing (Test, describe, test)
@@ -41,46 +41,51 @@ suite =
                 \_ ->
                     Expect.equalLists
                         [ futureCop, theMidnight ]
-                        (replaceOptions
+                        (OptionList.replaceOptions
                             multiSelectSelectionConfig
-                            [ thirdEyeBlind, futureCop ]
-                            [ futureCop, theMidnight ]
+                            (FancyOptionList [ thirdEyeBlind, futureCop ])
+                            (FancyOptionList [ futureCop, theMidnight ])
+                            |> OptionList.getOptions
                         )
             , test "should preserver selected options" <|
                 \_ ->
                     Expect.equalLists
                         [ futureCop, Option.selectOption 0 theMidnight ]
-                        (replaceOptions
+                        (OptionList.replaceOptions
                             multiSelectSelectionConfig
-                            [ thirdEyeBlind, futureCop ]
-                            [ futureCop, Option.selectOption 0 theMidnight ]
+                            (FancyOptionList [ thirdEyeBlind, futureCop ])
+                            (FancyOptionList [ futureCop, Option.selectOption 0 theMidnight ])
+                            |> OptionList.getOptions
                         )
             , test "should preserver selected options even if the selected value is not in the new list of options" <|
                 \_ ->
                     Expect.equalLists
-                        (replaceOptions
+                        (OptionList.replaceOptions
                             multiSelectSelectionConfig
-                            [ Option.selectOption 0 thirdEyeBlind, futureCop ]
-                            [ futureCop, theMidnight ]
+                            (FancyOptionList [ Option.selectOption 0 thirdEyeBlind, futureCop ])
+                            (FancyOptionList [ futureCop, theMidnight ])
+                            |> OptionList.getOptions
                         )
                         [ futureCop, theMidnight, Option.selectOption 0 thirdEyeBlind ]
             , test "should preserver selected order of the options" <|
                 \_ ->
                     Expect.equalLists
-                        (replaceOptions
+                        (OptionList.replaceOptions
                             multiSelectSelectionConfig
-                            [ Option.selectOption 1 thirdEyeBlind, futureCop, Option.selectOption 0 theMidnight ]
-                            [ Option.selectOption 1 thirdEyeBlind, futureCop, Option.selectOption 0 theMidnight ]
+                            (FancyOptionList [ Option.selectOption 1 thirdEyeBlind, futureCop, Option.selectOption 0 theMidnight ])
+                            (FancyOptionList [ Option.selectOption 1 thirdEyeBlind, futureCop, Option.selectOption 0 theMidnight ])
+                            |> OptionList.getOptions
                         )
                         [ Option.selectOption 1 thirdEyeBlind, futureCop, Option.selectOption 0 theMidnight ]
             , test "merging the 2 lists of options should preserver selected order of the options" <|
                 \_ ->
                     Expect.equalLists
-                        (mergeTwoListsOfOptionsPreservingSelectedOptions
+                        (OptionList.mergeTwoListsOfOptionsPreservingSelectedOptions
                             SelectionMode.MultiSelect
                             OutputStyle.SelectedItemStaysInPlace
-                            [ Option.selectOption 1 thirdEyeBlind, futureCop, Option.selectOption 0 theMidnight ]
-                            [ Option.selectOption 1 thirdEyeBlind, futureCop, Option.selectOption 0 theMidnight ]
+                            (FancyOptionList [ Option.selectOption 1 thirdEyeBlind, futureCop, Option.selectOption 0 theMidnight ])
+                            (FancyOptionList [ Option.selectOption 1 thirdEyeBlind, futureCop, Option.selectOption 0 theMidnight ])
+                            |> OptionList.getOptions
                         )
                         [ Option.selectOption 1 thirdEyeBlind, futureCop, Option.selectOption 0 theMidnight ]
             ]
@@ -88,46 +93,51 @@ suite =
             [ test "should preserver a single selected item in the new list of options" <|
                 \_ ->
                     Expect.equalLists
-                        (replaceOptions
+                        (OptionList.replaceOptions
                             selectionConfig
-                            [ futureCop, theMidnight ]
-                            [ Option.selectOption 0 thirdEyeBlind, futureCop ]
+                            (FancyOptionList [ futureCop, theMidnight ])
+                            (FancyOptionList [ Option.selectOption 0 thirdEyeBlind, futureCop ])
+                            |> OptionList.getOptions
                         )
                         [ Option.selectOption 0 thirdEyeBlind, futureCop ]
             , test "should preserver a single selected item in the old list of options" <|
                 \_ ->
                     Expect.equalLists
-                        (replaceOptions
+                        (OptionList.replaceOptions
                             selectionConfig
-                            [ Option.selectOption 0 thirdEyeBlind, theMidnight ]
-                            [ thirdEyeBlind, futureCop ]
+                            (FancyOptionList [ Option.selectOption 0 thirdEyeBlind, theMidnight ])
+                            (FancyOptionList [ thirdEyeBlind, futureCop ])
+                            |> OptionList.getOptions
                         )
                         [ Option.selectOption 0 thirdEyeBlind, futureCop ]
             , test "should preserver a single selected item when the selected item is in both the old and new list" <|
                 \_ ->
                     Expect.equalLists
-                        (replaceOptions
+                        (OptionList.replaceOptions
                             selectionConfig
-                            [ Option.selectOption 0 thirdEyeBlind, theMidnight ]
-                            [ Option.selectOption 0 thirdEyeBlind, futureCop ]
+                            (FancyOptionList [ Option.selectOption 0 thirdEyeBlind, theMidnight ])
+                            (FancyOptionList [ Option.selectOption 0 thirdEyeBlind, futureCop ])
+                            |> OptionList.getOptions
                         )
                         [ Option.selectOption 0 thirdEyeBlind, futureCop ]
             , test "should preserver a single selected item when the selected item is NOT in the new list" <|
                 \_ ->
                     Expect.equalLists
-                        (replaceOptions
+                        (OptionList.replaceOptions
                             selectionConfig
-                            [ Option.selectOption 0 thirdEyeBlind, theMidnight ]
-                            [ futureCop ]
+                            (FancyOptionList [ Option.selectOption 0 thirdEyeBlind, theMidnight ])
+                            (FancyOptionList [ futureCop ])
+                            |> OptionList.getOptions
                         )
                         [ futureCop, Option.selectOption 0 thirdEyeBlind ]
             , test "should preserver a single selected item when different items are selected in the old and new list, favoring the new selected option" <|
                 \_ ->
                     Expect.equalLists
-                        (replaceOptions
+                        (OptionList.replaceOptions
                             selectionConfig
-                            [ Option.selectOption 0 thirdEyeBlind, theMidnight ]
-                            [ Option.selectOption 0 futureCop ]
+                            (FancyOptionList [ Option.selectOption 0 thirdEyeBlind, theMidnight ])
+                            (FancyOptionList [ Option.selectOption 0 futureCop ])
+                            |> OptionList.getOptions
                         )
                         [ Option.selectOption 0 futureCop ]
             ]
