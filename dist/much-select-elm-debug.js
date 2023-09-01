@@ -14416,7 +14416,7 @@ var $author$project$OptionList$selectSingleOptionByValue = F2(
 		return A2(
 			$author$project$OptionList$map,
 			function (option_) {
-				return A2($author$project$Option$optionEqualsOptionValue, optionValue, option_) ? A2($author$project$Option$selectOption, 0, option_) : ($author$project$Option$isOptionSelected(option_) ? option_ : $author$project$Option$deselectOption(option_));
+				return A2($author$project$Option$optionEqualsOptionValue, optionValue, option_) ? A2($author$project$Option$selectOption, 0, option_) : $author$project$Option$deselectOption(option_);
 			},
 			options);
 	});

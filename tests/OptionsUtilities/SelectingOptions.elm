@@ -3,9 +3,8 @@ module OptionsUtilities.SelectingOptions exposing (suite)
 import DatalistOption
 import Expect exposing (Expectation)
 import Option exposing (Option, selectOption, test_newDatalistOption, test_newFancyOption)
-import OptionList exposing (OptionList(..), appendOption, optionsPlusOne, selectOptionByOptionValueWithIndex, selectOptionIByValueStringWithIndex, selectSingleOptionInListByStringOrSelectCustomValue, updateDatalistOptionsWithValueAndErrors)
+import OptionList exposing (OptionList(..), selectOptionIByValueStringWithIndex, updateDatalistOptionsWithValueAndErrors)
 import OptionValue
-import SearchString
 import Test exposing (Test, describe, test)
 import TransformAndValidate exposing (ValidationErrorMessage(..), ValidationFailureMessage(..), ValidationReportLevel(..))
 
@@ -53,49 +52,7 @@ assertEqualLists optionListA optionListB =
 suite : Test
 suite =
     describe "Selecting"
-        [ describe "a single option or adding a custom value"
-            [ test "should do nothing on an empty list of options and an empty string" <|
-                \_ ->
-                    assertEqualLists
-                        (selectSingleOptionInListByStringOrSelectCustomValue SearchString.reset
-                            (FancyOptionList [])
-                        )
-                        (FancyOptionList [])
-            , test "should select nothing on an empty string" <|
-                \_ ->
-                    assertEqualLists
-                        (selectSingleOptionInListByStringOrSelectCustomValue
-                            SearchString.reset
-                            (FancyOptionList [ desertIsland ])
-                        )
-                        (FancyOptionList [ desertIsland ])
-            , test "should create a new custom option when the list of option is empty" <|
-                \_ ->
-                    assertEqualLists
-                        (selectSingleOptionInListByStringOrSelectCustomValue
-                            (SearchString.update "Moon Lit Street")
-                            (FancyOptionList [])
-                        )
-                        (FancyOptionList
-                            [ test_newFancyOption "Moon Lit Street" Nothing
-                                |> selectOption 0
-                            ]
-                        )
-            , test "should selected an existing option if the string matches" <|
-                \_ ->
-                    assertEqualLists
-                        (selectSingleOptionInListByStringOrSelectCustomValue
-                            (SearchString.update "Boot Hill")
-                            options
-                        )
-                        (FancyOptionList [ slaveShip, desertIsland, bootHill |> selectOption 0 ])
-            , test "should not selected an existing option if the string has miss matching case" <|
-                \_ ->
-                    assertEqualLists
-                        (selectSingleOptionInListByStringOrSelectCustomValue (SearchString.update "boot hill") options)
-                        (appendOption (test_newFancyOption "boot hill" Nothing |> selectOption 0) options)
-            ]
-        , describe "selectOptionInListWithIndex"
+        [ describe "selectOptionInListWithIndex"
             [ test "keep the selection index" <|
                 \_ ->
                     assertEqualLists

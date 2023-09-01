@@ -83,11 +83,16 @@ arcadeHighSelected =
         |> Option.selectOption 2
 
 
+optionToTuple : Option -> ( String, Bool )
+optionToTuple option =
+    Tuple.pair (Option.getOptionValueAsString option) (Option.isOptionSelected option)
+
+
 assertEqualLists : OptionList -> OptionList -> Expectation
 assertEqualLists optionListA optionListB =
     Expect.equalLists
-        (optionListA |> OptionList.getOptions |> List.map Option.getOptionValueAsString)
-        (optionListB |> OptionList.getOptions |> List.map Option.getOptionValueAsString)
+        (optionListA |> OptionList.getOptions |> List.map optionToTuple)
+        (optionListB |> OptionList.getOptions |> List.map optionToTuple)
 
 
 suite : Test
