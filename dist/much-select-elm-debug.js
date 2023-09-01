@@ -13999,19 +13999,18 @@ var $author$project$OptionList$addNewEmptyOptionAtIndex = F2(
 	function (index, optionList) {
 		var secondPart = A2($author$project$OptionList$drop, index, optionList);
 		var firstPart = A2($author$project$OptionList$take, index, optionList);
-		return $author$project$OptionList$reIndexSelectedOptions(
+		return A2(
+			$author$project$OptionList$append,
 			A2(
 				$author$project$OptionList$append,
-				A2(
-					$author$project$OptionList$append,
-					firstPart,
-					$author$project$OptionList$DatalistOptionList(
-						_List_fromArray(
-							[
-								$author$project$Option$DatalistOption(
-								$author$project$DatalistOption$new($author$project$OptionValue$EmptyOptionValue))
-							]))),
-				secondPart));
+				firstPart,
+				$author$project$OptionList$DatalistOptionList(
+					_List_fromArray(
+						[
+							$author$project$Option$DatalistOption(
+							$author$project$DatalistOption$new($author$project$OptionValue$EmptyOptionValue))
+						]))),
+			secondPart);
 	});
 var $author$project$OptionDisplay$OptionHighlighted = {$: 'OptionHighlighted'};
 var $author$project$OptionDisplay$addHighlight = function (optionDisplay) {

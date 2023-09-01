@@ -1348,7 +1348,6 @@ addNewEmptyOptionAtIndex index optionList =
             )
         )
         secondPart
-        |> reIndexSelectedOptions
 
 
 replaceOptions : SelectionConfig -> OptionList -> OptionList -> OptionList

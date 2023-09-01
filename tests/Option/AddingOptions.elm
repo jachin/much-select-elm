@@ -307,7 +307,6 @@ suite =
                         )
                         (DatalistOptionList
                             [ test_newEmptyDatalistOption
-                                |> selectOption 0
                             , Option.selectOption 1 theMidnight
                             , Option.selectOption 2 futureCop
                             , Option.selectOption 3 arcadeHigh
@@ -326,7 +325,6 @@ suite =
                         (DatalistOptionList
                             [ theMidnightSelected
                             , test_newEmptyDatalistOption
-                                |> selectOption 1
                             , Option.selectOption 2 futureCop
                             , Option.selectOption 3 arcadeHigh
                             ]
@@ -338,16 +336,15 @@ suite =
                             [ theMidnightSelected
                             , futureCopSelected
                             , arcadeHighSelected
+                            , test_newEmptyDatalistOption
                             ]
-                            |> addNewEmptyOptionAtIndex 3
                         )
                         (DatalistOptionList
                             [ theMidnightSelected
                             , futureCopSelected
                             , arcadeHighSelected
-                            , test_newEmptyDatalistOption
-                                |> selectOption 3
                             ]
+                            |> addNewEmptyOptionAtIndex 3
                         )
             , test "preserver the empty selected options" <|
                 \_ ->

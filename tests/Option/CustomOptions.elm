@@ -7,7 +7,7 @@ import MuchSelect
         ( updateModelWithChangesThatEffectTheOptionsWithSearchString
         )
 import Option exposing (Option(..), selectOption, test_newFancyCustomOption, test_newFancyOptionWithMaybeCleanString)
-import OptionList exposing (OptionList(..), getOptions, prependCustomOption, removeUnselectedCustomOptions, selectOptionByOptionValue)
+import OptionList exposing (OptionList(..), prependCustomOption, removeUnselectedCustomOptions, selectOptionByOptionValue)
 import OptionValue exposing (stringToOptionValue)
 import OutputStyle
     exposing
