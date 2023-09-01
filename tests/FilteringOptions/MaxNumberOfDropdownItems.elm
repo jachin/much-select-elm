@@ -113,16 +113,6 @@ selectionConfigMaxDropdownItemsThree =
     selectionConfig |> SelectionMode.setMaxDropdownItems three
 
 
-searchStringMinLengthTwo =
-    FixedSearchStringMinimumLength (PositiveInt.new 2)
-
-
-multiSelectConfig =
-    defaultSelectionConfig
-        |> SelectionMode.setSelectionMode SelectionMode.MultiSelect
-        |> SelectionMode.setSearchStringMinimumLength searchStringMinLengthTwo
-
-
 assertEqualLists : OptionList -> OptionList -> Expectation
 assertEqualLists optionListA optionListB =
     Expect.equalLists

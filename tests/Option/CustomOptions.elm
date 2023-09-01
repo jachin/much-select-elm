@@ -6,7 +6,7 @@ import MuchSelect
     exposing
         ( updateModelWithChangesThatEffectTheOptionsWithSearchString
         )
-import Option exposing (Option(..), selectOption, test_newFancyOptionWithMaybeCleanString)
+import Option exposing (Option(..), selectOption, test_newFancyCustomOption, test_newFancyOptionWithMaybeCleanString)
 import OptionList exposing (OptionList(..), getOptions, prependCustomOption, removeUnselectedCustomOptions, selectOptionByOptionValue)
 import OptionValue exposing (stringToOptionValue)
 import OutputStyle
@@ -43,15 +43,15 @@ mossyCobblestone =
 
 
 torch =
-    test_newFancyOptionWithMaybeCleanString "Torch" Nothing
+    test_newFancyCustomOption "Torch"
 
 
 turf =
-    test_newFancyOptionWithMaybeCleanString "Turf" Nothing
+    test_newFancyCustomOption "Turf"
 
 
 vines =
-    test_newFancyOptionWithMaybeCleanString "Vines" Nothing
+    test_newFancyCustomOption "Vines"
 
 
 blocks =
@@ -66,11 +66,16 @@ emptyFancyList =
     FancyOptionList []
 
 
+optionToTuple : Option -> ( String, Bool )
+optionToTuple option =
+    Tuple.pair (Option.getOptionValueAsString option) (Option.isOptionSelected option)
+
+
 assertEqualLists : OptionList -> OptionList -> Expectation
 assertEqualLists optionListA optionListB =
     Expect.equalLists
-        (optionListA |> getOptions |> List.map Option.getOptionValueAsString)
-        (optionListB |> getOptions |> List.map Option.getOptionValueAsString)
+        (optionListA |> OptionList.getOptions |> List.map optionToTuple)
+        (optionListB |> OptionList.getOptions |> List.map optionToTuple)
 
 
 newFancyCustomOption : String -> Maybe String -> Option
@@ -84,17 +89,17 @@ suite =
         [ test "should be able to remove all the unselected custom options" <|
             \_ ->
                 assertEqualLists
-                    (blocks
-                        |> selectOptionByOptionValue (stringToOptionValue "Cut Copper")
-                        |> selectOptionByOptionValue (stringToOptionValue "Turf")
-                        |> removeUnselectedCustomOptions
-                    )
                     (FancyOptionList
                         [ birchWood
                         , selectOption 0 cutCopper
                         , mossyCobblestone
                         , selectOption 1 turf
                         ]
+                    )
+                    (blocks
+                        |> selectOptionByOptionValue (stringToOptionValue "Cut Copper")
+                        |> selectOptionByOptionValue (stringToOptionValue "Turf")
+                        |> removeUnselectedCustomOptions
                     )
         , test "should be able to maintain a custom option with an empty hint" <|
             \_ ->

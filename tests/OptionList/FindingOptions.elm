@@ -1,4 +1,4 @@
-module Attributes.OptionList.FindingOptions exposing (suite)
+module OptionList.FindingOptions exposing (suite)
 
 import Expect
 import Option exposing (Option, test_newFancyOption)

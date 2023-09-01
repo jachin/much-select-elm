@@ -60,6 +60,7 @@ module Option exposing
     , setOptionValueErrors
     , test_newDatalistOption
     , test_newEmptyDatalistOption
+    , test_newFancyCustomOption
     , test_newFancyOption
     , test_newFancyOptionWithMaybeCleanString
     , test_newSlottedOption
@@ -763,6 +764,11 @@ test_newFancyOption string =
 test_newFancyOptionWithMaybeCleanString : String -> Maybe String -> Option
 test_newFancyOptionWithMaybeCleanString string maybeString =
     FancyOption (FancyOption.new string maybeString)
+
+
+test_newFancyCustomOption : String -> Option
+test_newFancyCustomOption string =
+    FancyOption (FancyOption.newCustomOption string Nothing)
 
 
 test_newDatalistOption : String -> Option
