@@ -11599,8 +11599,7 @@ var $author$project$OptionList$decoder = F2(
 								return $elm$json$Json$Decode$succeed(
 									$author$project$OptionList$FancyOptionList(options));
 							case 'DatalistOptionList':
-								return $elm$json$Json$Decode$succeed(
-									$author$project$OptionList$DatalistOptionList(options));
+								return $elm$json$Json$Decode$fail('If the output style is Custom HTML the list of options must FancyOptionList or SlottedOptionList');
 							default:
 								return $elm$json$Json$Decode$succeed(
 									$author$project$OptionList$SlottedOptionList(options));
@@ -12507,14 +12506,14 @@ var $author$project$OptionList$reIndexSelectedOptions = function (optionList) {
 	var nonSelectedOptions = $author$project$OptionList$unselectedOptions(optionList);
 	return A2(
 		$author$project$OptionList$append,
-		nonSelectedOptions,
 		A2(
 			$author$project$OptionList$indexedMap,
 			F2(
 				function (index, option) {
 					return A2($author$project$Option$selectOption, index, option);
 				}),
-			selectedOptions_));
+			selectedOptions_),
+		nonSelectedOptions);
 };
 var $author$project$OptionList$removeEmptyOptions = function (optionList) {
 	return A2(

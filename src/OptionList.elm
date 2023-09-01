@@ -890,6 +890,15 @@ removeHighlightedOptionByValue optionValue optionList =
         optionList
 
 
+{-| Take a list of option. Pull out the selected options and the unselected option.
+Reindex the selected options, keep their order but if there are any gaps collapse
+those. Finally append the unselected options to the end of the selected options.
+
+I think this should only be used for datalist options.
+
+TODO: check to make sure this is only datalist options
+
+-}
 reIndexSelectedOptions : OptionList -> OptionList
 reIndexSelectedOptions optionList =
     let
@@ -901,8 +910,9 @@ reIndexSelectedOptions optionList =
             optionList
                 |> unselectedOptions
     in
-    indexedMap (\index option -> Option.selectOption index option) selectedOptions_
-        |> append nonSelectedOptions
+    append
+        (indexedMap (\index option -> Option.selectOption index option) selectedOptions_)
+        nonSelectedOptions
 
 
 deselectOptions : OptionList -> OptionList -> OptionList
@@ -1710,7 +1720,7 @@ decoder optionAge outputStyle =
                                         Json.Decode.succeed (FancyOptionList options)
 
                                     DatalistOptionList _ ->
-                                        Json.Decode.succeed (DatalistOptionList options)
+                                        Json.Decode.fail "If the output style is Custom HTML the list of options must FancyOptionList or SlottedOptionList"
 
                                     SlottedOptionList _ ->
                                         Json.Decode.succeed (SlottedOptionList options)
