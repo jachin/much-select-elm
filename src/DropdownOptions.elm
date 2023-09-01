@@ -310,7 +310,13 @@ moveHighlightedOptionUp selectionConfig optionList =
         maybeHigherSibling =
             visibleOptions
                 |> OptionList.findHighlightedOrSelectedOptionIndex
-                |> Maybe.andThen (\index -> OptionList.findClosestHighlightableOptionGoingUp selectionConfig index visibleOptions)
+                |> Maybe.andThen
+                    (\index ->
+                        OptionList.findClosestHighlightableOptionGoingUp
+                            (SelectionMode.getSelectionMode selectionConfig)
+                            index
+                            visibleOptions
+                    )
     in
     case maybeHigherSibling of
         Just option ->
@@ -334,7 +340,13 @@ moveHighlightedOptionDown selectionConfig allOptions =
         maybeLowerSibling =
             visibleOptions
                 |> OptionList.findHighlightedOrSelectedOptionIndex
-                |> Maybe.andThen (\index -> OptionList.findClosestHighlightableOptionGoingDown selectionConfig index visibleOptions)
+                |> Maybe.andThen
+                    (\index ->
+                        OptionList.findClosestHighlightableOptionGoingDown
+                            (SelectionMode.getSelectionMode selectionConfig)
+                            index
+                            visibleOptions
+                    )
     in
     case maybeLowerSibling of
         Just option ->
@@ -344,7 +356,12 @@ moveHighlightedOptionDown selectionConfig allOptions =
             -- If there is not a lower sibling to highlight, jump up to the top of the list, and see
             --  if there is a sibling to highlight at the top of the dropdown. There might not be,
             --  the dropdown might be empty or all the options might be selected.
-            case OptionList.findClosestHighlightableOptionGoingDown selectionConfig 0 visibleOptions of
+            case
+                OptionList.findClosestHighlightableOptionGoingDown
+                    (SelectionMode.getSelectionMode selectionConfig)
+                    0
+                    visibleOptions
+            of
                 Just firstOption ->
                     OptionList.highlightOption firstOption allOptions
 

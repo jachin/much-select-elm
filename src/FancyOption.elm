@@ -12,7 +12,7 @@ import OptionLabel exposing (OptionLabel, optionLabelToString)
 import OptionSearchFilter exposing (OptionSearchFilter)
 import OptionValue exposing (OptionValue(..))
 import OutputStyle exposing (SingleItemRemoval(..))
-import SelectionMode exposing (OutputStyle, SelectionConfig)
+import SelectionMode exposing (OutputStyle, SelectionConfig, SelectionMode)
 
 
 type FancyOption
@@ -420,9 +420,9 @@ isOptionHighlighted option =
     OptionDisplay.isHighlighted (getOptionDisplay option)
 
 
-optionIsHighlightable : SelectionConfig -> FancyOption -> Bool
-optionIsHighlightable selectionConfig option =
-    OptionDisplay.isHighlightable (SelectionMode.getSelectionMode selectionConfig) (getOptionDisplay option)
+optionIsHighlightable : SelectionMode -> FancyOption -> Bool
+optionIsHighlightable selectionMode option =
+    OptionDisplay.isHighlightable selectionMode (getOptionDisplay option)
 
 
 select : Int -> FancyOption -> FancyOption

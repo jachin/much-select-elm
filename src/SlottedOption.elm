@@ -1,4 +1,4 @@
-module SlottedOption exposing (SlottedOption, decoder, decoderWithAge, encode, getOptionDisplay, getOptionSelectedIndex, getOptionSlot, getOptionValue, getOptionValueAsString, hasSelectedItemIndex, highlightOption, isOptionHighlighted, isOptionSelectedHighlighted, isSelected, new, optionIsHighlightable, removeHighlightFromOption, setOptionDisplay, setOptionSelectedIndex, setOptionValue, test_optionToDebuggingString, toValueHtml)
+module SlottedOption exposing (SlottedOption, decoder, decoderWithAge, encode, getOptionDisplay, getOptionSelectedIndex, getOptionSlot, getOptionValue, getOptionValueAsString, highlightOption, isOptionHighlighted, isOptionSelectedHighlighted, isSelected, new, optionIsHighlightable, removeHighlightFromOption, setOptionDisplay, setOptionSelectedIndex, setOptionValue, test_optionToDebuggingString, toValueHtml)
 
 import Events exposing (mouseUpPreventDefault)
 import Html exposing (Html, div, span, text)
@@ -9,7 +9,7 @@ import OptionDisplay exposing (OptionDisplay(..))
 import OptionSlot exposing (OptionSlot)
 import OptionValue exposing (OptionValue)
 import OutputStyle exposing (SingleItemRemoval(..))
-import SelectionMode exposing (SelectionConfig)
+import SelectionMode exposing (SelectionConfig, SelectionMode)
 
 
 type SlottedOption
@@ -53,11 +53,6 @@ getOptionSelectedIndex slottedOption =
     slottedOption |> getOptionDisplay |> OptionDisplay.getSelectedIndex
 
 
-hasSelectedItemIndex : Int -> SlottedOption -> Bool
-hasSelectedItemIndex selectedItemIndex option =
-    getOptionSelectedIndex option == selectedItemIndex
-
-
 setOptionSelectedIndex : Int -> SlottedOption -> SlottedOption
 setOptionSelectedIndex selectedIndex option =
     setOptionDisplay (option |> getOptionDisplay |> OptionDisplay.setSelectedIndex selectedIndex) option
@@ -97,9 +92,9 @@ isOptionHighlighted option =
     OptionDisplay.isHighlighted (getOptionDisplay option)
 
 
-optionIsHighlightable : SelectionConfig -> SlottedOption -> Bool
-optionIsHighlightable selectionConfig option =
-    OptionDisplay.isHighlightable (SelectionMode.getSelectionMode selectionConfig) (getOptionDisplay option)
+optionIsHighlightable : SelectionMode -> SlottedOption -> Bool
+optionIsHighlightable selectionMode option =
+    OptionDisplay.isHighlightable selectionMode (getOptionDisplay option)
 
 
 select : Int -> SlottedOption -> SlottedOption
@@ -167,9 +162,9 @@ toValueHtml toggleSelectedMsg deselectOptionInternal enableSingleItemRemoval opt
             Html.Attributes.attribute "part" "value highlighted-value"
     in
     case option of
-        SlottedOption optionDisplay optionValue optionSlot ->
+        SlottedOption optionDisplay optionValue _ ->
             case optionDisplay of
-                OptionShown optionAge ->
+                OptionShown _ ->
                     text ""
 
                 OptionHidden ->
@@ -187,13 +182,13 @@ toValueHtml toggleSelectedMsg deselectOptionInternal enableSingleItemRemoval opt
                         , removalHtml optionValue
                         ]
 
-                OptionSelectedAndInvalid int validationFailureMessages ->
+                OptionSelectedAndInvalid _ _ ->
                     text ""
 
-                OptionSelectedPendingValidation int ->
+                OptionSelectedPendingValidation _ ->
                     text ""
 
-                OptionSelectedHighlighted int ->
+                OptionSelectedHighlighted _ ->
                     div
                         [ classList
                             [ ( "value", True )

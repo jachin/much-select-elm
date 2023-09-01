@@ -436,19 +436,19 @@ drop int optionList =
                 |> SlottedOptionList
 
 
-findClosestHighlightableOptionGoingUp : SelectionConfig -> Int -> OptionList -> Maybe Option
-findClosestHighlightableOptionGoingUp selectionConfig index list =
+findClosestHighlightableOptionGoingUp : SelectionMode -> Int -> OptionList -> Maybe Option
+findClosestHighlightableOptionGoingUp selectionMode index list =
     List.Extra.splitAt index (getOptions list)
         |> Tuple.first
         |> List.reverse
-        |> List.Extra.find (Option.optionIsHighlightable selectionConfig)
+        |> List.Extra.find (Option.optionIsHighlightable selectionMode)
 
 
-findClosestHighlightableOptionGoingDown : SelectionConfig -> Int -> OptionList -> Maybe Option
-findClosestHighlightableOptionGoingDown selectionConfig index list =
+findClosestHighlightableOptionGoingDown : SelectionMode -> Int -> OptionList -> Maybe Option
+findClosestHighlightableOptionGoingDown selectionMode index list =
     List.Extra.splitAt index (getOptions list)
         |> Tuple.second
-        |> List.Extra.find (Option.optionIsHighlightable selectionConfig)
+        |> List.Extra.find (Option.optionIsHighlightable selectionMode)
 
 
 findHighlightedOption : OptionList -> Maybe Option

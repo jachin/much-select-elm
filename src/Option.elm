@@ -441,17 +441,17 @@ isOptionHighlighted option =
             SlottedOption.isOptionHighlighted slottedOption
 
 
-optionIsHighlightable : SelectionConfig -> Option -> Bool
-optionIsHighlightable selectionConfig option =
+optionIsHighlightable : SelectionMode -> Option -> Bool
+optionIsHighlightable selectionMode option =
     case option of
         FancyOption fancyOption ->
-            FancyOption.optionIsHighlightable selectionConfig fancyOption
+            FancyOption.optionIsHighlightable selectionMode fancyOption
 
         DatalistOption _ ->
             False
 
         SlottedOption slottedOption ->
-            SlottedOption.optionIsHighlightable selectionConfig slottedOption
+            SlottedOption.optionIsHighlightable selectionMode slottedOption
 
 
 selectOption : Int -> Option -> Option

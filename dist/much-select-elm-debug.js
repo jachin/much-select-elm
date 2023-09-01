@@ -15989,30 +15989,30 @@ var $author$project$OptionDisplay$isHighlightable = F2(
 		}
 	});
 var $author$project$FancyOption$optionIsHighlightable = F2(
-	function (selectionConfig, option) {
+	function (selectionMode, option) {
 		return A2(
 			$author$project$OptionDisplay$isHighlightable,
-			$author$project$SelectionMode$getSelectionMode(selectionConfig),
+			selectionMode,
 			$author$project$FancyOption$getOptionDisplay(option));
 	});
 var $author$project$SlottedOption$optionIsHighlightable = F2(
-	function (selectionConfig, option) {
+	function (selectionMode, option) {
 		return A2(
 			$author$project$OptionDisplay$isHighlightable,
-			$author$project$SelectionMode$getSelectionMode(selectionConfig),
+			selectionMode,
 			$author$project$SlottedOption$getOptionDisplay(option));
 	});
 var $author$project$Option$optionIsHighlightable = F2(
-	function (selectionConfig, option) {
+	function (selectionMode, option) {
 		switch (option.$) {
 			case 'FancyOption':
 				var fancyOption = option.a;
-				return A2($author$project$FancyOption$optionIsHighlightable, selectionConfig, fancyOption);
+				return A2($author$project$FancyOption$optionIsHighlightable, selectionMode, fancyOption);
 			case 'DatalistOption':
 				return false;
 			default:
 				var slottedOption = option.a;
-				return A2($author$project$SlottedOption$optionIsHighlightable, selectionConfig, slottedOption);
+				return A2($author$project$SlottedOption$optionIsHighlightable, selectionMode, slottedOption);
 		}
 	});
 var $elm_community$list_extra$List$Extra$splitAt = F2(
@@ -16022,10 +16022,10 @@ var $elm_community$list_extra$List$Extra$splitAt = F2(
 			A2($elm$core$List$drop, n, xs));
 	});
 var $author$project$OptionList$findClosestHighlightableOptionGoingDown = F3(
-	function (selectionConfig, index, list) {
+	function (selectionMode, index, list) {
 		return A2(
 			$elm_community$list_extra$List$Extra$find,
-			$author$project$Option$optionIsHighlightable(selectionConfig),
+			$author$project$Option$optionIsHighlightable(selectionMode),
 			A2(
 				$elm_community$list_extra$List$Extra$splitAt,
 				index,
@@ -16038,14 +16038,22 @@ var $author$project$DropdownOptions$moveHighlightedOptionDown = F2(
 		var maybeLowerSibling = A2(
 			$elm$core$Maybe$andThen,
 			function (index) {
-				return A3($author$project$OptionList$findClosestHighlightableOptionGoingDown, selectionConfig, index, visibleOptions);
+				return A3(
+					$author$project$OptionList$findClosestHighlightableOptionGoingDown,
+					$author$project$SelectionMode$getSelectionMode(selectionConfig),
+					index,
+					visibleOptions);
 			},
 			$author$project$OptionList$findHighlightedOrSelectedOptionIndex(visibleOptions));
 		if (maybeLowerSibling.$ === 'Just') {
 			var option = maybeLowerSibling.a;
 			return A2($author$project$OptionList$highlightOption, option, allOptions);
 		} else {
-			var _v1 = A3($author$project$OptionList$findClosestHighlightableOptionGoingDown, selectionConfig, 0, visibleOptions);
+			var _v1 = A3(
+				$author$project$OptionList$findClosestHighlightableOptionGoingDown,
+				$author$project$SelectionMode$getSelectionMode(selectionConfig),
+				0,
+				visibleOptions);
 			if (_v1.$ === 'Just') {
 				var firstOption = _v1.a;
 				return A2($author$project$OptionList$highlightOption, firstOption, allOptions);
@@ -16064,10 +16072,10 @@ var $author$project$DropdownOptions$moveHighlightedOptionDownIfThereAreOptions =
 		return ($author$project$DropdownOptions$length(visibleOptions) > 1) ? A2($author$project$DropdownOptions$moveHighlightedOptionDown, selectionConfig, options) : options;
 	});
 var $author$project$OptionList$findClosestHighlightableOptionGoingUp = F3(
-	function (selectionConfig, index, list) {
+	function (selectionMode, index, list) {
 		return A2(
 			$elm_community$list_extra$List$Extra$find,
-			$author$project$Option$optionIsHighlightable(selectionConfig),
+			$author$project$Option$optionIsHighlightable(selectionMode),
 			$elm$core$List$reverse(
 				A2(
 					$elm_community$list_extra$List$Extra$splitAt,
@@ -16081,7 +16089,11 @@ var $author$project$DropdownOptions$moveHighlightedOptionUp = F2(
 		var maybeHigherSibling = A2(
 			$elm$core$Maybe$andThen,
 			function (index) {
-				return A3($author$project$OptionList$findClosestHighlightableOptionGoingUp, selectionConfig, index, visibleOptions);
+				return A3(
+					$author$project$OptionList$findClosestHighlightableOptionGoingUp,
+					$author$project$SelectionMode$getSelectionMode(selectionConfig),
+					index,
+					visibleOptions);
 			},
 			$author$project$OptionList$findHighlightedOrSelectedOptionIndex(visibleOptions));
 		if (maybeHigherSibling.$ === 'Just') {
@@ -20804,10 +20816,8 @@ var $author$project$SlottedOption$toValueHtml = F4(
 		var highlightPartAttr = A2($elm$html$Html$Attributes$attribute, 'part', 'value highlighted-value');
 		var optionDisplay = option.a;
 		var optionValue = option.b;
-		var optionSlot = option.c;
 		switch (optionDisplay.$) {
 			case 'OptionShown':
-				var optionAge = optionDisplay.a;
 				return $elm$html$Html$text('');
 			case 'OptionHidden':
 				return $elm$html$Html$text('');
@@ -20829,14 +20839,10 @@ var $author$project$SlottedOption$toValueHtml = F4(
 							removalHtml(optionValue)
 						]));
 			case 'OptionSelectedAndInvalid':
-				var _int = optionDisplay.a;
-				var validationFailureMessages = optionDisplay.b;
 				return $elm$html$Html$text('');
 			case 'OptionSelectedPendingValidation':
-				var _int = optionDisplay.a;
 				return $elm$html$Html$text('');
 			case 'OptionSelectedHighlighted':
-				var _int = optionDisplay.a;
 				return A2(
 					$elm$html$Html$div,
 					_List_fromArray(
