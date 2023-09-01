@@ -6,7 +6,7 @@ import Json.Encode
 import LightDomChange exposing (LightDomChange(..))
 import List.Extra
 import MuchSelect exposing (Flags)
-import Option exposing (test_newFancyOption)
+import Option exposing (test_newFancyOptionWithMaybeCleanString)
 import OptionList exposing (OptionList(..))
 import Ports exposing (optionsEncoder)
 import ProgramTest exposing (ProgramTest)
@@ -197,7 +197,7 @@ suite =
                                                     (MuchSelect.ReportValueChanged
                                                         (optionsEncoder
                                                             (FancyOptionList
-                                                                [ test_newFancyOption "pilot" Nothing
+                                                                [ test_newFancyOptionWithMaybeCleanString "pilot" Nothing
                                                                     |> Option.selectOption 0
                                                                 ]
                                                             )
@@ -298,7 +298,7 @@ suite =
                                                         (MuchSelect.ReportValueChanged
                                                             (optionsEncoder
                                                                 (FancyOptionList
-                                                                    [ test_newFancyOption "pilot" Nothing
+                                                                    [ test_newFancyOptionWithMaybeCleanString "pilot" Nothing
                                                                         |> Option.selectOption 0
                                                                     ]
                                                                 )
@@ -425,7 +425,7 @@ suite =
                                                             (MuchSelect.ReportValueChanged
                                                                 (optionsEncoder
                                                                     (FancyOptionList
-                                                                        [ test_newFancyOption "pilot" Nothing
+                                                                        [ test_newFancyOptionWithMaybeCleanString "pilot" Nothing
                                                                             |> Option.selectOption 0
                                                                         ]
                                                                     )
@@ -505,7 +505,7 @@ suite =
                                                         (MuchSelect.ReportValueChanged
                                                             (optionsEncoder
                                                                 (FancyOptionList
-                                                                    [ test_newFancyOption "pilot" Nothing
+                                                                    [ test_newFancyOptionWithMaybeCleanString "pilot" Nothing
                                                                         |> Option.selectOption 0
                                                                     ]
                                                                 )

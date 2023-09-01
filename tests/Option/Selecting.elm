@@ -1,26 +1,26 @@
 module Option.Selecting exposing (suite)
 
 import Expect exposing (Expectation)
-import Option exposing (Option(..), selectOption, test_newDatalistOption, test_newEmptyDatalistOption, test_newFancyOption)
+import Option exposing (Option(..), selectOption, test_newDatalistOption, test_newEmptyDatalistOption, test_newFancyOptionWithMaybeCleanString)
 import OptionList exposing (OptionList(..), cleanupEmptySelectedOptions, deselectEveryOptionExceptOptionsInList, selectOptionByOptionValue, selectOptions, selectOptionsInOptionsListByString, selectSingleOptionByValue)
 import OptionValue exposing (stringToOptionValue)
 import Test exposing (Test, describe, test)
 
 
 matthew =
-    test_newFancyOption "Matthew" Nothing
+    test_newFancyOptionWithMaybeCleanString "Matthew" Nothing
 
 
 mark =
-    test_newFancyOption "Mark" Nothing
+    test_newFancyOptionWithMaybeCleanString "Mark" Nothing
 
 
 luke =
-    test_newFancyOption "Luke" Nothing
+    test_newFancyOptionWithMaybeCleanString "Luke" Nothing
 
 
 john =
-    test_newFancyOption "John" Nothing
+    test_newFancyOptionWithMaybeCleanString "John" Nothing
 
 
 gospels =

@@ -1,24 +1,76 @@
 module Attributes.OptionList.FindingOptions exposing (suite)
 
 import Expect
-import Option exposing (test_newFancyOption)
-import OptionList exposing (OptionList(..), findClosestHighlightableOptionGoingUp)
+import Option exposing (Option, test_newFancyOption, test_newFancyOptionWithMaybeCleanString)
+import OptionList exposing (OptionList(..), findClosestHighlightableOptionGoingDown, findClosestHighlightableOptionGoingUp)
 import SelectionMode exposing (SelectionMode(..))
 import Test exposing (Test, describe, test)
 
 
-fancyList =
+rusty : Option
+rusty =
+    test_newFancyOption "Rusty"
+
+
+irwin : Option
+irwin =
+    test_newFancyOption "Irwin"
+
+
+ginger : Option
+ginger =
+    test_newFancyOption "Ginger"
+
+
+singleItemFancyList =
     FancyOptionList
-        [ test_newFancyOption "Rusty" Nothing
+        [ rusty
+        ]
+
+
+tripleItemFancyList =
+    FancyOptionList
+        [ rusty
+        , irwin
+        , ginger
         ]
 
 
 suite : Test
 suite =
     describe "Looking for something to highlight"
-        [ test "going up"
-            (\_ ->
-                findClosestHighlightableOptionGoingUp SingleSelect 0 fancyList
-                    |> Expect.equal (Just (test_newFancyOption "Rusty" Nothing))
-            )
+        [ describe "going up"
+            [ test "but we are starting at the top so there's nothing there"
+                (\_ ->
+                    findClosestHighlightableOptionGoingUp SingleSelect 0 singleItemFancyList
+                        |> Expect.equal Nothing
+                )
+            , test "in a single item list"
+                (\_ ->
+                    findClosestHighlightableOptionGoingUp SingleSelect 1 singleItemFancyList
+                        |> Expect.equal (Just rusty)
+                )
+            , test "from the middle"
+                (\_ ->
+                    findClosestHighlightableOptionGoingUp SingleSelect 2 tripleItemFancyList
+                        |> Expect.equal (Just irwin)
+                )
+            ]
+        , describe "going down"
+            [ test "starting at the top"
+                (\_ ->
+                    findClosestHighlightableOptionGoingDown SingleSelect 0 singleItemFancyList
+                        |> Expect.equal (Just rusty)
+                )
+            , test "in a single item list but starting at the bottom"
+                (\_ ->
+                    findClosestHighlightableOptionGoingDown SingleSelect 1 singleItemFancyList
+                        |> Expect.equal Nothing
+                )
+            , test "from the middle"
+                (\_ ->
+                    findClosestHighlightableOptionGoingDown SingleSelect 1 tripleItemFancyList
+                        |> Expect.equal (Just irwin)
+                )
+            ]
         ]

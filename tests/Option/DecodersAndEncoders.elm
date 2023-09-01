@@ -2,7 +2,7 @@ module Option.DecodersAndEncoders exposing (suite)
 
 import Expect
 import Json.Decode
-import Option exposing (newDisabledOption, newSelectedOption, selectOption, test_newFancyOption)
+import Option exposing (newDisabledOption, newSelectedOption, selectOption, test_newFancyOptionWithMaybeCleanString)
 import OptionDisplay
 import OptionList exposing (OptionList(..))
 import SelectionMode
@@ -86,7 +86,7 @@ suite =
             [ test "an option with just a label and value" <|
                 \_ ->
                     Expect.equal
-                        (Ok (test_newFancyOption "Sup" (Just "sup")))
+                        (Ok (test_newFancyOptionWithMaybeCleanString "Sup" (Just "sup")))
                         (Json.Decode.decodeString decoder simpleOptionWithJustLabelAndValue)
             , test "an option that's selected" <|
                 \_ ->
@@ -101,7 +101,7 @@ suite =
             , test "an option that's not selected" <|
                 \_ ->
                     Expect.equal
-                        (Ok (test_newFancyOption "Sup" (Just "sup")))
+                        (Ok (test_newFancyOptionWithMaybeCleanString "Sup" (Just "sup")))
                         (Json.Decode.decodeString decoder simpleNotSelectedOption)
             , test "an option that's disabled" <|
                 \_ ->
@@ -113,9 +113,9 @@ suite =
                     Expect.equal
                         (Ok
                             (FancyOptionList
-                                [ test_newFancyOption "1" Nothing |> Option.setLabelWithString "one" (Just "one")
-                                , test_newFancyOption "2" Nothing |> Option.setLabelWithString "two" (Just "two")
-                                , test_newFancyOption "3" Nothing |> selectOption 0 |> Option.setLabelWithString "three" (Just "three")
+                                [ test_newFancyOptionWithMaybeCleanString "1" Nothing |> Option.setLabelWithString "one" (Just "one")
+                                , test_newFancyOptionWithMaybeCleanString "2" Nothing |> Option.setLabelWithString "two" (Just "two")
+                                , test_newFancyOptionWithMaybeCleanString "3" Nothing |> selectOption 0 |> Option.setLabelWithString "three" (Just "three")
                                 ]
                             )
                         )
@@ -125,10 +125,10 @@ suite =
                     Expect.equal
                         (Ok
                             (FancyOptionList
-                                [ test_newFancyOption "1" Nothing
+                                [ test_newFancyOptionWithMaybeCleanString "1" Nothing
                                     |> Option.setLabelWithString "straw" (Just "straw")
                                     |> Option.setDescriptionWithString "👒"
-                                , test_newFancyOption "2" Nothing
+                                , test_newFancyOptionWithMaybeCleanString "2" Nothing
                                     |> Option.setLabelWithString "sticks" (Just "sticks")
                                     |> Option.setDescriptionWithString "🌳"
                                 , newSelectedOption 0 "3" Nothing
@@ -146,13 +146,13 @@ suite =
                     Expect.equal
                         (Ok
                             (FancyOptionList
-                                [ test_newFancyOption "1" Nothing
+                                [ test_newFancyOptionWithMaybeCleanString "1" Nothing
                                     |> Option.setLabelWithString "straw" (Just "straw")
                                     |> Option.setGroupWithString "Building Material"
-                                , test_newFancyOption "2" Nothing
+                                , test_newFancyOptionWithMaybeCleanString "2" Nothing
                                     |> Option.setLabelWithString "sticks" (Just "sticks")
                                     |> Option.setGroupWithString "Building Material"
-                                , test_newFancyOption "3" Nothing
+                                , test_newFancyOptionWithMaybeCleanString "3" Nothing
                                     |> selectOption 0
                                     |> Option.setLabelWithString "bricks" (Just "bricks")
                                     |> Option.setGroupWithString "Building Material"
@@ -166,12 +166,12 @@ suite =
             , test "an empty option with an empty label" <|
                 \_ ->
                     Expect.equal
-                        (Ok (FancyOptionList [ test_newFancyOption "" (Just "") ]))
+                        (Ok (FancyOptionList [ test_newFancyOptionWithMaybeCleanString "" (Just "") ]))
                         (Json.Decode.decodeString optionListDecoder """[ {"label": "", "labelClean": "", "value": "" } ]""")
             , test "an empty option with a label" <|
                 \_ ->
                     Expect.equal
-                        (Ok (FancyOptionList [ test_newFancyOption "" Nothing |> Option.setLabelWithString "nothing" (Just "nothing") ]))
+                        (Ok (FancyOptionList [ test_newFancyOptionWithMaybeCleanString "" Nothing |> Option.setLabelWithString "nothing" (Just "nothing") ]))
                         (Json.Decode.decodeString optionListDecoder """[ {"label": "nothing", "labelClean": "nothing", "value": "" } ]""")
             , test "a list of options with just values should fail" <|
                 \_ ->

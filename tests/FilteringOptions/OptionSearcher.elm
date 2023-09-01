@@ -3,7 +3,7 @@ module FilteringOptions.OptionSearcher exposing (suite)
 import DropdownOptions exposing (figureOutWhichOptionsToShowInTheDropdown)
 import Expect
 import Json.Decode
-import Option exposing (test_newFancyOption)
+import Option exposing (test_newFancyOptionWithMaybeCleanString)
 import OptionList exposing (OptionList(..), getOptions, sortOptionsByBestScore)
 import OptionSearchFilter
 import OptionSearcher exposing (doesSearchStringFindNothing)
@@ -22,37 +22,37 @@ selectionConfig =
 
 
 minervaryaPentali =
-    test_newFancyOption "Minervarya pentali" Nothing
+    test_newFancyOptionWithMaybeCleanString "Minervarya pentali" Nothing
         |> Option.setGroupWithString "Frog"
 
 
 paedophryneAmauensis =
-    test_newFancyOption "Paedophryne Amauensis" Nothing
+    test_newFancyOptionWithMaybeCleanString "Paedophryne Amauensis" Nothing
         |> Option.setGroupWithString "Frog"
 
 
 glassFrog =
-    test_newFancyOption "Glass Frog" Nothing
+    test_newFancyOptionWithMaybeCleanString "Glass Frog" Nothing
         |> Option.setGroupWithString "Frog"
 
 
 venezuelaPebbleToad =
-    test_newFancyOption "Venezuela Pebble Toad" Nothing
+    test_newFancyOptionWithMaybeCleanString "Venezuela Pebble Toad" Nothing
         |> Option.setGroupWithString "Frog"
 
 
 dinar =
-    test_newFancyOption "Dinar" Nothing
+    test_newFancyOptionWithMaybeCleanString "Dinar" Nothing
         |> Option.setGroupWithString "Money"
 
 
 ouguiya =
-    test_newFancyOption "Ougyiya" Nothing
+    test_newFancyOptionWithMaybeCleanString "Ougyiya" Nothing
         |> Option.setGroupWithString "Money"
 
 
 pound =
-    test_newFancyOption "Pound" Nothing
+    test_newFancyOptionWithMaybeCleanString "Pound" Nothing
         |> Option.setGroupWithString "Money"
 
 
@@ -183,8 +183,8 @@ suite =
                             (SelectionMode.setSearchStringMinimumLength NoMinimumToSearchStringLength selectionConfig)
                             (SearchString.update "win")
                             (FancyOptionList
-                                [ test_newFancyOption "LevelUp2021_SwagWinnersFinal" Nothing
-                                , test_newFancyOption "Q2 2021 Webinar Registrants" Nothing
+                                [ test_newFancyOptionWithMaybeCleanString "LevelUp2021_SwagWinnersFinal" Nothing
+                                , test_newFancyOptionWithMaybeCleanString "Q2 2021 Webinar Registrants" Nothing
                                 ]
                             )
                             |> sortOptionsByBestScore

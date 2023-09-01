@@ -1,7 +1,7 @@
 module Option.AddingOptions exposing (suite)
 
 import Expect exposing (Expectation)
-import Option exposing (Option(..), selectOption, setDescriptionWithString, setLabelWithString, test_newDatalistOption, test_newEmptyDatalistOption, test_newFancyOption)
+import Option exposing (Option(..), selectOption, setDescriptionWithString, setLabelWithString, test_newDatalistOption, test_newEmptyDatalistOption, test_newFancyOptionWithMaybeCleanString)
 import OptionList exposing (OptionList(..), addAdditionalOptionsToOptionList, addAdditionalOptionsToOptionListWithAutoSortRank, addAndSelectOptionsInOptionsListByString, addNewEmptyOptionAtIndex, mergeTwoListsOfOptionsPreservingSelectedOptions, updatedDatalistSelectedOptions)
 import OptionValue
 import OutputStyle exposing (SelectedItemPlacementMode(..))
@@ -11,25 +11,25 @@ import Test exposing (Test, describe, test)
 
 
 heartBones =
-    test_newFancyOption "Heart Bones" Nothing
+    test_newFancyOptionWithMaybeCleanString "Heart Bones" Nothing
 
 
 timecop1983 =
-    test_newFancyOption "Timecop1983" Nothing
+    test_newFancyOptionWithMaybeCleanString "Timecop1983" Nothing
 
 
 wolfCubJustValue =
-    test_newFancyOption "Wolf Club" Nothing
+    test_newFancyOptionWithMaybeCleanString "Wolf Club" Nothing
 
 
 wolfClub =
-    test_newFancyOption "Wolf Club" Nothing
+    test_newFancyOptionWithMaybeCleanString "Wolf Club" Nothing
         |> setLabelWithString "W O L F C L U B" Nothing
         |> setDescriptionWithString "80s Retro Wave"
 
 
 waveshaper =
-    test_newFancyOption "Waveshaper" Nothing
+    test_newFancyOptionWithMaybeCleanString "Waveshaper" Nothing
 
 
 theMidnightOptionValue =
@@ -199,7 +199,7 @@ suite =
                         (mergeTwoListsOfOptionsPreservingSelectedOptions
                             SelectionMode.SingleSelect
                             SelectedItemStaysInPlace
-                            (FancyOptionList [ test_newFancyOption "Wolf Club" Nothing |> selectOption 0 ])
+                            (FancyOptionList [ test_newFancyOptionWithMaybeCleanString "Wolf Club" Nothing |> selectOption 0 ])
                             (FancyOptionList [ wolfClub ])
                         )
             , test "if a new option matches the selected option update the description even when adding a bunch of new options" <|
@@ -209,7 +209,7 @@ suite =
                         (mergeTwoListsOfOptionsPreservingSelectedOptions
                             SelectionMode.SingleSelect
                             SelectedItemStaysInPlace
-                            (FancyOptionList [ test_newFancyOption "Wolf Club" Nothing |> selectOption 0 ])
+                            (FancyOptionList [ test_newFancyOptionWithMaybeCleanString "Wolf Club" Nothing |> selectOption 0 ])
                             (FancyOptionList [ wolfClub, timecop1983, heartBones ])
                         )
             , test "a selection option should stay in the same spot in the list" <|
@@ -219,7 +219,7 @@ suite =
                         (mergeTwoListsOfOptionsPreservingSelectedOptions
                             SelectionMode.SingleSelect
                             SelectedItemStaysInPlace
-                            (FancyOptionList [ test_newFancyOption "Wolf Club" Nothing |> selectOption 0 ])
+                            (FancyOptionList [ test_newFancyOptionWithMaybeCleanString "Wolf Club" Nothing |> selectOption 0 ])
                             (FancyOptionList [ timecop1983, heartBones, wolfClub ])
                         )
             , test "a selected option should move to the top of the list of options (when that option is set)" <|
@@ -229,7 +229,7 @@ suite =
                         (mergeTwoListsOfOptionsPreservingSelectedOptions
                             SelectionMode.SingleSelect
                             SelectedItemMovesToTheTop
-                            (FancyOptionList [ test_newFancyOption "Wolf Club" Nothing |> selectOption 0 ])
+                            (FancyOptionList [ test_newFancyOptionWithMaybeCleanString "Wolf Club" Nothing |> selectOption 0 ])
                             (FancyOptionList [ timecop1983, heartBones, wolfClub ])
                         )
             , describe "with auto sort order rank"
@@ -283,7 +283,7 @@ suite =
                                 [ wolfClub
                                 ]
                             )
-                            (FancyOptionList [ test_newFancyOption "Wolf Club" Nothing ])
+                            (FancyOptionList [ test_newFancyOptionWithMaybeCleanString "Wolf Club" Nothing ])
                         )
             ]
         , describe "mering two options"
@@ -291,12 +291,12 @@ suite =
                 \_ ->
                     Expect.equal
                         wolfClub
-                        (Option.merge wolfClub (test_newFancyOption "Wolf Club" Nothing))
+                        (Option.merge wolfClub (test_newFancyOptionWithMaybeCleanString "Wolf Club" Nothing))
             , test "should preserve label and description when the option with the label and description is second" <|
                 \_ ->
                     Expect.equal
                         wolfClub
-                        (Option.merge (test_newFancyOption "Wolf Club" Nothing) wolfClub)
+                        (Option.merge (test_newFancyOptionWithMaybeCleanString "Wolf Club" Nothing) wolfClub)
             ]
         , describe "to a datalist list of options"
             [ test "add to the beginning of the selected options" <|

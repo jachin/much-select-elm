@@ -7,7 +7,7 @@ import MuchSelect
     exposing
         ( updateModelWithChangesThatEffectTheOptionsWithSearchString
         )
-import Option exposing (Option(..), selectOption, test_newFancyOption)
+import Option exposing (Option(..), selectOption, test_newFancyOptionWithMaybeCleanString)
 import OptionList exposing (OptionList(..), getOptions, prependCustomOption, removeUnselectedCustomOptions, selectOptionByOptionValue)
 import OptionSearcher
 import OptionValue exposing (stringToOptionValue)
@@ -34,27 +34,27 @@ import Test exposing (Test, describe, test)
 
 
 birchWood =
-    test_newFancyOption "Birch Wood" Nothing
+    test_newFancyOptionWithMaybeCleanString "Birch Wood" Nothing
 
 
 cutCopper =
-    test_newFancyOption "Cut Copper" Nothing
+    test_newFancyOptionWithMaybeCleanString "Cut Copper" Nothing
 
 
 mossyCobblestone =
-    test_newFancyOption "Mossy Cobblestone" Nothing
+    test_newFancyOptionWithMaybeCleanString "Mossy Cobblestone" Nothing
 
 
 torch =
-    test_newFancyOption "Torch" Nothing
+    test_newFancyOptionWithMaybeCleanString "Torch" Nothing
 
 
 turf =
-    test_newFancyOption "Turf" Nothing
+    test_newFancyOptionWithMaybeCleanString "Turf" Nothing
 
 
 vines =
-    test_newFancyOption "Vines" Nothing
+    test_newFancyOptionWithMaybeCleanString "Vines" Nothing
 
 
 blocks =

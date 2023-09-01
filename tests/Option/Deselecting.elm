@@ -1,26 +1,26 @@
 module Option.Deselecting exposing (suite)
 
 import Expect exposing (Expectation)
-import Option exposing (Option, selectOption, test_newDatalistOption, test_newFancyOption)
+import Option exposing (Option, selectOption, test_newDatalistOption, test_newFancyOptionWithMaybeCleanString)
 import OptionList exposing (OptionList(..), deselectAll, deselectAllButTheFirstSelectedOptionInList, removeOptionFromOptionListBySelectedIndex, selectOptionByOptionValue)
 import OptionValue exposing (stringToOptionValue)
 import Test exposing (Test, describe, test)
 
 
 buzzCola =
-    test_newFancyOption "Buzz Cola" Nothing
+    test_newFancyOptionWithMaybeCleanString "Buzz Cola" Nothing
 
 
 krustyBurger =
-    test_newFancyOption "Krusty Burger" Nothing
+    test_newFancyOptionWithMaybeCleanString "Krusty Burger" Nothing
 
 
 lardLad =
-    test_newFancyOption "Lard Lad" Nothing
+    test_newFancyOptionWithMaybeCleanString "Lard Lad" Nothing
 
 
 squishee =
-    test_newFancyOption "Squishee" Nothing
+    test_newFancyOptionWithMaybeCleanString "Squishee" Nothing
 
 
 duff =

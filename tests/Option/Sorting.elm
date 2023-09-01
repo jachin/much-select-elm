@@ -1,7 +1,7 @@
 module Option.Sorting exposing (suite)
 
 import Expect
-import Option exposing (Option(..), setGroupWithString, test_newFancyOption, test_optionToDebuggingString)
+import Option exposing (Option(..), setGroupWithString, test_newFancyOptionWithMaybeCleanString, test_optionToDebuggingString)
 import OptionList exposing (findHighestAutoSortRank)
 import OptionSorting exposing (OptionSort(..), sortOptions)
 import SortRank exposing (newMaybeAutoSortRank)
@@ -9,19 +9,19 @@ import Test exposing (Test, describe, test)
 
 
 heartBones =
-    test_newFancyOption "Heart Bones" Nothing
+    test_newFancyOptionWithMaybeCleanString "Heart Bones" Nothing
 
 
 timecop1983 =
-    test_newFancyOption "Timecop1983" Nothing
+    test_newFancyOptionWithMaybeCleanString "Timecop1983" Nothing
 
 
 wolfClub =
-    test_newFancyOption "W O L F C L U B" Nothing
+    test_newFancyOptionWithMaybeCleanString "W O L F C L U B" Nothing
 
 
 waveshaper =
-    test_newFancyOption "Waveshaper" Nothing
+    test_newFancyOptionWithMaybeCleanString "Waveshaper" Nothing
 
 
 musicList =
@@ -33,42 +33,42 @@ musicList =
 
 
 screwDriver =
-    test_newFancyOption "Screw Driver" Nothing
+    test_newFancyOptionWithMaybeCleanString "Screw Driver" Nothing
         |> setGroupWithString "Hand Tool"
 
 
 wrench =
-    test_newFancyOption "Wrench" Nothing
+    test_newFancyOptionWithMaybeCleanString "Wrench" Nothing
         |> setGroupWithString "Hand Tool"
 
 
 hammer =
-    test_newFancyOption "Hammer" Nothing
+    test_newFancyOptionWithMaybeCleanString "Hammer" Nothing
         |> setGroupWithString "Hand Tool"
 
 
 chisel =
-    test_newFancyOption "Chisel" Nothing
+    test_newFancyOptionWithMaybeCleanString "Chisel" Nothing
         |> setGroupWithString "Hand Tool"
 
 
 multiMeter =
-    test_newFancyOption "Multi Meter" Nothing
+    test_newFancyOptionWithMaybeCleanString "Multi Meter" Nothing
         |> setGroupWithString "Electronic Instrument"
 
 
 signalTester =
-    test_newFancyOption "Signal Tester" Nothing
+    test_newFancyOptionWithMaybeCleanString "Signal Tester" Nothing
         |> setGroupWithString "Electronic Instrument"
 
 
 drill =
-    test_newFancyOption "Drill" Nothing
+    test_newFancyOptionWithMaybeCleanString "Drill" Nothing
         |> setGroupWithString "Power Tool"
 
 
 sawZaw =
-    test_newFancyOption "Saw Zaw" Nothing
+    test_newFancyOptionWithMaybeCleanString "Saw Zaw" Nothing
         |> setGroupWithString "Power Tool"
 
 

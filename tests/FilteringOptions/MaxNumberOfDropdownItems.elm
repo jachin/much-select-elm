@@ -2,7 +2,7 @@ module FilteringOptions.MaxNumberOfDropdownItems exposing (suite)
 
 import DropdownOptions exposing (figureOutWhichOptionsToShowInTheDropdown)
 import Expect exposing (Expectation)
-import Option exposing (setGroupWithString, test_newFancyOption)
+import Option exposing (setGroupWithString, test_newFancyOptionWithMaybeCleanString)
 import OptionList exposing (OptionList(..))
 import OptionSearcher
 import OutputStyle exposing (MaxDropdownItems(..), SearchStringMinimumLength(..))
@@ -13,47 +13,47 @@ import Test exposing (Test, describe, test)
 
 
 screwDriver =
-    test_newFancyOption "Screw Driver" Nothing
+    test_newFancyOptionWithMaybeCleanString "Screw Driver" Nothing
         |> setGroupWithString "Hand Tool"
 
 
 wrench =
-    test_newFancyOption "Wrench" Nothing
+    test_newFancyOptionWithMaybeCleanString "Wrench" Nothing
         |> setGroupWithString "Hand Tool"
 
 
 hammer =
-    test_newFancyOption "Hammer" Nothing
+    test_newFancyOptionWithMaybeCleanString "Hammer" Nothing
         |> setGroupWithString "Hand Tool"
 
 
 chisel =
-    test_newFancyOption "Chisel" Nothing
+    test_newFancyOptionWithMaybeCleanString "Chisel" Nothing
         |> setGroupWithString "Hand Tool"
 
 
 multiMeter =
-    test_newFancyOption "Multi Meter" Nothing
+    test_newFancyOptionWithMaybeCleanString "Multi Meter" Nothing
         |> setGroupWithString "Electronic Instrument"
 
 
 signalTester =
-    test_newFancyOption "Signal Tester" Nothing
+    test_newFancyOptionWithMaybeCleanString "Signal Tester" Nothing
         |> setGroupWithString "Electronic Instrument"
 
 
 drill =
-    test_newFancyOption "Drill" Nothing
+    test_newFancyOptionWithMaybeCleanString "Drill" Nothing
         |> setGroupWithString "Power Tool"
 
 
 sawZaw =
-    test_newFancyOption "Saw Zaw" Nothing
+    test_newFancyOptionWithMaybeCleanString "Saw Zaw" Nothing
         |> setGroupWithString "Power Tool"
 
 
 xActoKnife =
-    test_newFancyOption "xActo" Nothing
+    test_newFancyOptionWithMaybeCleanString "xActo" Nothing
         |> setGroupWithString "Hand Tool"
 
 

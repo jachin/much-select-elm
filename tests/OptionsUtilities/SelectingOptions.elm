@@ -2,7 +2,7 @@ module OptionsUtilities.SelectingOptions exposing (suite)
 
 import DatalistOption
 import Expect exposing (Expectation)
-import Option exposing (Option, selectOption, test_newDatalistOption, test_newFancyOption)
+import Option exposing (Option, selectOption, test_newDatalistOption, test_newFancyOptionWithMaybeCleanString)
 import OptionList exposing (OptionList(..), selectOptionIByValueStringWithIndex, updateDatalistOptionsWithValueAndErrors)
 import OptionValue
 import Test exposing (Test, describe, test)
@@ -10,15 +10,15 @@ import TransformAndValidate exposing (ValidationErrorMessage(..), ValidationFail
 
 
 slaveShip =
-    test_newFancyOption "Slave Ship" Nothing
+    test_newFancyOptionWithMaybeCleanString "Slave Ship" Nothing
 
 
 desertIsland =
-    test_newFancyOption "Desert Island" Nothing
+    test_newFancyOptionWithMaybeCleanString "Desert Island" Nothing
 
 
 bootHill =
-    test_newFancyOption "Boot Hill" Nothing
+    test_newFancyOptionWithMaybeCleanString "Boot Hill" Nothing
 
 
 options =

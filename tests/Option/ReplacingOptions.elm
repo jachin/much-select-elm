@@ -1,7 +1,7 @@
 module Option.ReplacingOptions exposing (suite)
 
 import Expect
-import Option exposing (test_newFancyOption)
+import Option exposing (test_newFancyOptionWithMaybeCleanString)
 import OptionList exposing (OptionList(..))
 import OutputStyle
 import SelectionMode
@@ -9,15 +9,15 @@ import Test exposing (Test, describe, test)
 
 
 futureCop =
-    test_newFancyOption "Future Cop!" Nothing
+    test_newFancyOptionWithMaybeCleanString "Future Cop!" Nothing
 
 
 theMidnight =
-    test_newFancyOption "The Midnight" Nothing
+    test_newFancyOptionWithMaybeCleanString "The Midnight" Nothing
 
 
 thirdEyeBlind =
-    test_newFancyOption "Third Eye Blind" Nothing
+    test_newFancyOptionWithMaybeCleanString "Third Eye Blind" Nothing
 
 
 selectionConfig =
