@@ -14014,6 +14014,125 @@ var $author$project$OptionList$addNewEmptyOptionAtIndex = F2(
 							]))),
 				secondPart));
 	});
+var $author$project$OptionDisplay$OptionHighlighted = {$: 'OptionHighlighted'};
+var $author$project$OptionDisplay$addHighlight = function (optionDisplay) {
+	switch (optionDisplay.$) {
+		case 'OptionShown':
+			return $author$project$OptionDisplay$OptionHighlighted;
+		case 'OptionHidden':
+			return optionDisplay;
+		case 'OptionSelected':
+			var selectedIndex = optionDisplay.a;
+			return $author$project$OptionDisplay$OptionSelectedHighlighted(selectedIndex);
+		case 'OptionSelectedPendingValidation':
+			return optionDisplay;
+		case 'OptionSelectedAndInvalid':
+			return optionDisplay;
+		case 'OptionSelectedHighlighted':
+			return optionDisplay;
+		case 'OptionHighlighted':
+			return optionDisplay;
+		case 'OptionDisabled':
+			return optionDisplay;
+		default:
+			return $author$project$OptionDisplay$OptionHighlighted;
+	}
+};
+var $author$project$FancyOption$highlightOption = function (option) {
+	return A2(
+		$author$project$FancyOption$setOptionDisplay,
+		$author$project$OptionDisplay$addHighlight(
+			$author$project$FancyOption$getOptionDisplay(option)),
+		option);
+};
+var $author$project$SlottedOption$highlightOption = function (option) {
+	return A2(
+		$author$project$SlottedOption$setOptionDisplay,
+		$author$project$OptionDisplay$addHighlight(
+			$author$project$SlottedOption$getOptionDisplay(option)),
+		option);
+};
+var $author$project$Option$highlightOption = function (option) {
+	switch (option.$) {
+		case 'FancyOption':
+			var fancyOption = option.a;
+			return $author$project$Option$FancyOption(
+				$author$project$FancyOption$highlightOption(fancyOption));
+		case 'DatalistOption':
+			return option;
+		default:
+			var slottedOption = option.a;
+			return $author$project$Option$SlottedOption(
+				$author$project$SlottedOption$highlightOption(slottedOption));
+	}
+};
+var $author$project$OptionDisplay$removeHighlight = function (optionDisplay) {
+	switch (optionDisplay.$) {
+		case 'OptionShown':
+			return optionDisplay;
+		case 'OptionHidden':
+			return optionDisplay;
+		case 'OptionSelected':
+			return optionDisplay;
+		case 'OptionSelectedPendingValidation':
+			return optionDisplay;
+		case 'OptionSelectedAndInvalid':
+			return optionDisplay;
+		case 'OptionSelectedHighlighted':
+			var selectedIndex = optionDisplay.a;
+			return A2($author$project$OptionDisplay$OptionSelected, selectedIndex, $author$project$OptionDisplay$MatureOption);
+		case 'OptionHighlighted':
+			return $author$project$OptionDisplay$OptionShown($author$project$OptionDisplay$MatureOption);
+		case 'OptionDisabled':
+			return optionDisplay;
+		default:
+			return optionDisplay;
+	}
+};
+var $author$project$FancyOption$removeHighlightFromOption = function (option) {
+	return A2(
+		$author$project$FancyOption$setOptionDisplay,
+		$author$project$OptionDisplay$removeHighlight(
+			$author$project$FancyOption$getOptionDisplay(option)),
+		option);
+};
+var $author$project$SlottedOption$removeHighlightFromOption = function (option) {
+	return A2(
+		$author$project$SlottedOption$setOptionDisplay,
+		$author$project$OptionDisplay$removeHighlight(
+			$author$project$SlottedOption$getOptionDisplay(option)),
+		option);
+};
+var $author$project$Option$removeHighlightFromOption = function (option) {
+	switch (option.$) {
+		case 'FancyOption':
+			var fancyOption = option.a;
+			return $author$project$Option$FancyOption(
+				$author$project$FancyOption$removeHighlightFromOption(fancyOption));
+		case 'DatalistOption':
+			return option;
+		default:
+			var slottedOption = option.a;
+			return $author$project$Option$SlottedOption(
+				$author$project$SlottedOption$removeHighlightFromOption(slottedOption));
+	}
+};
+var $author$project$OptionList$changeHighlightedOptionByValue = F2(
+	function (optionValue, optionList) {
+		return A2(
+			$author$project$OptionList$map,
+			function (option_) {
+				return A2($author$project$Option$optionEqualsOptionValue, optionValue, option_) ? $author$project$Option$highlightOption(option_) : $author$project$Option$removeHighlightFromOption(option_);
+			},
+			optionList);
+	});
+var $author$project$OptionList$changeHighlightedOption = F2(
+	function (option, optionList) {
+		return A2(
+			$author$project$OptionList$changeHighlightedOptionByValue,
+			$author$project$Option$getOptionValue(option),
+			optionList);
+	});
 var $author$project$Option$isEmptyOptionOrHasEmptyValue = function (option) {
 	return $author$project$Option$isEmptyOption(option) || $author$project$OptionValue$isEmpty(
 		$author$project$Option$getOptionValue(option));
@@ -15854,74 +15973,6 @@ var $author$project$DropdownOptions$head = function (dropdownOptions) {
 	return $author$project$OptionList$head(
 		$author$project$DropdownOptions$getOptions(dropdownOptions));
 };
-var $author$project$OptionDisplay$OptionHighlighted = {$: 'OptionHighlighted'};
-var $author$project$OptionDisplay$addHighlight = function (optionDisplay) {
-	switch (optionDisplay.$) {
-		case 'OptionShown':
-			return $author$project$OptionDisplay$OptionHighlighted;
-		case 'OptionHidden':
-			return optionDisplay;
-		case 'OptionSelected':
-			var selectedIndex = optionDisplay.a;
-			return $author$project$OptionDisplay$OptionSelectedHighlighted(selectedIndex);
-		case 'OptionSelectedPendingValidation':
-			return optionDisplay;
-		case 'OptionSelectedAndInvalid':
-			return optionDisplay;
-		case 'OptionSelectedHighlighted':
-			return optionDisplay;
-		case 'OptionHighlighted':
-			return optionDisplay;
-		case 'OptionDisabled':
-			return optionDisplay;
-		default:
-			return $author$project$OptionDisplay$OptionHighlighted;
-	}
-};
-var $author$project$FancyOption$highlightOption = function (option) {
-	return A2(
-		$author$project$FancyOption$setOptionDisplay,
-		$author$project$OptionDisplay$addHighlight(
-			$author$project$FancyOption$getOptionDisplay(option)),
-		option);
-};
-var $author$project$SlottedOption$highlightOption = function (option) {
-	return A2(
-		$author$project$SlottedOption$setOptionDisplay,
-		$author$project$OptionDisplay$addHighlight(
-			$author$project$SlottedOption$getOptionDisplay(option)),
-		option);
-};
-var $author$project$Option$highlightOption = function (option) {
-	switch (option.$) {
-		case 'FancyOption':
-			var fancyOption = option.a;
-			return $author$project$Option$FancyOption(
-				$author$project$FancyOption$highlightOption(fancyOption));
-		case 'DatalistOption':
-			return option;
-		default:
-			var slottedOption = option.a;
-			return $author$project$Option$SlottedOption(
-				$author$project$SlottedOption$highlightOption(slottedOption));
-	}
-};
-var $author$project$OptionList$highlightOptionByValue = F2(
-	function (optionValue, optionList) {
-		return A2(
-			$author$project$OptionList$map,
-			function (option) {
-				return A2($author$project$Option$optionEqualsOptionValue, optionValue, option) ? $author$project$Option$highlightOption(option) : option;
-			},
-			optionList);
-	});
-var $author$project$OptionList$highlightOption = F2(
-	function (option, optionList) {
-		return A2(
-			$author$project$OptionList$highlightOptionByValue,
-			$author$project$Option$getOptionValue(option),
-			optionList);
-	});
 var $author$project$SearchString$isCleared = function (_v0) {
 	var isCleared_ = _v0.b;
 	return isCleared_;
@@ -16047,7 +16098,7 @@ var $author$project$DropdownOptions$moveHighlightedOptionDown = F2(
 			$author$project$OptionList$findHighlightedOrSelectedOptionIndex(visibleOptions));
 		if (maybeLowerSibling.$ === 'Just') {
 			var option = maybeLowerSibling.a;
-			return A2($author$project$OptionList$highlightOption, option, allOptions);
+			return A2($author$project$OptionList$changeHighlightedOption, option, allOptions);
 		} else {
 			var _v1 = A3(
 				$author$project$OptionList$findClosestHighlightableOptionGoingDown,
@@ -16056,7 +16107,7 @@ var $author$project$DropdownOptions$moveHighlightedOptionDown = F2(
 				visibleOptions);
 			if (_v1.$ === 'Just') {
 				var firstOption = _v1.a;
-				return A2($author$project$OptionList$highlightOption, firstOption, allOptions);
+				return A2($author$project$OptionList$changeHighlightedOption, firstOption, allOptions);
 			} else {
 				return allOptions;
 			}
@@ -16082,28 +16133,32 @@ var $author$project$OptionList$findClosestHighlightableOptionGoingUp = F3(
 					index,
 					$author$project$OptionList$getOptions(list)).a));
 	});
+var $elm$core$Debug$log = _Debug_log;
 var $author$project$DropdownOptions$moveHighlightedOptionUp = F2(
 	function (selectionConfig, optionList) {
 		var visibleOptions = $author$project$DropdownOptions$getOptions(
 			A2($author$project$DropdownOptions$figureOutWhichOptionsToShowInTheDropdown, selectionConfig, optionList));
 		var maybeHigherSibling = A2(
-			$elm$core$Maybe$andThen,
-			function (index) {
-				return A3(
-					$author$project$OptionList$findClosestHighlightableOptionGoingUp,
-					$author$project$SelectionMode$getSelectionMode(selectionConfig),
-					index,
-					visibleOptions);
-			},
-			$author$project$OptionList$findHighlightedOrSelectedOptionIndex(visibleOptions));
+			$elm$core$Debug$log,
+			'maybeHigherSibling',
+			A2(
+				$elm$core$Maybe$andThen,
+				function (index) {
+					return A3(
+						$author$project$OptionList$findClosestHighlightableOptionGoingUp,
+						$author$project$SelectionMode$getSelectionMode(selectionConfig),
+						index,
+						visibleOptions);
+				},
+				$author$project$OptionList$findHighlightedOrSelectedOptionIndex(visibleOptions)));
 		if (maybeHigherSibling.$ === 'Just') {
 			var option = maybeHigherSibling.a;
-			return A2($author$project$OptionList$highlightOption, option, optionList);
+			return A2($author$project$OptionList$changeHighlightedOption, option, optionList);
 		} else {
 			var _v1 = $author$project$OptionList$head(visibleOptions);
 			if (_v1.$ === 'Just') {
 				var firstOption = _v1.a;
-				return A2($author$project$OptionList$highlightOption, firstOption, optionList);
+				return A2($author$project$OptionList$changeHighlightedOption, firstOption, optionList);
 			} else {
 				return optionList;
 			}
@@ -17050,57 +17105,6 @@ var $author$project$SelectionMode$setTransformAndValidate = F2(
 			}
 		}
 	});
-var $author$project$OptionDisplay$removeHighlight = function (optionDisplay) {
-	switch (optionDisplay.$) {
-		case 'OptionShown':
-			return optionDisplay;
-		case 'OptionHidden':
-			return optionDisplay;
-		case 'OptionSelected':
-			return optionDisplay;
-		case 'OptionSelectedPendingValidation':
-			return optionDisplay;
-		case 'OptionSelectedAndInvalid':
-			return optionDisplay;
-		case 'OptionSelectedHighlighted':
-			var selectedIndex = optionDisplay.a;
-			return A2($author$project$OptionDisplay$OptionSelected, selectedIndex, $author$project$OptionDisplay$MatureOption);
-		case 'OptionHighlighted':
-			return $author$project$OptionDisplay$OptionShown($author$project$OptionDisplay$MatureOption);
-		case 'OptionDisabled':
-			return optionDisplay;
-		default:
-			return optionDisplay;
-	}
-};
-var $author$project$FancyOption$removeHighlightFromOption = function (option) {
-	return A2(
-		$author$project$FancyOption$setOptionDisplay,
-		$author$project$OptionDisplay$removeHighlight(
-			$author$project$FancyOption$getOptionDisplay(option)),
-		option);
-};
-var $author$project$SlottedOption$removeHighlightFromOption = function (option) {
-	return A2(
-		$author$project$SlottedOption$setOptionDisplay,
-		$author$project$OptionDisplay$removeHighlight(
-			$author$project$SlottedOption$getOptionDisplay(option)),
-		option);
-};
-var $author$project$Option$removeHighlightFromOption = function (option) {
-	switch (option.$) {
-		case 'FancyOption':
-			var fancyOption = option.a;
-			return $author$project$Option$FancyOption(
-				$author$project$FancyOption$removeHighlightFromOption(fancyOption));
-		case 'DatalistOption':
-			return option;
-		default:
-			var slottedOption = option.a;
-			return $author$project$Option$SlottedOption(
-				$author$project$SlottedOption$removeHighlightFromOption(slottedOption));
-	}
-};
 var $author$project$Option$toggleHighlight = function (option) {
 	return $author$project$Option$isOptionHighlighted(option) ? $author$project$Option$removeHighlightFromOption(option) : $author$project$Option$highlightOption(option);
 };
@@ -17703,7 +17707,7 @@ var $author$project$MuchSelect$update = F2(
 				}
 			case 'DropdownMouseOverOption':
 				var optionValue = msg.a;
-				var updatedOptions = A2($author$project$OptionList$highlightOptionByValue, optionValue, model.options);
+				var updatedOptions = A2($author$project$OptionList$changeHighlightedOptionByValue, optionValue, model.options);
 				return _Utils_Tuple2(
 					$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheMouseMoves(
 						_Utils_update(
@@ -18619,7 +18623,7 @@ var $author$project$MuchSelect$update = F2(
 											var _v28 = $author$project$DropdownOptions$head(options);
 											if (_v28.$ === 'Just') {
 												var firstOption = _v28.a;
-												return A2($author$project$OptionList$highlightOption, firstOption, updatedOptions);
+												return A2($author$project$OptionList$changeHighlightedOption, firstOption, updatedOptions);
 											} else {
 												return updatedOptions;
 											}

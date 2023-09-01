@@ -62,6 +62,7 @@ module Option exposing
     , test_newEmptyDatalistOption
     , test_newFancyOption
     , test_newFancyOptionWithMaybeCleanString
+    , test_newSlottedOption
     , test_optionToDebuggingString
     , toggleHighlight
     , transformOptionForOutputStyle
@@ -772,3 +773,8 @@ test_newDatalistOption string =
 test_newEmptyDatalistOption : Option
 test_newEmptyDatalistOption =
     DatalistOption (DatalistOption.new OptionValue.EmptyOptionValue)
+
+
+test_newSlottedOption : String -> Option
+test_newSlottedOption string =
+    SlottedOption (SlottedOption.test_new string)

@@ -317,15 +317,16 @@ moveHighlightedOptionUp selectionConfig optionList =
                             index
                             visibleOptions
                     )
+                |> Debug.log "maybeHigherSibling"
     in
     case maybeHigherSibling of
         Just option ->
-            OptionList.highlightOption option optionList
+            OptionList.changeHighlightedOption option optionList
 
         Nothing ->
             case OptionList.head visibleOptions of
                 Just firstOption ->
-                    OptionList.highlightOption firstOption optionList
+                    OptionList.changeHighlightedOption firstOption optionList
 
                 Nothing ->
                     optionList
@@ -350,7 +351,7 @@ moveHighlightedOptionDown selectionConfig allOptions =
     in
     case maybeLowerSibling of
         Just option ->
-            OptionList.highlightOption option allOptions
+            OptionList.changeHighlightedOption option allOptions
 
         Nothing ->
             -- If there is not a lower sibling to highlight, jump up to the top of the list, and see
@@ -363,7 +364,7 @@ moveHighlightedOptionDown selectionConfig allOptions =
                     visibleOptions
             of
                 Just firstOption ->
-                    OptionList.highlightOption firstOption allOptions
+                    OptionList.changeHighlightedOption firstOption allOptions
 
                 Nothing ->
                     allOptions

@@ -1,7 +1,7 @@
 module Attributes.OptionList.FindingOptions exposing (suite)
 
 import Expect
-import Option exposing (Option, test_newFancyOption, test_newFancyOptionWithMaybeCleanString)
+import Option exposing (Option, test_newFancyOption)
 import OptionList exposing (OptionList(..), findClosestHighlightableOptionGoingDown, findClosestHighlightableOptionGoingUp)
 import SelectionMode exposing (SelectionMode(..))
 import Test exposing (Test, describe, test)

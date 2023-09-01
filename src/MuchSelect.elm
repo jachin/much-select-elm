@@ -396,7 +396,7 @@ update msg model =
             let
                 updatedOptions =
                     model.options
-                        |> OptionList.highlightOptionByValue optionValue
+                        |> OptionList.changeHighlightedOptionByValue optionValue
             in
             ( { model
                 | options = updatedOptions
@@ -1267,7 +1267,7 @@ update msg model =
                                     in
                                     case DropdownOptions.head options of
                                         Just firstOption ->
-                                            OptionList.highlightOption firstOption updatedOptions
+                                            OptionList.changeHighlightedOption firstOption updatedOptions
 
                                         Nothing ->
                                             updatedOptions

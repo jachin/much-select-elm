@@ -2,7 +2,7 @@ module Option.Highlighting exposing (suite)
 
 import DropdownOptions exposing (moveHighlightedOptionDown, moveHighlightedOptionUp)
 import Expect
-import Option exposing (test_newFancyOptionWithMaybeCleanString)
+import Option exposing (test_newDatalistOption, test_newFancyOption, test_newFancyOptionWithMaybeCleanString, test_newSlottedOption)
 import OptionList exposing (OptionList(..))
 import SelectionMode
 import Test exposing (Test, describe, test)
@@ -10,8 +10,25 @@ import Test exposing (Test, describe, test)
 
 suite : Test
 suite =
-    describe "Change the highlighted option"
-        [ describe "by moving the highlighted option down"
+    describe "Change option highlighting"
+        [ describe "with the setter"
+            [ test "with a fancy option" <|
+                \_ ->
+                    Expect.equal
+                        (Option.highlightOption (test_newFancyOption "fish") |> Option.isOptionHighlighted)
+                        True
+            , test "with a datalist option (but datalist options can't be highlighted" <|
+                \_ ->
+                    Expect.equal
+                        (Option.highlightOption (test_newDatalistOption "ketchup") |> Option.isOptionHighlighted)
+                        False
+            , test "with a slotted option " <|
+                \_ ->
+                    Expect.equal
+                        (Option.highlightOption (test_newSlottedOption "ketchup") |> Option.isOptionHighlighted)
+                        True
+            ]
+        , describe "by moving the highlighted option down in an option list"
             [ test "but if no option is already highlighted, highlight the first (top) option" <|
                 \_ ->
                     let
@@ -69,7 +86,7 @@ suite =
                             ]
                         )
             ]
-        , describe "by moving the highlighted option up"
+        , describe "by moving the highlighted option up in a list"
             [ test "but if no option is already highlighted, highlight the first (top) option" <|
                 \_ ->
                     let

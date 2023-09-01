@@ -1,4 +1,4 @@
-module SlottedOption exposing (SlottedOption, decoder, decoderWithAge, encode, getOptionDisplay, getOptionSelectedIndex, getOptionSlot, getOptionValue, getOptionValueAsString, highlightOption, isOptionHighlighted, isOptionSelectedHighlighted, isSelected, new, optionIsHighlightable, removeHighlightFromOption, setOptionDisplay, setOptionSelectedIndex, setOptionValue, test_optionToDebuggingString, toValueHtml)
+module SlottedOption exposing (SlottedOption, decoder, decoderWithAge, encode, getOptionDisplay, getOptionSelectedIndex, getOptionSlot, getOptionValue, getOptionValueAsString, highlightOption, isOptionHighlighted, isOptionSelectedHighlighted, isSelected, new, optionIsHighlightable, removeHighlightFromOption, setOptionDisplay, setOptionSelectedIndex, setOptionValue, test_new, test_optionToDebuggingString, toValueHtml)
 
 import Events exposing (mouseUpPreventDefault)
 import Html exposing (Html, div, span, text)
@@ -221,3 +221,8 @@ valueLabelHtml toggleSelectedMsg labelText optionValue =
             (toggleSelectedMsg optionValue)
         ]
         [ text labelText ]
+
+
+test_new : String -> SlottedOption
+test_new string =
+    new (OptionValue.stringToOptionValue string) (OptionSlot.new_test string)

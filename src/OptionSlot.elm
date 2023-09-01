@@ -1,10 +1,11 @@
-module OptionSlot exposing (OptionSlot, decoder, empty, encode, toSlotNameAttribute)
+module OptionSlot exposing (OptionSlot, decoder, empty, encode, new_test, toSlotNameAttribute)
 
 import Html
 import Html.Attributes
 import Html.Attributes.Extra
 import Json.Decode exposing (Decoder)
 import Json.Encode
+import String.Extra
 
 
 type OptionSlot
@@ -45,3 +46,8 @@ toSlotNameAttribute optionSlot =
 
             else
                 Html.Attributes.attribute "name" string
+
+
+new_test : String -> OptionSlot
+new_test string =
+    string |> String.toLower |> String.Extra.dasherize |> OptionSlot
