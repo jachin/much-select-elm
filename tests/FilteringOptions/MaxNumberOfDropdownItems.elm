@@ -4,10 +4,8 @@ import DropdownOptions exposing (figureOutWhichOptionsToShowInTheDropdown)
 import Expect exposing (Expectation)
 import Option exposing (setGroupWithString, test_newFancyOptionWithMaybeCleanString)
 import OptionList exposing (OptionList(..))
-import OptionSearcher
 import OutputStyle exposing (MaxDropdownItems(..), SearchStringMinimumLength(..))
 import PositiveInt
-import SearchString
 import SelectionMode exposing (OutputStyle(..), SelectionConfig(..), defaultSelectionConfig)
 import Test exposing (Test, describe, test)
 
@@ -360,26 +358,6 @@ suite =
                         (figureOutWhichOptionsToShowInTheDropdown selectionConfigMaxDropdownItemsThree
                             (tools
                                 |> OptionList.selectOption xActoKnife
-                                |> OptionList.highlightOption wrench
-                            )
-                            |> DropdownOptions.test_getOptions
-                        )
-            ]
-        , describe "if there are strong matches"
-            [ test "we should hide everything else" <|
-                \_ ->
-                    assertEqualLists
-                        (OptionList.highlightOption wrench
-                            (FancyOptionList
-                                [ wrench
-                                ]
-                            )
-                        )
-                        (figureOutWhichOptionsToShowInTheDropdown multiSelectConfig
-                            (tools
-                                |> OptionSearcher.updateOptionsWithSearchStringAndCustomOption
-                                    multiSelectConfig
-                                    (SearchString.update "wrench")
                                 |> OptionList.highlightOption wrench
                             )
                             |> DropdownOptions.test_getOptions

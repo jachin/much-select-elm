@@ -10909,8 +10909,8 @@ var $author$project$DatalistOption$getOptionValue = function (datalistOption) {
 var $author$project$FancyOption$getOptionValue = function (option) {
 	switch (option.$) {
 		case 'FancyOption':
-			var value = option.c;
-			return value;
+			var optionValue = option.c;
+			return optionValue;
 		case 'CustomFancyOption':
 			var optionValue = option.c;
 			return optionValue;

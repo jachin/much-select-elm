@@ -1,4 +1,4 @@
-module OptionSearcher exposing (decodeSearchParams, doesSearchStringFindNothing, encodeSearchParams, simpleMatch, updateOptionsWithSearchString, updateOptionsWithSearchStringAndCustomOption, updateOrAddCustomOption, updateSearchResultInOption)
+module OptionSearcher exposing (decodeSearchParams, doesSearchStringFindNothing, encodeSearchParams, simpleMatch, updateOptionsWithSearchString, updateOrAddCustomOption, updateSearchResultInOption)
 
 import DropdownOptions exposing (DropdownOptions, getSearchFilters)
 import Fuzzy exposing (Result, match)
@@ -14,16 +14,8 @@ import OptionSearchFilter exposing (OptionSearchFilter, OptionSearchResult, desc
 import OutputStyle exposing (CustomOptions(..), SearchStringMinimumLength(..), decodeSearchStringMinimumLength)
 import PositiveInt exposing (PositiveInt)
 import SearchString exposing (SearchString)
-import SelectionMode exposing (SelectionConfig, getCustomOptionHint, getSearchStringMinimumLength)
+import SelectionMode exposing (SelectionConfig, getCustomOptionHint)
 import TransformAndValidate
-
-
-updateOptionsWithSearchStringAndCustomOption : SelectionConfig -> SearchString -> OptionList -> OptionList
-updateOptionsWithSearchStringAndCustomOption selectionConfig searchString optionList =
-    -- TODO This function is only used in tests. It should be removed.
-    optionList
-        |> updateOrAddCustomOption searchString selectionConfig
-        |> updateOptionsWithSearchString searchString (selectionConfig |> getSearchStringMinimumLength)
 
 
 simpleMatch : String -> String -> Result

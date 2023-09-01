@@ -182,8 +182,8 @@ setLabelWithString string maybeCleanString option =
 getOptionValue : FancyOption -> OptionValue
 getOptionValue option =
     case option of
-        FancyOption _ _ value _ _ _ ->
-            value
+        FancyOption _ _ optionValue _ _ _ ->
+            optionValue
 
         CustomFancyOption _ _ optionValue _ ->
             optionValue
