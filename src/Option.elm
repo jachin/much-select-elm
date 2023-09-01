@@ -26,8 +26,10 @@ module Option exposing
     , hasSelectedItemIndex
     , highlightOption
     , isCustomOption
+    , isDatalistOption
     , isEmptyOption
     , isEmptyOptionOrHasEmptyValue
+    , isFancyOption
     , isInvalid
     , isOptionBelowScore
     , isOptionHighlighted
@@ -35,6 +37,7 @@ module Option exposing
     , isOptionSelectedHighlighted
     , isOptionValueInListOfStrings
     , isPendingValidation
+    , isSlottedOption
     , isValid
     , merge
     , newDisabledOption
@@ -84,6 +87,36 @@ type Option
     = FancyOption FancyOption.FancyOption
     | DatalistOption DatalistOption.DatalistOption
     | SlottedOption SlottedOption.SlottedOption
+
+
+isFancyOption : Option -> Bool
+isFancyOption option =
+    case option of
+        FancyOption _ ->
+            True
+
+        _ ->
+            False
+
+
+isDatalistOption : Option -> Bool
+isDatalistOption option =
+    case option of
+        DatalistOption _ ->
+            True
+
+        _ ->
+            False
+
+
+isSlottedOption : Option -> Bool
+isSlottedOption option =
+    case option of
+        SlottedOption _ ->
+            True
+
+        _ ->
+            False
 
 
 setOptionValue : OptionValue -> Option -> Option

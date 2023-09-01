@@ -1,4 +1,4 @@
-module OptionList exposing (OptionList(..), activateOptionInListByOptionValue, addAdditionalOptionsToOptionList, addAdditionalOptionsToOptionListWithAutoSortRank, addAdditionalSelectedOptionWithStringValue, addAndSelectOptionsInOptionsListByString, addNewEmptyOptionAtIndex, all, allOptionsAreValid, andMap, any, append, appendOptions, cleanupEmptySelectedOptions, concatMap, customSelectedOptions, decoder, deselectAllButTheFirstSelectedOptionInList, deselectAllOptions, deselectAllSelectedHighlightedOptions, deselectLastSelectedOption, deselectOption, deselectOptionByValue, deselectOptions, drop, encode, encodeSearchResults, filter, findByValue, findClosestHighlightableOptionGoingDown, findClosestHighlightableOptionGoingUp, findHighestAutoSortRank, findHighlightedOption, findHighlightedOptionIndex, findHighlightedOrSelectedOptionIndex, findLowestSearchScore, findOptionByValue, findSelectedOption, getOptions, hasAnyPendingValidation, hasAnyValidationErrors, hasOptionByValueString, hasSelectedHighlightedOptions, hasSelectedOption, head, highlightFirstOptionInList, highlightOption, highlightOptionByValue, isEmpty, isSlottedOptionList, length, map, mergeTwoListsOfOptionsPreservingSelectedOptions, optionsPlusOne, optionsValuesAsStrings, organizeNewDatalistOptions, prependCustomOption, removeHighlightedOptionByValue, removeOptionFromOptionListBySelectedIndex, removeOptionsFromOptionList, removeUnselectedCustomOptions, replaceOptions, selectHighlightedOption, selectOption, selectOptionByOptionValue, selectOptionByOptionValueWithIndex, selectOptionIByValueStringWithIndex, selectOptionsInOptionsListByString, selectSingleOption, selectSingleOptionByValue, selectedOptionValuesAreEqual, selectedOptions, selectedOptionsToTuple, setAge, sort, sortBy, sortOptionsByBestScore, sortOptionsByTotalScore, take, toggleSelectedHighlightByOptionValue, unhighlightSelectedOptions, uniqueBy, unselectedOptions, updateAge, updateDatalistOptionWithValueBySelectedValueIndex, updateDatalistOptionsWithPendingValidation, updateDatalistOptionsWithValue, updateDatalistOptionsWithValueAndErrors, updateOptionsWithNewSearchResults, updatedDatalistSelectedOptions)
+module OptionList exposing (OptionList(..), activateOptionInListByOptionValue, addAdditionalOptionsToOptionList, addAdditionalOptionsToOptionListWithAutoSortRank, addAdditionalSelectedOptionWithStringValue, addAndSelectOptionsInOptionsListByString, addNewEmptyOptionAtIndex, all, allOptionsAreValid, andMap, any, append, appendOption, appendOptions, cleanupEmptySelectedOptions, concatMap, customSelectedOptions, decoder, deselectAll, deselectAllButTheFirstSelectedOptionInList, deselectAllOptions, deselectAllSelectedHighlightedOptions, deselectEveryOptionExceptOptionsInList, deselectLastSelectedOption, deselectOption, deselectOptionByValue, deselectOptions, drop, encode, encodeSearchResults, filter, findByValue, findClosestHighlightableOptionGoingDown, findClosestHighlightableOptionGoingUp, findHighestAutoSortRank, findHighlightedOption, findHighlightedOptionIndex, findHighlightedOrSelectedOptionIndex, findLowestSearchScore, findOptionByValue, findSelectedOption, getOptions, hasAnyPendingValidation, hasAnyValidationErrors, hasOptionByValueString, hasSelectedHighlightedOptions, hasSelectedOption, head, highlightFirstOptionInList, highlightOption, highlightOptionByValue, isEmpty, isSlottedOptionList, length, map, mergeTwoListsOfOptionsPreservingSelectedOptions, optionsPlusOne, optionsValuesAsStrings, organizeNewDatalistOptions, prependCustomOption, removeHighlightedOptionByValue, removeOptionFromOptionListBySelectedIndex, removeOptionsFromOptionList, removeUnselectedCustomOptions, replaceOptions, selectHighlightedOption, selectOption, selectOptionByOptionValue, selectOptionByOptionValueWithIndex, selectOptionIByValueStringWithIndex, selectOptions, selectOptionsInOptionsListByString, selectSingleOption, selectSingleOptionByValue, selectSingleOptionInListByStringOrSelectCustomValue, selectedOptionValuesAreEqual, selectedOptions, selectedOptionsToTuple, setAge, sort, sortBy, sortOptionsByBestScore, sortOptionsByTotalScore, take, toggleSelectedHighlightByOptionValue, unhighlightSelectedOptions, uniqueBy, unselectedOptions, updateAge, updateDatalistOptionWithValueBySelectedValueIndex, updateDatalistOptionsWithPendingValidation, updateDatalistOptionsWithValue, updateDatalistOptionsWithValueAndErrors, updateOptionsWithNewSearchResults, updatedDatalistSelectedOptions)
 
 import DatalistOption
 import FancyOption
@@ -332,6 +332,31 @@ appendOptions optionsA optionsB =
         FancyOptionList []
 
 
+appendOption : Option -> OptionList -> OptionList
+appendOption option optionList =
+    case optionList of
+        FancyOptionList options ->
+            if Option.isFancyOption option then
+                FancyOptionList (option :: options)
+
+            else
+                optionList
+
+        DatalistOptionList options ->
+            if Option.isDatalistOption option then
+                DatalistOptionList (option :: options)
+
+            else
+                optionList
+
+        SlottedOptionList options ->
+            if Option.isSlottedOption option then
+                SlottedOptionList (option :: options)
+
+            else
+                optionList
+
+
 optionsPlusOne : Option -> List Option -> OptionList
 optionsPlusOne option options =
     appendOptions [ option ] options
@@ -644,6 +669,7 @@ selectHighlightedOption selectionMode optionList =
 
 selectSingleOptionInListByStringOrSelectCustomValue : SearchString -> OptionList -> OptionList
 selectSingleOptionInListByStringOrSelectCustomValue searchString optionList =
+    -- TODO Is this only used in tests?
     if SearchString.isEmpty searchString then
         optionList
 
@@ -705,6 +731,9 @@ deselectOptionByOptionValue optionValue optionList =
 
 
 {-| This is kind of a strange one it takes a list of options to leave selected and deselects all the rest.
+
+--TODO Is this only used in tests?
+
 -}
 deselectEveryOptionExceptOptionsInList : List Option -> OptionList -> OptionList
 deselectEveryOptionExceptOptionsInList optionsNotToDeselect optionList =
