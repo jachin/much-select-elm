@@ -10,7 +10,7 @@ import Option exposing (Option)
 import OptionDisplay
 import OptionLabel exposing (OptionLabel)
 import OptionSearchFilter exposing (OptionSearchFilterWithValue)
-import OptionSorting exposing (OptionSort)
+import OptionSorting exposing (OptionSort(..))
 import OptionValue exposing (OptionValue)
 import OutputStyle exposing (SelectedItemPlacementMode(..))
 import PositiveInt
@@ -192,13 +192,28 @@ sort : OptionSort -> OptionList -> OptionList
 sort sorting optionList =
     case optionList of
         FancyOptionList options ->
-            FancyOptionList (List.sortBy (Option.getOptionLabel >> OptionLabel.optionLabelToString) options)
+            case sorting of
+                NoSorting ->
+                    FancyOptionList (List.sortBy (Option.getOptionLabel >> OptionLabel.getSortRank >> SortRank.getAutoIndexForSorting) options)
+
+                SortByOptionLabel ->
+                    FancyOptionList (List.sortBy (Option.getOptionLabel >> OptionLabel.optionLabelToString) options)
 
         DatalistOptionList options ->
-            DatalistOptionList (List.sortBy (Option.getOptionLabel >> OptionLabel.optionLabelToString) options)
+            case sorting of
+                NoSorting ->
+                    DatalistOptionList (List.sortBy (Option.getOptionLabel >> OptionLabel.getSortRank >> SortRank.getAutoIndexForSorting) options)
+
+                SortByOptionLabel ->
+                    DatalistOptionList (List.sortBy (Option.getOptionLabel >> OptionLabel.optionLabelToString) options)
 
         SlottedOptionList options ->
-            SlottedOptionList (List.sortBy (Option.getOptionLabel >> OptionLabel.optionLabelToString) options)
+            case sorting of
+                NoSorting ->
+                    SlottedOptionList (List.sortBy (Option.getOptionLabel >> OptionLabel.getSortRank >> SortRank.getAutoIndexForSorting) options)
+
+                SortByOptionLabel ->
+                    SlottedOptionList (List.sortBy (Option.getOptionLabel >> OptionLabel.optionLabelToString) options)
 
 
 sortBy : (Option -> comparable) -> OptionList -> OptionList

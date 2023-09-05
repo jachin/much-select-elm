@@ -50,8 +50,8 @@ sawZaw =
         |> setGroupWithString "Power Tool"
 
 
-xActoKnife =
-    test_newFancyOptionWithMaybeCleanString "xActo" Nothing
+utilityKnife =
+    test_newFancyOptionWithMaybeCleanString "Utility Knife" Nothing
         |> setGroupWithString "Hand Tool"
 
 
@@ -65,7 +65,7 @@ tools =
         , hammer
         , chisel
         , signalTester
-        , xActoKnife
+        , utilityKnife
         ]
 
 
@@ -202,14 +202,14 @@ suite =
             , test "it shows the maximum number of options before the highlighted option if the highlighted option is the last one" <|
                 \_ ->
                     assertEqualLists
-                        (figureOutWhichOptionsToShowInTheDropdown selectionConfigMaxDropdownItemsFive (OptionList.highlightOption xActoKnife tools) |> DropdownOptions.test_getOptions)
-                        (OptionList.highlightOption xActoKnife
+                        (figureOutWhichOptionsToShowInTheDropdown selectionConfigMaxDropdownItemsFive (OptionList.highlightOption utilityKnife tools) |> DropdownOptions.test_getOptions)
+                        (OptionList.highlightOption utilityKnife
                             (FancyOptionList
                                 [ wrench
                                 , hammer
                                 , chisel
                                 , signalTester
-                                , xActoKnife
+                                , utilityKnife
                                 ]
                             )
                         )
@@ -237,7 +237,7 @@ suite =
                                 , hammer
                                 , chisel
                                 , signalTester
-                                , xActoKnife
+                                , utilityKnife
                                 ]
                             )
                         )
@@ -274,15 +274,15 @@ suite =
             , test "it shows the maximum number of options before the highlighted option if the highlighted option is the last one" <|
                 \_ ->
                     assertEqualLists
-                        (figureOutWhichOptionsToShowInTheDropdown selectionConfigMaxDropdownItemsSix (OptionList.highlightOption xActoKnife tools) |> DropdownOptions.test_getOptions)
-                        (OptionList.highlightOption xActoKnife
+                        (figureOutWhichOptionsToShowInTheDropdown selectionConfigMaxDropdownItemsSix (OptionList.highlightOption utilityKnife tools) |> DropdownOptions.test_getOptions)
+                        (OptionList.highlightOption utilityKnife
                             (FancyOptionList
                                 [ sawZaw
                                 , wrench
                                 , hammer
                                 , chisel
                                 , signalTester
-                                , xActoKnife
+                                , utilityKnife
                                 ]
                             )
                         )
@@ -312,12 +312,12 @@ suite =
                                 , hammer
                                 , chisel
                                 , signalTester
-                                , xActoKnife
+                                , utilityKnife
                                 ]
                             )
                         )
             ]
-        , describe "when we only have a selected option (nothing in highlighted)"
+        , describe "when we only have a selected option (nothing is highlighted)"
             [ test "it should show the options around the selected option" <|
                 \_ ->
                     assertEqualLists
@@ -347,7 +347,7 @@ suite =
                         )
                         (figureOutWhichOptionsToShowInTheDropdown selectionConfigMaxDropdownItemsThree
                             (tools
-                                |> OptionList.selectOption xActoKnife
+                                |> OptionList.selectOption utilityKnife
                                 |> OptionList.highlightOption wrench
                             )
                             |> DropdownOptions.test_getOptions

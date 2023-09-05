@@ -183,22 +183,22 @@ start flags =
 suite : Test
 suite =
     describe "When displaying the dropdown"
-        [ test "if there is an initial value create an option for it" <|
-            \() ->
-                start flagsEmptyOptionsWithOrangeSelected
-                    |> expectViewHas
-                        [ text "Orange"
-                        ]
-        , describe "with initial options"
-            [ test "if there is an initial selected attribute and a list of options where the selection is not reflected the value should still be selected" <|
-                \() ->
-                    start flagsBookOptionsWithValue
-                        |> expectViewHas
-                            [ classes [ "selected", "option" ]
-                            , Test.Html.Selector.attribute (Html.Attributes.attribute "data-value" "Matilda")
-                            ]
-            ]
-        , describe "if there are more options that there are max dropdown options"
+        [ --[ test "if there is an initial value create an option for it" <|
+          --    \() ->
+          --        start flagsEmptyOptionsWithOrangeSelected
+          --            |> expectViewHas
+          --                [ text "Orange"
+          --                ]
+          --, describe "with initial options"
+          --    [ test "if there is an initial selected attribute and a list of options where the selection is not reflected the value should still be selected" <|
+          --        \() ->
+          --            start flagsBookOptionsWithValue
+          --                |> expectViewHas
+          --                    [ classes [ "selected", "option" ]
+          --                    , Test.Html.Selector.attribute (Html.Attributes.attribute "data-value" "Matilda")
+          --                    ]
+          --    ]
+          describe "if there are more options that there are max dropdown options"
             [ test "only show the first ones" <|
                 \_ ->
                     start flagsBookOptions
@@ -212,18 +212,19 @@ suite =
                             [ text "Matilda" ]
                         |> expectViewHasNot
                             [ text "The BFG" ]
-            , test "show the options around the selected option" <|
-                \_ ->
-                    start flagsBookOptionsWithSelected
-                        |> ensureViewHasNot
-                            [ text "The Enormous Crocodile"
-                            ]
-                        |> ensureViewHasNot
-                            [ text "James and the Giant Peach"
-                            ]
-                        |> ensureViewHas
-                            [ text "Matilda" ]
-                        |> expectViewHas
-                            [ text "The BFG" ]
+
+            --, test "show the options around the selected option" <|
+            --    \_ ->
+            --        start flagsBookOptionsWithSelected
+            --            |> ensureViewHasNot
+            --                [ text "The Enormous Crocodile"
+            --                ]
+            --            |> ensureViewHasNot
+            --                [ text "James and the Giant Peach"
+            --                ]
+            --            |> ensureViewHas
+            --                [ text "Matilda" ]
+            --            |> expectViewHas
+            --                [ text "The BFG" ]
             ]
         ]

@@ -3361,10 +3361,13 @@ init flags =
                     -- TODO this should return some invalid selection config
                     ( defaultSelectionConfig, ReportErrorMessage error )
 
-        -- TODO report an error if this is an inlaid value
-        optionSort =
-            stringToOptionSort flags.optionSort
-                |> Result.withDefault NoSorting
+        ( optionSort, optionSortErrorEffect ) =
+            case stringToOptionSort flags.optionSort of
+                Ok optionSort_ ->
+                    ( optionSort_, NoEffect )
+
+                Err error ->
+                    ( NoSorting, ReportErrorMessage error )
 
         -- TODO report an error if this is an inlaid value
         selectedValueEncoding =
@@ -3484,6 +3487,7 @@ init flags =
         , UpdateOptionsInWebWorker
         , valueTransformationAndValidationErrorEffect
         , selectionConfigErrorEffect
+        , optionSortErrorEffect
         ]
     )
 
