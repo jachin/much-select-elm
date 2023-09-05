@@ -312,7 +312,6 @@ moveHighlightedOptionUp selectionConfig optionList =
                             index
                             visibleOptions
                     )
-                |> Debug.log "maybeHigherSibling"
     in
     case maybeHigherSibling of
         Just option ->

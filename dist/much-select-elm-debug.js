@@ -16131,24 +16131,20 @@ var $author$project$OptionList$findClosestHighlightableOptionGoingUp = F3(
 					index,
 					$author$project$OptionList$getOptions(list)).a));
 	});
-var $elm$core$Debug$log = _Debug_log;
 var $author$project$DropdownOptions$moveHighlightedOptionUp = F2(
 	function (selectionConfig, optionList) {
 		var visibleOptions = $author$project$DropdownOptions$getOptions(
 			A2($author$project$DropdownOptions$figureOutWhichOptionsToShowInTheDropdown, selectionConfig, optionList));
 		var maybeHigherSibling = A2(
-			$elm$core$Debug$log,
-			'maybeHigherSibling',
-			A2(
-				$elm$core$Maybe$andThen,
-				function (index) {
-					return A3(
-						$author$project$OptionList$findClosestHighlightableOptionGoingUp,
-						$author$project$SelectionMode$getSelectionMode(selectionConfig),
-						index,
-						visibleOptions);
-				},
-				$author$project$OptionList$findHighlightedOrSelectedOptionIndex(visibleOptions)));
+			$elm$core$Maybe$andThen,
+			function (index) {
+				return A3(
+					$author$project$OptionList$findClosestHighlightableOptionGoingUp,
+					$author$project$SelectionMode$getSelectionMode(selectionConfig),
+					index,
+					visibleOptions);
+			},
+			$author$project$OptionList$findHighlightedOrSelectedOptionIndex(visibleOptions));
 		if (maybeHigherSibling.$ === 'Just') {
 			var option = maybeHigherSibling.a;
 			return A2($author$project$OptionList$changeHighlightedOption, option, optionList);
