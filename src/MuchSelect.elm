@@ -810,7 +810,7 @@ update msg model =
             deselectOption model optionValueToDeselect
 
         DeselectOption optionJson ->
-            case Json.Decode.decodeValue (Option.decoderWithAgeAndOutputStyle OptionDisplay.MatureOption (SelectionMode.getOutputStyle model.selectionConfig)) optionJson of
+            case Json.Decode.decodeValue (Option.decoder OptionDisplay.MatureOption) optionJson of
                 Ok option ->
                     deselectOption model (Option.getOptionValue option)
 
@@ -1991,7 +1991,7 @@ deselectOption model optionValue =
             OptionList.deselectOptionByValue optionValue model.options
 
         maybeOptionToDeselect =
-            OptionList.findByValue optionValue model.options
+            OptionList.findByValue optionValue updatedOptions
     in
     case maybeOptionToDeselect of
         Just optionToDeselect ->

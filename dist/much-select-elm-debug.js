@@ -15024,7 +15024,7 @@ var $author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenThe
 var $author$project$MuchSelect$deselectOption = F2(
 	function (model, optionValue) {
 		var updatedOptions = A2($author$project$OptionList$deselectOptionByValue, optionValue, model.options);
-		var maybeOptionToDeselect = A2($author$project$OptionList$findByValue, optionValue, model.options);
+		var maybeOptionToDeselect = A2($author$project$OptionList$findByValue, optionValue, updatedOptions);
 		if (maybeOptionToDeselect.$ === 'Just') {
 			var optionToDeselect = maybeOptionToDeselect.a;
 			return _Utils_Tuple2(
@@ -18188,10 +18188,7 @@ var $author$project$MuchSelect$update = F2(
 				var optionJson = msg.a;
 				var _v17 = A2(
 					$elm$json$Json$Decode$decodeValue,
-					A2(
-						$author$project$Option$decoderWithAgeAndOutputStyle,
-						$author$project$OptionDisplay$MatureOption,
-						$author$project$SelectionMode$getOutputStyle(model.selectionConfig)),
+					$author$project$Option$decoder($author$project$OptionDisplay$MatureOption),
 					optionJson);
 				if (_v17.$ === 'Ok') {
 					var option = _v17.a;
