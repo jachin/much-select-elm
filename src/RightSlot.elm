@@ -5,6 +5,7 @@ be in transition.
 -}
 
 import Option exposing (Option)
+import OptionList exposing (OptionList)
 import OptionValue
 import SelectionMode exposing (OutputStyle, SelectionConfig(..), SelectionMode(..))
 
@@ -23,11 +24,11 @@ type RightSlot
     | ShowAddAndRemoveButtons
 
 
-updateRightSlot : RightSlot -> OutputStyle -> SelectionMode -> List Option -> RightSlot
-updateRightSlot current outputStyle selectionMode selectedOptions =
+updateRightSlot : RightSlot -> OutputStyle -> SelectionMode -> OptionList -> RightSlot
+updateRightSlot current outputStyle selectionMode selectedOptionList =
     let
         hasSelectedOption =
-            not (List.isEmpty selectedOptions)
+            not (OptionList.isEmpty selectedOptionList)
     in
     case outputStyle of
         SelectionMode.CustomHtml ->
@@ -109,10 +110,10 @@ updateRightSlot current outputStyle selectionMode selectedOptions =
                 MultiSelect ->
                     let
                         showAddButtons =
-                            List.any (\option -> option |> Option.getOptionValue |> OptionValue.isEmpty |> not) selectedOptions
+                            OptionList.any (\option -> option |> Option.getOptionValue |> OptionValue.isEmpty |> not) selectedOptionList
 
                         showRemoveButtons =
-                            List.length selectedOptions > 1
+                            OptionList.length selectedOptionList > 1
 
                         addAndRemoveButtonState =
                             if showAddButtons && not showRemoveButtons then
@@ -144,14 +145,14 @@ updateRightSlot current outputStyle selectionMode selectedOptions =
                             addAndRemoveButtonState
 
 
-updateRightSlotForDatalist : List Option -> RightSlot
+updateRightSlotForDatalist : OptionList -> RightSlot
 updateRightSlotForDatalist selectedOptions =
     let
         showAddButtons =
-            List.any (\option -> option |> Option.getOptionValue |> OptionValue.isEmpty |> not) selectedOptions
+            OptionList.any (\option -> option |> Option.getOptionValue |> OptionValue.isEmpty |> not) selectedOptions
 
         showRemoveButtons =
-            List.length selectedOptions > 1
+            OptionList.length selectedOptions > 1
     in
     if showAddButtons && not showRemoveButtons then
         ShowAddButton
@@ -163,8 +164,8 @@ updateRightSlotForDatalist selectedOptions =
         ShowNothing
 
 
-updateRightSlotLoading : RightSlot -> SelectionConfig -> List Option -> Bool -> RightSlot
-updateRightSlotLoading current selectionConfig selectedOptions isLoading_ =
+updateRightSlotLoading : RightSlot -> SelectionConfig -> OptionList -> Bool -> RightSlot
+updateRightSlotLoading current selectionConfig selectedOptionList isLoading_ =
     if isLoading_ then
         ShowLoadingIndicator
 
@@ -178,7 +179,7 @@ updateRightSlotLoading current selectionConfig selectedOptions isLoading_ =
                                 ShowDropdownIndicator NotInFocusTransition
 
                             ShowLoadingIndicator ->
-                                if List.isEmpty selectedOptions then
+                                if OptionList.isEmpty selectedOptionList then
                                     ShowDropdownIndicator NotInFocusTransition
 
                                 else
@@ -191,14 +192,14 @@ updateRightSlotLoading current selectionConfig selectedOptions isLoading_ =
                                 ShowClearButton
 
                             ShowAddButton ->
-                                if List.isEmpty selectedOptions then
+                                if OptionList.isEmpty selectedOptionList then
                                     ShowDropdownIndicator NotInFocusTransition
 
                                 else
                                     ShowClearButton
 
                             ShowAddAndRemoveButtons ->
-                                if List.isEmpty selectedOptions then
+                                if OptionList.isEmpty selectedOptionList then
                                     ShowDropdownIndicator NotInFocusTransition
 
                                 else
@@ -232,7 +233,7 @@ updateRightSlotLoading current selectionConfig selectedOptions isLoading_ =
                                 ShowNothing
 
                             ShowLoadingIndicator ->
-                                if List.isEmpty selectedOptions then
+                                if OptionList.isEmpty selectedOptionList then
                                     ShowDropdownIndicator NotInFocusTransition
 
                                 else
@@ -245,14 +246,14 @@ updateRightSlotLoading current selectionConfig selectedOptions isLoading_ =
                                 ShowClearButton
 
                             ShowAddButton ->
-                                if List.isEmpty selectedOptions then
+                                if OptionList.isEmpty selectedOptionList then
                                     ShowDropdownIndicator NotInFocusTransition
 
                                 else
                                     ShowClearButton
 
                             ShowAddAndRemoveButtons ->
-                                if List.isEmpty selectedOptions then
+                                if OptionList.isEmpty selectedOptionList then
                                     ShowDropdownIndicator NotInFocusTransition
 
                                 else
@@ -261,10 +262,10 @@ updateRightSlotLoading current selectionConfig selectedOptions isLoading_ =
                     SelectionMode.Datalist ->
                         let
                             showAddButtons =
-                                List.any (\option -> option |> Option.getOptionValue |> OptionValue.isEmpty |> not) selectedOptions
+                                OptionList.any (\option -> option |> Option.getOptionValue |> OptionValue.isEmpty |> not) selectedOptionList
 
                             showRemoveButtons =
-                                List.length selectedOptions > 1
+                                OptionList.length selectedOptionList > 1
 
                             addAndRemoveButtonState =
                                 if showAddButtons && not showRemoveButtons then

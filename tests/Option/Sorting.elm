@@ -1,29 +1,27 @@
 module Option.Sorting exposing (suite)
 
 import Expect
-import Option exposing (Option(..), newOption, optionGroupToString, setGroupWithString)
-import OptionLabel exposing (optionLabelToString)
+import Option exposing (Option(..), setGroupWithString, test_newFancyOptionWithMaybeCleanString, test_optionToDebuggingString)
+import OptionList exposing (findHighestAutoSortRank)
 import OptionSorting exposing (OptionSort(..), sortOptions)
-import OptionValue exposing (optionValueToString)
-import OptionsUtilities exposing (findHighestAutoSortRank)
 import SortRank exposing (newMaybeAutoSortRank)
 import Test exposing (Test, describe, test)
 
 
 heartBones =
-    newOption "Heart Bones" Nothing
+    test_newFancyOptionWithMaybeCleanString "Heart Bones" Nothing
 
 
 timecop1983 =
-    newOption "Timecop1983" Nothing
+    test_newFancyOptionWithMaybeCleanString "Timecop1983" Nothing
 
 
 wolfClub =
-    newOption "W O L F C L U B" Nothing
+    test_newFancyOptionWithMaybeCleanString "W O L F C L U B" Nothing
 
 
 waveshaper =
-    newOption "Waveshaper" Nothing
+    test_newFancyOptionWithMaybeCleanString "Waveshaper" Nothing
 
 
 musicList =
@@ -35,42 +33,42 @@ musicList =
 
 
 screwDriver =
-    newOption "Screw Driver" Nothing
+    test_newFancyOptionWithMaybeCleanString "Screw Driver" Nothing
         |> setGroupWithString "Hand Tool"
 
 
 wrench =
-    newOption "Wrench" Nothing
+    test_newFancyOptionWithMaybeCleanString "Wrench" Nothing
         |> setGroupWithString "Hand Tool"
 
 
 hammer =
-    newOption "Hammer" Nothing
+    test_newFancyOptionWithMaybeCleanString "Hammer" Nothing
         |> setGroupWithString "Hand Tool"
 
 
 chisel =
-    newOption "Chisel" Nothing
+    test_newFancyOptionWithMaybeCleanString "Chisel" Nothing
         |> setGroupWithString "Hand Tool"
 
 
 multiMeter =
-    newOption "Multi Meter" Nothing
+    test_newFancyOptionWithMaybeCleanString "Multi Meter" Nothing
         |> setGroupWithString "Electronic Instrument"
 
 
 signalTester =
-    newOption "Signal Tester" Nothing
+    test_newFancyOptionWithMaybeCleanString "Signal Tester" Nothing
         |> setGroupWithString "Electronic Instrument"
 
 
 drill =
-    newOption "Drill" Nothing
+    test_newFancyOptionWithMaybeCleanString "Drill" Nothing
         |> setGroupWithString "Power Tool"
 
 
 sawZaw =
-    newOption "Saw Zaw" Nothing
+    test_newFancyOptionWithMaybeCleanString "Saw Zaw" Nothing
         |> setGroupWithString "Power Tool"
 
 
@@ -86,30 +84,6 @@ tools =
     ]
 
 
-optionToDebuggingString : Option -> String
-optionToDebuggingString option =
-    case option of
-        FancyOption _ optionLabel _ _ optionGroup _ ->
-            case optionGroupToString optionGroup of
-                "" ->
-                    optionLabelToString optionLabel
-
-                optionGroupString ->
-                    optionGroupString ++ " - " ++ optionLabelToString optionLabel
-
-        CustomOption _ optionLabel _ _ ->
-            optionLabelToString optionLabel
-
-        EmptyOption _ optionLabel ->
-            optionLabelToString optionLabel
-
-        DatalistOption _ optionValue ->
-            optionValueToString optionValue
-
-        SlottedOption _ optionValue _ ->
-            optionValueToString optionValue
-
-
 suite : Test
 suite =
     describe "Sorting lists of options"
@@ -119,19 +93,19 @@ suite =
                     Expect.equalLists
                         (musicList
                             |> sortOptions NoSorting
-                            |> List.map optionToDebuggingString
+                            |> List.map test_optionToDebuggingString
                         )
                         ([ heartBones
                          , timecop1983
                          , wolfClub
                          , waveshaper
                          ]
-                            |> List.map optionToDebuggingString
+                            |> List.map test_optionToDebuggingString
                         )
             , test "options with groups should be sorted by their groups and then by their label" <|
                 \_ ->
                     Expect.equalLists
-                        (tools |> sortOptions NoSorting |> List.map optionToDebuggingString)
+                        (tools |> sortOptions NoSorting |> List.map test_optionToDebuggingString)
                         ([ chisel
                          , hammer
                          , screwDriver
@@ -141,22 +115,23 @@ suite =
                          , multiMeter
                          , signalTester
                          ]
-                            |> List.map optionToDebuggingString
+                            |> List.map test_optionToDebuggingString
                         )
             ]
         , describe "getting the highest sorted "
             [ test "when there is just 1" <|
                 \_ ->
                     Expect.equal
-                        ([ screwDriver |> Option.setMaybeSortRank (newMaybeAutoSortRank 1) ] |> findHighestAutoSortRank)
+                        (OptionList.FancyOptionList [ screwDriver |> Option.setMaybeSortRank (newMaybeAutoSortRank 1) ] |> findHighestAutoSortRank)
                         1
             , test "when there is more than 1" <|
                 \_ ->
                     Expect.equal
-                        ([ hammer |> Option.setMaybeSortRank (newMaybeAutoSortRank 1)
-                         , drill |> Option.setMaybeSortRank (newMaybeAutoSortRank 2)
-                         , screwDriver |> Option.setMaybeSortRank (newMaybeAutoSortRank 3)
-                         ]
+                        (OptionList.FancyOptionList
+                            [ hammer |> Option.setMaybeSortRank (newMaybeAutoSortRank 1)
+                            , drill |> Option.setMaybeSortRank (newMaybeAutoSortRank 2)
+                            , screwDriver |> Option.setMaybeSortRank (newMaybeAutoSortRank 3)
+                            ]
                             |> findHighestAutoSortRank
                         )
                         3

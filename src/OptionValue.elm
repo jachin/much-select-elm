@@ -1,4 +1,6 @@
-module OptionValue exposing (OptionValue(..), isEmpty, length, optionValueToString, stringToOptionValue)
+module OptionValue exposing (OptionValue(..), decoder, equals, isEmpty, length, optionValueToString, stringToOptionValue)
+
+import Json.Decode
 
 
 type OptionValue
@@ -36,6 +38,11 @@ length optionValue =
             0
 
 
+equals : OptionValue -> OptionValue -> Bool
+equals a b =
+    a == b
+
+
 isEmpty : OptionValue -> Bool
 isEmpty optionValue =
     case optionValue of
@@ -44,3 +51,17 @@ isEmpty optionValue =
 
         EmptyOptionValue ->
             True
+
+
+decoder : Json.Decode.Decoder OptionValue
+decoder =
+    Json.Decode.string
+        |> Json.Decode.andThen
+            (\valueStr ->
+                case String.trim valueStr of
+                    "" ->
+                        Json.Decode.succeed EmptyOptionValue
+
+                    str ->
+                        Json.Decode.succeed (OptionValue str)
+            )

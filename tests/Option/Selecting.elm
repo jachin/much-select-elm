@@ -1,49 +1,52 @@
 module Option.Selecting exposing (suite)
 
-import Expect
-import Option
-    exposing
-        ( newOption
-        , selectOption
-        )
+import Expect exposing (Expectation)
+import Option exposing (Option(..), selectOption, test_newDatalistOption, test_newEmptyDatalistOption, test_newFancyOptionWithMaybeCleanString)
+import OptionList exposing (OptionList(..), cleanupEmptySelectedOptions, deselectEveryOptionExceptOptionsInList, selectOptionByOptionValue, selectOptions, selectOptionsInOptionsListByString, selectSingleOptionByValue)
 import OptionValue exposing (stringToOptionValue)
-import OptionsUtilities
-    exposing
-        ( deselectEveryOptionExceptOptionsInList
-        , selectOptionInListByOptionValue
-        , selectOptionsInList
-        , selectOptionsInOptionsListByString
-        , selectSingleOptionInList
-        )
 import Test exposing (Test, describe, test)
 
 
 matthew =
-    newOption "Matthew" Nothing
+    test_newFancyOptionWithMaybeCleanString "Matthew" Nothing
 
 
 mark =
-    newOption "Mark" Nothing
+    test_newFancyOptionWithMaybeCleanString "Mark" Nothing
 
 
 luke =
-    newOption "Luke" Nothing
+    test_newFancyOptionWithMaybeCleanString "Luke" Nothing
 
 
 john =
-    newOption "John" Nothing
+    test_newFancyOptionWithMaybeCleanString "John" Nothing
 
 
 gospels =
-    [ matthew
-    , mark
-    , luke
-    , john
-    ]
+    FancyOptionList
+        [ matthew
+        , mark
+        , luke
+        , john
+        ]
 
 
 numbers =
-    Option.newSelectedDatalistOption (OptionValue.stringToOptionValue "Numbers") 0
+    test_newDatalistOption "Numbers"
+        |> Option.selectOption 0
+
+
+optionToTuple : Option -> ( String, Bool )
+optionToTuple option =
+    Tuple.pair (Option.getOptionValueAsString option) (Option.isOptionSelected option)
+
+
+assertEqualLists : OptionList -> OptionList -> Expectation
+assertEqualLists optionListA optionListB =
+    Expect.equalLists
+        (optionListA |> OptionList.getOptions |> List.map optionToTuple)
+        (optionListB |> OptionList.getOptions |> List.map optionToTuple)
 
 
 suite : Test
@@ -51,126 +54,150 @@ suite =
     describe "Selecting options"
         [ test "just one option" <|
             \_ ->
-                Expect.equalLists
+                assertEqualLists
                     (gospels
-                        |> selectOptionInListByOptionValue (stringToOptionValue "Mark")
+                        |> selectOptionByOptionValue (stringToOptionValue "Mark")
                     )
-                    [ matthew
-                    , selectOption 0 mark
-                    , luke
-                    , john
-                    ]
+                    (FancyOptionList
+                        [ matthew
+                        , selectOption 0 mark
+                        , luke
+                        , john
+                        ]
+                    )
         , test "just 2 options" <|
             \_ ->
-                Expect.equalLists
+                assertEqualLists
                     (gospels
-                        |> selectOptionInListByOptionValue (stringToOptionValue "Mark")
-                        |> selectOptionInListByOptionValue (stringToOptionValue "Luke")
+                        |> selectOptionByOptionValue (stringToOptionValue "Mark")
+                        |> selectOptionByOptionValue (stringToOptionValue "Luke")
                     )
-                    [ matthew
-                    , selectOption 0 mark
-                    , selectOption 1 luke
-                    , john
-                    ]
-        , test "one and only one option should... just... select one option" <|
-            \_ ->
-                Expect.equalLists
-                    (gospels
-                        |> selectSingleOptionInList (stringToOptionValue "Mark")
-                        |> selectSingleOptionInList (stringToOptionValue "Luke")
-                    )
-                    (gospels
-                        |> selectSingleOptionInList (stringToOptionValue "Luke")
-                    )
-        , test "only no deselecting them" <|
-            \_ ->
-                Expect.equalLists
-                    (deselectEveryOptionExceptOptionsInList [ mark ]
+                    (FancyOptionList
                         [ matthew
                         , selectOption 0 mark
                         , selectOption 1 luke
                         , john
                         ]
                     )
-                    [ matthew
-                    , selectOption 0 mark
-                    , luke
-                    , john
-                    ]
+        , test "one and only one option should... just... select one option" <|
+            \_ ->
+                assertEqualLists
+                    (gospels
+                        |> selectSingleOptionByValue (stringToOptionValue "Mark")
+                        |> selectSingleOptionByValue (stringToOptionValue "Luke")
+                    )
+                    (gospels
+                        |> selectSingleOptionByValue (stringToOptionValue "Luke")
+                    )
+        , test "only no deselecting them" <|
+            \_ ->
+                assertEqualLists
+                    (deselectEveryOptionExceptOptionsInList [ mark ]
+                        (FancyOptionList
+                            [ matthew
+                            , selectOption 0 mark
+                            , selectOption 1 luke
+                            , john
+                            ]
+                        )
+                    )
+                    (FancyOptionList
+                        [ matthew
+                        , selectOption 0 mark
+                        , luke
+                        , john
+                        ]
+                    )
         , test "select no options in a list " <|
             \_ ->
-                Expect.equalLists
+                assertEqualLists
                     gospels
-                    (selectOptionsInList [] gospels)
+                    (selectOptions [] gospels)
         , describe "by strings"
             [ test "select a single option" <|
                 \_ ->
-                    Expect.equalLists
+                    assertEqualLists
                         (selectOptionsInOptionsListByString [ "Luke" ] gospels)
-                        [ matthew
-                        , mark
-                        , selectOption 0 luke
-                        , john
-                        ]
+                        (FancyOptionList
+                            [ matthew
+                            , mark
+                            , selectOption 0 luke
+                            , john
+                            ]
+                        )
             , test "select 2 options" <|
                 \_ ->
-                    Expect.equalLists
+                    assertEqualLists
                         (gospels
                             |> selectOptionsInOptionsListByString [ "Matthew", "Luke" ]
                         )
-                        [ selectOption 0 matthew
-                        , mark
-                        , selectOption 1 luke
-                        , john
-                        ]
+                        (FancyOptionList
+                            [ selectOption 0 matthew
+                            , mark
+                            , selectOption 1 luke
+                            , john
+                            ]
+                        )
             , test "select 2 different options" <|
                 \_ ->
-                    Expect.equalLists
-                        ([ selectOption 0 matthew
-                         , mark
-                         , selectOption 1 luke
-                         , john
-                         ]
+                    assertEqualLists
+                        (FancyOptionList
+                            [ selectOption 0 matthew
+                            , mark
+                            , selectOption 1 luke
+                            , john
+                            ]
                             |> selectOptionsInOptionsListByString [ "Mark", "John" ]
                         )
-                        [ matthew
-                        , selectOption 2 mark
-                        , luke
-                        , selectOption 3 john
-                        ]
+                        (FancyOptionList
+                            [ matthew
+                            , selectOption 2 mark
+                            , luke
+                            , selectOption 3 john
+                            ]
+                        )
             ]
         , describe "for datalists"
             [ test "allow one empty option" <|
                 \_ ->
-                    Expect.equalLists
-                        ([ Option.newSelectedDatalistOption OptionValue.EmptyOptionValue 0
-                         ]
-                            |> OptionsUtilities.cleanupEmptySelectedOptions
+                    assertEqualLists
+                        (DatalistOptionList
+                            [ test_newEmptyDatalistOption |> selectOption 0
+                            ]
+                            |> cleanupEmptySelectedOptions
                         )
-                        [ Option.newSelectedDatalistOption OptionValue.EmptyOptionValue 0
-                        ]
+                        (DatalistOptionList
+                            [ test_newEmptyDatalistOption |> selectOption 0
+                            ]
+                        )
             , test "allow only one empty option" <|
                 \_ ->
-                    Expect.equalLists
-                        ([ Option.newSelectedDatalistOption OptionValue.EmptyOptionValue 0
-                         , Option.newSelectedDatalistOption OptionValue.EmptyOptionValue 1
-                         , Option.newSelectedDatalistOption OptionValue.EmptyOptionValue 2
-                         ]
-                            |> OptionsUtilities.cleanupEmptySelectedOptions
+                    assertEqualLists
+                        (DatalistOptionList
+                            [ test_newEmptyDatalistOption |> selectOption 0
+                            , test_newEmptyDatalistOption |> selectOption 1
+                            , test_newEmptyDatalistOption |> selectOption 2
+                            ]
+                            |> cleanupEmptySelectedOptions
                         )
-                        [ Option.newSelectedDatalistOption OptionValue.EmptyOptionValue 0
-                        ]
+                        (DatalistOptionList
+                            [ test_newEmptyDatalistOption |> selectOption 0
+                            ]
+                        )
             , test "allow no empty options is there is at least one non empty option" <|
                 \_ ->
-                    Expect.equalLists
-                        ([ numbers
-                         , Option.newSelectedDatalistOption OptionValue.EmptyOptionValue 1
-                         , Option.newSelectedDatalistOption OptionValue.EmptyOptionValue 2
-                         , Option.newSelectedDatalistOption OptionValue.EmptyOptionValue 3
-                         ]
-                            |> OptionsUtilities.cleanupEmptySelectedOptions
+                    assertEqualLists
+                        (DatalistOptionList
+                            [ numbers
+                            , test_newEmptyDatalistOption |> selectOption 1
+                            , test_newEmptyDatalistOption |> selectOption 2
+                            , test_newEmptyDatalistOption |> selectOption 3
+                            ]
+                            |> cleanupEmptySelectedOptions
                         )
-                        [ numbers
-                        ]
+                        (DatalistOptionList
+                            [ numbers
+                            ]
+                        )
             ]
         ]
