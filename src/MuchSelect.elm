@@ -3318,7 +3318,7 @@ init flags =
                     )
 
         ( searchStringMinimumLength, searchStringMinimumLengthErrorEffect ) =
-            case flags.maxDropdownItems of
+            case flags.searchStringMinimumLength of
                 Just str ->
                     case PositiveInt.fromString str of
                         Just int ->
