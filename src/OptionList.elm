@@ -1621,10 +1621,6 @@ addAndSelectOptionsInOptionsListByString strings optionList =
 
 selectedOptionValuesAreEqual : List String -> OptionList -> Bool
 selectedOptionValuesAreEqual valuesAsStrings options =
-    let
-        _ =
-            Debug.log "valuesAsStrings" valuesAsStrings
-    in
     case options of
         FancyOptionList _ ->
             (options
@@ -1637,13 +1633,11 @@ selectedOptionValuesAreEqual valuesAsStrings options =
 
         DatalistOptionList _ ->
             (options
-                |> reIndexSelectedOptions
                 |> selectedOptions
                 |> filter (Option.isEmptyOption >> not)
                 |> getOptions
                 |> List.map Option.getOptionValue
                 |> List.map OptionValue.optionValueToString
-                |> Debug.log "current selected values"
             )
                 == valuesAsStrings
 
