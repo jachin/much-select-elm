@@ -10922,15 +10922,6 @@ var $grotsev$elm_debouncer$Bounce$push = function (_v0) {
 	var counter = _v0;
 	return counter + 1;
 };
-var $author$project$OptionList$removeHighlightedOptionByValue = F2(
-	function (optionValue, optionList) {
-		return A2(
-			$author$project$OptionList$filter,
-			function (option_) {
-				return A2($author$project$Option$optionEqualsOptionValue, optionValue, option_) && $author$project$Option$isOptionHighlighted(option_);
-			},
-			optionList);
-	});
 var $elm$core$Basics$neq = _Utils_notEqual;
 var $author$project$OptionList$removeOptionFromOptionListBySelectedIndex = F2(
 	function (selectedIndex, options) {
@@ -11960,8 +11951,22 @@ var $author$project$TransformAndValidate$transformAndValidateSecondPass = F2(
 					},
 					validators)));
 	});
+var $author$project$OptionList$unhighlightOptionByValue = F2(
+	function (optionValue, optionList) {
+		return A2(
+			$author$project$OptionList$map,
+			function (option_) {
+				return A2($author$project$Option$optionEqualsOptionValue, optionValue, option_) ? $author$project$Option$removeHighlightFromOption(option_) : option_;
+			},
+			optionList);
+	});
 var $author$project$OptionList$unhighlightSelectedOptions = function (optionList) {
-	return A2($author$project$OptionList$map, $author$project$Option$removeHighlightFromOption, optionList);
+	return A2(
+		$author$project$OptionList$map,
+		function (option_) {
+			return $author$project$Option$isOptionSelected(option_) ? $author$project$Option$removeHighlightFromOption(option_) : option_;
+		},
+		optionList);
 };
 var $author$project$SearchString$update = function (string) {
 	return A2($author$project$SearchString$SearchString, string, false);
@@ -12471,7 +12476,7 @@ var $author$project$MuchSelect$update = F2(
 					$author$project$MuchSelect$NoEffect);
 			case 6:
 				var optionValue = msg.a;
-				var updatedOptions = A2($author$project$OptionList$removeHighlightedOptionByValue, optionValue, model.b);
+				var updatedOptions = A2($author$project$OptionList$unhighlightOptionByValue, optionValue, model.b);
 				return _Utils_Tuple2(
 					$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheMouseMoves(
 						_Utils_update(

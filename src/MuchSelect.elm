@@ -408,7 +408,7 @@ update msg model =
         DropdownMouseOutOption optionValue ->
             let
                 updatedOptions =
-                    OptionList.removeHighlightedOptionByValue optionValue model.options
+                    OptionList.unhighlightOptionByValue optionValue model.options
             in
             ( { model
                 | options = updatedOptions
