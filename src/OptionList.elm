@@ -1,4 +1,4 @@
-module OptionList exposing (OptionList(..), activateOptionInListByOptionValue, addAdditionalOptionsToOptionList, addAdditionalOptionsToOptionListWithAutoSortRank, addAdditionalSelectedOptionWithStringValue, addAndSelectOptionsInOptionsListByString, addNewEmptyOptionAtIndex, all, allOptionsAreValid, andMap, any, append, appendOptions, changeHighlightedOption, changeHighlightedOptionByValue, cleanupEmptySelectedOptions, concatMap, customSelectedOptions, decoder, deselectAll, deselectAllButTheFirstSelectedOptionInList, deselectAllOptions, deselectAllSelectedHighlightedOptions, deselectEveryOptionExceptOptionsInList, deselectLastSelectedOption, deselectOption, deselectOptionByValue, deselectOptions, drop, encode, encodeSearchResults, filter, findByValue, findClosestHighlightableOptionGoingDown, findClosestHighlightableOptionGoingUp, findHighestAutoSortRank, findHighlightedOption, findHighlightedOptionIndex, findHighlightedOrSelectedOptionIndex, findLowestSearchScore, findOptionByValue, findSelectedOption, getOptions, hasAnyPendingValidation, hasAnyValidationErrors, hasOptionByValueString, hasSelectedHighlightedOptions, hasSelectedOption, head, highlightFirstOptionInList, highlightOption, isEmpty, isSlottedOptionList, length, map, mergeTwoListsOfOptionsPreservingSelectedOptions, optionsPlusOne, optionsValuesAsStrings, organizeNewDatalistOptions, prependCustomOption, removeOptionFromOptionListBySelectedIndex, removeOptionsFromOptionList, removeUnselectedCustomOptions, replaceOptions, selectHighlightedOption, selectOption, selectOptionByOptionValue, selectOptionByOptionValueWithIndex, selectOptionIByValueStringWithIndex, selectOptions, selectOptionsInOptionsListByString, selectSingleOption, selectSingleOptionByValue, selectedOptionValuesAreEqual, selectedOptions, selectedOptionsToTuple, setAge, sort, sortBy, sortOptionsByBestScore, sortOptionsByTotalScore, take, test_newFancyOptionList, toggleSelectedHighlightByOptionValue, unhighlightOptionByValue, unhighlightSelectedOptions, uniqueBy, unselectedOptions, updateAge, updateDatalistOptionWithValueBySelectedValueIndex, updateDatalistOptionsWithPendingValidation, updateDatalistOptionsWithValue, updateDatalistOptionsWithValueAndErrors, updateOptionsWithNewSearchResults, updatedDatalistSelectedOptions)
+module OptionList exposing (OptionList(..), activateOptionInListByOptionValue, addAdditionalOptionsToOptionList, addAdditionalOptionsToOptionListWithAutoSortRank, addAdditionalSelectedOptionWithStringValue, addAndSelectOptionsInOptionsListByString, addNewEmptyOptionAtIndex, addNewSelectedEmptyOptionAtIndex, all, allOptionsAreValid, andMap, any, append, appendOptions, changeHighlightedOption, changeHighlightedOptionByValue, cleanupEmptySelectedOptions, concatMap, customSelectedOptions, decoder, deselectAll, deselectAllButTheFirstSelectedOptionInList, deselectAllOptions, deselectAllSelectedHighlightedOptions, deselectEveryOptionExceptOptionsInList, deselectLastSelectedOption, deselectOption, deselectOptionByValue, deselectOptions, drop, encode, encodeSearchResults, filter, findByValue, findClosestHighlightableOptionGoingDown, findClosestHighlightableOptionGoingUp, findHighestAutoSortRank, findHighlightedOption, findHighlightedOptionIndex, findHighlightedOrSelectedOptionIndex, findLowestSearchScore, findOptionByValue, findSelectedOption, getOptions, hasAnyPendingValidation, hasAnyValidationErrors, hasOptionByValueString, hasSelectedHighlightedOptions, hasSelectedOption, head, highlightFirstOptionInList, highlightOption, isEmpty, isSlottedOptionList, length, map, mergeTwoListsOfOptionsPreservingSelectedOptions, optionsPlusOne, optionsValuesAsStrings, organizeNewDatalistOptions, prependCustomOption, removeOptionFromOptionListBySelectedIndex, removeOptionsFromOptionList, removeUnselectedCustomOptions, replaceOptions, selectHighlightedOption, selectOption, selectOptionByOptionValue, selectOptionByOptionValueWithIndex, selectOptionIByValueStringWithIndex, selectOptions, selectOptionsInOptionsListByString, selectSingleOption, selectSingleOptionByValue, selectedOptionValuesAreEqual, selectedOptions, selectedOptionsToTuple, setAge, sort, sortBy, sortOptionsByBestScore, sortOptionsByTotalScore, take, test_newDatalistOptionList, test_newFancyOptionList, toggleSelectedHighlightByOptionValue, unhighlightOptionByValue, unhighlightSelectedOptions, uniqueBy, unselectedOptions, updateAge, updateDatalistOptionWithValueBySelectedValueIndex, updateDatalistOptionsWithPendingValidation, updateDatalistOptionsWithValue, updateDatalistOptionsWithValueAndErrors, updateOptionsWithNewSearchResults, updatedDatalistSelectedOptions)
 
 import DatalistOption
 import FancyOption
@@ -730,7 +730,7 @@ addAdditionalSelectedOptionWithStringValue string optionList =
         DatalistOptionList _ ->
             let
                 newOption =
-                    DatalistOption.newSelectedDatalistOption (OptionValue.stringToOptionValue string) 0
+                    DatalistOption.newSelected (OptionValue.stringToOptionValue string) 0
                         |> Option.DatalistOption
             in
             addAdditionalOption newOption optionList
@@ -1103,7 +1103,7 @@ updatedDatalistSelectedOptions selectedValues optionList =
         newSelectedOptions : OptionList
         newSelectedOptions =
             selectedValues
-                |> List.indexedMap (\i selectedValue -> DatalistOption.newSelectedDatalistOption selectedValue i)
+                |> List.indexedMap (\i selectedValue -> DatalistOption.newSelected selectedValue i)
                 |> List.map Option.DatalistOption
                 |> DatalistOptionList
 
@@ -1239,7 +1239,7 @@ updateDatalistOptionsWithValue optionValue selectedValueIndex optionList =
     else
         append
             (DatalistOptionList
-                [ Option.DatalistOption (DatalistOption.newSelectedDatalistOption optionValue selectedValueIndex)
+                [ Option.DatalistOption (DatalistOption.newSelected optionValue selectedValueIndex)
                 ]
             )
             optionList
@@ -1330,8 +1330,27 @@ addNewEmptyOptionAtIndex index optionList =
         (append
             firstPart
             (DatalistOptionList
-                [ Option.DatalistOption
-                    (DatalistOption.new OptionValue.EmptyOptionValue)
+                [ Option.newEmptyDatalistOption index
+                ]
+            )
+        )
+        secondPart
+
+
+addNewSelectedEmptyOptionAtIndex : Int -> OptionList -> OptionList
+addNewSelectedEmptyOptionAtIndex index optionList =
+    let
+        firstPart =
+            take index optionList
+
+        secondPart =
+            drop index optionList
+    in
+    append
+        (append
+            firstPart
+            (DatalistOptionList
+                [ Option.newSelectedEmptyDatalistOption index
                 ]
             )
         )
@@ -1546,7 +1565,7 @@ addAndSelectOptionsInOptionsListByString strings optionList =
                                         Just
                                             (DatalistOptionList
                                                 [ Option.DatalistOption
-                                                    (DatalistOption.newSelectedDatalistOption (OptionValue.stringToOptionValue valueString) index)
+                                                    (DatalistOption.newSelected (OptionValue.stringToOptionValue valueString) index)
                                                 ]
                                             )
 
@@ -1582,7 +1601,7 @@ addAndSelectOptionsInOptionsListByString strings optionList =
                                         Just
                                             (DatalistOptionList
                                                 [ Option.DatalistOption
-                                                    (DatalistOption.newSelectedDatalistOption (OptionValue.stringToOptionValue valueString) index)
+                                                    (DatalistOption.newSelected (OptionValue.stringToOptionValue valueString) index)
                                                 ]
                                             )
 
@@ -1771,3 +1790,8 @@ optionTypeMatches option optionList =
 test_newFancyOptionList : List Option -> OptionList
 test_newFancyOptionList options =
     FancyOptionList options
+
+
+test_newDatalistOptionList : List Option -> OptionList
+test_newDatalistOptionList options =
+    DatalistOptionList options

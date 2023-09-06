@@ -10720,7 +10720,7 @@ var $author$project$OptionDisplay$OptionSelected = F2(
 var $author$project$OptionDisplay$selected = function (index) {
 	return A2($author$project$OptionDisplay$OptionSelected, index, $author$project$OptionDisplay$MatureOption);
 };
-var $author$project$DatalistOption$newSelectedDatalistOption = F2(
+var $author$project$DatalistOption$newSelected = F2(
 	function (optionValue, selectedIndex) {
 		return A2(
 			$author$project$DatalistOption$DatalistOption,
@@ -10823,7 +10823,7 @@ var $author$project$OptionList$addAdditionalSelectedOptionWithStringValue = F2(
 			case 'DatalistOptionList':
 				var newOption = $author$project$Option$DatalistOption(
 					A2(
-						$author$project$DatalistOption$newSelectedDatalistOption,
+						$author$project$DatalistOption$newSelected,
 						$author$project$OptionValue$stringToOptionValue(string),
 						0));
 				return A2($author$project$OptionList$addAdditionalOption, newOption, optionList);
@@ -11149,7 +11149,7 @@ var $author$project$OptionList$addAndSelectOptionsInOptionsListByString = F2(
 														[
 															$author$project$Option$DatalistOption(
 															A2(
-																$author$project$DatalistOption$newSelectedDatalistOption,
+																$author$project$DatalistOption$newSelected,
 																$author$project$OptionValue$stringToOptionValue(valueString),
 																index))
 														])));
@@ -11199,7 +11199,7 @@ var $author$project$OptionList$addAndSelectOptionsInOptionsListByString = F2(
 														[
 															$author$project$Option$DatalistOption(
 															A2(
-																$author$project$DatalistOption$newSelectedDatalistOption,
+																$author$project$DatalistOption$newSelected,
 																$author$project$OptionValue$stringToOptionValue(valueString),
 																index))
 														])));
@@ -13913,8 +13913,15 @@ var $author$project$OptionList$drop = F2(
 					A2($elm$core$List$drop, _int, options));
 		}
 	});
-var $author$project$DatalistOption$new = function (optionValue) {
-	return A2($author$project$DatalistOption$DatalistOption, $author$project$OptionDisplay$default, optionValue);
+var $author$project$DatalistOption$newSelectedEmpty = function (selectedIndex) {
+	return A2(
+		$author$project$DatalistOption$DatalistOption,
+		$author$project$OptionDisplay$selected(selectedIndex),
+		$author$project$OptionValue$EmptyOptionValue);
+};
+var $author$project$Option$newSelectedEmptyDatalistOption = function (_int) {
+	return $author$project$Option$DatalistOption(
+		$author$project$DatalistOption$newSelectedEmpty(_int));
 };
 var $elm$core$List$takeReverse = F3(
 	function (n, list, kept) {
@@ -14059,7 +14066,7 @@ var $author$project$OptionList$take = F2(
 					A2($elm$core$List$take, _int, options));
 		}
 	});
-var $author$project$OptionList$addNewEmptyOptionAtIndex = F2(
+var $author$project$OptionList$addNewSelectedEmptyOptionAtIndex = F2(
 	function (index, optionList) {
 		var secondPart = A2($author$project$OptionList$drop, index, optionList);
 		var firstPart = A2($author$project$OptionList$take, index, optionList);
@@ -14071,8 +14078,7 @@ var $author$project$OptionList$addNewEmptyOptionAtIndex = F2(
 				$author$project$OptionList$DatalistOptionList(
 					_List_fromArray(
 						[
-							$author$project$Option$DatalistOption(
-							$author$project$DatalistOption$new($author$project$OptionValue$EmptyOptionValue))
+							$author$project$Option$newSelectedEmptyDatalistOption(index)
 						]))),
 			secondPart);
 	});
@@ -16325,6 +16331,9 @@ var $author$project$OptionList$mapValues = F2(
 						A2($elm$core$List$map, _function, options)));
 		}
 	});
+var $author$project$DatalistOption$new = function (optionValue) {
+	return A2($author$project$DatalistOption$DatalistOption, $author$project$OptionDisplay$default, optionValue);
+};
 var $author$project$FancyOption$setOptionValue = F2(
 	function (optionValue, option) {
 		switch (option.$) {
@@ -17433,7 +17442,7 @@ var $author$project$OptionList$updateDatalistOptionsWithValue = F3(
 				_List_fromArray(
 					[
 						$author$project$Option$DatalistOption(
-						A2($author$project$DatalistOption$newSelectedDatalistOption, optionValue, selectedValueIndex))
+						A2($author$project$DatalistOption$newSelected, optionValue, selectedValueIndex))
 					])),
 			optionList);
 	});
@@ -17673,7 +17682,7 @@ var $author$project$OptionList$updatedDatalistSelectedOptions = F2(
 					$elm$core$List$indexedMap,
 					F2(
 						function (i, selectedValue) {
-							return A2($author$project$DatalistOption$newSelectedDatalistOption, selectedValue, i);
+							return A2($author$project$DatalistOption$newSelected, selectedValue, i);
 						}),
 					selectedValues)));
 		var selectedOptions_ = A2($author$project$OptionList$equal, newSelectedOptions, oldSelectedOptionsCleanedUp) ? oldSelectedOptions : newSelectedOptions;
@@ -18609,7 +18618,7 @@ var $author$project$MuchSelect$update = F2(
 				}
 			case 'AddMultiSelectValue':
 				var indexWhereToAdd = msg.a;
-				var updatedOptions = A2($author$project$OptionList$addNewEmptyOptionAtIndex, indexWhereToAdd + 1, model.options);
+				var updatedOptions = A2($author$project$OptionList$addNewSelectedEmptyOptionAtIndex, indexWhereToAdd + 1, model.options);
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,

@@ -1197,7 +1197,7 @@ update msg model =
         AddMultiSelectValue indexWhereToAdd ->
             let
                 updatedOptions =
-                    OptionList.addNewEmptyOptionAtIndex (indexWhereToAdd + 1) model.options
+                    OptionList.addNewSelectedEmptyOptionAtIndex (indexWhereToAdd + 1) model.options
             in
             ( { model
                 | focusedIndex = indexWhereToAdd + 1

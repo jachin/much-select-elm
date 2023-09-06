@@ -1,9 +1,10 @@
 module FilteringOptions.MaxNumberOfDropdownItems exposing (suite)
 
+import DomStateCache exposing (OutputStyleAttribute(..), test_defaultDomStateCache, updateOutputStyle)
 import DropdownOptions exposing (figureOutWhichOptionsToShowInTheDropdown)
 import Expect exposing (Expectation)
-import Option exposing (setGroupWithString, test_newFancyOptionWithMaybeCleanString)
-import OptionList exposing (OptionList(..))
+import Option exposing (setGroupWithString, test_newDatalistOption, test_newEmptyDatalistOption, test_newFancyOptionWithMaybeCleanString)
+import OptionList exposing (OptionList(..), test_newDatalistOptionList)
 import OutputStyle exposing (MaxDropdownItems(..), SearchStringMinimumLength(..))
 import PositiveInt
 import SelectionMode exposing (OutputStyle(..), SelectionConfig(..), defaultSelectionConfig)
@@ -349,6 +350,33 @@ suite =
                             (tools
                                 |> OptionList.selectOption utilityKnife
                                 |> OptionList.highlightOption wrench
+                            )
+                            |> DropdownOptions.test_getOptions
+                        )
+            ]
+        , describe "when we have datalist options"
+            [ test "we need to include empty options" <|
+                \_ ->
+                    assertEqualLists
+                        (test_newDatalistOptionList
+                            [ test_newDatalistOption "oil"
+                            , test_newEmptyDatalistOption
+                            , test_newDatalistOption "ladder"
+                            , test_newDatalistOption "arrow"
+                            ]
+                        )
+                        (figureOutWhichOptionsToShowInTheDropdown
+                            (defaultSelectionConfig
+                                |> SelectionMode.setOutputStyle
+                                    (test_defaultDomStateCache |> updateOutputStyle OutputStyleDatalist)
+                                    Datalist
+                            )
+                            (test_newDatalistOptionList
+                                [ test_newDatalistOption "oil"
+                                , test_newEmptyDatalistOption
+                                , test_newDatalistOption "ladder"
+                                , test_newDatalistOption "arrow"
+                                ]
                             )
                             |> DropdownOptions.test_getOptions
                         )

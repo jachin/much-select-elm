@@ -1,11 +1,11 @@
-module DatalistOption exposing (DatalistOption, decoder, deselect, encode, getOptionDisplay, getOptionLabel, getOptionSelectedIndex, getOptionValue, getOptionValueAsString, hasSelectedIndex, isSelected, merge, new, newSelectedDatalistOption, newSelectedDatalistOptionPendingValidation, newSelectedDatalistOptionWithErrors, select, setOptionDisplay, setOptionDisplayAge, setOptionSelectedIndex, setOptionValue, test_optionToDebuggingString)
+module DatalistOption exposing (DatalistOption, decoder, deselect, encode, getOptionDisplay, getOptionLabel, getOptionSelectedIndex, getOptionValue, getOptionValueAsString, hasSelectedIndex, isSelected, merge, new, newEmpty, newSelected, newSelectedDatalistOptionPendingValidation, newSelectedDatalistOptionWithErrors, newSelectedEmpty, select, setOptionDisplay, setOptionDisplayAge, setOptionSelectedIndex, setOptionValue, test_optionToDebuggingString)
 
 import Json.Decode
 import Json.Encode
 import OptionDisplay exposing (OptionDisplay)
 import OptionGroup
 import OptionLabel exposing (OptionLabel)
-import OptionValue exposing (OptionValue)
+import OptionValue exposing (OptionValue(..))
 import TransformAndValidate exposing (ValidationFailureMessage)
 
 
@@ -13,11 +13,18 @@ type DatalistOption
     = DatalistOption OptionDisplay OptionValue
 
 
-newSelectedDatalistOption : OptionValue -> Int -> DatalistOption
-newSelectedDatalistOption optionValue selectedIndex =
+newSelected : OptionValue -> Int -> DatalistOption
+newSelected optionValue selectedIndex =
     DatalistOption
         (OptionDisplay.selected selectedIndex)
         optionValue
+
+
+newSelectedEmpty : Int -> DatalistOption
+newSelectedEmpty selectedIndex =
+    DatalistOption
+        (OptionDisplay.selected selectedIndex)
+        EmptyOptionValue
 
 
 newSelectedDatalistOptionWithErrors : List ValidationFailureMessage -> OptionValue -> Int -> DatalistOption
@@ -39,6 +46,13 @@ new optionValue =
     DatalistOption
         OptionDisplay.default
         optionValue
+
+
+newEmpty : DatalistOption
+newEmpty =
+    DatalistOption
+        OptionDisplay.default
+        EmptyOptionValue
 
 
 getOptionDisplay : DatalistOption -> OptionDisplay

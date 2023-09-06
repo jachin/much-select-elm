@@ -41,6 +41,9 @@ module Option exposing
     , isValid
     , merge
     , newDisabledOption
+    , newEmptyDatalistOption
+    , newSelectedDatalistOption
+    , newSelectedEmptyDatalistOption
     , newSelectedOption
     , optionEqualsOptionValue
     , optionIsHighlightable
@@ -258,6 +261,21 @@ newSelectedOption index labelString maybeCleanLabel =
 newDisabledOption : String -> Maybe String -> Option
 newDisabledOption string maybeCleanLabel =
     FancyOption (FancyOption.newDisabledOption string maybeCleanLabel)
+
+
+newEmptyDatalistOption : Int -> Option
+newEmptyDatalistOption int =
+    DatalistOption DatalistOption.newEmpty
+
+
+newSelectedEmptyDatalistOption : Int -> Option
+newSelectedEmptyDatalistOption int =
+    DatalistOption (DatalistOption.newSelectedEmpty int)
+
+
+newSelectedDatalistOption : Int -> String -> Option
+newSelectedDatalistOption int string =
+    DatalistOption (DatalistOption.newSelected (OptionValue.stringToOptionValue string) int)
 
 
 isOptionSelected : Option -> Bool
