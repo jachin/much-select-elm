@@ -14646,7 +14646,7 @@ var $author$project$OptionDisplay$isHighlighted = function (optionDisplay) {
 		case 'OptionSelectedPendingValidation':
 			return false;
 		case 'OptionSelectedHighlighted':
-			return false;
+			return true;
 		case 'OptionHighlighted':
 			return true;
 		case 'OptionDisabled':

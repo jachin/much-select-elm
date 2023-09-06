@@ -66,4 +66,36 @@ suite =
                         ]
                         |> OptionList.unhighlightSelectedOptions
                     )
+        , test "by toggle the highlight of a selected value" <|
+            \_ ->
+                Expect.equal
+                    (OptionList.test_newFancyOptionList
+                        [ bernie |> Option.selectOption 0
+                        , murry |> Option.selectOption 1
+                        , frank
+                        ]
+                        |> OptionList.toggleSelectedHighlightByOptionValue bernieValue
+                    )
+                    (OptionList.test_newFancyOptionList
+                        [ bernie |> Option.selectOption 0 |> Option.highlightOption
+                        , murry |> Option.selectOption 1
+                        , frank
+                        ]
+                    )
+        , test "by toggle the highlight of a selected value (to remove the highlight)" <|
+            \_ ->
+                Expect.equal
+                    (OptionList.test_newFancyOptionList
+                        [ bernie |> Option.selectOption 0 |> Option.highlightOption
+                        , murry |> Option.selectOption 1
+                        , frank
+                        ]
+                        |> OptionList.toggleSelectedHighlightByOptionValue bernieValue
+                    )
+                    (OptionList.test_newFancyOptionList
+                        [ bernie |> Option.selectOption 0
+                        , murry |> Option.selectOption 1
+                        , frank
+                        ]
+                    )
         ]

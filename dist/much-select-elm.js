@@ -9317,7 +9317,7 @@ var $author$project$OptionDisplay$isHighlighted = function (optionDisplay) {
 		case 4:
 			return false;
 		case 5:
-			return false;
+			return true;
 		case 6:
 			return true;
 		case 8:
