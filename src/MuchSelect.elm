@@ -513,6 +513,13 @@ update msg model =
             )
 
         UpdateOptionValueValue selectedValueIndex valueString ->
+            let
+                _ =
+                    Debug.log "selectedValueIndex" selectedValueIndex
+
+                _ =
+                    Debug.log "valueString" valueString
+            in
             case transformAndValidateFirstPass (SelectionMode.getTransformAndValidate model.selectionConfig) valueString selectedValueIndex of
                 TransformAndValidate.ValidationPass _ _ ->
                     let
@@ -521,6 +528,7 @@ update msg model =
                                 (OptionValue.stringToOptionValue valueString)
                                 selectedValueIndex
                                 model.options
+                                |> Debug.log "ValidationPass updatedOptions"
                     in
                     ( { model
                         | options = updatedOptions
@@ -576,6 +584,7 @@ update msg model =
                                 (OptionValue.stringToOptionValue valueString)
                                 selectedValueIndex
                                 model.options
+                                |> Debug.log "ValidationPending updatedOptions"
                     in
                     ( { model
                         | options = updatedOptions

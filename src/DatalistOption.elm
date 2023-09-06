@@ -1,4 +1,4 @@
-module DatalistOption exposing (DatalistOption, decoder, deselect, encode, getOptionDisplay, getOptionLabel, getOptionSelectedIndex, getOptionValue, getOptionValueAsString, hasSelectedIndex, isSelected, merge, new, newEmpty, newSelected, newSelectedDatalistOptionPendingValidation, newSelectedDatalistOptionWithErrors, newSelectedEmpty, select, setOptionDisplay, setOptionDisplayAge, setOptionSelectedIndex, setOptionValue, test_optionToDebuggingString)
+module DatalistOption exposing (DatalistOption, decoder, deselect, encode, getOptionDisplay, getOptionLabel, getOptionSelectedIndex, getOptionValue, getOptionValueAsString, hasSelectedIndex, isEmpty, isSelected, merge, new, newEmpty, newSelected, newSelectedDatalistOptionPendingValidation, newSelectedDatalistOptionWithErrors, newSelectedEmpty, select, setOptionDisplay, setOptionDisplayAge, setOptionSelectedIndex, setOptionValue, test_optionToDebuggingString)
 
 import Json.Decode
 import Json.Encode
@@ -134,6 +134,13 @@ select selectionIndex option =
 deselect : DatalistOption -> DatalistOption
 deselect option =
     setOptionDisplay (OptionDisplay.deselect (getOptionDisplay option)) option
+
+
+isEmpty : DatalistOption -> Bool
+isEmpty datalistOption =
+    case datalistOption of
+        DatalistOption _ optionValue ->
+            optionValue == EmptyOptionValue
 
 
 decoder : Json.Decode.Decoder DatalistOption

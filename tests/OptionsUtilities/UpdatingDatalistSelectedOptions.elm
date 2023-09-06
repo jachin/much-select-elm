@@ -167,5 +167,45 @@ suite =
                             , Option.newSelectedDatalistOption 2 "rocks"
                             ]
                         )
+            , test "update an existing empty selected option and there are other empty options" <|
+                \_ ->
+                    assertEqualLists
+                        (updateDatalistOptionWithValueBySelectedValueIndex
+                            []
+                            (OptionValue.stringToOptionValue "skull")
+                            1
+                            (DatalistOptionList
+                                [ Option.newSelectedDatalistOption 0 "desert"
+                                , Option.newSelectedEmptyDatalistOption 1
+                                , Option.newSelectedEmptyDatalistOption 2
+                                ]
+                            )
+                        )
+                        (DatalistOptionList
+                            [ Option.newSelectedDatalistOption 0 "desert"
+                            , Option.newSelectedDatalistOption 1 "skull"
+                            , Option.newSelectedEmptyDatalistOption 2
+                            ]
+                        )
+            , test "update an existing empty selected option and there are other empty options and the are out of order" <|
+                \_ ->
+                    assertEqualLists
+                        (updateDatalistOptionWithValueBySelectedValueIndex
+                            []
+                            (OptionValue.stringToOptionValue "skull")
+                            1
+                            (DatalistOptionList
+                                [ Option.newSelectedDatalistOption 0 "desert"
+                                , Option.newSelectedEmptyDatalistOption 2
+                                , Option.newSelectedEmptyDatalistOption 1
+                                ]
+                            )
+                        )
+                        (DatalistOptionList
+                            [ Option.newSelectedDatalistOption 0 "desert"
+                            , Option.newSelectedEmptyDatalistOption 2
+                            , Option.newSelectedDatalistOption 1 "skull"
+                            ]
+                        )
             ]
         ]

@@ -63,6 +63,7 @@ module Option exposing
     , setOptionValueErrors
     , test_newDatalistOption
     , test_newEmptyDatalistOption
+    , test_newEmptySelectedDatalistOption
     , test_newFancyCustomOption
     , test_newFancyOption
     , test_newFancyOptionWithMaybeCleanString
@@ -527,8 +528,8 @@ isEmptyOption option =
         FancyOption fancyOption ->
             FancyOption.isEmptyOption fancyOption
 
-        DatalistOption _ ->
-            False
+        DatalistOption datalistOption ->
+            DatalistOption.isEmpty datalistOption
 
         SlottedOption _ ->
             False
@@ -797,6 +798,11 @@ test_newDatalistOption string =
 test_newEmptyDatalistOption : Option
 test_newEmptyDatalistOption =
     DatalistOption (DatalistOption.new OptionValue.EmptyOptionValue)
+
+
+test_newEmptySelectedDatalistOption : Int -> Option
+test_newEmptySelectedDatalistOption int =
+    DatalistOption (DatalistOption.newSelectedEmpty int)
 
 
 test_newSlottedOption : String -> Option
