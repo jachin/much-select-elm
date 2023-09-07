@@ -206,7 +206,7 @@ selector = ".example #change-select-attribute-changes-selected-value-in-much-sel
 
 [widgets.change-the-options-with-the-dom]
 widget = "include"
-file = "examples/change-the-options-with-the-dom"
+file = "examples/change-the-options-with-the-dom.html"
 selector = ".example #change-the-options-with-the-dom"
 
 [widgets.custom-element-options]
