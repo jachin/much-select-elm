@@ -14723,11 +14723,10 @@ var $author$project$Option$isOptionHighlighted = function (option) {
 var $author$project$OptionList$deselectAllSelectedHighlightedOptions = function (optionList) {
 	return A2(
 		$author$project$OptionList$map,
-		$author$project$Option$deselectOption,
-		A2(
-			$author$project$OptionList$filter,
-			$author$project$Option$isOptionSelected,
-			A2($author$project$OptionList$filter, $author$project$Option$isOptionHighlighted, optionList)));
+		function (option) {
+			return ($author$project$Option$isOptionSelected(option) && $author$project$Option$isOptionHighlighted(option)) ? $author$project$Option$deselectOption(option) : option;
+		},
+		optionList);
 };
 var $elm_community$list_extra$List$Extra$last = function (items) {
 	last:

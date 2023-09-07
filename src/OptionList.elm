@@ -888,12 +888,19 @@ deselectAll optionList =
             map Option.deselectOption optionList
 
 
+{-| Deselect all the options that are selected AND highlighted.
+-}
 deselectAllSelectedHighlightedOptions : OptionList -> OptionList
 deselectAllSelectedHighlightedOptions optionList =
     optionList
-        |> filter Option.isOptionHighlighted
-        |> filter Option.isOptionSelected
-        |> map Option.deselectOption
+        |> map
+            (\option ->
+                if Option.isOptionSelected option && Option.isOptionHighlighted option then
+                    Option.deselectOption option
+
+                else
+                    option
+            )
 
 
 deselectLastSelectedOption : OptionList -> OptionList
