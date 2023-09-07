@@ -10792,15 +10792,61 @@ var $author$project$FancyOption$setOptionDisplay = F2(
 				return A2($author$project$FancyOption$EmptyFancyOption, optionDisplay, optionLabel);
 		}
 	});
+var $author$project$OptionValue$toOptionLabel = function (optionValue) {
+	if (optionValue.$ === 'OptionValue') {
+		var valueString = optionValue.a;
+		return A2(
+			$author$project$OptionLabel$newWithCleanLabel,
+			valueString,
+			$elm$core$Maybe$Just(valueString));
+	} else {
+		return A2($author$project$OptionLabel$newWithCleanLabel, '', $elm$core$Maybe$Nothing);
+	}
+};
+var $author$project$FancyOption$setOptionLabelToValue = function (fancyOption) {
+	if (fancyOption.$ === 'CustomFancyOption') {
+		var optionDisplay = fancyOption.a;
+		var optionValue = fancyOption.c;
+		var maybeOptionSearchFilter = fancyOption.d;
+		return A4(
+			$author$project$FancyOption$CustomFancyOption,
+			optionDisplay,
+			$author$project$OptionValue$toOptionLabel(optionValue),
+			optionValue,
+			maybeOptionSearchFilter);
+	} else {
+		return fancyOption;
+	}
+};
 var $author$project$FancyOption$select = F2(
 	function (selectionIndex, option) {
-		return A2(
-			$author$project$FancyOption$setOptionDisplay,
-			A2(
-				$author$project$OptionDisplay$select,
-				selectionIndex,
-				$author$project$FancyOption$getOptionDisplay(option)),
-			option);
+		switch (option.$) {
+			case 'FancyOption':
+				return A2(
+					$author$project$FancyOption$setOptionDisplay,
+					A2(
+						$author$project$OptionDisplay$select,
+						selectionIndex,
+						$author$project$FancyOption$getOptionDisplay(option)),
+					option);
+			case 'CustomFancyOption':
+				return $author$project$FancyOption$setOptionLabelToValue(
+					A2(
+						$author$project$FancyOption$setOptionDisplay,
+						A2(
+							$author$project$OptionDisplay$select,
+							selectionIndex,
+							$author$project$FancyOption$getOptionDisplay(option)),
+						option));
+			default:
+				return A2(
+					$author$project$FancyOption$setOptionDisplay,
+					A2(
+						$author$project$OptionDisplay$select,
+						selectionIndex,
+						$author$project$FancyOption$getOptionDisplay(option)),
+					option);
+		}
 	});
 var $author$project$OptionValue$EmptyOptionValue = {$: 'EmptyOptionValue'};
 var $author$project$OptionValue$stringToOptionValue = function (string) {
@@ -10956,13 +11002,13 @@ var $author$project$OptionList$hasOptionByValueString = F2(
 			$author$project$OptionValue$stringToOptionValue(string),
 			optionList);
 	});
-var $author$project$FancyOption$newCustomOption = F2(
-	function (value, maybeCleanLabel) {
+var $author$project$FancyOption$newCustomOption = F3(
+	function (valueString, labelString, maybeCleanLabel) {
 		return A4(
 			$author$project$FancyOption$CustomFancyOption,
 			$author$project$OptionDisplay$default,
-			A2($author$project$OptionLabel$newWithCleanLabel, value, maybeCleanLabel),
-			$author$project$OptionValue$OptionValue(value),
+			A2($author$project$OptionLabel$newWithCleanLabel, labelString, maybeCleanLabel),
+			$author$project$OptionValue$stringToOptionValue(valueString),
 			$elm$core$Maybe$Nothing);
 	});
 var $author$project$DatalistOption$getOptionDisplay = function (datalistOption) {
@@ -11037,19 +11083,6 @@ var $author$project$OptionList$map = F2(
 					A2($elm$core$List$map, _function, options));
 		}
 	});
-var $author$project$Option$getOptionDisplay = function (option) {
-	switch (option.$) {
-		case 'FancyOption':
-			var fancyOption = option.a;
-			return $author$project$FancyOption$getOptionDisplay(fancyOption);
-		case 'DatalistOption':
-			var datalistOption = option.a;
-			return $author$project$DatalistOption$getOptionDisplay(datalistOption);
-		default:
-			var slottedOption = option.a;
-			return $author$project$SlottedOption$getOptionDisplay(slottedOption);
-	}
-};
 var $author$project$Option$SlottedOption = function (a) {
 	return {$: 'SlottedOption', a: a};
 };
@@ -11057,6 +11090,16 @@ var $author$project$DatalistOption$setOptionDisplay = F2(
 	function (optionDisplay, datalistOption) {
 		var optionValue = datalistOption.b;
 		return A2($author$project$DatalistOption$DatalistOption, optionDisplay, optionValue);
+	});
+var $author$project$DatalistOption$select = F2(
+	function (selectionIndex, option) {
+		return A2(
+			$author$project$DatalistOption$setOptionDisplay,
+			A2(
+				$author$project$OptionDisplay$select,
+				selectionIndex,
+				$author$project$DatalistOption$getOptionDisplay(option)),
+			option);
 	});
 var $author$project$SlottedOption$SlottedOption = F3(
 	function (a, b, c) {
@@ -11068,39 +11111,39 @@ var $author$project$SlottedOption$setOptionDisplay = F2(
 		var optionSlot = slottedOption.c;
 		return A3($author$project$SlottedOption$SlottedOption, optionDisplay, optionValue, optionSlot);
 	});
-var $author$project$Option$setOptionDisplay = F2(
-	function (optionDisplay, option) {
+var $author$project$SlottedOption$select = F2(
+	function (selectionIndex, option) {
+		return A2(
+			$author$project$SlottedOption$setOptionDisplay,
+			A2(
+				$author$project$OptionDisplay$select,
+				selectionIndex,
+				$author$project$SlottedOption$getOptionDisplay(option)),
+			option);
+	});
+var $author$project$Option$select = F2(
+	function (selectionIndex, option) {
 		switch (option.$) {
 			case 'FancyOption':
 				var fancyOption = option.a;
 				return $author$project$Option$FancyOption(
-					A2($author$project$FancyOption$setOptionDisplay, optionDisplay, fancyOption));
+					A2($author$project$FancyOption$select, selectionIndex, fancyOption));
 			case 'DatalistOption':
 				var datalistOption = option.a;
 				return $author$project$Option$DatalistOption(
-					A2($author$project$DatalistOption$setOptionDisplay, optionDisplay, datalistOption));
+					A2($author$project$DatalistOption$select, selectionIndex, datalistOption));
 			default:
 				var slottedOption = option.a;
 				return $author$project$Option$SlottedOption(
-					A2($author$project$SlottedOption$setOptionDisplay, optionDisplay, slottedOption));
+					A2($author$project$SlottedOption$select, selectionIndex, slottedOption));
 		}
-	});
-var $author$project$Option$selectOption = F2(
-	function (selectionIndex, option) {
-		return A2(
-			$author$project$Option$setOptionDisplay,
-			A2(
-				$author$project$OptionDisplay$select,
-				selectionIndex,
-				$author$project$Option$getOptionDisplay(option)),
-			option);
 	});
 var $author$project$OptionList$selectOptionByOptionValueWithIndex = F3(
 	function (index, optionValue, optionList) {
 		return A2(
 			$author$project$OptionList$map,
 			function (option_) {
-				return A2($author$project$Option$optionEqualsOptionValue, optionValue, option_) ? A2($author$project$Option$selectOption, index, option_) : ($author$project$Option$isOptionSelected(option_) ? option_ : option_);
+				return A2($author$project$Option$optionEqualsOptionValue, optionValue, option_) ? A2($author$project$Option$select, index, option_) : ($author$project$Option$isOptionSelected(option_) ? option_ : option_);
 			},
 			optionList);
 	});
@@ -11137,8 +11180,9 @@ var $author$project$OptionList$addAndSelectOptionsInOptionsListByString = F2(
 															A2(
 																$author$project$FancyOption$select,
 																index,
-																A2(
+																A3(
 																	$author$project$FancyOption$newCustomOption,
+																	valueString,
 																	valueString,
 																	$elm$core$Maybe$Just(valueString))))
 														])));
@@ -11187,8 +11231,9 @@ var $author$project$OptionList$addAndSelectOptionsInOptionsListByString = F2(
 															A2(
 																$author$project$FancyOption$select,
 																index,
-																A2(
+																A3(
 																	$author$project$FancyOption$newCustomOption,
+																	valueString,
 																	valueString,
 																	$elm$core$Maybe$Just(valueString))))
 														])));
@@ -12071,6 +12116,19 @@ var $author$project$Option$getOptionLabel = function (option) {
 	}
 };
 var $elm$json$Json$Encode$int = _Json_wrap;
+var $author$project$Option$getOptionDisplay = function (option) {
+	switch (option.$) {
+		case 'FancyOption':
+			var fancyOption = option.a;
+			return $author$project$FancyOption$getOptionDisplay(fancyOption);
+		case 'DatalistOption':
+			var datalistOption = option.a;
+			return $author$project$DatalistOption$getOptionDisplay(datalistOption);
+		default:
+			var slottedOption = option.a;
+			return $author$project$SlottedOption$getOptionDisplay(slottedOption);
+	}
+};
 var $author$project$OptionDisplay$isInvalid = function (optionDisplay) {
 	switch (optionDisplay.$) {
 		case 'OptionShown':
@@ -12545,7 +12603,7 @@ var $author$project$OptionList$reIndexSelectedOptions = function (optionList) {
 			$author$project$OptionList$indexedMap,
 			F2(
 				function (index, option) {
-					return A2($author$project$Option$selectOption, index, option);
+					return A2($author$project$Option$select, index, option);
 				}),
 			selectedOptions_),
 		nonSelectedOptions);
@@ -13663,6 +13721,23 @@ var $author$project$OptionDisplay$activate = function (optionDisplay) {
 			return optionDisplay;
 	}
 };
+var $author$project$Option$setOptionDisplay = F2(
+	function (optionDisplay, option) {
+		switch (option.$) {
+			case 'FancyOption':
+				var fancyOption = option.a;
+				return $author$project$Option$FancyOption(
+					A2($author$project$FancyOption$setOptionDisplay, optionDisplay, fancyOption));
+			case 'DatalistOption':
+				var datalistOption = option.a;
+				return $author$project$Option$DatalistOption(
+					A2($author$project$DatalistOption$setOptionDisplay, optionDisplay, datalistOption));
+			default:
+				var slottedOption = option.a;
+				return $author$project$Option$SlottedOption(
+					A2($author$project$SlottedOption$setOptionDisplay, optionDisplay, slottedOption));
+		}
+	});
 var $author$project$Option$activateOption = function (option) {
 	return A2(
 		$author$project$Option$setOptionDisplay,
@@ -14661,7 +14736,7 @@ var $author$project$OptionList$selectSingleOptionByValue = F2(
 		return A2(
 			$author$project$OptionList$map,
 			function (option_) {
-				return A2($author$project$Option$optionEqualsOptionValue, optionValue, option_) ? A2($author$project$Option$selectOption, 0, option_) : $author$project$Option$deselectOption(option_);
+				return A2($author$project$Option$optionEqualsOptionValue, optionValue, option_) ? A2($author$project$Option$select, 0, option_) : $author$project$Option$deselectOption(option_);
 			},
 			options);
 	});
@@ -14865,6 +14940,7 @@ var $author$project$SearchString$toString = function (_v0) {
 };
 var $author$project$OptionList$prependCustomOption = F3(
 	function (maybeCustomOptionHint, searchString, options) {
+		var valueString = $author$project$SearchString$toString(searchString);
 		var label = function () {
 			if (maybeCustomOptionHint.$ === 'Just') {
 				var customOptionHint = maybeCustomOptionHint.a;
@@ -14897,10 +14973,11 @@ var $author$project$OptionList$prependCustomOption = F3(
 				_List_fromArray(
 					[
 						$author$project$Option$FancyOption(
-						A2(
+						A3(
 							$author$project$FancyOption$newCustomOption,
+							valueString,
 							label,
-							$elm$core$Maybe$Just(label)))
+							$elm$core$Maybe$Just(valueString)))
 					])),
 			options);
 	});

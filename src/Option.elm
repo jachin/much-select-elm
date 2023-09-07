@@ -26,10 +26,8 @@ module Option exposing
     , hasSelectedItemIndex
     , highlightOption
     , isCustomOption
-    , isDatalistOption
     , isEmptyOption
     , isEmptyOptionOrHasEmptyValue
-    , isFancyOption
     , isInvalid
     , isOptionBelowScore
     , isOptionHighlighted
@@ -37,7 +35,6 @@ module Option exposing
     , isOptionSelectedHighlighted
     , isOptionValueInListOfStrings
     , isPendingValidation
-    , isSlottedOption
     , isValid
     , merge
     , newDisabledOption
@@ -50,7 +47,7 @@ module Option exposing
     , optionToValueLabelTuple
     , optionsHaveEqualValues
     , removeHighlightFromOption
-    , selectOption
+    , select
     , setDescriptionWithString
     , setGroupWithString
     , setLabel
@@ -58,13 +55,16 @@ module Option exposing
     , setMaybeSortRank
     , setOptionDisplay
     , setOptionDisplayAge
+    , setOptionLabelToValue
     , setOptionSearchFilter
     , setOptionValue
     , setOptionValueErrors
     , test_newDatalistOption
     , test_newEmptyDatalistOption
     , test_newEmptySelectedDatalistOption
-    , test_newFancyCustomOption
+    , test_newFancyCustomOptionWithCleanString
+    , test_newFancyCustomOptionWithLabelAndMaybeCleanString
+    , test_newFancyCustomOptionWithMaybeCleanString
     , test_newFancyOption
     , test_newFancyOptionWithMaybeCleanString
     , test_newSlottedOption
@@ -94,36 +94,6 @@ type Option
     = FancyOption FancyOption.FancyOption
     | DatalistOption DatalistOption.DatalistOption
     | SlottedOption SlottedOption.SlottedOption
-
-
-isFancyOption : Option -> Bool
-isFancyOption option =
-    case option of
-        FancyOption _ ->
-            True
-
-        _ ->
-            False
-
-
-isDatalistOption : Option -> Bool
-isDatalistOption option =
-    case option of
-        DatalistOption _ ->
-            True
-
-        _ ->
-            False
-
-
-isSlottedOption : Option -> Bool
-isSlottedOption option =
-    case option of
-        SlottedOption _ ->
-            True
-
-        _ ->
-            False
 
 
 setOptionValue : OptionValue -> Option -> Option
@@ -172,6 +142,20 @@ setLabelWithString string maybeCleanString option =
             OptionLabel.newWithCleanLabel string maybeCleanString
     in
     setLabel newOptionLabel option
+
+
+{-| When a user selection a custom option this switches the label to the value
+removing any extra text hints that have been added to the custom option's
+label to show that this is a new custom option the user has the option to create.
+-}
+setOptionLabelToValue : Option -> Option
+setOptionLabelToValue option =
+    case option of
+        FancyOption fancyOption ->
+            FancyOption (FancyOption.setOptionLabelToValue fancyOption)
+
+        _ ->
+            option
 
 
 setDescription : OptionDescription -> Option -> Option
@@ -264,8 +248,8 @@ newDisabledOption string maybeCleanLabel =
     FancyOption (FancyOption.newDisabledOption string maybeCleanLabel)
 
 
-newEmptyDatalistOption : Int -> Option
-newEmptyDatalistOption int =
+newEmptyDatalistOption : Option
+newEmptyDatalistOption =
     DatalistOption DatalistOption.newEmpty
 
 
@@ -476,9 +460,17 @@ optionIsHighlightable selectionMode option =
             SlottedOption.optionIsHighlightable selectionMode slottedOption
 
 
-selectOption : Int -> Option -> Option
-selectOption selectionIndex option =
-    setOptionDisplay (OptionDisplay.select selectionIndex (getOptionDisplay option)) option
+select : Int -> Option -> Option
+select selectionIndex option =
+    case option of
+        FancyOption fancyOption ->
+            FancyOption (FancyOption.select selectionIndex fancyOption)
+
+        DatalistOption datalistOption ->
+            DatalistOption (DatalistOption.select selectionIndex datalistOption)
+
+        SlottedOption slottedOption ->
+            SlottedOption (SlottedOption.select selectionIndex slottedOption)
 
 
 deselectOption : Option -> Option
@@ -793,9 +785,19 @@ test_newFancyOptionWithMaybeCleanString string maybeString =
     FancyOption (FancyOption.new string maybeString)
 
 
-test_newFancyCustomOption : String -> Option
-test_newFancyCustomOption string =
-    FancyOption (FancyOption.newCustomOption string Nothing)
+test_newFancyCustomOptionWithCleanString : String -> Option
+test_newFancyCustomOptionWithCleanString string =
+    test_newFancyCustomOptionWithMaybeCleanString string (Just string)
+
+
+test_newFancyCustomOptionWithMaybeCleanString : String -> Maybe String -> Option
+test_newFancyCustomOptionWithMaybeCleanString valueString maybeString =
+    test_newFancyCustomOptionWithLabelAndMaybeCleanString valueString valueString maybeString
+
+
+test_newFancyCustomOptionWithLabelAndMaybeCleanString : String -> String -> Maybe String -> Option
+test_newFancyCustomOptionWithLabelAndMaybeCleanString valueString labelString maybeString =
+    FancyOption (FancyOption.newCustomOption valueString labelString maybeString)
 
 
 test_newDatalistOption : String -> Option

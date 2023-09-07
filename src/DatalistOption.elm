@@ -3,7 +3,6 @@ module DatalistOption exposing (DatalistOption, decoder, deselect, encode, getOp
 import Json.Decode
 import Json.Encode
 import OptionDisplay exposing (OptionDisplay)
-import OptionGroup
 import OptionLabel exposing (OptionLabel)
 import OptionValue exposing (OptionValue(..))
 import TransformAndValidate exposing (ValidationFailureMessage)

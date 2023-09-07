@@ -1,13 +1,12 @@
 module Option.CustomOptions exposing (suite)
 
 import Expect exposing (Expectation)
-import FancyOption exposing (newCustomOption)
 import MuchSelect
     exposing
         ( updateModelWithChangesThatEffectTheOptionsWithSearchString
         )
-import Option exposing (Option(..), selectOption, test_newFancyCustomOption, test_newFancyOptionWithMaybeCleanString)
-import OptionList exposing (OptionList(..), prependCustomOption, removeUnselectedCustomOptions, selectOptionByOptionValue)
+import Option exposing (Option(..), select, test_newFancyCustomOptionWithCleanString, test_newFancyCustomOptionWithLabelAndMaybeCleanString, test_newFancyCustomOptionWithMaybeCleanString, test_newFancyOption, test_newFancyOptionWithMaybeCleanString)
+import OptionList exposing (OptionList(..), prependCustomOption, removeUnselectedCustomOptions, selectOptionByOptionValue, test_newFancyOptionList)
 import OptionValue exposing (stringToOptionValue)
 import OutputStyle
     exposing
@@ -31,31 +30,31 @@ import Test exposing (Test, describe, test)
 
 
 birchWood =
-    test_newFancyOptionWithMaybeCleanString "Birch Wood" Nothing
+    test_newFancyOption "Birch Wood"
 
 
 cutCopper =
-    test_newFancyOptionWithMaybeCleanString "Cut Copper" Nothing
+    test_newFancyOption "Cut Copper"
 
 
 mossyCobblestone =
-    test_newFancyOptionWithMaybeCleanString "Mossy Cobblestone" Nothing
+    test_newFancyOption "Mossy Cobblestone"
 
 
 torch =
-    test_newFancyCustomOption "Torch"
+    test_newFancyCustomOptionWithCleanString "Torch"
 
 
 turf =
-    test_newFancyCustomOption "Turf"
+    test_newFancyCustomOptionWithCleanString "Turf"
 
 
 vines =
-    test_newFancyCustomOption "Vines"
+    test_newFancyCustomOptionWithCleanString "Vines"
 
 
 blocks =
-    FancyOptionList [ birchWood, cutCopper, mossyCobblestone, torch, turf, vines ]
+    test_newFancyOptionList [ birchWood, cutCopper, mossyCobblestone, torch, turf, vines ]
 
 
 maxDropdownItemsIsTen =
@@ -63,7 +62,7 @@ maxDropdownItemsIsTen =
 
 
 emptyFancyList =
-    FancyOptionList []
+    test_newFancyOptionList []
 
 
 optionToTuple : Option -> ( String, Bool )
@@ -78,22 +77,17 @@ assertEqualLists optionListA optionListB =
         (optionListB |> OptionList.getOptions |> List.map optionToTuple)
 
 
-newFancyCustomOption : String -> Maybe String -> Option
-newFancyCustomOption value maybeCleanLabel =
-    FancyOption (newCustomOption value maybeCleanLabel)
-
-
 suite : Test
 suite =
     describe "Custom options"
         [ test "should be able to remove all the unselected custom options" <|
             \_ ->
                 assertEqualLists
-                    (FancyOptionList
+                    (test_newFancyOptionList
                         [ birchWood
-                        , selectOption 0 cutCopper
+                        , select 0 cutCopper
                         , mossyCobblestone
-                        , selectOption 1 turf
+                        , select 1 turf
                         ]
                     )
                     (blocks
@@ -103,9 +97,14 @@ suite =
                     )
         , test "should be able to maintain a custom option with an empty hint" <|
             \_ ->
-                assertEqualLists
+                Expect.equal
                     (prependCustomOption (Just "{{}}") (SearchString.update "pizza") emptyFancyList)
-                    (FancyOptionList [ newFancyCustomOption "pizza" Nothing ])
+                    (test_newFancyOptionList [ test_newFancyCustomOptionWithCleanString "pizza" ])
+        , test "should not include the hint in the value of the custom option" <|
+            \_ ->
+                Expect.equal
+                    (prependCustomOption (Just "Add {{}}") (SearchString.update "pizza") emptyFancyList)
+                    (test_newFancyOptionList [ test_newFancyCustomOptionWithLabelAndMaybeCleanString "pizza" "Add pizza" (Just "pizza") ])
         , describe "updateModelWithChangesThatEffectTheOptionsWithSearchString"
             [ test "should show up at the top in the dropdown" <|
                 \_ ->

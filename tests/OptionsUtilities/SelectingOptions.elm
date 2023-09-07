@@ -2,7 +2,7 @@ module OptionsUtilities.SelectingOptions exposing (suite)
 
 import DatalistOption
 import Expect exposing (Expectation)
-import Option exposing (Option, selectOption, test_newDatalistOption, test_newFancyOptionWithMaybeCleanString)
+import Option exposing (Option, select, test_newDatalistOption, test_newFancyOptionWithMaybeCleanString)
 import OptionList exposing (OptionList(..), selectOptionIByValueStringWithIndex, updateDatalistOptionsWithValueAndErrors)
 import OptionValue
 import Test exposing (Test, describe, test)
@@ -57,12 +57,12 @@ suite =
                 \_ ->
                     assertEqualLists
                         (selectOptionIByValueStringWithIndex 5 "Dance Floor" (FancyOptionList [ danceFloor ]))
-                        (FancyOptionList [ danceFloor |> selectOption 5 ])
+                        (FancyOptionList [ danceFloor |> select 5 ])
             , test "if no selection index is specified default to 0" <|
                 \_ ->
                     assertEqualLists
                         (OptionList.selectOption danceFloor (FancyOptionList [ danceFloor ]))
-                        (FancyOptionList [ danceFloor |> selectOption 0 ])
+                        (FancyOptionList [ danceFloor |> select 0 ])
             ]
         , describe "when there are validation errors"
             [ test "should update a selected value with errors, when there are errors" <|

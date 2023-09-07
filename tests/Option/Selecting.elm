@@ -1,7 +1,7 @@
 module Option.Selecting exposing (suite)
 
 import Expect exposing (Expectation)
-import Option exposing (Option(..), selectOption, test_newDatalistOption, test_newEmptyDatalistOption, test_newFancyOptionWithMaybeCleanString)
+import Option exposing (Option(..), select, test_newDatalistOption, test_newEmptyDatalistOption, test_newFancyOptionWithMaybeCleanString)
 import OptionList exposing (OptionList(..), cleanupEmptySelectedOptions, deselectEveryOptionExceptOptionsInList, selectOptionByOptionValue, selectOptions, selectOptionsInOptionsListByString, selectSingleOptionByValue)
 import OptionValue exposing (stringToOptionValue)
 import Test exposing (Test, describe, test)
@@ -34,7 +34,7 @@ gospels =
 
 numbers =
     test_newDatalistOption "Numbers"
-        |> Option.selectOption 0
+        |> Option.select 0
 
 
 optionToTuple : Option -> ( String, Bool )
@@ -60,7 +60,7 @@ suite =
                     )
                     (FancyOptionList
                         [ matthew
-                        , selectOption 0 mark
+                        , select 0 mark
                         , luke
                         , john
                         ]
@@ -74,8 +74,8 @@ suite =
                     )
                     (FancyOptionList
                         [ matthew
-                        , selectOption 0 mark
-                        , selectOption 1 luke
+                        , select 0 mark
+                        , select 1 luke
                         , john
                         ]
                     )
@@ -95,15 +95,15 @@ suite =
                     (deselectEveryOptionExceptOptionsInList [ mark ]
                         (FancyOptionList
                             [ matthew
-                            , selectOption 0 mark
-                            , selectOption 1 luke
+                            , select 0 mark
+                            , select 1 luke
                             , john
                             ]
                         )
                     )
                     (FancyOptionList
                         [ matthew
-                        , selectOption 0 mark
+                        , select 0 mark
                         , luke
                         , john
                         ]
@@ -121,7 +121,7 @@ suite =
                         (FancyOptionList
                             [ matthew
                             , mark
-                            , selectOption 0 luke
+                            , select 0 luke
                             , john
                             ]
                         )
@@ -132,9 +132,9 @@ suite =
                             |> selectOptionsInOptionsListByString [ "Matthew", "Luke" ]
                         )
                         (FancyOptionList
-                            [ selectOption 0 matthew
+                            [ select 0 matthew
                             , mark
-                            , selectOption 1 luke
+                            , select 1 luke
                             , john
                             ]
                         )
@@ -142,18 +142,18 @@ suite =
                 \_ ->
                     assertEqualLists
                         (FancyOptionList
-                            [ selectOption 0 matthew
+                            [ select 0 matthew
                             , mark
-                            , selectOption 1 luke
+                            , select 1 luke
                             , john
                             ]
                             |> selectOptionsInOptionsListByString [ "Mark", "John" ]
                         )
                         (FancyOptionList
                             [ matthew
-                            , selectOption 2 mark
+                            , select 2 mark
                             , luke
-                            , selectOption 3 john
+                            , select 3 john
                             ]
                         )
             ]
@@ -162,26 +162,26 @@ suite =
                 \_ ->
                     assertEqualLists
                         (DatalistOptionList
-                            [ test_newEmptyDatalistOption |> selectOption 0
+                            [ test_newEmptyDatalistOption |> select 0
                             ]
                             |> cleanupEmptySelectedOptions
                         )
                         (DatalistOptionList
-                            [ test_newEmptyDatalistOption |> selectOption 0
+                            [ test_newEmptyDatalistOption |> select 0
                             ]
                         )
             , test "allow only one empty option" <|
                 \_ ->
                     assertEqualLists
                         (DatalistOptionList
-                            [ test_newEmptyDatalistOption |> selectOption 0
-                            , test_newEmptyDatalistOption |> selectOption 1
-                            , test_newEmptyDatalistOption |> selectOption 2
+                            [ test_newEmptyDatalistOption |> select 0
+                            , test_newEmptyDatalistOption |> select 1
+                            , test_newEmptyDatalistOption |> select 2
                             ]
                             |> cleanupEmptySelectedOptions
                         )
                         (DatalistOptionList
-                            [ test_newEmptyDatalistOption |> selectOption 0
+                            [ test_newEmptyDatalistOption |> select 0
                             ]
                         )
             , test "allow no empty options is there is at least one non empty option" <|
@@ -189,9 +189,9 @@ suite =
                     assertEqualLists
                         (DatalistOptionList
                             [ numbers
-                            , test_newEmptyDatalistOption |> selectOption 1
-                            , test_newEmptyDatalistOption |> selectOption 2
-                            , test_newEmptyDatalistOption |> selectOption 3
+                            , test_newEmptyDatalistOption |> select 1
+                            , test_newEmptyDatalistOption |> select 2
+                            , test_newEmptyDatalistOption |> select 3
                             ]
                             |> cleanupEmptySelectedOptions
                         )

@@ -53,7 +53,7 @@ suite =
                         options =
                             FancyOptionList
                                 [ test_newFancyOptionWithMaybeCleanString "one" Nothing |> Option.highlightOption
-                                , test_newFancyOptionWithMaybeCleanString "two" Nothing |> Option.selectOption 0
+                                , test_newFancyOptionWithMaybeCleanString "two" Nothing |> Option.select 0
                                 , test_newFancyOptionWithMaybeCleanString "three" Nothing
                                 ]
                     in
@@ -61,7 +61,7 @@ suite =
                         (moveHighlightedOptionDown SelectionMode.defaultSelectionConfig options)
                         (FancyOptionList
                             [ test_newFancyOptionWithMaybeCleanString "one" Nothing
-                            , test_newFancyOptionWithMaybeCleanString "two" Nothing |> Option.selectOption 0 |> Option.highlightOption
+                            , test_newFancyOptionWithMaybeCleanString "two" Nothing |> Option.select 0 |> Option.highlightOption
                             , test_newFancyOptionWithMaybeCleanString "three" Nothing
                             ]
                         )
@@ -111,7 +111,7 @@ suite =
                         options =
                             FancyOptionList
                                 [ test_newFancyOptionWithMaybeCleanString "one" Nothing
-                                , test_newFancyOptionWithMaybeCleanString "two" Nothing |> Option.selectOption 0
+                                , test_newFancyOptionWithMaybeCleanString "two" Nothing |> Option.select 0
                                 , test_newFancyOptionWithMaybeCleanString "three" Nothing |> Option.highlightOption
                                 ]
                     in
@@ -119,7 +119,7 @@ suite =
                         (moveHighlightedOptionUp SelectionMode.defaultSelectionConfig options)
                         (FancyOptionList
                             [ test_newFancyOptionWithMaybeCleanString "one" Nothing
-                            , test_newFancyOptionWithMaybeCleanString "two" Nothing |> Option.selectOption 0 |> Option.highlightOption
+                            , test_newFancyOptionWithMaybeCleanString "two" Nothing |> Option.select 0 |> Option.highlightOption
                             , test_newFancyOptionWithMaybeCleanString "three" Nothing
                             ]
                         )

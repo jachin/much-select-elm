@@ -83,7 +83,7 @@ suite =
                             (test_newDatalistOptionList
                                 [ test_newDatalistOption "Al's"
                                 , test_newDatalistOption "Glass-bottom"
-                                , test_newDatalistOption "Tours" |> Option.selectOption 1
+                                , test_newDatalistOption "Tours" |> Option.select 1
                                 ]
                             )
                 , test "by selected value index" <|
@@ -101,7 +101,7 @@ suite =
                             (test_newDatalistOptionList
                                 [ test_newDatalistOption "Al's"
                                 , test_newDatalistOption "Glass-bottom"
-                                , test_newDatalistOption "Tours" |> Option.selectOption 1
+                                , test_newDatalistOption "Tours" |> Option.select 1
                                 ]
                             )
                 , test "all the options" <|

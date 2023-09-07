@@ -198,7 +198,7 @@ suite =
                                                         (optionsEncoder
                                                             (FancyOptionList
                                                                 [ test_newFancyOptionWithMaybeCleanString "pilot" Nothing
-                                                                    |> Option.selectOption 0
+                                                                    |> Option.select 0
                                                                 ]
                                                             )
                                                         )
@@ -299,7 +299,7 @@ suite =
                                                             (optionsEncoder
                                                                 (FancyOptionList
                                                                     [ test_newFancyOptionWithMaybeCleanString "pilot" Nothing
-                                                                        |> Option.selectOption 0
+                                                                        |> Option.select 0
                                                                     ]
                                                                 )
                                                             )
@@ -426,7 +426,7 @@ suite =
                                                                 (optionsEncoder
                                                                     (FancyOptionList
                                                                         [ test_newFancyOptionWithMaybeCleanString "pilot" Nothing
-                                                                            |> Option.selectOption 0
+                                                                            |> Option.select 0
                                                                         ]
                                                                     )
                                                                 )
@@ -506,7 +506,7 @@ suite =
                                                             (optionsEncoder
                                                                 (FancyOptionList
                                                                     [ test_newFancyOptionWithMaybeCleanString "pilot" Nothing
-                                                                        |> Option.selectOption 0
+                                                                        |> Option.select 0
                                                                     ]
                                                                 )
                                                             )

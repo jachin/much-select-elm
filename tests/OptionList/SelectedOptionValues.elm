@@ -1,7 +1,7 @@
 module OptionList.SelectedOptionValues exposing (..)
 
 import Expect
-import Option exposing (selectOption, test_newDatalistOption, test_newEmptySelectedDatalistOption, test_newFancyOption)
+import Option exposing (select, test_newDatalistOption, test_newEmptySelectedDatalistOption, test_newFancyOption)
 import OptionList exposing (selectedOptionValuesAreEqual, test_newDatalistOptionList, test_newFancyOptionList)
 import Test exposing (Test, describe, test)
 
@@ -16,10 +16,10 @@ suite =
                     (selectedOptionValuesAreEqual
                         [ "another", "mouth", "to", "feed" ]
                         (test_newFancyOptionList
-                            [ test_newFancyOption "another" |> selectOption 0
-                            , test_newFancyOption "mouth" |> selectOption 1
-                            , test_newFancyOption "to" |> selectOption 2
-                            , test_newFancyOption "feed" |> selectOption 3
+                            [ test_newFancyOption "another" |> select 0
+                            , test_newFancyOption "mouth" |> select 1
+                            , test_newFancyOption "to" |> select 2
+                            , test_newFancyOption "feed" |> select 3
                             ]
                         )
                     )
@@ -30,11 +30,11 @@ suite =
                     (selectedOptionValuesAreEqual
                         [ "another", "mouth", "to", "feed" ]
                         (test_newFancyOptionList
-                            [ test_newFancyOption "" |> selectOption 0
-                            , test_newFancyOption "another" |> selectOption 1
-                            , test_newFancyOption "mouth" |> selectOption 2
-                            , test_newFancyOption "to" |> selectOption 3
-                            , test_newFancyOption "feed" |> selectOption 4
+                            [ test_newFancyOption "" |> select 0
+                            , test_newFancyOption "another" |> select 1
+                            , test_newFancyOption "mouth" |> select 2
+                            , test_newFancyOption "to" |> select 3
+                            , test_newFancyOption "feed" |> select 4
                             ]
                         )
                     )
@@ -46,10 +46,10 @@ suite =
                         [ "Warren", "and", "the", "cat" ]
                         (test_newDatalistOptionList
                             [ test_newEmptySelectedDatalistOption 0
-                            , test_newDatalistOption "Warren" |> selectOption 1
-                            , test_newDatalistOption "and" |> selectOption 2
-                            , test_newDatalistOption "the" |> selectOption 3
-                            , test_newDatalistOption "cat" |> selectOption 4
+                            , test_newDatalistOption "Warren" |> select 1
+                            , test_newDatalistOption "and" |> select 2
+                            , test_newDatalistOption "the" |> select 3
+                            , test_newDatalistOption "cat" |> select 4
                             ]
                         )
                     )
@@ -60,10 +60,10 @@ suite =
                     (selectedOptionValuesAreEqual
                         [ "Warren", "and", "the", "cat" ]
                         (test_newDatalistOptionList
-                            [ test_newDatalistOption "Warren" |> selectOption 1
-                            , test_newDatalistOption "and" |> selectOption 2
-                            , test_newDatalistOption "the" |> selectOption 3
-                            , test_newDatalistOption "cat" |> selectOption 4
+                            [ test_newDatalistOption "Warren" |> select 1
+                            , test_newDatalistOption "and" |> select 2
+                            , test_newDatalistOption "the" |> select 3
+                            , test_newDatalistOption "cat" |> select 4
                             , test_newEmptySelectedDatalistOption 5
                             ]
                         )
@@ -75,10 +75,10 @@ suite =
                     (selectedOptionValuesAreEqual
                         [ "another", "mouth", "to", "feed" ]
                         (test_newFancyOptionList
-                            [ test_newFancyOption "another" |> selectOption 4
-                            , test_newFancyOption "mouth" |> selectOption 1
-                            , test_newFancyOption "to" |> selectOption 0
-                            , test_newFancyOption "feed" |> selectOption 3
+                            [ test_newFancyOption "another" |> select 4
+                            , test_newFancyOption "mouth" |> select 1
+                            , test_newFancyOption "to" |> select 0
+                            , test_newFancyOption "feed" |> select 3
                             ]
                         )
                     )
@@ -89,10 +89,10 @@ suite =
                     (selectedOptionValuesAreEqual
                         [ "to", "mouth", "feed", "another" ]
                         (test_newFancyOptionList
-                            [ test_newFancyOption "another" |> selectOption 4
-                            , test_newFancyOption "mouth" |> selectOption 1
-                            , test_newFancyOption "to" |> selectOption 0
-                            , test_newFancyOption "feed" |> selectOption 3
+                            [ test_newFancyOption "another" |> select 4
+                            , test_newFancyOption "mouth" |> select 1
+                            , test_newFancyOption "to" |> select 0
+                            , test_newFancyOption "feed" |> select 3
                             ]
                         )
                     )

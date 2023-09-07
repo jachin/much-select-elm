@@ -1,7 +1,7 @@
 module Option.Deselecting exposing (suite)
 
 import Expect exposing (Expectation)
-import Option exposing (Option, selectOption, test_newDatalistOption, test_newFancyOptionWithMaybeCleanString)
+import Option exposing (Option, select, test_newDatalistOption, test_newFancyOptionWithMaybeCleanString)
 import OptionList exposing (OptionList(..), deselectAll, deselectAllButTheFirstSelectedOptionInList, removeOptionFromOptionListBySelectedIndex, selectOptionByOptionValue)
 import OptionValue exposing (stringToOptionValue)
 import Test exposing (Test, describe, test)
@@ -81,7 +81,7 @@ suite =
                     (FancyOptionList
                         [ buzzCola
                         , krustyBurger
-                        , selectOption 0 lardLad
+                        , select 0 lardLad
                         , squishee
                         ]
                     )
@@ -91,9 +91,9 @@ suite =
                     let
                         optionsWithThreeSelections =
                             OptionList.appendOptions
-                                [ test_newDatalistOption "Left-Mart" |> selectOption 0
-                                , test_newDatalistOption "Powersause" |> selectOption 1
-                                , test_newDatalistOption "Skybucks" |> selectOption 2
+                                [ test_newDatalistOption "Left-Mart" |> select 0
+                                , test_newDatalistOption "Powersause" |> select 1
+                                , test_newDatalistOption "Skybucks" |> select 2
                                 ]
                                 [ duff, rockBottom, malibuStacy ]
                     in
@@ -102,8 +102,8 @@ suite =
                             |> removeOptionFromOptionListBySelectedIndex 0
                         )
                         (OptionList.appendOptions
-                            [ test_newDatalistOption "Powersause" |> selectOption 0
-                            , test_newDatalistOption "Skybucks" |> selectOption 1
+                            [ test_newDatalistOption "Powersause" |> select 0
+                            , test_newDatalistOption "Skybucks" |> select 1
                             ]
                             [ duff, rockBottom, malibuStacy ]
                         )
@@ -112,9 +112,9 @@ suite =
                     let
                         optionsWithThreeSelections =
                             OptionList.appendOptions
-                                [ test_newDatalistOption "Left-Mart" |> selectOption 0
-                                , test_newDatalistOption "Powersause" |> selectOption 1
-                                , test_newDatalistOption "Skybucks" |> selectOption 2
+                                [ test_newDatalistOption "Left-Mart" |> select 0
+                                , test_newDatalistOption "Powersause" |> select 1
+                                , test_newDatalistOption "Skybucks" |> select 2
                                 ]
                                 [ duff, rockBottom, malibuStacy ]
                     in
@@ -123,8 +123,8 @@ suite =
                             |> removeOptionFromOptionListBySelectedIndex 1
                         )
                         (OptionList.appendOptions
-                            [ test_newDatalistOption "Left-Mart" |> selectOption 0
-                            , test_newDatalistOption "Skybucks" |> selectOption 1
+                            [ test_newDatalistOption "Left-Mart" |> select 0
+                            , test_newDatalistOption "Skybucks" |> select 1
                             ]
                             [ duff, rockBottom, malibuStacy ]
                         )
@@ -133,9 +133,9 @@ suite =
                     let
                         optionsWithThreeSelections =
                             OptionList.appendOptions
-                                [ test_newDatalistOption "Left-Mart" |> selectOption 0
-                                , test_newDatalistOption "Powersause" |> selectOption 1
-                                , test_newDatalistOption "Skybucks" |> selectOption 2
+                                [ test_newDatalistOption "Left-Mart" |> select 0
+                                , test_newDatalistOption "Powersause" |> select 1
+                                , test_newDatalistOption "Skybucks" |> select 2
                                 ]
                                 [ duff, rockBottom, malibuStacy ]
                     in
@@ -144,8 +144,8 @@ suite =
                             |> removeOptionFromOptionListBySelectedIndex 2
                         )
                         (OptionList.appendOptions
-                            [ test_newDatalistOption "Left-Mart" |> selectOption 0
-                            , test_newDatalistOption "Powersause" |> selectOption 1
+                            [ test_newDatalistOption "Left-Mart" |> select 0
+                            , test_newDatalistOption "Powersause" |> select 1
                             ]
                             [ duff, rockBottom, malibuStacy ]
                         )

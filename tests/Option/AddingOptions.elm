@@ -1,7 +1,7 @@
 module Option.AddingOptions exposing (suite)
 
 import Expect exposing (Expectation)
-import Option exposing (Option(..), selectOption, setDescriptionWithString, setLabelWithString, test_newDatalistOption, test_newEmptyDatalistOption, test_newFancyOptionWithMaybeCleanString)
+import Option exposing (Option(..), select, setDescriptionWithString, setLabelWithString, test_newDatalistOption, test_newEmptyDatalistOption, test_newFancyOptionWithMaybeCleanString)
 import OptionList exposing (OptionList(..), addAdditionalOptionsToOptionList, addAdditionalOptionsToOptionListWithAutoSortRank, addAndSelectOptionsInOptionsListByString, addNewEmptyOptionAtIndex, mergeTwoListsOfOptionsPreservingSelectedOptions, updatedDatalistSelectedOptions)
 import OptionValue
 import OutputStyle exposing (SelectedItemPlacementMode(..))
@@ -38,7 +38,7 @@ theMidnightOptionValue =
 
 theMidnightSelected =
     test_newDatalistOption "The Midnight"
-        |> Option.selectOption 0
+        |> Option.select 0
 
 
 theMidnight =
@@ -67,7 +67,7 @@ futureCop =
 
 futureCopSelected =
     test_newDatalistOption "Futurecop!"
-        |> Option.selectOption 1
+        |> Option.select 1
 
 
 arcadeHighOptionValue =
@@ -80,7 +80,7 @@ arcadeHigh =
 
 arcadeHighSelected =
     test_newDatalistOption "Arcade High"
-        |> Option.selectOption 2
+        |> Option.select 2
 
 
 optionToTuple : Option -> ( String, Bool )
@@ -142,16 +142,16 @@ suite =
             [ test "with the same value of an option already in the list, preserver the label" <|
                 \_ ->
                     assertEqualLists
-                        (FancyOptionList [ selectOption 0 wolfClub ])
+                        (FancyOptionList [ select 0 wolfClub ])
                         (addAndSelectOptionsInOptionsListByString [ "Wolf Club" ] (FancyOptionList [ wolfClub ]))
             , test "with the same value of a selected option already in the list preserver the label" <|
                 \_ ->
                     assertEqualLists
                         (FancyOptionList
                             [ wolfClub
-                            , selectOption 1 waveshaper
+                            , select 1 waveshaper
                             , arcadeHigh
-                            , selectOption 0 timecop1983
+                            , select 0 timecop1983
                             ]
                         )
                         (addAndSelectOptionsInOptionsListByString [ "Timecop1983", "Waveshaper" ]
@@ -166,19 +166,19 @@ suite =
             , test "should preserver the order of the selection" <|
                 \_ ->
                     assertEqualLists
-                        (FancyOptionList [ selectOption 0 wolfClub ])
+                        (FancyOptionList [ select 0 wolfClub ])
                         (addAndSelectOptionsInOptionsListByString [ "Wolf Club" ]
                             (FancyOptionList
-                                [ selectOption 0 wolfClub ]
+                                [ select 0 wolfClub ]
                             )
                         )
             , test "should preserver the order of multiple selections" <|
                 \_ ->
                     assertEqualLists
                         (FancyOptionList
-                            [ selectOption 1 heartBones
+                            [ select 1 heartBones
                             , timecop1983
-                            , selectOption 0 waveshaper
+                            , select 0 waveshaper
                             ]
                         )
                         (addAndSelectOptionsInOptionsListByString
@@ -195,41 +195,41 @@ suite =
             [ test "if a new option matches the selected option update the label and description" <|
                 \_ ->
                     assertEqualLists
-                        (FancyOptionList [ wolfClub |> selectOption 0 ])
+                        (FancyOptionList [ wolfClub |> select 0 ])
                         (mergeTwoListsOfOptionsPreservingSelectedOptions
                             SelectionMode.SingleSelect
                             SelectedItemStaysInPlace
-                            (FancyOptionList [ test_newFancyOptionWithMaybeCleanString "Wolf Club" Nothing |> selectOption 0 ])
+                            (FancyOptionList [ test_newFancyOptionWithMaybeCleanString "Wolf Club" Nothing |> select 0 ])
                             (FancyOptionList [ wolfClub ])
                         )
             , test "if a new option matches the selected option update the description even when adding a bunch of new options" <|
                 \_ ->
                     assertEqualLists
-                        (FancyOptionList [ wolfClub |> selectOption 0, timecop1983, heartBones ])
+                        (FancyOptionList [ wolfClub |> select 0, timecop1983, heartBones ])
                         (mergeTwoListsOfOptionsPreservingSelectedOptions
                             SelectionMode.SingleSelect
                             SelectedItemStaysInPlace
-                            (FancyOptionList [ test_newFancyOptionWithMaybeCleanString "Wolf Club" Nothing |> selectOption 0 ])
+                            (FancyOptionList [ test_newFancyOptionWithMaybeCleanString "Wolf Club" Nothing |> select 0 ])
                             (FancyOptionList [ wolfClub, timecop1983, heartBones ])
                         )
             , test "a selection option should stay in the same spot in the list" <|
                 \_ ->
                     assertEqualLists
-                        (FancyOptionList [ timecop1983, heartBones, wolfClub |> selectOption 0 ])
+                        (FancyOptionList [ timecop1983, heartBones, wolfClub |> select 0 ])
                         (mergeTwoListsOfOptionsPreservingSelectedOptions
                             SelectionMode.SingleSelect
                             SelectedItemStaysInPlace
-                            (FancyOptionList [ test_newFancyOptionWithMaybeCleanString "Wolf Club" Nothing |> selectOption 0 ])
+                            (FancyOptionList [ test_newFancyOptionWithMaybeCleanString "Wolf Club" Nothing |> select 0 ])
                             (FancyOptionList [ timecop1983, heartBones, wolfClub ])
                         )
             , test "a selected option should move to the top of the list of options (when that option is set)" <|
                 \_ ->
                     assertEqualLists
-                        (FancyOptionList [ wolfClub |> selectOption 0, timecop1983, heartBones ])
+                        (FancyOptionList [ wolfClub |> select 0, timecop1983, heartBones ])
                         (mergeTwoListsOfOptionsPreservingSelectedOptions
                             SelectionMode.SingleSelect
                             SelectedItemMovesToTheTop
-                            (FancyOptionList [ test_newFancyOptionWithMaybeCleanString "Wolf Club" Nothing |> selectOption 0 ])
+                            (FancyOptionList [ test_newFancyOptionWithMaybeCleanString "Wolf Club" Nothing |> select 0 ])
                             (FancyOptionList [ timecop1983, heartBones, wolfClub ])
                         )
             , describe "with auto sort order rank"
@@ -307,9 +307,9 @@ suite =
                         )
                         (DatalistOptionList
                             [ test_newEmptyDatalistOption
-                            , Option.selectOption 1 theMidnight
-                            , Option.selectOption 2 futureCop
-                            , Option.selectOption 3 arcadeHigh
+                            , Option.select 1 theMidnight
+                            , Option.select 2 futureCop
+                            , Option.select 3 arcadeHigh
                             ]
                         )
             , test "add to the middle of the selected options" <|
@@ -325,8 +325,8 @@ suite =
                         (DatalistOptionList
                             [ theMidnightSelected
                             , test_newEmptyDatalistOption
-                            , Option.selectOption 2 futureCop
-                            , Option.selectOption 3 arcadeHigh
+                            , Option.select 2 futureCop
+                            , Option.select 3 arcadeHigh
                             ]
                         )
             , test "add to the end of the selected options" <|
@@ -356,7 +356,7 @@ suite =
                                 , futureCopSelected
                                 , arcadeHighSelected
                                 , test_newEmptyDatalistOption
-                                    |> selectOption 3
+                                    |> select 3
                                 , theMidnight
                                 , futureCop
                                 , arcadeHigh
@@ -368,7 +368,7 @@ suite =
                             , futureCopSelected
                             , arcadeHighSelected
                             , test_newEmptyDatalistOption
-                                |> selectOption 3
+                                |> select 3
                             , theMidnight
                             , futureCop
                             , arcadeHigh

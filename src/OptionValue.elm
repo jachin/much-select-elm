@@ -1,6 +1,7 @@
-module OptionValue exposing (OptionValue(..), decoder, equals, isEmpty, length, optionValueToString, stringToOptionValue, test_newOptionValue)
+module OptionValue exposing (OptionValue(..), decoder, equals, isEmpty, length, optionValueToString, stringToOptionValue, test_newOptionValue, toOptionLabel)
 
 import Json.Decode
+import OptionLabel exposing (OptionLabel)
 
 
 type OptionValue
@@ -51,6 +52,16 @@ isEmpty optionValue =
 
         EmptyOptionValue ->
             True
+
+
+toOptionLabel : OptionValue -> OptionLabel
+toOptionLabel optionValue =
+    case optionValue of
+        OptionValue valueString ->
+            OptionLabel.newWithCleanLabel valueString (Just valueString)
+
+        EmptyOptionValue ->
+            OptionLabel.newWithCleanLabel "" Nothing
 
 
 decoder : Json.Decode.Decoder OptionValue

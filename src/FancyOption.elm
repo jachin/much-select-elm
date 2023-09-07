@@ -1,4 +1,4 @@
-module FancyOption exposing (FancyOption, activateOption, decoder, decoderWithAge, deselect, encode, getMaybeOptionSearchFilter, getOptionDescription, getOptionDisplay, getOptionGroup, getOptionLabel, getOptionSelectedIndex, getOptionValue, getOptionValueAsString, hasSelectedItemIndex, highlightOption, isCustomOption, isEmptyOption, isEmptyOptionOrHasEmptyValue, isOptionHighlighted, isOptionSelectedHighlighted, isSelected, merge, new, newCustomOption, newDisabledOption, newSelectedOption, optionIsHighlightable, optionToValueLabelTuple, removeHighlightFromOption, select, setDescription, setDescriptionWithString, setGroupWithString, setLabel, setLabelWithString, setOptionDisplay, setOptionDisplayAge, setOptionGroup, setOptionSearchFilter, setOptionSelectedIndex, setOptionValue, test_optionToDebuggingString, toValueHtml)
+module FancyOption exposing (FancyOption, activateOption, decoder, decoderWithAge, deselect, encode, getMaybeOptionSearchFilter, getOptionDescription, getOptionDisplay, getOptionGroup, getOptionLabel, getOptionSelectedIndex, getOptionValue, getOptionValueAsString, hasSelectedItemIndex, highlightOption, isCustomOption, isEmptyOption, isEmptyOptionOrHasEmptyValue, isOptionHighlighted, isOptionSelectedHighlighted, isSelected, merge, new, newCustomOption, newDisabledOption, newSelectedOption, optionIsHighlightable, optionToValueLabelTuple, removeHighlightFromOption, select, setDescription, setDescriptionWithString, setGroupWithString, setLabel, setLabelWithString, setOptionDisplay, setOptionDisplayAge, setOptionGroup, setOptionLabelToValue, setOptionSearchFilter, setOptionSelectedIndex, setOptionValue, test_optionToDebuggingString, toValueHtml)
 
 import Events exposing (mouseUpPreventDefault)
 import Html exposing (Html, div, span, text)
@@ -37,12 +37,12 @@ new value maybeCleanLabel =
                 Nothing
 
 
-newCustomOption : String -> Maybe String -> FancyOption
-newCustomOption value maybeCleanLabel =
+newCustomOption : String -> String -> Maybe String -> FancyOption
+newCustomOption valueString labelString maybeCleanLabel =
     CustomFancyOption
         OptionDisplay.default
-        (OptionLabel.newWithCleanLabel value maybeCleanLabel)
-        (OptionValue value)
+        (OptionLabel.newWithCleanLabel labelString maybeCleanLabel)
+        (OptionValue.stringToOptionValue valueString)
         Nothing
 
 
@@ -51,7 +51,7 @@ newSelectedOption index string maybeString =
     FancyOption
         (OptionDisplay.select index OptionDisplay.default)
         (OptionLabel.newWithCleanLabel string maybeString)
-        (OptionValue string)
+        (OptionValue.stringToOptionValue string)
         OptionDescription.noDescription
         NoOptionGroup
         Nothing
@@ -427,7 +427,17 @@ optionIsHighlightable selectionMode option =
 
 select : Int -> FancyOption -> FancyOption
 select selectionIndex option =
-    setOptionDisplay (OptionDisplay.select selectionIndex (getOptionDisplay option)) option
+    case option of
+        FancyOption _ _ _ _ _ _ ->
+            setOptionDisplay (OptionDisplay.select selectionIndex (getOptionDisplay option)) option
+
+        CustomFancyOption _ _ _ _ ->
+            option
+                |> setOptionDisplay (OptionDisplay.select selectionIndex (getOptionDisplay option))
+                |> setOptionLabelToValue
+
+        EmptyFancyOption _ _ ->
+            setOptionDisplay (OptionDisplay.select selectionIndex (getOptionDisplay option)) option
 
 
 deselect : FancyOption -> FancyOption
@@ -479,6 +489,20 @@ isCustomOption option =
 
         EmptyFancyOption _ _ ->
             False
+
+
+setOptionLabelToValue : FancyOption -> FancyOption
+setOptionLabelToValue fancyOption =
+    case fancyOption of
+        CustomFancyOption optionDisplay _ optionValue maybeOptionSearchFilter ->
+            CustomFancyOption optionDisplay (OptionValue.toOptionLabel optionValue) optionValue maybeOptionSearchFilter
+
+        _ ->
+            fancyOption
+
+
+
+-- JSON (Decoders and Encoders)
 
 
 decoder : Json.Decode.Decoder FancyOption
@@ -540,14 +564,8 @@ encode option =
         ]
 
 
-test_optionToDebuggingString : FancyOption -> String
-test_optionToDebuggingString fancyOption =
-    case fancyOption |> getOptionGroup |> OptionGroup.toString of
-        "" ->
-            fancyOption |> getOptionLabel |> optionLabelToString
 
-        group ->
-            group ++ " - " ++ (fancyOption |> getOptionLabel |> optionLabelToString)
+-- HTML (View Helpers)
 
 
 toValueHtml : (OptionValue -> msg) -> (OptionValue -> msg) -> SingleItemRemoval -> FancyOption -> Html msg
@@ -686,3 +704,17 @@ valueLabelHtml toggleSelectedMsg labelText optionValue =
             (toggleSelectedMsg optionValue)
         ]
         [ text labelText ]
+
+
+
+-- TEST HELPERS
+
+
+test_optionToDebuggingString : FancyOption -> String
+test_optionToDebuggingString fancyOption =
+    case fancyOption |> getOptionGroup |> OptionGroup.toString of
+        "" ->
+            fancyOption |> getOptionLabel |> optionLabelToString
+
+        group ->
+            group ++ " - " ++ (fancyOption |> getOptionLabel |> optionLabelToString)

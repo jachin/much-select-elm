@@ -2,7 +2,7 @@ module Option.DecodersAndEncoders exposing (suite)
 
 import Expect
 import Json.Decode
-import Option exposing (newDisabledOption, newSelectedOption, selectOption, test_newFancyOptionWithMaybeCleanString)
+import Option exposing (newDisabledOption, newSelectedOption, select, test_newFancyOptionWithMaybeCleanString)
 import OptionDisplay
 import OptionList exposing (OptionList(..))
 import SelectionMode
@@ -115,7 +115,7 @@ suite =
                             (FancyOptionList
                                 [ test_newFancyOptionWithMaybeCleanString "1" Nothing |> Option.setLabelWithString "one" (Just "one")
                                 , test_newFancyOptionWithMaybeCleanString "2" Nothing |> Option.setLabelWithString "two" (Just "two")
-                                , test_newFancyOptionWithMaybeCleanString "3" Nothing |> selectOption 0 |> Option.setLabelWithString "three" (Just "three")
+                                , test_newFancyOptionWithMaybeCleanString "3" Nothing |> select 0 |> Option.setLabelWithString "three" (Just "three")
                                 ]
                             )
                         )
@@ -153,7 +153,7 @@ suite =
                                     |> Option.setLabelWithString "sticks" (Just "sticks")
                                     |> Option.setGroupWithString "Building Material"
                                 , test_newFancyOptionWithMaybeCleanString "3" Nothing
-                                    |> selectOption 0
+                                    |> select 0
                                     |> Option.setLabelWithString "bricks" (Just "bricks")
                                     |> Option.setGroupWithString "Building Material"
                                 ]

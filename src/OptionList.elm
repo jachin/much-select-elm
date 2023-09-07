@@ -534,7 +534,7 @@ selectSingleOptionByValue optionValue options =
         |> map
             (\option_ ->
                 if Option.optionEqualsOptionValue optionValue option_ then
-                    Option.selectOption 0 option_
+                    Option.select 0 option_
 
                 else
                     Option.deselectOption option_
@@ -584,7 +584,7 @@ selectOptionByOptionValueWithIndex index optionValue optionList =
                 --
                 --        EmptyOptionValue ->
                 --            Option.selectOption nextSelectedIndex option_
-                Option.selectOption index option_
+                Option.select index option_
 
             else if Option.isOptionSelected option_ then
                 option_
@@ -838,7 +838,7 @@ reIndexSelectedOptions optionList =
                 |> unselectedOptions
     in
     append
-        (indexedMap (\index option -> Option.selectOption index option) selectedOptions_)
+        (indexedMap (\index option -> Option.select index option) selectedOptions_)
         nonSelectedOptions
 
 
@@ -1167,11 +1167,14 @@ prependCustomOption maybeCustomOptionHint searchString options =
 
                 Nothing ->
                     "Add " ++ SearchString.toString searchString ++ "…"
+
+        valueString =
+            SearchString.toString searchString
     in
     append
         (FancyOptionList
             [ Option.FancyOption
-                (FancyOption.newCustomOption label (Just label))
+                (FancyOption.newCustomOption valueString label (Just valueString))
             ]
         )
         options
@@ -1340,7 +1343,7 @@ addNewEmptyOptionAtIndex index optionList =
         (append
             firstPart
             (DatalistOptionList
-                [ Option.newEmptyDatalistOption index
+                [ Option.newEmptyDatalistOption
                 ]
             )
         )
@@ -1566,7 +1569,7 @@ addAndSelectOptionsInOptionsListByString strings optionList =
                                         Just
                                             (FancyOptionList
                                                 [ Option.FancyOption
-                                                    (FancyOption.newCustomOption valueString (Just valueString)
+                                                    (FancyOption.newCustomOption valueString valueString (Just valueString)
                                                         |> FancyOption.select index
                                                     )
                                                 ]
@@ -1602,7 +1605,7 @@ addAndSelectOptionsInOptionsListByString strings optionList =
                                         Just
                                             (FancyOptionList
                                                 [ Option.FancyOption
-                                                    (FancyOption.newCustomOption valueString (Just valueString)
+                                                    (FancyOption.newCustomOption valueString valueString (Just valueString)
                                                         |> FancyOption.select index
                                                     )
                                                 ]

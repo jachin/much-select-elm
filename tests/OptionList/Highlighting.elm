@@ -54,14 +54,14 @@ suite =
             \_ ->
                 Expect.equal
                     (OptionList.test_newFancyOptionList
-                        [ bernie |> Option.selectOption 0
-                        , murry |> Option.selectOption 1
+                        [ bernie |> Option.select 0
+                        , murry |> Option.select 1
                         , frank
                         ]
                     )
                     (OptionList.test_newFancyOptionList
-                        [ bernie |> Option.highlightOption |> Option.selectOption 0
-                        , murry |> Option.selectOption 1 |> Option.highlightOption
+                        [ bernie |> Option.highlightOption |> Option.select 0
+                        , murry |> Option.select 1 |> Option.highlightOption
                         , frank
                         ]
                         |> OptionList.unhighlightSelectedOptions
@@ -70,15 +70,15 @@ suite =
             \_ ->
                 Expect.equal
                     (OptionList.test_newFancyOptionList
-                        [ bernie |> Option.selectOption 0
-                        , murry |> Option.selectOption 1
+                        [ bernie |> Option.select 0
+                        , murry |> Option.select 1
                         , frank
                         ]
                         |> OptionList.toggleSelectedHighlightByOptionValue bernieValue
                     )
                     (OptionList.test_newFancyOptionList
-                        [ bernie |> Option.selectOption 0 |> Option.highlightOption
-                        , murry |> Option.selectOption 1
+                        [ bernie |> Option.select 0 |> Option.highlightOption
+                        , murry |> Option.select 1
                         , frank
                         ]
                     )
@@ -86,15 +86,15 @@ suite =
             \_ ->
                 Expect.equal
                     (OptionList.test_newFancyOptionList
-                        [ bernie |> Option.selectOption 0 |> Option.highlightOption
-                        , murry |> Option.selectOption 1
+                        [ bernie |> Option.select 0 |> Option.highlightOption
+                        , murry |> Option.select 1
                         , frank
                         ]
                         |> OptionList.toggleSelectedHighlightByOptionValue bernieValue
                     )
                     (OptionList.test_newFancyOptionList
-                        [ bernie |> Option.selectOption 0
-                        , murry |> Option.selectOption 1
+                        [ bernie |> Option.select 0
+                        , murry |> Option.select 1
                         , frank
                         ]
                     )
