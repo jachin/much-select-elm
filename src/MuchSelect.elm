@@ -1217,25 +1217,30 @@ update msg model =
             )
 
         RemoveMultiSelectValue indexWhereToDelete ->
-            let
-                updatedOptions =
-                    OptionList.removeOptionFromOptionListBySelectedIndex indexWhereToDelete model.options
-            in
-            ( { model
-                | options = updatedOptions
-                , rightSlot =
-                    updateRightSlot
-                        model.rightSlot
-                        (model.selectionConfig |> SelectionMode.getOutputStyle)
-                        (model.selectionConfig |> SelectionMode.getSelectionMode)
-                        (updatedOptions |> OptionList.selectedOptions)
-              }
-            , makeEffectsWhenValuesChanges
-                (SelectionMode.getEventMode model.selectionConfig)
-                (SelectionMode.getSelectionMode model.selectionConfig)
-                model.selectedValueEncoding
-                (updatedOptions |> OptionList.selectedOptions |> OptionList.cleanupEmptySelectedOptions)
-            )
+            case PositiveInt.maybeNew indexWhereToDelete of
+                Just selectedIndex ->
+                    let
+                        updatedOptions =
+                            OptionList.deselect selectedIndex model.options
+                    in
+                    ( { model
+                        | options = updatedOptions
+                        , rightSlot =
+                            updateRightSlot
+                                model.rightSlot
+                                (model.selectionConfig |> SelectionMode.getOutputStyle)
+                                (model.selectionConfig |> SelectionMode.getSelectionMode)
+                                (updatedOptions |> OptionList.selectedOptions)
+                      }
+                    , makeEffectsWhenValuesChanges
+                        (SelectionMode.getEventMode model.selectionConfig)
+                        (SelectionMode.getSelectionMode model.selectionConfig)
+                        model.selectedValueEncoding
+                        (updatedOptions |> OptionList.selectedOptions |> OptionList.cleanupEmptySelectedOptions)
+                    )
+
+                Nothing ->
+                    ( model, NoEffect )
 
         RequestAllOptions ->
             ( model
