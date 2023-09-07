@@ -1110,7 +1110,7 @@ update msg model =
                 SingleSelectConfig _ _ _ ->
                     if OptionList.hasSelectedOption model.options then
                         -- if there are ANY selected options, clear them all;
-                        clearAllSelectedOption model
+                        clearAllSelectedOptions model
 
                     else
                         ( model, NoEffect )
@@ -1154,7 +1154,7 @@ update msg model =
             ( { model | valueCasing = ValueCasing dims.width dims.height }, NoEffect )
 
         ClearAllSelectedOptions ->
-            clearAllSelectedOption model
+            clearAllSelectedOptions model
 
         ToggleSelectedValueHighlight optionValue ->
             let
@@ -1609,12 +1609,12 @@ update msg model =
                             else
                                 case selectedValueStrings of
                                     [] ->
-                                        clearAllSelectedOption model
+                                        clearAllSelectedOptions model
 
                                     [ selectedValueString ] ->
                                         case selectedValueString of
                                             "" ->
-                                                clearAllSelectedOption model
+                                                clearAllSelectedOptions model
 
                                             _ ->
                                                 let
@@ -1640,8 +1640,10 @@ update msg model =
                                             newOptions =
                                                 model.options
                                                     |> OptionList.deselectAllOptions
+                                                    |> Debug.log "newOptions deselectAllOptions"
                                                     |> OptionList.addAndSelectOptionsInOptionsListByString
                                                         selectedValueStrings
+                                                    |> Debug.log "newOptions"
                                         in
                                         ( { model
                                             | options = newOptions
@@ -1827,7 +1829,7 @@ update msg model =
                     )
 
                 "selected-value" ->
-                    clearAllSelectedOption model
+                    clearAllSelectedOptions model
 
                 "selected-value-encoding" ->
                     ( { model
@@ -2015,8 +2017,8 @@ deselectOption model optionValue =
             ( model, NoEffect )
 
 
-clearAllSelectedOption : Model -> ( Model, Effect )
-clearAllSelectedOption model =
+clearAllSelectedOptions : Model -> ( Model, Effect )
+clearAllSelectedOptions model =
     let
         optionsAboutToBeDeselected : OptionList
         optionsAboutToBeDeselected =

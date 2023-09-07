@@ -483,7 +483,15 @@ selectOption selectionIndex option =
 
 deselectOption : Option -> Option
 deselectOption option =
-    setOptionDisplay (OptionDisplay.deselect (getOptionDisplay option)) option
+    case option of
+        FancyOption fancyOption ->
+            FancyOption (FancyOption.deselect fancyOption)
+
+        DatalistOption datalistOption ->
+            DatalistOption (DatalistOption.deselect datalistOption)
+
+        SlottedOption slottedOption ->
+            SlottedOption (SlottedOption.deselect slottedOption)
 
 
 deselectOptionIfEqual : OptionValue -> Option -> Option

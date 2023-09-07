@@ -920,9 +920,21 @@ deselectOptionByValue optionValue optionList =
         optionList
 
 
+{-| Deselect all the options.
+For a datalist this a little bit different because all selected options need to be removed.
+-}
 deselectAllOptions : OptionList -> OptionList
 deselectAllOptions optionList =
-    map Option.deselectOption optionList
+    case optionList of
+        FancyOptionList _ ->
+            map Option.deselectOption optionList
+
+        DatalistOptionList _ ->
+            --filter (Option.isOptionSelected >> not) optionList
+            map Option.deselectOption optionList
+
+        SlottedOptionList _ ->
+            map Option.deselectOption optionList
 
 
 deselectAllSelectedHighlightedOptions : OptionList -> OptionList

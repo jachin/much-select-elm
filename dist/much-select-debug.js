@@ -1616,14 +1616,8 @@ class MuchSelect extends HTMLElement {
    * Do not allow this value to be anything but:
    *  - json
    *  - comma (default)
-   *
-   * In addition to actually changing the private property, it also (re)encodes
-   *  the current selected value, but ONLY IF the web component is connected,
-   *  meaning the connected callback has been called, if that has not been called
-   *  we are still initializing.
    * */
   set selectedValueEncoding(value) {
-    const currentValue = this.parsedSelectedValue;
     let selectedValueEncoding;
     if (value === "json") {
       selectedValueEncoding = "json";
@@ -1632,10 +1626,6 @@ class MuchSelect extends HTMLElement {
     } else {
       throw new Error(`Invalid selected value encoding: ${value}`);
     }
-    if (this._connected) {
-      this.parsedSelectedValue = currentValue;
-    }
-
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
       app.ports.selectedValueEncodingChangeReceiver.send(selectedValueEncoding)

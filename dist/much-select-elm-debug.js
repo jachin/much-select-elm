@@ -12474,12 +12474,42 @@ var $author$project$OptionDisplay$deselect = function (optionDisplay) {
 			return $author$project$OptionDisplay$OptionShown($author$project$OptionDisplay$MatureOption);
 	}
 };
-var $author$project$Option$deselectOption = function (option) {
+var $author$project$DatalistOption$deselect = function (option) {
 	return A2(
-		$author$project$Option$setOptionDisplay,
+		$author$project$DatalistOption$setOptionDisplay,
 		$author$project$OptionDisplay$deselect(
-			$author$project$Option$getOptionDisplay(option)),
+			$author$project$DatalistOption$getOptionDisplay(option)),
 		option);
+};
+var $author$project$FancyOption$deselect = function (option) {
+	return A2(
+		$author$project$FancyOption$setOptionDisplay,
+		$author$project$OptionDisplay$deselect(
+			$author$project$FancyOption$getOptionDisplay(option)),
+		option);
+};
+var $author$project$SlottedOption$deselect = function (option) {
+	return A2(
+		$author$project$SlottedOption$setOptionDisplay,
+		$author$project$OptionDisplay$deselect(
+			$author$project$SlottedOption$getOptionDisplay(option)),
+		option);
+};
+var $author$project$Option$deselectOption = function (option) {
+	switch (option.$) {
+		case 'FancyOption':
+			var fancyOption = option.a;
+			return $author$project$Option$FancyOption(
+				$author$project$FancyOption$deselect(fancyOption));
+		case 'DatalistOption':
+			var datalistOption = option.a;
+			return $author$project$Option$DatalistOption(
+				$author$project$DatalistOption$deselect(datalistOption));
+		default:
+			var slottedOption = option.a;
+			return $author$project$Option$SlottedOption(
+				$author$project$SlottedOption$deselect(slottedOption));
+	}
 };
 var $author$project$OptionList$indexedMap = F2(
 	function (_function, optionList) {
@@ -14223,7 +14253,14 @@ var $author$project$MuchSelect$ReportOptionDeselected = function (a) {
 	return {$: 'ReportOptionDeselected', a: a};
 };
 var $author$project$OptionList$deselectAllOptions = function (optionList) {
-	return A2($author$project$OptionList$map, $author$project$Option$deselectOption, optionList);
+	switch (optionList.$) {
+		case 'FancyOptionList':
+			return A2($author$project$OptionList$map, $author$project$Option$deselectOption, optionList);
+		case 'DatalistOptionList':
+			return A2($author$project$OptionList$map, $author$project$Option$deselectOption, optionList);
+		default:
+			return A2($author$project$OptionList$map, $author$project$Option$deselectOption, optionList);
+	}
 };
 var $author$project$OptionList$isEmpty = function (optionList) {
 	switch (optionList.$) {
@@ -14451,7 +14488,7 @@ var $author$project$RightSlot$updateRightSlot = F4(
 			}
 		}
 	});
-var $author$project$MuchSelect$clearAllSelectedOption = function (model) {
+var $author$project$MuchSelect$clearAllSelectedOptions = function (model) {
 	var optionsAboutToBeDeselected = $author$project$OptionList$selectedOptions(model.options);
 	var newOptions = $author$project$OptionList$deselectAllOptions(model.options);
 	var focusEffect = $author$project$SelectionMode$isFocused(model.selectionConfig) ? $author$project$MuchSelect$FocusInput : $author$project$MuchSelect$NoEffect;
@@ -18591,7 +18628,7 @@ var $author$project$MuchSelect$update = F2(
 			case 'DeleteInputForSingleSelect':
 				var _v26 = model.selectionConfig;
 				if (_v26.$ === 'SingleSelectConfig') {
-					return $author$project$OptionList$hasSelectedOption(model.options) ? $author$project$MuchSelect$clearAllSelectedOption(model) : _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
+					return $author$project$OptionList$hasSelectedOption(model.options) ? $author$project$MuchSelect$clearAllSelectedOptions(model) : _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
 				} else {
 					return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
 				}
@@ -18626,7 +18663,7 @@ var $author$project$MuchSelect$update = F2(
 						}),
 					$author$project$MuchSelect$NoEffect);
 			case 'ClearAllSelectedOptions':
-				return $author$project$MuchSelect$clearAllSelectedOption(model);
+				return $author$project$MuchSelect$clearAllSelectedOptions(model);
 			case 'ToggleSelectedValueHighlight':
 				var optionValue = msg.a;
 				var updatedOptions = A2($author$project$OptionList$toggleSelectedHighlightByOptionValue, optionValue, model.options);
@@ -19094,12 +19131,12 @@ var $author$project$MuchSelect$update = F2(
 								return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
 							} else {
 								if (!selectedValueStrings.b) {
-									return $author$project$MuchSelect$clearAllSelectedOption(model);
+									return $author$project$MuchSelect$clearAllSelectedOptions(model);
 								} else {
 									if (!selectedValueStrings.b.b) {
 										var selectedValueString = selectedValueStrings.a;
 										if (selectedValueString === '') {
-											return $author$project$MuchSelect$clearAllSelectedOption(model);
+											return $author$project$MuchSelect$clearAllSelectedOptions(model);
 										} else {
 											var newOptions = A2(
 												$author$project$OptionList$addAndSelectOptionsInOptionsListByString,
@@ -19119,9 +19156,15 @@ var $author$project$MuchSelect$update = F2(
 										}
 									} else {
 										var newOptions = A2(
-											$author$project$OptionList$addAndSelectOptionsInOptionsListByString,
-											selectedValueStrings,
-											$author$project$OptionList$deselectAllOptions(model.options));
+											$elm$core$Debug$log,
+											'newOptions',
+											A2(
+												$author$project$OptionList$addAndSelectOptionsInOptionsListByString,
+												selectedValueStrings,
+												A2(
+													$elm$core$Debug$log,
+													'newOptions deselectAllOptions',
+													$author$project$OptionList$deselectAllOptions(model.options))));
 										return _Utils_Tuple2(
 											$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
 												_Utils_update(
@@ -19305,7 +19348,7 @@ var $author$project$MuchSelect$update = F2(
 								}),
 							$author$project$MuchSelect$NoEffect);
 					case 'selected-value':
-						return $author$project$MuchSelect$clearAllSelectedOption(model);
+						return $author$project$MuchSelect$clearAllSelectedOptions(model);
 					case 'selected-value-encoding':
 						return _Utils_Tuple2(
 							_Utils_update(
