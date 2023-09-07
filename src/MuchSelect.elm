@@ -520,7 +520,6 @@ update msg model =
                                 (OptionValue.stringToOptionValue valueString)
                                 selectedValueIndex
                                 model.options
-                                |> Debug.log "ValidationPass updatedOptions"
                     in
                     ( { model
                         | options = updatedOptions
@@ -1620,7 +1619,7 @@ update msg model =
                                                 let
                                                     newOptions =
                                                         model.options
-                                                            |> OptionList.deselectAllOptions
+                                                            |> OptionList.deselectAll
                                                             |> OptionList.addAndSelectOptionsInOptionsListByString
                                                                 selectedValueStrings
                                                 in
@@ -1639,11 +1638,9 @@ update msg model =
                                         let
                                             newOptions =
                                                 model.options
-                                                    |> OptionList.deselectAllOptions
-                                                    |> Debug.log "newOptions deselectAllOptions"
+                                                    |> OptionList.deselectAll
                                                     |> OptionList.addAndSelectOptionsInOptionsListByString
                                                         selectedValueStrings
-                                                    |> Debug.log "newOptions"
                                         in
                                         ( { model
                                             | options = newOptions
@@ -2029,10 +2026,10 @@ clearAllSelectedOptions model =
                 NoEffect
 
             else
-                ReportOptionDeselected (Ports.optionsEncoder (OptionList.deselectAllOptions optionsAboutToBeDeselected))
+                ReportOptionDeselected (Ports.optionsEncoder (OptionList.deselectAll optionsAboutToBeDeselected))
 
         newOptions =
-            OptionList.deselectAllOptions model.options
+            OptionList.deselectAll model.options
 
         focusEffect =
             if isFocused model.selectionConfig then
@@ -2042,7 +2039,7 @@ clearAllSelectedOptions model =
                 NoEffect
     in
     ( { model
-        | options = OptionList.deselectAllOptions newOptions
+        | options = OptionList.deselectAll newOptions
         , rightSlot =
             updateRightSlot
                 model.rightSlot

@@ -14252,12 +14252,16 @@ var $author$project$OptionList$cleanupEmptySelectedOptions = function (options) 
 var $author$project$MuchSelect$ReportOptionDeselected = function (a) {
 	return {$: 'ReportOptionDeselected', a: a};
 };
-var $author$project$OptionList$deselectAllOptions = function (optionList) {
+var $author$project$OptionList$deselectAll = function (optionList) {
 	switch (optionList.$) {
 		case 'FancyOptionList':
 			return A2($author$project$OptionList$map, $author$project$Option$deselectOption, optionList);
 		case 'DatalistOptionList':
-			return A2($author$project$OptionList$map, $author$project$Option$deselectOption, optionList);
+			return $author$project$OptionList$removeEmptyOptions(
+				A2(
+					$author$project$OptionList$uniqueBy,
+					$author$project$Option$getOptionValueAsString,
+					A2($author$project$OptionList$map, $author$project$Option$deselectOption, optionList)));
 		default:
 			return A2($author$project$OptionList$map, $author$project$Option$deselectOption, optionList);
 	}
@@ -14490,16 +14494,16 @@ var $author$project$RightSlot$updateRightSlot = F4(
 	});
 var $author$project$MuchSelect$clearAllSelectedOptions = function (model) {
 	var optionsAboutToBeDeselected = $author$project$OptionList$selectedOptions(model.options);
-	var newOptions = $author$project$OptionList$deselectAllOptions(model.options);
+	var newOptions = $author$project$OptionList$deselectAll(model.options);
 	var focusEffect = $author$project$SelectionMode$isFocused(model.selectionConfig) ? $author$project$MuchSelect$FocusInput : $author$project$MuchSelect$NoEffect;
 	var deselectEventEffect = $author$project$OptionList$isEmpty(optionsAboutToBeDeselected) ? $author$project$MuchSelect$NoEffect : $author$project$MuchSelect$ReportOptionDeselected(
 		$author$project$Ports$optionsEncoder(
-			$author$project$OptionList$deselectAllOptions(optionsAboutToBeDeselected)));
+			$author$project$OptionList$deselectAll(optionsAboutToBeDeselected)));
 	return _Utils_Tuple2(
 		_Utils_update(
 			model,
 			{
-				options: $author$project$OptionList$deselectAllOptions(newOptions),
+				options: $author$project$OptionList$deselectAll(newOptions),
 				rightSlot: A4(
 					$author$project$RightSlot$updateRightSlot,
 					model.rightSlot,
@@ -14663,25 +14667,6 @@ var $author$project$OptionList$deselectAllButTheFirstSelectedOptionInList = func
 		return optionList;
 	}
 };
-var $author$project$OptionList$deselectOptions = F2(
-	function (optionsToDeselect, allOptions) {
-		var shouldDeselectOption = function (option) {
-			return A2(
-				$author$project$OptionList$any,
-				function (optionToDeselect) {
-					return _Utils_eq(
-						$author$project$Option$getOptionValue(optionToDeselect),
-						$author$project$Option$getOptionValue(option));
-				},
-				optionsToDeselect);
-		};
-		return A2(
-			$author$project$OptionList$map,
-			function (option) {
-				return shouldDeselectOption(option) ? $author$project$Option$deselectOption(option) : option;
-			},
-			allOptions);
-	});
 var $author$project$OptionDisplay$isHighlighted = function (optionDisplay) {
 	switch (optionDisplay.$) {
 		case 'OptionShown':
@@ -14725,26 +14710,23 @@ var $author$project$Option$isOptionHighlighted = function (option) {
 	}
 };
 var $author$project$OptionList$deselectAllSelectedHighlightedOptions = function (optionList) {
-	var highlightedOptions = A2(
-		$author$project$OptionList$filter,
-		$author$project$Option$isOptionSelected,
-		A2($author$project$OptionList$filter, $author$project$Option$isOptionHighlighted, optionList));
-	return A2($author$project$OptionList$deselectOptions, highlightedOptions, optionList);
+	return A2(
+		$author$project$OptionList$map,
+		$author$project$Option$deselectOption,
+		A2(
+			$author$project$OptionList$filter,
+			$author$project$Option$isOptionSelected,
+			A2($author$project$OptionList$filter, $author$project$Option$isOptionHighlighted, optionList)));
 };
-var $author$project$OptionList$deselectOptionByValue = F2(
-	function (optionValue, optionList) {
+var $author$project$OptionList$deselect = F2(
+	function (selectionIndex, optionList) {
 		return A2(
 			$author$project$OptionList$map,
-			function (option_) {
-				return A2($author$project$Option$optionEqualsOptionValue, optionValue, option_) ? $author$project$Option$deselectOption(option_) : option_;
+			function (option) {
+				return _Utils_eq(
+					$author$project$Option$getOptionSelectedIndex(option),
+					$author$project$PositiveInt$toInt(selectionIndex)) ? $author$project$Option$deselectOption(option) : option;
 			},
-			optionList);
-	});
-var $author$project$OptionList$deselectOption = F2(
-	function (option, optionList) {
-		return A2(
-			$author$project$OptionList$deselectOptionByValue,
-			$author$project$Option$getOptionValue(option),
 			optionList);
 	});
 var $elm_community$list_extra$List$Extra$last = function (items) {
@@ -14781,13 +14763,31 @@ var $author$project$OptionList$last = function (optionList) {
 var $author$project$OptionList$deselectLastSelectedOption = function (optionList) {
 	var maybeLastSelectionOption = $author$project$OptionList$last(
 		$author$project$OptionList$selectedOptions(optionList));
-	if (maybeLastSelectionOption.$ === 'Just') {
-		var lastSelectionOption = maybeLastSelectionOption.a;
-		return A2($author$project$OptionList$deselectOption, lastSelectionOption, optionList);
+	var maybeLastSelectionIndex = function () {
+		if (maybeLastSelectionOption.$ === 'Just') {
+			var lastSelectionOption = maybeLastSelectionOption.a;
+			return $author$project$PositiveInt$maybeNew(
+				$author$project$Option$getOptionSelectedIndex(lastSelectionOption));
+		} else {
+			return $elm$core$Maybe$Nothing;
+		}
+	}();
+	if (maybeLastSelectionIndex.$ === 'Just') {
+		var lastSelectionIndex = maybeLastSelectionIndex.a;
+		return A2($author$project$OptionList$deselect, lastSelectionIndex, optionList);
 	} else {
 		return optionList;
 	}
 };
+var $author$project$OptionList$deselectOptionByValue = F2(
+	function (optionValue, optionList) {
+		return A2(
+			$author$project$OptionList$map,
+			function (option_) {
+				return A2($author$project$Option$optionEqualsOptionValue, optionValue, option_) ? $author$project$Option$deselectOption(option_) : option_;
+			},
+			optionList);
+	});
 var $author$project$SearchString$isEmpty = function (_v0) {
 	var str = _v0.a;
 	return !$elm$core$String$length(str);
@@ -16291,9 +16291,6 @@ var $author$project$OptionList$findOptionByValue = F2(
 			$author$project$Option$getOptionValue(option),
 			optionList);
 	});
-var $author$project$OptionList$deselectAll = function (options) {
-	return A2($author$project$OptionList$map, $author$project$Option$deselectOption, options);
-};
 var $author$project$OptionList$setSelectedOptionInNewOptions = F3(
 	function (selectionMode, oldOptions, newOptions) {
 		var oldSelectedOption = $author$project$OptionList$selectedOptions(oldOptions);
@@ -17970,14 +17967,11 @@ var $author$project$MuchSelect$update = F2(
 					selectedValueIndex);
 				switch (_v7.$) {
 					case 'ValidationPass':
-						var updatedOptions = A2(
-							$elm$core$Debug$log,
-							'ValidationPass updatedOptions',
-							A3(
-								$author$project$OptionList$updateDatalistOptionsWithValue,
-								$author$project$OptionValue$stringToOptionValue(valueString),
-								selectedValueIndex,
-								model.options));
+						var updatedOptions = A3(
+							$author$project$OptionList$updateDatalistOptionsWithValue,
+							$author$project$OptionValue$stringToOptionValue(valueString),
+							selectedValueIndex,
+							model.options);
 						return _Utils_Tuple2(
 							_Utils_update(
 								model,
@@ -19141,7 +19135,7 @@ var $author$project$MuchSelect$update = F2(
 											var newOptions = A2(
 												$author$project$OptionList$addAndSelectOptionsInOptionsListByString,
 												selectedValueStrings,
-												$author$project$OptionList$deselectAllOptions(model.options));
+												$author$project$OptionList$deselectAll(model.options));
 											return _Utils_Tuple2(
 												$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
 													_Utils_update(
@@ -19156,15 +19150,9 @@ var $author$project$MuchSelect$update = F2(
 										}
 									} else {
 										var newOptions = A2(
-											$elm$core$Debug$log,
-											'newOptions',
-											A2(
-												$author$project$OptionList$addAndSelectOptionsInOptionsListByString,
-												selectedValueStrings,
-												A2(
-													$elm$core$Debug$log,
-													'newOptions deselectAllOptions',
-													$author$project$OptionList$deselectAllOptions(model.options))));
+											$author$project$OptionList$addAndSelectOptionsInOptionsListByString,
+											selectedValueStrings,
+											$author$project$OptionList$deselectAll(model.options));
 										return _Utils_Tuple2(
 											$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
 												_Utils_update(

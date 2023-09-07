@@ -1,4 +1,4 @@
-module OptionList exposing (OptionList(..), activateOptionInListByOptionValue, addAdditionalOptionsToOptionList, addAdditionalOptionsToOptionListWithAutoSortRank, addAdditionalSelectedOptionWithStringValue, addAndSelectOptionsInOptionsListByString, addNewEmptyOptionAtIndex, addNewSelectedEmptyOptionAtIndex, all, allOptionsAreValid, andMap, any, append, appendOptions, changeHighlightedOption, changeHighlightedOptionByValue, cleanupEmptySelectedOptions, concatMap, customSelectedOptions, decoder, deselectAll, deselectAllButTheFirstSelectedOptionInList, deselectAllOptions, deselectAllSelectedHighlightedOptions, deselectEveryOptionExceptOptionsInList, deselectLastSelectedOption, deselectOption, deselectOptionByValue, deselectOptions, drop, encode, encodeSearchResults, filter, findByValue, findClosestHighlightableOptionGoingDown, findClosestHighlightableOptionGoingUp, findHighestAutoSortRank, findHighlightedOption, findHighlightedOptionIndex, findHighlightedOrSelectedOptionIndex, findLowestSearchScore, findOptionByValue, findSelectedOption, getOptions, hasAnyPendingValidation, hasAnyValidationErrors, hasOptionByValueString, hasSelectedHighlightedOptions, hasSelectedOption, head, highlightFirstOptionInList, highlightOption, isEmpty, isSlottedOptionList, length, map, mergeTwoListsOfOptionsPreservingSelectedOptions, optionsPlusOne, optionsValuesAsStrings, organizeNewDatalistOptions, prependCustomOption, reIndexSelectedOptions, removeOptionFromOptionListBySelectedIndex, removeOptionsFromOptionList, removeUnselectedCustomOptions, replaceOptions, selectHighlightedOption, selectOption, selectOptionByOptionValue, selectOptionByOptionValueWithIndex, selectOptionIByValueStringWithIndex, selectOptions, selectOptionsInOptionsListByString, selectSingleOption, selectSingleOptionByValue, selectedOptionValuesAreEqual, selectedOptions, selectedOptionsToTuple, setAge, sort, sortBy, sortOptionsByBestScore, sortOptionsByTotalScore, take, test_newDatalistOptionList, test_newFancyOptionList, toggleSelectedHighlightByOptionValue, unhighlightOptionByValue, unhighlightSelectedOptions, uniqueBy, unselectedOptions, updateAge, updateDatalistOptionWithValueBySelectedValueIndex, updateDatalistOptionsWithPendingValidation, updateDatalistOptionsWithValue, updateDatalistOptionsWithValueAndErrors, updateOptionsWithNewSearchResults, updatedDatalistSelectedOptions)
+module OptionList exposing (OptionList(..), activateOptionInListByOptionValue, addAdditionalOptionsToOptionList, addAdditionalOptionsToOptionListWithAutoSortRank, addAdditionalSelectedOptionWithStringValue, addAndSelectOptionsInOptionsListByString, addNewEmptyOptionAtIndex, addNewSelectedEmptyOptionAtIndex, all, allOptionsAreValid, andMap, any, append, appendOptions, changeHighlightedOption, changeHighlightedOptionByValue, cleanupEmptySelectedOptions, concatMap, customSelectedOptions, decoder, deselectAll, deselectAllButTheFirstSelectedOptionInList, deselectAllSelectedHighlightedOptions, deselectEveryOptionExceptOptionsInList, deselectLastSelectedOption, deselectOptionByValue, drop, encode, encodeSearchResults, filter, findByValue, findClosestHighlightableOptionGoingDown, findClosestHighlightableOptionGoingUp, findHighestAutoSortRank, findHighlightedOption, findHighlightedOptionIndex, findHighlightedOrSelectedOptionIndex, findLowestSearchScore, findOptionByValue, findSelectedOption, getOptions, hasAnyPendingValidation, hasAnyValidationErrors, hasOptionByValueString, hasSelectedHighlightedOptions, hasSelectedOption, head, highlightFirstOptionInList, highlightOption, isEmpty, isSlottedOptionList, length, map, mergeTwoListsOfOptionsPreservingSelectedOptions, optionsPlusOne, optionsValuesAsStrings, organizeNewDatalistOptions, prependCustomOption, reIndexSelectedOptions, removeOptionFromOptionListBySelectedIndex, removeOptionsFromOptionList, removeUnselectedCustomOptions, replaceOptions, selectHighlightedOption, selectOption, selectOptionByOptionValue, selectOptionByOptionValueWithIndex, selectOptionIByValueStringWithIndex, selectOptions, selectOptionsInOptionsListByString, selectSingleOption, selectSingleOptionByValue, selectedOptionValuesAreEqual, selectedOptions, selectedOptionsToTuple, setAge, sort, sortBy, sortOptionsByBestScore, sortOptionsByTotalScore, take, test_newDatalistOptionList, test_newFancyOptionList, toggleSelectedHighlightByOptionValue, unhighlightOptionByValue, unhighlightSelectedOptions, uniqueBy, unselectedOptions, updateAge, updateDatalistOptionWithValueBySelectedValueIndex, updateDatalistOptionsWithPendingValidation, updateDatalistOptionsWithValue, updateDatalistOptionsWithValueAndErrors, updateOptionsWithNewSearchResults, updatedDatalistSelectedOptions)
 
 import DatalistOption
 import FancyOption
@@ -13,7 +13,7 @@ import OptionSearchFilter exposing (OptionSearchFilterWithValue)
 import OptionSorting exposing (OptionSort(..))
 import OptionValue exposing (OptionValue)
 import OutputStyle exposing (SelectedItemPlacementMode(..))
-import PositiveInt
+import PositiveInt exposing (PositiveInt)
 import SearchString exposing (SearchString)
 import SelectionMode exposing (OutputStyle(..), SelectionConfig, SelectionMode(..))
 import SortRank exposing (SortRank)
@@ -637,46 +637,6 @@ selectHighlightedOption selectionMode optionList =
                 |> Maybe.withDefault optionList
 
 
-{-| This is kind of a strange one it takes a list of options to leave selected and deselects all the rest.
-
---TODO Is this only used in tests?
-
--}
-deselectEveryOptionExceptOptionsInList : List Option -> OptionList -> OptionList
-deselectEveryOptionExceptOptionsInList optionsNotToDeselect optionList =
-    map
-        (\option ->
-            let
-                test : Option -> Bool
-                test optionNotToDeselect =
-                    Option.optionsHaveEqualValues optionNotToDeselect option
-            in
-            if List.any test optionsNotToDeselect then
-                option
-
-            else
-                Option.deselectOption option
-        )
-        optionList
-
-
-deselectAllButTheFirstSelectedOptionInList : OptionList -> OptionList
-deselectAllButTheFirstSelectedOptionInList optionList =
-    case head (selectedOptions optionList) of
-        Just oneOptionToLeaveSelected ->
-            selectSingleOptionByValue (Option.getOptionValue oneOptionToLeaveSelected) optionList
-
-        Nothing ->
-            optionList
-
-
-deselectAll : OptionList -> OptionList
-deselectAll options =
-    map
-        Option.deselectOption
-        options
-
-
 {-| Look through the list of options, if we find one that matches the given option value
 then select it and return a new list of options with the found option selected.
 
@@ -882,29 +842,19 @@ reIndexSelectedOptions optionList =
         nonSelectedOptions
 
 
-deselectOptions : OptionList -> OptionList -> OptionList
-deselectOptions optionsToDeselect allOptions =
-    let
-        shouldDeselectOption option =
-            -- figure out if options match my looking at their value's
-            any
-                (\optionToDeselect -> Option.getOptionValue optionToDeselect == Option.getOptionValue option)
-                optionsToDeselect
-    in
+{-| Find an option with the selection index and deselect it.
+-}
+deselect : PositiveInt -> OptionList -> OptionList
+deselect selectionIndex optionList =
     map
         (\option ->
-            if shouldDeselectOption option then
+            if Option.getOptionSelectedIndex option == PositiveInt.toInt selectionIndex then
                 Option.deselectOption option
 
             else
                 option
         )
-        allOptions
-
-
-deselectOption : Option -> OptionList -> OptionList
-deselectOption option optionList =
-    deselectOptionByValue (Option.getOptionValue option) optionList
+        optionList
 
 
 deselectOptionByValue : OptionValue -> OptionList -> OptionList
@@ -923,15 +873,16 @@ deselectOptionByValue optionValue optionList =
 {-| Deselect all the options.
 For a datalist this a little bit different because all selected options need to be removed.
 -}
-deselectAllOptions : OptionList -> OptionList
-deselectAllOptions optionList =
+deselectAll : OptionList -> OptionList
+deselectAll optionList =
     case optionList of
         FancyOptionList _ ->
             map Option.deselectOption optionList
 
         DatalistOptionList _ ->
-            --filter (Option.isOptionSelected >> not) optionList
             map Option.deselectOption optionList
+                |> uniqueBy Option.getOptionValueAsString
+                |> removeEmptyOptions
 
         SlottedOptionList _ ->
             map Option.deselectOption optionList
@@ -939,13 +890,10 @@ deselectAllOptions optionList =
 
 deselectAllSelectedHighlightedOptions : OptionList -> OptionList
 deselectAllSelectedHighlightedOptions optionList =
-    let
-        highlightedOptions =
-            optionList
-                |> filter Option.isOptionHighlighted
-                |> filter Option.isOptionSelected
-    in
-    deselectOptions highlightedOptions optionList
+    optionList
+        |> filter Option.isOptionHighlighted
+        |> filter Option.isOptionSelected
+        |> map Option.deselectOption
 
 
 deselectLastSelectedOption : OptionList -> OptionList
@@ -955,10 +903,53 @@ deselectLastSelectedOption optionList =
             optionList
                 |> selectedOptions
                 |> last
+
+        maybeLastSelectionIndex : Maybe PositiveInt
+        maybeLastSelectionIndex =
+            case maybeLastSelectionOption of
+                Just lastSelectionOption ->
+                    PositiveInt.maybeNew (Option.getOptionSelectedIndex lastSelectionOption)
+
+                Nothing ->
+                    Nothing
     in
-    case maybeLastSelectionOption of
-        Just lastSelectionOption ->
-            deselectOption lastSelectionOption optionList
+    case maybeLastSelectionIndex of
+        Just lastSelectionIndex ->
+            deselect lastSelectionIndex optionList
+
+        Nothing ->
+            optionList
+
+
+{-| This is kind of a strange one it takes a list of options to leave selected and
+deselects all the rest.
+
+It decides if 2 options are the same based on their values.
+
+-}
+deselectEveryOptionExceptOptionsInList : List Option -> OptionList -> OptionList
+deselectEveryOptionExceptOptionsInList optionsNotToDeselect optionList =
+    map
+        (\option ->
+            let
+                test : Option -> Bool
+                test optionNotToDeselect =
+                    Option.optionsHaveEqualValues optionNotToDeselect option
+            in
+            if List.any test optionsNotToDeselect then
+                option
+
+            else
+                Option.deselectOption option
+        )
+        optionList
+
+
+deselectAllButTheFirstSelectedOptionInList : OptionList -> OptionList
+deselectAllButTheFirstSelectedOptionInList optionList =
+    case head (selectedOptions optionList) of
+        Just oneOptionToLeaveSelected ->
+            selectSingleOptionByValue (Option.getOptionValue oneOptionToLeaveSelected) optionList
 
         Nothing ->
             optionList
