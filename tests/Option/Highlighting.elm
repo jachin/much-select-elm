@@ -15,17 +15,17 @@ suite =
             [ test "with a fancy option" <|
                 \_ ->
                     Expect.equal
-                        (Option.highlightOption (test_newFancyOption "fish") |> Option.isOptionHighlighted)
+                        (Option.highlight (test_newFancyOption "fish") |> Option.isHighlighted)
                         True
             , test "with a datalist option (but datalist options can't be highlighted" <|
                 \_ ->
                     Expect.equal
-                        (Option.highlightOption (test_newDatalistOption "ketchup") |> Option.isOptionHighlighted)
+                        (Option.highlight (test_newDatalistOption "ketchup") |> Option.isHighlighted)
                         False
             , test "with a slotted option " <|
                 \_ ->
                     Expect.equal
-                        (Option.highlightOption (test_newSlottedOption "ketchup") |> Option.isOptionHighlighted)
+                        (Option.highlight (test_newSlottedOption "ketchup") |> Option.isHighlighted)
                         True
             ]
         , describe "by moving the highlighted option down in an option list"
@@ -42,7 +42,7 @@ suite =
                     Expect.equal
                         (moveHighlightedOptionDown SelectionMode.defaultSelectionConfig options)
                         (FancyOptionList
-                            [ test_newFancyOptionWithMaybeCleanString "one" Nothing |> Option.highlightOption
+                            [ test_newFancyOptionWithMaybeCleanString "one" Nothing |> Option.highlight
                             , test_newFancyOptionWithMaybeCleanString "two" Nothing
                             , test_newFancyOptionWithMaybeCleanString "three" Nothing
                             ]
@@ -52,7 +52,7 @@ suite =
                     let
                         options =
                             FancyOptionList
-                                [ test_newFancyOptionWithMaybeCleanString "one" Nothing |> Option.highlightOption
+                                [ test_newFancyOptionWithMaybeCleanString "one" Nothing |> Option.highlight
                                 , test_newFancyOptionWithMaybeCleanString "two" Nothing |> Option.select 0
                                 , test_newFancyOptionWithMaybeCleanString "three" Nothing
                                 ]
@@ -61,7 +61,7 @@ suite =
                         (moveHighlightedOptionDown SelectionMode.defaultSelectionConfig options)
                         (FancyOptionList
                             [ test_newFancyOptionWithMaybeCleanString "one" Nothing
-                            , test_newFancyOptionWithMaybeCleanString "two" Nothing |> Option.select 0 |> Option.highlightOption
+                            , test_newFancyOptionWithMaybeCleanString "two" Nothing |> Option.select 0 |> Option.highlight
                             , test_newFancyOptionWithMaybeCleanString "three" Nothing
                             ]
                         )
@@ -70,7 +70,7 @@ suite =
                     let
                         options =
                             FancyOptionList
-                                [ test_newFancyOptionWithMaybeCleanString "one" Nothing |> Option.highlightOption
+                                [ test_newFancyOptionWithMaybeCleanString "one" Nothing |> Option.highlight
                                 , Option.newDisabledOption "two" Nothing
                                 , Option.newDisabledOption "three" Nothing
                                 , test_newFancyOptionWithMaybeCleanString "four" Nothing
@@ -82,7 +82,7 @@ suite =
                             [ test_newFancyOptionWithMaybeCleanString "one" Nothing
                             , Option.newDisabledOption "two" Nothing
                             , Option.newDisabledOption "three" Nothing
-                            , test_newFancyOptionWithMaybeCleanString "four" Nothing |> Option.highlightOption
+                            , test_newFancyOptionWithMaybeCleanString "four" Nothing |> Option.highlight
                             ]
                         )
             ]
@@ -100,7 +100,7 @@ suite =
                     Expect.equal
                         (moveHighlightedOptionUp SelectionMode.defaultSelectionConfig options)
                         (FancyOptionList
-                            [ test_newFancyOptionWithMaybeCleanString "one" Nothing |> Option.highlightOption
+                            [ test_newFancyOptionWithMaybeCleanString "one" Nothing |> Option.highlight
                             , test_newFancyOptionWithMaybeCleanString "two" Nothing
                             , test_newFancyOptionWithMaybeCleanString "three" Nothing
                             ]
@@ -112,14 +112,14 @@ suite =
                             FancyOptionList
                                 [ test_newFancyOptionWithMaybeCleanString "one" Nothing
                                 , test_newFancyOptionWithMaybeCleanString "two" Nothing |> Option.select 0
-                                , test_newFancyOptionWithMaybeCleanString "three" Nothing |> Option.highlightOption
+                                , test_newFancyOptionWithMaybeCleanString "three" Nothing |> Option.highlight
                                 ]
                     in
                     Expect.equal
                         (moveHighlightedOptionUp SelectionMode.defaultSelectionConfig options)
                         (FancyOptionList
                             [ test_newFancyOptionWithMaybeCleanString "one" Nothing
-                            , test_newFancyOptionWithMaybeCleanString "two" Nothing |> Option.select 0 |> Option.highlightOption
+                            , test_newFancyOptionWithMaybeCleanString "two" Nothing |> Option.select 0 |> Option.highlight
                             , test_newFancyOptionWithMaybeCleanString "three" Nothing
                             ]
                         )
@@ -131,13 +131,13 @@ suite =
                                 [ test_newFancyOptionWithMaybeCleanString "one" Nothing
                                 , Option.newDisabledOption "two" Nothing
                                 , Option.newDisabledOption "three" Nothing
-                                , test_newFancyOptionWithMaybeCleanString "four" Nothing |> Option.highlightOption
+                                , test_newFancyOptionWithMaybeCleanString "four" Nothing |> Option.highlight
                                 ]
                     in
                     Expect.equal
                         (moveHighlightedOptionUp SelectionMode.defaultSelectionConfig options)
                         (FancyOptionList
-                            [ test_newFancyOptionWithMaybeCleanString "one" Nothing |> Option.highlightOption
+                            [ test_newFancyOptionWithMaybeCleanString "one" Nothing |> Option.highlight
                             , Option.newDisabledOption "two" Nothing
                             , Option.newDisabledOption "three" Nothing
                             , test_newFancyOptionWithMaybeCleanString "four" Nothing
@@ -150,7 +150,7 @@ suite =
                             FancyOptionList
                                 [ test_newFancyOptionWithMaybeCleanString "one" Nothing
                                 , test_newFancyOptionWithMaybeCleanString "two" Nothing
-                                , test_newFancyOptionWithMaybeCleanString "three" Nothing |> Option.highlightOption
+                                , test_newFancyOptionWithMaybeCleanString "three" Nothing |> Option.highlight
                                 , test_newFancyOptionWithMaybeCleanString "four" Nothing
                                 , test_newFancyOptionWithMaybeCleanString "five" Nothing
                                 ]
@@ -159,7 +159,7 @@ suite =
                         (moveHighlightedOptionUp SelectionMode.defaultSelectionConfig options)
                         (FancyOptionList
                             [ test_newFancyOptionWithMaybeCleanString "one" Nothing
-                            , test_newFancyOptionWithMaybeCleanString "two" Nothing |> Option.highlightOption
+                            , test_newFancyOptionWithMaybeCleanString "two" Nothing |> Option.highlight
                             , test_newFancyOptionWithMaybeCleanString "three" Nothing
                             , test_newFancyOptionWithMaybeCleanString "four" Nothing
                             , test_newFancyOptionWithMaybeCleanString "five" Nothing

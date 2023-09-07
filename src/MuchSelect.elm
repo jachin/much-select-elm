@@ -657,7 +657,7 @@ update msg model =
                     ( model, ReportErrorMessage (Json.Decode.errorToString error) )
 
         OptionsReplaced newOptionsJson ->
-            case Json.Decode.decodeValue (OptionList.decoder OptionDisplay.NewOption (SelectionMode.getOutputStyle model.selectionConfig)) newOptionsJson of
+            case Json.Decode.decodeValue (OptionList.decoderWithAge OptionDisplay.NewOption (SelectionMode.getOutputStyle model.selectionConfig)) newOptionsJson of
                 Ok newOptions ->
                     case SelectionMode.getOutputStyle model.selectionConfig of
                         CustomHtml ->
@@ -724,7 +724,7 @@ update msg model =
                     ( model, ReportErrorMessage (Json.Decode.errorToString error) )
 
         AddOptions optionsJson ->
-            case Json.Decode.decodeValue (OptionList.decoder OptionDisplay.NewOption (SelectionMode.getOutputStyle model.selectionConfig)) optionsJson of
+            case Json.Decode.decodeValue (OptionList.decoderWithAge OptionDisplay.NewOption (SelectionMode.getOutputStyle model.selectionConfig)) optionsJson of
                 Ok newOptions ->
                     let
                         updatedOptions =
@@ -752,7 +752,7 @@ update msg model =
                     ( model, ReportErrorMessage (Json.Decode.errorToString error) )
 
         RemoveOptions optionsJson ->
-            case Json.Decode.decodeValue (OptionList.decoder OptionDisplay.MatureOption (SelectionMode.getOutputStyle model.selectionConfig)) optionsJson of
+            case Json.Decode.decodeValue (OptionList.decoderWithAge OptionDisplay.MatureOption (SelectionMode.getOutputStyle model.selectionConfig)) optionsJson of
                 Ok optionsToRemove ->
                     let
                         updatedOptions =
@@ -810,7 +810,7 @@ update msg model =
             deselectOption model optionValueToDeselect
 
         DeselectOption optionJson ->
-            case Json.Decode.decodeValue (Option.decoder OptionDisplay.MatureOption) optionJson of
+            case Json.Decode.decodeValue Option.decoder optionJson of
                 Ok option ->
                     deselectOption model (Option.getOptionValue option)
 
@@ -3388,7 +3388,7 @@ init flags =
                     ( [], ReportErrorMessage error )
 
         ( optionsWithInitialValueSelected, errorEffect ) =
-            case Json.Decode.decodeString (OptionList.decoder OptionDisplay.MatureOption (SelectionMode.getOutputStyle selectionConfig)) flags.optionsJson of
+            case Json.Decode.decodeString (OptionList.decoderWithAge OptionDisplay.MatureOption (SelectionMode.getOutputStyle selectionConfig)) flags.optionsJson of
                 Ok options ->
                     case SelectionMode.getSelectionMode selectionConfig of
                         SelectionMode.SingleSelect ->
@@ -3422,7 +3422,7 @@ init flags =
                                 -- Don't include any empty options, that doesn't make sense.
                                 optionsWithInitialValues =
                                     options
-                                        |> OptionList.filter (not << Option.isEmptyOption)
+                                        |> OptionList.filter (not << Option.isEmpty)
                                         |> OptionList.addAndSelectOptionsInOptionsListByString initialValues
                             in
                             ( optionsWithInitialValues, NoEffect )

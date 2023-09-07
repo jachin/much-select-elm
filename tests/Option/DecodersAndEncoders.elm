@@ -72,11 +72,11 @@ listOfOptionsWithJustValues =
 
 
 decoder =
-    Option.decoder OptionDisplay.MatureOption
+    Option.decoder
 
 
 optionListDecoder =
-    OptionList.decoder OptionDisplay.MatureOption SelectionMode.CustomHtml
+    OptionList.decoder SelectionMode.CustomHtml
 
 
 suite : Test

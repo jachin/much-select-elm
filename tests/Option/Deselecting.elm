@@ -41,7 +41,7 @@ brandOptions =
 
 optionToTuple : Option -> ( String, Bool )
 optionToTuple option =
-    Tuple.pair (Option.getOptionValueAsString option) (Option.isOptionSelected option)
+    Tuple.pair (Option.getOptionValueAsString option) (Option.isSelected option)
 
 
 assertEqualLists : OptionList -> OptionList -> Expectation

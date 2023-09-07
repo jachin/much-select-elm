@@ -11053,7 +11053,7 @@ var $author$project$SlottedOption$isSelected = function (slottedOption) {
 	return $author$project$OptionDisplay$isSelected(
 		$author$project$SlottedOption$getOptionDisplay(slottedOption));
 };
-var $author$project$Option$isOptionSelected = function (option) {
+var $author$project$Option$isSelected = function (option) {
 	switch (option.$) {
 		case 'FancyOption':
 			var fancyOption = option.a;
@@ -11143,7 +11143,7 @@ var $author$project$OptionList$selectOptionByOptionValueWithIndex = F3(
 		return A2(
 			$author$project$OptionList$map,
 			function (option_) {
-				return A2($author$project$Option$optionEqualsOptionValue, optionValue, option_) ? A2($author$project$Option$select, index, option_) : ($author$project$Option$isOptionSelected(option_) ? option_ : option_);
+				return A2($author$project$Option$optionEqualsOptionValue, optionValue, option_) ? A2($author$project$Option$select, index, option_) : ($author$project$Option$isSelected(option_) ? option_ : option_);
 			},
 			optionList);
 	});
@@ -11558,7 +11558,6 @@ var $author$project$FancyOption$decoderWithAge = function (optionAge) {
 				$author$project$FancyOption$decodeOptionWithAValue(optionAge)
 			]));
 };
-var $author$project$FancyOption$decoder = $author$project$FancyOption$decoderWithAge($author$project$OptionDisplay$MatureOption);
 var $author$project$OptionSlot$OptionSlot = function (a) {
 	return {$: 'OptionSlot', a: a};
 };
@@ -11571,16 +11570,25 @@ var $author$project$SlottedOption$decoderWithAge = function (age) {
 		A2($elm$json$Json$Decode$field, 'value', $author$project$OptionValue$decoder),
 		A2($elm$json$Json$Decode$field, 'slot', $author$project$OptionSlot$decoder));
 };
-var $author$project$SlottedOption$decoder = $author$project$SlottedOption$decoderWithAge($author$project$OptionDisplay$MatureOption);
-var $author$project$Option$decoder = function (age) {
-	return $elm$json$Json$Decode$oneOf(
-		_List_fromArray(
-			[
-				A2($elm$json$Json$Decode$map, $author$project$Option$FancyOption, $author$project$FancyOption$decoder),
-				A2($elm$json$Json$Decode$map, $author$project$Option$DatalistOption, $author$project$DatalistOption$decoder),
-				A2($elm$json$Json$Decode$map, $author$project$Option$SlottedOption, $author$project$SlottedOption$decoder)
-			]));
-};
+var $author$project$Option$decoderWithAgeAndOutputStyle = F2(
+	function (optionAge, outputStyle) {
+		if (outputStyle.$ === 'CustomHtml') {
+			return $elm$json$Json$Decode$oneOf(
+				_List_fromArray(
+					[
+						A2(
+						$elm$json$Json$Decode$map,
+						$author$project$Option$FancyOption,
+						$author$project$FancyOption$decoderWithAge(optionAge)),
+						A2(
+						$elm$json$Json$Decode$map,
+						$author$project$Option$SlottedOption,
+						$author$project$SlottedOption$decoderWithAge(optionAge))
+					]));
+		} else {
+			return A2($elm$json$Json$Decode$map, $author$project$Option$DatalistOption, $author$project$DatalistOption$decoder);
+		}
+	});
 var $elm$core$List$all = F2(
 	function (isOkay, list) {
 		return !A2(
@@ -11630,7 +11638,7 @@ var $author$project$OptionList$determineListType = function (options) {
 		$author$project$OptionList$DatalistOptionList(_List_Nil)) : ($author$project$OptionList$allSlottedOptions(options) ? $elm$core$Result$Ok(
 		$author$project$OptionList$SlottedOptionList(_List_Nil)) : $elm$core$Result$Err('The list of options must be all FancyOptions, all DatalistOptions, or all SlottedOptions')));
 };
-var $author$project$OptionList$decoder = F2(
+var $author$project$OptionList$decoderWithAge = F2(
 	function (optionAge, outputStyle) {
 		if (outputStyle.$ === 'CustomHtml') {
 			return A2(
@@ -11655,7 +11663,7 @@ var $author$project$OptionList$decoder = F2(
 					}
 				},
 				$elm$json$Json$Decode$list(
-					$author$project$Option$decoder(optionAge)));
+					A2($author$project$Option$decoderWithAgeAndOutputStyle, optionAge, outputStyle)));
 		} else {
 			return A2(
 				$elm$json$Json$Decode$map,
@@ -11915,7 +11923,7 @@ var $author$project$OptionList$selectedOptions = function (options) {
 	return A2(
 		$author$project$OptionList$sortBy,
 		$author$project$Option$getOptionSelectedIndex,
-		A2($author$project$OptionList$filter, $author$project$Option$isOptionSelected, options));
+		A2($author$project$OptionList$filter, $author$project$Option$isSelected, options));
 };
 var $author$project$OptionList$hasSelectedOption = function (optionList) {
 	return function (length_) {
@@ -12035,7 +12043,7 @@ var $author$project$FancyOption$isEmptyOption = function (option) {
 			return true;
 	}
 };
-var $author$project$Option$isEmptyOption = function (option) {
+var $author$project$Option$isEmpty = function (option) {
 	switch (option.$) {
 		case 'FancyOption':
 			var fancyOption = option.a;
@@ -12267,7 +12275,7 @@ var $author$project$OptionList$find = F2(
 		}
 	});
 var $author$project$OptionList$findSelectedOption = function (optionList) {
-	return A2($author$project$OptionList$find, $author$project$Option$isOptionSelected, optionList);
+	return A2($author$project$OptionList$find, $author$project$Option$isSelected, optionList);
 };
 var $elm$url$Url$percentEncode = _Url_percentEncode;
 var $author$project$SelectedValueEncoding$rawSelectedValue = F3(
@@ -12553,7 +12561,7 @@ var $author$project$SlottedOption$deselect = function (option) {
 			$author$project$SlottedOption$getOptionDisplay(option)),
 		option);
 };
-var $author$project$Option$deselectOption = function (option) {
+var $author$project$Option$deselect = function (option) {
 	switch (option.$) {
 		case 'FancyOption':
 			var fancyOption = option.a;
@@ -12590,7 +12598,7 @@ var $author$project$OptionList$unselectedOptions = function (options) {
 	return A2(
 		$author$project$OptionList$filter,
 		function (option) {
-			return !$author$project$Option$isOptionSelected(option);
+			return !$author$project$Option$isSelected(option);
 		},
 		options);
 };
@@ -12611,7 +12619,7 @@ var $author$project$OptionList$reIndexSelectedOptions = function (optionList) {
 var $author$project$OptionList$removeEmptyOptions = function (optionList) {
 	return A2(
 		$author$project$OptionList$filter,
-		A2($elm$core$Basics$composeR, $author$project$Option$isEmptyOption, $elm$core$Basics$not),
+		A2($elm$core$Basics$composeR, $author$project$Option$isEmpty, $elm$core$Basics$not),
 		optionList);
 };
 var $elm$core$List$member = F2(
@@ -12686,10 +12694,10 @@ var $author$project$OptionList$organizeNewDatalistOptions = function (optionList
 			$author$project$Option$getOptionValueAsString,
 			A2(
 				$author$project$OptionList$map,
-				$author$project$Option$deselectOption,
+				$author$project$Option$deselect,
 				A2(
 					$author$project$OptionList$filter,
-					A2($elm$core$Basics$composeR, $author$project$Option$isOptionSelected, $elm$core$Basics$not),
+					A2($elm$core$Basics$composeR, $author$project$Option$isSelected, $elm$core$Basics$not),
 					optionList))));
 	return $author$project$OptionList$reIndexSelectedOptions(
 		A2($author$project$OptionList$append, selectedOptions_, optionsForTheDatasetHints));
@@ -12714,11 +12722,11 @@ var $author$project$OptionList$deselectEveryOptionExceptOptionsInList = F2(
 				var test = function (optionNotToDeselect) {
 					return A2($author$project$Option$optionsHaveEqualValues, optionNotToDeselect, option);
 				};
-				return A2($elm$core$List$any, test, optionsNotToDeselect) ? option : $author$project$Option$deselectOption(option);
+				return A2($elm$core$List$any, test, optionsNotToDeselect) ? option : $author$project$Option$deselect(option);
 			},
 			optionList);
 	});
-var $author$project$Option$isOptionValueInListOfStrings = F2(
+var $author$project$Option$isValueInListOfStrings = F2(
 	function (possibleValues, option) {
 		return A2(
 			$elm$core$List$any,
@@ -12777,7 +12785,7 @@ var $author$project$OptionList$selectOptionsInOptionsListByString = F2(
 		var optionsToSelect = $author$project$OptionList$getOptions(
 			A2(
 				$author$project$OptionList$filter,
-				$author$project$Option$isOptionValueInListOfStrings(strings),
+				$author$project$Option$isValueInListOfStrings(strings),
 				options));
 		return A2(
 			$author$project$OptionList$deselectEveryOptionExceptOptionsInList,
@@ -13109,7 +13117,7 @@ var $author$project$MuchSelect$init = function (flags) {
 		var _v15 = A2(
 			$elm$json$Json$Decode$decodeString,
 			A2(
-				$author$project$OptionList$decoder,
+				$author$project$OptionList$decoderWithAge,
 				$author$project$OptionDisplay$MatureOption,
 				$author$project$SelectionMode$getOutputStyle(selectionConfig)),
 			flags.optionsJson);
@@ -13140,7 +13148,7 @@ var $author$project$MuchSelect$init = function (flags) {
 					initialValues,
 					A2(
 						$author$project$OptionList$filter,
-						A2($elm$core$Basics$composeL, $elm$core$Basics$not, $author$project$Option$isEmptyOption),
+						A2($elm$core$Basics$composeL, $elm$core$Basics$not, $author$project$Option$isEmpty),
 						options));
 				return _Utils_Tuple2(optionsWithInitialValues, $author$project$MuchSelect$NoEffect);
 			}
@@ -13721,39 +13729,52 @@ var $author$project$OptionDisplay$activate = function (optionDisplay) {
 			return optionDisplay;
 	}
 };
-var $author$project$Option$setOptionDisplay = F2(
-	function (optionDisplay, option) {
-		switch (option.$) {
-			case 'FancyOption':
-				var fancyOption = option.a;
-				return $author$project$Option$FancyOption(
-					A2($author$project$FancyOption$setOptionDisplay, optionDisplay, fancyOption));
-			case 'DatalistOption':
-				var datalistOption = option.a;
-				return $author$project$Option$DatalistOption(
-					A2($author$project$DatalistOption$setOptionDisplay, optionDisplay, datalistOption));
-			default:
-				var slottedOption = option.a;
-				return $author$project$Option$SlottedOption(
-					A2($author$project$SlottedOption$setOptionDisplay, optionDisplay, slottedOption));
-		}
-	});
-var $author$project$Option$activateOption = function (option) {
+var $author$project$DatalistOption$activate = function (option) {
 	return A2(
-		$author$project$Option$setOptionDisplay,
+		$author$project$DatalistOption$setOptionDisplay,
 		$author$project$OptionDisplay$activate(
-			$author$project$Option$getOptionDisplay(option)),
+			$author$project$DatalistOption$getOptionDisplay(option)),
 		option);
 };
-var $author$project$Option$activateOptionIfEqualRemoveHighlightElse = F2(
+var $author$project$FancyOption$activate = function (option) {
+	return A2(
+		$author$project$FancyOption$setOptionDisplay,
+		$author$project$OptionDisplay$activate(
+			$author$project$FancyOption$getOptionDisplay(option)),
+		option);
+};
+var $author$project$SlottedOption$activate = function (option) {
+	return A2(
+		$author$project$SlottedOption$setOptionDisplay,
+		$author$project$OptionDisplay$activate(
+			$author$project$SlottedOption$getOptionDisplay(option)),
+		option);
+};
+var $author$project$Option$activate = function (option) {
+	switch (option.$) {
+		case 'FancyOption':
+			var fancyOption = option.a;
+			return $author$project$Option$FancyOption(
+				$author$project$FancyOption$activate(fancyOption));
+		case 'DatalistOption':
+			var datalistOption = option.a;
+			return $author$project$Option$DatalistOption(
+				$author$project$DatalistOption$activate(datalistOption));
+		default:
+			var slottedOption = option.a;
+			return $author$project$Option$SlottedOption(
+				$author$project$SlottedOption$activate(slottedOption));
+	}
+};
+var $author$project$Option$activateIfEqualRemoveHighlightElse = F2(
 	function (optionValue, option) {
-		return A2($author$project$Option$optionEqualsOptionValue, optionValue, option) ? $author$project$Option$activateOption(option) : option;
+		return A2($author$project$Option$optionEqualsOptionValue, optionValue, option) ? $author$project$Option$activate(option) : option;
 	});
 var $author$project$OptionList$activateOptionInListByOptionValue = F2(
 	function (value, options) {
 		return A2(
 			$author$project$OptionList$map,
-			$author$project$Option$activateOptionIfEqualRemoveHighlightElse(value),
+			$author$project$Option$activateIfEqualRemoveHighlightElse(value),
 			options);
 	});
 var $author$project$OptionList$findByValue = F2(
@@ -14231,7 +14252,7 @@ var $author$project$SlottedOption$highlightOption = function (option) {
 			$author$project$SlottedOption$getOptionDisplay(option)),
 		option);
 };
-var $author$project$Option$highlightOption = function (option) {
+var $author$project$Option$highlight = function (option) {
 	switch (option.$) {
 		case 'FancyOption':
 			var fancyOption = option.a;
@@ -14282,7 +14303,7 @@ var $author$project$SlottedOption$removeHighlightFromOption = function (option) 
 			$author$project$SlottedOption$getOptionDisplay(option)),
 		option);
 };
-var $author$project$Option$removeHighlightFromOption = function (option) {
+var $author$project$Option$removeHighlight = function (option) {
 	switch (option.$) {
 		case 'FancyOption':
 			var fancyOption = option.a;
@@ -14301,7 +14322,7 @@ var $author$project$OptionList$changeHighlightedOptionByValue = F2(
 		return A2(
 			$author$project$OptionList$map,
 			function (option_) {
-				return A2($author$project$Option$optionEqualsOptionValue, optionValue, option_) ? $author$project$Option$highlightOption(option_) : $author$project$Option$removeHighlightFromOption(option_);
+				return A2($author$project$Option$optionEqualsOptionValue, optionValue, option_) ? $author$project$Option$highlight(option_) : $author$project$Option$removeHighlight(option_);
 			},
 			optionList);
 	});
@@ -14312,15 +14333,15 @@ var $author$project$OptionList$changeHighlightedOption = F2(
 			$author$project$Option$getOptionValue(option),
 			optionList);
 	});
-var $author$project$Option$isEmptyOptionOrHasEmptyValue = function (option) {
-	return $author$project$Option$isEmptyOption(option) || $author$project$OptionValue$isEmpty(
+var $author$project$Option$isEmptyOrHasEmptyValue = function (option) {
+	return $author$project$Option$isEmpty(option) || $author$project$OptionValue$isEmpty(
 		$author$project$Option$getOptionValue(option));
 };
 var $author$project$OptionList$cleanupEmptySelectedOptions = function (options) {
 	var selectedOptions_ = $author$project$OptionList$selectedOptions(options);
 	var selectedOptionsSansEmptyOptions = A2(
 		$author$project$OptionList$filter,
-		A2($elm$core$Basics$composeR, $author$project$Option$isEmptyOptionOrHasEmptyValue, $elm$core$Basics$not),
+		A2($elm$core$Basics$composeR, $author$project$Option$isEmptyOrHasEmptyValue, $elm$core$Basics$not),
 		$author$project$OptionList$selectedOptions(options));
 	return (($author$project$OptionList$length(selectedOptions_) > 1) && ($author$project$OptionList$length(selectedOptionsSansEmptyOptions) > 1)) ? selectedOptionsSansEmptyOptions : (($author$project$OptionList$length(selectedOptions_) > 1) ? A2($author$project$OptionList$take, 1, selectedOptions_) : options);
 };
@@ -14330,15 +14351,15 @@ var $author$project$MuchSelect$ReportOptionDeselected = function (a) {
 var $author$project$OptionList$deselectAll = function (optionList) {
 	switch (optionList.$) {
 		case 'FancyOptionList':
-			return A2($author$project$OptionList$map, $author$project$Option$deselectOption, optionList);
+			return A2($author$project$OptionList$map, $author$project$Option$deselect, optionList);
 		case 'DatalistOptionList':
 			return $author$project$OptionList$removeEmptyOptions(
 				A2(
 					$author$project$OptionList$uniqueBy,
 					$author$project$Option$getOptionValueAsString,
-					A2($author$project$OptionList$map, $author$project$Option$deselectOption, optionList)));
+					A2($author$project$OptionList$map, $author$project$Option$deselect, optionList)));
 		default:
-			return A2($author$project$OptionList$map, $author$project$Option$deselectOption, optionList);
+			return A2($author$project$OptionList$map, $author$project$Option$deselect, optionList);
 	}
 };
 var $author$project$OptionList$isEmpty = function (optionList) {
@@ -14688,25 +14709,15 @@ var $author$project$Option$decodeSearchResults = A4(
 					$elm$json$Json$Decode$nullable($author$project$OptionSearchFilter$decode))))),
 	A2($elm$json$Json$Decode$field, 'searchNonce', $elm$json$Json$Decode$int),
 	A2($elm$json$Json$Decode$field, 'clearingSearch', $elm$json$Json$Decode$bool));
-var $author$project$Option$decoderWithAgeAndOutputStyle = F2(
-	function (optionAge, outputStyle) {
-		if (outputStyle.$ === 'CustomHtml') {
-			return $elm$json$Json$Decode$oneOf(
-				_List_fromArray(
-					[
-						A2(
-						$elm$json$Json$Decode$map,
-						$author$project$Option$FancyOption,
-						$author$project$FancyOption$decoderWithAge(optionAge)),
-						A2(
-						$elm$json$Json$Decode$map,
-						$author$project$Option$SlottedOption,
-						$author$project$SlottedOption$decoderWithAge(optionAge))
-					]));
-		} else {
-			return A2($elm$json$Json$Decode$map, $author$project$Option$DatalistOption, $author$project$DatalistOption$decoder);
-		}
-	});
+var $author$project$FancyOption$decoder = $author$project$FancyOption$decoderWithAge($author$project$OptionDisplay$MatureOption);
+var $author$project$SlottedOption$decoder = $author$project$SlottedOption$decoderWithAge($author$project$OptionDisplay$MatureOption);
+var $author$project$Option$decoder = $elm$json$Json$Decode$oneOf(
+	_List_fromArray(
+		[
+			A2($elm$json$Json$Decode$map, $author$project$Option$FancyOption, $author$project$FancyOption$decoder),
+			A2($elm$json$Json$Decode$map, $author$project$Option$DatalistOption, $author$project$DatalistOption$decoder),
+			A2($elm$json$Json$Decode$map, $author$project$Option$SlottedOption, $author$project$SlottedOption$decoder)
+		]));
 var $author$project$OptionList$deselect = F2(
 	function (selectionIndex, optionList) {
 		return A2(
@@ -14714,7 +14725,7 @@ var $author$project$OptionList$deselect = F2(
 			function (option) {
 				return _Utils_eq(
 					$author$project$Option$getOptionSelectedIndex(option),
-					$author$project$PositiveInt$toInt(selectionIndex)) ? $author$project$Option$deselectOption(option) : option;
+					$author$project$PositiveInt$toInt(selectionIndex)) ? $author$project$Option$deselect(option) : option;
 			},
 			optionList);
 	});
@@ -14736,7 +14747,7 @@ var $author$project$OptionList$selectSingleOptionByValue = F2(
 		return A2(
 			$author$project$OptionList$map,
 			function (option_) {
-				return A2($author$project$Option$optionEqualsOptionValue, optionValue, option_) ? A2($author$project$Option$select, 0, option_) : $author$project$Option$deselectOption(option_);
+				return A2($author$project$Option$optionEqualsOptionValue, optionValue, option_) ? A2($author$project$Option$select, 0, option_) : $author$project$Option$deselect(option_);
 			},
 			options);
 	});
@@ -14783,7 +14794,7 @@ var $author$project$SlottedOption$isOptionHighlighted = function (option) {
 	return $author$project$OptionDisplay$isHighlighted(
 		$author$project$SlottedOption$getOptionDisplay(option));
 };
-var $author$project$Option$isOptionHighlighted = function (option) {
+var $author$project$Option$isHighlighted = function (option) {
 	switch (option.$) {
 		case 'FancyOption':
 			var fancyOption = option.a;
@@ -14799,7 +14810,7 @@ var $author$project$OptionList$deselectAllSelectedHighlightedOptions = function 
 	return A2(
 		$author$project$OptionList$map,
 		function (option) {
-			return ($author$project$Option$isOptionSelected(option) && $author$project$Option$isOptionHighlighted(option)) ? $author$project$Option$deselectOption(option) : option;
+			return ($author$project$Option$isSelected(option) && $author$project$Option$isHighlighted(option)) ? $author$project$Option$deselect(option) : option;
 		},
 		optionList);
 };
@@ -14858,7 +14869,7 @@ var $author$project$OptionList$deselectOptionByValue = F2(
 		return A2(
 			$author$project$OptionList$map,
 			function (option_) {
-				return A2($author$project$Option$optionEqualsOptionValue, optionValue, option_) ? $author$project$Option$deselectOption(option_) : option_;
+				return A2($author$project$Option$optionEqualsOptionValue, optionValue, option_) ? $author$project$Option$deselect(option_) : option_;
 			},
 			optionList);
 	});
@@ -14993,7 +15004,7 @@ var $author$project$OptionList$removeOptionsFromOptionList = F2(
 var $author$project$OptionList$removeUnselectedCustomOptions = function (optionList) {
 	var unselectedCustomOptions = A2(
 		$author$project$OptionList$filter,
-		A2($elm$core$Basics$composeR, $author$project$Option$isOptionSelected, $elm$core$Basics$not),
+		A2($elm$core$Basics$composeR, $author$project$Option$isSelected, $elm$core$Basics$not),
 		A2($author$project$OptionList$filter, $author$project$Option$isCustomOption, optionList));
 	return A2($author$project$OptionList$removeOptionsFromOptionList, optionList, unselectedCustomOptions);
 };
@@ -15870,7 +15881,7 @@ var $author$project$OptionList$findLowestSearchScore = function (optionList) {
 				optionList)));
 	return _Utils_eq(lowSore, $author$project$OptionSearchFilter$impossiblyLowScore) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(lowSore);
 };
-var $author$project$Option$isOptionBelowScore = F2(
+var $author$project$Option$isBelowSearchFilterScore = F2(
 	function (score, option) {
 		var _v0 = $author$project$Option$getMaybeOptionSearchFilter(option);
 		if (_v0.$ === 'Just') {
@@ -15891,7 +15902,7 @@ var $author$project$DropdownOptions$filterOptionsToShowInDropdownBySearchScore =
 			$author$project$OptionList$filter,
 			function (option) {
 				return A2(
-					$author$project$Option$isOptionBelowScore,
+					$author$project$Option$isBelowSearchFilterScore,
 					$author$project$OptionSearchFilter$lowScoreCutOff(lowScore),
 					option) || $author$project$Option$isCustomOption(option);
 			},
@@ -15948,12 +15959,12 @@ var $author$project$OptionList$findHighlightedOptionIndex = function (optionList
 	return A2(
 		$author$project$OptionList$findIndex,
 		function (option) {
-			return $author$project$Option$isOptionHighlighted(option);
+			return $author$project$Option$isHighlighted(option);
 		},
 		optionList);
 };
 var $author$project$OptionList$findSelectedOptionIndex = function (optionList) {
-	return A2($author$project$OptionList$findIndex, $author$project$Option$isOptionSelected, optionList);
+	return A2($author$project$OptionList$findIndex, $author$project$Option$isSelected, optionList);
 };
 var $author$project$OptionList$findHighlightedOrSelectedOptionIndex = function (optionList) {
 	var _v0 = $author$project$OptionList$findHighlightedOptionIndex(optionList);
@@ -16064,7 +16075,7 @@ var $author$project$OptionList$findHighlightedOption = function (optionList) {
 	return A2(
 		$author$project$OptionList$find,
 		function (option) {
-			return $author$project$Option$isOptionHighlighted(option);
+			return $author$project$Option$isHighlighted(option);
 		},
 		optionList);
 };
@@ -16137,7 +16148,7 @@ var $author$project$SlottedOption$isOptionSelectedHighlighted = function (option
 	return $author$project$OptionDisplay$isHighlightedSelected(
 		$author$project$SlottedOption$getOptionDisplay(option));
 };
-var $author$project$Option$isOptionSelectedHighlighted = function (option) {
+var $author$project$Option$isSelectedHighlighted = function (option) {
 	switch (option.$) {
 		case 'FancyOption':
 			var fancyOption = option.a;
@@ -16150,7 +16161,7 @@ var $author$project$Option$isOptionSelectedHighlighted = function (option) {
 	}
 };
 var $author$project$OptionList$hasSelectedHighlightedOptions = function (optionList) {
-	return A2($author$project$OptionList$any, $author$project$Option$isOptionSelectedHighlighted, optionList);
+	return A2($author$project$OptionList$any, $author$project$Option$isSelectedHighlighted, optionList);
 };
 var $author$project$DropdownOptions$head = function (dropdownOptions) {
 	return $author$project$OptionList$head(
@@ -16237,7 +16248,7 @@ var $author$project$SlottedOption$optionIsHighlightable = F2(
 			selectionMode,
 			$author$project$SlottedOption$getOptionDisplay(option));
 	});
-var $author$project$Option$optionIsHighlightable = F2(
+var $author$project$Option$issHighlightable = F2(
 	function (selectionMode, option) {
 		switch (option.$) {
 			case 'FancyOption':
@@ -16260,7 +16271,7 @@ var $author$project$OptionList$findClosestHighlightableOptionGoingDown = F3(
 	function (selectionMode, index, list) {
 		return A2(
 			$elm_community$list_extra$List$Extra$find,
-			$author$project$Option$optionIsHighlightable(selectionMode),
+			$author$project$Option$issHighlightable(selectionMode),
 			A2(
 				$elm_community$list_extra$List$Extra$splitAt,
 				index,
@@ -16310,7 +16321,7 @@ var $author$project$OptionList$findClosestHighlightableOptionGoingUp = F3(
 	function (selectionMode, index, list) {
 		return A2(
 			$elm_community$list_extra$List$Extra$find,
-			$author$project$Option$optionIsHighlightable(selectionMode),
+			$author$project$Option$issHighlightable(selectionMode),
 			$elm$core$List$reverse(
 				A2(
 					$elm_community$list_extra$List$Extra$splitAt,
@@ -16556,10 +16567,10 @@ var $author$project$OptionList$replaceOptions = F3(
 					$author$project$Option$getOptionValueAsString,
 					A2(
 						$author$project$OptionList$map,
-						$author$project$Option$deselectOption,
+						$author$project$Option$deselect,
 						A2(
 							$author$project$OptionList$filter,
-							A2($elm$core$Basics$composeR, $author$project$Option$isOptionSelected, $elm$core$Basics$not),
+							A2($elm$core$Basics$composeR, $author$project$Option$isSelected, $elm$core$Basics$not),
 							newOptions))));
 			var newSelectedOptions = oldSelectedOptions;
 			return A2($author$project$OptionList$append, newSelectedOptions, optionsForTheDatasetHints);
@@ -16569,7 +16580,7 @@ var $author$project$OptionList$clearAnyUnselectedCustomOptions = function (optio
 	return A2(
 		$author$project$OptionList$filter,
 		function (option) {
-			return !($author$project$Option$isCustomOption(option) && (!$author$project$Option$isOptionSelected(option)));
+			return !($author$project$Option$isCustomOption(option) && (!$author$project$Option$isSelected(option)));
 		},
 		optionsList);
 };
@@ -16596,7 +16607,7 @@ var $author$project$OptionList$selectHighlightedOption = F2(
 							A2(
 								$author$project$OptionList$filter,
 								function (option) {
-									return $author$project$Option$isOptionHighlighted(option);
+									return $author$project$Option$isHighlighted(option);
 								},
 								optionList)))));
 		} else {
@@ -16612,7 +16623,7 @@ var $author$project$OptionList$selectHighlightedOption = F2(
 						A2(
 							$author$project$OptionList$filter,
 							function (option) {
-								return $author$project$Option$isOptionHighlighted(option);
+								return $author$project$Option$isHighlighted(option);
 							},
 							optionList))));
 		}
@@ -16670,7 +16681,7 @@ var $author$project$OptionList$selectedOptionValuesAreEqual = F2(
 							$author$project$OptionList$getOptions(
 								A2(
 									$author$project$OptionList$filter,
-									A2($elm$core$Basics$composeR, $author$project$Option$isEmptyOption, $elm$core$Basics$not),
+									A2($elm$core$Basics$composeR, $author$project$Option$isEmpty, $elm$core$Basics$not),
 									$author$project$OptionList$selectedOptions(options))))),
 					valuesAsStrings);
 			default:
@@ -16708,6 +16719,23 @@ var $author$project$OptionDisplay$setAge = F2(
 				return $author$project$OptionDisplay$OptionDisabled(optionAge);
 			default:
 				return $author$project$OptionDisplay$OptionActivated;
+		}
+	});
+var $author$project$Option$setOptionDisplay = F2(
+	function (optionDisplay, option) {
+		switch (option.$) {
+			case 'FancyOption':
+				var fancyOption = option.a;
+				return $author$project$Option$FancyOption(
+					A2($author$project$FancyOption$setOptionDisplay, optionDisplay, fancyOption));
+			case 'DatalistOption':
+				var datalistOption = option.a;
+				return $author$project$Option$DatalistOption(
+					A2($author$project$DatalistOption$setOptionDisplay, optionDisplay, datalistOption));
+			default:
+				var slottedOption = option.a;
+				return $author$project$Option$SlottedOption(
+					A2($author$project$SlottedOption$setOptionDisplay, optionDisplay, slottedOption));
 		}
 	});
 var $author$project$Option$setOptionDisplayAge = F2(
@@ -17293,7 +17321,7 @@ var $author$project$SelectionMode$setTransformAndValidate = F2(
 		}
 	});
 var $author$project$Option$toggleHighlight = function (option) {
-	return $author$project$Option$isOptionHighlighted(option) ? $author$project$Option$removeHighlightFromOption(option) : $author$project$Option$highlightOption(option);
+	return $author$project$Option$isHighlighted(option) ? $author$project$Option$removeHighlight(option) : $author$project$Option$highlight(option);
 };
 var $author$project$OptionList$toggleSelectedHighlightByOptionValue = F2(
 	function (optionValue, optionList) {
@@ -17397,7 +17425,7 @@ var $author$project$OptionList$unhighlightOptionByValue = F2(
 		return A2(
 			$author$project$OptionList$map,
 			function (option_) {
-				return A2($author$project$Option$optionEqualsOptionValue, optionValue, option_) ? $author$project$Option$removeHighlightFromOption(option_) : option_;
+				return A2($author$project$Option$optionEqualsOptionValue, optionValue, option_) ? $author$project$Option$removeHighlight(option_) : option_;
 			},
 			optionList);
 	});
@@ -17405,7 +17433,7 @@ var $author$project$OptionList$unhighlightSelectedOptions = function (optionList
 	return A2(
 		$author$project$OptionList$map,
 		function (option_) {
-			return $author$project$Option$isOptionSelected(option_) ? $author$project$Option$removeHighlightFromOption(option_) : option_;
+			return $author$project$Option$isSelected(option_) ? $author$project$Option$removeHighlight(option_) : option_;
 		},
 		optionList);
 };
@@ -17800,10 +17828,10 @@ var $author$project$OptionList$updatedDatalistSelectedOptions = F2(
 				$author$project$Option$getOptionValueAsString,
 				A2(
 					$author$project$OptionList$map,
-					$author$project$Option$deselectOption,
+					$author$project$Option$deselect,
 					A2(
 						$author$project$OptionList$filter,
-						A2($elm$core$Basics$composeR, $author$project$Option$isOptionSelected, $elm$core$Basics$not),
+						A2($elm$core$Basics$composeR, $author$project$Option$isSelected, $elm$core$Basics$not),
 						optionList))));
 		var oldSelectedOptions = $author$project$OptionList$selectedOptions(optionList);
 		var oldSelectedOptionsCleanedUp = $author$project$OptionList$cleanupEmptySelectedOptions(oldSelectedOptions);
@@ -18195,7 +18223,7 @@ var $author$project$MuchSelect$update = F2(
 				var _v11 = A2(
 					$elm$json$Json$Decode$decodeValue,
 					A2(
-						$author$project$OptionList$decoder,
+						$author$project$OptionList$decoderWithAge,
 						$author$project$OptionDisplay$NewOption,
 						$author$project$SelectionMode$getOutputStyle(model.selectionConfig)),
 					newOptionsJson);
@@ -18270,7 +18298,7 @@ var $author$project$MuchSelect$update = F2(
 				var _v13 = A2(
 					$elm$json$Json$Decode$decodeValue,
 					A2(
-						$author$project$OptionList$decoder,
+						$author$project$OptionList$decoderWithAge,
 						$author$project$OptionDisplay$NewOption,
 						$author$project$SelectionMode$getOutputStyle(model.selectionConfig)),
 					optionsJson);
@@ -18310,7 +18338,7 @@ var $author$project$MuchSelect$update = F2(
 				var _v14 = A2(
 					$elm$json$Json$Decode$decodeValue,
 					A2(
-						$author$project$OptionList$decoder,
+						$author$project$OptionList$decoderWithAge,
 						$author$project$OptionDisplay$MatureOption,
 						$author$project$SelectionMode$getOutputStyle(model.selectionConfig)),
 					optionsJson);
@@ -18392,10 +18420,7 @@ var $author$project$MuchSelect$update = F2(
 				return A2($author$project$MuchSelect$deselectOption, model, optionValueToDeselect);
 			case 'DeselectOption':
 				var optionJson = msg.a;
-				var _v17 = A2(
-					$elm$json$Json$Decode$decodeValue,
-					$author$project$Option$decoder($author$project$OptionDisplay$MatureOption),
-					optionJson);
+				var _v17 = A2($elm$json$Json$Decode$decodeValue, $author$project$Option$decoder, optionJson);
 				if (_v17.$ === 'Ok') {
 					var option = _v17.a;
 					return A2(
@@ -19649,7 +19674,7 @@ var $author$project$DropdownOptions$maybeFirstOptionSearchFilter = function (dro
 			$author$project$OptionList$head(options));
 	}
 };
-var $author$project$Option$getOptionDescription = function (option) {
+var $author$project$Option$getDescription = function (option) {
 	switch (option.$) {
 		case 'FancyOption':
 			var fancyOption = option.a;
@@ -19669,7 +19694,7 @@ var $author$project$OptionDescription$toBool = function (optionDescription) {
 };
 var $author$project$Option$hasDescription = function (option) {
 	return $author$project$OptionDescription$toBool(
-		$author$project$Option$getOptionDescription(option));
+		$author$project$Option$getDescription(option));
 };
 var $elm$virtual_dom$VirtualDom$lazy2 = _VirtualDom_lazy2;
 var $elm$html$Html$Lazy$lazy2 = $elm$virtual_dom$VirtualDom$lazy2;
@@ -19810,7 +19835,7 @@ var $author$project$DropdownOptions$optionToCustomHtml = F3(
 												[
 													$elm$html$Html$text(
 													$author$project$OptionDescription$toString(
-														$author$project$Option$getOptionDescription(option)))
+														$author$project$Option$getDescription(option)))
 												]))
 										]));
 							}
@@ -21704,7 +21729,7 @@ var $elm_community$html_extra$Html$Attributes$Extra$attributeIf = F2(
 	function (condition, attr) {
 		return condition ? attr : $elm_community$html_extra$Html$Attributes$Extra$empty;
 	});
-var $author$project$Option$optionToValueLabelTuple = function (option) {
+var $author$project$Option$toValueLabelTuple = function (option) {
 	return _Utils_Tuple2(
 		$author$project$Option$getOptionValueAsString(option),
 		$author$project$OptionLabel$optionLabelToString(
@@ -21713,7 +21738,7 @@ var $author$project$Option$optionToValueLabelTuple = function (option) {
 var $author$project$OptionList$selectedOptionsToTuple = function (optionList) {
 	return A2(
 		$elm$core$List$map,
-		$author$project$Option$optionToValueLabelTuple,
+		$author$project$Option$toValueLabelTuple,
 		$author$project$OptionList$getOptions(
 			$author$project$OptionList$selectedOptions(optionList)));
 };

@@ -47,7 +47,7 @@ search string option =
         simpleMatch
             (string |> String.toLower)
             (option
-                |> Option.getOptionDescription
+                |> Option.getDescription
                 |> OptionDescription.toSearchString
             )
     , groupMatch =
@@ -76,7 +76,7 @@ updateSearchResultInOption searchString option =
             tokenize (option |> Option.getOptionLabel |> optionLabelToString) searchResult.labelMatch
 
         descriptionTokens =
-            tokenize (option |> Option.getOptionDescription |> OptionDescription.toSearchString) searchResult.descriptionMatch
+            tokenize (option |> Option.getDescription |> OptionDescription.toSearchString) searchResult.descriptionMatch
 
         groupTokens =
             tokenize (option |> Option.getOptionGroup |> OptionGroup.toSearchString) searchResult.groupMatch

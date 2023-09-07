@@ -1,4 +1,4 @@
-module SlottedOption exposing (SlottedOption, decoder, decoderWithAge, deselect, encode, getOptionDisplay, getOptionSelectedIndex, getOptionSlot, getOptionValue, getOptionValueAsString, highlightOption, isOptionHighlighted, isOptionSelectedHighlighted, isSelected, new, optionIsHighlightable, removeHighlightFromOption, select, setOptionDisplay, setOptionSelectedIndex, setOptionValue, test_new, test_optionToDebuggingString, toValueHtml)
+module SlottedOption exposing (SlottedOption, activate, decoder, decoderWithAge, deselect, encode, getOptionDisplay, getOptionSelectedIndex, getOptionSlot, getOptionValue, getOptionValueAsString, highlightOption, isOptionHighlighted, isOptionSelectedHighlighted, isSelected, new, optionIsHighlightable, removeHighlightFromOption, select, setOptionDisplay, setOptionSelectedIndex, setOptionValue, test_new, test_optionToDebuggingString, toValueHtml)
 
 import Events exposing (mouseUpPreventDefault)
 import Html exposing (Html, div, span, text)
@@ -112,6 +112,11 @@ getOptionSlot slottedOption =
     case slottedOption of
         SlottedOption _ _ optionSlot ->
             optionSlot
+
+
+activate : SlottedOption -> SlottedOption
+activate option =
+    setOptionDisplay (getOptionDisplay option |> OptionDisplay.activate) option
 
 
 decoder : Json.Decode.Decoder SlottedOption

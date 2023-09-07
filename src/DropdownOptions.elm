@@ -213,7 +213,7 @@ filterOptionsToShowInDropdownBySearchScore optionList =
         Just lowScore ->
             OptionList.filter
                 (\option ->
-                    Option.isOptionBelowScore (OptionSearchFilter.lowScoreCutOff lowScore) option
+                    Option.isBelowSearchFilterScore (OptionSearchFilter.lowScoreCutOff lowScore) option
                         || Option.isCustomOption option
                 )
                 optionList
@@ -431,7 +431,7 @@ optionToCustomHtml eventHandlers selectionConfig_ option_ =
                                     ]
                                     [ span []
                                         [ option
-                                            |> Option.getOptionDescription
+                                            |> Option.getDescription
                                             |> OptionDescription.toString
                                             |> text
                                         ]

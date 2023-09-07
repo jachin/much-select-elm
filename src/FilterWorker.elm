@@ -25,7 +25,7 @@ update : Msg -> OptionList -> ( OptionList, Cmd msg )
 update msg options =
     case msg of
         UpdateOptions optionsJson ->
-            case Json.Decode.decodeValue (OptionList.decoder OptionDisplay.MatureOption SelectionMode.CustomHtml) optionsJson of
+            case Json.Decode.decodeValue (OptionList.decoder SelectionMode.CustomHtml) optionsJson of
                 Ok newOptions ->
                     ( newOptions, Cmd.none )
 

@@ -1,19 +1,17 @@
 module Option exposing
     ( Option(..)
     , SearchResults
-    , activateOption
-    , activateOptionIfEqualRemoveHighlightElse
+    , activate
+    , activateIfEqualRemoveHighlightElse
     , decodeSearchResults
     , decoder
-    , decoderWithAge
     , decoderWithAgeAndOutputStyle
-    , deselectOption
-    , deselectOptionIfEqual
+    , deselect
     , encode
     , encodeSearchResult
     , equal
+    , getDescription
     , getMaybeOptionSearchFilter
-    , getOptionDescription
     , getOptionDisplay
     , getOptionGroup
     , getOptionLabel
@@ -24,18 +22,19 @@ module Option exposing
     , getSlot
     , hasDescription
     , hasSelectedItemIndex
-    , highlightOption
+    , highlight
+    , isBelowSearchFilterScore
     , isCustomOption
-    , isEmptyOption
-    , isEmptyOptionOrHasEmptyValue
+    , isEmpty
+    , isEmptyOrHasEmptyValue
+    , isHighlighted
     , isInvalid
-    , isOptionBelowScore
-    , isOptionHighlighted
-    , isOptionSelected
-    , isOptionSelectedHighlighted
-    , isOptionValueInListOfStrings
     , isPendingValidation
+    , isSelected
+    , isSelectedHighlighted
     , isValid
+    , isValueInListOfStrings
+    , issHighlightable
     , merge
     , newDisabledOption
     , newEmptyDatalistOption
@@ -43,10 +42,8 @@ module Option exposing
     , newSelectedEmptyDatalistOption
     , newSelectedOption
     , optionEqualsOptionValue
-    , optionIsHighlightable
-    , optionToValueLabelTuple
     , optionsHaveEqualValues
-    , removeHighlightFromOption
+    , removeHighlight
     , select
     , setDescriptionWithString
     , setGroupWithString
@@ -55,7 +52,6 @@ module Option exposing
     , setMaybeSortRank
     , setOptionDisplay
     , setOptionDisplayAge
-    , setOptionLabelToValue
     , setOptionSearchFilter
     , setOptionValue
     , setOptionValueErrors
@@ -69,6 +65,7 @@ module Option exposing
     , test_newFancyOptionWithMaybeCleanString
     , test_newSlottedOption
     , test_optionToDebuggingString
+    , toValueLabelTuple
     , toggleHighlight
     , transformOptionForOutputStyle
     )
@@ -142,20 +139,6 @@ setLabelWithString string maybeCleanString option =
             OptionLabel.newWithCleanLabel string maybeCleanString
     in
     setLabel newOptionLabel option
-
-
-{-| When a user selection a custom option this switches the label to the value
-removing any extra text hints that have been added to the custom option's
-label to show that this is a new custom option the user has the option to create.
--}
-setOptionLabelToValue : Option -> Option
-setOptionLabelToValue option =
-    case option of
-        FancyOption fancyOption ->
-            FancyOption (FancyOption.setOptionLabelToValue fancyOption)
-
-        _ ->
-            option
 
 
 setDescription : OptionDescription -> Option -> Option
@@ -263,8 +246,8 @@ newSelectedDatalistOption int string =
     DatalistOption (DatalistOption.newSelected (OptionValue.stringToOptionValue string) int)
 
 
-isOptionSelected : Option -> Bool
-isOptionSelected option =
+isSelected : Option -> Bool
+isSelected option =
     case option of
         FancyOption fancyOption ->
             FancyOption.isSelected fancyOption
@@ -302,19 +285,6 @@ getOptionSelectedIndex option =
             SlottedOption.getOptionSelectedIndex slottedOption
 
 
-setOptionSelectedIndex : Int -> Option -> Option
-setOptionSelectedIndex selectedIndex option =
-    case option of
-        FancyOption fancyOption ->
-            FancyOption (FancyOption.setOptionSelectedIndex selectedIndex fancyOption)
-
-        DatalistOption datalistOption ->
-            DatalistOption (DatalistOption.setOptionSelectedIndex selectedIndex datalistOption)
-
-        SlottedOption slottedOption ->
-            SlottedOption (SlottedOption.setOptionSelectedIndex selectedIndex slottedOption)
-
-
 hasSelectedItemIndex : Int -> Option -> Bool
 hasSelectedItemIndex selectedItemIndex option =
     getOptionSelectedIndex option == selectedItemIndex
@@ -343,8 +313,8 @@ getOptionValueAsString option =
             ""
 
 
-getOptionDescription : Option -> OptionDescription
-getOptionDescription option =
+getDescription : Option -> OptionDescription
+getDescription option =
     case option of
         FancyOption fancyOption ->
             FancyOption.getOptionDescription fancyOption
@@ -358,7 +328,7 @@ getOptionDescription option =
 
 hasDescription : Option -> Bool
 hasDescription option =
-    option |> getOptionDescription |> OptionDescription.toBool
+    option |> getDescription |> OptionDescription.toBool
 
 
 getMaybeOptionSearchFilter : Option -> Maybe OptionSearchFilter
@@ -374,8 +344,8 @@ getMaybeOptionSearchFilter option =
             Nothing
 
 
-isOptionBelowScore : Int -> Option -> Bool
-isOptionBelowScore score option =
+isBelowSearchFilterScore : Int -> Option -> Bool
+isBelowSearchFilterScore score option =
     case getMaybeOptionSearchFilter option of
         Just optionSearchFilter ->
             score >= optionSearchFilter.bestScore
@@ -384,8 +354,8 @@ isOptionBelowScore score option =
             False
 
 
-isOptionValueInListOfStrings : List String -> Option -> Bool
-isOptionValueInListOfStrings possibleValues option =
+isValueInListOfStrings : List String -> Option -> Bool
+isValueInListOfStrings possibleValues option =
     List.any (\possibleValue -> getOptionValueAsString option == possibleValue) possibleValues
 
 
@@ -399,8 +369,8 @@ optionEqualsOptionValue optionValue option =
     OptionValue.equals (getOptionValue option) optionValue
 
 
-highlightOption : Option -> Option
-highlightOption option =
+highlight : Option -> Option
+highlight option =
     case option of
         FancyOption fancyOption ->
             FancyOption (FancyOption.highlightOption fancyOption)
@@ -412,8 +382,8 @@ highlightOption option =
             SlottedOption (SlottedOption.highlightOption slottedOption)
 
 
-removeHighlightFromOption : Option -> Option
-removeHighlightFromOption option =
+removeHighlight : Option -> Option
+removeHighlight option =
     case option of
         FancyOption fancyOption ->
             FancyOption (FancyOption.removeHighlightFromOption fancyOption)
@@ -427,15 +397,15 @@ removeHighlightFromOption option =
 
 toggleHighlight : Option -> Option
 toggleHighlight option =
-    if isOptionHighlighted option then
-        removeHighlightFromOption option
+    if isHighlighted option then
+        removeHighlight option
 
     else
-        highlightOption option
+        highlight option
 
 
-isOptionHighlighted : Option -> Bool
-isOptionHighlighted option =
+isHighlighted : Option -> Bool
+isHighlighted option =
     case option of
         FancyOption fancyOption ->
             FancyOption.isOptionHighlighted fancyOption
@@ -447,8 +417,8 @@ isOptionHighlighted option =
             SlottedOption.isOptionHighlighted slottedOption
 
 
-optionIsHighlightable : SelectionMode -> Option -> Bool
-optionIsHighlightable selectionMode option =
+issHighlightable : SelectionMode -> Option -> Bool
+issHighlightable selectionMode option =
     case option of
         FancyOption fancyOption ->
             FancyOption.optionIsHighlightable selectionMode fancyOption
@@ -473,8 +443,8 @@ select selectionIndex option =
             SlottedOption (SlottedOption.select selectionIndex slottedOption)
 
 
-deselectOption : Option -> Option
-deselectOption option =
+deselect : Option -> Option
+deselect option =
     case option of
         FancyOption fancyOption ->
             FancyOption (FancyOption.deselect fancyOption)
@@ -486,17 +456,8 @@ deselectOption option =
             SlottedOption (SlottedOption.deselect slottedOption)
 
 
-deselectOptionIfEqual : OptionValue -> Option -> Option
-deselectOptionIfEqual optionValue option =
-    if optionEqualsOptionValue optionValue option then
-        deselectOption option
-
-    else
-        option
-
-
-isOptionSelectedHighlighted : Option -> Bool
-isOptionSelectedHighlighted option =
+isSelectedHighlighted : Option -> Bool
+isSelectedHighlighted option =
     case option of
         FancyOption fancyOption ->
             FancyOption.isOptionSelectedHighlighted fancyOption
@@ -508,22 +469,30 @@ isOptionSelectedHighlighted option =
             SlottedOption.isOptionSelectedHighlighted slottedOption
 
 
-activateOption : Option -> Option
-activateOption option =
-    setOptionDisplay (getOptionDisplay option |> OptionDisplay.activate) option
+activate : Option -> Option
+activate option =
+    case option of
+        FancyOption fancyOption ->
+            FancyOption (FancyOption.activate fancyOption)
+
+        DatalistOption datalistOption ->
+            DatalistOption (DatalistOption.activate datalistOption)
+
+        SlottedOption slottedOption ->
+            SlottedOption (SlottedOption.activate slottedOption)
 
 
-activateOptionIfEqualRemoveHighlightElse : OptionValue -> Option -> Option
-activateOptionIfEqualRemoveHighlightElse optionValue option =
+activateIfEqualRemoveHighlightElse : OptionValue -> Option -> Option
+activateIfEqualRemoveHighlightElse optionValue option =
     if optionEqualsOptionValue optionValue option then
-        activateOption option
+        activate option
 
     else
         option
 
 
-isEmptyOption : Option -> Bool
-isEmptyOption option =
+isEmpty : Option -> Bool
+isEmpty option =
     case option of
         FancyOption fancyOption ->
             FancyOption.isEmptyOption fancyOption
@@ -535,13 +504,13 @@ isEmptyOption option =
             False
 
 
-isEmptyOptionOrHasEmptyValue : Option -> Bool
-isEmptyOptionOrHasEmptyValue option =
-    isEmptyOption option || (getOptionValue option |> OptionValue.isEmpty)
+isEmptyOrHasEmptyValue : Option -> Bool
+isEmptyOrHasEmptyValue option =
+    isEmpty option || (getOptionValue option |> OptionValue.isEmpty)
 
 
-optionToValueLabelTuple : Option -> ( String, String )
-optionToValueLabelTuple option =
+toValueLabelTuple : Option -> ( String, String )
+toValueLabelTuple option =
     ( getOptionValueAsString option, getOptionLabel option |> optionLabelToString )
 
 
@@ -571,21 +540,12 @@ getOptionGroup option =
             OptionGroup.new ""
 
 
-decoder : OptionDisplay.OptionAge -> Json.Decode.Decoder Option
-decoder age =
+decoder : Json.Decode.Decoder Option
+decoder =
     Json.Decode.oneOf
         [ Json.Decode.map FancyOption FancyOption.decoder
         , Json.Decode.map DatalistOption DatalistOption.decoder
         , Json.Decode.map SlottedOption SlottedOption.decoder
-        ]
-
-
-decoderWithAge : OptionDisplay.OptionAge -> Json.Decode.Decoder Option
-decoderWithAge optionAge =
-    Json.Decode.oneOf
-        [ Json.Decode.map FancyOption (FancyOption.decoderWithAge optionAge)
-        , Json.Decode.map DatalistOption DatalistOption.decoder
-        , Json.Decode.map SlottedOption (SlottedOption.decoderWithAge optionAge)
         ]
 
 

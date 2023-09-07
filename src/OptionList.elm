@@ -1,4 +1,4 @@
-module OptionList exposing (OptionList(..), activateOptionInListByOptionValue, addAdditionalOptionsToOptionList, addAdditionalOptionsToOptionListWithAutoSortRank, addAdditionalSelectedOptionWithStringValue, addAndSelectOptionsInOptionsListByString, addNewEmptyOptionAtIndex, addNewSelectedEmptyOptionAtIndex, all, allOptionsAreValid, andMap, any, append, appendOptions, changeHighlightedOption, changeHighlightedOptionByValue, cleanupEmptySelectedOptions, concatMap, customSelectedOptions, decoder, deselect, deselectAll, deselectAllButTheFirstSelectedOptionInList, deselectAllSelectedHighlightedOptions, deselectEveryOptionExceptOptionsInList, deselectLastSelectedOption, deselectOptionByValue, drop, encode, encodeSearchResults, filter, findByValue, findClosestHighlightableOptionGoingDown, findClosestHighlightableOptionGoingUp, findHighestAutoSortRank, findHighlightedOption, findHighlightedOptionIndex, findHighlightedOrSelectedOptionIndex, findLowestSearchScore, findOptionByValue, findSelectedOption, getOptions, hasAnyPendingValidation, hasAnyValidationErrors, hasOptionByValueString, hasSelectedHighlightedOptions, hasSelectedOption, head, highlightFirstOptionInList, highlightOption, isEmpty, isSlottedOptionList, length, map, mergeTwoListsOfOptionsPreservingSelectedOptions, optionsPlusOne, optionsValuesAsStrings, organizeNewDatalistOptions, prependCustomOption, reIndexSelectedOptions, removeOptionFromOptionListBySelectedIndex, removeOptionsFromOptionList, removeUnselectedCustomOptions, replaceOptions, selectHighlightedOption, selectOption, selectOptionByOptionValue, selectOptionByOptionValueWithIndex, selectOptionIByValueStringWithIndex, selectOptions, selectOptionsInOptionsListByString, selectSingleOption, selectSingleOptionByValue, selectedOptionValuesAreEqual, selectedOptions, selectedOptionsToTuple, setAge, sort, sortBy, sortOptionsByBestScore, sortOptionsByTotalScore, take, test_newDatalistOptionList, test_newFancyOptionList, toggleSelectedHighlightByOptionValue, unhighlightOptionByValue, unhighlightSelectedOptions, uniqueBy, unselectedOptions, updateAge, updateDatalistOptionWithValueBySelectedValueIndex, updateDatalistOptionsWithPendingValidation, updateDatalistOptionsWithValue, updateDatalistOptionsWithValueAndErrors, updateOptionsWithNewSearchResults, updatedDatalistSelectedOptions)
+module OptionList exposing (OptionList(..), activateOptionInListByOptionValue, addAdditionalOptionsToOptionList, addAdditionalOptionsToOptionListWithAutoSortRank, addAdditionalSelectedOptionWithStringValue, addAndSelectOptionsInOptionsListByString, addNewEmptyOptionAtIndex, addNewSelectedEmptyOptionAtIndex, all, allOptionsAreValid, andMap, any, append, appendOptions, changeHighlightedOption, changeHighlightedOptionByValue, cleanupEmptySelectedOptions, concatMap, customSelectedOptions, decoder, decoderWithAge, deselect, deselectAll, deselectAllButTheFirstSelectedOptionInList, deselectAllSelectedHighlightedOptions, deselectEveryOptionExceptOptionsInList, deselectLastSelectedOption, deselectOptionByValue, drop, encode, encodeSearchResults, filter, findByValue, findClosestHighlightableOptionGoingDown, findClosestHighlightableOptionGoingUp, findHighestAutoSortRank, findHighlightedOption, findHighlightedOptionIndex, findHighlightedOrSelectedOptionIndex, findLowestSearchScore, findOptionByValue, findSelectedOption, getOptions, hasAnyPendingValidation, hasAnyValidationErrors, hasOptionByValueString, hasSelectedHighlightedOptions, hasSelectedOption, head, highlightFirstOptionInList, highlightOption, isEmpty, isSlottedOptionList, length, map, mergeTwoListsOfOptionsPreservingSelectedOptions, optionsPlusOne, optionsValuesAsStrings, organizeNewDatalistOptions, prependCustomOption, reIndexSelectedOptions, removeOptionFromOptionListBySelectedIndex, removeOptionsFromOptionList, removeUnselectedCustomOptions, replaceOptions, selectHighlightedOption, selectOption, selectOptionByOptionValue, selectOptionByOptionValueWithIndex, selectOptionIByValueStringWithIndex, selectOptions, selectOptionsInOptionsListByString, selectSingleOption, selectSingleOptionByValue, selectedOptionValuesAreEqual, selectedOptions, selectedOptionsToTuple, setAge, sort, sortBy, sortOptionsByBestScore, sortOptionsByTotalScore, take, test_newDatalistOptionList, test_newFancyOptionList, toggleSelectedHighlightByOptionValue, unhighlightOptionByValue, unhighlightSelectedOptions, uniqueBy, unselectedOptions, updateAge, updateDatalistOptionWithValueBySelectedValueIndex, updateDatalistOptionsWithPendingValidation, updateDatalistOptionsWithValue, updateDatalistOptionsWithValueAndErrors, updateOptionsWithNewSearchResults, updatedDatalistSelectedOptions)
 
 import DatalistOption
 import FancyOption
@@ -431,24 +431,24 @@ findClosestHighlightableOptionGoingUp selectionMode index list =
     List.Extra.splitAt index (getOptions list)
         |> Tuple.first
         |> List.reverse
-        |> List.Extra.find (Option.optionIsHighlightable selectionMode)
+        |> List.Extra.find (Option.issHighlightable selectionMode)
 
 
 findClosestHighlightableOptionGoingDown : SelectionMode -> Int -> OptionList -> Maybe Option
 findClosestHighlightableOptionGoingDown selectionMode index list =
     List.Extra.splitAt index (getOptions list)
         |> Tuple.second
-        |> List.Extra.find (Option.optionIsHighlightable selectionMode)
+        |> List.Extra.find (Option.issHighlightable selectionMode)
 
 
 findHighlightedOption : OptionList -> Maybe Option
 findHighlightedOption optionList =
-    find (\option -> Option.isOptionHighlighted option) optionList
+    find (\option -> Option.isHighlighted option) optionList
 
 
 findHighlightedOptionIndex : OptionList -> Maybe Int
 findHighlightedOptionIndex optionList =
-    findIndex (\option -> Option.isOptionHighlighted option) optionList
+    findIndex (\option -> Option.isHighlighted option) optionList
 
 
 findHighlightedOrSelectedOptionIndex : OptionList -> Maybe Int
@@ -464,14 +464,14 @@ findHighlightedOrSelectedOptionIndex optionList =
 selectedOptions : OptionList -> OptionList
 selectedOptions options =
     options
-        |> filter Option.isOptionSelected
+        |> filter Option.isSelected
         |> sortBy Option.getOptionSelectedIndex
 
 
 unselectedOptions : OptionList -> OptionList
 unselectedOptions options =
     options
-        |> filter (\option -> Option.isOptionSelected option |> not)
+        |> filter (\option -> Option.isSelected option |> not)
 
 
 customOptions : OptionList -> OptionList
@@ -537,7 +537,7 @@ selectSingleOptionByValue optionValue options =
                     Option.select 0 option_
 
                 else
-                    Option.deselectOption option_
+                    Option.deselect option_
             )
 
 
@@ -586,7 +586,7 @@ selectOptionByOptionValueWithIndex index optionValue optionList =
                 --            Option.selectOption nextSelectedIndex option_
                 Option.select index option_
 
-            else if Option.isOptionSelected option_ then
+            else if Option.isSelected option_ then
                 option_
 
             else
@@ -619,7 +619,7 @@ selectHighlightedOption selectionMode optionList =
             optionList
                 |> filter
                     (\option ->
-                        Option.isOptionHighlighted option
+                        Option.isHighlighted option
                     )
                 |> head
                 |> Maybe.map (\option -> selectSingleOption option optionList)
@@ -630,7 +630,7 @@ selectHighlightedOption selectionMode optionList =
             optionList
                 |> filter
                     (\option ->
-                        Option.isOptionHighlighted option
+                        Option.isHighlighted option
                     )
                 |> head
                 |> Maybe.map (\option -> selectOption option optionList)
@@ -646,13 +646,13 @@ If we do not find the option value return the same list of options.
 activateOptionInListByOptionValue : OptionValue -> OptionList -> OptionList
 activateOptionInListByOptionValue value options =
     map
-        (Option.activateOptionIfEqualRemoveHighlightElse value)
+        (Option.activateIfEqualRemoveHighlightElse value)
         options
 
 
 clearAnyUnselectedCustomOptions : OptionList -> OptionList
 clearAnyUnselectedCustomOptions optionsList =
-    filter (\option -> not (Option.isCustomOption option && not (Option.isOptionSelected option))) optionsList
+    filter (\option -> not (Option.isCustomOption option && not (Option.isSelected option))) optionsList
 
 
 hasOptionValue : OptionValue -> OptionList -> Bool
@@ -807,14 +807,14 @@ removeUnselectedCustomOptions optionList =
         unselectedCustomOptions =
             optionList
                 |> filter Option.isCustomOption
-                |> filter (Option.isOptionSelected >> not)
+                |> filter (Option.isSelected >> not)
     in
     removeOptionsFromOptionList optionList unselectedCustomOptions
 
 
 removeEmptyOptions : OptionList -> OptionList
 removeEmptyOptions optionList =
-    filter (Option.isEmptyOption >> not) optionList
+    filter (Option.isEmpty >> not) optionList
 
 
 {-| Take a list of option. Pull out the selected options and the unselected option.
@@ -849,7 +849,7 @@ deselect selectionIndex optionList =
     map
         (\option ->
             if Option.getOptionSelectedIndex option == PositiveInt.toInt selectionIndex then
-                Option.deselectOption option
+                Option.deselect option
 
             else
                 option
@@ -862,7 +862,7 @@ deselectOptionByValue optionValue optionList =
     map
         (\option_ ->
             if Option.optionEqualsOptionValue optionValue option_ then
-                Option.deselectOption option_
+                Option.deselect option_
 
             else
                 option_
@@ -877,15 +877,15 @@ deselectAll : OptionList -> OptionList
 deselectAll optionList =
     case optionList of
         FancyOptionList _ ->
-            map Option.deselectOption optionList
+            map Option.deselect optionList
 
         DatalistOptionList _ ->
-            map Option.deselectOption optionList
+            map Option.deselect optionList
                 |> uniqueBy Option.getOptionValueAsString
                 |> removeEmptyOptions
 
         SlottedOptionList _ ->
-            map Option.deselectOption optionList
+            map Option.deselect optionList
 
 
 {-| Deselect all the options that are selected AND highlighted.
@@ -895,8 +895,8 @@ deselectAllSelectedHighlightedOptions optionList =
     optionList
         |> map
             (\option ->
-                if Option.isOptionSelected option && Option.isOptionHighlighted option then
-                    Option.deselectOption option
+                if Option.isSelected option && Option.isHighlighted option then
+                    Option.deselect option
 
                 else
                     option
@@ -947,7 +947,7 @@ deselectEveryOptionExceptOptionsInList optionsNotToDeselect optionList =
                 option
 
             else
-                Option.deselectOption option
+                Option.deselect option
         )
         optionList
 
@@ -964,12 +964,12 @@ deselectAllButTheFirstSelectedOptionInList optionList =
 
 findSelectedOption : OptionList -> Maybe Option
 findSelectedOption optionList =
-    find Option.isOptionSelected optionList
+    find Option.isSelected optionList
 
 
 findSelectedOptionIndex : OptionList -> Maybe Int
 findSelectedOptionIndex optionList =
-    findIndex Option.isOptionSelected optionList
+    findIndex Option.isSelected optionList
 
 
 highlightOptionByValue : OptionValue -> OptionList -> OptionList
@@ -978,7 +978,7 @@ highlightOptionByValue optionValue optionList =
         |> map
             (\option ->
                 if Option.optionEqualsOptionValue optionValue option then
-                    Option.highlightOption option
+                    Option.highlight option
 
                 else
                     option
@@ -1002,10 +1002,10 @@ changeHighlightedOptionByValue optionValue optionList =
         |> map
             (\option_ ->
                 if Option.optionEqualsOptionValue optionValue option_ then
-                    Option.highlightOption option_
+                    Option.highlight option_
 
                 else
-                    Option.removeHighlightFromOption option_
+                    Option.removeHighlight option_
             )
 
 
@@ -1034,15 +1034,15 @@ toggleSelectedHighlightByOptionValue optionValue optionList =
 
 hasSelectedHighlightedOptions : OptionList -> Bool
 hasSelectedHighlightedOptions optionList =
-    any Option.isOptionSelectedHighlighted optionList
+    any Option.isSelectedHighlighted optionList
 
 
 unhighlightSelectedOptions : OptionList -> OptionList
 unhighlightSelectedOptions optionList =
     map
         (\option_ ->
-            if Option.isOptionSelected option_ then
-                Option.removeHighlightFromOption option_
+            if Option.isSelected option_ then
+                Option.removeHighlight option_
 
             else
                 option_
@@ -1058,7 +1058,7 @@ unhighlightOptionByValue optionValue optionList =
     map
         (\option_ ->
             if Option.optionEqualsOptionValue optionValue option_ then
-                Option.removeHighlightFromOption option_
+                Option.removeHighlight option_
 
             else
                 option_
@@ -1079,7 +1079,7 @@ cleanupEmptySelectedOptions options =
         selectedOptionsSansEmptyOptions =
             options
                 |> selectedOptions
-                |> filter (Option.isEmptyOptionOrHasEmptyValue >> not)
+                |> filter (Option.isEmptyOrHasEmptyValue >> not)
     in
     if length selectedOptions_ > 1 && length selectedOptionsSansEmptyOptions > 1 then
         selectedOptionsSansEmptyOptions
@@ -1099,8 +1099,8 @@ organizeNewDatalistOptions optionList =
 
         optionsForTheDatasetHints =
             optionList
-                |> filter (Option.isOptionSelected >> not)
-                |> map Option.deselectOption
+                |> filter (Option.isSelected >> not)
+                |> map Option.deselect
                 |> uniqueBy Option.getOptionValueAsString
                 |> removeEmptyOptions
     in
@@ -1136,8 +1136,8 @@ updatedDatalistSelectedOptions selectedValues optionList =
 
         optionsForTheDatasetHints =
             optionList
-                |> filter (Option.isOptionSelected >> not)
-                |> map Option.deselectOption
+                |> filter (Option.isSelected >> not)
+                |> map Option.deselect
                 |> uniqueBy Option.getOptionValueAsString
                 |> removeEmptyOptions
     in
@@ -1417,8 +1417,8 @@ replaceOptions selectionConfig oldOptions newOptions =
             let
                 optionsForTheDatasetHints =
                     newOptions
-                        |> filter (Option.isOptionSelected >> not)
-                        |> map Option.deselectOption
+                        |> filter (Option.isSelected >> not)
+                        |> map Option.deselect
                         |> uniqueBy Option.getOptionValueAsString
                         |> removeEmptyOptions
 
@@ -1501,7 +1501,7 @@ selectOptionsInOptionsListByString strings options =
     let
         optionsToSelect : List Option
         optionsToSelect =
-            filter (Option.isOptionValueInListOfStrings strings) options
+            filter (Option.isValueInListOfStrings strings) options
                 |> getOptions
     in
     selectOptions optionsToSelect options
@@ -1536,7 +1536,7 @@ transformOptionsToOutputStyle outputStyle options =
 
 selectedOptionsToTuple : OptionList -> List ( String, String )
 selectedOptionsToTuple optionList =
-    optionList |> selectedOptions |> getOptions |> List.map Option.optionToValueLabelTuple
+    optionList |> selectedOptions |> getOptions |> List.map Option.toValueLabelTuple
 
 
 {-| Take a list of string that are the values of options and an existing options list.
@@ -1647,7 +1647,7 @@ selectedOptionValuesAreEqual valuesAsStrings options =
         DatalistOptionList _ ->
             (options
                 |> selectedOptions
-                |> filter (Option.isEmptyOption >> not)
+                |> filter (Option.isEmpty >> not)
                 |> getOptions
                 |> List.map Option.getOptionValue
                 |> List.map OptionValue.optionValueToString
@@ -1747,11 +1747,16 @@ isSlottedOptionList optionList =
             False
 
 
-decoder : OptionDisplay.OptionAge -> OutputStyle -> Json.Decode.Decoder OptionList
-decoder optionAge outputStyle =
+decoder : OutputStyle -> Json.Decode.Decoder OptionList
+decoder outputStyle =
+    decoderWithAge OptionDisplay.MatureOption outputStyle
+
+
+decoderWithAge : OptionDisplay.OptionAge -> OutputStyle -> Json.Decode.Decoder OptionList
+decoderWithAge optionAge outputStyle =
     case outputStyle of
         CustomHtml ->
-            Json.Decode.list (Option.decoder optionAge)
+            Json.Decode.list (Option.decoderWithAgeAndOutputStyle optionAge outputStyle)
                 |> Json.Decode.andThen
                     (\options ->
                         case determineListType options of
