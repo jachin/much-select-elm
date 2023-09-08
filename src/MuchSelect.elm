@@ -656,16 +656,41 @@ update msg model =
                     ( model, ReportErrorMessage (Json.Decode.errorToString error) )
 
         OptionsReplaced newOptionsJson ->
-            case Json.Decode.decodeValue (OptionList.decoderWithAge OptionDisplay.NewOption (SelectionMode.getOutputStyle model.selectionConfig)) newOptionsJson of
-                Ok newOptions ->
+            let
+                _ =
+                    Debug.log "OptionsReplaced newOptionsJson" newOptionsJson
+
+                _ =
+                    Debug.log "OptionsReplaced getOutputStyle" (SelectionMode.getOutputStyle model.selectionConfig)
+
+                decoder =
+                    OptionList.decoderWithAge OptionDisplay.NewOption (SelectionMode.getOutputStyle model.selectionConfig)
+                        |> Debug.log "OptionsReplaced decoder"
+            in
+            case Json.Decode.decodeValue decoder newOptionsJson of
+                Ok newOptions_ ->
+                    let
+                        _ =
+                            Debug.log "newOptions_1" newOptions_
+                    in
                     case SelectionMode.getOutputStyle model.selectionConfig of
                         CustomHtml ->
                             let
+                                _ =
+                                    Debug.log "newOptions_2" newOptions_
+
+                                _ =
+                                    Debug.log "selectionConfig" model.selectionConfig
+
+                                _ =
+                                    Debug.log "current options" model.options
+
                                 newOptionWithOldSelectedOption =
                                     OptionList.replaceOptions
                                         model.selectionConfig
                                         model.options
-                                        newOptions
+                                        newOptions_
+                                        |> Debug.log "newOptionWithOldSelectedOption"
                             in
                             ( { model
                                 | options =
@@ -695,7 +720,7 @@ update msg model =
                                     OptionList.replaceOptions
                                         model.selectionConfig
                                         model.options
-                                        newOptions
+                                        newOptions_
                                         |> OptionList.organizeNewDatalistOptions
                                         |> OptionList.updateAge
                                             Datalist

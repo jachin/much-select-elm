@@ -1,26 +1,26 @@
 module Option.Selecting exposing (suite)
 
 import Expect exposing (Expectation)
-import Option exposing (Option(..), select, test_newDatalistOption, test_newEmptyDatalistOption, test_newFancyOptionWithMaybeCleanString)
-import OptionList exposing (OptionList(..), cleanupEmptySelectedOptions, deselectEveryOptionExceptOptionsInList, selectOptionByOptionValue, selectOptions, selectOptionsInOptionsListByString, selectSingleOptionByValue)
+import Option exposing (Option(..), select, test_newDatalistOption, test_newEmptyDatalistOption, test_newFancyOption, test_newFancyOptionWithMaybeCleanString)
+import OptionList exposing (OptionList(..), cleanupEmptySelectedOptions, deselectEveryOptionExceptOptionsInList, selectOptionByOptionValue, selectOptions, selectOptionsInOptionsListByString, selectSingleOptionByValue, test_newFancyOptionList)
 import OptionValue exposing (stringToOptionValue)
 import Test exposing (Test, describe, test)
 
 
 matthew =
-    test_newFancyOptionWithMaybeCleanString "Matthew" Nothing
+    test_newFancyOption "Matthew"
 
 
 mark =
-    test_newFancyOptionWithMaybeCleanString "Mark" Nothing
+    test_newFancyOption "Mark"
 
 
 luke =
-    test_newFancyOptionWithMaybeCleanString "Luke" Nothing
+    test_newFancyOption "Luke"
 
 
 john =
-    test_newFancyOptionWithMaybeCleanString "John" Nothing
+    test_newFancyOption "John"
 
 
 gospels =
@@ -37,16 +37,12 @@ numbers =
         |> Option.select 0
 
 
-optionToTuple : Option -> ( String, Bool )
-optionToTuple option =
-    Tuple.pair (Option.getOptionValueAsString option) (Option.isSelected option)
+cor =
+    test_newFancyOption "cor"
 
 
-assertEqualLists : OptionList -> OptionList -> Expectation
-assertEqualLists optionListA optionListB =
-    Expect.equalLists
-        (optionListA |> OptionList.getOptions |> List.map optionToTuple)
-        (optionListB |> OptionList.getOptions |> List.map optionToTuple)
+corinthians =
+    cor |> Option.setLabelWithString "Letter to the Corinthians" (Just "Letter to the Corinthians")
 
 
 suite : Test
@@ -54,7 +50,7 @@ suite =
     describe "Selecting options"
         [ test "just one option" <|
             \_ ->
-                assertEqualLists
+                Expect.equal
                     (gospels
                         |> selectOptionByOptionValue (stringToOptionValue "Mark")
                     )
@@ -67,7 +63,7 @@ suite =
                     )
         , test "just 2 options" <|
             \_ ->
-                assertEqualLists
+                Expect.equal
                     (gospels
                         |> selectOptionByOptionValue (stringToOptionValue "Mark")
                         |> selectOptionByOptionValue (stringToOptionValue "Luke")
@@ -81,7 +77,7 @@ suite =
                     )
         , test "one and only one option should... just... select one option" <|
             \_ ->
-                assertEqualLists
+                Expect.equal
                     (gospels
                         |> selectSingleOptionByValue (stringToOptionValue "Mark")
                         |> selectSingleOptionByValue (stringToOptionValue "Luke")
@@ -91,9 +87,9 @@ suite =
                     )
         , test "only no deselecting them" <|
             \_ ->
-                assertEqualLists
+                Expect.equal
                     (deselectEveryOptionExceptOptionsInList [ mark ]
-                        (FancyOptionList
+                        (test_newFancyOptionList
                             [ matthew
                             , select 0 mark
                             , select 1 luke
@@ -101,24 +97,44 @@ suite =
                             ]
                         )
                     )
-                    (FancyOptionList
+                    (test_newFancyOptionList
                         [ matthew
                         , select 0 mark
                         , luke
                         , john
                         ]
                     )
+        , test "select 3 options in a list " <|
+            \_ ->
+                Expect.equal
+                    (test_newFancyOptionList
+                        [ select 0 matthew
+                        , select 0 mark
+                        , luke
+                        , select 0 john
+                        ]
+                    )
+                    (selectOptions [ matthew, mark, john ] gospels)
+        , test "select an option with a fancy label " <|
+            \_ ->
+                Expect.equal
+                    (test_newFancyOptionList
+                        [ select 0 corinthians
+                        , luke
+                        ]
+                    )
+                    (selectOptions [ corinthians ] (test_newFancyOptionList [ corinthians, luke ]))
         , test "select no options in a list " <|
             \_ ->
-                assertEqualLists
+                Expect.equal
                     gospels
                     (selectOptions [] gospels)
         , describe "by strings"
             [ test "select a single option" <|
                 \_ ->
-                    assertEqualLists
+                    Expect.equal
                         (selectOptionsInOptionsListByString [ "Luke" ] gospels)
-                        (FancyOptionList
+                        (test_newFancyOptionList
                             [ matthew
                             , mark
                             , select 0 luke
@@ -127,40 +143,40 @@ suite =
                         )
             , test "select 2 options" <|
                 \_ ->
-                    assertEqualLists
+                    Expect.equal
                         (gospels
                             |> selectOptionsInOptionsListByString [ "Matthew", "Luke" ]
                         )
-                        (FancyOptionList
+                        (test_newFancyOptionList
                             [ select 0 matthew
                             , mark
-                            , select 1 luke
+                            , select 0 luke
                             , john
                             ]
                         )
             , test "select 2 different options" <|
                 \_ ->
-                    assertEqualLists
-                        (FancyOptionList
+                    Expect.equal
+                        (test_newFancyOptionList
                             [ select 0 matthew
                             , mark
-                            , select 1 luke
+                            , select 0 luke
                             , john
                             ]
                             |> selectOptionsInOptionsListByString [ "Mark", "John" ]
                         )
                         (FancyOptionList
                             [ matthew
-                            , select 2 mark
+                            , select 0 mark
                             , luke
-                            , select 3 john
+                            , select 0 john
                             ]
                         )
             ]
         , describe "for datalists"
             [ test "allow one empty option" <|
                 \_ ->
-                    assertEqualLists
+                    Expect.equal
                         (DatalistOptionList
                             [ test_newEmptyDatalistOption |> select 0
                             ]
@@ -172,7 +188,7 @@ suite =
                         )
             , test "allow only one empty option" <|
                 \_ ->
-                    assertEqualLists
+                    Expect.equal
                         (DatalistOptionList
                             [ test_newEmptyDatalistOption |> select 0
                             , test_newEmptyDatalistOption |> select 1
@@ -186,7 +202,7 @@ suite =
                         )
             , test "allow no empty options is there is at least one non empty option" <|
                 \_ ->
-                    assertEqualLists
+                    Expect.equal
                         (DatalistOptionList
                             [ numbers
                             , test_newEmptyDatalistOption |> select 1

@@ -573,8 +573,16 @@ selectOptionByOptionValue value list =
 
 selectOptionByOptionValueWithIndex : Int -> OptionValue -> OptionList -> OptionList
 selectOptionByOptionValueWithIndex index optionValue optionList =
+    let
+        _ =
+            Debug.log "selectOptionByOptionValueWithIndex" ( index, optionValue, optionList )
+    in
     map
         (\option_ ->
+            let
+                _ =
+                    Debug.log "selectOptionByOptionValueWithIndex option_" option_
+            in
             if Option.optionEqualsOptionValue optionValue option_ then
                 --CustomOption _ _ _ _ ->
                 --    case value of
@@ -584,16 +592,13 @@ selectOptionByOptionValueWithIndex index optionValue optionList =
                 --
                 --        EmptyOptionValue ->
                 --            Option.selectOption nextSelectedIndex option_
-                Option.select index option_
-
-            else if Option.isSelected option_ then
-                option_
+                option_ |> Debug.log "option_ before" |> Option.select index |> Debug.log "option_ after"
 
             else
-                --Option.removeHighlightFromOption option_
                 option_
         )
         optionList
+        |> Debug.log "selectOptionByOptionValueWithIndex"
 
 
 selectOptionIByValueStringWithIndex : Int -> String -> OptionList -> OptionList
@@ -609,6 +614,7 @@ selectOptions optionsToSelect optionList =
             ( selectOption optionToSelect newOptions, [] )
     in
     List.Extra.mapAccuml helper optionList optionsToSelect
+        |> Debug.log "diddle"
         |> Tuple.first
 
 
@@ -1466,8 +1472,10 @@ mergeTwoListsOfOptionsPreservingSelectedOptions selectionMode selectedItemPlacem
 
         newOptions =
             uniqueBy Option.getOptionValueAsString superList
+                |> Debug.log "mergeTwoListsOfOptionsPreservingSelectedOptions newOptions"
     in
     setSelectedOptionInNewOptions selectionMode superList newOptions
+        |> Debug.log "mergeTwoListsOfOptionsPreservingSelectedOptions setSelectedOptionInNewOptions"
 
 
 {-| This takes a list of strings and a list of options.
@@ -1501,12 +1509,26 @@ setSelectedOptionInNewOptions selectionMode oldOptions newOptions =
     in
     case selectionMode of
         SelectionMode.SingleSelect ->
+            let
+                _ =
+                    Debug.log "SelectionMode.SingleSelect setSelectedOptionInNewOptions newOptions" newOptions
+
+                _ =
+                    Debug.log "SelectionMode.SingleSelect setSelectedOptionInNewOptions newSelectedOptions" newSelectedOptions
+            in
             newOptions
                 |> deselectAll
                 |> selectOptions (take 1 newSelectedOptions |> getOptions)
 
         SelectionMode.MultiSelect ->
-            selectOptions (newSelectedOptions |> getOptions) newOptions
+            let
+                _ =
+                    Debug.log "SelectionMode.MultiSelect setSelectedOptionInNewOptions newOptions" newOptions
+
+                _ =
+                    Debug.log " SelectionMode.MultiSelect setSelectedOptionInNewOptions newSelectedOptions" (newSelectedOptions |> getOptions)
+            in
+            selectOptions (newSelectedOptions |> getOptions) newOptions |> Debug.log "goober"
 
 
 transformOptionsToOutputStyle : SelectionMode.OutputStyle -> OptionList -> OptionList
@@ -1549,7 +1571,7 @@ addAndSelectOptionsInOptionsListByString strings optionList =
                                         Just
                                             (FancyOptionList
                                                 [ Option.FancyOption
-                                                    (FancyOption.newCustomOption valueString valueString (Just valueString)
+                                                    (FancyOption.new valueString Nothing
                                                         |> FancyOption.select index
                                                     )
                                                 ]
@@ -1585,7 +1607,7 @@ addAndSelectOptionsInOptionsListByString strings optionList =
                                         Just
                                             (FancyOptionList
                                                 [ Option.FancyOption
-                                                    (FancyOption.newCustomOption valueString valueString (Just valueString)
+                                                    (FancyOption.new valueString Nothing
                                                         |> FancyOption.select index
                                                     )
                                                 ]
