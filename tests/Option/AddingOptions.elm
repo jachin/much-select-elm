@@ -1,7 +1,7 @@
 module Option.AddingOptions exposing (suite)
 
 import Expect exposing (Expectation)
-import Option exposing (Option(..), select, setDescriptionWithString, setLabelWithString, test_newDatalistOption, test_newEmptyDatalistOption, test_newEmptySelectedDatalistOption, test_newFancyOptionWithMaybeCleanString)
+import Option exposing (Option(..), select, setDescriptionWithString, setLabelWithString, test_newDatalistOption, test_newEmptyDatalistOption, test_newEmptySelectedDatalistOption, test_newFancyOption, test_newFancyOptionWithMaybeCleanString, test_newFancyOptionWithNoLabel)
 import OptionList exposing (OptionList(..), addAdditionalOptionsToOptionList, addAdditionalOptionsToOptionListWithAutoSortRank, addAndSelectOptionsInOptionsListByString, addNewSelectedEmptyOptionAtIndex, mergeTwoListsOfOptionsPreservingSelectedOptions, test_newFancyOptionList, updatedDatalistSelectedOptions)
 import OptionValue
 import OutputStyle exposing (SelectedItemPlacementMode(..))
@@ -187,7 +187,7 @@ suite =
                         (mergeTwoListsOfOptionsPreservingSelectedOptions
                             SelectionMode.SingleSelect
                             SelectedItemStaysInPlace
-                            (test_newFancyOptionList [ test_newFancyOptionWithMaybeCleanString "Wolf Club" Nothing |> select 0 ])
+                            (test_newFancyOptionList [ test_newFancyOption "Wolf Club" |> select 0 ])
                             (test_newFancyOptionList [ wolfClub ])
                         )
             , test "if a new option matches the selected option update the description even when adding a bunch of new options" <|

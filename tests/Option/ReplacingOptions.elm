@@ -1,7 +1,7 @@
 module Option.ReplacingOptions exposing (suite)
 
 import Expect
-import Option exposing (test_newFancyCustomOptionWithCleanString, test_newFancyOptionWithMaybeCleanString, test_newFancyOptionWithNoLabel)
+import Option exposing (test_newFancyCustomOptionWithCleanString, test_newFancyOption, test_newFancyOptionWithMaybeCleanString, test_newFancyOptionWithNoLabel)
 import OptionList exposing (OptionList(..), test_newFancyOptionList)
 import OutputStyle
 import SelectionMode
@@ -9,23 +9,24 @@ import Test exposing (Test, describe, test)
 
 
 futureCop =
-    test_newFancyOptionWithMaybeCleanString "Future Cop!" Nothing
+    test_newFancyOption "Future Cop!"
 
 
 theMidnight =
-    test_newFancyOptionWithMaybeCleanString "The Midnight" Nothing
+    test_newFancyOption "The Midnight"
 
 
 thirdEyeBlind =
-    test_newFancyOptionWithMaybeCleanString "Third Eye Blind" Nothing
+    test_newFancyOption "Third Eye Blind"
 
 
 timeCop1983 =
-    test_newFancyOptionWithNoLabel "Timecop1983"
+    test_newFancyOption "Timecop1983"
 
 
 timeCop1983WithLabel =
-    test_newFancyCustomOptionWithCleanString "Timecop1983"
+    test_newFancyOption "Timecop1983"
+        |> Option.setLabelWithString "Timecop 1983" (Just "Timecop 1983")
 
 
 selectionConfig =
