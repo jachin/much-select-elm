@@ -2,7 +2,7 @@ module Option.AddingOptions exposing (suite)
 
 import Expect exposing (Expectation)
 import Option exposing (Option(..), select, setDescriptionWithString, setLabelWithString, test_newDatalistOption, test_newEmptyDatalistOption, test_newFancyOptionWithMaybeCleanString)
-import OptionList exposing (OptionList(..), addAdditionalOptionsToOptionList, addAdditionalOptionsToOptionListWithAutoSortRank, addAndSelectOptionsInOptionsListByString, addNewEmptyOptionAtIndex, mergeTwoListsOfOptionsPreservingSelectedOptions, updatedDatalistSelectedOptions)
+import OptionList exposing (OptionList(..), addAdditionalOptionsToOptionList, addAdditionalOptionsToOptionListWithAutoSortRank, addAndSelectOptionsInOptionsListByString, addNewEmptyOptionAtIndex, mergeTwoListsOfOptionsPreservingSelectedOptions, test_newFancyOptionList, updatedDatalistSelectedOptions)
 import OptionValue
 import OutputStyle exposing (SelectedItemPlacementMode(..))
 import SelectionMode
@@ -101,53 +101,53 @@ suite =
         [ test "that have different values should get added to the list" <|
             \_ ->
                 assertEqualLists
-                    (FancyOptionList [ heartBones, waveshaper ])
+                    (test_newFancyOptionList [ heartBones, waveshaper ])
                     (addAdditionalOptionsToOptionList
-                        (FancyOptionList [ waveshaper ])
-                        (FancyOptionList [ heartBones ])
+                        (test_newFancyOptionList [ waveshaper ])
+                        (test_newFancyOptionList [ heartBones ])
                     )
         , test "with the same value of an option already in the list (single)" <|
             \_ ->
                 assertEqualLists
-                    (FancyOptionList [ heartBones ])
+                    (test_newFancyOptionList [ heartBones ])
                     (addAdditionalOptionsToOptionList
-                        (FancyOptionList [ heartBones ])
-                        (FancyOptionList [ heartBones ])
+                        (test_newFancyOptionList [ heartBones ])
+                        (test_newFancyOptionList [ heartBones ])
                     )
         , test "with the same value of an option already in the list" <|
             \_ ->
                 assertEqualLists
-                    (FancyOptionList [ timecop1983, heartBones ])
+                    (test_newFancyOptionList [ timecop1983, heartBones ])
                     (addAdditionalOptionsToOptionList
-                        (FancyOptionList [ timecop1983, heartBones ])
-                        (FancyOptionList [ heartBones ])
+                        (test_newFancyOptionList [ timecop1983, heartBones ])
+                        (test_newFancyOptionList [ heartBones ])
                     )
         , test "with the same value of an option already in the list but with a description" <|
             \_ ->
                 assertEqualLists
-                    (FancyOptionList [ wolfClub ])
+                    (test_newFancyOptionList [ wolfClub ])
                     (addAdditionalOptionsToOptionList
-                        (FancyOptionList [ wolfCubJustValue ])
-                        (FancyOptionList [ wolfClub ])
+                        (test_newFancyOptionList [ wolfCubJustValue ])
+                        (test_newFancyOptionList [ wolfClub ])
                     )
         , test "with the same value of an option already in the list but with less meta data" <|
             \_ ->
                 assertEqualLists
-                    (FancyOptionList [ wolfClub ])
+                    (test_newFancyOptionList [ wolfClub ])
                     (addAdditionalOptionsToOptionList
-                        (FancyOptionList [ wolfClub ])
-                        (FancyOptionList [ wolfCubJustValue ])
+                        (test_newFancyOptionList [ wolfClub ])
+                        (test_newFancyOptionList [ wolfCubJustValue ])
                     )
         , describe "and selecting them"
             [ test "with the same value of an option already in the list, preserver the label" <|
                 \_ ->
                     assertEqualLists
-                        (FancyOptionList [ select 0 wolfClub ])
-                        (addAndSelectOptionsInOptionsListByString [ "Wolf Club" ] (FancyOptionList [ wolfClub ]))
+                        (test_newFancyOptionList [ select 0 wolfClub ])
+                        (addAndSelectOptionsInOptionsListByString [ "Wolf Club" ] (test_newFancyOptionList [ wolfClub ]))
             , test "with the same value of a selected option already in the list preserver the label" <|
                 \_ ->
                     assertEqualLists
-                        (FancyOptionList
+                        (test_newFancyOptionList
                             [ wolfClub
                             , select 1 waveshaper
                             , arcadeHigh
@@ -155,7 +155,7 @@ suite =
                             ]
                         )
                         (addAndSelectOptionsInOptionsListByString [ "Timecop1983", "Waveshaper" ]
-                            (FancyOptionList
+                            (test_newFancyOptionList
                                 [ wolfClub
                                 , waveshaper
                                 , arcadeHigh
@@ -166,16 +166,16 @@ suite =
             , test "should preserver the order of the selection" <|
                 \_ ->
                     assertEqualLists
-                        (FancyOptionList [ select 0 wolfClub ])
+                        (test_newFancyOptionList [ select 0 wolfClub ])
                         (addAndSelectOptionsInOptionsListByString [ "Wolf Club" ]
-                            (FancyOptionList
+                            (test_newFancyOptionList
                                 [ select 0 wolfClub ]
                             )
                         )
             , test "should preserver the order of multiple selections" <|
                 \_ ->
                     assertEqualLists
-                        (FancyOptionList
+                        (test_newFancyOptionList
                             [ select 1 heartBones
                             , timecop1983
                             , select 0 waveshaper
@@ -183,7 +183,7 @@ suite =
                         )
                         (addAndSelectOptionsInOptionsListByString
                             [ "Waveshaper", "Heart Bones" ]
-                            (FancyOptionList
+                            (test_newFancyOptionList
                                 [ heartBones
                                 , timecop1983
                                 , waveshaper
@@ -195,76 +195,76 @@ suite =
             [ test "if a new option matches the selected option update the label and description" <|
                 \_ ->
                     assertEqualLists
-                        (FancyOptionList [ wolfClub |> select 0 ])
+                        (test_newFancyOptionList [ wolfClub |> select 0 ])
                         (mergeTwoListsOfOptionsPreservingSelectedOptions
                             SelectionMode.SingleSelect
                             SelectedItemStaysInPlace
-                            (FancyOptionList [ test_newFancyOptionWithMaybeCleanString "Wolf Club" Nothing |> select 0 ])
-                            (FancyOptionList [ wolfClub ])
+                            (test_newFancyOptionList [ test_newFancyOptionWithMaybeCleanString "Wolf Club" Nothing |> select 0 ])
+                            (test_newFancyOptionList [ wolfClub ])
                         )
             , test "if a new option matches the selected option update the description even when adding a bunch of new options" <|
                 \_ ->
                     assertEqualLists
-                        (FancyOptionList [ wolfClub |> select 0, timecop1983, heartBones ])
+                        (test_newFancyOptionList [ wolfClub |> select 0, timecop1983, heartBones ])
                         (mergeTwoListsOfOptionsPreservingSelectedOptions
                             SelectionMode.SingleSelect
                             SelectedItemStaysInPlace
-                            (FancyOptionList [ test_newFancyOptionWithMaybeCleanString "Wolf Club" Nothing |> select 0 ])
-                            (FancyOptionList [ wolfClub, timecop1983, heartBones ])
+                            (test_newFancyOptionList [ test_newFancyOptionWithMaybeCleanString "Wolf Club" Nothing |> select 0 ])
+                            (test_newFancyOptionList [ wolfClub, timecop1983, heartBones ])
                         )
             , test "a selection option should stay in the same spot in the list" <|
                 \_ ->
                     assertEqualLists
-                        (FancyOptionList [ timecop1983, heartBones, wolfClub |> select 0 ])
+                        (test_newFancyOptionList [ timecop1983, heartBones, wolfClub |> select 0 ])
                         (mergeTwoListsOfOptionsPreservingSelectedOptions
                             SelectionMode.SingleSelect
                             SelectedItemStaysInPlace
-                            (FancyOptionList [ test_newFancyOptionWithMaybeCleanString "Wolf Club" Nothing |> select 0 ])
-                            (FancyOptionList [ timecop1983, heartBones, wolfClub ])
+                            (test_newFancyOptionList [ test_newFancyOptionWithMaybeCleanString "Wolf Club" Nothing |> select 0 ])
+                            (test_newFancyOptionList [ timecop1983, heartBones, wolfClub ])
                         )
             , test "a selected option should move to the top of the list of options (when that option is set)" <|
                 \_ ->
                     assertEqualLists
-                        (FancyOptionList [ wolfClub |> select 0, timecop1983, heartBones ])
+                        (test_newFancyOptionList [ wolfClub |> select 0, timecop1983, heartBones ])
                         (mergeTwoListsOfOptionsPreservingSelectedOptions
                             SelectionMode.SingleSelect
                             SelectedItemMovesToTheTop
-                            (FancyOptionList [ test_newFancyOptionWithMaybeCleanString "Wolf Club" Nothing |> select 0 ])
-                            (FancyOptionList [ timecop1983, heartBones, wolfClub ])
+                            (test_newFancyOptionList [ test_newFancyOptionWithMaybeCleanString "Wolf Club" Nothing |> select 0 ])
+                            (test_newFancyOptionList [ timecop1983, heartBones, wolfClub ])
                         )
             , describe "with auto sort order rank"
                 [ test "new options should get added to the end of the list of options" <|
                     \_ ->
                         assertEqualLists
-                            (FancyOptionList
+                            (test_newFancyOptionList
                                 [ heartBones |> Option.setMaybeSortRank (newMaybeAutoSortRank 3)
                                 , wolfClub |> Option.setMaybeSortRank (newMaybeAutoSortRank 1)
                                 , timecop1983 |> Option.setMaybeSortRank (newMaybeAutoSortRank 2)
                                 ]
                             )
                             (addAdditionalOptionsToOptionListWithAutoSortRank
-                                (FancyOptionList
+                                (test_newFancyOptionList
                                     [ wolfClub |> Option.setMaybeSortRank (newMaybeAutoSortRank 1)
                                     , timecop1983 |> Option.setMaybeSortRank (newMaybeAutoSortRank 2)
                                     ]
                                 )
-                                (FancyOptionList [ heartBones ])
+                                (test_newFancyOptionList [ heartBones ])
                             )
                 , test "multiple new options should get added to the end of the list of options" <|
                     \_ ->
                         assertEqualLists
-                            (FancyOptionList
+                            (test_newFancyOptionList
                                 [ heartBones |> Option.setMaybeSortRank (newMaybeAutoSortRank 6)
                                 , timecop1983 |> Option.setMaybeSortRank (newMaybeAutoSortRank 7)
                                 , wolfClub |> Option.setMaybeSortRank (newMaybeAutoSortRank 5)
                                 ]
                             )
                             (addAdditionalOptionsToOptionListWithAutoSortRank
-                                (FancyOptionList
+                                (test_newFancyOptionList
                                     [ wolfClub |> Option.setMaybeSortRank (newMaybeAutoSortRank 5)
                                     ]
                                 )
-                                (FancyOptionList [ heartBones, timecop1983 ])
+                                (test_newFancyOptionList [ heartBones, timecop1983 ])
                             )
                 ]
             ]
@@ -272,18 +272,18 @@ suite =
             [ test "we should keep label and descriptions" <|
                 \_ ->
                     assertEqualLists
-                        (FancyOptionList
+                        (test_newFancyOptionList
                             [ wolfClub
                             ]
                         )
                         (mergeTwoListsOfOptionsPreservingSelectedOptions
                             SelectionMode.SingleSelect
                             SelectedItemStaysInPlace
-                            (FancyOptionList
+                            (test_newFancyOptionList
                                 [ wolfClub
                                 ]
                             )
-                            (FancyOptionList [ test_newFancyOptionWithMaybeCleanString "Wolf Club" Nothing ])
+                            (test_newFancyOptionList [ test_newFancyOptionWithMaybeCleanString "Wolf Club" Nothing ])
                         )
             ]
         , describe "mering two options"

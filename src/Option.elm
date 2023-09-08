@@ -63,6 +63,7 @@ module Option exposing
     , test_newFancyCustomOptionWithMaybeCleanString
     , test_newFancyOption
     , test_newFancyOptionWithMaybeCleanString
+    , test_newFancyOptionWithNoLabel
     , test_newSlottedOption
     , test_optionToDebuggingString
     , toValueLabelTuple
@@ -758,6 +759,18 @@ test_newFancyCustomOptionWithMaybeCleanString valueString maybeString =
 test_newFancyCustomOptionWithLabelAndMaybeCleanString : String -> String -> Maybe String -> Option
 test_newFancyCustomOptionWithLabelAndMaybeCleanString valueString labelString maybeString =
     FancyOption (FancyOption.newCustomOption valueString labelString maybeString)
+
+
+test_newFancyOptionWithNoLabel : String -> Option
+test_newFancyOptionWithNoLabel string =
+    FancyOption
+        (FancyOption.newFancyOption
+            OptionDisplay.default
+            (OptionLabel.new "")
+            (OptionValue.stringToOptionValue string)
+            OptionDescription.noDescription
+            (OptionGroup.new "")
+        )
 
 
 test_newDatalistOption : String -> Option

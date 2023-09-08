@@ -1,4 +1,4 @@
-module FancyOption exposing (FancyOption, activate, decoder, decoderWithAge, deselect, encode, getMaybeOptionSearchFilter, getOptionDescription, getOptionDisplay, getOptionGroup, getOptionLabel, getOptionSelectedIndex, getOptionValue, getOptionValueAsString, hasSelectedItemIndex, highlightOption, isCustomOption, isEmptyOption, isEmptyOptionOrHasEmptyValue, isOptionHighlighted, isOptionSelectedHighlighted, isSelected, merge, new, newCustomOption, newDisabledOption, newSelectedOption, optionIsHighlightable, optionToValueLabelTuple, removeHighlightFromOption, select, setDescription, setDescriptionWithString, setGroupWithString, setLabel, setLabelWithString, setOptionDisplay, setOptionDisplayAge, setOptionGroup, setOptionLabelToValue, setOptionSearchFilter, setOptionSelectedIndex, setOptionValue, test_optionToDebuggingString, toValueHtml)
+module FancyOption exposing (FancyOption, activate, decoder, decoderWithAge, deselect, encode, getMaybeOptionSearchFilter, getOptionDescription, getOptionDisplay, getOptionGroup, getOptionLabel, getOptionSelectedIndex, getOptionValue, getOptionValueAsString, hasSelectedItemIndex, highlightOption, isCustomOption, isEmptyOption, isEmptyOptionOrHasEmptyValue, isOptionHighlighted, isOptionSelectedHighlighted, isSelected, merge, new, newCustomOption, newDisabledOption, newFancyOption, newSelectedOption, optionIsHighlightable, optionToValueLabelTuple, removeHighlightFromOption, select, setDescription, setDescriptionWithString, setGroupWithString, setLabel, setLabelWithString, setOptionDisplay, setOptionDisplayAge, setOptionGroup, setOptionLabelToValue, setOptionSearchFilter, setOptionSelectedIndex, setOptionValue, test_optionToDebuggingString, toValueHtml)
 
 import Events exposing (mouseUpPreventDefault)
 import Html exposing (Html, div, span, text)
@@ -35,6 +35,11 @@ new value maybeCleanLabel =
                 OptionDescription.noDescription
                 NoOptionGroup
                 Nothing
+
+
+newFancyOption : OptionDisplay -> OptionLabel -> OptionValue -> OptionDescription -> OptionGroup -> FancyOption
+newFancyOption optionDisplay optionLabel optionValue optionDescription optionGroup =
+    FancyOption optionDisplay optionLabel optionValue optionDescription optionGroup Nothing
 
 
 newCustomOption : String -> String -> Maybe String -> FancyOption
