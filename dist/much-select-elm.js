@@ -5602,70 +5602,6 @@ var $author$project$OptionList$hasOptionByValueString = F2(
 			$author$project$OptionValue$stringToOptionValue(string),
 			optionList);
 	});
-var $author$project$FancyOption$newCustomOption = F3(
-	function (valueString, labelString, maybeCleanLabel) {
-		return A4(
-			$author$project$FancyOption$CustomFancyOption,
-			$author$project$OptionDisplay$default,
-			A2($author$project$OptionLabel$newWithCleanLabel, labelString, maybeCleanLabel),
-			$author$project$OptionValue$stringToOptionValue(valueString),
-			$elm$core$Maybe$Nothing);
-	});
-var $author$project$DatalistOption$getOptionDisplay = function (datalistOption) {
-	var optionDisplay = datalistOption.a;
-	return optionDisplay;
-};
-var $author$project$OptionDisplay$isSelected = function (optionDisplay) {
-	switch (optionDisplay.$) {
-		case 0:
-			return false;
-		case 1:
-			return false;
-		case 2:
-			return true;
-		case 4:
-			return true;
-		case 3:
-			return true;
-		case 5:
-			return true;
-		case 6:
-			return false;
-		case 8:
-			return false;
-		default:
-			return false;
-	}
-};
-var $author$project$DatalistOption$isSelected = function (datalistOption) {
-	return $author$project$OptionDisplay$isSelected(
-		$author$project$DatalistOption$getOptionDisplay(datalistOption));
-};
-var $author$project$FancyOption$isSelected = function (fancyOption) {
-	return $author$project$OptionDisplay$isSelected(
-		$author$project$FancyOption$getOptionDisplay(fancyOption));
-};
-var $author$project$SlottedOption$getOptionDisplay = function (slottedOption) {
-	var optionDisplay = slottedOption.a;
-	return optionDisplay;
-};
-var $author$project$SlottedOption$isSelected = function (slottedOption) {
-	return $author$project$OptionDisplay$isSelected(
-		$author$project$SlottedOption$getOptionDisplay(slottedOption));
-};
-var $author$project$Option$isSelected = function (option) {
-	switch (option.$) {
-		case 0:
-			var fancyOption = option.a;
-			return $author$project$FancyOption$isSelected(fancyOption);
-		case 1:
-			var datalistOption = option.a;
-			return $author$project$DatalistOption$isSelected(datalistOption);
-		default:
-			var slottedOption = option.a;
-			return $author$project$SlottedOption$isSelected(slottedOption);
-	}
-};
 var $author$project$OptionList$map = F2(
 	function (_function, optionList) {
 		switch (optionList.$) {
@@ -5686,6 +5622,10 @@ var $author$project$OptionList$map = F2(
 var $author$project$Option$SlottedOption = function (a) {
 	return {$: 2, a: a};
 };
+var $author$project$DatalistOption$getOptionDisplay = function (datalistOption) {
+	var optionDisplay = datalistOption.a;
+	return optionDisplay;
+};
 var $author$project$DatalistOption$setOptionDisplay = F2(
 	function (optionDisplay, datalistOption) {
 		var optionValue = datalistOption.b;
@@ -5701,6 +5641,10 @@ var $author$project$DatalistOption$select = F2(
 				$author$project$DatalistOption$getOptionDisplay(option)),
 			option);
 	});
+var $author$project$SlottedOption$getOptionDisplay = function (slottedOption) {
+	var optionDisplay = slottedOption.a;
+	return optionDisplay;
+};
 var $author$project$SlottedOption$SlottedOption = F3(
 	function (a, b, c) {
 		return {$: 0, a: a, b: b, c: c};
@@ -5743,7 +5687,7 @@ var $author$project$OptionList$selectOptionByOptionValueWithIndex = F3(
 		return A2(
 			$author$project$OptionList$map,
 			function (option_) {
-				return A2($author$project$Option$optionEqualsOptionValue, optionValue, option_) ? A2($author$project$Option$select, index, option_) : ($author$project$Option$isSelected(option_) ? option_ : option_);
+				return A2($author$project$Option$optionEqualsOptionValue, optionValue, option_) ? A2($author$project$Option$select, index, option_) : option_;
 			},
 			optionList);
 	});
@@ -5780,11 +5724,7 @@ var $author$project$OptionList$addAndSelectOptionsInOptionsListByString = F2(
 															A2(
 																$author$project$FancyOption$select,
 																index,
-																A3(
-																	$author$project$FancyOption$newCustomOption,
-																	valueString,
-																	valueString,
-																	$elm$core$Maybe$Just(valueString))))
+																A2($author$project$FancyOption$new, valueString, $elm$core$Maybe$Nothing)))
 														])));
 										case 1:
 											return $elm$core$Maybe$Just(
@@ -5831,11 +5771,7 @@ var $author$project$OptionList$addAndSelectOptionsInOptionsListByString = F2(
 															A2(
 																$author$project$FancyOption$select,
 																index,
-																A3(
-																	$author$project$FancyOption$newCustomOption,
-																	valueString,
-																	valueString,
-																	$elm$core$Maybe$Just(valueString))))
+																A2($author$project$FancyOption$new, valueString, $elm$core$Maybe$Nothing)))
 														])));
 										case 1:
 											return $elm$core$Maybe$Just(
@@ -6506,6 +6442,53 @@ var $author$project$Option$getOptionSelectedIndex = function (option) {
 		default:
 			var slottedOption = option.a;
 			return $author$project$SlottedOption$getOptionSelectedIndex(slottedOption);
+	}
+};
+var $author$project$OptionDisplay$isSelected = function (optionDisplay) {
+	switch (optionDisplay.$) {
+		case 0:
+			return false;
+		case 1:
+			return false;
+		case 2:
+			return true;
+		case 4:
+			return true;
+		case 3:
+			return true;
+		case 5:
+			return true;
+		case 6:
+			return false;
+		case 8:
+			return false;
+		default:
+			return false;
+	}
+};
+var $author$project$DatalistOption$isSelected = function (datalistOption) {
+	return $author$project$OptionDisplay$isSelected(
+		$author$project$DatalistOption$getOptionDisplay(datalistOption));
+};
+var $author$project$FancyOption$isSelected = function (fancyOption) {
+	return $author$project$OptionDisplay$isSelected(
+		$author$project$FancyOption$getOptionDisplay(fancyOption));
+};
+var $author$project$SlottedOption$isSelected = function (slottedOption) {
+	return $author$project$OptionDisplay$isSelected(
+		$author$project$SlottedOption$getOptionDisplay(slottedOption));
+};
+var $author$project$Option$isSelected = function (option) {
+	switch (option.$) {
+		case 0:
+			var fancyOption = option.a;
+			return $author$project$FancyOption$isSelected(fancyOption);
+		case 1:
+			var datalistOption = option.a;
+			return $author$project$DatalistOption$isSelected(datalistOption);
+		default:
+			var slottedOption = option.a;
+			return $author$project$SlottedOption$isSelected(slottedOption);
 	}
 };
 var $elm$core$List$sortBy = _List_sortBy;
@@ -9616,6 +9599,15 @@ var $author$project$OptionLabel$optionLabelToSearchString = function (optionLabe
 		return $elm$core$String$toLower(string);
 	}
 };
+var $author$project$FancyOption$newCustomOption = F3(
+	function (valueString, labelString, maybeCleanLabel) {
+		return A4(
+			$author$project$FancyOption$CustomFancyOption,
+			$author$project$OptionDisplay$default,
+			A2($author$project$OptionLabel$newWithCleanLabel, labelString, maybeCleanLabel),
+			$author$project$OptionValue$stringToOptionValue(valueString),
+			$elm$core$Maybe$Nothing);
+	});
 var $author$project$SearchString$toString = function (_v0) {
 	var str = _v0.a;
 	return str;
@@ -12916,18 +12908,16 @@ var $author$project$MuchSelect$update = F2(
 				}
 			case 14:
 				var newOptionsJson = msg.a;
-				var _v11 = A2(
-					$elm$json$Json$Decode$decodeValue,
-					A2(
-						$author$project$OptionList$decoderWithAge,
-						0,
-						$author$project$SelectionMode$getOutputStyle(model.a)),
-					newOptionsJson);
+				var decoder = A2(
+					$author$project$OptionList$decoderWithAge,
+					0,
+					$author$project$SelectionMode$getOutputStyle(model.a));
+				var _v11 = A2($elm$json$Json$Decode$decodeValue, decoder, newOptionsJson);
 				if (!_v11.$) {
-					var newOptions = _v11.a;
+					var newOptions_ = _v11.a;
 					var _v12 = $author$project$SelectionMode$getOutputStyle(model.a);
 					if (!_v12) {
-						var newOptionWithOldSelectedOption = A3($author$project$OptionList$replaceOptions, model.a, model.b, newOptions);
+						var newOptionWithOldSelectedOption = A3($author$project$OptionList$replaceOptions, model.a, model.b, newOptions_);
 						return _Utils_Tuple2(
 							$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
 								_Utils_update(
@@ -12960,7 +12950,7 @@ var $author$project$MuchSelect$update = F2(
 							model.g,
 							$author$project$SelectionMode$getSearchStringMinimumLength(model.a),
 							$author$project$OptionList$organizeNewDatalistOptions(
-								A3($author$project$OptionList$replaceOptions, model.a, model.b, newOptions)));
+								A3($author$project$OptionList$replaceOptions, model.a, model.b, newOptions_)));
 						return _Utils_Tuple2(
 							$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
 								_Utils_update(

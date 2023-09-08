@@ -573,16 +573,8 @@ selectOptionByOptionValue value list =
 
 selectOptionByOptionValueWithIndex : Int -> OptionValue -> OptionList -> OptionList
 selectOptionByOptionValueWithIndex index optionValue optionList =
-    let
-        _ =
-            Debug.log "selectOptionByOptionValueWithIndex" ( index, optionValue, optionList )
-    in
     map
         (\option_ ->
-            let
-                _ =
-                    Debug.log "selectOptionByOptionValueWithIndex option_" option_
-            in
             if Option.optionEqualsOptionValue optionValue option_ then
                 --CustomOption _ _ _ _ ->
                 --    case value of
@@ -592,13 +584,12 @@ selectOptionByOptionValueWithIndex index optionValue optionList =
                 --
                 --        EmptyOptionValue ->
                 --            Option.selectOption nextSelectedIndex option_
-                option_ |> Debug.log "option_ before" |> Option.select index |> Debug.log "option_ after"
+                option_ |> Option.select index
 
             else
                 option_
         )
         optionList
-        |> Debug.log "selectOptionByOptionValueWithIndex"
 
 
 selectOptionIByValueStringWithIndex : Int -> String -> OptionList -> OptionList
@@ -614,7 +605,6 @@ selectOptions optionsToSelect optionList =
             ( selectOption optionToSelect newOptions, [] )
     in
     List.Extra.mapAccuml helper optionList optionsToSelect
-        |> Debug.log "diddle"
         |> Tuple.first
 
 
@@ -1472,10 +1462,8 @@ mergeTwoListsOfOptionsPreservingSelectedOptions selectionMode selectedItemPlacem
 
         newOptions =
             uniqueBy Option.getOptionValueAsString superList
-                |> Debug.log "mergeTwoListsOfOptionsPreservingSelectedOptions newOptions"
     in
     setSelectedOptionInNewOptions selectionMode superList newOptions
-        |> Debug.log "mergeTwoListsOfOptionsPreservingSelectedOptions setSelectedOptionInNewOptions"
 
 
 {-| This takes a list of strings and a list of options.
@@ -1509,26 +1497,12 @@ setSelectedOptionInNewOptions selectionMode oldOptions newOptions =
     in
     case selectionMode of
         SelectionMode.SingleSelect ->
-            let
-                _ =
-                    Debug.log "SelectionMode.SingleSelect setSelectedOptionInNewOptions newOptions" newOptions
-
-                _ =
-                    Debug.log "SelectionMode.SingleSelect setSelectedOptionInNewOptions newSelectedOptions" newSelectedOptions
-            in
             newOptions
                 |> deselectAll
                 |> selectOptions (take 1 newSelectedOptions |> getOptions)
 
         SelectionMode.MultiSelect ->
-            let
-                _ =
-                    Debug.log "SelectionMode.MultiSelect setSelectedOptionInNewOptions newOptions" newOptions
-
-                _ =
-                    Debug.log " SelectionMode.MultiSelect setSelectedOptionInNewOptions newSelectedOptions" (newSelectedOptions |> getOptions)
-            in
-            selectOptions (newSelectedOptions |> getOptions) newOptions |> Debug.log "goober"
+            selectOptions (newSelectedOptions |> getOptions) newOptions
 
 
 transformOptionsToOutputStyle : SelectionMode.OutputStyle -> OptionList -> OptionList
