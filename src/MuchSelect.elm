@@ -575,7 +575,6 @@ update msg model =
                                 (OptionValue.stringToOptionValue valueString)
                                 selectedValueIndex
                                 model.options
-                                |> Debug.log "ValidationPending updatedOptions"
                     in
                     ( { model
                         | options = updatedOptions

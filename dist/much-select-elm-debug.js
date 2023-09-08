@@ -16192,7 +16192,6 @@ var $author$project$RightSlot$isRightSlotTransitioning = function (rightSlot) {
 			return false;
 	}
 };
-var $elm$core$Debug$log = _Debug_log;
 var $author$project$MuchSelect$ReportOptionSelected = function (a) {
 	return {$: 'ReportOptionSelected', a: a};
 };
@@ -18121,14 +18120,11 @@ var $author$project$MuchSelect$update = F2(
 										A2($author$project$MuchSelect$InputHasBeenKeyUp, valueString, $author$project$TransformAndValidate$InputHasFailedValidation)
 									])));
 					default:
-						var updatedOptions = A2(
-							$elm$core$Debug$log,
-							'ValidationPending updatedOptions',
-							A3(
-								$author$project$OptionList$updateDatalistOptionsWithPendingValidation,
-								$author$project$OptionValue$stringToOptionValue(valueString),
-								selectedValueIndex,
-								model.options));
+						var updatedOptions = A3(
+							$author$project$OptionList$updateDatalistOptionsWithPendingValidation,
+							$author$project$OptionValue$stringToOptionValue(valueString),
+							selectedValueIndex,
+							model.options);
 						return _Utils_Tuple2(
 							_Utils_update(
 								model,
