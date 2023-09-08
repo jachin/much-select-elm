@@ -1,8 +1,8 @@
 module Option.AddingOptions exposing (suite)
 
 import Expect exposing (Expectation)
-import Option exposing (Option(..), select, setDescriptionWithString, setLabelWithString, test_newDatalistOption, test_newEmptyDatalistOption, test_newFancyOptionWithMaybeCleanString)
-import OptionList exposing (OptionList(..), addAdditionalOptionsToOptionList, addAdditionalOptionsToOptionListWithAutoSortRank, addAndSelectOptionsInOptionsListByString, addNewEmptyOptionAtIndex, mergeTwoListsOfOptionsPreservingSelectedOptions, test_newFancyOptionList, updatedDatalistSelectedOptions)
+import Option exposing (Option(..), select, setDescriptionWithString, setLabelWithString, test_newDatalistOption, test_newEmptyDatalistOption, test_newEmptySelectedDatalistOption, test_newFancyOptionWithMaybeCleanString)
+import OptionList exposing (OptionList(..), addAdditionalOptionsToOptionList, addAdditionalOptionsToOptionListWithAutoSortRank, addAndSelectOptionsInOptionsListByString, addNewSelectedEmptyOptionAtIndex, mergeTwoListsOfOptionsPreservingSelectedOptions, test_newFancyOptionList, updatedDatalistSelectedOptions)
 import OptionValue
 import OutputStyle exposing (SelectedItemPlacementMode(..))
 import SelectionMode
@@ -83,24 +83,12 @@ arcadeHighSelected =
         |> Option.select 2
 
 
-optionToTuple : Option -> ( String, Bool )
-optionToTuple option =
-    Tuple.pair (Option.getOptionValueAsString option) (Option.isSelected option)
-
-
-assertEqualLists : OptionList -> OptionList -> Expectation
-assertEqualLists optionListA optionListB =
-    Expect.equalLists
-        (optionListA |> OptionList.getOptions |> List.map optionToTuple)
-        (optionListB |> OptionList.getOptions |> List.map optionToTuple)
-
-
 suite : Test
 suite =
     describe "Adding options"
         [ test "that have different values should get added to the list" <|
             \_ ->
-                assertEqualLists
+                Expect.equal
                     (test_newFancyOptionList [ heartBones, waveshaper ])
                     (addAdditionalOptionsToOptionList
                         (test_newFancyOptionList [ waveshaper ])
@@ -108,7 +96,7 @@ suite =
                     )
         , test "with the same value of an option already in the list (single)" <|
             \_ ->
-                assertEqualLists
+                Expect.equal
                     (test_newFancyOptionList [ heartBones ])
                     (addAdditionalOptionsToOptionList
                         (test_newFancyOptionList [ heartBones ])
@@ -116,7 +104,7 @@ suite =
                     )
         , test "with the same value of an option already in the list" <|
             \_ ->
-                assertEqualLists
+                Expect.equal
                     (test_newFancyOptionList [ timecop1983, heartBones ])
                     (addAdditionalOptionsToOptionList
                         (test_newFancyOptionList [ timecop1983, heartBones ])
@@ -124,7 +112,7 @@ suite =
                     )
         , test "with the same value of an option already in the list but with a description" <|
             \_ ->
-                assertEqualLists
+                Expect.equal
                     (test_newFancyOptionList [ wolfClub ])
                     (addAdditionalOptionsToOptionList
                         (test_newFancyOptionList [ wolfCubJustValue ])
@@ -132,7 +120,7 @@ suite =
                     )
         , test "with the same value of an option already in the list but with less meta data" <|
             \_ ->
-                assertEqualLists
+                Expect.equal
                     (test_newFancyOptionList [ wolfClub ])
                     (addAdditionalOptionsToOptionList
                         (test_newFancyOptionList [ wolfClub ])
@@ -141,12 +129,12 @@ suite =
         , describe "and selecting them"
             [ test "with the same value of an option already in the list, preserver the label" <|
                 \_ ->
-                    assertEqualLists
+                    Expect.equal
                         (test_newFancyOptionList [ select 0 wolfClub ])
                         (addAndSelectOptionsInOptionsListByString [ "Wolf Club" ] (test_newFancyOptionList [ wolfClub ]))
             , test "with the same value of a selected option already in the list preserver the label" <|
                 \_ ->
-                    assertEqualLists
+                    Expect.equal
                         (test_newFancyOptionList
                             [ wolfClub
                             , select 1 waveshaper
@@ -165,7 +153,7 @@ suite =
                         )
             , test "should preserver the order of the selection" <|
                 \_ ->
-                    assertEqualLists
+                    Expect.equal
                         (test_newFancyOptionList [ select 0 wolfClub ])
                         (addAndSelectOptionsInOptionsListByString [ "Wolf Club" ]
                             (test_newFancyOptionList
@@ -174,7 +162,7 @@ suite =
                         )
             , test "should preserver the order of multiple selections" <|
                 \_ ->
-                    assertEqualLists
+                    Expect.equal
                         (test_newFancyOptionList
                             [ select 1 heartBones
                             , timecop1983
@@ -194,7 +182,7 @@ suite =
         , describe "and merging them with a selected value"
             [ test "if a new option matches the selected option update the label and description" <|
                 \_ ->
-                    assertEqualLists
+                    Expect.equal
                         (test_newFancyOptionList [ wolfClub |> select 0 ])
                         (mergeTwoListsOfOptionsPreservingSelectedOptions
                             SelectionMode.SingleSelect
@@ -204,7 +192,7 @@ suite =
                         )
             , test "if a new option matches the selected option update the description even when adding a bunch of new options" <|
                 \_ ->
-                    assertEqualLists
+                    Expect.equal
                         (test_newFancyOptionList [ wolfClub |> select 0, timecop1983, heartBones ])
                         (mergeTwoListsOfOptionsPreservingSelectedOptions
                             SelectionMode.SingleSelect
@@ -214,7 +202,7 @@ suite =
                         )
             , test "a selection option should stay in the same spot in the list" <|
                 \_ ->
-                    assertEqualLists
+                    Expect.equal
                         (test_newFancyOptionList [ timecop1983, heartBones, wolfClub |> select 0 ])
                         (mergeTwoListsOfOptionsPreservingSelectedOptions
                             SelectionMode.SingleSelect
@@ -224,7 +212,7 @@ suite =
                         )
             , test "a selected option should move to the top of the list of options (when that option is set)" <|
                 \_ ->
-                    assertEqualLists
+                    Expect.equal
                         (test_newFancyOptionList [ wolfClub |> select 0, timecop1983, heartBones ])
                         (mergeTwoListsOfOptionsPreservingSelectedOptions
                             SelectionMode.SingleSelect
@@ -235,7 +223,7 @@ suite =
             , describe "with auto sort order rank"
                 [ test "new options should get added to the end of the list of options" <|
                     \_ ->
-                        assertEqualLists
+                        Expect.equal
                             (test_newFancyOptionList
                                 [ heartBones |> Option.setMaybeSortRank (newMaybeAutoSortRank 3)
                                 , wolfClub |> Option.setMaybeSortRank (newMaybeAutoSortRank 1)
@@ -252,7 +240,7 @@ suite =
                             )
                 , test "multiple new options should get added to the end of the list of options" <|
                     \_ ->
-                        assertEqualLists
+                        Expect.equal
                             (test_newFancyOptionList
                                 [ heartBones |> Option.setMaybeSortRank (newMaybeAutoSortRank 6)
                                 , timecop1983 |> Option.setMaybeSortRank (newMaybeAutoSortRank 7)
@@ -271,7 +259,7 @@ suite =
         , describe "and merging them with existing options"
             [ test "we should keep label and descriptions" <|
                 \_ ->
-                    assertEqualLists
+                    Expect.equal
                         (test_newFancyOptionList
                             [ wolfClub
                             ]
@@ -301,42 +289,42 @@ suite =
         , describe "to a datalist list of options"
             [ test "add to the beginning of the selected options" <|
                 \_ ->
-                    assertEqualLists
-                        (DatalistOptionList [ theMidnightSelected, futureCopSelected, arcadeHighSelected ]
-                            |> addNewEmptyOptionAtIndex 0
-                        )
+                    Expect.equal
                         (DatalistOptionList
-                            [ test_newEmptyDatalistOption
+                            [ test_newEmptySelectedDatalistOption 0
                             , Option.select 1 theMidnight
                             , Option.select 2 futureCop
                             , Option.select 3 arcadeHigh
                             ]
                         )
+                        (DatalistOptionList [ theMidnightSelected, futureCopSelected, arcadeHighSelected ]
+                            |> addNewSelectedEmptyOptionAtIndex 0
+                        )
             , test "add to the middle of the selected options" <|
                 \_ ->
-                    assertEqualLists
+                    Expect.equal
                         (DatalistOptionList
                             [ theMidnightSelected
-                            , futureCopSelected
-                            , arcadeHighSelected
-                            ]
-                            |> addNewEmptyOptionAtIndex 1
-                        )
-                        (DatalistOptionList
-                            [ theMidnightSelected
-                            , test_newEmptyDatalistOption
+                            , test_newEmptySelectedDatalistOption 1
                             , Option.select 2 futureCop
                             , Option.select 3 arcadeHigh
                             ]
                         )
-            , test "add to the end of the selected options" <|
-                \_ ->
-                    assertEqualLists
                         (DatalistOptionList
                             [ theMidnightSelected
                             , futureCopSelected
                             , arcadeHighSelected
-                            , test_newEmptyDatalistOption
+                            ]
+                            |> addNewSelectedEmptyOptionAtIndex 1
+                        )
+            , test "add to the end of the selected options" <|
+                \_ ->
+                    Expect.equal
+                        (DatalistOptionList
+                            [ theMidnightSelected
+                            , futureCopSelected
+                            , arcadeHighSelected
+                            , test_newEmptySelectedDatalistOption 3
                             ]
                         )
                         (DatalistOptionList
@@ -344,11 +332,11 @@ suite =
                             , futureCopSelected
                             , arcadeHighSelected
                             ]
-                            |> addNewEmptyOptionAtIndex 3
+                            |> addNewSelectedEmptyOptionAtIndex 3
                         )
             , test "preserver the empty selected options" <|
                 \_ ->
-                    assertEqualLists
+                    Expect.equal
                         (updatedDatalistSelectedOptions
                             [ theMidnightOptionValue, futureCopOptionValue, arcadeHighOptionValue ]
                             (DatalistOptionList
