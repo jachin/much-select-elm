@@ -1,7 +1,7 @@
 module Option.ReplacingOptions exposing (suite)
 
 import Expect
-import Option exposing (test_newFancyCustomOptionWithCleanString, test_newFancyOption, test_newFancyOptionWithMaybeCleanString, test_newFancyOptionWithNoLabel)
+import Option exposing (test_newFancyOption)
 import OptionList exposing (OptionList(..), test_newFancyOptionList)
 import OutputStyle
 import SelectionMode

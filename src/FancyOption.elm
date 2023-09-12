@@ -1,4 +1,4 @@
-module FancyOption exposing (FancyOption, activate, decoder, decoderWithAge, deselect, encode, getMaybeOptionSearchFilter, getOptionDescription, getOptionDisplay, getOptionGroup, getOptionLabel, getOptionSelectedIndex, getOptionValue, getOptionValueAsString, hasSelectedItemIndex, highlightOption, isCustomOption, isEmptyOption, isEmptyOptionOrHasEmptyValue, isOptionHighlighted, isOptionSelectedHighlighted, isSelected, merge, new, newCustomOption, newDisabledOption, newFancyOption, newSelectedOption, optionIsHighlightable, optionToValueLabelTuple, removeHighlightFromOption, select, setDescription, setDescriptionWithString, setGroupWithString, setLabel, setLabelWithString, setOptionDisplay, setOptionDisplayAge, setOptionGroup, setOptionLabelToValue, setOptionSearchFilter, setOptionSelectedIndex, setOptionValue, test_optionToDebuggingString, toValueHtml)
+module FancyOption exposing (FancyOption, activate, decoder, decoderWithAge, deselect, encode, getMaybeOptionSearchFilter, getOptionDescription, getOptionDisplay, getOptionGroup, getOptionLabel, getOptionSelectedIndex, getOptionValue, getOptionValueAsString, highlightOption, isCustomOption, isEmptyOption, isOptionHighlighted, isOptionSelectedHighlighted, isSelected, merge, new, newCustomOption, newDisabledOption, newSelectedOption, optionIsHighlightable, removeHighlightFromOption, select, setDescription, setLabel, setOptionDisplay, setOptionGroup, setOptionLabelToValue, setOptionSearchFilter, setOptionSelectedIndex, setOptionValue, test_optionToDebuggingString, toValueHtml)
 
 import Events exposing (mouseUpPreventDefault)
 import Html exposing (Html, div, span, text)
@@ -35,11 +35,6 @@ new value maybeCleanLabel =
                 OptionDescription.noDescription
                 NoOptionGroup
                 Nothing
-
-
-newFancyOption : OptionDisplay -> OptionLabel -> OptionValue -> OptionDescription -> OptionGroup -> FancyOption
-newFancyOption optionDisplay optionLabel optionValue optionDescription optionGroup =
-    FancyOption optionDisplay optionLabel optionValue optionDescription optionGroup Nothing
 
 
 newCustomOption : String -> String -> Maybe String -> FancyOption
@@ -114,19 +109,9 @@ getOptionSelectedIndex option =
     option |> getOptionDisplay |> OptionDisplay.getSelectedIndex
 
 
-hasSelectedItemIndex : Int -> FancyOption -> Bool
-hasSelectedItemIndex selectedItemIndex option =
-    getOptionSelectedIndex option == selectedItemIndex
-
-
 setOptionSelectedIndex : Int -> FancyOption -> FancyOption
 setOptionSelectedIndex selectedIndex option =
     setOptionDisplay (option |> getOptionDisplay |> OptionDisplay.setSelectedIndex selectedIndex) option
-
-
-setOptionDisplayAge : OptionDisplay.OptionAge -> FancyOption -> FancyOption
-setOptionDisplayAge optionAge option =
-    setOptionDisplay (option |> getOptionDisplay |> OptionDisplay.setAge optionAge) option
 
 
 getOptionLabel : FancyOption -> OptionLabel
@@ -159,29 +144,6 @@ setLabel label option =
 
         EmptyFancyOption optionDisplay _ ->
             EmptyFancyOption optionDisplay label
-
-
-setLabelWithString : String -> Maybe String -> FancyOption -> FancyOption
-setLabelWithString string maybeCleanString option =
-    let
-        newOptionLabel =
-            OptionLabel.newWithCleanLabel string maybeCleanString
-    in
-    case option of
-        FancyOption optionDisplay _ optionValue description group search ->
-            FancyOption
-                optionDisplay
-                newOptionLabel
-                optionValue
-                description
-                group
-                search
-
-        CustomFancyOption optionDisplay _ optionValue maybeOptionSearchFilter ->
-            CustomFancyOption optionDisplay newOptionLabel optionValue maybeOptionSearchFilter
-
-        EmptyFancyOption optionDisplay _ ->
-            EmptyFancyOption optionDisplay newOptionLabel
 
 
 getOptionValue : FancyOption -> OptionValue
@@ -251,11 +213,6 @@ setDescription description option =
             option
 
 
-setDescriptionWithString : String -> FancyOption -> FancyOption
-setDescriptionWithString string option =
-    setDescription (OptionDescription.new string) option
-
-
 getOptionGroup : FancyOption -> OptionGroup
 getOptionGroup fancyOption =
     case fancyOption of
@@ -285,11 +242,6 @@ setOptionGroup optionGroup option =
 
         EmptyFancyOption _ _ ->
             option
-
-
-setGroupWithString : String -> FancyOption -> FancyOption
-setGroupWithString string option =
-    setOptionGroup (OptionGroup string) option
 
 
 getMaybeOptionSearchFilter : FancyOption -> Maybe OptionSearchFilter
@@ -475,16 +427,6 @@ isEmptyOption option =
             True
 
 
-isEmptyOptionOrHasEmptyValue : FancyOption -> Bool
-isEmptyOptionOrHasEmptyValue option =
-    isEmptyOption option || (getOptionValue option |> OptionValue.isEmpty)
-
-
-optionToValueLabelTuple : FancyOption -> ( String, String )
-optionToValueLabelTuple option =
-    ( getOptionValueAsString option, getOptionLabel option |> optionLabelToString )
-
-
 isCustomOption : FancyOption -> Bool
 isCustomOption option =
     case option of
@@ -594,7 +536,7 @@ toValueHtml toggleSelectedMsg deselectOptionInternal enableSingleItemRemoval fan
             Html.Attributes.attribute "part" "value highlighted-value"
     in
     case fancyOption of
-        FancyOption optionDisplay optionLabel optionValue optionDescription optionGroup maybeOptionSearchFilter ->
+        FancyOption optionDisplay optionLabel optionValue _ _ _ ->
             case optionDisplay of
                 OptionShown _ ->
                     text ""
@@ -615,7 +557,7 @@ toValueHtml toggleSelectedMsg deselectOptionInternal enableSingleItemRemoval fan
                 OptionSelectedPendingValidation _ ->
                     text ""
 
-                OptionSelectedHighlighted int ->
+                OptionSelectedHighlighted _ ->
                     div
                         [ classList
                             [ ( "value", True )
@@ -634,7 +576,7 @@ toValueHtml toggleSelectedMsg deselectOptionInternal enableSingleItemRemoval fan
                 OptionDisabled _ ->
                     text ""
 
-        CustomFancyOption optionDisplay optionLabel optionValue maybeOptionSearchFilter ->
+        CustomFancyOption optionDisplay optionLabel optionValue _ ->
             case optionDisplay of
                 OptionShown _ ->
                     text ""

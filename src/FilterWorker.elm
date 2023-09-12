@@ -3,8 +3,6 @@ port module FilterWorker exposing (..)
 import DropdownOptions
 import Json.Decode
 import Json.Encode
-import Option exposing (Option)
-import OptionDisplay
 import OptionList exposing (OptionList(..))
 import OptionSearcher exposing (decodeSearchParams)
 import Platform

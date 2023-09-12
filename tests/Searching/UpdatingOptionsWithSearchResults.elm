@@ -3,7 +3,6 @@ module Searching.UpdatingOptionsWithSearchResults exposing (suite)
 import DropdownOptions
 import Expect
 import Json.Decode
-import Maybe.Extra
 import Option exposing (test_newFancyOption)
 import OptionDisplay
 import OptionList exposing (test_newFancyOptionList)
@@ -66,7 +65,9 @@ suite =
                         (OptionSearchFilter.OptionSearchFilter
                             55090
                             90
-                            [ ( True, "Ob" ), ( False, "jective-C" ) ]
+                            [ ( True, "Ob" )
+                            , ( False, "jective-C" )
+                            ]
                             []
                             []
                         )

@@ -1,7 +1,7 @@
 module Option.AddingOptions exposing (suite)
 
 import Expect exposing (Expectation)
-import Option exposing (Option(..), select, setDescriptionWithString, setLabelWithString, test_newDatalistOption, test_newEmptyDatalistOption, test_newEmptySelectedDatalistOption, test_newFancyOption, test_newFancyOptionWithMaybeCleanString, test_newFancyOptionWithNoLabel)
+import Option exposing (Option(..), select, setDescriptionWithString, setLabelWithString, test_newDatalistOption, test_newEmptyDatalistOption, test_newEmptySelectedDatalistOption, test_newFancyOption, test_newFancyOptionWithMaybeCleanString)
 import OptionList exposing (OptionList(..), addAdditionalOptionsToOptionList, addAdditionalOptionsToOptionListWithAutoSortRank, addAndSelectOptionsInOptionsListByString, addNewSelectedEmptyOptionAtIndex, mergeTwoListsOfOptionsPreservingSelectedOptions, test_newFancyOptionList, updatedDatalistSelectedOptions)
 import OptionValue
 import OutputStyle exposing (SelectedItemPlacementMode(..))

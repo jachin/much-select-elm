@@ -13774,6 +13774,10 @@ var $author$project$OptionList$hasOptionByValue = F2(
 			$author$project$Option$getOptionValue(option),
 			optionsList);
 	});
+var $author$project$DatalistOption$merge = F2(
+	function (optionA, _v0) {
+		return optionA;
+	});
 var $author$project$FancyOption$getOptionDescription = function (option) {
 	switch (option.$) {
 		case 'FancyOption':
@@ -13980,7 +13984,14 @@ var $author$project$Option$merge = F2(
 					return optionA;
 				}
 			case 'DatalistOption':
-				return optionA;
+				var datalistOptionA = optionA.a;
+				if (optionB.$ === 'DatalistOption') {
+					var datalistOptionB = optionB.a;
+					return $author$project$Option$DatalistOption(
+						A2($author$project$DatalistOption$merge, datalistOptionA, datalistOptionB));
+				} else {
+					return optionA;
+				}
 			default:
 				return optionA;
 		}
@@ -20844,9 +20855,6 @@ var $author$project$FancyOption$toValueHtml = F4(
 				var optionDisplay = fancyOption.a;
 				var optionLabel = fancyOption.b;
 				var optionValue = fancyOption.c;
-				var optionDescription = fancyOption.d;
-				var optionGroup = fancyOption.e;
-				var maybeOptionSearchFilter = fancyOption.f;
 				switch (optionDisplay.$) {
 					case 'OptionShown':
 						return $elm$html$Html$text('');
@@ -20874,7 +20882,6 @@ var $author$project$FancyOption$toValueHtml = F4(
 					case 'OptionSelectedPendingValidation':
 						return $elm$html$Html$text('');
 					case 'OptionSelectedHighlighted':
-						var _int = optionDisplay.a;
 						return A2(
 							$elm$html$Html$div,
 							_List_fromArray(
@@ -20907,7 +20914,6 @@ var $author$project$FancyOption$toValueHtml = F4(
 				var optionDisplay = fancyOption.a;
 				var optionLabel = fancyOption.b;
 				var optionValue = fancyOption.c;
-				var maybeOptionSearchFilter = fancyOption.d;
 				switch (optionDisplay.$) {
 					case 'OptionShown':
 						return $elm$html$Html$text('');

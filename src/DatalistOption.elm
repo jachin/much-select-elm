@@ -1,4 +1,4 @@
-module DatalistOption exposing (DatalistOption, activate, decoder, deselect, encode, getOptionDisplay, getOptionLabel, getOptionSelectedIndex, getOptionValue, getOptionValueAsString, hasSelectedIndex, isEmpty, isSelected, merge, new, newEmpty, newSelected, newSelectedDatalistOptionPendingValidation, newSelectedDatalistOptionWithErrors, newSelectedEmpty, select, setOptionDisplay, setOptionDisplayAge, setOptionSelectedIndex, setOptionValue, test_optionToDebuggingString)
+module DatalistOption exposing (DatalistOption, activate, decoder, deselect, encode, getOptionDisplay, getOptionLabel, getOptionSelectedIndex, getOptionValue, getOptionValueAsString, isEmpty, isSelected, merge, new, newSelected, newSelectedDatalistOptionPendingValidation, newSelectedDatalistOptionWithErrors, newSelectedEmpty, select, setOptionDisplay, setOptionValue, test_optionToDebuggingString)
 
 import Json.Decode
 import Json.Encode
@@ -47,13 +47,6 @@ new optionValue =
         optionValue
 
 
-newEmpty : DatalistOption
-newEmpty =
-    DatalistOption
-        OptionDisplay.default
-        EmptyOptionValue
-
-
 getOptionDisplay : DatalistOption -> OptionDisplay
 getOptionDisplay datalistOption =
     case datalistOption of
@@ -76,21 +69,6 @@ isSelected datalistOption =
 getOptionSelectedIndex : DatalistOption -> Int
 getOptionSelectedIndex datalistOption =
     datalistOption |> getOptionDisplay |> OptionDisplay.getSelectedIndex
-
-
-hasSelectedIndex : Int -> DatalistOption -> Bool
-hasSelectedIndex selectedItemIndex datalistOption =
-    getOptionSelectedIndex datalistOption == selectedItemIndex
-
-
-setOptionSelectedIndex : Int -> DatalistOption -> DatalistOption
-setOptionSelectedIndex selectedItemIndex option =
-    setOptionDisplay (option |> getOptionDisplay |> OptionDisplay.setSelectedIndex selectedItemIndex) option
-
-
-setOptionDisplayAge : OptionDisplay.OptionAge -> DatalistOption -> DatalistOption
-setOptionDisplayAge optionAge option =
-    setOptionDisplay (option |> getOptionDisplay |> OptionDisplay.setAge optionAge) option
 
 
 getOptionLabel : DatalistOption -> OptionLabel

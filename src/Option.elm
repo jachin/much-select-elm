@@ -37,7 +37,6 @@ module Option exposing
     , isValueInListOfStrings
     , merge
     , newDisabledOption
-    , newEmptyDatalistOption
     , newSelectedDatalistOption
     , newSelectedEmptyDatalistOption
     , newSelectedOption
@@ -63,7 +62,6 @@ module Option exposing
     , test_newFancyCustomOptionWithMaybeCleanString
     , test_newFancyOption
     , test_newFancyOptionWithMaybeCleanString
-    , test_newFancyOptionWithNoLabel
     , test_newSlottedOption
     , test_optionToDebuggingString
     , toValueLabelTuple
@@ -230,11 +228,6 @@ newSelectedOption index labelString maybeCleanLabel =
 newDisabledOption : String -> Maybe String -> Option
 newDisabledOption string maybeCleanLabel =
     FancyOption (FancyOption.newDisabledOption string maybeCleanLabel)
-
-
-newEmptyDatalistOption : Option
-newEmptyDatalistOption =
-    DatalistOption DatalistOption.newEmpty
 
 
 newSelectedEmptyDatalistOption : Int -> Option
@@ -716,8 +709,13 @@ merge optionA optionB =
                 _ ->
                     optionA
 
-        DatalistOption _ ->
-            optionA
+        DatalistOption datalistOptionA ->
+            case optionB of
+                DatalistOption datalistOptionB ->
+                    DatalistOption (DatalistOption.merge datalistOptionA datalistOptionB)
+
+                _ ->
+                    optionA
 
         SlottedOption _ ->
             optionA
@@ -759,18 +757,6 @@ test_newFancyCustomOptionWithMaybeCleanString valueString maybeString =
 test_newFancyCustomOptionWithLabelAndMaybeCleanString : String -> String -> Maybe String -> Option
 test_newFancyCustomOptionWithLabelAndMaybeCleanString valueString labelString maybeString =
     FancyOption (FancyOption.newCustomOption valueString labelString maybeString)
-
-
-test_newFancyOptionWithNoLabel : String -> Option
-test_newFancyOptionWithNoLabel string =
-    FancyOption
-        (FancyOption.newFancyOption
-            OptionDisplay.default
-            (OptionLabel.new "")
-            (OptionValue.stringToOptionValue string)
-            OptionDescription.noDescription
-            (OptionGroup.new "")
-        )
 
 
 test_newDatalistOption : String -> Option
