@@ -431,14 +431,14 @@ findClosestHighlightableOptionGoingUp selectionMode index list =
     List.Extra.splitAt index (getOptions list)
         |> Tuple.first
         |> List.reverse
-        |> List.Extra.find (Option.issHighlightable selectionMode)
+        |> List.Extra.find (Option.isHighlightable selectionMode)
 
 
 findClosestHighlightableOptionGoingDown : SelectionMode -> Int -> OptionList -> Maybe Option
 findClosestHighlightableOptionGoingDown selectionMode index list =
     List.Extra.splitAt index (getOptions list)
         |> Tuple.second
-        |> List.Extra.find (Option.issHighlightable selectionMode)
+        |> List.Extra.find (Option.isHighlightable selectionMode)
 
 
 findHighlightedOption : OptionList -> Maybe Option

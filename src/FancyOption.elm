@@ -521,12 +521,13 @@ decoderWithAge : OptionDisplay.OptionAge -> Json.Decode.Decoder FancyOption
 decoderWithAge optionAge =
     Json.Decode.oneOf
         [ decodeOptionWithoutAValue optionAge
-        , decodeOptionWithAValue optionAge
+        , decoderOptionWithAValue optionAge
         ]
 
 
 decodeOptionWithoutAValue : OptionDisplay.OptionAge -> Json.Decode.Decoder FancyOption
 decodeOptionWithoutAValue age =
+    -- TODO Why does this function have this name? We are decoding a value.
     Json.Decode.field
         "value"
         OptionValue.decoder
@@ -544,8 +545,8 @@ decodeOptionWithoutAValue age =
             )
 
 
-decodeOptionWithAValue : OptionDisplay.OptionAge -> Json.Decode.Decoder FancyOption
-decodeOptionWithAValue age =
+decoderOptionWithAValue : OptionDisplay.OptionAge -> Json.Decode.Decoder FancyOption
+decoderOptionWithAValue age =
     Json.Decode.map6 FancyOption
         (OptionDisplay.decoder age)
         OptionLabel.labelDecoder

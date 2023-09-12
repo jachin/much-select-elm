@@ -11367,10 +11367,6 @@ var $author$project$DatalistOption$decoder = A3(
 	$author$project$DatalistOption$DatalistOption,
 	$author$project$OptionDisplay$decoder($author$project$OptionDisplay$MatureOption),
 	A2($elm$json$Json$Decode$field, 'value', $author$project$OptionValue$decoder));
-var $author$project$OptionDescription$OptionDescription = F2(
-	function (a, b) {
-		return {$: 'OptionDescription', a: a, b: b};
-	});
 var $elm$json$Json$Decode$null = _Json_decodeNull;
 var $elm$json$Json$Decode$nullable = function (decoder) {
 	return $elm$json$Json$Decode$oneOf(
@@ -11380,31 +11376,6 @@ var $elm$json$Json$Decode$nullable = function (decoder) {
 				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, decoder)
 			]));
 };
-var $author$project$OptionDescription$decoder = $elm$json$Json$Decode$oneOf(
-	_List_fromArray(
-		[
-			A3(
-			$elm$json$Json$Decode$map2,
-			$author$project$OptionDescription$OptionDescription,
-			A2($elm$json$Json$Decode$field, 'description', $elm$json$Json$Decode$string),
-			A2(
-				$elm$json$Json$Decode$field,
-				'descriptionClean',
-				$elm$json$Json$Decode$nullable($elm$json$Json$Decode$string))),
-			$elm$json$Json$Decode$succeed($author$project$OptionDescription$NoDescription)
-		]));
-var $author$project$OptionGroup$OptionGroup = function (a) {
-	return {$: 'OptionGroup', a: a};
-};
-var $author$project$OptionGroup$decoder = $elm$json$Json$Decode$oneOf(
-	_List_fromArray(
-		[
-			A2(
-			$elm$json$Json$Decode$map,
-			$author$project$OptionGroup$OptionGroup,
-			A2($elm$json$Json$Decode$field, 'group', $elm$json$Json$Decode$string)),
-			$elm$json$Json$Decode$succeed($author$project$OptionGroup$NoOptionGroup)
-		]));
 var $author$project$SortRank$Auto = function (a) {
 	return {$: 'Auto', a: a};
 };
@@ -11458,18 +11429,6 @@ var $author$project$OptionLabel$labelDecoder = A4(
 		'labelClean',
 		$elm$json$Json$Decode$nullable($elm$json$Json$Decode$string)),
 	$author$project$SortRank$sortRankDecoder);
-var $elm$json$Json$Decode$map6 = _Json_map6;
-var $author$project$FancyOption$decodeOptionWithAValue = function (age) {
-	return A7(
-		$elm$json$Json$Decode$map6,
-		$author$project$FancyOption$FancyOption,
-		$author$project$OptionDisplay$decoder(age),
-		$author$project$OptionLabel$labelDecoder,
-		A2($elm$json$Json$Decode$field, 'value', $author$project$OptionValue$decoder),
-		$author$project$OptionDescription$decoder,
-		$author$project$OptionGroup$decoder,
-		$elm$json$Json$Decode$succeed($elm$core$Maybe$Nothing));
-};
 var $author$project$FancyOption$decodeOptionWithoutAValue = function (age) {
 	return A2(
 		$elm$json$Json$Decode$andThen,
@@ -11486,12 +11445,53 @@ var $author$project$FancyOption$decodeOptionWithoutAValue = function (age) {
 		},
 		A2($elm$json$Json$Decode$field, 'value', $author$project$OptionValue$decoder));
 };
+var $author$project$OptionDescription$OptionDescription = F2(
+	function (a, b) {
+		return {$: 'OptionDescription', a: a, b: b};
+	});
+var $author$project$OptionDescription$decoder = $elm$json$Json$Decode$oneOf(
+	_List_fromArray(
+		[
+			A3(
+			$elm$json$Json$Decode$map2,
+			$author$project$OptionDescription$OptionDescription,
+			A2($elm$json$Json$Decode$field, 'description', $elm$json$Json$Decode$string),
+			A2(
+				$elm$json$Json$Decode$field,
+				'descriptionClean',
+				$elm$json$Json$Decode$nullable($elm$json$Json$Decode$string))),
+			$elm$json$Json$Decode$succeed($author$project$OptionDescription$NoDescription)
+		]));
+var $author$project$OptionGroup$OptionGroup = function (a) {
+	return {$: 'OptionGroup', a: a};
+};
+var $author$project$OptionGroup$decoder = $elm$json$Json$Decode$oneOf(
+	_List_fromArray(
+		[
+			A2(
+			$elm$json$Json$Decode$map,
+			$author$project$OptionGroup$OptionGroup,
+			A2($elm$json$Json$Decode$field, 'group', $elm$json$Json$Decode$string)),
+			$elm$json$Json$Decode$succeed($author$project$OptionGroup$NoOptionGroup)
+		]));
+var $elm$json$Json$Decode$map6 = _Json_map6;
+var $author$project$FancyOption$decoderOptionWithAValue = function (age) {
+	return A7(
+		$elm$json$Json$Decode$map6,
+		$author$project$FancyOption$FancyOption,
+		$author$project$OptionDisplay$decoder(age),
+		$author$project$OptionLabel$labelDecoder,
+		A2($elm$json$Json$Decode$field, 'value', $author$project$OptionValue$decoder),
+		$author$project$OptionDescription$decoder,
+		$author$project$OptionGroup$decoder,
+		$elm$json$Json$Decode$succeed($elm$core$Maybe$Nothing));
+};
 var $author$project$FancyOption$decoderWithAge = function (optionAge) {
 	return $elm$json$Json$Decode$oneOf(
 		_List_fromArray(
 			[
 				$author$project$FancyOption$decodeOptionWithoutAValue(optionAge),
-				$author$project$FancyOption$decodeOptionWithAValue(optionAge)
+				$author$project$FancyOption$decoderOptionWithAValue(optionAge)
 			]));
 };
 var $author$project$OptionSlot$OptionSlot = function (a) {
@@ -14664,7 +14664,7 @@ var $author$project$OptionSearchFilter$decodeToken = A3(
 	A2($elm$json$Json$Decode$field, 'isHighlighted', $elm$json$Json$Decode$bool),
 	A2($elm$json$Json$Decode$field, 'stringChunk', $elm$json$Json$Decode$string));
 var $author$project$OptionSearchFilter$decodeTokens = $elm$json$Json$Decode$list($author$project$OptionSearchFilter$decodeToken);
-var $author$project$OptionSearchFilter$decode = A6(
+var $author$project$OptionSearchFilter$decoder = A6(
 	$elm$json$Json$Decode$map5,
 	$author$project$OptionSearchFilter$OptionSearchFilter,
 	A2($elm$json$Json$Decode$field, 'totalScore', $elm$json$Json$Decode$int),
@@ -14689,7 +14689,7 @@ var $author$project$Option$decodeSearchResults = A4(
 				A2(
 					$elm$json$Json$Decode$field,
 					'searchFilter',
-					$elm$json$Json$Decode$nullable($author$project$OptionSearchFilter$decode))))),
+					$elm$json$Json$Decode$nullable($author$project$OptionSearchFilter$decoder))))),
 	A2($elm$json$Json$Decode$field, 'searchNonce', $elm$json$Json$Decode$int),
 	A2($elm$json$Json$Decode$field, 'clearingSearch', $elm$json$Json$Decode$bool));
 var $author$project$FancyOption$decoder = $author$project$FancyOption$decoderWithAge($author$project$OptionDisplay$MatureOption);
@@ -16239,7 +16239,7 @@ var $author$project$SlottedOption$optionIsHighlightable = F2(
 			selectionMode,
 			$author$project$SlottedOption$getOptionDisplay(option));
 	});
-var $author$project$Option$issHighlightable = F2(
+var $author$project$Option$isHighlightable = F2(
 	function (selectionMode, option) {
 		switch (option.$) {
 			case 'FancyOption':
@@ -16262,7 +16262,7 @@ var $author$project$OptionList$findClosestHighlightableOptionGoingDown = F3(
 	function (selectionMode, index, list) {
 		return A2(
 			$elm_community$list_extra$List$Extra$find,
-			$author$project$Option$issHighlightable(selectionMode),
+			$author$project$Option$isHighlightable(selectionMode),
 			A2(
 				$elm_community$list_extra$List$Extra$splitAt,
 				index,
@@ -16312,7 +16312,7 @@ var $author$project$OptionList$findClosestHighlightableOptionGoingUp = F3(
 	function (selectionMode, index, list) {
 		return A2(
 			$elm_community$list_extra$List$Extra$find,
-			$author$project$Option$issHighlightable(selectionMode),
+			$author$project$Option$isHighlightable(selectionMode),
 			$elm$core$List$reverse(
 				A2(
 					$elm_community$list_extra$List$Extra$splitAt,

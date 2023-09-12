@@ -2,7 +2,7 @@ module OptionSearchFilter exposing
     ( OptionSearchFilter
     , OptionSearchFilterWithValue
     , OptionSearchResult
-    , decode
+    , decoder
     , descriptionHandicap
     , encode
     , getLowScore
@@ -126,8 +126,8 @@ encodeToken ( isHighlighted, stringChuck ) =
         ]
 
 
-decode : Json.Decode.Decoder OptionSearchFilter
-decode =
+decoder : Json.Decode.Decoder OptionSearchFilter
+decoder =
     Json.Decode.map5
         OptionSearchFilter
         (Json.Decode.field "totalScore" Json.Decode.int)

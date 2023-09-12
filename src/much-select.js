@@ -26,7 +26,7 @@ const buildOptionsFromSelectElement = (selectElement) => {
     }
     const option = { value };
     option.label = optionElement.innerText.trim();
-    option.labelClean = asciiFold(optionElement.innerText);
+    option.labelClean = asciiFold(optionElement.innerText).trim();
     option.index = optionIndex;
     if (optionElement.hasAttribute("selected")) {
       const optionSelectedValue = optionElement.getAttribute("selected");
@@ -1347,7 +1347,7 @@ class MuchSelect extends HTMLElement {
   }
 
   /**
-   * Set the maxium number of items to try to render in the dropdown.
+   * Set the maximum number of items to try to render in the dropdown.
    *
    * @param value {string}
    */

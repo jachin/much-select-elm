@@ -27,6 +27,7 @@ module Option exposing
     , isCustomOption
     , isEmpty
     , isEmptyOrHasEmptyValue
+    , isHighlightable
     , isHighlighted
     , isInvalid
     , isPendingValidation
@@ -34,7 +35,6 @@ module Option exposing
     , isSelectedHighlighted
     , isValid
     , isValueInListOfStrings
-    , issHighlightable
     , merge
     , newDisabledOption
     , newEmptyDatalistOption
@@ -418,8 +418,8 @@ isHighlighted option =
             SlottedOption.isOptionHighlighted slottedOption
 
 
-issHighlightable : SelectionMode -> Option -> Bool
-issHighlightable selectionMode option =
+isHighlightable : SelectionMode -> Option -> Bool
+isHighlightable selectionMode option =
     case option of
         FancyOption fancyOption ->
             FancyOption.optionIsHighlightable selectionMode fancyOption
@@ -610,7 +610,7 @@ decodeSearchResults =
                     )
                     (Json.Decode.field "value" OptionValue.decoder)
                     (Json.Decode.field "searchFilter"
-                        (Json.Decode.nullable OptionSearchFilter.decode)
+                        (Json.Decode.nullable OptionSearchFilter.decoder)
                     )
                 )
             )
