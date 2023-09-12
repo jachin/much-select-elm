@@ -23,27 +23,15 @@ options =
         ]
 
 
-results : List OptionSearchFilterWithValue
-results =
-    [ { value = OptionValue.stringToOptionValue "Nam Commodi Tempore Fuga Eos Impedit Qui"
-      , maybeSearchFilter =
-            Just
-                (OptionSearchFilter.new 10 23 [] [] [])
-      }
-    , { value = OptionValue.stringToOptionValue "Et Reprehenderit Optio Et"
-      , maybeSearchFilter = Nothing
-      }
-    , { value = OptionValue.stringToOptionValue "Magni Omnis Et"
-      , maybeSearchFilter = Nothing
-      }
-    ]
-
-
 suite : Test
 suite =
     describe "Searching through lots of options"
         [ test "The labels tokens should have the right highlights" <|
             \_ ->
+                -- TODO This test is a bit convoluted, it's supposed to simulate the process of data
+                -- passing between the filter worker and into the much-select. Ideally things would be
+                -- refactored so more of this happened in 1 function that could be tested, or this should
+                -- be refactored to en elm-program-test.
                 let
                     searchString =
                         SearchString.new "ob" False
@@ -71,6 +59,16 @@ suite =
                     (options
                         |> OptionList.updateOptionsWithNewSearchResults searchResults.optionSearchFilters
                         |> OptionList.setAge OptionDisplay.MatureOption
+                        |> OptionList.findByValue (OptionValue.stringToOptionValue "Objective-C")
+                        |> Maybe.andThen Option.getMaybeOptionSearchFilter
                     )
-                    options
+                    (Just
+                        (OptionSearchFilter.OptionSearchFilter
+                            55090
+                            90
+                            [ ( True, "Ob" ), ( False, "jective-C" ) ]
+                            []
+                            []
+                        )
+                    )
         ]
