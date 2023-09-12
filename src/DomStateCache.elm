@@ -1,4 +1,4 @@
-module DomStateCache exposing (CustomOptionsAttribute(..), DisabledAttribute(..), DomStateCache, OutputStyleAttribute(..), updateAllowCustomOptions, updateDisabledAttribute, updateOutputStyle)
+module DomStateCache exposing (CustomOptionsAttribute(..), DisabledAttribute(..), DomStateCache, OutputStyleAttribute(..), test_defaultDomStateCache, updateAllowCustomOptions, updateDisabledAttribute, updateOutputStyle)
 
 
 type alias DomStateCache =
@@ -40,3 +40,11 @@ updateOutputStyle outputStyleAttribute domStateCache =
 updateDisabledAttribute : DisabledAttribute -> DomStateCache -> DomStateCache
 updateDisabledAttribute disabledAttribute domStateCache =
     { domStateCache | disabled = disabledAttribute }
+
+
+test_defaultDomStateCache : DomStateCache
+test_defaultDomStateCache =
+    { allowCustomOptions = CustomOptionsNotAllowed
+    , outputStyle = OutputStyleCustomHtml
+    , disabled = NoDisabledAttribute
+    }

@@ -1,27 +1,21 @@
-module OptionSearcher exposing (decodeSearchParams, doesSearchStringFindNothing, encodeSearchParams, simpleMatch, updateOptionsWithSearchString, updateOptionsWithSearchStringAndCustomOption, updateOrAddCustomOption, updateSearchResultInOption)
+module OptionSearcher exposing (decodeSearchParams, doesSearchStringFindNothing, encodeSearchParams, simpleMatch, updateOptionsWithSearchString, updateOrAddCustomOption, updateSearchResultInOption)
 
 import DropdownOptions exposing (DropdownOptions, getSearchFilters)
 import Fuzzy exposing (Result, match)
 import Json.Decode
 import Json.Encode
 import Option exposing (Option(..))
+import OptionDescription
+import OptionGroup
 import OptionLabel exposing (optionLabelToSearchString, optionLabelToString)
+import OptionList exposing (OptionList)
 import OptionPresentor exposing (tokenize)
 import OptionSearchFilter exposing (OptionSearchFilter, OptionSearchResult, descriptionHandicap, groupHandicap)
-import OptionsUtilities exposing (prependCustomOption, removeUnselectedCustomOptions)
 import OutputStyle exposing (CustomOptions(..), SearchStringMinimumLength(..), decodeSearchStringMinimumLength)
 import PositiveInt exposing (PositiveInt)
 import SearchString exposing (SearchString)
-import SelectionMode exposing (SelectionConfig, getCustomOptionHint, getSearchStringMinimumLength)
+import SelectionMode exposing (SelectionConfig, getCustomOptionHint)
 import TransformAndValidate
-
-
-updateOptionsWithSearchStringAndCustomOption : SelectionConfig -> SearchString -> List Option -> List Option
-updateOptionsWithSearchStringAndCustomOption selectionConfig searchString options =
-    -- TODO This function is only used in tests. It should be removed.
-    options
-        |> updateOrAddCustomOption searchString selectionConfig
-        |> updateOptionsWithSearchString searchString (selectionConfig |> getSearchStringMinimumLength)
 
 
 simpleMatch : String -> String -> Result
@@ -53,15 +47,15 @@ search string option =
         simpleMatch
             (string |> String.toLower)
             (option
-                |> Option.getOptionDescription
-                |> Option.optionDescriptionToSearchString
+                |> Option.getDescription
+                |> OptionDescription.toSearchString
             )
     , groupMatch =
         groupMatch
             (string |> String.toLower)
             (option
                 |> Option.getOptionGroup
-                |> Option.optionGroupToSearchString
+                |> OptionGroup.toSearchString
             )
     }
 
@@ -70,22 +64,22 @@ updateSearchResultInOption : SearchString -> Option -> Option
 updateSearchResultInOption searchString option =
     let
         -- if the searchString has a trailing space it doesn't match with certain types of options
-        trimedSearchString =
+        trimmedSearchString =
             SearchString.toString searchString
                 |> String.trim
 
         searchResult : OptionSearchResult
         searchResult =
-            search trimedSearchString option
+            search trimmedSearchString option
 
         labelTokens =
             tokenize (option |> Option.getOptionLabel |> optionLabelToString) searchResult.labelMatch
 
         descriptionTokens =
-            tokenize (option |> Option.getOptionDescription |> Option.optionDescriptionToString) searchResult.descriptionMatch
+            tokenize (option |> Option.getDescription |> OptionDescription.toSearchString) searchResult.descriptionMatch
 
         groupTokens =
-            tokenize (option |> Option.getOptionGroup |> Option.optionGroupToString) searchResult.groupMatch
+            tokenize (option |> Option.getOptionGroup |> OptionGroup.toSearchString) searchResult.groupMatch
 
         bestScore =
             Maybe.withDefault OptionSearchFilter.impossiblyLowScore
@@ -147,7 +141,7 @@ updateSearchResultInOption searchString option =
         option
 
 
-updateOrAddCustomOption : SearchString -> SelectionConfig -> List Option -> List Option
+updateOrAddCustomOption : SearchString -> SelectionConfig -> OptionList -> OptionList
 updateOrAddCustomOption searchString selectionMode options =
     let
         ( showCustomOption, newSearchString ) =
@@ -174,7 +168,7 @@ updateOrAddCustomOption searchString selectionMode options =
         --  option.
         noExactOptionLabelMatch =
             options
-                |> List.any
+                |> OptionList.any
                     (\option_ ->
                         (option_
                             |> Option.getOptionLabel
@@ -186,17 +180,17 @@ updateOrAddCustomOption searchString selectionMode options =
                 |> not
     in
     if showCustomOption && noExactOptionLabelMatch then
-        prependCustomOption
+        OptionList.prependCustomOption
             (selectionMode |> getCustomOptionHint)
             newSearchString
-            (removeUnselectedCustomOptions options)
+            (OptionList.removeUnselectedCustomOptions options)
 
     else
-        removeUnselectedCustomOptions options
+        OptionList.removeUnselectedCustomOptions options
 
 
-updateOptionsWithSearchString : SearchString -> SearchStringMinimumLength -> List Option -> List Option
-updateOptionsWithSearchString searchString searchStringMinimumLength options =
+updateOptionsWithSearchString : SearchString -> SearchStringMinimumLength -> OptionList -> OptionList
+updateOptionsWithSearchString searchString searchStringMinimumLength optionList =
     let
         doOptionFiltering =
             case searchStringMinimumLength of
@@ -207,13 +201,13 @@ updateOptionsWithSearchString searchString searchStringMinimumLength options =
                     True
     in
     if doOptionFiltering then
-        options
-            |> List.map
+        optionList
+            |> OptionList.map
                 (updateSearchResultInOption searchString)
 
     else
-        options
-            |> List.map
+        optionList
+            |> OptionList.map
                 (\option ->
                     Option.setOptionSearchFilter
                         Nothing

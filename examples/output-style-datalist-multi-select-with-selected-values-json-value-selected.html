@@ -30,23 +30,23 @@
 
         const valueToToggle = event.target.dataset.toggleValue;
 
-        const selectedValues = muchSelect.parsedSelectedValue;
+        muchSelect.getSelectedValues().then((selectedValues) => {
+          let newSelectedValues = selectedValues;
 
-        let newSelectedValues = selectedValues;
+          if (selectedValues.includes(valueToToggle)) {
+            // deselect the value
+            newSelectedValues = selectedValues.filter((v) => v !== valueToToggle);
+          } else {
+            // select the value
+            newSelectedValues = selectedValues.concat([valueToToggle]);
+          }
 
-        if (selectedValues.includes(valueToToggle)) {
-          // deselect the value
-          newSelectedValues = selectedValues.filter((v) => v !== valueToToggle);
-        } else {
-          // select the value
-          newSelectedValues = selectedValues.concat([valueToToggle]);
-        }
+          const selectedValueEncodedString = encodeURIComponent(
+            JSON.stringify(newSelectedValues)
+          );
 
-        const selectedValueEncodedString = encodeURIComponent(
-          JSON.stringify(newSelectedValues)
-        );
-
-        muchSelect.setAttribute("selected-value", selectedValueEncodedString);
+          muchSelect.setAttribute("selected-value", selectedValueEncodedString);
+        });
       });
     });
   </script>

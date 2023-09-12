@@ -1,11 +1,10 @@
 port module FilterWorker exposing (..)
 
+import DropdownOptions
 import Json.Decode
 import Json.Encode
-import Option exposing (Option)
-import OptionDisplay
+import OptionList exposing (OptionList(..))
 import OptionSearcher exposing (decodeSearchParams)
-import OptionsUtilities exposing (filterOptionsToShowInDropdownBySearchScore)
 import Platform
 import SelectionMode exposing (SelectionConfig)
 
@@ -15,21 +14,21 @@ type Msg
     | UpdateSearchString Json.Decode.Value
 
 
-init : () -> ( List Option, Cmd msg )
+init : () -> ( OptionList, Cmd msg )
 init _ =
-    ( [], Cmd.none )
+    ( FancyOptionList [], Cmd.none )
 
 
-update : Msg -> List Option -> ( List Option, Cmd msg )
+update : Msg -> OptionList -> ( OptionList, Cmd msg )
 update msg options =
     case msg of
         UpdateOptions optionsJson ->
-            case Json.Decode.decodeValue (Option.optionsDecoder OptionDisplay.MatureOption SelectionMode.CustomHtml) optionsJson of
+            case Json.Decode.decodeValue (OptionList.decoder SelectionMode.CustomHtml) optionsJson of
                 Ok newOptions ->
                     ( newOptions, Cmd.none )
 
                 Err error ->
-                    ( [], sendErrorMessage (Json.Decode.errorToString error) )
+                    ( FancyOptionList [], sendErrorMessage (Json.Decode.errorToString error) )
 
         UpdateSearchString jsonSearchParams ->
             case Json.Decode.decodeValue decodeSearchParams jsonSearchParams of
@@ -41,13 +40,13 @@ update msg options =
                                 options
 
                         optionsToSend =
-                            filterOptionsToShowInDropdownBySearchScore newOptions
+                            DropdownOptions.filterOptionsToShowInDropdownBySearchScore newOptions
                                 -- TODO this number is arbitrary.
-                                |> List.take 100
+                                |> OptionList.take 100
                     in
                     ( newOptions
                     , sendSearchResults
-                        (Option.encodeSearchResults optionsToSend
+                        (OptionList.encodeSearchResults optionsToSend
                             searchParams.searchNonce
                             searchParams.clearingSearch
                         )
@@ -57,7 +56,7 @@ update msg options =
                     ( options, sendErrorMessage (Json.Decode.errorToString error) )
 
 
-subscriptions : List Option -> Sub Msg
+subscriptions : OptionList -> Sub Msg
 subscriptions _ =
     Sub.batch
         [ receiveOptions UpdateOptions
@@ -65,7 +64,7 @@ subscriptions _ =
         ]
 
 
-main : Program () (List Option) Msg
+main : Program () OptionList Msg
 main =
     Platform.worker { init = init, update = update, subscriptions = subscriptions }
 

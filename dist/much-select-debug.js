@@ -8,6 +8,12 @@ import getMuchSelectTemplate from "./much-select-template.js";
 
 import asciiFold from "./ascii-fold.js";
 
+/**
+ * Take a select element, and parse the data out of it into an array of objects.
+ *
+ * @param selectElement {Element}
+ * @returns {object[]}
+ */
 const buildOptionsFromSelectElement = (selectElement) => {
   const options = [];
   const optionElements = selectElement.querySelectorAll("option");
@@ -20,7 +26,7 @@ const buildOptionsFromSelectElement = (selectElement) => {
     }
     const option = { value };
     option.label = optionElement.innerText.trim();
-    option.labelClean = asciiFold(optionElement.innerText);
+    option.labelClean = asciiFold(optionElement.innerText).trim();
     option.index = optionIndex;
     if (optionElement.hasAttribute("selected")) {
       const optionSelectedValue = optionElement.getAttribute("selected");
@@ -34,6 +40,23 @@ const buildOptionsFromSelectElement = (selectElement) => {
       option.descriptionClean = asciiFold(option.description);
     }
     option.disabled = optionElement.hasAttribute("disabled");
+    options.push(option);
+  });
+  return options;
+};
+
+/**
+ *
+ * @param optionElements {NodeListOf<Element>}
+ * @returns {object[]}
+ */
+const buildOptionsFromMuchSelectOptionElements = (optionElements) => {
+  const options = [];
+  optionElements.forEach((optionElement, optionIndex) => {
+    const option = {};
+    option.value = optionElement.getAttribute("option-value");
+    option.slot = optionElement.getAttribute("slot");
+    option.index = optionIndex;
     options.push(option);
   });
   return options;
@@ -867,6 +890,15 @@ class MuchSelect extends HTMLElement {
     if (selectElement) {
       const optionsJson = buildOptionsFromSelectElement(selectElement);
       this._callOptionChanged(optionsJson);
+    } else {
+      const muchSelectOptionElements =
+        this.querySelectorAll("much-select-option");
+      if (muchSelectOptionElements) {
+        const optionsJson = buildOptionsFromMuchSelectOptionElements(
+          muchSelectOptionElements
+        );
+        this._callOptionChanged(optionsJson);
+      }
     }
   }
 
@@ -1017,6 +1049,15 @@ class MuchSelect extends HTMLElement {
     }
 
     const selectElement = this.querySelector("select[slot='select-input']");
+    const muchSelectOptionElements =
+      this.querySelectorAll("much-select-option");
+
+    if (selectElement && muchSelectOptionElements.length > 0) {
+      throw new Error(
+        "Much Select does not support mixing the select-input slot and much-select-option elements. To define the options you need to pick one or the other."
+      );
+    }
+
     if (this.hasAttribute("selected-value")) {
       if (selectElement && selectElement.querySelector("option[selected]")) {
         throw new Error(
@@ -1033,6 +1074,10 @@ class MuchSelect extends HTMLElement {
     if (selectElement) {
       flags.optionsJson = JSON.stringify(
         buildOptionsFromSelectElement(selectElement)
+      );
+    } else if (muchSelectOptionElements) {
+      flags.optionsJson = JSON.stringify(
+        buildOptionsFromMuchSelectOptionElements(muchSelectOptionElements)
       );
     } else {
       flags.optionsJson = JSON.stringify([]);
@@ -1302,7 +1347,7 @@ class MuchSelect extends HTMLElement {
   }
 
   /**
-   * Set the maxium number of items to try to render in the dropdown.
+   * Set the maximum number of items to try to render in the dropdown.
    *
    * @param value {string}
    */
@@ -1571,14 +1616,8 @@ class MuchSelect extends HTMLElement {
    * Do not allow this value to be anything but:
    *  - json
    *  - comma (default)
-   *
-   * In addition to actually changing the private property, it also (re)encodes
-   *  the current selected value, but ONLY IF the web component is connected,
-   *  meaning the connected callback has been called, if that has not been called
-   *  we are still initializing.
    * */
   set selectedValueEncoding(value) {
-    const currentValue = this.parsedSelectedValue;
     let selectedValueEncoding;
     if (value === "json") {
       selectedValueEncoding = "json";
@@ -1587,10 +1626,6 @@ class MuchSelect extends HTMLElement {
     } else {
       throw new Error(`Invalid selected value encoding: ${value}`);
     }
-    if (this._connected) {
-      this.parsedSelectedValue = currentValue;
-    }
-
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
       app.ports.selectedValueEncodingChangeReceiver.send(selectedValueEncoding)

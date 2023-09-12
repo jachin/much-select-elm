@@ -3,7 +3,9 @@ module GroupedDropdownOptions exposing (DropdownOptionsGroup, GroupedDropdownOpt
 import DropdownOptions exposing (DropdownItemEventListeners, DropdownOptions, dropdownOptionsToDatalistOption, optionsToCustomHtml)
 import Html exposing (Html, div, optgroup, span, text)
 import Html.Attributes exposing (class)
-import Option exposing (Option, OptionGroup, optionGroupToString)
+import Option exposing (Option)
+import OptionGroup exposing (OptionGroup)
+import OptionList
 import OptionPresentor exposing (tokensToHtml)
 import SelectionMode exposing (SelectionConfig)
 
@@ -42,11 +44,11 @@ test_DropdownOptionsGroupToStringAndOptions dropdownOptionsGroups =
         (\optionsGroup ->
             ( optionsGroup
                 |> getOptionsGroup
-                |> optionGroupToString
+                |> OptionGroup.toString
             , optionsGroup
                 |> getOptions
                 |> DropdownOptions.test_getOptions
-                |> List.map Option.test_optionToDebuggingString
+                |> OptionList.andMap Option.test_optionToDebuggingString
             )
         )
         dropdownOptionsGroups
@@ -63,7 +65,7 @@ optionGroupToHtml dropdownItemEventListeners selectionMode dropdownOptionsGroup 
         optionGroupHtml =
             case dropdownOptionsGroup |> getOptions |> DropdownOptions.maybeFirstOptionSearchFilter of
                 Just optionSearchFilter ->
-                    case dropdownOptionsGroup |> getOptionsGroup |> Option.optionGroupToString of
+                    case dropdownOptionsGroup |> getOptionsGroup |> OptionGroup.toString of
                         "" ->
                             text ""
 
@@ -77,7 +79,7 @@ optionGroupToHtml dropdownItemEventListeners selectionMode dropdownOptionsGroup 
                                 ]
 
                 Nothing ->
-                    case dropdownOptionsGroup |> getOptionsGroup |> Option.optionGroupToString of
+                    case dropdownOptionsGroup |> getOptionsGroup |> OptionGroup.toString of
                         "" ->
                             text ""
 
@@ -108,7 +110,7 @@ dataListOptionGroupToHtml : GroupedDropdownOptions -> List (Html msg)
 dataListOptionGroupToHtml groupedDropdownOptions =
     List.concatMap
         (\(DropdownOptionsGroup optionGroup dropdownOptions) ->
-            case Option.optionGroupToString optionGroup of
+            case OptionGroup.toString optionGroup of
                 "" ->
                     dropdownOptionsToDatalistOption dropdownOptions
 
