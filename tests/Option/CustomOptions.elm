@@ -65,24 +65,12 @@ emptyFancyList =
     test_newFancyOptionList []
 
 
-optionToTuple : Option -> ( String, Bool )
-optionToTuple option =
-    Tuple.pair (Option.getOptionValueAsString option) (Option.isSelected option)
-
-
-assertEqualLists : OptionList -> OptionList -> Expectation
-assertEqualLists optionListA optionListB =
-    Expect.equalLists
-        (optionListA |> OptionList.getOptions |> List.map optionToTuple)
-        (optionListB |> OptionList.getOptions |> List.map optionToTuple)
-
-
 suite : Test
 suite =
     describe "Custom options"
         [ test "should be able to remove all the unselected custom options" <|
             \_ ->
-                assertEqualLists
+                Expect.equal
                     (test_newFancyOptionList
                         [ birchWood
                         , select 0 cutCopper

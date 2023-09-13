@@ -7376,22 +7376,17 @@ var $elm_community$list_extra$List$Extra$mapAccuml = F3(
 			accFinal,
 			$elm$core$List$reverse(generatedList));
 	});
-var $author$project$OptionList$selectOption = F2(
-	function (optionToSelect, options) {
-		var optionValue = $author$project$Option$getOptionValue(optionToSelect);
-		var notLessThanZero = function (index) {
-			return (index < 0) ? 0 : index;
-		};
-		var selectionIndex = notLessThanZero(
-			$author$project$Option$getOptionSelectedIndex(optionToSelect));
-		return A3($author$project$OptionList$selectOptionByOptionValueWithIndex, selectionIndex, optionValue, options);
-	});
 var $author$project$OptionList$selectOptions = F2(
 	function (optionsToSelect, optionList) {
 		var helper = F2(
 			function (newOptions, optionToSelect) {
+				var selectionIndex = ($author$project$Option$getOptionSelectedIndex(optionToSelect) < 0) ? 0 : $author$project$Option$getOptionSelectedIndex(optionToSelect);
 				return _Utils_Tuple2(
-					A2($author$project$OptionList$selectOption, optionToSelect, newOptions),
+					A3(
+						$author$project$OptionList$selectOptionByOptionValueWithIndex,
+						selectionIndex,
+						$author$project$Option$getOptionValue(optionToSelect),
+						newOptions),
 					_List_Nil);
 			});
 		return A3($elm_community$list_extra$List$Extra$mapAccuml, helper, optionList, optionsToSelect).a;
@@ -11286,6 +11281,41 @@ var $author$project$OptionList$clearAnyUnselectedCustomOptions = function (optio
 		},
 		optionsList);
 };
+var $author$project$OptionList$foldl = F3(
+	function (_function, b, optionList) {
+		switch (optionList.$) {
+			case 0:
+				var options = optionList.a;
+				return A3($elm$core$List$foldl, _function, b, options);
+			case 1:
+				var options = optionList.a;
+				return A3($elm$core$List$foldl, _function, b, options);
+			default:
+				var options = optionList.a;
+				return A3($elm$core$List$foldl, _function, b, options);
+		}
+	});
+var $author$project$OptionList$selectOptionByOptionValue = F2(
+	function (value, list) {
+		var nextSelectedIndex = A3(
+			$author$project$OptionList$foldl,
+			F2(
+				function (selectedOption, highestIndex) {
+					return (_Utils_cmp(
+						$author$project$Option$getOptionSelectedIndex(selectedOption),
+						highestIndex) > 0) ? $author$project$Option$getOptionSelectedIndex(selectedOption) : highestIndex;
+				}),
+			-1,
+			list) + 1;
+		return A3($author$project$OptionList$selectOptionByOptionValueWithIndex, nextSelectedIndex, value, list);
+	});
+var $author$project$OptionList$selectOption = F2(
+	function (optionToSelect, options) {
+		return A2(
+			$author$project$OptionList$selectOptionByOptionValue,
+			$author$project$Option$getOptionValue(optionToSelect),
+			options);
+	});
 var $author$project$OptionList$selectSingleOption = F2(
 	function (option, optionList) {
 		return A2(
@@ -11329,34 +11359,6 @@ var $author$project$OptionList$selectHighlightedOption = F2(
 							},
 							optionList))));
 		}
-	});
-var $author$project$OptionList$foldl = F3(
-	function (_function, b, optionList) {
-		switch (optionList.$) {
-			case 0:
-				var options = optionList.a;
-				return A3($elm$core$List$foldl, _function, b, options);
-			case 1:
-				var options = optionList.a;
-				return A3($elm$core$List$foldl, _function, b, options);
-			default:
-				var options = optionList.a;
-				return A3($elm$core$List$foldl, _function, b, options);
-		}
-	});
-var $author$project$OptionList$selectOptionByOptionValue = F2(
-	function (value, list) {
-		var nextSelectedIndex = A3(
-			$author$project$OptionList$foldl,
-			F2(
-				function (selectedOption, highestIndex) {
-					return (_Utils_cmp(
-						$author$project$Option$getOptionSelectedIndex(selectedOption),
-						highestIndex) > 0) ? $author$project$Option$getOptionSelectedIndex(selectedOption) : highestIndex;
-				}),
-			-1,
-			list) + 1;
-		return A3($author$project$OptionList$selectOptionByOptionValueWithIndex, nextSelectedIndex, value, list);
 	});
 var $author$project$OptionList$selectedOptionValuesAreEqual = F2(
 	function (valuesAsStrings, options) {
