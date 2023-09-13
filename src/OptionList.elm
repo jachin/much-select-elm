@@ -504,22 +504,7 @@ Pick a selection index that is the same as the selection index of the option.
 -}
 selectOption : Option -> OptionList -> OptionList
 selectOption optionToSelect options =
-    let
-        notLessThanZero index =
-            if index < 0 then
-                0
-
-            else
-                index
-
-        selectionIndex =
-            Option.getOptionSelectedIndex optionToSelect
-                |> notLessThanZero
-
-        optionValue =
-            Option.getOptionValue optionToSelect
-    in
-    selectOptionByOptionValueWithIndex selectionIndex optionValue options
+    selectOptionByOptionValue (Option.getOptionValue optionToSelect) options
 
 
 {-| Look through the list of options, if we find one that matches the given option value
@@ -576,14 +561,6 @@ selectOptionByOptionValueWithIndex index optionValue optionList =
     map
         (\option_ ->
             if Option.optionEqualsOptionValue optionValue option_ then
-                --CustomOption _ _ _ _ ->
-                --    case value of
-                --        OptionValue valueStr ->
-                --            Option.selectOption nextSelectedIndex option_
-                --                |> setLabelWithString valueStr Nothing
-                --
-                --        EmptyOptionValue ->
-                --            Option.selectOption nextSelectedIndex option_
                 option_ |> Option.select index
 
             else
@@ -597,12 +574,32 @@ selectOptionIByValueStringWithIndex int string optionList =
     selectOptionByOptionValueWithIndex int (OptionValue.stringToOptionValue string) optionList
 
 
+{-| Select all the options in a "list" of options in an OptionList.
+
+While we do this we're going to try to be smart with the selection index. We're going to get the selection index from the option.
+
+If it's -1 then we're going to use 0. If it's 0 or greater we're going to use that.
+
+-}
 selectOptions : List Option -> OptionList -> OptionList
 selectOptions optionsToSelect optionList =
     let
         helper : OptionList -> Option -> ( OptionList, List Option )
         helper newOptions optionToSelect =
-            ( selectOption optionToSelect newOptions, [] )
+            let
+                selectionIndex =
+                    if Option.getOptionSelectedIndex optionToSelect < 0 then
+                        0
+
+                    else
+                        Option.getOptionSelectedIndex optionToSelect
+            in
+            ( selectOptionByOptionValueWithIndex
+                selectionIndex
+                (Option.getOptionValue optionToSelect)
+                newOptions
+            , []
+            )
     in
     List.Extra.mapAccuml helper optionList optionsToSelect
         |> Tuple.first
