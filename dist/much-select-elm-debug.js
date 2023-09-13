@@ -10890,11 +10890,11 @@ var $author$project$OptionList$append = F2(
 					return optionListA;
 				}
 			case 'DatalistOptionList':
-				var options = optionListA.a;
+				var optionsA = optionListA.a;
 				if (optionListB.$ === 'DatalistOptionList') {
 					var optionsB = optionListB.a;
 					return $author$project$OptionList$DatalistOptionList(
-						_Utils_ap(options, optionsB));
+						_Utils_ap(optionsA, optionsB));
 				} else {
 					return optionListA;
 				}
@@ -16424,6 +16424,45 @@ var $author$project$OptionList$mergeTwoListsOfOptionsPreservingSelectedOptions =
 		var newOptions = A2($author$project$OptionList$uniqueBy, $author$project$Option$getOptionValueAsString, superList);
 		return A3($author$project$OptionList$setSelectedOptionInNewOptions, selectionMode, superList, newOptions);
 	});
+var $author$project$DatalistOption$new = function (optionValue) {
+	return A2($author$project$DatalistOption$DatalistOption, $author$project$OptionDisplay$default, optionValue);
+};
+var $author$project$Option$toDatalistOption = function (option) {
+	switch (option.$) {
+		case 'FancyOption':
+			var fancyOption = option.a;
+			return $author$project$Option$DatalistOption(
+				A2(
+					$author$project$DatalistOption$setOptionDisplay,
+					$author$project$FancyOption$getOptionDisplay(fancyOption),
+					$author$project$DatalistOption$new(
+						$author$project$FancyOption$getOptionValue(fancyOption))));
+		case 'DatalistOption':
+			return option;
+		default:
+			var slottedOption = option.a;
+			return $author$project$Option$DatalistOption(
+				A2(
+					$author$project$DatalistOption$setOptionDisplay,
+					$author$project$SlottedOption$getOptionDisplay(slottedOption),
+					$author$project$DatalistOption$new(
+						$author$project$SlottedOption$getOptionValue(slottedOption))));
+	}
+};
+var $author$project$OptionList$toDatalistOptionList = function (optionList) {
+	switch (optionList.$) {
+		case 'FancyOptionList':
+			var options = optionList.a;
+			return $author$project$OptionList$DatalistOptionList(
+				A2($elm$core$List$map, $author$project$Option$toDatalistOption, options));
+		case 'DatalistOptionList':
+			return optionList;
+		default:
+			var options = optionList.a;
+			return $author$project$OptionList$DatalistOptionList(
+				A2($elm$core$List$map, $author$project$Option$toDatalistOption, options));
+	}
+};
 var $author$project$OptionList$mapValues = F2(
 	function (_function, optionList) {
 		switch (optionList.$) {
@@ -16444,9 +16483,6 @@ var $author$project$OptionList$mapValues = F2(
 						A2($elm$core$List$map, _function, options)));
 		}
 	});
-var $author$project$DatalistOption$new = function (optionValue) {
-	return A2($author$project$DatalistOption$DatalistOption, $author$project$OptionDisplay$default, optionValue);
-};
 var $author$project$FancyOption$setOptionValue = F2(
 	function (optionValue, option) {
 		switch (option.$) {
@@ -16518,8 +16554,8 @@ var $author$project$OptionList$transformOptionsToOutputStyle = F2(
 var $author$project$OptionList$replaceOptions = F3(
 	function (selectionConfig, oldOptions, newOptions) {
 		var oldSelectedOptions = function () {
-			var _v2 = $author$project$SelectionMode$getSelectionMode(selectionConfig);
-			if (_v2.$ === 'SingleSelect') {
+			var _v3 = $author$project$SelectionMode$getSelectionMode(selectionConfig);
+			if (_v3.$ === 'SingleSelect') {
 				if ($author$project$OptionList$hasSelectedOption(newOptions)) {
 					switch (oldOptions.$) {
 						case 'FancyOptionList':
@@ -16569,8 +16605,19 @@ var $author$project$OptionList$replaceOptions = F3(
 							$author$project$OptionList$filter,
 							A2($elm$core$Basics$composeR, $author$project$Option$isSelected, $elm$core$Basics$not),
 							newOptions))));
-			var newSelectedOptions = oldSelectedOptions;
-			return A2($author$project$OptionList$append, newSelectedOptions, optionsForTheDatasetHints);
+			var newSelectedOptions = $author$project$OptionList$toDatalistOptionList(oldSelectedOptions);
+			var _v2 = A2($author$project$OptionList$append, newSelectedOptions, optionsForTheDatasetHints);
+			switch (_v2.$) {
+				case 'DatalistOptionList':
+					var datalistOptions = _v2.a;
+					return $author$project$OptionList$DatalistOptionList(datalistOptions);
+				case 'FancyOptionList':
+					var options = _v2.a;
+					return $author$project$OptionList$DatalistOptionList(options);
+				default:
+					var options = _v2.a;
+					return $author$project$OptionList$DatalistOptionList(options);
+			}
 		}
 	});
 var $author$project$OptionList$clearAnyUnselectedCustomOptions = function (optionsList) {

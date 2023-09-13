@@ -64,6 +64,7 @@ module Option exposing
     , test_newFancyOptionWithMaybeCleanString
     , test_newSlottedOption
     , test_optionToDebuggingString
+    , toDatalistOption
     , toValueLabelTuple
     , toggleHighlight
     , transformOptionForOutputStyle
@@ -90,6 +91,29 @@ type Option
     = FancyOption FancyOption.FancyOption
     | DatalistOption DatalistOption.DatalistOption
     | SlottedOption SlottedOption.SlottedOption
+
+
+toDatalistOption : Option -> Option
+toDatalistOption option =
+    case option of
+        FancyOption fancyOption ->
+            DatalistOption
+                (FancyOption.getOptionValue fancyOption
+                    |> DatalistOption.new
+                    |> DatalistOption.setOptionDisplay
+                        (FancyOption.getOptionDisplay fancyOption)
+                )
+
+        DatalistOption _ ->
+            option
+
+        SlottedOption slottedOption ->
+            DatalistOption
+                (SlottedOption.getOptionValue slottedOption
+                    |> DatalistOption.new
+                    |> DatalistOption.setOptionDisplay
+                        (SlottedOption.getOptionDisplay slottedOption)
+                )
 
 
 setOptionValue : OptionValue -> Option -> Option
