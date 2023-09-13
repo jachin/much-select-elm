@@ -52,20 +52,9 @@ printf "$tpl" "$FILTER_WORKER_JS" > ./dist/much-select-template.js
 #  so lets clean up after ourselves.
 rm build/gen/filter-worker.js
 
-if test -e "/dist/much-select-elm.js"; then
-  rm ./dist/much-select-elm.js
-fi
-
 # Compile the Main elm file into JavaScript and optimize it because this
 # build is for production. So also put the out put in the dist directory.
 npx elm-esm make ./src/MuchSelect.elm --output=./dist/much-select-elm.js --optimize
-
-if [[ -e "./dist/much-select-elm.js" ]]; then
-    echo "./dist/much-select-elm.js exists so it must have been built"
-else
-    echo "Unable to build ./dist/much-select-elm.js"
-    exit 1
-fi
 
 
 # There are more JavaScript modules (files) the production build need, let's copy those over
