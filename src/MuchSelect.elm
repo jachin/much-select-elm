@@ -658,7 +658,9 @@ update msg model =
         OptionsReplaced newOptionsJson ->
             let
                 decoder =
-                    OptionList.decoderWithAge OptionDisplay.NewOption (SelectionMode.getOutputStyle model.selectionConfig)
+                    OptionList.decoderWithAge
+                        OptionDisplay.NewOption
+                        (SelectionMode.getOutputStyle model.selectionConfig)
             in
             case Json.Decode.decodeValue decoder newOptionsJson of
                 Ok newOptions_ ->
