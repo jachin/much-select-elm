@@ -86,6 +86,11 @@
       "src",
       "--",
       "scripts/build.sh"
-    ]
+    ],
+    "status": {
+      "Detected problems": ["🚨", "E"],
+      "Unable to build": ["🚨", "E"],
+      "Success!": ["✅", "+"]
+    }
   }
 ]
