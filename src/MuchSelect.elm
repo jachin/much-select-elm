@@ -52,6 +52,7 @@ import Html.Events
         , onMouseDown
         , onMouseUp
         )
+import Html.Extra
 import Html.Lazy
 import Json.Decode
 import Json.Encode
@@ -2213,17 +2214,6 @@ singleSelectViewCustomHtml selectionConfig options searchString rightSlot =
         hasOptionSelected =
             OptionList.hasSelectedOption options
 
-        valueStr =
-            if hasOptionSelected then
-                options
-                    |> OptionList.selectedOptionsToTuple
-                    |> List.map Tuple.second
-                    |> List.head
-                    |> Maybe.withDefault ""
-
-            else
-                ""
-
         hasErrors =
             OptionList.hasAnyValidationErrors options
 
@@ -2242,11 +2232,26 @@ singleSelectViewCustomHtml selectionConfig options searchString rightSlot =
         , classList
             (valueCasingClassList selectionConfig hasOptionSelected False)
         ]
-        [ span
-            [ id "selected-value"
-            , Html.Attributes.attribute "part" "selected-value"
-            ]
-            [ text valueStr ]
+        [ case options |> OptionList.selectedOptions |> OptionList.head of
+            Just selectedOption ->
+                singleSelectViewCustomHtmlValue selectedOption
+
+            Nothing ->
+                case options of
+                    FancyOptionList _ ->
+                        FancyOption.toSingleSelectValueNoValueSelected
+
+                    DatalistOptionList _ ->
+                        {- TODO, in theory this should never happen. We need to refactor some more
+                           so either this branch can be meaningful, or we can just get rid of it.
+                        -}
+                        Html.Extra.nothing
+
+                    SlottedOptionList _ ->
+                        {- TODO, in theory this should never happen. We need to refactor some more
+                           so either this branch can be meaningful, or we can just get rid of it.
+                        -}
+                        Html.Extra.nothing
         , singleSelectCustomHtmlInputField
             searchString
             (isDisabled selectionConfig)
@@ -2272,6 +2277,11 @@ singleSelectViewCustomHtml selectionConfig options searchString rightSlot =
             ShowAddAndRemoveButtons ->
                 text ""
         ]
+
+
+singleSelectViewCustomHtmlValue : Option -> Html Msg
+singleSelectViewCustomHtmlValue selectedOption =
+    Option.singleSelectViewCustomHtmlValueHtml selectedOption
 
 
 multiSelectViewCustomHtml : SelectionConfig -> OptionList -> SearchString -> RightSlot -> Html Msg
@@ -2963,7 +2973,7 @@ optionToValueHtml : SingleItemRemoval -> Option -> Html Msg
 optionToValueHtml enableSingleItemRemoval option =
     case option of
         Option.FancyOption fancyOption ->
-            FancyOption.toValueHtml ToggleSelectedValueHighlight DeselectOptionInternal enableSingleItemRemoval fancyOption
+            FancyOption.toMultiSelectValueHtml ToggleSelectedValueHighlight DeselectOptionInternal enableSingleItemRemoval fancyOption
 
         Option.DatalistOption _ ->
             text ""

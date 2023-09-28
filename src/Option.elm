@@ -54,6 +54,7 @@ module Option exposing
     , setOptionValue
     , setOptionValueErrors
     , setPart
+    , singleSelectViewCustomHtmlValueHtml
     , test_newDatalistOption
     , test_newEmptyDatalistOption
     , test_newEmptySelectedDatalistOption
@@ -72,6 +73,8 @@ module Option exposing
 
 import DatalistOption
 import FancyOption
+import Html exposing (Html)
+import Html.Extra
 import Json.Decode
 import Json.Encode
 import OptionDescription exposing (OptionDescription)
@@ -752,6 +755,19 @@ merge optionA optionB =
 
         SlottedOption _ ->
             optionA
+
+
+singleSelectViewCustomHtmlValueHtml : Option -> Html msg
+singleSelectViewCustomHtmlValueHtml option =
+    case option of
+        FancyOption fancyOption ->
+            FancyOption.toSingleSelectValueHtml fancyOption
+
+        DatalistOption _ ->
+            Html.Extra.nothing
+
+        SlottedOption _ ->
+            Html.Extra.nothing
 
 
 test_optionToDebuggingString : Option -> String

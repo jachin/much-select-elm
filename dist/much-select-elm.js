@@ -15924,12 +15924,20 @@ var $author$project$OptionLabel$getLabelString = function (optionLabel) {
 	var string = optionLabel.a;
 	return string;
 };
-var $author$project$OptionPart$toValueAttribute = function (optionPart) {
+var $author$project$OptionPart$toSelectedHighlightedValueAttribute = function (optionPart) {
 	var string = optionPart;
 	if (string === '') {
-		return A2($elm$html$Html$Attributes$attribute, 'part', 'value');
+		return A2($elm$html$Html$Attributes$attribute, 'part', 'selected-value highlighted');
 	} else {
-		return A2($elm$html$Html$Attributes$attribute, 'part', 'value ' + string);
+		return A2($elm$html$Html$Attributes$attribute, 'part', 'selected-value highlighted ' + string);
+	}
+};
+var $author$project$OptionPart$toSelectedValueAttribute = function (optionPart) {
+	var string = optionPart;
+	if (string === '') {
+		return A2($elm$html$Html$Attributes$attribute, 'part', 'selected-value');
+	} else {
+		return A2($elm$html$Html$Attributes$attribute, 'part', 'selected-value ' + string);
 	}
 };
 var $author$project$FancyOption$valueLabelHtml = F3(
@@ -15967,9 +15975,6 @@ var $author$project$FancyOption$toValueHtml = F4(
 				return $elm$html$Html$text('');
 			}
 		};
-		var partAttr = $author$project$OptionPart$toValueAttribute(
-			$author$project$FancyOption$getOptionPart(fancyOption));
-		var highlightPartAttr = A2($elm$html$Html$Attributes$attribute, 'part', 'value highlighted-value');
 		switch (fancyOption.$) {
 			case 0:
 				var optionDisplay = fancyOption.a;
@@ -15977,16 +15982,17 @@ var $author$project$FancyOption$toValueHtml = F4(
 				var optionValue = fancyOption.c;
 				switch (optionDisplay.$) {
 					case 0:
-						return $elm$html$Html$text('');
+						return $elm_community$html_extra$Html$Extra$nothing;
 					case 1:
-						return $elm$html$Html$text('');
+						return $elm_community$html_extra$Html$Extra$nothing;
 					case 2:
 						return A2(
 							$elm$html$Html$div,
 							_List_fromArray(
 								[
 									$elm$html$Html$Attributes$class('value'),
-									partAttr
+									$author$project$OptionPart$toSelectedValueAttribute(
+									$author$project$FancyOption$getOptionPart(fancyOption))
 								]),
 							_List_fromArray(
 								[
@@ -15998,9 +16004,9 @@ var $author$project$FancyOption$toValueHtml = F4(
 									removalHtml(optionValue)
 								]));
 					case 3:
-						return $elm$html$Html$text('');
+						return $elm_community$html_extra$Html$Extra$nothing;
 					case 4:
-						return $elm$html$Html$text('');
+						return $elm_community$html_extra$Html$Extra$nothing;
 					case 5:
 						return A2(
 							$elm$html$Html$div,
@@ -16012,7 +16018,8 @@ var $author$project$FancyOption$toValueHtml = F4(
 											_Utils_Tuple2('value', true),
 											_Utils_Tuple2('highlighted-value', true)
 										])),
-									highlightPartAttr
+									$author$project$OptionPart$toSelectedHighlightedValueAttribute(
+									$author$project$FancyOption$getOptionPart(fancyOption))
 								]),
 							_List_fromArray(
 								[
@@ -16024,11 +16031,11 @@ var $author$project$FancyOption$toValueHtml = F4(
 									removalHtml(optionValue)
 								]));
 					case 6:
-						return $elm$html$Html$text('');
+						return $elm_community$html_extra$Html$Extra$nothing;
 					case 7:
-						return $elm$html$Html$text('');
+						return $elm_community$html_extra$Html$Extra$nothing;
 					default:
-						return $elm$html$Html$text('');
+						return $elm_community$html_extra$Html$Extra$nothing;
 				}
 			case 1:
 				var optionDisplay = fancyOption.a;
@@ -16036,16 +16043,17 @@ var $author$project$FancyOption$toValueHtml = F4(
 				var optionValue = fancyOption.c;
 				switch (optionDisplay.$) {
 					case 0:
-						return $elm$html$Html$text('');
+						return $elm_community$html_extra$Html$Extra$nothing;
 					case 1:
-						return $elm$html$Html$text('');
+						return $elm_community$html_extra$Html$Extra$nothing;
 					case 2:
 						return A2(
 							$elm$html$Html$div,
 							_List_fromArray(
 								[
 									$elm$html$Html$Attributes$class('value'),
-									partAttr
+									$author$project$OptionPart$toSelectedValueAttribute(
+									$author$project$FancyOption$getOptionPart(fancyOption))
 								]),
 							_List_fromArray(
 								[
@@ -16057,9 +16065,9 @@ var $author$project$FancyOption$toValueHtml = F4(
 									removalHtml(optionValue)
 								]));
 					case 3:
-						return $elm$html$Html$text('');
+						return $elm_community$html_extra$Html$Extra$nothing;
 					case 4:
-						return $elm$html$Html$text('');
+						return $elm_community$html_extra$Html$Extra$nothing;
 					case 5:
 						return A2(
 							$elm$html$Html$div,
@@ -16071,7 +16079,8 @@ var $author$project$FancyOption$toValueHtml = F4(
 											_Utils_Tuple2('value', true),
 											_Utils_Tuple2('highlighted-value', true)
 										])),
-									highlightPartAttr
+									$author$project$OptionPart$toSelectedHighlightedValueAttribute(
+									$author$project$FancyOption$getOptionPart(fancyOption))
 								]),
 							_List_fromArray(
 								[
@@ -16083,27 +16092,28 @@ var $author$project$FancyOption$toValueHtml = F4(
 									removalHtml(optionValue)
 								]));
 					case 6:
-						return $elm$html$Html$text('');
+						return $elm_community$html_extra$Html$Extra$nothing;
 					case 7:
-						return $elm$html$Html$text('');
+						return $elm_community$html_extra$Html$Extra$nothing;
 					default:
-						return $elm$html$Html$text('');
+						return $elm_community$html_extra$Html$Extra$nothing;
 				}
 			default:
 				var optionDisplay = fancyOption.a;
 				var optionLabel = fancyOption.b;
 				switch (optionDisplay.$) {
 					case 0:
-						return $elm$html$Html$text('');
+						return $elm_community$html_extra$Html$Extra$nothing;
 					case 1:
-						return $elm$html$Html$text('');
+						return $elm_community$html_extra$Html$Extra$nothing;
 					case 2:
 						return A2(
 							$elm$html$Html$div,
 							_List_fromArray(
 								[
 									$elm$html$Html$Attributes$class('value'),
-									partAttr
+									$author$project$OptionPart$toSelectedValueAttribute(
+									$author$project$FancyOption$getOptionPart(fancyOption))
 								]),
 							_List_fromArray(
 								[
@@ -16111,17 +16121,17 @@ var $author$project$FancyOption$toValueHtml = F4(
 									$author$project$OptionLabel$getLabelString(optionLabel))
 								]));
 					case 3:
-						return $elm$html$Html$text('');
+						return $elm_community$html_extra$Html$Extra$nothing;
 					case 4:
-						return $elm$html$Html$text('');
+						return $elm_community$html_extra$Html$Extra$nothing;
 					case 5:
-						return $elm$html$Html$text('');
+						return $elm_community$html_extra$Html$Extra$nothing;
 					case 6:
-						return $elm$html$Html$text('');
+						return $elm_community$html_extra$Html$Extra$nothing;
 					case 7:
-						return $elm$html$Html$text('');
+						return $elm_community$html_extra$Html$Extra$nothing;
 					default:
-						return $elm$html$Html$text('');
+						return $elm_community$html_extra$Html$Extra$nothing;
 				}
 		}
 	});

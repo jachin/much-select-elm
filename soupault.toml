@@ -539,6 +539,11 @@ widget = "include"
 file = "examples/single-select-value-changed-event.html"
 selector = ".example #single-select-value-changed-event"
 
+[widgets.styling-dropdown-options-with-part]
+widget = "include"
+file = "examples/styling-dropdown-options-with-part.html"
+selector = ".example #styling-dropdown-options-with-part"
+
 [widgets.switch-between-datalist-and-custom-html]
 widget = "include"
 file = "examples/switch-between-datalist-and-custom-html.html"
