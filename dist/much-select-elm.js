@@ -5383,6 +5383,79 @@ var $author$project$OptionDisplay$OptionShown = function (a) {
 var $author$project$OptionDisplay$default = $author$project$OptionDisplay$OptionShown(1);
 var $author$project$OptionPart$OptionPart = $elm$core$Basics$identity;
 var $author$project$OptionPart$empty = '';
+var $elm$core$Basics$always = F2(
+	function (a, _v0) {
+		return a;
+	});
+var $elm$core$String$append = _String_append;
+var $elm$core$Basics$composeR = F3(
+	function (f, g, x) {
+		return g(
+			f(x));
+	});
+var $elm$regex$Regex$Match = F4(
+	function (match, index, number, submatches) {
+		return {dj: index, dv: match, dP: number, ea: submatches};
+	});
+var $elm$regex$Regex$fromStringWith = _Regex_fromStringWith;
+var $elm$regex$Regex$fromString = function (string) {
+	return A2(
+		$elm$regex$Regex$fromStringWith,
+		{cV: false, dE: false},
+		string);
+};
+var $elm$regex$Regex$never = _Regex_never;
+var $elm$core$Maybe$withDefault = F2(
+	function (_default, maybe) {
+		if (!maybe.$) {
+			var value = maybe.a;
+			return value;
+		} else {
+			return _default;
+		}
+	});
+var $elm_community$string_extra$String$Extra$regexFromString = A2(
+	$elm$core$Basics$composeR,
+	$elm$regex$Regex$fromString,
+	$elm$core$Maybe$withDefault($elm$regex$Regex$never));
+var $elm$regex$Regex$replace = _Regex_replaceAtMost(_Regex_infinity);
+var $elm$core$String$toLower = _String_toLower;
+var $elm$core$String$trim = _String_trim;
+var $elm_community$string_extra$String$Extra$dasherize = function (string) {
+	return $elm$core$String$toLower(
+		A3(
+			$elm$regex$Regex$replace,
+			$elm_community$string_extra$String$Extra$regexFromString('[_-\\s]+'),
+			$elm$core$Basics$always('-'),
+			A3(
+				$elm$regex$Regex$replace,
+				$elm_community$string_extra$String$Extra$regexFromString('([A-Z])'),
+				A2(
+					$elm$core$Basics$composeR,
+					function ($) {
+						return $.dv;
+					},
+					$elm$core$String$append('-')),
+				$elm$core$String$trim(string))));
+};
+var $author$project$OptionPart$fromString = function (string) {
+	var partString = $elm_community$string_extra$String$Extra$dasherize(
+		$elm$core$String$trim(string));
+	if (partString === '') {
+		return $elm$core$Maybe$Nothing;
+	} else {
+		return $elm$core$Maybe$Just(string);
+	}
+};
+var $author$project$OptionPart$fromStringOrEmpty = function (string) {
+	var _v0 = $author$project$OptionPart$fromString(string);
+	if (_v0.$ === 1) {
+		return $author$project$OptionPart$empty;
+	} else {
+		var part = _v0.a;
+		return part;
+	}
+};
 var $author$project$SortRank$NoSortRank = {$: 2};
 var $author$project$OptionLabel$OptionLabel = F3(
 	function (a, b, c) {
@@ -5409,7 +5482,7 @@ var $author$project$FancyOption$new = F2(
 				$author$project$OptionValue$OptionValue(value),
 				$author$project$OptionDescription$noDescription,
 				$author$project$OptionGroup$NoOptionGroup,
-				$author$project$OptionPart$empty,
+				$author$project$OptionPart$fromStringOrEmpty(value),
 				$elm$core$Maybe$Nothing);
 		}
 	});
@@ -6061,7 +6134,6 @@ var $author$project$OptionDisplay$decoder = function (age) {
 				$author$project$OptionDisplay$OptionShown(age))
 			]));
 };
-var $elm$core$String$trim = _String_trim;
 var $author$project$OptionValue$decoder = A2(
 	$elm$json$Json$Decode$andThen,
 	function (valueStr) {
@@ -6185,59 +6257,30 @@ var $author$project$OptionGroup$decoder = $elm$json$Json$Decode$oneOf(
 			A2($elm$json$Json$Decode$field, 'group', $elm$json$Json$Decode$string)),
 			$elm$json$Json$Decode$succeed($author$project$OptionGroup$NoOptionGroup)
 		]));
-var $elm$core$Basics$always = F2(
-	function (a, _v0) {
-		return a;
-	});
-var $elm$core$String$append = _String_append;
-var $elm$core$Basics$composeR = F3(
-	function (f, g, x) {
-		return g(
-			f(x));
-	});
-var $elm$regex$Regex$Match = F4(
-	function (match, index, number, submatches) {
-		return {dj: index, dv: match, dP: number, ea: submatches};
-	});
-var $elm$regex$Regex$fromStringWith = _Regex_fromStringWith;
-var $elm$regex$Regex$fromString = function (string) {
-	return A2(
-		$elm$regex$Regex$fromStringWith,
-		{cV: false, dE: false},
-		string);
-};
-var $elm$regex$Regex$never = _Regex_never;
-var $elm$core$Maybe$withDefault = F2(
-	function (_default, maybe) {
-		if (!maybe.$) {
-			var value = maybe.a;
-			return value;
+var $elm$json$Json$Decode$map7 = _Json_map7;
+var $author$project$OptionPart$valueDecoder = A2(
+	$elm$json$Json$Decode$andThen,
+	function (s) {
+		var _v0 = $author$project$OptionPart$fromString(s);
+		if (_v0.$ === 1) {
+			return $elm$json$Json$Decode$fail('The value is empty so we are unable to make a part of the value');
 		} else {
-			return _default;
+			var part = _v0.a;
+			return $elm$json$Json$Decode$succeed(part);
 		}
-	});
-var $elm_community$string_extra$String$Extra$regexFromString = A2(
-	$elm$core$Basics$composeR,
-	$elm$regex$Regex$fromString,
-	$elm$core$Maybe$withDefault($elm$regex$Regex$never));
-var $elm$regex$Regex$replace = _Regex_replaceAtMost(_Regex_infinity);
-var $elm$core$String$toLower = _String_toLower;
-var $elm_community$string_extra$String$Extra$dasherize = function (string) {
-	return $elm$core$String$toLower(
-		A3(
-			$elm$regex$Regex$replace,
-			$elm_community$string_extra$String$Extra$regexFromString('[_-\\s]+'),
-			$elm$core$Basics$always('-'),
-			A3(
-				$elm$regex$Regex$replace,
-				$elm_community$string_extra$String$Extra$regexFromString('([A-Z])'),
-				A2(
-					$elm$core$Basics$composeR,
-					function ($) {
-						return $.dv;
-					},
-					$elm$core$String$append('-')),
-				$elm$core$String$trim(string))));
+	},
+	$elm$json$Json$Decode$string);
+var $author$project$FancyOption$decoderOptionWithAValue = function (age) {
+	return A8(
+		$elm$json$Json$Decode$map7,
+		$author$project$FancyOption$FancyOption,
+		$author$project$OptionDisplay$decoder(age),
+		$author$project$OptionLabel$labelDecoder,
+		A2($elm$json$Json$Decode$field, 'value', $author$project$OptionValue$decoder),
+		$author$project$OptionDescription$decoder,
+		$author$project$OptionGroup$decoder,
+		A2($elm$json$Json$Decode$field, 'value', $author$project$OptionPart$valueDecoder),
+		$elm$json$Json$Decode$succeed($elm$core$Maybe$Nothing));
 };
 var $author$project$OptionPart$decoder = A2(
 	$elm$json$Json$Decode$andThen,
@@ -6247,8 +6290,7 @@ var $author$project$OptionPart$decoder = A2(
 			$elm_community$string_extra$String$Extra$dasherize(s)) ? $elm$json$Json$Decode$succeed(s) : $elm$json$Json$Decode$fail('Invalid option part: ' + s);
 	},
 	$elm$json$Json$Decode$string);
-var $elm$json$Json$Decode$map7 = _Json_map7;
-var $author$project$FancyOption$decoderOptionWithAValue = function (age) {
+var $author$project$FancyOption$decoderOptionWithAValueAndPart = function (age) {
 	return A8(
 		$elm$json$Json$Decode$map7,
 		$author$project$FancyOption$FancyOption,
@@ -6265,6 +6307,7 @@ var $author$project$FancyOption$decoderWithAge = function (optionAge) {
 		_List_fromArray(
 			[
 				$author$project$FancyOption$decodeEmptyOptionValue(optionAge),
+				$author$project$FancyOption$decoderOptionWithAValueAndPart(optionAge),
 				$author$project$FancyOption$decoderOptionWithAValue(optionAge)
 			]));
 };

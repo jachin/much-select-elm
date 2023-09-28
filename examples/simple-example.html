@@ -1,4 +1,28 @@
 <div id="simple-example">
+  <style>
+    #simple-example much-select::part(dropdown-option bricks)  {
+      color: crimson;
+    }
+
+    #simple-example much-select::part(dropdown-option bricks)::before  {
+      content: "🧱";
+    }
+    #simple-example much-select::part(dropdown-option sticks)  {
+      color: brown;
+    }
+
+    #simple-example much-select::part(dropdown-option sticks)::before  {
+      content: "🥢";
+    }
+
+    #simple-example much-select::part(dropdown-option straw)  {
+      color: yellow;
+    }
+
+    #simple-example much-select::part(dropdown-option straw)::before  {
+      content: "🥤";
+    }
+  </style>
   <h3>Simple Example</h3>
   <p>
       Just selecting a single value from a list. If this is all you need to do you should probably just use a

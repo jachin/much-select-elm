@@ -1,8 +1,7 @@
-module OptionPart exposing (OptionPart, decoder, empty, toActiveDropdownAttribute, toDisabledDropdownAttribute, toDropdownAttribute, toHighlightedDropdownAttribute, toValueAttribute)
+module OptionPart exposing (OptionPart, decoder, empty, fromStringOrEmpty, test_new, toActiveDropdownAttribute, toDisabledDropdownAttribute, toDropdownAttribute, toHighlightedDropdownAttribute, toValueAttribute, valueDecoder)
 
 import Html
 import Html.Attributes
-import Html.Attributes.Extra
 import Json.Decode exposing (Decoder)
 import String.Extra
 
@@ -87,3 +86,46 @@ decoder =
                 else
                     Json.Decode.fail ("Invalid option part: " ++ s)
             )
+
+
+valueDecoder : Decoder OptionPart
+valueDecoder =
+    Json.Decode.string
+        |> Json.Decode.andThen
+            (\s ->
+                case fromString s of
+                    Nothing ->
+                        Json.Decode.fail "The value is empty so we are unable to make a part of the value"
+
+                    Just part ->
+                        Json.Decode.succeed part
+            )
+
+
+fromString : String -> Maybe OptionPart
+fromString string =
+    let
+        partString =
+            string |> String.trim |> String.Extra.dasherize
+    in
+    case partString of
+        "" ->
+            Nothing
+
+        _ ->
+            Just (OptionPart string)
+
+
+fromStringOrEmpty : String -> OptionPart
+fromStringOrEmpty string =
+    case fromString string of
+        Nothing ->
+            empty
+
+        Just part ->
+            part
+
+
+test_new : String -> OptionPart
+test_new string =
+    OptionPart string

@@ -1,4 +1,4 @@
-module FancyOption exposing (FancyOption, activate, decoder, decoderWithAge, deselect, encode, getMaybeOptionSearchFilter, getOptionDescription, getOptionDisplay, getOptionGroup, getOptionLabel, getOptionSelectedIndex, getOptionValue, getOptionValueAsString, highlightOption, isCustomOption, isEmptyOption, isOptionHighlighted, isOptionSelectedHighlighted, isSelected, merge, new, newCustomOption, newDisabledOption, newSelectedOption, optionIsHighlightable, removeHighlightFromOption, select, setDescription, setLabel, setOptionDisplay, setOptionGroup, setOptionLabelToValue, setOptionSearchFilter, setOptionSelectedIndex, setOptionValue, test_optionToDebuggingString, toDropdownHtml, toValueHtml)
+module FancyOption exposing (FancyOption, activate, decoder, decoderWithAge, deselect, encode, getMaybeOptionSearchFilter, getOptionDescription, getOptionDisplay, getOptionGroup, getOptionLabel, getOptionSelectedIndex, getOptionValue, getOptionValueAsString, highlightOption, isCustomOption, isEmptyOption, isOptionHighlighted, isOptionSelectedHighlighted, isSelected, merge, new, newCustomOption, newDisabledOption, newSelectedOption, optionIsHighlightable, removeHighlightFromOption, select, setDescription, setLabel, setOptionDisplay, setOptionGroup, setOptionLabelToValue, setOptionSearchFilter, setOptionSelectedIndex, setOptionValue, setPart, test_optionToDebuggingString, toDropdownHtml, toValueHtml)
 
 import DropdownItemEventListeners exposing (DropdownItemEventListeners)
 import Events exposing (mouseDownPreventDefault, mouseUpPreventDefault, onClickPreventDefault, onClickPreventDefaultAndStopPropagation)
@@ -39,7 +39,7 @@ new value maybeCleanLabel =
                 (OptionValue value)
                 OptionDescription.noDescription
                 NoOptionGroup
-                OptionPart.empty
+                (OptionPart.fromStringOrEmpty value)
                 Nothing
 
 
@@ -53,14 +53,14 @@ newCustomOption valueString labelString maybeCleanLabel =
 
 
 newSelectedOption : Int -> String -> Maybe String -> FancyOption
-newSelectedOption index string maybeString =
+newSelectedOption index valueString maybeString =
     FancyOption
         (OptionDisplay.select index OptionDisplay.default)
-        (OptionLabel.newWithCleanLabel string maybeString)
-        (OptionValue.stringToOptionValue string)
+        (OptionLabel.newWithCleanLabel valueString maybeString)
+        (OptionValue.stringToOptionValue valueString)
         OptionDescription.noDescription
         NoOptionGroup
-        OptionPart.empty
+        (OptionPart.fromStringOrEmpty valueString)
         Nothing
 
 
@@ -71,7 +71,7 @@ newDisabledOption valueString maybeString =
         (OptionValue valueString)
         OptionDescription.noDescription
         NoOptionGroup
-        OptionPart.empty
+        (OptionPart.fromStringOrEmpty valueString)
         Nothing
 
 
@@ -273,6 +273,19 @@ getOptionPart fancyOption =
 
         EmptyFancyOption _ _ ->
             OptionPart.empty
+
+
+setPart : OptionPart -> FancyOption -> FancyOption
+setPart part fancyOption =
+    case fancyOption of
+        FancyOption display label value description group _ maybeSearchFilter ->
+            FancyOption display label value description group part maybeSearchFilter
+
+        CustomFancyOption _ _ _ _ ->
+            fancyOption
+
+        EmptyFancyOption _ _ ->
+            fancyOption
 
 
 getMaybeOptionSearchFilter : FancyOption -> Maybe OptionSearchFilter
@@ -494,6 +507,7 @@ decoderWithAge : OptionDisplay.OptionAge -> Json.Decode.Decoder FancyOption
 decoderWithAge optionAge =
     Json.Decode.oneOf
         [ decodeEmptyOptionValue optionAge
+        , decoderOptionWithAValueAndPart optionAge
         , decoderOptionWithAValue optionAge
         ]
 
@@ -519,6 +533,21 @@ decodeEmptyOptionValue age =
 
 decoderOptionWithAValue : OptionDisplay.OptionAge -> Json.Decode.Decoder FancyOption
 decoderOptionWithAValue age =
+    Json.Decode.map7 FancyOption
+        (OptionDisplay.decoder age)
+        OptionLabel.labelDecoder
+        (Json.Decode.field
+            "value"
+            OptionValue.decoder
+        )
+        OptionDescription.decoder
+        OptionGroup.decoder
+        (Json.Decode.field "value" OptionPart.valueDecoder)
+        (Json.Decode.succeed Nothing)
+
+
+decoderOptionWithAValueAndPart : OptionDisplay.OptionAge -> Json.Decode.Decoder FancyOption
+decoderOptionWithAValueAndPart age =
     Json.Decode.map7 FancyOption
         (OptionDisplay.decoder age)
         OptionLabel.labelDecoder

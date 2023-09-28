@@ -3,8 +3,8 @@ module Option.DecodersAndEncoders exposing (suite)
 import Expect
 import Json.Decode
 import Option exposing (newDisabledOption, newSelectedOption, select, test_newFancyOptionWithMaybeCleanString)
-import OptionDisplay
 import OptionList exposing (OptionList(..))
+import OptionPart
 import SelectionMode
 import Test exposing (Test, describe, test)
 
@@ -106,16 +106,27 @@ suite =
             , test "an option that's disabled" <|
                 \_ ->
                     Expect.equal
-                        (Ok (newDisabledOption "Dude" (Just "dude")))
+                        (Ok
+                            (newDisabledOption "Dude" (Just "dude")
+                                |> Option.setPart (OptionPart.test_new "Dude")
+                            )
+                        )
                         (Json.Decode.decodeString decoder disabledOption)
             , test "a list of options" <|
                 \_ ->
                     Expect.equal
                         (Ok
                             (FancyOptionList
-                                [ test_newFancyOptionWithMaybeCleanString "1" Nothing |> Option.setLabelWithString "one" (Just "one")
-                                , test_newFancyOptionWithMaybeCleanString "2" Nothing |> Option.setLabelWithString "two" (Just "two")
-                                , test_newFancyOptionWithMaybeCleanString "3" Nothing |> select 0 |> Option.setLabelWithString "three" (Just "three")
+                                [ test_newFancyOptionWithMaybeCleanString "1" Nothing
+                                    |> Option.setLabelWithString "one" (Just "one")
+                                    |> Option.setPart (OptionPart.test_new "1")
+                                , test_newFancyOptionWithMaybeCleanString "2" Nothing
+                                    |> Option.setLabelWithString "two" (Just "two")
+                                    |> Option.setPart (OptionPart.test_new "2")
+                                , test_newFancyOptionWithMaybeCleanString "3" Nothing
+                                    |> select 0
+                                    |> Option.setLabelWithString "three" (Just "three")
+                                    |> Option.setPart (OptionPart.test_new "3")
                                 ]
                             )
                         )
@@ -128,12 +139,15 @@ suite =
                                 [ test_newFancyOptionWithMaybeCleanString "1" Nothing
                                     |> Option.setLabelWithString "straw" (Just "straw")
                                     |> Option.setDescriptionWithString "👒"
+                                    |> Option.setPart (OptionPart.test_new "1")
                                 , test_newFancyOptionWithMaybeCleanString "2" Nothing
                                     |> Option.setLabelWithString "sticks" (Just "sticks")
                                     |> Option.setDescriptionWithString "🌳"
+                                    |> Option.setPart (OptionPart.test_new "2")
                                 , newSelectedOption 0 "3" Nothing
                                     |> Option.setLabelWithString "bricks" (Just "bricks")
                                     |> Option.setDescriptionWithString "🧱"
+                                    |> Option.setPart (OptionPart.test_new "3")
                                 ]
                             )
                         )
@@ -149,13 +163,16 @@ suite =
                                 [ test_newFancyOptionWithMaybeCleanString "1" Nothing
                                     |> Option.setLabelWithString "straw" (Just "straw")
                                     |> Option.setGroupWithString "Building Material"
+                                    |> Option.setPart (OptionPart.test_new "1")
                                 , test_newFancyOptionWithMaybeCleanString "2" Nothing
                                     |> Option.setLabelWithString "sticks" (Just "sticks")
                                     |> Option.setGroupWithString "Building Material"
+                                    |> Option.setPart (OptionPart.test_new "2")
                                 , test_newFancyOptionWithMaybeCleanString "3" Nothing
                                     |> select 0
                                     |> Option.setLabelWithString "bricks" (Just "bricks")
                                     |> Option.setGroupWithString "Building Material"
+                                    |> Option.setPart (OptionPart.test_new "3")
                                 ]
                             )
                         )
