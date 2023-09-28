@@ -14677,6 +14677,17 @@ var $author$project$FancyOption$descriptionHtml = function (fancyOption) {
 		return $elm$html$Html$text('');
 	}
 };
+var $author$project$FancyOption$getOptionPart = function (fancyOption) {
+	switch (fancyOption.$) {
+		case 0:
+			var part = fancyOption.f;
+			return part;
+		case 1:
+			return $author$project$OptionPart$empty;
+		default:
+			return $author$project$OptionPart$empty;
+	}
+};
 var $author$project$FancyOption$labelHtml = function (option) {
 	var _v0 = $author$project$FancyOption$getMaybeOptionSearchFilter(option);
 	if (!_v0.$) {
@@ -14758,6 +14769,30 @@ var $elm$html$Html$Events$onMouseLeave = function (msg) {
 		'mouseleave',
 		$elm$json$Json$Decode$succeed(msg));
 };
+var $author$project$OptionPart$toActiveDropdownAttribute = function (optionPart) {
+	var string = optionPart;
+	if (string === '') {
+		return A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option active highlighted');
+	} else {
+		return A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option active highlighted ' + string);
+	}
+};
+var $author$project$OptionPart$toDisabledDropdownAttribute = function (optionPart) {
+	var string = optionPart;
+	if (string === '') {
+		return A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option disabled');
+	} else {
+		return A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option disabled ' + string);
+	}
+};
+var $author$project$OptionPart$toDropdownAttribute = function (optionPart) {
+	var string = optionPart;
+	if (string === '') {
+		return A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option');
+	} else {
+		return A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option ' + string);
+	}
+};
 var $author$project$FancyOption$valueDataAttribute = function (option) {
 	return A2(
 		$elm$html$Html$Attributes$attribute,
@@ -14783,6 +14818,8 @@ var $author$project$FancyOption$toDropdownOptionSelectedHighlightedHtml = F2(
 					eventHandlers.dD(
 						$author$project$FancyOption$getOptionValue(option))),
 					A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option selected highlighted'),
+					$author$project$OptionPart$toDropdownAttribute(
+					$author$project$FancyOption$getOptionPart(option)),
 					$elm$html$Html$Attributes$class('option selected highlighted'),
 					$author$project$FancyOption$valueDataAttribute(option)
 				]),
@@ -14811,6 +14848,8 @@ var $author$project$FancyOption$toDropdownOptionSelectedHtml = F2(
 					eventHandlers.dD(
 						$author$project$FancyOption$getOptionValue(option))),
 					A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option selected'),
+					$author$project$OptionPart$toDropdownAttribute(
+					$author$project$FancyOption$getOptionPart(option)),
 					$elm$html$Html$Attributes$class('option selected'),
 					$author$project$FancyOption$valueDataAttribute(option)
 				]),
@@ -14820,6 +14859,14 @@ var $author$project$FancyOption$toDropdownOptionSelectedHtml = F2(
 					$author$project$FancyOption$descriptionHtml(option)
 				]));
 	});
+var $author$project$OptionPart$toHighlightedDropdownAttribute = function (optionPart) {
+	var string = optionPart;
+	if (string === '') {
+		return A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option highlighted');
+	} else {
+		return A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option highlighted ' + string);
+	}
+};
 var $author$project$FancyOption$toDropdownHtml = F3(
 	function (eventHandlers, selectionMode, option) {
 		var _v0 = $author$project$FancyOption$getOptionDisplay(option);
@@ -14842,7 +14889,8 @@ var $author$project$FancyOption$toDropdownHtml = F3(
 							eventHandlers.dD(
 								$author$project$FancyOption$getOptionValue(option))),
 							$author$project$Events$onClickPreventDefault(eventHandlers.dH),
-							A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option'),
+							$author$project$OptionPart$toDropdownAttribute(
+							$author$project$FancyOption$getOptionPart(option)),
 							$elm$html$Html$Attributes$class('option'),
 							$author$project$FancyOption$valueDataAttribute(option)
 						]),
@@ -14866,6 +14914,8 @@ var $author$project$FancyOption$toDropdownHtml = F3(
 						[
 							A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option disabled pending-validation'),
 							$elm$html$Html$Attributes$class('option disabled pending-validation'),
+							$author$project$OptionPart$toDropdownAttribute(
+							$author$project$FancyOption$getOptionPart(option)),
 							$author$project$FancyOption$valueDataAttribute(option)
 						]),
 					_List_fromArray(
@@ -14898,8 +14948,9 @@ var $author$project$FancyOption$toDropdownHtml = F3(
 							$author$project$Events$mouseUpPreventDefault(
 							eventHandlers.dD(
 								$author$project$FancyOption$getOptionValue(option))),
-							A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option highlighted'),
 							$elm$html$Html$Attributes$class('option highlighted'),
+							$author$project$OptionPart$toHighlightedDropdownAttribute(
+							$author$project$FancyOption$getOptionPart(option)),
 							$author$project$FancyOption$valueDataAttribute(option)
 						]),
 					_List_fromArray(
@@ -14925,8 +14976,9 @@ var $author$project$FancyOption$toDropdownHtml = F3(
 							eventHandlers.dD(
 								$author$project$FancyOption$getOptionValue(option))),
 							$author$project$Events$onClickPreventDefaultAndStopPropagation(eventHandlers.dH),
-							A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option active highlighted'),
 							$elm$html$Html$Attributes$class('option active highlighted'),
+							$author$project$OptionPart$toActiveDropdownAttribute(
+							$author$project$FancyOption$getOptionPart(option)),
 							$author$project$FancyOption$valueDataAttribute(option)
 						]),
 					_List_fromArray(
@@ -14939,8 +14991,9 @@ var $author$project$FancyOption$toDropdownHtml = F3(
 					$elm$html$Html$div,
 					_List_fromArray(
 						[
-							A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option disabled'),
 							$elm$html$Html$Attributes$class('option disabled'),
+							$author$project$OptionPart$toDisabledDropdownAttribute(
+							$author$project$FancyOption$getOptionPart(option)),
 							$author$project$FancyOption$valueDataAttribute(option)
 						]),
 					_List_fromArray(
@@ -15828,18 +15881,7 @@ var $author$project$OptionLabel$getLabelString = function (optionLabel) {
 	var string = optionLabel.a;
 	return string;
 };
-var $author$project$FancyOption$getOptionPart = function (fancyOption) {
-	switch (fancyOption.$) {
-		case 0:
-			var part = fancyOption.f;
-			return part;
-		case 1:
-			return $author$project$OptionPart$empty;
-		default:
-			return $author$project$OptionPart$empty;
-	}
-};
-var $author$project$OptionPart$toAttribute = function (optionPart) {
+var $author$project$OptionPart$toValueAttribute = function (optionPart) {
 	var string = optionPart;
 	if (string === '') {
 		return A2($elm$html$Html$Attributes$attribute, 'part', 'value');
@@ -15882,7 +15924,7 @@ var $author$project$FancyOption$toValueHtml = F4(
 				return $elm$html$Html$text('');
 			}
 		};
-		var partAttr = $author$project$OptionPart$toAttribute(
+		var partAttr = $author$project$OptionPart$toValueAttribute(
 			$author$project$FancyOption$getOptionPart(fancyOption));
 		var highlightPartAttr = A2($elm$html$Html$Attributes$attribute, 'part', 'value highlighted-value');
 		switch (fancyOption.$) {

@@ -561,7 +561,7 @@ toValueHtml toggleSelectedMsg deselectOptionInternal enableSingleItemRemoval fan
                     text ""
 
         partAttr =
-            OptionPart.toAttribute (getOptionPart fancyOption)
+            OptionPart.toValueAttribute (getOptionPart fancyOption)
 
         highlightPartAttr =
             Html.Attributes.attribute "part" "value highlighted-value"
@@ -741,7 +741,7 @@ toDropdownHtml eventHandlers selectionMode option =
                 , mouseDownPreventDefault (option |> getOptionValue |> eventHandlers.mouseDownMsgConstructor)
                 , mouseUpPreventDefault (option |> getOptionValue |> eventHandlers.mouseUpMsgConstructor)
                 , onClickPreventDefault eventHandlers.noOpMsgConstructor
-                , Html.Attributes.attribute "part" "dropdown-option"
+                , OptionPart.toDropdownAttribute (getOptionPart option)
                 , class "option"
                 , valueDataAttribute option
                 ]
@@ -762,6 +762,7 @@ toDropdownHtml eventHandlers selectionMode option =
             div
                 [ Html.Attributes.attribute "part" "dropdown-option disabled pending-validation"
                 , class "option disabled pending-validation"
+                , OptionPart.toDropdownAttribute (getOptionPart option)
                 , valueDataAttribute option
                 ]
                 [ labelHtml option, descriptionHtml option ]
@@ -783,8 +784,8 @@ toDropdownHtml eventHandlers selectionMode option =
                 , onMouseLeave (option |> getOptionValue |> eventHandlers.mouseOutMsgConstructor)
                 , mouseDownPreventDefault (option |> getOptionValue |> eventHandlers.mouseDownMsgConstructor)
                 , mouseUpPreventDefault (option |> getOptionValue |> eventHandlers.mouseUpMsgConstructor)
-                , Html.Attributes.attribute "part" "dropdown-option highlighted"
                 , class "option highlighted"
+                , OptionPart.toHighlightedDropdownAttribute (getOptionPart option)
                 , valueDataAttribute option
                 ]
                 [ labelHtml option, descriptionHtml option ]
@@ -796,16 +797,16 @@ toDropdownHtml eventHandlers selectionMode option =
                 , mouseDownPreventDefault (option |> getOptionValue |> eventHandlers.mouseDownMsgConstructor)
                 , mouseUpPreventDefault (option |> getOptionValue |> eventHandlers.mouseUpMsgConstructor)
                 , onClickPreventDefaultAndStopPropagation eventHandlers.noOpMsgConstructor
-                , Html.Attributes.attribute "part" "dropdown-option active highlighted"
                 , class "option active highlighted"
+                , OptionPart.toActiveDropdownAttribute (getOptionPart option)
                 , valueDataAttribute option
                 ]
                 [ labelHtml option, descriptionHtml option ]
 
         OptionDisabled _ ->
             div
-                [ Html.Attributes.attribute "part" "dropdown-option disabled"
-                , class "option disabled"
+                [ class "option disabled"
+                , OptionPart.toDisabledDropdownAttribute (getOptionPart option)
                 , valueDataAttribute option
                 ]
                 [ labelHtml option, descriptionHtml option ]
@@ -819,6 +820,7 @@ toDropdownOptionSelectedHtml eventHandlers option =
         , mouseDownPreventDefault (option |> getOptionValue |> eventHandlers.mouseDownMsgConstructor)
         , mouseUpPreventDefault (option |> getOptionValue |> eventHandlers.mouseUpMsgConstructor)
         , Html.Attributes.attribute "part" "dropdown-option selected"
+        , OptionPart.toDropdownAttribute (getOptionPart option)
         , class "option selected"
         , valueDataAttribute option
         ]
@@ -833,6 +835,7 @@ toDropdownOptionSelectedHighlightedHtml eventHandlers option =
         , mouseDownPreventDefault (option |> getOptionValue |> eventHandlers.mouseDownMsgConstructor)
         , mouseUpPreventDefault (option |> getOptionValue |> eventHandlers.mouseUpMsgConstructor)
         , Html.Attributes.attribute "part" "dropdown-option selected highlighted"
+        , OptionPart.toDropdownAttribute (getOptionPart option)
         , class "option selected highlighted"
         , valueDataAttribute option
         ]

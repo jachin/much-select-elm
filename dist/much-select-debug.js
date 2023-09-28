@@ -39,9 +39,9 @@ const buildOptionsFromSelectElement = (selectElement) => {
     }
     const option = { value };
     if (optionElement.hasAttribute("id")) {
-      option.part = optionElement.getAttribute("id");
+      option.part = optionElement.getAttribute("id").trim();
     } else {
-      option.part = dasherize(option.value);
+      option.part = dasherize(option.value.trim());
     }
     option.label = optionElement.innerText.trim();
     option.labelClean = asciiFold(optionElement.innerText).trim();
