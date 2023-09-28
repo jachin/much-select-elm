@@ -20,7 +20,6 @@ module Option exposing
     , getOptionValue
     , getOptionValueAsString
     , getSlot
-    , hasDescription
     , hasSelectedItemIndex
     , highlight
     , isBelowSearchFilterScore
@@ -54,6 +53,8 @@ module Option exposing
     , setOptionSearchFilter
     , setOptionValue
     , setOptionValueErrors
+    , setPart
+    , singleSelectViewCustomHtmlValueHtml
     , test_newDatalistOption
     , test_newEmptyDatalistOption
     , test_newEmptySelectedDatalistOption
@@ -72,12 +73,15 @@ module Option exposing
 
 import DatalistOption
 import FancyOption
+import Html exposing (Html)
+import Html.Extra
 import Json.Decode
 import Json.Encode
 import OptionDescription exposing (OptionDescription)
 import OptionDisplay exposing (OptionDisplay)
 import OptionGroup exposing (OptionGroup)
 import OptionLabel exposing (OptionLabel(..), optionLabelToString)
+import OptionPart exposing (OptionPart)
 import OptionSearchFilter exposing (OptionSearchFilter, OptionSearchFilterWithValue, OptionSearchResult)
 import OptionSlot exposing (OptionSlot)
 import OptionValue exposing (OptionValue(..))
@@ -244,6 +248,19 @@ setMaybeSortRank maybeSortRank option =
     setLabel (option |> getOptionLabel |> OptionLabel.setMaybeSortRank maybeSortRank) option
 
 
+setPart : OptionPart -> Option -> Option
+setPart optionPart option =
+    case option of
+        FancyOption fancyOption ->
+            FancyOption (FancyOption.setPart optionPart fancyOption)
+
+        DatalistOption _ ->
+            option
+
+        SlottedOption _ ->
+            option
+
+
 newSelectedOption : Int -> String -> Maybe String -> Option
 newSelectedOption index labelString maybeCleanLabel =
     FancyOption (FancyOption.newSelectedOption index labelString maybeCleanLabel)
@@ -342,11 +359,6 @@ getDescription option =
 
         SlottedOption _ ->
             OptionDescription.noDescription
-
-
-hasDescription : Option -> Bool
-hasDescription option =
-    option |> getDescription |> OptionDescription.toBool
 
 
 getMaybeOptionSearchFilter : Option -> Maybe OptionSearchFilter
@@ -743,6 +755,19 @@ merge optionA optionB =
 
         SlottedOption _ ->
             optionA
+
+
+singleSelectViewCustomHtmlValueHtml : Option -> Html msg
+singleSelectViewCustomHtmlValueHtml option =
+    case option of
+        FancyOption fancyOption ->
+            FancyOption.toSingleSelectValueHtml fancyOption
+
+        DatalistOption _ ->
+            Html.Extra.nothing
+
+        SlottedOption _ ->
+            Html.Extra.nothing
 
 
 test_optionToDebuggingString : Option -> String

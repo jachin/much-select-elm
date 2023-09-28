@@ -4963,6 +4963,107 @@ function _Browser_load(url)
 }
 
 
+// CREATE
+
+var _Regex_never = /.^/;
+
+var _Regex_fromStringWith = F2(function(options, string)
+{
+	var flags = 'g';
+	if (options.multiline) { flags += 'm'; }
+	if (options.caseInsensitive) { flags += 'i'; }
+
+	try
+	{
+		return $elm$core$Maybe$Just(new RegExp(string, flags));
+	}
+	catch(error)
+	{
+		return $elm$core$Maybe$Nothing;
+	}
+});
+
+
+// USE
+
+var _Regex_contains = F2(function(re, string)
+{
+	return string.match(re) !== null;
+});
+
+
+var _Regex_findAtMost = F3(function(n, re, str)
+{
+	var out = [];
+	var number = 0;
+	var string = str;
+	var lastIndex = re.lastIndex;
+	var prevLastIndex = -1;
+	var result;
+	while (number++ < n && (result = re.exec(string)))
+	{
+		if (prevLastIndex == re.lastIndex) break;
+		var i = result.length - 1;
+		var subs = new Array(i);
+		while (i > 0)
+		{
+			var submatch = result[i];
+			subs[--i] = submatch
+				? $elm$core$Maybe$Just(submatch)
+				: $elm$core$Maybe$Nothing;
+		}
+		out.push(A4($elm$regex$Regex$Match, result[0], result.index, number, _List_fromArray(subs)));
+		prevLastIndex = re.lastIndex;
+	}
+	re.lastIndex = lastIndex;
+	return _List_fromArray(out);
+});
+
+
+var _Regex_replaceAtMost = F4(function(n, re, replacer, string)
+{
+	var count = 0;
+	function jsReplacer(match)
+	{
+		if (count++ >= n)
+		{
+			return match;
+		}
+		var i = arguments.length - 3;
+		var submatches = new Array(i);
+		while (i > 0)
+		{
+			var submatch = arguments[i];
+			submatches[--i] = submatch
+				? $elm$core$Maybe$Just(submatch)
+				: $elm$core$Maybe$Nothing;
+		}
+		return replacer(A4($elm$regex$Regex$Match, match, arguments[arguments.length - 2], count, _List_fromArray(submatches)));
+	}
+	return string.replace(re, jsReplacer);
+});
+
+var _Regex_splitAtMost = F3(function(n, re, str)
+{
+	var string = str;
+	var out = [];
+	var start = re.lastIndex;
+	var restoreLastIndex = re.lastIndex;
+	while (n--)
+	{
+		var result = re.exec(string);
+		if (!result) break;
+		out.push(string.slice(start, result.index));
+		start = re.lastIndex;
+	}
+	out.push(string.slice(start));
+	re.lastIndex = restoreLastIndex;
+	return _List_fromArray(out);
+});
+
+var _Regex_infinity = Infinity;
+
+
 function _Url_percentEncode(string)
 {
 	return encodeURIComponent(string);
@@ -10668,9 +10769,9 @@ var $author$project$FancyOption$EmptyFancyOption = F2(
 	function (a, b) {
 		return {$: 'EmptyFancyOption', a: a, b: b};
 	});
-var $author$project$FancyOption$FancyOption = F6(
-	function (a, b, c, d, e, f) {
-		return {$: 'FancyOption', a: a, b: b, c: c, d: d, e: e, f: f};
+var $author$project$FancyOption$FancyOption = F7(
+	function (a, b, c, d, e, f, g) {
+		return {$: 'FancyOption', a: a, b: b, c: c, d: d, e: e, f: f, g: g};
 	});
 var $author$project$OptionGroup$NoOptionGroup = {$: 'NoOptionGroup'};
 var $author$project$OptionValue$OptionValue = function (a) {
@@ -10680,6 +10781,66 @@ var $author$project$OptionDisplay$OptionShown = function (a) {
 	return {$: 'OptionShown', a: a};
 };
 var $author$project$OptionDisplay$default = $author$project$OptionDisplay$OptionShown($author$project$OptionDisplay$MatureOption);
+var $author$project$OptionPart$OptionPart = function (a) {
+	return {$: 'OptionPart', a: a};
+};
+var $author$project$OptionPart$empty = $author$project$OptionPart$OptionPart('');
+var $elm$core$String$append = _String_append;
+var $elm$regex$Regex$Match = F4(
+	function (match, index, number, submatches) {
+		return {index: index, match: match, number: number, submatches: submatches};
+	});
+var $elm$regex$Regex$fromStringWith = _Regex_fromStringWith;
+var $elm$regex$Regex$fromString = function (string) {
+	return A2(
+		$elm$regex$Regex$fromStringWith,
+		{caseInsensitive: false, multiline: false},
+		string);
+};
+var $elm$regex$Regex$never = _Regex_never;
+var $elm_community$string_extra$String$Extra$regexFromString = A2(
+	$elm$core$Basics$composeR,
+	$elm$regex$Regex$fromString,
+	$elm$core$Maybe$withDefault($elm$regex$Regex$never));
+var $elm$regex$Regex$replace = _Regex_replaceAtMost(_Regex_infinity);
+var $elm$core$String$toLower = _String_toLower;
+var $elm$core$String$trim = _String_trim;
+var $elm_community$string_extra$String$Extra$dasherize = function (string) {
+	return $elm$core$String$toLower(
+		A3(
+			$elm$regex$Regex$replace,
+			$elm_community$string_extra$String$Extra$regexFromString('[_-\\s]+'),
+			$elm$core$Basics$always('-'),
+			A3(
+				$elm$regex$Regex$replace,
+				$elm_community$string_extra$String$Extra$regexFromString('([A-Z])'),
+				A2(
+					$elm$core$Basics$composeR,
+					function ($) {
+						return $.match;
+					},
+					$elm$core$String$append('-')),
+				$elm$core$String$trim(string))));
+};
+var $author$project$OptionPart$fromString = function (string) {
+	var partString = $elm_community$string_extra$String$Extra$dasherize(
+		$elm$core$String$trim(string));
+	if (partString === '') {
+		return $elm$core$Maybe$Nothing;
+	} else {
+		return $elm$core$Maybe$Just(
+			$author$project$OptionPart$OptionPart(string));
+	}
+};
+var $author$project$OptionPart$fromStringOrEmpty = function (string) {
+	var _v0 = $author$project$OptionPart$fromString(string);
+	if (_v0.$ === 'Nothing') {
+		return $author$project$OptionPart$empty;
+	} else {
+		var part = _v0.a;
+		return part;
+	}
+};
 var $author$project$SortRank$NoSortRank = {$: 'NoSortRank'};
 var $author$project$OptionLabel$OptionLabel = F3(
 	function (a, b, c) {
@@ -10699,13 +10860,14 @@ var $author$project$FancyOption$new = F2(
 				$author$project$OptionDisplay$default,
 				A2($author$project$OptionLabel$newWithCleanLabel, '', maybeCleanLabel));
 		} else {
-			return A6(
+			return A7(
 				$author$project$FancyOption$FancyOption,
 				$author$project$OptionDisplay$default,
 				A2($author$project$OptionLabel$newWithCleanLabel, value, maybeCleanLabel),
 				$author$project$OptionValue$OptionValue(value),
 				$author$project$OptionDescription$noDescription,
 				$author$project$OptionGroup$NoOptionGroup,
+				$author$project$OptionPart$fromStringOrEmpty(value),
 				$elm$core$Maybe$Nothing);
 		}
 	});
@@ -10780,8 +10942,9 @@ var $author$project$FancyOption$setOptionDisplay = F2(
 				var optionValue = option.c;
 				var optionDescription = option.d;
 				var optionGroup = option.e;
-				var search = option.f;
-				return A6($author$project$FancyOption$FancyOption, optionDisplay, optionLabel, optionValue, optionDescription, optionGroup, search);
+				var optionPart = option.f;
+				var search = option.g;
+				return A7($author$project$FancyOption$FancyOption, optionDisplay, optionLabel, optionValue, optionDescription, optionGroup, optionPart, search);
 			case 'CustomFancyOption':
 				var optionLabel = option.b;
 				var optionValue = option.c;
@@ -11348,7 +11511,6 @@ var $author$project$OptionDisplay$decoder = function (age) {
 				$author$project$OptionDisplay$OptionShown(age))
 			]));
 };
-var $elm$core$String$trim = _String_trim;
 var $author$project$OptionValue$decoder = A2(
 	$elm$json$Json$Decode$andThen,
 	function (valueStr) {
@@ -11429,7 +11591,7 @@ var $author$project$OptionLabel$labelDecoder = A4(
 		'labelClean',
 		$elm$json$Json$Decode$nullable($elm$json$Json$Decode$string)),
 	$author$project$SortRank$sortRankDecoder);
-var $author$project$FancyOption$decodeOptionWithoutAValue = function (age) {
+var $author$project$FancyOption$decodeEmptyOptionValue = function (age) {
 	return A2(
 		$elm$json$Json$Decode$andThen,
 		function (value) {
@@ -11474,23 +11636,58 @@ var $author$project$OptionGroup$decoder = $elm$json$Json$Decode$oneOf(
 			A2($elm$json$Json$Decode$field, 'group', $elm$json$Json$Decode$string)),
 			$elm$json$Json$Decode$succeed($author$project$OptionGroup$NoOptionGroup)
 		]));
-var $elm$json$Json$Decode$map6 = _Json_map6;
+var $elm$json$Json$Decode$map7 = _Json_map7;
+var $author$project$OptionPart$valueDecoder = A2(
+	$elm$json$Json$Decode$andThen,
+	function (s) {
+		var _v0 = $author$project$OptionPart$fromString(s);
+		if (_v0.$ === 'Nothing') {
+			return $elm$json$Json$Decode$fail('The value is empty so we are unable to make a part of the value');
+		} else {
+			var part = _v0.a;
+			return $elm$json$Json$Decode$succeed(part);
+		}
+	},
+	$elm$json$Json$Decode$string);
 var $author$project$FancyOption$decoderOptionWithAValue = function (age) {
-	return A7(
-		$elm$json$Json$Decode$map6,
+	return A8(
+		$elm$json$Json$Decode$map7,
 		$author$project$FancyOption$FancyOption,
 		$author$project$OptionDisplay$decoder(age),
 		$author$project$OptionLabel$labelDecoder,
 		A2($elm$json$Json$Decode$field, 'value', $author$project$OptionValue$decoder),
 		$author$project$OptionDescription$decoder,
 		$author$project$OptionGroup$decoder,
+		A2($elm$json$Json$Decode$field, 'value', $author$project$OptionPart$valueDecoder),
+		$elm$json$Json$Decode$succeed($elm$core$Maybe$Nothing));
+};
+var $author$project$OptionPart$decoder = A2(
+	$elm$json$Json$Decode$andThen,
+	function (s) {
+		return _Utils_eq(
+			s,
+			$elm_community$string_extra$String$Extra$dasherize(s)) ? $elm$json$Json$Decode$succeed(
+			$author$project$OptionPart$OptionPart(s)) : $elm$json$Json$Decode$fail('Invalid option part: ' + s);
+	},
+	$elm$json$Json$Decode$string);
+var $author$project$FancyOption$decoderOptionWithAValueAndPart = function (age) {
+	return A8(
+		$elm$json$Json$Decode$map7,
+		$author$project$FancyOption$FancyOption,
+		$author$project$OptionDisplay$decoder(age),
+		$author$project$OptionLabel$labelDecoder,
+		A2($elm$json$Json$Decode$field, 'value', $author$project$OptionValue$decoder),
+		$author$project$OptionDescription$decoder,
+		$author$project$OptionGroup$decoder,
+		A2($elm$json$Json$Decode$field, 'part', $author$project$OptionPart$decoder),
 		$elm$json$Json$Decode$succeed($elm$core$Maybe$Nothing));
 };
 var $author$project$FancyOption$decoderWithAge = function (optionAge) {
 	return $elm$json$Json$Decode$oneOf(
 		_List_fromArray(
 			[
-				$author$project$FancyOption$decodeOptionWithoutAValue(optionAge),
+				$author$project$FancyOption$decodeEmptyOptionValue(optionAge),
+				$author$project$FancyOption$decoderOptionWithAValueAndPart(optionAge),
 				$author$project$FancyOption$decoderOptionWithAValue(optionAge)
 			]));
 };
@@ -13776,8 +13973,8 @@ var $author$project$DatalistOption$merge = F2(
 var $author$project$FancyOption$getOptionDescription = function (option) {
 	switch (option.$) {
 		case 'FancyOption':
-			var optionDescription = option.d;
-			return optionDescription;
+			var description = option.d;
+			return description;
 		case 'CustomFancyOption':
 			return $author$project$OptionDescription$noDescription;
 		default:
@@ -13806,8 +14003,8 @@ var $author$project$FancyOption$orOptionDescriptions = F2(
 var $author$project$FancyOption$getOptionGroup = function (fancyOption) {
 	switch (fancyOption.$) {
 		case 'FancyOption':
-			var optionGroup = fancyOption.e;
-			return optionGroup;
+			var group = fancyOption.e;
+			return group;
 		case 'CustomFancyOption':
 			return $author$project$OptionGroup$NoOptionGroup;
 		default:
@@ -13863,8 +14060,9 @@ var $author$project$FancyOption$setDescription = F2(
 				var label = option.b;
 				var optionValue = option.c;
 				var group = option.e;
-				var search = option.f;
-				return A6($author$project$FancyOption$FancyOption, optionDisplay, label, optionValue, description, group, search);
+				var part = option.f;
+				var search = option.g;
+				return A7($author$project$FancyOption$FancyOption, optionDisplay, label, optionValue, description, group, part, search);
 			case 'CustomFancyOption':
 				return option;
 			default:
@@ -13879,8 +14077,9 @@ var $author$project$FancyOption$setLabel = F2(
 				var optionValue = option.c;
 				var description = option.d;
 				var group = option.e;
-				var search = option.f;
-				return A6($author$project$FancyOption$FancyOption, optionDisplay, label, optionValue, description, group, search);
+				var part = option.f;
+				var search = option.g;
+				return A7($author$project$FancyOption$FancyOption, optionDisplay, label, optionValue, description, group, part, search);
 			case 'CustomFancyOption':
 				var optionDisplay = option.a;
 				var optionValue = option.c;
@@ -13899,8 +14098,9 @@ var $author$project$FancyOption$setOptionGroup = F2(
 				var label = option.b;
 				var optionValue = option.c;
 				var description = option.d;
-				var search = option.f;
-				return A6($author$project$FancyOption$FancyOption, optionDisplay, label, optionValue, description, optionGroup, search);
+				var part = option.f;
+				var search = option.g;
+				return A7($author$project$FancyOption$FancyOption, optionDisplay, label, optionValue, description, optionGroup, part, search);
 			case 'CustomFancyOption':
 				return option;
 			default:
@@ -14923,7 +15123,6 @@ var $author$project$SearchString$new = F2(
 	function (string, isCleared_) {
 		return A2($author$project$SearchString$SearchString, string, isCleared_);
 	});
-var $elm$core$String$toLower = _String_toLower;
 var $author$project$OptionLabel$optionLabelToSearchString = function (optionLabel) {
 	var string = optionLabel.a;
 	var maybeCleanString = optionLabel.b;
@@ -15821,8 +16020,8 @@ var $author$project$OptionSearchFilter$impossiblyLowScore = 1000000;
 var $author$project$FancyOption$getMaybeOptionSearchFilter = function (option) {
 	switch (option.$) {
 		case 'FancyOption':
-			var maybeOptionSearchFilter = option.f;
-			return maybeOptionSearchFilter;
+			var maybeSearchFilter = option.g;
+			return maybeSearchFilter;
 		case 'CustomFancyOption':
 			return $elm$core$Maybe$Nothing;
 		default:
@@ -16487,17 +16686,18 @@ var $author$project$FancyOption$setOptionValue = F2(
 	function (optionValue, option) {
 		switch (option.$) {
 			case 'FancyOption':
-				var optionDisplay = option.a;
-				var optionLabel = option.b;
-				var optionDescription = option.d;
-				var optionGroup = option.e;
-				var maybeOptionSearchFilter = option.f;
-				return A6($author$project$FancyOption$FancyOption, optionDisplay, optionLabel, optionValue, optionDescription, optionGroup, maybeOptionSearchFilter);
+				var display = option.a;
+				var label = option.b;
+				var description = option.d;
+				var group = option.e;
+				var part = option.f;
+				var maybeSearchFilter = option.g;
+				return A7($author$project$FancyOption$FancyOption, display, label, optionValue, description, group, part, maybeSearchFilter);
 			case 'CustomFancyOption':
-				var optionDisplay = option.a;
-				var optionLabel = option.b;
-				var maybeOptionSearchFilter = option.d;
-				return A4($author$project$FancyOption$CustomFancyOption, optionDisplay, optionLabel, optionValue, maybeOptionSearchFilter);
+				var display = option.a;
+				var label = option.b;
+				var maybeSearchFilter = option.d;
+				return A4($author$project$FancyOption$CustomFancyOption, display, label, optionValue, maybeSearchFilter);
 			default:
 				return option;
 		}
@@ -17707,20 +17907,21 @@ var $author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenThe
 	return A4($author$project$MuchSelect$updatePartOfTheModelWithChangesThatEffectTheOptionsWhenTheMouseMoves, model.rightSlot, model.selectionConfig, model.options, model);
 };
 var $author$project$FancyOption$setOptionSearchFilter = F2(
-	function (optionSearchFilter, option) {
+	function (searchFilter, option) {
 		switch (option.$) {
 			case 'FancyOption':
-				var optionDisplay = option.a;
-				var optionLabel = option.b;
-				var optionValue = option.c;
-				var optionDescription = option.d;
-				var optionGroup = option.e;
-				return A6($author$project$FancyOption$FancyOption, optionDisplay, optionLabel, optionValue, optionDescription, optionGroup, optionSearchFilter);
+				var display = option.a;
+				var label = option.b;
+				var value = option.c;
+				var description = option.d;
+				var group = option.e;
+				var part = option.f;
+				return A7($author$project$FancyOption$FancyOption, display, label, value, description, group, part, searchFilter);
 			case 'CustomFancyOption':
-				var optionDisplay = option.a;
-				var optionLabel = option.b;
-				var optionValue = option.c;
-				return A4($author$project$FancyOption$CustomFancyOption, optionDisplay, optionLabel, optionValue, optionSearchFilter);
+				var display = option.a;
+				var label = option.b;
+				var value = option.c;
+				return A4($author$project$FancyOption$CustomFancyOption, display, label, value, searchFilter);
 			default:
 				return option;
 		}
@@ -19720,17 +19921,9 @@ var $author$project$DropdownOptions$maybeFirstOptionSearchFilter = function (dro
 			$author$project$OptionList$head(options));
 	}
 };
-var $author$project$Option$getDescription = function (option) {
-	switch (option.$) {
-		case 'FancyOption':
-			var fancyOption = option.a;
-			return $author$project$FancyOption$getOptionDescription(fancyOption);
-		case 'DatalistOption':
-			return $author$project$OptionDescription$noDescription;
-		default:
-			return $author$project$OptionDescription$noDescription;
-	}
-};
+var $elm$virtual_dom$VirtualDom$lazy2 = _VirtualDom_lazy2;
+var $elm$html$Html$Lazy$lazy2 = $elm$virtual_dom$VirtualDom$lazy2;
+var $elm_community$html_extra$Html$Extra$nothing = $elm$html$Html$text('');
 var $author$project$OptionDescription$toBool = function (optionDescription) {
 	if (optionDescription.$ === 'OptionDescription') {
 		return true;
@@ -19738,12 +19931,104 @@ var $author$project$OptionDescription$toBool = function (optionDescription) {
 		return false;
 	}
 };
-var $author$project$Option$hasDescription = function (option) {
+var $author$project$FancyOption$hasDescription = function (option) {
 	return $author$project$OptionDescription$toBool(
-		$author$project$Option$getDescription(option));
+		$author$project$FancyOption$getOptionDescription(option));
 };
-var $elm$virtual_dom$VirtualDom$lazy2 = _VirtualDom_lazy2;
-var $elm$html$Html$Lazy$lazy2 = $elm$virtual_dom$VirtualDom$lazy2;
+var $author$project$OptionPresentor$tokensToHtml = function (list) {
+	return A2(
+		$elm$core$List$map,
+		function (_v0) {
+			var highlighted = _v0.a;
+			var string = _v0.b;
+			return highlighted ? A2(
+				$elm$html$Html$span,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('highlight')
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text(string)
+					])) : $elm$html$Html$text(string);
+		},
+		list);
+};
+var $author$project$FancyOption$descriptionHtml = function (fancyOption) {
+	if ($author$project$FancyOption$hasDescription(fancyOption)) {
+		var _v0 = $author$project$FancyOption$getMaybeOptionSearchFilter(fancyOption);
+		if (_v0.$ === 'Just') {
+			var optionSearchFilter = _v0.a;
+			return A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('description'),
+						A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option-description')
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$span,
+						_List_Nil,
+						$author$project$OptionPresentor$tokensToHtml(optionSearchFilter.descriptionTokens))
+					]));
+		} else {
+			return A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('description'),
+						A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option-description')
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$span,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text(
+								$author$project$OptionDescription$toString(
+									$author$project$FancyOption$getOptionDescription(fancyOption)))
+							]))
+					]));
+		}
+	} else {
+		return $elm$html$Html$text('');
+	}
+};
+var $author$project$FancyOption$getOptionPart = function (fancyOption) {
+	switch (fancyOption.$) {
+		case 'FancyOption':
+			var part = fancyOption.f;
+			return part;
+		case 'CustomFancyOption':
+			return $author$project$OptionPart$empty;
+		default:
+			return $author$project$OptionPart$empty;
+	}
+};
+var $author$project$FancyOption$labelHtml = function (option) {
+	var _v0 = $author$project$FancyOption$getMaybeOptionSearchFilter(option);
+	if (_v0.$ === 'Just') {
+		var optionSearchFilter = _v0.a;
+		return A2(
+			$elm$html$Html$span,
+			_List_Nil,
+			$author$project$OptionPresentor$tokensToHtml(optionSearchFilter.labelTokens));
+	} else {
+		return A2(
+			$elm$html$Html$span,
+			_List_Nil,
+			_List_fromArray(
+				[
+					$elm$html$Html$text(
+					$author$project$OptionLabel$optionLabelToString(
+						$author$project$FancyOption$getOptionLabel(option)))
+				]));
+	}
+};
 var $elm$virtual_dom$VirtualDom$Custom = function (a) {
 	return {$: 'Custom', a: a};
 };
@@ -19794,256 +20079,255 @@ var $elm$html$Html$Events$onMouseLeave = function (msg) {
 		'mouseleave',
 		$elm$json$Json$Decode$succeed(msg));
 };
-var $author$project$OptionPresentor$tokensToHtml = function (list) {
-	return A2(
-		$elm$core$List$map,
-		function (_v0) {
-			var highlighted = _v0.a;
-			var string = _v0.b;
-			return highlighted ? A2(
-				$elm$html$Html$span,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$class('highlight')
-					]),
-				_List_fromArray(
-					[
-						$elm$html$Html$text(string)
-					])) : $elm$html$Html$text(string);
-		},
-		list);
+var $author$project$OptionPart$toActiveDropdownAttribute = function (optionPart) {
+	var string = optionPart.a;
+	if (string === '') {
+		return A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option active highlighted');
+	} else {
+		return A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option active highlighted ' + string);
+	}
 };
-var $author$project$DropdownOptions$valueDataAttribute = function (option) {
+var $author$project$OptionPart$toDisabledDropdownAttribute = function (optionPart) {
+	var string = optionPart.a;
+	if (string === '') {
+		return A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option disabled');
+	} else {
+		return A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option disabled ' + string);
+	}
+};
+var $author$project$OptionPart$toDropdownAttribute = function (optionPart) {
+	var string = optionPart.a;
+	if (string === '') {
+		return A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option');
+	} else {
+		return A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option ' + string);
+	}
+};
+var $author$project$FancyOption$valueDataAttribute = function (option) {
 	return A2(
 		$elm$html$Html$Attributes$attribute,
 		'data-value',
-		$author$project$Option$getOptionValueAsString(option));
+		$author$project$FancyOption$getOptionValueAsString(option));
 };
+var $author$project$FancyOption$toDropdownOptionSelectedHighlightedHtml = F2(
+	function (eventHandlers, option) {
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Events$onMouseEnter(
+					eventHandlers.mouseOverMsgConstructor(
+						$author$project$FancyOption$getOptionValue(option))),
+					$elm$html$Html$Events$onMouseLeave(
+					eventHandlers.mouseOutMsgConstructor(
+						$author$project$FancyOption$getOptionValue(option))),
+					$author$project$Events$mouseDownPreventDefault(
+					eventHandlers.mouseDownMsgConstructor(
+						$author$project$FancyOption$getOptionValue(option))),
+					$author$project$Events$mouseUpPreventDefault(
+					eventHandlers.mouseUpMsgConstructor(
+						$author$project$FancyOption$getOptionValue(option))),
+					A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option selected highlighted'),
+					$author$project$OptionPart$toDropdownAttribute(
+					$author$project$FancyOption$getOptionPart(option)),
+					$elm$html$Html$Attributes$class('option selected highlighted'),
+					$author$project$FancyOption$valueDataAttribute(option)
+				]),
+			_List_fromArray(
+				[
+					$author$project$FancyOption$labelHtml(option),
+					$author$project$FancyOption$descriptionHtml(option)
+				]));
+	});
+var $author$project$FancyOption$toDropdownOptionSelectedHtml = F2(
+	function (eventHandlers, option) {
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Events$onMouseEnter(
+					eventHandlers.mouseOverMsgConstructor(
+						$author$project$FancyOption$getOptionValue(option))),
+					$elm$html$Html$Events$onMouseLeave(
+					eventHandlers.mouseOutMsgConstructor(
+						$author$project$FancyOption$getOptionValue(option))),
+					$author$project$Events$mouseDownPreventDefault(
+					eventHandlers.mouseDownMsgConstructor(
+						$author$project$FancyOption$getOptionValue(option))),
+					$author$project$Events$mouseUpPreventDefault(
+					eventHandlers.mouseUpMsgConstructor(
+						$author$project$FancyOption$getOptionValue(option))),
+					A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option selected'),
+					$author$project$OptionPart$toDropdownAttribute(
+					$author$project$FancyOption$getOptionPart(option)),
+					$elm$html$Html$Attributes$class('option selected'),
+					$author$project$FancyOption$valueDataAttribute(option)
+				]),
+			_List_fromArray(
+				[
+					$author$project$FancyOption$labelHtml(option),
+					$author$project$FancyOption$descriptionHtml(option)
+				]));
+	});
+var $author$project$OptionPart$toHighlightedDropdownAttribute = function (optionPart) {
+	var string = optionPart.a;
+	if (string === '') {
+		return A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option highlighted');
+	} else {
+		return A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option highlighted ' + string);
+	}
+};
+var $author$project$FancyOption$toDropdownHtml = F3(
+	function (eventHandlers, selectionMode, option) {
+		var _v0 = $author$project$FancyOption$getOptionDisplay(option);
+		switch (_v0.$) {
+			case 'OptionShown':
+				return A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Events$onMouseEnter(
+							eventHandlers.mouseOverMsgConstructor(
+								$author$project$FancyOption$getOptionValue(option))),
+							$elm$html$Html$Events$onMouseLeave(
+							eventHandlers.mouseOutMsgConstructor(
+								$author$project$FancyOption$getOptionValue(option))),
+							$author$project$Events$mouseDownPreventDefault(
+							eventHandlers.mouseDownMsgConstructor(
+								$author$project$FancyOption$getOptionValue(option))),
+							$author$project$Events$mouseUpPreventDefault(
+							eventHandlers.mouseUpMsgConstructor(
+								$author$project$FancyOption$getOptionValue(option))),
+							$author$project$Events$onClickPreventDefault(eventHandlers.noOpMsgConstructor),
+							$author$project$OptionPart$toDropdownAttribute(
+							$author$project$FancyOption$getOptionPart(option)),
+							$elm$html$Html$Attributes$class('option'),
+							$author$project$FancyOption$valueDataAttribute(option)
+						]),
+					_List_fromArray(
+						[
+							$author$project$FancyOption$labelHtml(option),
+							$author$project$FancyOption$descriptionHtml(option)
+						]));
+			case 'OptionHidden':
+				return $elm_community$html_extra$Html$Extra$nothing;
+			case 'OptionSelected':
+				if (selectionMode.$ === 'SingleSelect') {
+					return A2($author$project$FancyOption$toDropdownOptionSelectedHtml, eventHandlers, option);
+				} else {
+					return $elm_community$html_extra$Html$Extra$nothing;
+				}
+			case 'OptionSelectedPendingValidation':
+				return A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option disabled pending-validation'),
+							$elm$html$Html$Attributes$class('option disabled pending-validation'),
+							$author$project$OptionPart$toDropdownAttribute(
+							$author$project$FancyOption$getOptionPart(option)),
+							$author$project$FancyOption$valueDataAttribute(option)
+						]),
+					_List_fromArray(
+						[
+							$author$project$FancyOption$labelHtml(option),
+							$author$project$FancyOption$descriptionHtml(option)
+						]));
+			case 'OptionSelectedAndInvalid':
+				return $elm_community$html_extra$Html$Extra$nothing;
+			case 'OptionSelectedHighlighted':
+				if (selectionMode.$ === 'SingleSelect') {
+					return A2($author$project$FancyOption$toDropdownOptionSelectedHighlightedHtml, eventHandlers, option);
+				} else {
+					return $elm_community$html_extra$Html$Extra$nothing;
+				}
+			case 'OptionHighlighted':
+				return A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Events$onMouseEnter(
+							eventHandlers.mouseOverMsgConstructor(
+								$author$project$FancyOption$getOptionValue(option))),
+							$elm$html$Html$Events$onMouseLeave(
+							eventHandlers.mouseOutMsgConstructor(
+								$author$project$FancyOption$getOptionValue(option))),
+							$author$project$Events$mouseDownPreventDefault(
+							eventHandlers.mouseDownMsgConstructor(
+								$author$project$FancyOption$getOptionValue(option))),
+							$author$project$Events$mouseUpPreventDefault(
+							eventHandlers.mouseUpMsgConstructor(
+								$author$project$FancyOption$getOptionValue(option))),
+							$elm$html$Html$Attributes$class('option highlighted'),
+							$author$project$OptionPart$toHighlightedDropdownAttribute(
+							$author$project$FancyOption$getOptionPart(option)),
+							$author$project$FancyOption$valueDataAttribute(option)
+						]),
+					_List_fromArray(
+						[
+							$author$project$FancyOption$labelHtml(option),
+							$author$project$FancyOption$descriptionHtml(option)
+						]));
+			case 'OptionActivated':
+				return A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Events$onMouseEnter(
+							eventHandlers.mouseOverMsgConstructor(
+								$author$project$FancyOption$getOptionValue(option))),
+							$elm$html$Html$Events$onMouseLeave(
+							eventHandlers.mouseOutMsgConstructor(
+								$author$project$FancyOption$getOptionValue(option))),
+							$author$project$Events$mouseDownPreventDefault(
+							eventHandlers.mouseDownMsgConstructor(
+								$author$project$FancyOption$getOptionValue(option))),
+							$author$project$Events$mouseUpPreventDefault(
+							eventHandlers.mouseUpMsgConstructor(
+								$author$project$FancyOption$getOptionValue(option))),
+							$author$project$Events$onClickPreventDefaultAndStopPropagation(eventHandlers.noOpMsgConstructor),
+							$elm$html$Html$Attributes$class('option active highlighted'),
+							$author$project$OptionPart$toActiveDropdownAttribute(
+							$author$project$FancyOption$getOptionPart(option)),
+							$author$project$FancyOption$valueDataAttribute(option)
+						]),
+					_List_fromArray(
+						[
+							$author$project$FancyOption$labelHtml(option),
+							$author$project$FancyOption$descriptionHtml(option)
+						]));
+			default:
+				return A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('option disabled'),
+							$author$project$OptionPart$toDisabledDropdownAttribute(
+							$author$project$FancyOption$getOptionPart(option)),
+							$author$project$FancyOption$valueDataAttribute(option)
+						]),
+					_List_fromArray(
+						[
+							$author$project$FancyOption$labelHtml(option),
+							$author$project$FancyOption$descriptionHtml(option)
+						]));
+		}
+	});
 var $author$project$DropdownOptions$optionToCustomHtml = F3(
 	function (eventHandlers, selectionConfig_, option_) {
 		return A3(
 			$elm$html$Html$Lazy$lazy2,
 			F2(
 				function (selectionConfig, option) {
-					var labelHtml = function () {
-						var _v4 = $author$project$Option$getMaybeOptionSearchFilter(option);
-						if (_v4.$ === 'Just') {
-							var optionSearchFilter = _v4.a;
-							return A2(
-								$elm$html$Html$span,
-								_List_Nil,
-								$author$project$OptionPresentor$tokensToHtml(optionSearchFilter.labelTokens));
-						} else {
-							return A2(
-								$elm$html$Html$span,
-								_List_Nil,
-								_List_fromArray(
-									[
-										$elm$html$Html$text(
-										$author$project$OptionLabel$optionLabelToString(
-											$author$project$Option$getOptionLabel(option)))
-									]));
-						}
-					}();
-					var descriptionHtml = function () {
-						if ($author$project$Option$hasDescription(option)) {
-							var _v3 = $author$project$Option$getMaybeOptionSearchFilter(option);
-							if (_v3.$ === 'Just') {
-								var optionSearchFilter = _v3.a;
-								return A2(
-									$elm$html$Html$div,
-									_List_fromArray(
-										[
-											$elm$html$Html$Attributes$class('description'),
-											A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option-description')
-										]),
-									_List_fromArray(
-										[
-											A2(
-											$elm$html$Html$span,
-											_List_Nil,
-											$author$project$OptionPresentor$tokensToHtml(optionSearchFilter.descriptionTokens))
-										]));
-							} else {
-								return A2(
-									$elm$html$Html$div,
-									_List_fromArray(
-										[
-											$elm$html$Html$Attributes$class('description'),
-											A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option-description')
-										]),
-									_List_fromArray(
-										[
-											A2(
-											$elm$html$Html$span,
-											_List_Nil,
-											_List_fromArray(
-												[
-													$elm$html$Html$text(
-													$author$project$OptionDescription$toString(
-														$author$project$Option$getDescription(option)))
-												]))
-										]));
-							}
-						} else {
-							return $elm$html$Html$text('');
-						}
-					}();
-					var _v0 = $author$project$Option$getOptionDisplay(option);
-					switch (_v0.$) {
-						case 'OptionShown':
-							return A2(
-								$elm$html$Html$div,
-								_List_fromArray(
-									[
-										$elm$html$Html$Events$onMouseEnter(
-										eventHandlers.mouseOverMsgConstructor(
-											$author$project$Option$getOptionValue(option))),
-										$elm$html$Html$Events$onMouseLeave(
-										eventHandlers.mouseOutMsgConstructor(
-											$author$project$Option$getOptionValue(option))),
-										$author$project$Events$mouseDownPreventDefault(
-										eventHandlers.mouseDownMsgConstructor(
-											$author$project$Option$getOptionValue(option))),
-										$author$project$Events$mouseUpPreventDefault(
-										eventHandlers.mouseUpMsgConstructor(
-											$author$project$Option$getOptionValue(option))),
-										$author$project$Events$onClickPreventDefault(eventHandlers.noOpMsgConstructor),
-										A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option'),
-										$elm$html$Html$Attributes$class('option'),
-										$author$project$DropdownOptions$valueDataAttribute(option)
-									]),
-								_List_fromArray(
-									[labelHtml, descriptionHtml]));
-						case 'OptionHidden':
-							return $elm$html$Html$text('');
-						case 'OptionSelected':
-							var _v1 = $author$project$SelectionMode$getSelectionMode(selectionConfig);
-							if (_v1.$ === 'SingleSelect') {
-								return A2(
-									$elm$html$Html$div,
-									_List_fromArray(
-										[
-											$elm$html$Html$Events$onMouseEnter(
-											eventHandlers.mouseOverMsgConstructor(
-												$author$project$Option$getOptionValue(option))),
-											$elm$html$Html$Events$onMouseLeave(
-											eventHandlers.mouseOutMsgConstructor(
-												$author$project$Option$getOptionValue(option))),
-											$author$project$Events$mouseDownPreventDefault(
-											eventHandlers.mouseDownMsgConstructor(
-												$author$project$Option$getOptionValue(option))),
-											$author$project$Events$mouseUpPreventDefault(
-											eventHandlers.mouseUpMsgConstructor(
-												$author$project$Option$getOptionValue(option))),
-											A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option selected'),
-											$elm$html$Html$Attributes$class('option selected'),
-											$author$project$DropdownOptions$valueDataAttribute(option)
-										]),
-									_List_fromArray(
-										[labelHtml, descriptionHtml]));
-							} else {
-								return $elm$html$Html$text('');
-							}
-						case 'OptionSelectedPendingValidation':
-							return A2(
-								$elm$html$Html$div,
-								_List_fromArray(
-									[
-										A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option disabled pending-validation'),
-										$elm$html$Html$Attributes$class('option disabled pending-validation'),
-										$author$project$DropdownOptions$valueDataAttribute(option)
-									]),
-								_List_fromArray(
-									[labelHtml, descriptionHtml]));
-						case 'OptionSelectedAndInvalid':
-							return $elm$html$Html$text('');
-						case 'OptionSelectedHighlighted':
-							var _v2 = $author$project$SelectionMode$getSelectionMode(selectionConfig);
-							if (_v2.$ === 'SingleSelect') {
-								return A2(
-									$elm$html$Html$div,
-									_List_fromArray(
-										[
-											$elm$html$Html$Events$onMouseEnter(
-											eventHandlers.mouseOverMsgConstructor(
-												$author$project$Option$getOptionValue(option))),
-											$elm$html$Html$Events$onMouseLeave(
-											eventHandlers.mouseOutMsgConstructor(
-												$author$project$Option$getOptionValue(option))),
-											$author$project$Events$mouseDownPreventDefault(
-											eventHandlers.mouseDownMsgConstructor(
-												$author$project$Option$getOptionValue(option))),
-											$author$project$Events$mouseUpPreventDefault(
-											eventHandlers.mouseUpMsgConstructor(
-												$author$project$Option$getOptionValue(option))),
-											A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option selected highlighted'),
-											$elm$html$Html$Attributes$class('option selected highlighted'),
-											$author$project$DropdownOptions$valueDataAttribute(option)
-										]),
-									_List_fromArray(
-										[labelHtml, descriptionHtml]));
-							} else {
-								return $elm$html$Html$text('');
-							}
-						case 'OptionHighlighted':
-							return A2(
-								$elm$html$Html$div,
-								_List_fromArray(
-									[
-										$elm$html$Html$Events$onMouseEnter(
-										eventHandlers.mouseOverMsgConstructor(
-											$author$project$Option$getOptionValue(option))),
-										$elm$html$Html$Events$onMouseLeave(
-										eventHandlers.mouseOutMsgConstructor(
-											$author$project$Option$getOptionValue(option))),
-										$author$project$Events$mouseDownPreventDefault(
-										eventHandlers.mouseDownMsgConstructor(
-											$author$project$Option$getOptionValue(option))),
-										$author$project$Events$mouseUpPreventDefault(
-										eventHandlers.mouseUpMsgConstructor(
-											$author$project$Option$getOptionValue(option))),
-										A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option highlighted'),
-										$elm$html$Html$Attributes$class('option highlighted'),
-										$author$project$DropdownOptions$valueDataAttribute(option)
-									]),
-								_List_fromArray(
-									[labelHtml, descriptionHtml]));
-						case 'OptionDisabled':
-							return A2(
-								$elm$html$Html$div,
-								_List_fromArray(
-									[
-										A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option disabled'),
-										$elm$html$Html$Attributes$class('option disabled'),
-										$author$project$DropdownOptions$valueDataAttribute(option)
-									]),
-								_List_fromArray(
-									[labelHtml, descriptionHtml]));
-						default:
-							return A2(
-								$elm$html$Html$div,
-								_List_fromArray(
-									[
-										$elm$html$Html$Events$onMouseEnter(
-										eventHandlers.mouseOverMsgConstructor(
-											$author$project$Option$getOptionValue(option))),
-										$elm$html$Html$Events$onMouseLeave(
-										eventHandlers.mouseOutMsgConstructor(
-											$author$project$Option$getOptionValue(option))),
-										$author$project$Events$mouseDownPreventDefault(
-										eventHandlers.mouseDownMsgConstructor(
-											$author$project$Option$getOptionValue(option))),
-										$author$project$Events$mouseUpPreventDefault(
-										eventHandlers.mouseUpMsgConstructor(
-											$author$project$Option$getOptionValue(option))),
-										$author$project$Events$onClickPreventDefaultAndStopPropagation(eventHandlers.noOpMsgConstructor),
-										A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option active highlighted'),
-										$elm$html$Html$Attributes$class('option active highlighted'),
-										$author$project$DropdownOptions$valueDataAttribute(option)
-									]),
-								_List_fromArray(
-									[labelHtml, descriptionHtml]));
+					if (option.$ === 'FancyOption') {
+						var fancyOption = option.a;
+						return A3(
+							$author$project$FancyOption$toDropdownHtml,
+							eventHandlers,
+							$author$project$SelectionMode$getSelectionMode(selectionConfig),
+							fancyOption);
+					} else {
+						return $elm_community$html_extra$Html$Extra$nothing;
 					}
 				}),
 			selectionConfig_,
@@ -20862,6 +21146,22 @@ var $author$project$OptionLabel$getLabelString = function (optionLabel) {
 	var string = optionLabel.a;
 	return string;
 };
+var $author$project$OptionPart$toSelectedHighlightedValueAttribute = function (optionPart) {
+	var string = optionPart.a;
+	if (string === '') {
+		return A2($elm$html$Html$Attributes$attribute, 'part', 'selected-value highlighted');
+	} else {
+		return A2($elm$html$Html$Attributes$attribute, 'part', 'selected-value highlighted ' + string);
+	}
+};
+var $author$project$OptionPart$toSelectedValueAttribute = function (optionPart) {
+	var string = optionPart.a;
+	if (string === '') {
+		return A2($elm$html$Html$Attributes$attribute, 'part', 'selected-value');
+	} else {
+		return A2($elm$html$Html$Attributes$attribute, 'part', 'selected-value ' + string);
+	}
+};
 var $author$project$FancyOption$valueLabelHtml = F3(
 	function (toggleSelectedMsg, labelText, optionValue) {
 		return A2(
@@ -20877,7 +21177,7 @@ var $author$project$FancyOption$valueLabelHtml = F3(
 					$elm$html$Html$text(labelText)
 				]));
 	});
-var $author$project$FancyOption$toValueHtml = F4(
+var $author$project$FancyOption$toMultiSelectValueHtml = F4(
 	function (toggleSelectedMsg, deselectOptionInternal, enableSingleItemRemoval, fancyOption) {
 		var removalHtml = function (optionValue) {
 			if (enableSingleItemRemoval.$ === 'EnableSingleItemRemoval') {
@@ -20897,8 +21197,6 @@ var $author$project$FancyOption$toValueHtml = F4(
 				return $elm$html$Html$text('');
 			}
 		};
-		var partAttr = A2($elm$html$Html$Attributes$attribute, 'part', 'value');
-		var highlightPartAttr = A2($elm$html$Html$Attributes$attribute, 'part', 'value highlighted-value');
 		switch (fancyOption.$) {
 			case 'FancyOption':
 				var optionDisplay = fancyOption.a;
@@ -20906,16 +21204,17 @@ var $author$project$FancyOption$toValueHtml = F4(
 				var optionValue = fancyOption.c;
 				switch (optionDisplay.$) {
 					case 'OptionShown':
-						return $elm$html$Html$text('');
+						return $elm_community$html_extra$Html$Extra$nothing;
 					case 'OptionHidden':
-						return $elm$html$Html$text('');
+						return $elm_community$html_extra$Html$Extra$nothing;
 					case 'OptionSelected':
 						return A2(
 							$elm$html$Html$div,
 							_List_fromArray(
 								[
 									$elm$html$Html$Attributes$class('value'),
-									partAttr
+									$author$project$OptionPart$toSelectedValueAttribute(
+									$author$project$FancyOption$getOptionPart(fancyOption))
 								]),
 							_List_fromArray(
 								[
@@ -20927,9 +21226,9 @@ var $author$project$FancyOption$toValueHtml = F4(
 									removalHtml(optionValue)
 								]));
 					case 'OptionSelectedAndInvalid':
-						return $elm$html$Html$text('');
+						return $elm_community$html_extra$Html$Extra$nothing;
 					case 'OptionSelectedPendingValidation':
-						return $elm$html$Html$text('');
+						return $elm_community$html_extra$Html$Extra$nothing;
 					case 'OptionSelectedHighlighted':
 						return A2(
 							$elm$html$Html$div,
@@ -20941,7 +21240,8 @@ var $author$project$FancyOption$toValueHtml = F4(
 											_Utils_Tuple2('value', true),
 											_Utils_Tuple2('highlighted-value', true)
 										])),
-									highlightPartAttr
+									$author$project$OptionPart$toSelectedHighlightedValueAttribute(
+									$author$project$FancyOption$getOptionPart(fancyOption))
 								]),
 							_List_fromArray(
 								[
@@ -20953,11 +21253,11 @@ var $author$project$FancyOption$toValueHtml = F4(
 									removalHtml(optionValue)
 								]));
 					case 'OptionHighlighted':
-						return $elm$html$Html$text('');
+						return $elm_community$html_extra$Html$Extra$nothing;
 					case 'OptionActivated':
-						return $elm$html$Html$text('');
+						return $elm_community$html_extra$Html$Extra$nothing;
 					default:
-						return $elm$html$Html$text('');
+						return $elm_community$html_extra$Html$Extra$nothing;
 				}
 			case 'CustomFancyOption':
 				var optionDisplay = fancyOption.a;
@@ -20965,16 +21265,17 @@ var $author$project$FancyOption$toValueHtml = F4(
 				var optionValue = fancyOption.c;
 				switch (optionDisplay.$) {
 					case 'OptionShown':
-						return $elm$html$Html$text('');
+						return $elm_community$html_extra$Html$Extra$nothing;
 					case 'OptionHidden':
-						return $elm$html$Html$text('');
+						return $elm_community$html_extra$Html$Extra$nothing;
 					case 'OptionSelected':
 						return A2(
 							$elm$html$Html$div,
 							_List_fromArray(
 								[
 									$elm$html$Html$Attributes$class('value'),
-									partAttr
+									$author$project$OptionPart$toSelectedValueAttribute(
+									$author$project$FancyOption$getOptionPart(fancyOption))
 								]),
 							_List_fromArray(
 								[
@@ -20986,9 +21287,9 @@ var $author$project$FancyOption$toValueHtml = F4(
 									removalHtml(optionValue)
 								]));
 					case 'OptionSelectedAndInvalid':
-						return $elm$html$Html$text('');
+						return $elm_community$html_extra$Html$Extra$nothing;
 					case 'OptionSelectedPendingValidation':
-						return $elm$html$Html$text('');
+						return $elm_community$html_extra$Html$Extra$nothing;
 					case 'OptionSelectedHighlighted':
 						return A2(
 							$elm$html$Html$div,
@@ -21000,7 +21301,8 @@ var $author$project$FancyOption$toValueHtml = F4(
 											_Utils_Tuple2('value', true),
 											_Utils_Tuple2('highlighted-value', true)
 										])),
-									highlightPartAttr
+									$author$project$OptionPart$toSelectedHighlightedValueAttribute(
+									$author$project$FancyOption$getOptionPart(fancyOption))
 								]),
 							_List_fromArray(
 								[
@@ -21012,27 +21314,28 @@ var $author$project$FancyOption$toValueHtml = F4(
 									removalHtml(optionValue)
 								]));
 					case 'OptionHighlighted':
-						return $elm$html$Html$text('');
+						return $elm_community$html_extra$Html$Extra$nothing;
 					case 'OptionActivated':
-						return $elm$html$Html$text('');
+						return $elm_community$html_extra$Html$Extra$nothing;
 					default:
-						return $elm$html$Html$text('');
+						return $elm_community$html_extra$Html$Extra$nothing;
 				}
 			default:
 				var optionDisplay = fancyOption.a;
 				var optionLabel = fancyOption.b;
 				switch (optionDisplay.$) {
 					case 'OptionShown':
-						return $elm$html$Html$text('');
+						return $elm_community$html_extra$Html$Extra$nothing;
 					case 'OptionHidden':
-						return $elm$html$Html$text('');
+						return $elm_community$html_extra$Html$Extra$nothing;
 					case 'OptionSelected':
 						return A2(
 							$elm$html$Html$div,
 							_List_fromArray(
 								[
 									$elm$html$Html$Attributes$class('value'),
-									partAttr
+									$author$project$OptionPart$toSelectedValueAttribute(
+									$author$project$FancyOption$getOptionPart(fancyOption))
 								]),
 							_List_fromArray(
 								[
@@ -21040,17 +21343,17 @@ var $author$project$FancyOption$toValueHtml = F4(
 									$author$project$OptionLabel$getLabelString(optionLabel))
 								]));
 					case 'OptionSelectedAndInvalid':
-						return $elm$html$Html$text('');
+						return $elm_community$html_extra$Html$Extra$nothing;
 					case 'OptionSelectedPendingValidation':
-						return $elm$html$Html$text('');
+						return $elm_community$html_extra$Html$Extra$nothing;
 					case 'OptionSelectedHighlighted':
-						return $elm$html$Html$text('');
+						return $elm_community$html_extra$Html$Extra$nothing;
 					case 'OptionHighlighted':
-						return $elm$html$Html$text('');
+						return $elm_community$html_extra$Html$Extra$nothing;
 					case 'OptionActivated':
-						return $elm$html$Html$text('');
+						return $elm_community$html_extra$Html$Extra$nothing;
 					default:
-						return $elm$html$Html$text('');
+						return $elm_community$html_extra$Html$Extra$nothing;
 				}
 		}
 	});
@@ -21154,7 +21457,7 @@ var $author$project$MuchSelect$optionToValueHtml = F2(
 		switch (option.$) {
 			case 'FancyOption':
 				var fancyOption = option.a;
-				return A4($author$project$FancyOption$toValueHtml, $author$project$MuchSelect$ToggleSelectedValueHighlight, $author$project$MuchSelect$DeselectOptionInternal, enableSingleItemRemoval, fancyOption);
+				return A4($author$project$FancyOption$toMultiSelectValueHtml, $author$project$MuchSelect$ToggleSelectedValueHighlight, $author$project$MuchSelect$DeselectOptionInternal, enableSingleItemRemoval, fancyOption);
 			case 'DatalistOption':
 				return $elm$html$Html$text('');
 			default:
@@ -21770,19 +22073,6 @@ var $elm_community$html_extra$Html$Attributes$Extra$attributeIf = F2(
 	function (condition, attr) {
 		return condition ? attr : $elm_community$html_extra$Html$Attributes$Extra$empty;
 	});
-var $author$project$Option$toValueLabelTuple = function (option) {
-	return _Utils_Tuple2(
-		$author$project$Option$getOptionValueAsString(option),
-		$author$project$OptionLabel$optionLabelToString(
-			$author$project$Option$getOptionLabel(option)));
-};
-var $author$project$OptionList$selectedOptionsToTuple = function (optionList) {
-	return A2(
-		$elm$core$List$map,
-		$author$project$Option$toValueLabelTuple,
-		$author$project$OptionList$getOptions(
-			$author$project$OptionList$selectedOptions(optionList)));
-};
 var $author$project$MuchSelect$DeleteInputForSingleSelect = {$: 'DeleteInputForSingleSelect'};
 var $robinheghan$keyboard_events$Keyboard$Events$customPerKey = F2(
 	function (event, decisionMap) {
@@ -21872,18 +22162,51 @@ var $author$project$MuchSelect$singleSelectCustomHtmlInputField = F5(
 				]),
 			_List_Nil));
 	});
+var $author$project$FancyOption$toSingleSelectValueHtml = function (option) {
+	return A2(
+		$elm$html$Html$span,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$id('selected-value'),
+				$author$project$OptionPart$toSelectedValueAttribute(
+				$author$project$FancyOption$getOptionPart(option))
+			]),
+		_List_fromArray(
+			[
+				$elm$html$Html$text(
+				$author$project$OptionLabel$optionLabelToString(
+					$author$project$FancyOption$getOptionLabel(option)))
+			]));
+};
+var $author$project$Option$singleSelectViewCustomHtmlValueHtml = function (option) {
+	switch (option.$) {
+		case 'FancyOption':
+			var fancyOption = option.a;
+			return $author$project$FancyOption$toSingleSelectValueHtml(fancyOption);
+		case 'DatalistOption':
+			return $elm_community$html_extra$Html$Extra$nothing;
+		default:
+			return $elm_community$html_extra$Html$Extra$nothing;
+	}
+};
+var $author$project$MuchSelect$singleSelectViewCustomHtmlValue = function (selectedOption) {
+	return $author$project$Option$singleSelectViewCustomHtmlValueHtml(selectedOption);
+};
+var $author$project$FancyOption$toSingleSelectValueNoValueSelected = A2(
+	$elm$html$Html$span,
+	_List_fromArray(
+		[
+			$elm$html$Html$Attributes$id('selected-value'),
+			A2($elm$html$Html$Attributes$attribute, 'part', 'selected-value')
+		]),
+	_List_fromArray(
+		[
+			$elm$html$Html$text('')
+		]));
 var $author$project$MuchSelect$singleSelectViewCustomHtml = F4(
 	function (selectionConfig, options, searchString, rightSlot) {
 		var hasPendingValidation = $author$project$OptionList$hasAnyPendingValidation(options);
 		var hasOptionSelected = $author$project$OptionList$hasSelectedOption(options);
-		var valueStr = hasOptionSelected ? A2(
-			$elm$core$Maybe$withDefault,
-			'',
-			$elm$core$List$head(
-				A2(
-					$elm$core$List$map,
-					$elm$core$Tuple$second,
-					$author$project$OptionList$selectedOptionsToTuple(options)))) : '';
 		var hasErrors = $author$project$OptionList$hasAnyValidationErrors(options);
 		return A2(
 			$elm$html$Html$div,
@@ -21910,17 +22233,23 @@ var $author$project$MuchSelect$singleSelectViewCustomHtml = F4(
 				]),
 			_List_fromArray(
 				[
-					A2(
-					$elm$html$Html$span,
-					_List_fromArray(
-						[
-							$elm$html$Html$Attributes$id('selected-value'),
-							A2($elm$html$Html$Attributes$attribute, 'part', 'selected-value')
-						]),
-					_List_fromArray(
-						[
-							$elm$html$Html$text(valueStr)
-						])),
+					function () {
+					var _v0 = $author$project$OptionList$head(
+						$author$project$OptionList$selectedOptions(options));
+					if (_v0.$ === 'Just') {
+						var selectedOption = _v0.a;
+						return $author$project$MuchSelect$singleSelectViewCustomHtmlValue(selectedOption);
+					} else {
+						switch (options.$) {
+							case 'FancyOptionList':
+								return $author$project$FancyOption$toSingleSelectValueNoValueSelected;
+							case 'DatalistOptionList':
+								return $elm_community$html_extra$Html$Extra$nothing;
+							default:
+								return $elm_community$html_extra$Html$Extra$nothing;
+						}
+					}
+				}(),
 					A5(
 					$author$project$MuchSelect$singleSelectCustomHtmlInputField,
 					searchString,
@@ -22068,6 +22397,12 @@ var $author$project$Option$getSlot = function (option) {
 var $author$project$OptionSlot$toSlotNameAttribute = function (optionSlot) {
 	var string = optionSlot.a;
 	return (string === '') ? $elm_community$html_extra$Html$Attributes$Extra$empty : A2($elm$html$Html$Attributes$attribute, 'name', string);
+};
+var $author$project$DropdownOptions$valueDataAttribute = function (option) {
+	return A2(
+		$elm$html$Html$Attributes$attribute,
+		'data-value',
+		$author$project$Option$getOptionValueAsString(option));
 };
 var $author$project$DropdownOptions$optionToSlottedOptionHtml = F2(
 	function (eventHandlers, option) {

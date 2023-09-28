@@ -1,21 +1,20 @@
-module DropdownOptions exposing (DropdownItemEventListeners, DropdownOptions, dropdownOptionsToDatalistOption, dropdownOptionsToSlottedOptionsHtml, figureOutWhichOptionsToShowInTheDropdown, figureOutWhichOptionsToShowInTheDropdownThatAreNotSelected, filterOptionsToShowInDropdownBySearchScore, getSearchFilters, groupInOrder, head, isEmpty, length, maybeFirstOptionSearchFilter, moveHighlightedOptionDown, moveHighlightedOptionDownIfThereAreOptions, moveHighlightedOptionUp, optionsToCustomHtml, test_fromOptions, test_getOptions)
+module DropdownOptions exposing (DropdownOptions, dropdownOptionsToDatalistOption, dropdownOptionsToSlottedOptionsHtml, figureOutWhichOptionsToShowInTheDropdown, figureOutWhichOptionsToShowInTheDropdownThatAreNotSelected, filterOptionsToShowInDropdownBySearchScore, getSearchFilters, groupInOrder, head, isEmpty, length, maybeFirstOptionSearchFilter, moveHighlightedOptionDown, moveHighlightedOptionDownIfThereAreOptions, moveHighlightedOptionUp, optionsToCustomHtml, test_fromOptions, test_getOptions)
 
-import Events exposing (mouseDownPreventDefault, mouseUpPreventDefault, onClickPreventDefault, onClickPreventDefaultAndStopPropagation)
-import Html exposing (Html, div, node, span, text)
+import DropdownItemEventListeners exposing (DropdownItemEventListeners)
+import Events exposing (mouseDownPreventDefault, mouseUpPreventDefault, onClickPreventDefault)
+import FancyOption
+import Html exposing (Html, div, node, text)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onMouseEnter, onMouseLeave)
+import Html.Extra
 import Html.Lazy
 import List.Extra
-import Option exposing (Option)
-import OptionDescription
+import Option exposing (Option(..))
 import OptionDisplay exposing (OptionDisplay(..))
 import OptionGroup exposing (OptionGroup)
-import OptionLabel exposing (optionLabelToString)
 import OptionList exposing (OptionList)
-import OptionPresentor exposing (tokensToHtml)
 import OptionSearchFilter exposing (OptionSearchFilter)
 import OptionSlot
-import OptionValue exposing (OptionValue)
 import OutputStyle
 import PositiveInt
 import SelectionMode exposing (SelectionConfig, getMaxDropdownItems)
@@ -379,15 +378,6 @@ moveHighlightedOptionDownIfThereAreOptions selectionConfig options =
         options
 
 
-type alias DropdownItemEventListeners msg =
-    { mouseOverMsgConstructor : OptionValue -> msg
-    , mouseOutMsgConstructor : OptionValue -> msg
-    , mouseDownMsgConstructor : OptionValue -> msg
-    , mouseUpMsgConstructor : OptionValue -> msg
-    , noOpMsgConstructor : msg
-    }
-
-
 optionsToCustomHtml : DropdownItemEventListeners msg -> SelectionConfig -> DropdownOptions -> List (Html msg)
 optionsToCustomHtml dropdownItemEventListeners selectionConfig dropdownOptions =
     case dropdownOptions of
@@ -411,138 +401,12 @@ optionToCustomHtml :
 optionToCustomHtml eventHandlers selectionConfig_ option_ =
     Html.Lazy.lazy2
         (\selectionConfig option ->
-            let
-                descriptionHtml : Html msg
-                descriptionHtml =
-                    if option |> Option.hasDescription then
-                        case Option.getMaybeOptionSearchFilter option of
-                            Just optionSearchFilter ->
-                                div
-                                    [ class "description"
-                                    , Html.Attributes.attribute "part" "dropdown-option-description"
-                                    ]
-                                    [ span [] (tokensToHtml optionSearchFilter.descriptionTokens)
-                                    ]
+            case option of
+                FancyOption fancyOption ->
+                    FancyOption.toDropdownHtml eventHandlers (SelectionMode.getSelectionMode selectionConfig) fancyOption
 
-                            Nothing ->
-                                div
-                                    [ class "description"
-                                    , Html.Attributes.attribute "part" "dropdown-option-description"
-                                    ]
-                                    [ span []
-                                        [ option
-                                            |> Option.getDescription
-                                            |> OptionDescription.toString
-                                            |> text
-                                        ]
-                                    ]
-
-                    else
-                        text ""
-
-                labelHtml : Html msg
-                labelHtml =
-                    case Option.getMaybeOptionSearchFilter option of
-                        Just optionSearchFilter ->
-                            span [] (tokensToHtml optionSearchFilter.labelTokens)
-
-                        Nothing ->
-                            span [] [ Option.getOptionLabel option |> optionLabelToString |> text ]
-            in
-            case Option.getOptionDisplay option of
-                OptionShown _ ->
-                    div
-                        [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
-                        , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
-                        , mouseDownPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseDownMsgConstructor)
-                        , mouseUpPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseUpMsgConstructor)
-                        , onClickPreventDefault eventHandlers.noOpMsgConstructor
-                        , Html.Attributes.attribute "part" "dropdown-option"
-                        , class "option"
-                        , valueDataAttribute option
-                        ]
-                        [ labelHtml, descriptionHtml ]
-
-                OptionHidden ->
-                    text ""
-
-                OptionSelected _ _ ->
-                    case SelectionMode.getSelectionMode selectionConfig of
-                        SelectionMode.SingleSelect ->
-                            div
-                                [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
-                                , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
-                                , mouseDownPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseDownMsgConstructor)
-                                , mouseUpPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseUpMsgConstructor)
-                                , Html.Attributes.attribute "part" "dropdown-option selected"
-                                , class "option selected"
-                                , valueDataAttribute option
-                                ]
-                                [ labelHtml, descriptionHtml ]
-
-                        SelectionMode.MultiSelect ->
-                            text ""
-
-                OptionSelectedPendingValidation _ ->
-                    div
-                        [ Html.Attributes.attribute "part" "dropdown-option disabled pending-validation"
-                        , class "option disabled pending-validation"
-                        , valueDataAttribute option
-                        ]
-                        [ labelHtml, descriptionHtml ]
-
-                OptionSelectedAndInvalid _ _ ->
-                    text ""
-
-                OptionSelectedHighlighted _ ->
-                    case SelectionMode.getSelectionMode selectionConfig of
-                        SelectionMode.SingleSelect ->
-                            div
-                                [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
-                                , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
-                                , mouseDownPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseDownMsgConstructor)
-                                , mouseUpPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseUpMsgConstructor)
-                                , Html.Attributes.attribute "part" "dropdown-option selected highlighted"
-                                , class "option selected highlighted"
-                                , valueDataAttribute option
-                                ]
-                                [ labelHtml, descriptionHtml ]
-
-                        SelectionMode.MultiSelect ->
-                            text ""
-
-                OptionHighlighted ->
-                    div
-                        [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
-                        , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
-                        , mouseDownPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseDownMsgConstructor)
-                        , mouseUpPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseUpMsgConstructor)
-                        , Html.Attributes.attribute "part" "dropdown-option highlighted"
-                        , class "option highlighted"
-                        , valueDataAttribute option
-                        ]
-                        [ labelHtml, descriptionHtml ]
-
-                OptionDisabled _ ->
-                    div
-                        [ Html.Attributes.attribute "part" "dropdown-option disabled"
-                        , class "option disabled"
-                        , valueDataAttribute option
-                        ]
-                        [ labelHtml, descriptionHtml ]
-
-                OptionActivated ->
-                    div
-                        [ onMouseEnter (option |> Option.getOptionValue |> eventHandlers.mouseOverMsgConstructor)
-                        , onMouseLeave (option |> Option.getOptionValue |> eventHandlers.mouseOutMsgConstructor)
-                        , mouseDownPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseDownMsgConstructor)
-                        , mouseUpPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseUpMsgConstructor)
-                        , onClickPreventDefaultAndStopPropagation eventHandlers.noOpMsgConstructor
-                        , Html.Attributes.attribute "part" "dropdown-option active highlighted"
-                        , class "option active highlighted"
-                        , valueDataAttribute option
-                        ]
-                        [ labelHtml, descriptionHtml ]
+                _ ->
+                    Html.Extra.nothing
         )
         selectionConfig_
         option_
