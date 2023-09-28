@@ -1,12 +1,25 @@
 // noinspection JSFileReferences
 
 // eslint-disable-next-line import/no-unresolved
-import { Elm } from "./much-select-elm-debug.js";
+import { Elm } from "./much-select-elm.js";
 
 // eslint-disable-next-line import/no-unresolved
 import getMuchSelectTemplate from "./much-select-template.js";
 
 import asciiFold from "./ascii-fold.js";
+
+/**
+ * Dasherize a string.
+ * @param str
+ * @returns {string}
+ */
+function dasherize(str) {
+  // Convert CamelCase to spaces
+  const spaced = str.replace(/([a-z])([A-Z])/g, "$1 $2");
+
+  // Replace spaces, underscores, and illegal characters with dashes
+  return spaced.replace(/[^a-zA-Z0-9]+/g, "-").toLowerCase();
+}
 
 /**
  * Take a select element, and parse the data out of it into an array of objects.
@@ -25,6 +38,11 @@ const buildOptionsFromSelectElement = (selectElement) => {
       value = optionElement.innerText;
     }
     const option = { value };
+    if (optionElement.hasAttribute("id")) {
+      option.part = optionElement.getAttribute("id");
+    } else {
+      option.part = dasherize(option.value);
+    }
     option.label = optionElement.innerText.trim();
     option.labelClean = asciiFold(optionElement.innerText).trim();
     option.index = optionIndex;
@@ -232,12 +250,6 @@ class MuchSelect extends HTMLElement {
      * @private
      */
     this._filterWorkerPromise = null;
-
-    /**
-     * @type {boolean}
-     * @private
-     */
-    this._connected = false;
 
     /**
      * Once we see a value change come through, set this to true, then
@@ -725,8 +737,6 @@ class MuchSelect extends HTMLElement {
     this.startCustomValidationSlotObserver();
 
     this.startTransformationValidationSlotObserver();
-
-    this._connected = true;
   }
 
   startMuchSelectObserver() {
@@ -912,8 +922,6 @@ class MuchSelect extends HTMLElement {
     this.stopCustomValidationSlotObserver();
 
     this.stopTransformationValidationSlotObserver();
-
-    this._connected = false;
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -1780,7 +1788,7 @@ class MuchSelect extends HTMLElement {
       }
 
       .optgroup {
-        background-color: gray;
+        background-color: rgb(128,128,128);
       }
 
       .option {
@@ -1798,7 +1806,7 @@ class MuchSelect extends HTMLElement {
 
       .option.disabled {
         cursor: default;
-        color: gray;
+        color: rgb(128,128,128);
       }
 
       .description {
