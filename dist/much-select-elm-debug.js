@@ -21177,7 +21177,7 @@ var $author$project$FancyOption$valueLabelHtml = F3(
 					$elm$html$Html$text(labelText)
 				]));
 	});
-var $author$project$FancyOption$toValueHtml = F4(
+var $author$project$FancyOption$toMultiSelectValueHtml = F4(
 	function (toggleSelectedMsg, deselectOptionInternal, enableSingleItemRemoval, fancyOption) {
 		var removalHtml = function (optionValue) {
 			if (enableSingleItemRemoval.$ === 'EnableSingleItemRemoval') {
@@ -21457,7 +21457,7 @@ var $author$project$MuchSelect$optionToValueHtml = F2(
 		switch (option.$) {
 			case 'FancyOption':
 				var fancyOption = option.a;
-				return A4($author$project$FancyOption$toValueHtml, $author$project$MuchSelect$ToggleSelectedValueHighlight, $author$project$MuchSelect$DeselectOptionInternal, enableSingleItemRemoval, fancyOption);
+				return A4($author$project$FancyOption$toMultiSelectValueHtml, $author$project$MuchSelect$ToggleSelectedValueHighlight, $author$project$MuchSelect$DeselectOptionInternal, enableSingleItemRemoval, fancyOption);
 			case 'DatalistOption':
 				return $elm$html$Html$text('');
 			default:
@@ -22073,19 +22073,6 @@ var $elm_community$html_extra$Html$Attributes$Extra$attributeIf = F2(
 	function (condition, attr) {
 		return condition ? attr : $elm_community$html_extra$Html$Attributes$Extra$empty;
 	});
-var $author$project$Option$toValueLabelTuple = function (option) {
-	return _Utils_Tuple2(
-		$author$project$Option$getOptionValueAsString(option),
-		$author$project$OptionLabel$optionLabelToString(
-			$author$project$Option$getOptionLabel(option)));
-};
-var $author$project$OptionList$selectedOptionsToTuple = function (optionList) {
-	return A2(
-		$elm$core$List$map,
-		$author$project$Option$toValueLabelTuple,
-		$author$project$OptionList$getOptions(
-			$author$project$OptionList$selectedOptions(optionList)));
-};
 var $author$project$MuchSelect$DeleteInputForSingleSelect = {$: 'DeleteInputForSingleSelect'};
 var $robinheghan$keyboard_events$Keyboard$Events$customPerKey = F2(
 	function (event, decisionMap) {
@@ -22175,18 +22162,51 @@ var $author$project$MuchSelect$singleSelectCustomHtmlInputField = F5(
 				]),
 			_List_Nil));
 	});
+var $author$project$FancyOption$toSingleSelectValueHtml = function (option) {
+	return A2(
+		$elm$html$Html$span,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$id('selected-value'),
+				$author$project$OptionPart$toSelectedValueAttribute(
+				$author$project$FancyOption$getOptionPart(option))
+			]),
+		_List_fromArray(
+			[
+				$elm$html$Html$text(
+				$author$project$OptionLabel$optionLabelToString(
+					$author$project$FancyOption$getOptionLabel(option)))
+			]));
+};
+var $author$project$Option$singleSelectViewCustomHtmlValueHtml = function (option) {
+	switch (option.$) {
+		case 'FancyOption':
+			var fancyOption = option.a;
+			return $author$project$FancyOption$toSingleSelectValueHtml(fancyOption);
+		case 'DatalistOption':
+			return $elm_community$html_extra$Html$Extra$nothing;
+		default:
+			return $elm_community$html_extra$Html$Extra$nothing;
+	}
+};
+var $author$project$MuchSelect$singleSelectViewCustomHtmlValue = function (selectedOption) {
+	return $author$project$Option$singleSelectViewCustomHtmlValueHtml(selectedOption);
+};
+var $author$project$FancyOption$toSingleSelectValueNoValueSelected = A2(
+	$elm$html$Html$span,
+	_List_fromArray(
+		[
+			$elm$html$Html$Attributes$id('selected-value'),
+			A2($elm$html$Html$Attributes$attribute, 'part', 'selected-value')
+		]),
+	_List_fromArray(
+		[
+			$elm$html$Html$text('')
+		]));
 var $author$project$MuchSelect$singleSelectViewCustomHtml = F4(
 	function (selectionConfig, options, searchString, rightSlot) {
 		var hasPendingValidation = $author$project$OptionList$hasAnyPendingValidation(options);
 		var hasOptionSelected = $author$project$OptionList$hasSelectedOption(options);
-		var valueStr = hasOptionSelected ? A2(
-			$elm$core$Maybe$withDefault,
-			'',
-			$elm$core$List$head(
-				A2(
-					$elm$core$List$map,
-					$elm$core$Tuple$second,
-					$author$project$OptionList$selectedOptionsToTuple(options)))) : '';
 		var hasErrors = $author$project$OptionList$hasAnyValidationErrors(options);
 		return A2(
 			$elm$html$Html$div,
@@ -22213,17 +22233,23 @@ var $author$project$MuchSelect$singleSelectViewCustomHtml = F4(
 				]),
 			_List_fromArray(
 				[
-					A2(
-					$elm$html$Html$span,
-					_List_fromArray(
-						[
-							$elm$html$Html$Attributes$id('selected-value'),
-							A2($elm$html$Html$Attributes$attribute, 'part', 'selected-value')
-						]),
-					_List_fromArray(
-						[
-							$elm$html$Html$text(valueStr)
-						])),
+					function () {
+					var _v0 = $author$project$OptionList$head(
+						$author$project$OptionList$selectedOptions(options));
+					if (_v0.$ === 'Just') {
+						var selectedOption = _v0.a;
+						return $author$project$MuchSelect$singleSelectViewCustomHtmlValue(selectedOption);
+					} else {
+						switch (options.$) {
+							case 'FancyOptionList':
+								return $author$project$FancyOption$toSingleSelectValueNoValueSelected;
+							case 'DatalistOptionList':
+								return $elm_community$html_extra$Html$Extra$nothing;
+							default:
+								return $elm_community$html_extra$Html$Extra$nothing;
+						}
+					}
+				}(),
 					A5(
 					$author$project$MuchSelect$singleSelectCustomHtmlInputField,
 					searchString,

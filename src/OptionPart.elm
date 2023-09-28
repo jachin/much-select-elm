@@ -12,7 +12,7 @@ type OptionPart
 
 toSelectedValueAttribute : OptionPart -> Html.Attribute msg
 toSelectedValueAttribute optionPart =
-    case optionPart |> Debug.log "toSelectedValueAttribute optionPart" of
+    case optionPart of
         OptionPart string ->
             case string of
                 "" ->
