@@ -1,97 +1,70 @@
 module Option.OrderingInGroups exposing (suite)
 
+import DropdownOptions
 import Expect
-import Option
-    exposing
-        ( Option(..)
-        , OptionGroup
-        , newOption
-        , newOptionGroup
-        , optionGroupToString
-        , setGroupWithString
-        )
-import OptionLabel exposing (optionLabelToString)
-import OptionValue exposing (optionValueToString)
-import OptionsUtilities exposing (groupOptionsInOrder)
+import GroupedDropdownOptions
+import Option exposing (Option(..), setGroupWithString, test_newFancyOptionWithMaybeCleanString)
+import OptionGroup exposing (OptionGroup)
+import OptionList
 import Test exposing (Test, describe, test)
 
 
 screwDriver =
-    newOption "Screw Driver" Nothing
+    test_newFancyOptionWithMaybeCleanString "Screw Driver" Nothing
         |> setGroupWithString "Hand Tool"
 
 
 wrench =
-    newOption "Wrench" Nothing
+    test_newFancyOptionWithMaybeCleanString "Wrench" Nothing
         |> setGroupWithString "Hand Tool"
 
 
 hammer =
-    newOption "Hammer" Nothing
+    test_newFancyOptionWithMaybeCleanString "Hammer" Nothing
         |> setGroupWithString "Hand Tool"
 
 
 chisel =
-    newOption "Chisel" Nothing
+    test_newFancyOptionWithMaybeCleanString "Chisel" Nothing
         |> setGroupWithString "Hand Tool"
 
 
 multiMeter =
-    newOption "Multi Meter" Nothing
+    test_newFancyOptionWithMaybeCleanString "Multi Meter" Nothing
         |> setGroupWithString "Electronic Instrument"
 
 
 signalTester =
-    newOption "Signal Tester" Nothing
+    test_newFancyOptionWithMaybeCleanString "Signal Tester" Nothing
         |> setGroupWithString "Electronic Instrument"
 
 
 drill =
-    newOption "Drill" Nothing
+    test_newFancyOptionWithMaybeCleanString "Drill" Nothing
         |> setGroupWithString "Power Tool"
 
 
 sawZaw =
-    newOption "Saw Zaw" Nothing
+    test_newFancyOptionWithMaybeCleanString "Saw Zaw" Nothing
         |> setGroupWithString "Power Tool"
 
 
 tools =
-    [ screwDriver
-    , drill
-    , multiMeter
-    , sawZaw
-    , wrench
-    , hammer
-    , chisel
-    , signalTester
-    ]
-
-
-optionToDebuggingString : Option -> String
-optionToDebuggingString option =
-    case option of
-        Option _ optionLabel _ _ optionGroup _ ->
-            case optionGroupToString optionGroup of
-                "" ->
-                    optionLabelToString optionLabel
-
-                optionGroupString ->
-                    optionGroupString ++ " - " ++ optionLabelToString optionLabel
-
-        CustomOption _ optionLabel _ _ ->
-            optionLabelToString optionLabel
-
-        EmptyOption _ optionLabel ->
-            optionLabelToString optionLabel
-
-        DatalistOption _ optionValue ->
-            optionValueToString optionValue
+    OptionList.FancyOptionList
+        [ screwDriver
+        , drill
+        , multiMeter
+        , sawZaw
+        , wrench
+        , hammer
+        , chisel
+        , signalTester
+        ]
 
 
 optionGroupToDebuggingString : OptionGroup -> String
 optionGroupToDebuggingString optionGroup =
-    optionGroupToString optionGroup
+    OptionGroup.toString optionGroup
 
 
 suite : Test
@@ -100,25 +73,20 @@ suite =
         [ test "keep them in order but group them by their option groups" <|
             \_ ->
                 Expect.equalLists
-                    (groupOptionsInOrder tools
-                        |> List.map
-                            (\( optionGroup, options ) ->
-                                ( optionGroupToDebuggingString optionGroup
-                                , List.map optionToDebuggingString options
-                                )
-                            )
+                    (GroupedDropdownOptions.groupOptionsInOrder (DropdownOptions.test_fromOptions tools)
+                        |> GroupedDropdownOptions.test_DropdownOptionsGroupToStringAndOptions
                     )
-                    ([ ( newOptionGroup "Hand Tool", [ screwDriver ] )
-                     , ( newOptionGroup "Power Tool", [ drill ] )
-                     , ( newOptionGroup "Electronic Instrument", [ multiMeter ] )
-                     , ( newOptionGroup "Power Tool", [ sawZaw ] )
-                     , ( newOptionGroup "Hand Tool", [ wrench, hammer, chisel ] )
-                     , ( newOptionGroup "Electronic Instrument", [ signalTester ] )
+                    ([ ( OptionGroup.new "Hand Tool", [ screwDriver ] )
+                     , ( OptionGroup.new "Power Tool", [ drill ] )
+                     , ( OptionGroup.new "Electronic Instrument", [ multiMeter ] )
+                     , ( OptionGroup.new "Power Tool", [ sawZaw ] )
+                     , ( OptionGroup.new "Hand Tool", [ wrench, hammer, chisel ] )
+                     , ( OptionGroup.new "Electronic Instrument", [ signalTester ] )
                      ]
                         |> List.map
                             (\( optionGroup, options ) ->
                                 ( optionGroupToDebuggingString optionGroup
-                                , List.map optionToDebuggingString options
+                                , List.map Option.test_optionToDebuggingString options
                                 )
                             )
                     )

@@ -46,6 +46,7 @@ sortFunction optionSort_ =
 
 sortOptionsBySearchFilterTotalScore : List Option -> List Option
 sortOptionsBySearchFilterTotalScore options =
+    -- TODO I might not this any more.
     List.sortBy
         (\option ->
             option

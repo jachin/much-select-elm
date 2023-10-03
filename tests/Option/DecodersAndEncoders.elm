@@ -2,13 +2,9 @@ module Option.DecodersAndEncoders exposing (suite)
 
 import Expect
 import Json.Decode
-import Option
-    exposing
-        ( newDisabledOption
-        , newOption
-        , newSelectedOption
-        )
-import OptionDisplay
+import Option exposing (newDisabledOption, newSelectedOption, select, test_newFancyOptionWithMaybeCleanString)
+import OptionList exposing (OptionList(..))
+import OptionPart
 import SelectionMode
 import Test exposing (Test, describe, test)
 
@@ -76,11 +72,11 @@ listOfOptionsWithJustValues =
 
 
 decoder =
-    Option.decoder OptionDisplay.MatureOption SelectionMode.CustomHtml
+    Option.decoder
 
 
-optionsDecoder =
-    Option.optionsDecoder OptionDisplay.MatureOption SelectionMode.CustomHtml
+optionListDecoder =
+    OptionList.decoder SelectionMode.CustomHtml
 
 
 suite : Test
@@ -90,7 +86,7 @@ suite =
             [ test "an option with just a label and value" <|
                 \_ ->
                     Expect.equal
-                        (Ok (newOption "Sup" (Just "sup")))
+                        (Ok (test_newFancyOptionWithMaybeCleanString "Sup" (Just "sup")))
                         (Json.Decode.decodeString decoder simpleOptionWithJustLabelAndValue)
             , test "an option that's selected" <|
                 \_ ->
@@ -105,74 +101,98 @@ suite =
             , test "an option that's not selected" <|
                 \_ ->
                     Expect.equal
-                        (Ok (newOption "Sup" (Just "sup")))
+                        (Ok (test_newFancyOptionWithMaybeCleanString "Sup" (Just "sup")))
                         (Json.Decode.decodeString decoder simpleNotSelectedOption)
             , test "an option that's disabled" <|
                 \_ ->
                     Expect.equal
-                        (Ok (newDisabledOption "Dude" (Just "dude")))
+                        (Ok
+                            (newDisabledOption "Dude" (Just "dude")
+                                |> Option.setPart (OptionPart.test_new "Dude")
+                            )
+                        )
                         (Json.Decode.decodeString decoder disabledOption)
             , test "a list of options" <|
                 \_ ->
                     Expect.equal
                         (Ok
-                            [ newOption "1" Nothing |> Option.setLabelWithString "one" (Just "one")
-                            , newOption "2" Nothing |> Option.setLabelWithString "two" (Just "two")
-                            , newSelectedOption 0 "3" Nothing |> Option.setLabelWithString "three" (Just "three")
-                            ]
+                            (FancyOptionList
+                                [ test_newFancyOptionWithMaybeCleanString "1" Nothing
+                                    |> Option.setLabelWithString "one" (Just "one")
+                                    |> Option.setPart (OptionPart.test_new "1")
+                                , test_newFancyOptionWithMaybeCleanString "2" Nothing
+                                    |> Option.setLabelWithString "two" (Just "two")
+                                    |> Option.setPart (OptionPart.test_new "2")
+                                , test_newFancyOptionWithMaybeCleanString "3" Nothing
+                                    |> select 0
+                                    |> Option.setLabelWithString "three" (Just "three")
+                                    |> Option.setPart (OptionPart.test_new "3")
+                                ]
+                            )
                         )
-                        (Json.Decode.decodeString optionsDecoder listOfOptions)
+                        (Json.Decode.decodeString optionListDecoder listOfOptions)
             , test "a list of options with descriptions" <|
                 \_ ->
                     Expect.equal
                         (Ok
-                            [ newOption "1" Nothing
-                                |> Option.setLabelWithString "straw" (Just "straw")
-                                |> Option.setDescriptionWithString "👒"
-                            , newOption "2" Nothing
-                                |> Option.setLabelWithString "sticks" (Just "sticks")
-                                |> Option.setDescriptionWithString "🌳"
-                            , newSelectedOption 0 "3" Nothing
-                                |> Option.setLabelWithString "bricks" (Just "bricks")
-                                |> Option.setDescriptionWithString "🧱"
-                            ]
+                            (FancyOptionList
+                                [ test_newFancyOptionWithMaybeCleanString "1" Nothing
+                                    |> Option.setLabelWithString "straw" (Just "straw")
+                                    |> Option.setDescriptionWithString "👒"
+                                    |> Option.setPart (OptionPart.test_new "1")
+                                , test_newFancyOptionWithMaybeCleanString "2" Nothing
+                                    |> Option.setLabelWithString "sticks" (Just "sticks")
+                                    |> Option.setDescriptionWithString "🌳"
+                                    |> Option.setPart (OptionPart.test_new "2")
+                                , newSelectedOption 0 "3" Nothing
+                                    |> Option.setLabelWithString "bricks" (Just "bricks")
+                                    |> Option.setDescriptionWithString "🧱"
+                                    |> Option.setPart (OptionPart.test_new "3")
+                                ]
+                            )
                         )
                         (Json.Decode.decodeString
-                            optionsDecoder
+                            optionListDecoder
                             listOfOptionsWithDescriptions
                         )
             , test "a list of options with groups" <|
                 \_ ->
                     Expect.equal
                         (Ok
-                            [ newOption "1" Nothing
-                                |> Option.setLabelWithString "straw" (Just "straw")
-                                |> Option.setGroupWithString "Building Material"
-                            , newOption "2" Nothing
-                                |> Option.setLabelWithString "sticks" (Just "sticks")
-                                |> Option.setGroupWithString "Building Material"
-                            , newSelectedOption 0 "3" Nothing
-                                |> Option.setLabelWithString "bricks" (Just "bricks")
-                                |> Option.setGroupWithString "Building Material"
-                            ]
+                            (FancyOptionList
+                                [ test_newFancyOptionWithMaybeCleanString "1" Nothing
+                                    |> Option.setLabelWithString "straw" (Just "straw")
+                                    |> Option.setGroupWithString "Building Material"
+                                    |> Option.setPart (OptionPart.test_new "1")
+                                , test_newFancyOptionWithMaybeCleanString "2" Nothing
+                                    |> Option.setLabelWithString "sticks" (Just "sticks")
+                                    |> Option.setGroupWithString "Building Material"
+                                    |> Option.setPart (OptionPart.test_new "2")
+                                , test_newFancyOptionWithMaybeCleanString "3" Nothing
+                                    |> select 0
+                                    |> Option.setLabelWithString "bricks" (Just "bricks")
+                                    |> Option.setGroupWithString "Building Material"
+                                    |> Option.setPart (OptionPart.test_new "3")
+                                ]
+                            )
                         )
                         (Json.Decode.decodeString
-                            optionsDecoder
+                            optionListDecoder
                             listOfOptionsWithGroups
                         )
             , test "an empty option with an empty label" <|
                 \_ ->
                     Expect.equal
-                        (Ok [ newOption "" (Just "") ])
-                        (Json.Decode.decodeString optionsDecoder """[ {"label": "", "labelClean": "", "value": "" } ]""")
+                        (Ok (FancyOptionList [ test_newFancyOptionWithMaybeCleanString "" (Just "") ]))
+                        (Json.Decode.decodeString optionListDecoder """[ {"label": "", "labelClean": "", "value": "" } ]""")
             , test "an empty option with a label" <|
                 \_ ->
                     Expect.equal
-                        (Ok [ newOption "" Nothing |> Option.setLabelWithString "nothing" (Just "nothing") ])
-                        (Json.Decode.decodeString optionsDecoder """[ {"label": "nothing", "labelClean": "nothing", "value": "" } ]""")
+                        (Ok (FancyOptionList [ test_newFancyOptionWithMaybeCleanString "" Nothing |> Option.setLabelWithString "nothing" (Just "nothing") ]))
+                        (Json.Decode.decodeString optionListDecoder """[ {"label": "nothing", "labelClean": "nothing", "value": "" } ]""")
             , test "a list of options with just values should fail" <|
                 \_ ->
                     Expect.err
-                        (Json.Decode.decodeString optionsDecoder listOfOptionsWithJustValues)
+                        (Json.Decode.decodeString optionListDecoder listOfOptionsWithJustValues)
             ]
         ]

@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 # To learn more about what all is going on here and why checkout the wiki
 # https://github.com/DripEmail/much-select-elm/wiki/How-the-Build-Works
 
@@ -20,7 +22,7 @@ FILTER_WORKER_JS=$(<build/gen/filter-worker.js)
 # Here we have our little JavaScript template. This code should
 #  mirror what we have else where. It would be great if this could
 #  live in 1 place.
-read -d '' tpl << EOF
+tpl=$(cat <<EOF
 const getMuchSelectTemplate = (styleTag) => {
   const templateTag = document.createElement("template");
   templateTag.innerHTML = \`
@@ -38,6 +40,8 @@ const getMuchSelectTemplate = (styleTag) => {
 
 export default getMuchSelectTemplate;
 EOF
+)
+
 
 
 # Generate the muchSelectTemplate es6 module.
@@ -51,6 +55,7 @@ rm build/gen/filter-worker.js
 # Compile the Main elm file into JavaScript and optimize it because this
 # build is for production. So also put the out put in the dist directory.
 npx elm-esm make ./src/MuchSelect.elm --output=./dist/much-select-elm.js --optimize
+
 
 # There are more JavaScript modules (files) the production build need, let's copy those over
 #  to the build directory

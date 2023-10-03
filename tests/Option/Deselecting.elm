@@ -1,52 +1,54 @@
 module Option.Deselecting exposing (suite)
 
-import Expect
-import Option exposing (newOption, selectOption)
+import Expect exposing (Expectation)
+import Option exposing (Option, select, test_newDatalistOption, test_newFancyOptionWithMaybeCleanString)
+import OptionList exposing (OptionList(..), deselectAll, deselectAllButTheFirstSelectedOptionInList, removeOptionFromOptionListBySelectedIndex, selectOptionByOptionValue)
 import OptionValue exposing (stringToOptionValue)
-import OptionsUtilities
-    exposing
-        ( deselectAllButTheFirstSelectedOptionInList
-        , deselectAllOptionsInOptionsList
-        , deselectOptions
-        , selectOptionInListByOptionValue
-        )
 import Test exposing (Test, describe, test)
 
 
 buzzCola =
-    newOption "Buzz Cola" Nothing
+    test_newFancyOptionWithMaybeCleanString "Buzz Cola" Nothing
 
 
 krustyBurger =
-    newOption "Krusty Burger" Nothing
+    test_newFancyOptionWithMaybeCleanString "Krusty Burger" Nothing
 
 
 lardLad =
-    newOption "Lard Lad" Nothing
+    test_newFancyOptionWithMaybeCleanString "Lard Lad" Nothing
 
 
 squishee =
-    newOption "Squishee" Nothing
+    test_newFancyOptionWithMaybeCleanString "Squishee" Nothing
 
 
 duff =
-    Option.newDatalistOption (OptionValue.stringToOptionValue "Duff")
+    test_newDatalistOption "Duff"
 
 
 rockBottom =
-    Option.newDatalistOption (OptionValue.stringToOptionValue "Rock Bottom")
+    test_newDatalistOption "Rock Bottom"
 
 
 malibuStacy =
-    Option.newDatalistOption (OptionValue.stringToOptionValue "Malibu Stacy")
+    test_newDatalistOption "Malibu Stacy"
 
 
 brandOptions =
-    [ buzzCola, krustyBurger, lardLad, squishee ]
+    FancyOptionList [ buzzCola, krustyBurger, lardLad, squishee ]
 
 
-datalistOption =
-    [ duff, rockBottom, malibuStacy ]
+optionToTuple : Option -> ( String, Bool )
+optionToTuple option =
+    Tuple.pair (Option.getOptionValueAsString option) (Option.isSelected option)
+
+
+assertEqualLists : OptionList -> OptionList -> Expectation
+assertEqualLists optionListA optionListB =
+    Expect.equalLists
+        (optionListA |> OptionList.getOptions |> List.map optionToTuple)
+        (optionListB |> OptionList.getOptions |> List.map optionToTuple)
 
 
 suite : Test
@@ -54,102 +56,98 @@ suite =
     describe "Deselecting"
         [ test "all the selected option" <|
             \_ ->
-                Expect.equalLists
+                assertEqualLists
                     (brandOptions
-                        |> selectOptionInListByOptionValue (stringToOptionValue "Krusty Burger")
-                        |> selectOptionInListByOptionValue (stringToOptionValue "Lard Lad")
-                        |> deselectAllOptionsInOptionsList
+                        |> selectOptionByOptionValue (stringToOptionValue "Krusty Burger")
+                        |> selectOptionByOptionValue (stringToOptionValue "Lard Lad")
+                        |> deselectAll
                     )
-                    [ buzzCola
-                    , krustyBurger
-                    , lardLad
-                    , squishee
-                    ]
-        , test "all the selected options in a list" <|
-            \_ ->
-                Expect.equalLists
-                    (brandOptions
-                        |> selectOptionInListByOptionValue (stringToOptionValue "Buzz Cola")
-                        |> selectOptionInListByOptionValue (stringToOptionValue "Krusty Burger")
-                        |> selectOptionInListByOptionValue (stringToOptionValue "Lard Lad")
-                        |> deselectOptions [ buzzCola, krustyBurger ]
+                    (FancyOptionList
+                        [ buzzCola
+                        , krustyBurger
+                        , lardLad
+                        , squishee
+                        ]
                     )
-                    [ buzzCola
-                    , krustyBurger
-                    , selectOption 2 lardLad
-                    , squishee
-                    ]
         , test "all but the first selected option" <|
             \_ ->
-                Expect.equalLists
+                assertEqualLists
                     (brandOptions
-                        |> selectOptionInListByOptionValue (stringToOptionValue "Lard Lad")
-                        |> selectOptionInListByOptionValue (stringToOptionValue "Buzz Cola")
-                        |> selectOptionInListByOptionValue (stringToOptionValue "Krusty Burger")
+                        |> selectOptionByOptionValue (stringToOptionValue "Lard Lad")
+                        |> selectOptionByOptionValue (stringToOptionValue "Buzz Cola")
+                        |> selectOptionByOptionValue (stringToOptionValue "Krusty Burger")
                         |> deselectAllButTheFirstSelectedOptionInList
                     )
-                    [ buzzCola
-                    , krustyBurger
-                    , selectOption 0 lardLad
-                    , squishee
-                    ]
+                    (FancyOptionList
+                        [ buzzCola
+                        , krustyBurger
+                        , select 0 lardLad
+                        , squishee
+                        ]
+                    )
         , describe "in a datalist"
             [ test "the first option" <|
                 \_ ->
                     let
                         optionsWithThreeSelections =
-                            [ Option.newSelectedDatalistOption (OptionValue.stringToOptionValue "Left-Mart") 0
-                            , Option.newSelectedDatalistOption (OptionValue.stringToOptionValue "Powersause") 1
-                            , Option.newSelectedDatalistOption (OptionValue.stringToOptionValue "Skybucks") 2
-                            ]
-                                ++ datalistOption
+                            OptionList.appendOptions
+                                [ test_newDatalistOption "Left-Mart" |> select 0
+                                , test_newDatalistOption "Powersause" |> select 1
+                                , test_newDatalistOption "Skybucks" |> select 2
+                                ]
+                                [ duff, rockBottom, malibuStacy ]
                     in
-                    Expect.equalLists
+                    assertEqualLists
                         (optionsWithThreeSelections
-                            |> OptionsUtilities.removeOptionFromOptionListBySelectedIndex 0
+                            |> removeOptionFromOptionListBySelectedIndex 0
                         )
-                        ([ Option.newSelectedDatalistOption (OptionValue.stringToOptionValue "Powersause") 0
-                         , Option.newSelectedDatalistOption (OptionValue.stringToOptionValue "Skybucks") 1
-                         ]
-                            ++ datalistOption
+                        (OptionList.appendOptions
+                            [ test_newDatalistOption "Powersause" |> select 0
+                            , test_newDatalistOption "Skybucks" |> select 1
+                            ]
+                            [ duff, rockBottom, malibuStacy ]
                         )
             , test "the middle option" <|
                 \_ ->
                     let
                         optionsWithThreeSelections =
-                            [ Option.newSelectedDatalistOption (OptionValue.stringToOptionValue "Left-Mart") 0
-                            , Option.newSelectedDatalistOption (OptionValue.stringToOptionValue "Powersause") 1
-                            , Option.newSelectedDatalistOption (OptionValue.stringToOptionValue "Skybucks") 2
-                            ]
-                                ++ datalistOption
+                            OptionList.appendOptions
+                                [ test_newDatalistOption "Left-Mart" |> select 0
+                                , test_newDatalistOption "Powersause" |> select 1
+                                , test_newDatalistOption "Skybucks" |> select 2
+                                ]
+                                [ duff, rockBottom, malibuStacy ]
                     in
-                    Expect.equalLists
+                    assertEqualLists
                         (optionsWithThreeSelections
-                            |> OptionsUtilities.removeOptionFromOptionListBySelectedIndex 1
+                            |> removeOptionFromOptionListBySelectedIndex 1
                         )
-                        ([ Option.newSelectedDatalistOption (OptionValue.stringToOptionValue "Left-Mart") 0
-                         , Option.newSelectedDatalistOption (OptionValue.stringToOptionValue "Skybucks") 1
-                         ]
-                            ++ datalistOption
+                        (OptionList.appendOptions
+                            [ test_newDatalistOption "Left-Mart" |> select 0
+                            , test_newDatalistOption "Skybucks" |> select 1
+                            ]
+                            [ duff, rockBottom, malibuStacy ]
                         )
             , test "the last option" <|
                 \_ ->
                     let
                         optionsWithThreeSelections =
-                            [ Option.newSelectedDatalistOption (OptionValue.stringToOptionValue "Left-Mart") 0
-                            , Option.newSelectedDatalistOption (OptionValue.stringToOptionValue "Powersause") 1
-                            , Option.newSelectedDatalistOption (OptionValue.stringToOptionValue "Skybucks") 2
-                            ]
-                                ++ datalistOption
+                            OptionList.appendOptions
+                                [ test_newDatalistOption "Left-Mart" |> select 0
+                                , test_newDatalistOption "Powersause" |> select 1
+                                , test_newDatalistOption "Skybucks" |> select 2
+                                ]
+                                [ duff, rockBottom, malibuStacy ]
                     in
-                    Expect.equalLists
+                    assertEqualLists
                         (optionsWithThreeSelections
-                            |> OptionsUtilities.removeOptionFromOptionListBySelectedIndex 2
+                            |> removeOptionFromOptionListBySelectedIndex 2
                         )
-                        ([ Option.newSelectedDatalistOption (OptionValue.stringToOptionValue "Left-Mart") 0
-                         , Option.newSelectedDatalistOption (OptionValue.stringToOptionValue "Powersause") 1
-                         ]
-                            ++ datalistOption
+                        (OptionList.appendOptions
+                            [ test_newDatalistOption "Left-Mart" |> select 0
+                            , test_newDatalistOption "Powersause" |> select 1
+                            ]
+                            [ duff, rockBottom, malibuStacy ]
                         )
             ]
         ]

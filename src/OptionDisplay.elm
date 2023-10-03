@@ -308,7 +308,7 @@ isHighlighted optionDisplay =
             False
 
         OptionSelectedHighlighted _ ->
-            False
+            True
 
         OptionHighlighted ->
             True

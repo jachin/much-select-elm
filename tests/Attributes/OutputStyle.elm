@@ -4,10 +4,12 @@ import Expect
 import Json.Decode
 import Json.Encode
 import MuchSelect exposing (Flags)
-import ProgramTest exposing (expectLastEffect, start)
+import ProgramTest exposing (expectLastEffect, expectView, start)
 import SimulatedEffect.Cmd
 import SimulatedEffect.Ports
 import Test exposing (Test, describe, test)
+import Test.Html.Query
+import Test.Html.Selector exposing (classes, id, tag)
 
 
 element =
@@ -30,11 +32,37 @@ simulateEffects effect =
             SimulatedEffect.Cmd.none
 
 
-simulateSub : MuchSelect.Model -> ProgramTest.SimulatedSub MuchSelect.Msg
-simulateSub _ =
+simulateSubOutputStyleChangedReceiver : MuchSelect.Model -> ProgramTest.SimulatedSub MuchSelect.Msg
+simulateSubOutputStyleChangedReceiver _ =
     SimulatedEffect.Ports.subscribe "outputStyleChangedReceiver"
         Json.Decode.string
         MuchSelect.OutputStyleChanged
+
+
+decodeTuple2 : Json.Decode.Decoder a -> Json.Decode.Decoder b -> Json.Decode.Decoder ( a, b )
+decodeTuple2 decoderA decoderB =
+    Json.Decode.list Json.Decode.value
+        |> Json.Decode.andThen
+            (\values ->
+                case values of
+                    [ a, b ] ->
+                        case ( Json.Decode.decodeValue decoderA a, Json.Decode.decodeValue decoderB b ) of
+                            ( Ok valA, Ok valB ) ->
+                                Json.Decode.succeed ( valA, valB )
+
+                            _ ->
+                                Json.Decode.fail "could not decode tuple"
+
+                    _ ->
+                        Json.Decode.fail "expected a list of two elements"
+            )
+
+
+simulateSubAttributeChanged : MuchSelect.Model -> ProgramTest.SimulatedSub MuchSelect.Msg
+simulateSubAttributeChanged _ =
+    SimulatedEffect.Ports.subscribe "attributeChanged"
+        (decodeTuple2 Json.Decode.string Json.Decode.string)
+        MuchSelect.AttributeChanged
 
 
 flagsDatalistSingle : Flags
@@ -90,7 +118,7 @@ suite =
             \() ->
                 element
                     |> ProgramTest.withSimulatedEffects simulateEffects
-                    |> ProgramTest.withSimulatedSubscriptions simulateSub
+                    |> ProgramTest.withSimulatedSubscriptions simulateSubOutputStyleChangedReceiver
                     |> start flagsDatalistSingle
                     |> ProgramTest.simulateIncomingPort
                         "outputStyleChangedReceiver"
@@ -112,7 +140,7 @@ suite =
             \() ->
                 element
                     |> ProgramTest.withSimulatedEffects simulateEffects
-                    |> ProgramTest.withSimulatedSubscriptions simulateSub
+                    |> ProgramTest.withSimulatedSubscriptions simulateSubOutputStyleChangedReceiver
                     |> start flagsCustomHtmlSingle
                     |> ProgramTest.simulateIncomingPort
                         "outputStyleChangedReceiver"
@@ -130,11 +158,11 @@ suite =
                                 _ ->
                                     Expect.fail "We should be fetching options from the DOM."
                         )
-        , test "an invalid value should result in an error" <|
+        , test "an invalid value for output style should result in an error" <|
             \() ->
                 element
                     |> ProgramTest.withSimulatedEffects simulateEffects
-                    |> ProgramTest.withSimulatedSubscriptions simulateSub
+                    |> ProgramTest.withSimulatedSubscriptions simulateSubOutputStyleChangedReceiver
                     |> start flagsDatalistSingle
                     |> ProgramTest.simulateIncomingPort
                         "outputStyleChangedReceiver"
@@ -147,5 +175,34 @@ suite =
 
                                 _ ->
                                     Expect.fail "We should be fetching options from the DOM."
+                        )
+        , test "between output styles should maintain whether or not custom values are allowed" <|
+            \() ->
+                element
+                    |> ProgramTest.withSimulatedEffects simulateEffects
+                    |> ProgramTest.withSimulatedSubscriptions simulateSubAttributeChanged
+                    |> start flagsCustomHtmlSingle
+                    |> ProgramTest.simulateIncomingPort
+                        "attributeChanged"
+                        (Json.Encode.list Json.Encode.string [ "allow-custom-options", "" ])
+                    |> ProgramTest.simulateIncomingPort
+                        "attributeChanged"
+                        (Json.Encode.list Json.Encode.string [ "output-style", "datalist" ])
+                    |> ProgramTest.simulateIncomingPort
+                        "attributeChanged"
+                        (Json.Encode.list Json.Encode.string
+                            [ "output-style"
+                            , "custom-html"
+                            ]
+                        )
+                    |> expectView
+                        (Test.Html.Query.has
+                            [ tag "div"
+                            , id "value-casing"
+                            , classes
+                                [ "output-style-custom-html"
+                                , "allows-custom-options"
+                                ]
+                            ]
                         )
         ]

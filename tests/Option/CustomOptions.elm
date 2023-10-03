@@ -1,22 +1,13 @@
 module Option.CustomOptions exposing (suite)
 
-import Expect
+import Expect exposing (Expectation)
 import MuchSelect
     exposing
-        ( figureOutWhichOptionsToShowInTheDropdown
-        , updateModelWithChangesThatEffectTheOptionsWithSearchString
+        ( updateModelWithChangesThatEffectTheOptionsWithSearchString
         )
-import Option exposing (newCustomOption, newOption, selectOption)
-import OptionSearcher
-import OptionSorting
+import Option exposing (Option(..), select, test_newFancyCustomOptionWithCleanString, test_newFancyCustomOptionWithLabelAndMaybeCleanString, test_newFancyOption)
+import OptionList exposing (OptionList(..), prependCustomOption, removeUnselectedCustomOptions, selectOptionByOptionValue, test_newFancyOptionList)
 import OptionValue exposing (stringToOptionValue)
-import OptionsUtilities
-    exposing
-        ( highlightFirstOptionInList
-        , prependCustomOption
-        , removeUnselectedCustomOptions
-        , selectOptionInListByOptionValue
-        )
 import OutputStyle
     exposing
         ( MaxDropdownItems(..)
@@ -33,46 +24,45 @@ import SelectionMode
         , SelectionMode(..)
         , defaultSelectionConfig
         , setAllowCustomOptionsWithBool
-        , setSelectionMode
         , setSingleItemRemoval
         )
 import Test exposing (Test, describe, test)
 
 
 birchWood =
-    newOption "Birch Wood" Nothing
+    test_newFancyOption "Birch Wood"
 
 
 cutCopper =
-    newOption "Cut Copper" Nothing
+    test_newFancyOption "Cut Copper"
 
 
 mossyCobblestone =
-    newOption "Mossy Cobblestone" Nothing
+    test_newFancyOption "Mossy Cobblestone"
 
 
 torch =
-    newCustomOption "Torch" Nothing
+    test_newFancyCustomOptionWithCleanString "Torch"
 
 
 turf =
-    newCustomOption "Turf" Nothing
+    test_newFancyCustomOptionWithCleanString "Turf"
 
 
 vines =
-    newCustomOption "Vines" Nothing
+    test_newFancyCustomOptionWithCleanString "Vines"
 
 
 blocks =
-    [ birchWood, cutCopper, mossyCobblestone, torch, turf, vines ]
-
-
-searchStringMinLengthTen =
-    FixedSearchStringMinimumLength (PositiveInt.new 10)
+    test_newFancyOptionList [ birchWood, cutCopper, mossyCobblestone, torch, turf, vines ]
 
 
 maxDropdownItemsIsTen =
     FixedMaxDropdownItems (PositiveInt.new 10)
+
+
+emptyFancyList =
+    test_newFancyOptionList []
 
 
 suite : Test
@@ -80,107 +70,29 @@ suite =
     describe "Custom options"
         [ test "should be able to remove all the unselected custom options" <|
             \_ ->
-                Expect.equalLists
+                Expect.equal
+                    (test_newFancyOptionList
+                        [ birchWood
+                        , select 0 cutCopper
+                        , mossyCobblestone
+                        , select 1 turf
+                        ]
+                    )
                     (blocks
-                        |> selectOptionInListByOptionValue (stringToOptionValue "Cut Copper")
-                        |> selectOptionInListByOptionValue (stringToOptionValue "Turf")
+                        |> selectOptionByOptionValue (stringToOptionValue "Cut Copper")
+                        |> selectOptionByOptionValue (stringToOptionValue "Turf")
                         |> removeUnselectedCustomOptions
                     )
-                    [ birchWood
-                    , selectOption 0 cutCopper
-                    , mossyCobblestone
-                    , selectOption 1 turf
-                    ]
         , test "should be able to maintain a custom option with an empty hint" <|
             \_ ->
-                Expect.equalLists
-                    (prependCustomOption (Just "{{}}") (SearchString.update "pizza") [])
-                    [ newCustomOption "pizza" Nothing ]
-        , test "should stay in the dropdown if there's only a custom option with an empty hint" <|
+                Expect.equal
+                    (prependCustomOption (Just "{{}}") (SearchString.update "pizza") emptyFancyList)
+                    (test_newFancyOptionList [ test_newFancyCustomOptionWithCleanString "pizza" ])
+        , test "should not include the hint in the value of the custom option" <|
             \_ ->
-                let
-                    selectionConfig =
-                        defaultSelectionConfig
-                            |> setSelectionMode MultiSelect
-                            |> setAllowCustomOptionsWithBool True Nothing
-                            |> setSingleItemRemoval EnableSingleItemRemoval
-                            |> SelectionMode.setMaxDropdownItems maxDropdownItemsIsTen
-                in
-                Expect.equalLists
-                    (OptionSearcher.updateOptionsWithSearchStringAndCustomOption selectionConfig (SearchString.update "monkey bread") []
-                        |> figureOutWhichOptionsToShowInTheDropdown selectionConfig
-                        |> List.map Option.getOptionValueAsString
-                    )
-                    [ "monkey bread" ]
-
-        {- https://github.com/DripEmail/much-select-elm/issues/135 -}
-        , test "should stay in the dropdown if there's a custom option and some existing selected options" <|
-            \_ ->
-                let
-                    selectionConfig =
-                        defaultSelectionConfig
-                            |> setSelectionMode MultiSelect
-                            |> setAllowCustomOptionsWithBool True Nothing
-                            |> setSingleItemRemoval EnableSingleItemRemoval
-                            |> SelectionMode.setMaxDropdownItems NoLimitToDropdownItems
-                in
-                Expect.equalLists
-                    ([ newCustomOption "monkey bread" Nothing |> Option.highlightOption
-                     , birchWood |> Option.selectOption 1
-                     , cutCopper |> Option.selectOption 2
-                     ]
-                        |> OptionSearcher.updateOptionsWithSearchStringAndCustomOption
-                            selectionConfig
-                            (SearchString.update "monkey bread")
-                        |> List.map Option.getOptionValueAsString
-                    )
-                    [ "monkey bread", "Birch Wood", "Cut Copper" ]
-        , test "and regular options show be visible in the dropdown if the search string matches OK" <|
-            \_ ->
-                let
-                    selectionConfig =
-                        defaultSelectionConfig
-                            |> setSelectionMode MultiSelect
-                            |> setAllowCustomOptionsWithBool True Nothing
-                            |> setSingleItemRemoval EnableSingleItemRemoval
-                            |> SelectionMode.setMaxDropdownItems NoLimitToDropdownItems
-                            |> SelectionMode.setSearchStringMinimumLength searchStringMinLengthTen
-                in
-                Expect.equalLists
-                    ([ mossyCobblestone
-                     ]
-                        |> OptionSearcher.updateOptionsWithSearchStringAndCustomOption
-                            selectionConfig
-                            (SearchString.update "cob")
-                        |> OptionSorting.sortOptionsBySearchFilterTotalScore
-                        |> highlightFirstOptionInList
-                        |> figureOutWhichOptionsToShowInTheDropdown selectionConfig
-                        |> List.map Option.getOptionValueAsString
-                    )
-                    [ "cob", "Mossy Cobblestone" ]
-        , test "a custom option should show up even if it is shorter than the minimum search length" <|
-            \_ ->
-                let
-                    selectionConfig =
-                        defaultSelectionConfig
-                            |> setSelectionMode MultiSelect
-                            |> setAllowCustomOptionsWithBool True Nothing
-                            |> setSingleItemRemoval EnableSingleItemRemoval
-                            |> SelectionMode.setMaxDropdownItems NoLimitToDropdownItems
-                            |> SelectionMode.setSearchStringMinimumLength searchStringMinLengthTen
-                in
-                Expect.equalLists
-                    ([ mossyCobblestone
-                     ]
-                        |> OptionSearcher.updateOptionsWithSearchStringAndCustomOption
-                            selectionConfig
-                            (SearchString.update "cob")
-                        |> OptionSorting.sortOptionsBySearchFilterTotalScore
-                        |> highlightFirstOptionInList
-                        |> figureOutWhichOptionsToShowInTheDropdown selectionConfig
-                        |> List.map Option.getOptionValueAsString
-                    )
-                    [ "cob", "Mossy Cobblestone" ]
+                Expect.equal
+                    (prependCustomOption (Just "Add {{}}") (SearchString.update "pizza") emptyFancyList)
+                    (test_newFancyOptionList [ test_newFancyCustomOptionWithLabelAndMaybeCleanString "pizza" "Add pizza" (Just "pizza") ])
         , describe "updateModelWithChangesThatEffectTheOptionsWithSearchString"
             [ test "should show up at the top in the dropdown" <|
                 \_ ->
@@ -196,10 +108,10 @@ suite =
                             ShowNothing
                             selectionConfig
                             (SearchString.update "mil")
-                            [ birchWood ]
-                            { options = [ birchWood ], rightSlot = ShowNothing }
+                            (FancyOptionList [ birchWood ])
+                            { options = FancyOptionList [ birchWood ], rightSlot = ShowNothing }
                             |> .options
-                            |> List.map Option.getOptionValueAsString
+                            |> OptionList.optionsValuesAsStrings
                         )
                         [ "mil", "Birch Wood" ]
             ]

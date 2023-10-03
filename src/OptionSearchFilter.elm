@@ -2,10 +2,9 @@ module OptionSearchFilter exposing
     ( OptionSearchFilter
     , OptionSearchFilterWithValue
     , OptionSearchResult
-    , decode
+    , decoder
     , descriptionHandicap
     , encode
-    , getLowScore
     , groupHandicap
     , impossiblyLowScore
     , lowScoreCutOff
@@ -53,17 +52,6 @@ new totalScore bestScore labelTokens descriptionTokens groupTokens =
     , descriptionTokens = descriptionTokens
     , groupTokens = groupTokens
     }
-
-
-getLowScore : OptionSearchResult -> Int
-getLowScore optionSearchResult =
-    List.minimum
-        [ optionSearchResult.labelMatch.score
-        , descriptionHandicap optionSearchResult.descriptionMatch.score
-        , groupHandicap optionSearchResult.groupMatch.score
-        ]
-        |> Maybe.withDefault
-            impossiblyLowScore
 
 
 lowScoreCutOff : Int -> Int
@@ -126,8 +114,8 @@ encodeToken ( isHighlighted, stringChuck ) =
         ]
 
 
-decode : Json.Decode.Decoder OptionSearchFilter
-decode =
+decoder : Json.Decode.Decoder OptionSearchFilter
+decoder =
     Json.Decode.map5
         OptionSearchFilter
         (Json.Decode.field "totalScore" Json.Decode.int)

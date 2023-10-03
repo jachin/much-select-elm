@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 # Build the worker in a optimized and minimized way for production.
 
 # Ensure the build/gen directory is there.
