@@ -42,8 +42,6 @@ export default getMuchSelectTemplate;
 EOF
 )
 
-
-
 # Generate the muchSelectTemplate es6 module.
 printf "$tpl" "$FILTER_WORKER_JS" > ./dist/much-select-template.js
 
@@ -71,8 +69,10 @@ cp ./src/much-select.js ./dist/much-select-debug.js
 
 # Have the debug version of this dist, load up the debug version of compiled elm code.
 # This condition is because we need format sed differently if we're on macOS for in the Github actions environment.
-if [[ -v GITHUB_RUN_ID ]]; then
-  sed -i -e 's/much-select-elm\./much-select-elm-debug\./g' ./dist/much-select-debug.js
-else
+if [ -z "${GITHUB_RUN_ID+x}" ]; then
+  # GITHUB_RUN_ID is unset
   sed -i '' -e 's/much-select-elm\./much-select-elm-debug\./g' ./dist/much-select-debug.js
+else
+  # GITHUB_RUN_ID is set
+  sed -i -e 's/much-select-elm\./much-select-elm-debug\./g' ./dist/much-select-debug.js
 fi
