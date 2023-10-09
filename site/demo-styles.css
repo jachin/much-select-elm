@@ -1,6 +1,6 @@
 /*
-Fun colors https://flatuicolors.com/palette/se
 Boring colors https://flatuicolors.com/palette/gb
+Fun colors https://flatuicolors.com/palette/se
 */
 
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@500&display=swap');
@@ -26,7 +26,7 @@ body {
     --vanadyl-blue: #0097e6;
     --matt-purple: #8c7ae6;
     --nanohanacha-gold: #e1b12c;
-    --street-green: #44bd32;
+    --skirret-green: #44bd32;
     --naval: #40739e;
     --nasturcian-flower: #e84118;
     --lynx-white: #f5f6fa;
@@ -118,6 +118,9 @@ body {
         --much-select-dropdown-option-highlighted-background-color: var(--matt-purple);
         --much-select-dropdown-option-active-background-color: var(--protoss-pylon);
         --much-select-dropdown-option-selected-background-color: var(--chain-gang-grey);
+        --much-select-dropdown-optgroup-background-color: var(--skirret-green);
+        --much-select-dropdown-footer-color: var(--chain-gang-grey);
+        --much-select-dropdown-footer-background-color: var(--hint-of-pensive);
     }
 
     #theme-switch-fun:checked ~ #page-wrapper {
@@ -152,6 +155,9 @@ body {
         --much-select-dropdown-option-highlighted-background-color: var(--spirio-disco-ball);
         --much-select-dropdown-option-active-background-color: var(--minty-green);
         --much-select-dropdown-option-selected-background-color: var(--fresh-turquoise);
+        --much-select-dropdown-optgroup-background-color: var(--green-teal);
+        --much-select-dropdown-footer-color: var(--yriel-yellow);
+        --much-select-dropdown-footer-background-color: var(--red-orange);
     }
 }
 
@@ -183,6 +189,9 @@ body {
         --much-select-dropdown-option-highlighted-background-color: var(--free-speech-blue);
         --much-select-dropdown-option-active-background-color: var(--minty-green);
         --much-select-dropdown-option-selected-background-color: var(--black-pearl);
+        --much-select-dropdown-optgroup-background-color: var(--blue-nights);
+        --much-select-dropdown-footer-color: var(--hint-of-pensive);
+        --much-select-dropdown-footer-background-color: var(--chain-gang-grey);
     }
 
     #theme-switch-fun:checked ~ #page-wrapper {
@@ -211,6 +220,9 @@ body {
         --much-select-dropdown-option-highlighted-background-color: var(--black-pearl);
         --much-select-dropdown-option-active-background-color: var(--london-square);
         --much-select-dropdown-option-selected-background-color: var(--black-pearl);
+        --much-select-dropdown-optgroup-background-color: var(--london-square);
+        --much-select-dropdown-footer-color: var(--minty-green);
+        --much-select-dropdown-footer-background-color: var(--dark-periwinkle);
     }
 }
 
@@ -391,9 +403,7 @@ much-select::part(value-casing output-style-custom-html) {
     background-color: var(--much-select-background-color);
     box-shadow: 1px 1px 1px 0 lightgray inset;
     padding: 0.1em 1.5em 0.1em 0.1em;
-}
 
-much-select::part(value-casing output-style-custom-html) {
     flex-flow: row;
     cursor: pointer;
     border: 1px solid var(--much-select-border-color);
@@ -444,6 +454,11 @@ much-select::part(value-casing output-style-custom-html single) {
     background-repeat: repeat-x;
 }
 
+much-select::part(value-casing output-style-custom-html multi) {
+    background-image: var(--much-select-value-casing-background-image);
+    background-repeat: repeat-x;
+}
+
 much-select::part(value-casing single disabled) {
     background-image: none;
     background-color: var(--much-select-disabled-background-color);
@@ -455,6 +470,7 @@ much-select::part(input-filter) {
     */
     height: 36px;
     font-size: var(--value-font-size);
+    color: var(--text-color);
     /* The min-width let's the input shrink down as far as it needs to.
     The with width lets it grow as much as it can.
     */
@@ -477,11 +493,10 @@ much-select::part(input-filter) {
     outline: none;
     background: none;
 
-    padding: 0;
     margin: 0;
 
     /* Keep input filter's text from running over the dropdown indicator. */
-    padding-right: 0.8em;
+    padding: 0 0.8em 0 0;
 }
 
 much-select::part(input-filter):hover, much-select::part(input-filter):focus {
@@ -629,7 +644,7 @@ much-select::part(dropdown-option-description) {
 much-select::part(dropdown-footer) {
     font-size: 50%;
     text-align: center;
-    color: gray;
-    background-color: lightgray;
+    color: var(--much-select-dropdown-footer-color);
+    background-color: var(--much-select-dropdown-footer-background-color);
     padding: 5px;
 }
