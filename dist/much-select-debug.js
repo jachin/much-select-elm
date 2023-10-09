@@ -179,18 +179,13 @@ const cleanUpSelectedValue = (selectedValue) => {
   return newSelectedValue;
 };
 
-const makeDebouncedFunc = (func, timeout = 500) => {
-  let timer;
-  const myThis = this;
-  return (...args) => {
-    clearTimeout(timer);
-    timer = setTimeout(() => {
-      func.apply(myThis, args);
-    }, timeout);
-  };
-};
-
-const makeDebounceLeadingFunc = (func, delay = 250) => {
+/**
+ * Make a debounced function.
+ * @param func
+ * @param {number} [delay=250]
+ * @return {(function(...[*]): void)|*}
+ */
+const makeDebounceFunc = (func, delay = 250) => {
   let timeoutId;
   return (...args) => {
     clearTimeout(timeoutId);
@@ -290,29 +285,26 @@ class MuchSelect extends HTMLElement {
      */
     this._filterWorkerOptionsCache = null;
 
-    this._inputKeypressDebounceHandler = makeDebouncedFunc((searchString) => {
+    this._inputKeypressDebounceHandler = makeDebounceFunc((searchString) => {
       this.dispatchEvent(
         new CustomEvent("inputKeyUpDebounced", {
           bubbles: true,
           detail: { searchString },
         })
       );
-    });
+    }, 500);
 
-    this._callValueCasingWidthUpdate = makeDebounceLeadingFunc(
-      (width, height) => {
-        this.appPromise.then((app) => {
-          // noinspection JSUnresolvedVariable
-          app.ports.valueCasingDimensionsChangedReceiver.send({
-            width,
-            height,
-          });
+    this._callValueCasingWidthUpdate = makeDebounceFunc((width, height) => {
+      this.appPromise.then((app) => {
+        // noinspection JSUnresolvedVariable
+        app.ports.valueCasingDimensionsChangedReceiver.send({
+          width,
+          height,
         });
-      },
-      5
-    );
+      });
+    }, 5);
 
-    this._callOptionChanged = makeDebounceLeadingFunc((optionsJson) => {
+    this._callOptionChanged = makeDebounceFunc((optionsJson) => {
       this.appPromise.then((app) => {
         // noinspection JSUnresolvedVariable
         app.ports.optionsReplacedReceiver.send(optionsJson);
@@ -320,14 +312,14 @@ class MuchSelect extends HTMLElement {
       });
     }, 100);
 
-    this._callValueChanged = makeDebounceLeadingFunc((newValue) => {
+    this._callValueChanged = makeDebounceFunc((newValue) => {
       this.appPromise.then((app) => {
         // noinspection JSUnresolvedVariable
         app.ports.valueChangedReceiver.send(newValue);
       });
     }, 5);
 
-    this._callUpdateOptionsFromDom = makeDebounceLeadingFunc(() => {
+    this._callUpdateOptionsFromDom = makeDebounceFunc(() => {
       this.updateOptionsFromDom();
     }, 100);
 
