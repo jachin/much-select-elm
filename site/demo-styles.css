@@ -403,9 +403,7 @@ much-select::part(value-casing output-style-custom-html) {
     background-color: var(--much-select-background-color);
     box-shadow: 1px 1px 1px 0 lightgray inset;
     padding: 0.1em 1.5em 0.1em 0.1em;
-}
 
-much-select::part(value-casing output-style-custom-html) {
     flex-flow: row;
     cursor: pointer;
     border: 1px solid var(--much-select-border-color);
@@ -452,6 +450,11 @@ much-select::part(value-casing output-style-custom-html disabled) {
 }
 
 much-select::part(value-casing output-style-custom-html single) {
+    background-image: var(--much-select-value-casing-background-image);
+    background-repeat: repeat-x;
+}
+
+much-select::part(value-casing output-style-custom-html multi) {
     background-image: var(--much-select-value-casing-background-image);
     background-repeat: repeat-x;
 }
