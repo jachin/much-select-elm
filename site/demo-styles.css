@@ -467,6 +467,7 @@ much-select::part(input-filter) {
     */
     height: 36px;
     font-size: var(--value-font-size);
+    color: var(--text-color);
     /* The min-width let's the input shrink down as far as it needs to.
     The with width lets it grow as much as it can.
     */
