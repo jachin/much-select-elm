@@ -19,21 +19,21 @@
       describe("placeholder", () => {
         it("the default value should be custom-html", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select></much-select>`
+            html`<much-select></much-select>`,
           );
           expect(await el.placeholder).to.equal("");
         });
 
         it("you should be able to set an initial placeholder with the attribute", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select placeholder="text go here"></much-select>`
+            html`<much-select placeholder="text go here"></much-select>`,
           );
           expect(await el.placeholder).to.equal("text go here");
         });
 
         it("you should be add a placeholder by setting the attribute", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select></much-select>`
+            html`<much-select></much-select>`,
           );
 
           el.setAttribute("placeholder", "monkey");
@@ -43,7 +43,7 @@
 
         it("you should be change the placeholder by setting the attribute", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select placeholder="bob"</much-select>`
+            html`<much-select placeholder="bob"</much-select>`,
           );
 
           el.setAttribute("placeholder", "of the month");
@@ -53,7 +53,7 @@
 
         it("you should be change the placeholder via the setter", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select placeholder="prison"</much-select>`
+            html`<much-select placeholder="prison"</much-select>`,
           );
 
           el.placeholder = "jail";

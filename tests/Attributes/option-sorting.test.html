@@ -19,14 +19,14 @@
       describe("option-sorting", () => {
         it("the default value should be no-sorting", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select></much-select>`
+            html`<much-select></much-select>`,
           );
           expect(await el.optionSorting).to.equal("no-sorting");
         });
 
         it("is empty the default value of no-sorting should be used", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select option-sorting=""></much-select>`
+            html`<much-select option-sorting=""></much-select>`,
           );
           el.setAttribute("search-string-minimum-length", "");
           expect(await el.optionSorting).to.equal("no-sorting");
@@ -34,21 +34,21 @@
 
         it("setting the attribute to no-sorting should work", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select option-sorting="no-sorting"></much-select>`
+            html`<much-select option-sorting="no-sorting"></much-select>`,
           );
           expect(await el.optionSorting).to.equal("no-sorting");
         });
 
         it("setting the attribute to no-sorting explicitly should persist", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select option-sorting="no-sorting"></much-select>`
+            html`<much-select option-sorting="no-sorting"></much-select>`,
           );
           expect(el.hasAttribute("option-sorting")).to.be.true;
         });
 
         it("setting the attribute to by-option-label should be valid and the attribute should stay", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select option-sorting="by-option-label"></much-select>`
+            html`<much-select option-sorting="by-option-label"></much-select>`,
           );
 
           expect(await el.optionSorting).to.equal("by-option-label");
@@ -56,7 +56,7 @@
 
         it("removing the attribute should set the option sorting to default of no-sorting", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select option-sorting="by-option-label"></much-select>`
+            html`<much-select option-sorting="by-option-label"></much-select>`,
           );
 
           el.removeAttribute("option-sorting");
@@ -68,7 +68,7 @@
 
         it("should be able to be set by the property", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select></much-select>`
+            html`<much-select></much-select>`,
           );
 
           el.optionSorting = "no-sorting";
@@ -82,7 +82,7 @@
 
         it("should not allow a non-sense value change via the property setter", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select></much-select>`
+            html`<much-select></much-select>`,
           );
 
           el.optionSorting = "no-sorting";

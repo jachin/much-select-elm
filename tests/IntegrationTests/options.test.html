@@ -19,24 +19,24 @@
       describe("single selection mode", () => {
         it("creates an option if a value is set", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select selected-value="table"></much-select>`
+            html`<much-select selected-value="table"></much-select>`,
           );
           expect(await el.selectedValue).to.equal("table");
           expect(
-            el.shadowRoot.querySelector("#selected-value").innerHTML
+            el.shadowRoot.querySelector("#selected-value").innerHTML,
           ).to.equal("table");
         });
 
         it("creates an option if a value is set", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select selected-value=""></much-select>`
+            html`<much-select selected-value=""></much-select>`,
           );
           expect(await el.selectedValue).to.equal("");
         });
 
         it("the selected value should be an empty string if no attribute for selected-value is present", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select></much-select>`
+            html`<much-select></much-select>`,
           );
           expect(await el.selectedValue).to.equal("");
         });
@@ -47,14 +47,14 @@
             html`<much-select
               multi-select=""
               selected-value="table"
-            ></much-select>`
+            ></much-select>`,
           );
           expect(await el.selectedValue).to.deep.equal(["table"]);
 
           await nextFrame();
 
           expect(el.shadowRoot.querySelectorAll(".value")[0].innerHTML).to.equal(
-            '<span class="value-label">table</span>'
+            '<span class="value-label">table</span>',
           );
           expect(el.shadowRoot.querySelectorAll(".value").length).to.equal(1);
         });

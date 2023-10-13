@@ -19,7 +19,7 @@
       describe("events-only", () => {
         it("adding the attribute should put the much-select events only mode", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select></much-select>`
+            html`<much-select></much-select>`,
           );
           expect(await el.eventsOnlyMode).to.be.false;
 
@@ -33,16 +33,15 @@
         });
 
         it("should prevent the select-value attribute from automatically updating", async () => {
-          const el = /** @type {MuchSelect} */ await fixture(html` <much-select
-            events-only=""
-            selected-value="air"
-          >
-            <select slot="select-input">
-              <option>air</option>
-              <option>fire</option>
-              <option>water</option>
-            </select>
-          </much-select>`);
+          const el = /** @type {MuchSelect} */ await fixture(
+            html` <much-select events-only="" selected-value="air">
+              <select slot="select-input">
+                <option>air</option>
+                <option>fire</option>
+                <option>water</option>
+              </select>
+            </much-select>`,
+          );
 
           expect(await el.selectedValue).to.equal("air");
 
@@ -56,13 +55,15 @@
         });
 
         it("should support setting the property directly on the element", async () => {
-          const el = /** @type {MuchSelect} */ await fixture(html` <much-select>
-            <select slot="select-input">
-              <option>air</option>
-              <option>fire</option>
-              <option>water</option>
-            </select>
-          </much-select>`);
+          const el = /** @type {MuchSelect} */ await fixture(
+            html` <much-select>
+              <select slot="select-input">
+                <option>air</option>
+                <option>fire</option>
+                <option>water</option>
+              </select>
+            </much-select>`,
+          );
 
           el.eventsOnlyMode = true;
 

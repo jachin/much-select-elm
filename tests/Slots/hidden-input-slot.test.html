@@ -3,8 +3,7 @@
 <body>
 <script type="module">
   import { runTests } from "@web/test-runner-mocha";
-  import { expect } from "@esm-bundle/chai";
-  import { html, fixture, nextFrame, waitUntil } from "@open-wc/testing";
+  import { html, fixture, waitUntil } from "@open-wc/testing";
 
   import MuchSelect from "../../dist/much-select-debug.js";
 
@@ -24,13 +23,13 @@
                 slot="hidden-value-input"
                 type="hidden"
                 name="my-special-value"
-            /></much-select>`
+            /></much-select>`,
           );
           await waitUntil(
             async () =>
               el
                 .querySelector("[slot='hidden-value-input']")
-                .getAttribute("value") === ""
+                .getAttribute("value") === "",
           );
         });
 
@@ -41,13 +40,13 @@
                 slot="hidden-value-input"
                 type="hidden"
                 name="my-special-value"
-            /></much-select>`
+            /></much-select>`,
           );
           await waitUntil(
             async () =>
               el
                 .querySelector("[slot='hidden-value-input']")
-                .getAttribute("value") === "Tocharians"
+                .getAttribute("value") === "Tocharians",
           );
         });
 
@@ -58,7 +57,7 @@
                 slot="hidden-value-input"
                 type="hidden"
                 name="my-special-value"
-            /></much-select>`
+            /></much-select>`,
           );
           el.setAttribute("selected-value", "Chaouacha");
 
@@ -66,7 +65,7 @@
             async () =>
               el
                 .querySelector("[slot='hidden-value-input']")
-                .getAttribute("value") === "Chaouacha"
+                .getAttribute("value") === "Chaouacha",
           );
         });
       });

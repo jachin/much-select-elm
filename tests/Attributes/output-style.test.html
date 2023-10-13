@@ -19,21 +19,21 @@
       describe("output-style", () => {
         it("the default value should be custom-html", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select></much-select>`
+            html`<much-select></much-select>`,
           );
           expect(await el.outputStyle).to.equal("custom-html");
         });
 
         it("should support datalist on init", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select output-style="datalist"></much-select>`
+            html`<much-select output-style="datalist"></much-select>`,
           );
           expect(await el.outputStyle).to.equal("datalist");
         });
 
         it("should support changing the value through the setter", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select output-style="datalist"></much-select>`
+            html`<much-select output-style="datalist"></much-select>`,
           );
 
           el.outputStyle = "custom-html";

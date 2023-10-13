@@ -19,14 +19,14 @@
       describe("search-string-minimum-length", () => {
         it("the default value should be 2", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select></much-select>`
+            html`<much-select></much-select>`,
           );
           expect(await el.searchStringMinimumLength).to.equal(2);
         });
 
         it("is empty the search string minimum should be set to 0", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select></much-select>`
+            html`<much-select></much-select>`,
           );
           el.setAttribute("search-string-minimum-length", "");
           await nextFrame();
@@ -35,7 +35,7 @@
 
         it("setting the attribute to a positive number should change the value", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select></much-select>`
+            html`<much-select></much-select>`,
           );
 
           el.setAttribute("search-string-minimum-length", "5");
@@ -45,7 +45,7 @@
 
         it("setting the attribute initially sets the minimum search string length", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select search-string-minimum-length="10"></much-select>`
+            html`<much-select search-string-minimum-length="10"></much-select>`,
           );
 
           expect(await el.searchStringMinimumLength).to.equal(10);

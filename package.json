@@ -33,7 +33,7 @@
     "build-and-test": "npm run build; npm run test; npm run web-test-runner",
     "serve": "scripts/serve-site.sh",
     "deploy-site": "npm run build && npm run build-site && firebase deploy",
-    "lint": "eslint",
+    "lint": "eslint; eslint tests",
     "format": "elm-format",
     "review": "elm-review"
   },
