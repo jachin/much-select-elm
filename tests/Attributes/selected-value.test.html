@@ -18,66 +18,70 @@
     describe("Attributes", () => {
       describe("comma seperated selected-value", () => {
         it("preserver the order of the selected values if the order of the options are the same", async () => {
-          const el = /** @type {MuchSelect} */ await fixture(html` <much-select
-            multi-select
-            selected-value="red,green"
-          >
-            <select slot="select-input">
-              <option>red</option>
-              <option>green</option>
-            </select>
-          </much-select>`);
+          const el = /** @type {MuchSelect} */ await fixture(
+            html` <much-select multi-select selected-value="red,green">
+              <select slot="select-input">
+                <option>red</option>
+                <option>green</option>
+              </select>
+            </much-select>`,
+          );
           expect(await el.selectedValue).to.eql(["red", "green"]);
         });
         it("preserver the order of the selected values even if the order of the options are different", async () => {
-          const el = /** @type {MuchSelect} */ await fixture(html` <much-select
-            multi-select
-            selected-value="red,green"
-          >
-            <select slot="select-input">
-              <option>green</option>
-              <option>red</option>
-            </select>
-          </much-select>`);
+          const el = /** @type {MuchSelect} */ await fixture(
+            html` <much-select multi-select selected-value="red,green">
+              <select slot="select-input">
+                <option>green</option>
+                <option>red</option>
+              </select>
+            </much-select>`,
+          );
           expect(await el.selectedValue).to.eql(["red", "green"]);
         });
       });
       describe("json encoded selected-value", () => {
         it("preserver the order of the selected values if the order of the options are the same", async () => {
-          const el = /** @type {MuchSelect} */ await fixture(html` <much-select
-            multi-select
-            selected-value-encoding="json"
-            selected-value="%5B%22red%22%2C%22green%22%5D"
-          >
-            <select slot="select-input">
-              <option>red</option>
-              <option>green</option>
-            </select>
-          </much-select>`);
+          const el = /** @type {MuchSelect} */ await fixture(
+            html` <much-select
+              multi-select
+              selected-value-encoding="json"
+              selected-value="%5B%22red%22%2C%22green%22%5D"
+            >
+              <select slot="select-input">
+                <option>red</option>
+                <option>green</option>
+              </select>
+            </much-select>`,
+          );
           expect(await el.selectedValue).to.eql(["red", "green"]);
         });
         it("preserver the order of the selected values even if the order of the options are different", async () => {
-          const el = /** @type {MuchSelect} */ await fixture(html`<much-select
-            multi-select
-            selected-value-encoding="json"
-            selected-value="%5B%22red%22%2C%22green%22%5D"
-          >
-            <select slot="select-input">
-              <option>green</option>
-              <option>red</option>
-            </select>
-          </much-select>`);
+          const el = /** @type {MuchSelect} */ await fixture(
+            html`<much-select
+              multi-select
+              selected-value-encoding="json"
+              selected-value="%5B%22red%22%2C%22green%22%5D"
+            >
+              <select slot="select-input">
+                <option>green</option>
+                <option>red</option>
+              </select>
+            </much-select>`,
+          );
           expect(await el.selectedValue).to.eql(["red", "green"]);
         });
 
         it("can decode a selected value that's a string of IDs", async () => {
-          const el = /** @type {MuchSelect} */ await fixture(html`<much-select
-            multi-select
-            selected-value-encoding="json"
-            selected-value="%5B%22211107950%22%5D"
-          >
-            <select slot="select-input"></select>
-          </much-select>`);
+          const el = /** @type {MuchSelect} */ await fixture(
+            html`<much-select
+              multi-select
+              selected-value-encoding="json"
+              selected-value="%5B%22211107950%22%5D"
+            >
+              <select slot="select-input"></select>
+            </much-select>`,
+          );
 
           // The selected value should be set.
           expect(await el.selectedValue).to.eql(["211107950"]);
@@ -97,13 +101,15 @@
         });
 
         it("can decode a selected value that's a string of IDs then support updating the DOM with additional option details", async () => {
-          const el = /** @type {MuchSelect} */ await fixture(html`<much-select
-            multi-select
-            selected-value-encoding="json"
-            selected-value="%5B%22211107950%22%5D"
-          >
-            <select slot="select-input"></select>
-          </much-select>`);
+          const el = /** @type {MuchSelect} */ await fixture(
+            html`<much-select
+              multi-select
+              selected-value-encoding="json"
+              selected-value="%5B%22211107950%22%5D"
+            >
+              <select slot="select-input"></select>
+            </much-select>`,
+          );
 
           const selectEl = el.querySelector("select");
 
@@ -137,23 +143,27 @@
         });
 
         it("works in multi select mode with an empty array", async () => {
-          const el = /** @type {MuchSelect} */ await fixture(html`<much-select
-            multi-select
-            selected-value-encoding="json"
-            selected-value="%5B%5D"
-          >
-          </much-select>`);
+          const el = /** @type {MuchSelect} */ await fixture(
+            html`<much-select
+              multi-select
+              selected-value-encoding="json"
+              selected-value="%5B%5D"
+            >
+            </much-select>`,
+          );
 
           // The parsed selected value should be an empty array.
           expect(await el.selectedValue).to.eql([]);
         });
 
         it("works in select mode with an empty selected value", async () => {
-          const el = /** @type {MuchSelect} */ await fixture(html`<much-select
-            selected-value-encoding="json"
-            selected-value="%22%22"
-          >
-          </much-select>`);
+          const el = /** @type {MuchSelect} */ await fixture(
+            html`<much-select
+              selected-value-encoding="json"
+              selected-value="%22%22"
+            >
+            </much-select>`,
+          );
 
           // The selected value should be an empty string.
           expect(await el.selectedValue).to.equal("");
