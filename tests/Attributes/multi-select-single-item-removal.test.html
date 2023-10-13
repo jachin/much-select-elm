@@ -19,14 +19,14 @@
       describe("multi-select-single-item-removal", () => {
         it("the default value should be false", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select></much-select>`
+            html`<much-select></much-select>`,
           );
           expect(await el.isInMultiSelectModeWithSingleItemRemoval).to.false;
         });
 
         it("having the attribute preset should set it to true but not if we are in single select mode", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select multi-select-single-item-removal></much-select>`
+            html`<much-select multi-select-single-item-removal></much-select>`,
           );
           expect(await el.isInMultiSelectModeWithSingleItemRemoval).to.false;
         });
@@ -36,7 +36,7 @@
             html`<much-select
               multi-select-single-item-removal
               multi-select
-            ></much-select>`
+            ></much-select>`,
           );
           expect(await el.isInMultiSelectModeWithSingleItemRemoval).to.true;
         });
@@ -46,7 +46,7 @@
             html`<much-select
               multi-select-single-item-removal
               multi-select
-            ></much-select>`
+            ></much-select>`,
           );
           el.isInMultiSelectModeWithSingleItemRemoval = false;
           await nextFrame();

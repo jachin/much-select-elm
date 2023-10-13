@@ -19,21 +19,21 @@
       describe("max-dropdown-items", () => {
         it("the default value should be 1000", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select></much-select>`
+            html`<much-select></much-select>`,
           );
           expect(await el.maxDropdownItems).to.equal(1000);
         });
 
         it("setting the attribute to a positive integer should change the value", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select max-dropdown-items="3"></much-select>`
+            html`<much-select max-dropdown-items="3"></much-select>`,
           );
           expect(await el.maxDropdownItems).to.equal(3);
         });
 
         it("removing the attribute should revert back to the defaul value", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select max-dropdown-items="5"></much-select>`
+            html`<much-select max-dropdown-items="5"></much-select>`,
           );
           el.removeAttribute("max-dropdown-items");
           await nextFrame();
@@ -42,7 +42,7 @@
 
         it("using the setter should set the value for max-dropdown-items", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select></much-select>`
+            html`<much-select></much-select>`,
           );
           el.maxDropdownItems = 8;
           await nextFrame();
@@ -51,14 +51,14 @@
 
         it("the initial value for max-dropdown-items should support 0", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select max-dropdown-items="0"></much-select>`
+            html`<much-select max-dropdown-items="0"></much-select>`,
           );
           expect(await el.maxDropdownItems).to.equal(0);
         });
 
         it("changing the attribute should change the value", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select max-dropdown-items="5"></much-select>`
+            html`<much-select max-dropdown-items="5"></much-select>`,
           );
           el.setAttribute("max-dropdown-items", 10);
           expect(await el.maxDropdownItems).to.equal(10);

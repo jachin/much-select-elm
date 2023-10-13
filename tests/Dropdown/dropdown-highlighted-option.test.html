@@ -35,7 +35,7 @@
               <option value="Water">Water</option>
               <option value="Soda">Soda</option>
             </select>
-          </much-select>`
+          </much-select>`,
         );
 
         // Focus on the input filter so the dropdown opens.
@@ -44,7 +44,7 @@
         await nextFrame();
 
         expect(
-          el.shadowRoot.querySelectorAll("#dropdown .option.highlighted").length
+          el.shadowRoot.querySelectorAll("#dropdown .option.highlighted").length,
         ).to.equal(0);
       });
 
@@ -57,7 +57,7 @@
               <option value="Water">Water</option>
               <option value="Soda">Soda</option>
             </select>
-          </much-select>`
+          </much-select>`,
         );
 
         await oneEvent(el, "muchSelectReady");
@@ -68,19 +68,19 @@
         await nextFrame();
 
         expect(
-          el.shadowRoot.getElementById("dropdown").classList.contains("showing")
+          el.shadowRoot.getElementById("dropdown").classList.contains("showing"),
         ).to.be.true;
 
         expect(
-          el.shadowRoot.querySelectorAll("#dropdown .option").length
+          el.shadowRoot.querySelectorAll("#dropdown .option").length,
         ).to.equal(4);
 
         expect(
-          el.shadowRoot.querySelectorAll("#dropdown .option.highlighted").length
+          el.shadowRoot.querySelectorAll("#dropdown .option.highlighted").length,
         ).to.equal(0);
 
         expect(
-          el.shadowRoot.querySelectorAll("#dropdown .option.selected").length
+          el.shadowRoot.querySelectorAll("#dropdown .option.selected").length,
         ).to.equal(1);
       });
 
@@ -93,7 +93,7 @@
               <option value="Water">Water</option>
               <option value="Soda">Soda</option>
             </select>
-          </much-select>`
+          </much-select>`,
         );
 
         await oneEvent(el, "muchSelectReady");
@@ -108,11 +108,11 @@
         await nextFrame();
 
         expect(
-          el.shadowRoot.querySelectorAll("#dropdown .option.highlighted").length
+          el.shadowRoot.querySelectorAll("#dropdown .option.highlighted").length,
         ).to.equal(1);
 
         expect(
-          el.shadowRoot.querySelector("#dropdown .option.highlighted")
+          el.shadowRoot.querySelector("#dropdown .option.highlighted"),
         ).to.have.text("Coffee");
       });
 
@@ -125,7 +125,7 @@
               <option selected value="Water">Water</option>
               <option value="Soda">Soda</option>
             </select>
-          </much-select>`
+          </much-select>`,
         );
         await oneEvent(el, "muchSelectReady");
 
@@ -144,11 +144,11 @@
         await nextFrame();
 
         expect(
-          el.shadowRoot.querySelectorAll("#dropdown .option.highlighted").length
+          el.shadowRoot.querySelectorAll("#dropdown .option.highlighted").length,
         ).to.equal(1);
 
         expect(
-          el.shadowRoot.querySelector("#dropdown .option.highlighted")
+          el.shadowRoot.querySelector("#dropdown .option.highlighted"),
         ).to.have.text("Water");
       });
 
@@ -161,7 +161,7 @@
               <option selected value="Water">Water</option>
               <option value="Soda">Soda</option>
             </select>
-          </much-select>`
+          </much-select>`,
         );
         await oneEvent(el, "muchSelectReady");
 
@@ -181,7 +181,7 @@
 
         expect(
           el.shadowRoot.querySelectorAll("#dropdown .option.selected.highlighted")
-            .length
+            .length,
         ).to.equal(1);
 
         await sendKeys({ press: "ArrowUp" });
@@ -189,7 +189,7 @@
         await nextFrame();
 
         expect(
-          el.shadowRoot.querySelectorAll("#dropdown .option.highlighted").length
+          el.shadowRoot.querySelectorAll("#dropdown .option.highlighted").length,
         ).to.equal(1);
 
         await sendKeys({ press: "ArrowUp" });
@@ -197,7 +197,7 @@
         await nextFrame();
 
         expect(
-          el.shadowRoot.querySelectorAll("#dropdown .option.selected").length
+          el.shadowRoot.querySelectorAll("#dropdown .option.selected").length,
         ).to.equal(1);
       });
     });

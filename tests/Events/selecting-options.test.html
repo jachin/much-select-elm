@@ -19,7 +19,7 @@
       describe("single select mode", () => {
         it("should emit valueChanged events", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select></much-select>`
+            html`<much-select></much-select>`,
           );
 
           // Add some options
@@ -37,7 +37,7 @@
 
       it("should emit optionSelected events", async () => {
         const el = /** @type {MuchSelect} */ await fixture(
-          html`<much-select></much-select>`
+          html`<much-select></much-select>`,
         );
 
         // Add some options
@@ -54,7 +54,7 @@
 
       it("should emit addItem events", async () => {
         const el = /** @type {MuchSelect} */ await fixture(
-          html`<much-select></much-select>`
+          html`<much-select></much-select>`,
         );
 
         // Add some options
@@ -71,7 +71,7 @@
 
       it("should emit optionDeselected events when an option is deselected", async () => {
         const el = /** @type {MuchSelect} */ await fixture(
-          html`<much-select></much-select>`
+          html`<much-select></much-select>`,
         );
 
         // Add some options

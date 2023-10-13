@@ -19,21 +19,21 @@
       describe("disabled", () => {
         it("the default value should be false", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select></much-select>`
+            html`<much-select></much-select>`,
           );
           expect(await el.disabled).to.be.false;
         });
 
         it("setting an empty attribute should set it to true", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select disabled></much-select>`
+            html`<much-select disabled></much-select>`,
           );
           expect(await el.disabled).to.be.true;
         });
 
         it("removing the attribute should set it to false", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select disabled></much-select>`
+            html`<much-select disabled></much-select>`,
           );
           el.removeAttribute("disabled");
           await nextFrame();
@@ -42,7 +42,7 @@
 
         it("using the setter should set it to true", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select></much-select>`
+            html`<much-select></much-select>`,
           );
           el.disabled = true;
           await nextFrame();

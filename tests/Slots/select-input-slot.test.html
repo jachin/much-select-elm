@@ -50,7 +50,7 @@
               <div slot="loading-indicator">
                 <loading-orb style="margin-right: 5px;"></loading-orb>
               </div>
-            </much-select>`
+            </much-select>`,
           );
 
           const allOptions = await el.getAllOptions();
@@ -65,7 +65,7 @@
             <select>
               <option value="should not work">never no never</option>
             </select>
-          </much-select>`
+          </much-select>`,
         );
 
         const allOptions = await el.getAllOptions();
@@ -75,7 +75,7 @@
 
       it("should add the options if we add the select-input slot later", async () => {
         const el = /** @type {MuchSelect} */ await fixture(
-          html`<much-select></much-select>`
+          html`<much-select></much-select>`,
         );
 
         const allInitialOptions = await el.getAllOptions();

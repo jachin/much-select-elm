@@ -19,7 +19,7 @@
       describe("open", () => {
         it("when the input filter is focused on", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select></much-select>`
+            html`<much-select></much-select>`,
           );
 
           // Add some options
@@ -34,19 +34,19 @@
 
           // Three options in the dropdown
           expect(
-            el.shadowRoot.querySelectorAll("#dropdown .option").length
+            el.shadowRoot.querySelectorAll("#dropdown .option").length,
           ).to.equal(3);
 
           // No options selected.
           expect(
-            el.shadowRoot.querySelectorAll("#dropdown .option.selected").length
+            el.shadowRoot.querySelectorAll("#dropdown .option.selected").length,
           ).to.equal(0);
         });
       });
       describe("ordering", () => {
         it("selecting an option should give it a selected class", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select></much-select>`
+            html`<much-select></much-select>`,
           );
 
           // Add some options
@@ -66,13 +66,13 @@
 
           // Now 1 option should be selected
           expect(
-            el.shadowRoot.querySelectorAll("#dropdown .option.selected").length
+            el.shadowRoot.querySelectorAll("#dropdown .option.selected").length,
           ).to.equal(1);
         });
 
         it("in single select mode the selected item should stay in place", async () => {
           const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select></much-select>`
+            html`<much-select></much-select>`,
           );
 
           // Add some options
@@ -93,7 +93,7 @@
 
           // Ensure the selected option is in the right spot.
           const secondOption = el.shadowRoot.querySelector(
-            "#dropdown .option:nth-child(2)"
+            "#dropdown .option:nth-child(2)",
           );
 
           expect(secondOption).to.have.class("selected");

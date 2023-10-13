@@ -60,22 +60,26 @@ asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git
 We use a static site generator called [Soupault](https://soupault.app/) to make the sandbox.
 There [several ways to install](https://soupault.app/install/) it. I recommend using the OPAM method.
 
+
+#### watchexec
+
+The development build scripts depend on [watchexec](https://watchexec.github.io/). You can install it anyway that makes sense on your machine as long as it's in the `PATH` but I recommend using [homebrew](https://formulae.brew.sh/formula/watchexec).
+
+```bash
+brew install watchexec
+```
+
 ### Initial Setup
 
-To work on this project, clone the repo to your machine then:
+To work on this project, clone the repo to your machine then run the following:
 
 ```bash
 asdf install
 npm install
-npm start
-```
-
-Just do like you'd expect to get started. Only development dependencies.
-
-``` bash
-npm install
 npx elm-tooling install
 ```
+
+This should install the correct version of node (via `asdf`). All the npm packages, and all the elm-tools.
 
 ### Watch and Develop
 
