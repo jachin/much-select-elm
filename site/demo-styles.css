@@ -2,8 +2,8 @@
 Boring colors https://flatuicolors.com/palette/gb
 Fun colors https://flatuicolors.com/palette/se
 */
-
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;300;400;600&display=swap');
+/* @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@500&display=swap'); */
 
 
 body {
@@ -11,7 +11,6 @@ body {
     This seems to prevent the dramatic flash as the theme is getting setup as a page loads.
     */
     transition-duration: 0.5s;
-
     margin: 0;
     padding: 0;
 }
@@ -23,10 +22,10 @@ body {
     --rise-n-shine: #fbc531;
     --download-progress: #4cd137;
     --sea-brook: #487eb0;
-    --vanadyl-blue: #0097e6;
-    --matt-purple: #8c7ae6;
+    --vanadyl-blue: #EEEDED;
+    --matt-purple: #A7D397;
     --nanohanacha-gold: #e1b12c;
-    --skirret-green: #44bd32;
+    --skirret-green: #A7D397;
     --naval: #40739e;
     --nasturcian-flower: #e84118;
     --lynx-white: #f5f6fa;
@@ -34,7 +33,7 @@ body {
     --mazarine-blue: #273c75;
     --blue-nights: #353b48;
     --harley-davidson-orange: #c23616;
-    --hint-of-pensive: #dcdde1;
+    --hint-of-pensive: #D0D4CA;
     --chain-gang-grey: #718093;
     --pico-void: #192a56;
     --electromagnetic: #2f3640;
@@ -60,7 +59,6 @@ body {
     --red-orange: #ff3f34;
     --london-square: #808e9b;
     --black-pearl: #1e272e;
-
     --much-select-height: 36px;
 }
 
@@ -77,11 +75,12 @@ body {
 }
 
 #theme-switch-boring:checked ~ #page-wrapper {
-    --header-font: "Andale Mono", sans-serif;
-    --body-font: "Times New Roman", serif;
-    --form-font: "Andale Mono", sans-serif;
-    --value-font-size: 25px;
+    --header-font: 'Poppins', sans-serif;
+    --body-font: 'Poppins', sans-serif;
+    --form-font: 'Poppins', sans-serif;
+    --value-font-size: 20px;
 }
+
 
 #theme-switch-fun:checked ~ #page-wrapper {
     --header-font: "Comic Sans MS";
@@ -311,16 +310,22 @@ h3 {
 }
 
 .container > .example {
+    height: auto;
     margin: 1rem;
     padding: 1rem;
-    border: 3px solid var(--example-border-color);
+    border: 1px solid var(--example-border-color);
     box-shadow: 2px 2px 5px 0 var(--example-border-shadow-color);
     border-radius: 12px;
     max-width: 400px;
     background-color: var(--example-background-color);
     flex: 0 1 400px;
 }
-
+.container .example a{
+    text-decoration: none;
+}
+.container .example a:hover{
+    text-decoration: underline;
+}
 nav {
     margin: 0.25em;
     border-radius: 12px;
@@ -334,7 +339,13 @@ nav a:any-link {
 nav.site-nav {
     padding: 0.25em;
     background-color: var(--site-nav-background-color);
+    overflow: auto;
+    white-space: nowrap;
 }
+nav.site-nav ol li{
+    display: inline-block;
+}
+
 
 nav.offsite-nav {
     padding: 0.25em;
@@ -350,6 +361,10 @@ nav ol {
 nav.offsite-nav ol {
     place-content: end;
 }
+nav.offsite-nav ol li a,
+nav.site-nav ol li a{
+    text-decoration: none;
+}
 
 nav ol > li {
     margin: 0.5em;
@@ -364,6 +379,8 @@ nav ol > li > a {
 nav ol > li > a:hover {
     background-color: var(--nav-link-text-hover-background-color);
 }
+
+
 
 
 much-select:not(:defined) {
@@ -402,8 +419,7 @@ much-select::part(value-casing) {
 much-select::part(value-casing output-style-custom-html) {
     background-color: var(--much-select-background-color);
     box-shadow: 1px 1px 1px 0 lightgray inset;
-    padding: 0.1em 1.5em 0.1em 0.1em;
-
+    padding: 0.1em 2em 0.1em 10px;
     flex-flow: row;
     cursor: pointer;
     border: 1px solid var(--much-select-border-color);
@@ -420,7 +436,6 @@ much-select::part(value-casing output-style-custom-html multi) {
 much-select::part(value-casing output-style-datalist) {
     flex-flow: column;
     cursor: pointer;
-    border: 1px solid var(--much-select-border-color);
 }
 
 much-select::part(input-value) {
@@ -429,7 +444,7 @@ much-select::part(input-value) {
 
 
 much-select::part(value-casing output-style-datalist error) {
-    border: 1px solid var(--much-select-error-border-color);
+    border: none;
 }
 
 much-select::part(value-casing output-style-custom-html):hover {
@@ -484,7 +499,7 @@ much-select::part(input-filter) {
     /* We don't want a border because the value-casing will supply the border for
       this input.
     */
-    border: none;
+
 
     /*
     We do not want an outline on the input (filter) because we want everything
@@ -492,11 +507,11 @@ much-select::part(input-filter) {
     */
     outline: none;
     background: none;
-
     margin: 0;
 
     /* Keep input filter's text from running over the dropdown indicator. */
-    padding: 0 0.8em 0 0;
+    padding: 0 0.8em 0 10px;
+    border-right: 2px dotted #D0D4CA;
 }
 
 much-select::part(input-filter):hover, much-select::part(input-filter):focus {
@@ -538,16 +553,20 @@ much-select::part(value) {
     border-radius: 5px;
     border: 3px solid #d99477;
     min-width: 10px;
-
     flex-grow: 0;
     flex-shrink: 1;
     flex-basis: auto;
 }
 
 much-select::part(selected-value) {
-    font-size: var(--value-font-size);
-
-    padding-top: 2px;
+    font-size: 14px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    padding: 3px 10px;
+    margin-right: 3px;
+    margin-bottom: 3px;
+    margin-top: 5px;
 }
 
 much-select::part(value highlighted-value) {
@@ -557,11 +576,11 @@ much-select::part(value highlighted-value) {
 
 much-select::part(dropdown-indicator) {
     position: absolute;
-    right: 8px;
-    top: 15px;
+    right: 12px;
+    top: 10px;
     cursor: pointer;
     display: block;
-    transition: transform 0.25s;
+    transition: transform 0.50s;
 }
 
 much-select::part(dropdown-indicator up) {
@@ -580,7 +599,6 @@ much-select::part(clear-button-wrapper) {
     cursor: pointer;
     box-sizing: content-box;
     padding: 0.3em 0.5em;
-
     border-width: 1px;
     border-style: solid;
     border-color: transparent;
@@ -591,6 +609,8 @@ much-select::part(clear-button-wrapper):hover {
 }
 
 much-select::part(dropdown) {
+    margin-top: 5px;
+    border-radius: 8px;
     font-size: 20px;
     max-height: 300px;
     font-family: var(--form-font);
@@ -601,15 +621,16 @@ much-select::part(dropdown-optgroup) {
     font-size: 0.85rem;
     font-weight: 300;
     font-family: var(--form-font);
-    padding: 5px;
+    padding: 10px;
 }
 
 much-select::part(dropdown-option) {
-    background-color: var(--much-select-dropdown-option-background-color);
+    background-color: #f1f1f1;
     color: var(--much-select-dropdown-option-color);
     font-family: var(--form-font);
     padding: 5px;
     cursor: pointer;
+    height: 40px;
 }
 
 much-select::part(dropdown-option selected) {
@@ -647,4 +668,5 @@ much-select::part(dropdown-footer) {
     color: var(--much-select-dropdown-footer-color);
     background-color: var(--much-select-dropdown-footer-background-color);
     padding: 5px;
+
 }
