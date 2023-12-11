@@ -1,0 +1,23 @@
+<div id="focus-on-demand">
+  <h3>Single Select - <code>blurOrUnfocusedValueChanged</code> Event</h3>
+  <much-select>
+    <select slot="select-input">
+      <option value="111">Grass Pea</option>
+      <option value="222">Velvet Bean</option>
+      <option value="333">Sword Bean</option>
+      <option value="444">Soybean</option>
+    </select>
+  </much-select>
+  <br>
+  <button>Focus 👀</button>
+
+  <script>
+    window.addEventListener("load", () => {
+      document
+        .querySelector("#focus-on-demand button")
+        .addEventListener("click", () => {
+          document.querySelector("#focus-on-demand much-select").focus();
+        });
+    });
+  </script>
+</div>

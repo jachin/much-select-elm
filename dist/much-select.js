@@ -38,7 +38,9 @@ const buildOptionsFromSelectElement = (selectElement) => {
       value = optionElement.innerText;
     }
     const option = { value };
-    if (optionElement.hasAttribute("id")) {
+    if (optionElement.hasAttribute("data-part")) {
+      option.part = optionElement.getAttribute("data-part").trim();
+    } else if (optionElement.hasAttribute("id")) {
       option.part = optionElement.getAttribute("id").trim();
     } else {
       option.part = dasherize(option.value.trim());
@@ -610,13 +612,7 @@ class MuchSelect extends HTMLElement {
       app.ports.focusInput.subscribe(() => {
         // This port is here because we need to be able to call the focus method
         //  which is something we can not do from inside Elm.
-        window.requestAnimationFrame(() => {
-          const inputFilterElement =
-            this.shadowRoot.getElementById("input-filter");
-          if (inputFilterElement) {
-            this.shadowRoot.getElementById("input-filter").focus();
-          }
-        });
+        this.focus();
       }),
     );
 
@@ -1995,6 +1991,15 @@ class MuchSelect extends HTMLElement {
         // Maybe this can get garbage collected, we should not need it again.
         //  not that we have a filter worker we don't need any more.
         this._filterWorkerOptionsCache = null;
+      }
+    });
+  }
+
+  focus() {
+    window.requestAnimationFrame(() => {
+      const inputFilterElement = this.shadowRoot.getElementById("input-filter");
+      if (inputFilterElement) {
+        this.shadowRoot.getElementById("input-filter").focus();
       }
     });
   }
