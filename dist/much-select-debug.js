@@ -38,9 +38,7 @@ const buildOptionsFromSelectElement = (selectElement) => {
       value = optionElement.innerText;
     }
     const option = { value };
-    if (optionElement.hasAttribute("data-part")) {
-      option.part = optionElement.getAttribute("data-part").trim();
-    } else if (optionElement.hasAttribute("id")) {
+    if (optionElement.hasAttribute("id")) {
       option.part = optionElement.getAttribute("id").trim();
     } else {
       option.part = dasherize(option.value.trim());
