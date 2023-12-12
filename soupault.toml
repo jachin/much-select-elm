@@ -299,6 +299,11 @@ widget = "include"
 file = "examples/events-only-mode.html"
 selector = ".example #events-only-mode"
 
+[widgets.focus-on-dedmand]
+widget = "include"
+file = "examples/focus-on-demand.html"
+selector = ".example #focus-on-demand"
+
 [widgets.hidden-input-json-encoding-slot]
 widget = "include"
 file = "examples/hidden-input-json-encoding-slot.html"
