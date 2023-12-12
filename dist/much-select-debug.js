@@ -217,6 +217,8 @@ class MuchSelect extends HTMLElement {
   constructor() {
     super();
 
+    this._isReady = false;
+
     /**
      * Used in the CSS and elsewhere to determine what the
      *  minimum width should be.
@@ -290,7 +292,7 @@ class MuchSelect extends HTMLElement {
         new CustomEvent("inputKeyUpDebounced", {
           bubbles: true,
           detail: { searchString },
-        })
+        }),
       );
     }, 500);
 
@@ -379,25 +381,26 @@ class MuchSelect extends HTMLElement {
         window.requestAnimationFrame(() => {
           this.dispatchEvent(new CustomEvent("ready", { bubbles: true }));
           this.dispatchEvent(new CustomEvent("muchSelectReady"));
+          this._isReady = true;
         });
-      })
+      }),
     );
 
     // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
     this.appPromise.then((app) =>
-      app.ports.errorMessage.subscribe(this.errorHandler.bind(this))
+      app.ports.errorMessage.subscribe(this.errorHandler.bind(this)),
     );
 
     // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
     this.appPromise.then((app) =>
-      app.ports.errorMessage.subscribe(this.errorHandler.bind(this))
+      app.ports.errorMessage.subscribe(this.errorHandler.bind(this)),
     );
 
     // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
     this.appPromise.then((app) =>
       app.ports.lightDomChange.subscribe((lightDomChange) => {
         const eventsOnly = booleanAttributeValueToBool(
-          this.getAttribute("events-only")
+          this.getAttribute("events-only"),
         );
 
         if (eventsOnly) {
@@ -442,20 +445,20 @@ class MuchSelect extends HTMLElement {
           }
 
           const hiddenValueInput = this.querySelector(
-            "[slot='hidden-value-input']"
+            "[slot='hidden-value-input']",
           );
           if (hiddenValueInput) {
             // noinspection JSUnresolvedVariable
             hiddenValueInput.setAttribute(
               "value",
-              lightDomChange.data.rawValue
+              lightDomChange.data.rawValue,
             );
             // event listeners in the surrounding context might want to be able to detect when the value changes on this input
             hiddenValueInput.dispatchEvent(
-              new Event("change", { bubbles: true })
+              new Event("change", { bubbles: true }),
             );
             hiddenValueInput.dispatchEvent(
-              new Event("input", { bubbles: true })
+              new Event("input", { bubbles: true }),
             );
           }
 
@@ -466,21 +469,21 @@ class MuchSelect extends HTMLElement {
         } else if (lightDomChange.changeType === "add-update-attribute") {
           this.setAttribute(lightDomChange.name, lightDomChange.value);
         }
-      })
+      }),
     );
 
     // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
     this.appPromise.then((app) =>
       app.ports.valueChangedSingleSelect.subscribe(
-        this.valueChangedHandlerSingleSelect.bind(this)
-      )
+        this.valueChangedHandlerSingleSelect.bind(this),
+      ),
     );
 
     // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
     this.appPromise.then((app) =>
       app.ports.valueChangedMultiSelectSelect.subscribe(
-        this.valueChangedHandlerMultiSelectSelect.bind(this)
-      )
+        this.valueChangedHandlerMultiSelectSelect.bind(this),
+      ),
     );
 
     // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
@@ -492,9 +495,9 @@ class MuchSelect extends HTMLElement {
             detail: {
               values,
             },
-          })
+          }),
         );
-      })
+      }),
     );
 
     // noinspection JSUnresolvedVariable
@@ -507,7 +510,7 @@ class MuchSelect extends HTMLElement {
               value: option.value,
               label: option.label,
             },
-          })
+          }),
         );
         // The addItem event is for backwards compatibility.
         this.dispatchEvent(
@@ -517,9 +520,9 @@ class MuchSelect extends HTMLElement {
               value: option.value,
               label: option.label,
             },
-          })
+          }),
         );
-      })
+      }),
     );
 
     this.appPromise.then((app) => {
@@ -531,14 +534,14 @@ class MuchSelect extends HTMLElement {
               optionsReplaced,
               optionsUpdated: !optionsReplaced,
             },
-          })
+          }),
         );
       });
     });
 
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
-      app.ports.inputKeyUp.subscribe(this._handleInputKeyUp.bind(this))
+      app.ports.inputKeyUp.subscribe(this._handleInputKeyUp.bind(this)),
     );
 
     // noinspection JSUnresolvedVariable
@@ -547,22 +550,22 @@ class MuchSelect extends HTMLElement {
         this.dispatchEvent(
           new CustomEvent("valueCleared", {
             bubbles: true,
-          })
+          }),
         );
         // The cleared event is for backwards compatibility.
         this.dispatchEvent(
           new CustomEvent("cleared", {
             bubbles: true,
-          })
+          }),
         );
-      })
+      }),
     );
 
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
       app.ports.customOptionSelected.subscribe(
-        this.customOptionSelected.bind(this)
-      )
+        this.customOptionSelected.bind(this),
+      ),
     );
 
     // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
@@ -574,7 +577,7 @@ class MuchSelect extends HTMLElement {
         if (inputFilterElement) {
           inputFilterElement.blur();
         }
-      })
+      }),
     );
 
     // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
@@ -591,7 +594,7 @@ class MuchSelect extends HTMLElement {
                 detail: {
                   value: await this.selectedValue,
                 },
-              })
+              }),
             );
           })();
         }
@@ -599,10 +602,10 @@ class MuchSelect extends HTMLElement {
           this.dispatchEvent(
             new CustomEvent("muchSelectBlurred", {
               bubbles: true,
-            })
+            }),
           );
         });
-      })
+      }),
     );
 
     // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
@@ -610,14 +613,8 @@ class MuchSelect extends HTMLElement {
       app.ports.focusInput.subscribe(() => {
         // This port is here because we need to be able to call the focus method
         //  which is something we can not do from inside Elm.
-        window.requestAnimationFrame(() => {
-          const inputFilterElement =
-            this.shadowRoot.getElementById("input-filter");
-          if (inputFilterElement) {
-            this.shadowRoot.getElementById("input-filter").focus();
-          }
-        });
-      })
+        this.focus();
+      }),
     );
 
     // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
@@ -629,10 +626,10 @@ class MuchSelect extends HTMLElement {
           this.dispatchEvent(
             new CustomEvent("muchSelectFocused", {
               bubbles: false,
-            })
+            }),
           );
         });
-      })
+      }),
     );
 
     // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
@@ -642,15 +639,15 @@ class MuchSelect extends HTMLElement {
           new CustomEvent("optionDeselected", {
             bubbles: true,
             detail: deselectedOption,
-          })
+          }),
         );
         this.dispatchEvent(
           new CustomEvent("deselectItem", {
             bubbles: true,
             detail: deselectedOption,
-          })
+          }),
         );
-      })
+      }),
     );
 
     // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
@@ -658,7 +655,7 @@ class MuchSelect extends HTMLElement {
       app.ports.scrollDropdownToElement.subscribe(() => {
         const dropdown = this.shadowRoot.getElementById("dropdown");
         const highlightedOption = this.shadowRoot.querySelector(
-          "#dropdown .option.highlighted"
+          "#dropdown .option.highlighted",
         );
 
         // If we found the highlight option AND there are vertical scroll bars
@@ -677,7 +674,7 @@ class MuchSelect extends HTMLElement {
             }
           }
         }
-      })
+      }),
     );
 
     this.appPromise.then((app) => {
@@ -717,7 +714,7 @@ class MuchSelect extends HTMLElement {
               stringToValidate,
               selectedValueIndex,
             },
-          })
+          }),
         );
       });
     });
@@ -779,7 +776,7 @@ class MuchSelect extends HTMLElement {
     if (selectElement) {
       this._selectSlotObserver.observe(
         this.querySelector("select[slot='select-input']"),
-        selectSlotConfig
+        selectSlotConfig,
       );
     }
   }
@@ -815,17 +812,17 @@ class MuchSelect extends HTMLElement {
             });
           }
         });
-      }
+      },
     );
 
     const customValidationResultElement = this.querySelector(
-      "[slot='custom-validation-result']"
+      "[slot='custom-validation-result']",
     );
 
     if (customValidationResultElement) {
       this._customValidationResultSlotObserver.observe(
         customValidationResultElement,
-        customValidationResultSlotConfig
+        customValidationResultSlotConfig,
       );
     }
   }
@@ -854,14 +851,14 @@ class MuchSelect extends HTMLElement {
             this._updateTransformationValidationFromTheDom();
           }
         });
-      }
+      },
     );
 
     const element = this.querySelector("[slot='transformation-validation']");
     if (element) {
       this._transformationValidationSlotObserver.observe(
         this.querySelector("[slot='transformation-validation']"),
-        slotConfig
+        slotConfig,
       );
 
       this._updateTransformationValidationFromTheDom();
@@ -897,7 +894,7 @@ class MuchSelect extends HTMLElement {
         this.querySelectorAll("much-select-option");
       if (muchSelectOptionElements) {
         const optionsJson = buildOptionsFromMuchSelectOptionElements(
-          muchSelectOptionElements
+          muchSelectOptionElements,
         );
         this._callOptionChanged(optionsJson);
       }
@@ -962,15 +959,15 @@ class MuchSelect extends HTMLElement {
     const flags = {};
 
     flags.isEventsOnly = booleanAttributeValueToBool(
-      this.getAttribute("events-only")
+      this.getAttribute("events-only"),
     );
 
     flags.allowMultiSelect = booleanAttributeValueToBool(
-      this.getAttribute("multi-select")
+      this.getAttribute("multi-select"),
     );
 
     flags.enableMultiSelectSingleItemRemoval = booleanAttributeValueToBool(
-      this.getAttribute("multi-select-single-item-removal")
+      this.getAttribute("multi-select-single-item-removal"),
     );
 
     if (this.hasAttribute("placeholder")) {
@@ -986,12 +983,12 @@ class MuchSelect extends HTMLElement {
     }
 
     flags.searchStringMinimumLength = this.getAttribute(
-      "search-string-minimum-length"
+      "search-string-minimum-length",
     );
 
     if (this.hasAttribute("show-dropdown-footer")) {
       flags.showDropdownFooter = booleanAttributeValueToBool(
-        this.getAttribute("show-dropdown-footer")
+        this.getAttribute("show-dropdown-footer"),
       );
     } else {
       flags.showDropdownFooter = false;
@@ -1013,7 +1010,7 @@ class MuchSelect extends HTMLElement {
     }
 
     const transformationAndValidationSlot = this.querySelector(
-      "[slot='transformation-validation']"
+      "[slot='transformation-validation']",
     );
 
     if (transformationAndValidationSlot) {
@@ -1028,7 +1025,7 @@ class MuchSelect extends HTMLElement {
 
     // TODO let's get the verbiage here aligned.
     flags.selectedItemStaysInPlace = !booleanAttributeValueToBool(
-      this.getAttribute("selected-option-goes-to-top")
+      this.getAttribute("selected-option-goes-to-top"),
     );
     flags.maxDropdownItems = this.getAttribute("max-dropdown-items");
 
@@ -1054,14 +1051,14 @@ class MuchSelect extends HTMLElement {
 
     if (selectElement && muchSelectOptionElements.length > 0) {
       throw new Error(
-        "Much Select does not support mixing the select-input slot and much-select-option elements. To define the options you need to pick one or the other."
+        "Much Select does not support mixing the select-input slot and much-select-option elements. To define the options you need to pick one or the other.",
       );
     }
 
     if (this.hasAttribute("selected-value")) {
       if (selectElement && selectElement.querySelector("option[selected]")) {
         throw new Error(
-          "MuchSelect does not support using the selected-value attribute and selected options in the selected-value slot."
+          "MuchSelect does not support using the selected-value attribute and selected options in the selected-value slot.",
         );
       }
       flags.selectedValue = this.getAttribute("selected-value");
@@ -1073,11 +1070,11 @@ class MuchSelect extends HTMLElement {
 
     if (selectElement) {
       flags.optionsJson = JSON.stringify(
-        buildOptionsFromSelectElement(selectElement)
+        buildOptionsFromSelectElement(selectElement),
       );
     } else if (muchSelectOptionElements) {
       flags.optionsJson = JSON.stringify(
-        buildOptionsFromMuchSelectOptionElements(muchSelectOptionElements)
+        buildOptionsFromMuchSelectOptionElements(muchSelectOptionElements),
       );
     } else {
       flags.optionsJson = JSON.stringify([]);
@@ -1109,14 +1106,14 @@ class MuchSelect extends HTMLElement {
         new CustomEvent("valueChanged", {
           bubbles: true,
           detail: { value: null, values: [], isValid },
-        })
+        }),
       );
       // The change event is for backwards compatibility.
       this.dispatchEvent(
         new CustomEvent("change", {
           bubbles: true,
           detail: { value: null, values: [], isValid },
-        })
+        }),
       );
     } else {
       // If we are in single select mode put the list of values in the event.
@@ -1124,14 +1121,14 @@ class MuchSelect extends HTMLElement {
         new CustomEvent("valueChanged", {
           bubbles: true,
           detail: { value: valuesObjects[0], values: valuesObjects, isValid },
-        })
+        }),
       );
       // The change event is for backwards compatibility.
       this.dispatchEvent(
         new CustomEvent("changed", {
           bubbles: true,
           detail: { value: valuesObjects, isValid },
-        })
+        }),
       );
     }
   }
@@ -1157,14 +1154,14 @@ class MuchSelect extends HTMLElement {
       new CustomEvent("valueChanged", {
         bubbles: true,
         detail: { values: valuesObjects, isValid },
-      })
+      }),
     );
     // The change event is for backwards compatibility.
     this.dispatchEvent(
       new CustomEvent("change", {
         bubbles: true,
         detail: { values: valuesObjects, isValid },
-      })
+      }),
     );
   }
 
@@ -1181,7 +1178,7 @@ class MuchSelect extends HTMLElement {
           detail: {
             values,
           },
-        })
+        }),
       );
     } else if (values.length === 1) {
       // If we are in single select mode put the list of values in the event.
@@ -1191,12 +1188,12 @@ class MuchSelect extends HTMLElement {
           detail: {
             value: values[0],
           },
-        })
+        }),
       );
     } else {
       // If we are in single select mode and there is not one value then something is wrong.
       throw new TypeError(
-        `In single select mode we are expecting a single custom option, instead we got ${values.length}`
+        `In single select mode we are expecting a single custom option, instead we got ${values.length}`,
       );
     }
   }
@@ -1206,7 +1203,7 @@ class MuchSelect extends HTMLElement {
       new CustomEvent("inputKeyUp", {
         bubbles: true,
         detail: { searchString },
-      })
+      }),
     );
 
     this._inputKeypressDebounceHandler(searchString);
@@ -1227,7 +1224,7 @@ class MuchSelect extends HTMLElement {
           this._parentDiv = this.attachShadow({ mode: "open" });
 
           const html = getMuchSelectTemplate(this.styleTag).content.cloneNode(
-            true
+            true,
           );
           this._parentDiv.append(html);
 
@@ -1321,7 +1318,7 @@ class MuchSelect extends HTMLElement {
 
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
-      app.ports.disableChangedReceiver.send(disabled)
+      app.ports.disableChangedReceiver.send(disabled),
     );
   }
 
@@ -1362,7 +1359,7 @@ class MuchSelect extends HTMLElement {
     }
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
-      app.ports.maxDropdownItemsChangedReceiver.send(maxDropdownItemsValue)
+      app.ports.maxDropdownItemsChangedReceiver.send(maxDropdownItemsValue),
     );
   }
 
@@ -1383,8 +1380,8 @@ class MuchSelect extends HTMLElement {
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
       app.ports.showDropdownFooterChangedReceiver.send(
-        searchStringMinimumLength
-      )
+        searchStringMinimumLength,
+      ),
     );
   }
 
@@ -1428,8 +1425,8 @@ class MuchSelect extends HTMLElement {
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
       app.ports.searchStringMinimumLengthChangedReceiver.send(
-        searchStringMinimumLength
-      )
+        searchStringMinimumLength,
+      ),
     );
   }
 
@@ -1455,7 +1452,7 @@ class MuchSelect extends HTMLElement {
 
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
-      app.ports.multiSelectChangedReceiver.send(cleanValue)
+      app.ports.multiSelectChangedReceiver.send(cleanValue),
     );
   }
 
@@ -1472,8 +1469,8 @@ class MuchSelect extends HTMLElement {
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
       app.ports.multiSelectSingleItemRemovalChangedReceiver.send(
-        isInMultiSelectModeWithSingleItemRemoval
-      )
+        isInMultiSelectModeWithSingleItemRemoval,
+      ),
     );
   }
 
@@ -1492,7 +1489,7 @@ class MuchSelect extends HTMLElement {
     }
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
-      app.ports.loadingChangedReceiver.send(isLoading)
+      app.ports.loadingChangedReceiver.send(isLoading),
     );
   }
 
@@ -1505,7 +1502,7 @@ class MuchSelect extends HTMLElement {
    */
   get allowCustomOptions() {
     return this.getConfigValuePromise("allow-custom-options").then(
-      (result) => !!result
+      (result) => !!result,
     );
   }
 
@@ -1559,7 +1556,7 @@ class MuchSelect extends HTMLElement {
       });
     } else {
       throw new TypeError(
-        `Unexpected type for the customOptionHint, it should be a string but instead it is a: ${typeof value}`
+        `Unexpected type for the customOptionHint, it should be a string but instead it is a: ${typeof value}`,
       );
     }
   }
@@ -1580,8 +1577,8 @@ class MuchSelect extends HTMLElement {
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
       app.ports.selectedItemStaysInPlaceChangedReceiver.send(
-        selectedItemStaysInPlace
-      )
+        selectedItemStaysInPlace,
+      ),
     );
   }
 
@@ -1603,8 +1600,8 @@ class MuchSelect extends HTMLElement {
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
       app.ports.selectedItemStaysInPlaceChangedReceiver.send(
-        selectedItemStaysInPlace
-      )
+        selectedItemStaysInPlace,
+      ),
     );
   }
 
@@ -1628,7 +1625,7 @@ class MuchSelect extends HTMLElement {
     }
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
-      app.ports.selectedValueEncodingChangeReceiver.send(selectedValueEncoding)
+      app.ports.selectedValueEncodingChangeReceiver.send(selectedValueEncoding),
     );
   }
 
@@ -1644,7 +1641,7 @@ class MuchSelect extends HTMLElement {
   set optionSorting(value) {
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
-      app.ports.optionSortingChangedReceiver.send(value)
+      app.ports.optionSortingChangedReceiver.send(value),
     );
   }
 
@@ -1702,6 +1699,7 @@ class MuchSelect extends HTMLElement {
         margin-bottom: auto;
         position: relative;
       }
+
 
       #value-casing {
         display: flex;
@@ -1845,7 +1843,7 @@ class MuchSelect extends HTMLElement {
   addOptions(options) {
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
-      app.ports.addOptionsReceiver.send(cleanUpOptions(options))
+      app.ports.addOptionsReceiver.send(cleanUpOptions(options)),
     );
     this.updateDimensions();
   }
@@ -1853,14 +1851,14 @@ class MuchSelect extends HTMLElement {
   selectOption(option) {
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
-      app.ports.selectOptionReceiver.send(cleanUpOption(option))
+      app.ports.selectOptionReceiver.send(cleanUpOption(option)),
     );
   }
 
   deselectOption(option) {
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
-      app.ports.deselectOptionReceiver.send(cleanUpOption(option))
+      app.ports.deselectOptionReceiver.send(cleanUpOption(option)),
     );
   }
 
@@ -1973,14 +1971,14 @@ class MuchSelect extends HTMLElement {
           this.appPromise.then((app) => {
             // noinspection JSUnresolvedVariable
             app.ports.updateSearchResultDataWithWebWorkerReceiver.send(
-              searchResultData
+              searchResultData,
             );
           });
         } else if (messageName === "errorMessage") {
           this.errorHandler(errorMessage);
         } else {
           this.errorHandler(
-            `Unknown message from filter worker: ${messageName}`
+            `Unknown message from filter worker: ${messageName}`,
           );
         }
       };
@@ -1996,6 +1994,29 @@ class MuchSelect extends HTMLElement {
         this._filterWorkerOptionsCache = null;
       }
     });
+  }
+
+  focus() {
+    window.requestAnimationFrame(() => {
+      const inputFilterElement = this.shadowRoot.getElementById("input-filter");
+      if (inputFilterElement) {
+        this.shadowRoot.getElementById("input-filter").focus();
+      }
+    });
+  }
+
+  async isReady(count = 0) {
+    // return if this._isReady is true, if not wait a bit and then check 3 more times.
+    if (this._isReady) {
+      return true;
+    }
+    if (count < 3) {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 100);
+      });
+      return this.isReady(count + 1);
+    }
+    return false;
   }
 }
 
