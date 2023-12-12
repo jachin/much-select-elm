@@ -219,6 +219,8 @@ class MuchSelect extends HTMLElement {
   constructor() {
     super();
 
+    this._isReady = false;
+
     /**
      * Used in the CSS and elsewhere to determine what the
      *  minimum width should be.
@@ -381,6 +383,7 @@ class MuchSelect extends HTMLElement {
         window.requestAnimationFrame(() => {
           this.dispatchEvent(new CustomEvent("ready", { bubbles: true }));
           this.dispatchEvent(new CustomEvent("muchSelectReady"));
+          this._isReady = true;
         });
       }),
     );
@@ -2002,6 +2005,20 @@ class MuchSelect extends HTMLElement {
         this.shadowRoot.getElementById("input-filter").focus();
       }
     });
+  }
+
+  async isReady(count = 0) {
+    // return if this._isReady is true, if not wait a bit and then check 3 more times.
+    if (this._isReady) {
+      return true;
+    }
+    if (count < 3) {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 100);
+      });
+      return this.isReady(count + 1);
+    }
+    return false;
   }
 }
 
