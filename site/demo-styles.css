@@ -119,6 +119,8 @@ body {
         --much-select-clear-button-border-color: var(--matt-purple);
 
         /* Much Select Dropdown */
+        --much-select-dropdown-option-color: var(--text-color);
+        --much-select-dropdown-option-color-inverse: var(--lynx-white);
         --much-select-dropdown-option-background-color: var(--lynx-white);
         --much-select-dropdown-option-highlighted-background-color: var(--matt-purple);
         --much-select-dropdown-option-active-background-color: var(--protoss-pylon);
@@ -188,12 +190,12 @@ body {
         --much-select-clear-button-border-color: var(--electromagnetic);
 
         /* Much Select Dropdown */
-        --much-select-dropdown-option-color: var(--good-night);
-        --much-select-dropdown-option-color-inverse: var(--megaman);
-        --much-select-dropdown-option-background-color: var(--hint-of-elusive-blue);
-        --much-select-dropdown-option-highlighted-background-color: var(--free-speech-blue);
-        --much-select-dropdown-option-active-background-color: var(--minty-green);
-        --much-select-dropdown-option-selected-background-color: var(--black-pearl);
+        --much-select-dropdown-option-color: var(--text-color);
+        --much-select-dropdown-option-color-inverse: var(--hint-of-pensive);
+        --much-select-dropdown-option-background-color: var(--mazarine-blue);
+        --much-select-dropdown-option-highlighted-background-color: var(--naval);
+        --much-select-dropdown-option-active-background-color: var(--protoss-pylon);
+        --much-select-dropdown-option-selected-background-color: var(--periwinkle);
         --much-select-dropdown-optgroup-background-color: var(--blue-nights);
         --much-select-dropdown-footer-color: var(--hint-of-pensive);
         --much-select-dropdown-footer-background-color: var(--chain-gang-grey);
