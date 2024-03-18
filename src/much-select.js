@@ -1787,10 +1787,6 @@ class MuchSelect extends HTMLElement {
         cursor: pointer;
       }
 
-      .option.selected {
-        font-weight: bold;
-      }
-
       .option.highlighted {
         background-color: var(--black);
         color: var(--white);
@@ -1847,9 +1843,6 @@ class MuchSelect extends HTMLElement {
       #search-keyboard-events #search-keyboard-events-log {
         width:100px;
       }
-
-
-
     </style>`;
   }
 

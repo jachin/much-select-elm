@@ -20079,30 +20079,38 @@ var $elm$html$Html$Events$onMouseLeave = function (msg) {
 		'mouseleave',
 		$elm$json$Json$Decode$succeed(msg));
 };
-var $author$project$OptionPart$toActiveDropdownAttribute = function (optionPart) {
-	var string = optionPart.a;
-	if (string === '') {
-		return A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option active highlighted');
-	} else {
-		return A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option active highlighted ' + string);
-	}
-};
-var $author$project$OptionPart$toDisabledDropdownAttribute = function (optionPart) {
-	var string = optionPart.a;
-	if (string === '') {
-		return A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option disabled');
-	} else {
-		return A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option disabled ' + string);
-	}
-};
-var $author$project$OptionPart$toDropdownAttribute = function (optionPart) {
-	var string = optionPart.a;
-	if (string === '') {
-		return A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option');
-	} else {
-		return A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option ' + string);
-	}
-};
+var $author$project$OptionPart$toDropdownAttribute = F2(
+	function (optionDisplay, optionPart) {
+		var valuePart = function () {
+			var string = optionPart.a;
+			if (string === '') {
+				return '';
+			} else {
+				return string;
+			}
+		}();
+		var partAttribute = $elm$html$Html$Attributes$attribute('part');
+		switch (optionDisplay.$) {
+			case 'OptionShown':
+				return partAttribute('dropdown-option ' + valuePart);
+			case 'OptionHidden':
+				return partAttribute('dropdown-option hidden ' + valuePart);
+			case 'OptionSelected':
+				return partAttribute('dropdown-option selected selected ' + valuePart);
+			case 'OptionSelectedAndInvalid':
+				return partAttribute('dropdown-option selected invalid ' + valuePart);
+			case 'OptionSelectedPendingValidation':
+				return partAttribute('dropdown-option ' + valuePart);
+			case 'OptionSelectedHighlighted':
+				return partAttribute('dropdown-option selected highlighted ' + valuePart);
+			case 'OptionHighlighted':
+				return partAttribute('dropdown-option highlighted ' + valuePart);
+			case 'OptionActivated':
+				return partAttribute('dropdown-option active highlighted ' + valuePart);
+			default:
+				return partAttribute('dropdown-option disabled ' + valuePart);
+		}
+	});
 var $author$project$FancyOption$valueDataAttribute = function (option) {
 	return A2(
 		$elm$html$Html$Attributes$attribute,
@@ -20128,7 +20136,9 @@ var $author$project$FancyOption$toDropdownOptionSelectedHighlightedHtml = F2(
 					eventHandlers.mouseUpMsgConstructor(
 						$author$project$FancyOption$getOptionValue(option))),
 					A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option selected highlighted'),
-					$author$project$OptionPart$toDropdownAttribute(
+					A2(
+					$author$project$OptionPart$toDropdownAttribute,
+					$author$project$FancyOption$getOptionDisplay(option),
 					$author$project$FancyOption$getOptionPart(option)),
 					$elm$html$Html$Attributes$class('option selected highlighted'),
 					$author$project$FancyOption$valueDataAttribute(option)
@@ -20158,7 +20168,9 @@ var $author$project$FancyOption$toDropdownOptionSelectedHtml = F2(
 					eventHandlers.mouseUpMsgConstructor(
 						$author$project$FancyOption$getOptionValue(option))),
 					A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option selected'),
-					$author$project$OptionPart$toDropdownAttribute(
+					A2(
+					$author$project$OptionPart$toDropdownAttribute,
+					$author$project$FancyOption$getOptionDisplay(option),
 					$author$project$FancyOption$getOptionPart(option)),
 					$elm$html$Html$Attributes$class('option selected'),
 					$author$project$FancyOption$valueDataAttribute(option)
@@ -20169,14 +20181,6 @@ var $author$project$FancyOption$toDropdownOptionSelectedHtml = F2(
 					$author$project$FancyOption$descriptionHtml(option)
 				]));
 	});
-var $author$project$OptionPart$toHighlightedDropdownAttribute = function (optionPart) {
-	var string = optionPart.a;
-	if (string === '') {
-		return A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option highlighted');
-	} else {
-		return A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option highlighted ' + string);
-	}
-};
 var $author$project$FancyOption$toDropdownHtml = F3(
 	function (eventHandlers, selectionMode, option) {
 		var _v0 = $author$project$FancyOption$getOptionDisplay(option);
@@ -20199,7 +20203,9 @@ var $author$project$FancyOption$toDropdownHtml = F3(
 							eventHandlers.mouseUpMsgConstructor(
 								$author$project$FancyOption$getOptionValue(option))),
 							$author$project$Events$onClickPreventDefault(eventHandlers.noOpMsgConstructor),
-							$author$project$OptionPart$toDropdownAttribute(
+							A2(
+							$author$project$OptionPart$toDropdownAttribute,
+							$author$project$FancyOption$getOptionDisplay(option),
 							$author$project$FancyOption$getOptionPart(option)),
 							$elm$html$Html$Attributes$class('option'),
 							$author$project$FancyOption$valueDataAttribute(option)
@@ -20224,7 +20230,9 @@ var $author$project$FancyOption$toDropdownHtml = F3(
 						[
 							A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option disabled pending-validation'),
 							$elm$html$Html$Attributes$class('option disabled pending-validation'),
-							$author$project$OptionPart$toDropdownAttribute(
+							A2(
+							$author$project$OptionPart$toDropdownAttribute,
+							$author$project$FancyOption$getOptionDisplay(option),
 							$author$project$FancyOption$getOptionPart(option)),
 							$author$project$FancyOption$valueDataAttribute(option)
 						]),
@@ -20259,7 +20267,9 @@ var $author$project$FancyOption$toDropdownHtml = F3(
 							eventHandlers.mouseUpMsgConstructor(
 								$author$project$FancyOption$getOptionValue(option))),
 							$elm$html$Html$Attributes$class('option highlighted'),
-							$author$project$OptionPart$toHighlightedDropdownAttribute(
+							A2(
+							$author$project$OptionPart$toDropdownAttribute,
+							$author$project$FancyOption$getOptionDisplay(option),
 							$author$project$FancyOption$getOptionPart(option)),
 							$author$project$FancyOption$valueDataAttribute(option)
 						]),
@@ -20287,7 +20297,9 @@ var $author$project$FancyOption$toDropdownHtml = F3(
 								$author$project$FancyOption$getOptionValue(option))),
 							$author$project$Events$onClickPreventDefaultAndStopPropagation(eventHandlers.noOpMsgConstructor),
 							$elm$html$Html$Attributes$class('option active highlighted'),
-							$author$project$OptionPart$toActiveDropdownAttribute(
+							A2(
+							$author$project$OptionPart$toDropdownAttribute,
+							$author$project$FancyOption$getOptionDisplay(option),
 							$author$project$FancyOption$getOptionPart(option)),
 							$author$project$FancyOption$valueDataAttribute(option)
 						]),
@@ -20302,7 +20314,9 @@ var $author$project$FancyOption$toDropdownHtml = F3(
 					_List_fromArray(
 						[
 							$elm$html$Html$Attributes$class('option disabled'),
-							$author$project$OptionPart$toDisabledDropdownAttribute(
+							A2(
+							$author$project$OptionPart$toDropdownAttribute,
+							$author$project$FancyOption$getOptionDisplay(option),
 							$author$project$FancyOption$getOptionPart(option)),
 							$author$project$FancyOption$valueDataAttribute(option)
 						]),
@@ -21146,22 +21160,6 @@ var $author$project$OptionLabel$getLabelString = function (optionLabel) {
 	var string = optionLabel.a;
 	return string;
 };
-var $author$project$OptionPart$toSelectedHighlightedValueAttribute = function (optionPart) {
-	var string = optionPart.a;
-	if (string === '') {
-		return A2($elm$html$Html$Attributes$attribute, 'part', 'selected-value highlighted');
-	} else {
-		return A2($elm$html$Html$Attributes$attribute, 'part', 'selected-value highlighted ' + string);
-	}
-};
-var $author$project$OptionPart$toSelectedValueAttribute = function (optionPart) {
-	var string = optionPart.a;
-	if (string === '') {
-		return A2($elm$html$Html$Attributes$attribute, 'part', 'selected-value');
-	} else {
-		return A2($elm$html$Html$Attributes$attribute, 'part', 'selected-value ' + string);
-	}
-};
 var $author$project$FancyOption$valueLabelHtml = F3(
 	function (toggleSelectedMsg, labelText, optionValue) {
 		return A2(
@@ -21213,7 +21211,9 @@ var $author$project$FancyOption$toMultiSelectValueHtml = F4(
 							_List_fromArray(
 								[
 									$elm$html$Html$Attributes$class('value'),
-									$author$project$OptionPart$toSelectedValueAttribute(
+									A2(
+									$author$project$OptionPart$toDropdownAttribute,
+									$author$project$FancyOption$getOptionDisplay(fancyOption),
 									$author$project$FancyOption$getOptionPart(fancyOption))
 								]),
 							_List_fromArray(
@@ -21240,7 +21240,9 @@ var $author$project$FancyOption$toMultiSelectValueHtml = F4(
 											_Utils_Tuple2('value', true),
 											_Utils_Tuple2('highlighted-value', true)
 										])),
-									$author$project$OptionPart$toSelectedHighlightedValueAttribute(
+									A2(
+									$author$project$OptionPart$toDropdownAttribute,
+									$author$project$FancyOption$getOptionDisplay(fancyOption),
 									$author$project$FancyOption$getOptionPart(fancyOption))
 								]),
 							_List_fromArray(
@@ -21274,7 +21276,9 @@ var $author$project$FancyOption$toMultiSelectValueHtml = F4(
 							_List_fromArray(
 								[
 									$elm$html$Html$Attributes$class('value'),
-									$author$project$OptionPart$toSelectedValueAttribute(
+									A2(
+									$author$project$OptionPart$toDropdownAttribute,
+									$author$project$FancyOption$getOptionDisplay(fancyOption),
 									$author$project$FancyOption$getOptionPart(fancyOption))
 								]),
 							_List_fromArray(
@@ -21301,7 +21305,9 @@ var $author$project$FancyOption$toMultiSelectValueHtml = F4(
 											_Utils_Tuple2('value', true),
 											_Utils_Tuple2('highlighted-value', true)
 										])),
-									$author$project$OptionPart$toSelectedHighlightedValueAttribute(
+									A2(
+									$author$project$OptionPart$toDropdownAttribute,
+									$author$project$FancyOption$getOptionDisplay(fancyOption),
 									$author$project$FancyOption$getOptionPart(fancyOption))
 								]),
 							_List_fromArray(
@@ -21334,7 +21340,9 @@ var $author$project$FancyOption$toMultiSelectValueHtml = F4(
 							_List_fromArray(
 								[
 									$elm$html$Html$Attributes$class('value'),
-									$author$project$OptionPart$toSelectedValueAttribute(
+									A2(
+									$author$project$OptionPart$toDropdownAttribute,
+									$author$project$FancyOption$getOptionDisplay(fancyOption),
 									$author$project$FancyOption$getOptionPart(fancyOption))
 								]),
 							_List_fromArray(
@@ -22163,20 +22171,44 @@ var $author$project$MuchSelect$singleSelectCustomHtmlInputField = F5(
 			_List_Nil));
 	});
 var $author$project$FancyOption$toSingleSelectValueHtml = function (option) {
-	return A2(
-		$elm$html$Html$span,
-		_List_fromArray(
-			[
-				$elm$html$Html$Attributes$id('selected-value'),
-				$author$project$OptionPart$toSelectedValueAttribute(
-				$author$project$FancyOption$getOptionPart(option))
-			]),
-		_List_fromArray(
-			[
-				$elm$html$Html$text(
-				$author$project$OptionLabel$optionLabelToString(
-					$author$project$FancyOption$getOptionLabel(option)))
-			]));
+	switch (option.$) {
+		case 'FancyOption':
+			return A2(
+				$elm$html$Html$span,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$id('selected-value'),
+						A2(
+						$author$project$OptionPart$toDropdownAttribute,
+						$author$project$FancyOption$getOptionDisplay(option),
+						$author$project$FancyOption$getOptionPart(option))
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text(
+						$author$project$OptionLabel$optionLabelToString(
+							$author$project$FancyOption$getOptionLabel(option)))
+					]));
+		case 'CustomFancyOption':
+			return A2(
+				$elm$html$Html$span,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$id('selected-value'),
+						A2(
+						$author$project$OptionPart$toDropdownAttribute,
+						$author$project$FancyOption$getOptionDisplay(option),
+						$author$project$FancyOption$getOptionPart(option))
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text(
+						$author$project$OptionLabel$optionLabelToString(
+							$author$project$FancyOption$getOptionLabel(option)))
+					]));
+		default:
+			return $elm_community$html_extra$Html$Extra$nothing;
+	}
 };
 var $author$project$Option$singleSelectViewCustomHtmlValueHtml = function (option) {
 	switch (option.$) {
@@ -22192,17 +22224,7 @@ var $author$project$Option$singleSelectViewCustomHtmlValueHtml = function (optio
 var $author$project$MuchSelect$singleSelectViewCustomHtmlValue = function (selectedOption) {
 	return $author$project$Option$singleSelectViewCustomHtmlValueHtml(selectedOption);
 };
-var $author$project$FancyOption$toSingleSelectValueNoValueSelected = A2(
-	$elm$html$Html$span,
-	_List_fromArray(
-		[
-			$elm$html$Html$Attributes$id('selected-value'),
-			A2($elm$html$Html$Attributes$attribute, 'part', 'selected-value')
-		]),
-	_List_fromArray(
-		[
-			$elm$html$Html$text('')
-		]));
+var $author$project$FancyOption$toSingleSelectValueNoValueSelected = $elm_community$html_extra$Html$Extra$nothing;
 var $author$project$MuchSelect$singleSelectViewCustomHtml = F4(
 	function (selectionConfig, options, searchString, rightSlot) {
 		var hasPendingValidation = $author$project$OptionList$hasAnyPendingValidation(options);

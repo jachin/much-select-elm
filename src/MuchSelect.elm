@@ -2838,9 +2838,11 @@ type alias DropdownItemEventListeners msg =
 customHtmlDropdown : SelectionConfig -> OptionList -> SearchString -> ValueCasing -> Html Msg
 customHtmlDropdown selectionMode options searchString (ValueCasing valueCasingWidth valueCasingHeight) =
     let
+        optionsForTheDropdown : DropdownOptions
         optionsForTheDropdown =
             figureOutWhichOptionsToShowInTheDropdown selectionMode options
 
+        optionsHtml : List (Html Msg)
         optionsHtml =
             -- TODO We should probably do something different if we are in a loading state
             if DropdownOptions.isEmpty optionsForTheDropdown then
@@ -2861,6 +2863,7 @@ customHtmlDropdown selectionMode options searchString (ValueCasing valueCasingWi
                         }
                         selectionMode
 
+        dropdownFooterHtml : Html msg
         dropdownFooterHtml =
             if showDropdownFooter selectionMode && DropdownOptions.length optionsForTheDropdown < OptionList.length options then
                 div

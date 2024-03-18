@@ -2,9 +2,6 @@
 Boring colors https://flatuicolors.com/palette/gb
 Fun colors https://flatuicolors.com/palette/se
 */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;300;400;600&display=swap');
-/* @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@500&display=swap'); */
-
 
 body {
     /*
@@ -22,10 +19,10 @@ body {
     --rise-n-shine: #fbc531;
     --download-progress: #4cd137;
     --sea-brook: #487eb0;
-    --vanadyl-blue: #EEEDED;
-    --matt-purple: #A7D397;
+    --vanadyl-blue: #0097e6;
+    --matt-purple: #8c7ae6;
     --nanohanacha-gold: #e1b12c;
-    --skirret-green: #A7D397;
+    --skirret-green: #44bd32;
     --naval: #40739e;
     --nasturcian-flower: #e84118;
     --lynx-white: #f5f6fa;
@@ -33,15 +30,10 @@ body {
     --mazarine-blue: #273c75;
     --blue-nights: #353b48;
     --harley-davidson-orange: #c23616;
-    --hint-of-pensive: #D0D4CA;
+    --hint-of-pensive: #dcdde1;
     --chain-gang-grey: #718093;
     --pico-void: #192a56;
     --electromagnetic: #2f3640;
-    --border-right:#D0D4CA;
-    --white:#f1f1f1;
-    --red:#FF0000;
-    --border-left:#718093;
-    --black:#000000;
 
     /* Fun colors */
     --highligher-pink: #ef5777;
@@ -65,6 +57,8 @@ body {
     --london-square: #808e9b;
     --black-pearl: #1e272e;
     --much-select-height: 36px;
+
+    --comic-sans: 'Comic Sans MS', cursive, sans-serif;
 }
 
 @media (prefers-color-scheme: light) {
@@ -80,19 +74,26 @@ body {
 }
 
 #theme-switch-boring:checked ~ #page-wrapper {
-    --header-font: 'Poppins', sans-serif;
-    --body-font: 'Poppins', sans-serif;
-    --form-font: 'Poppins', sans-serif;
+    --header-font: system-ui;
+    --body-font: system-ui;
+    --form-font: system-ui;
     --value-font-size: 20px;
 }
 
 
 #theme-switch-fun:checked ~ #page-wrapper {
-    --header-font: "Comic Sans MS";
-    --body-font: 'DM Sans', sans-serif;
-    --form-font: 'DM Sans', sans-serif;
+    --header-font: var(--comic-sans);
+    --body-font: system-ui;
+    --form-font: system-ui;
     --value-font-size: 25px;
 }
+
+/*--border-right:#D0D4CA;*/
+/*--white:#f1f1f1;*/
+/*--red:#FF0000;*/
+/*--border-left:#718093;*/
+/*--black:#000000;*/
+
 
 @media (prefers-color-scheme: light) {
     #theme-switch-boring:checked ~ #page-wrapper {
@@ -118,7 +119,7 @@ body {
         --much-select-clear-button-border-color: var(--matt-purple);
 
         /* Much Select Dropdown */
-        --much-select-dropdown-option-background-color: var(--hint-of-pensive);
+        --much-select-dropdown-option-background-color: var(--lynx-white);
         --much-select-dropdown-option-highlighted-background-color: var(--matt-purple);
         --much-select-dropdown-option-active-background-color: var(--protoss-pylon);
         --much-select-dropdown-option-selected-background-color: var(--chain-gang-grey);
@@ -155,7 +156,7 @@ body {
         /* Much Select Dropdown */
         --much-select-dropdown-option-color: var(--black-pearl);
         --much-select-dropdown-option-color-inverse: var(--good-night);
-        --much-select-dropdown-option-background-color: var(--hint-of-elusive-blue);
+        --much-select-dropdown-option-background-color: var(--good-night);
         --much-select-dropdown-option-highlighted-background-color: var(--spirio-disco-ball);
         --much-select-dropdown-option-active-background-color: var(--minty-green);
         --much-select-dropdown-option-selected-background-color: var(--fresh-turquoise);
@@ -325,16 +326,19 @@ h3 {
     background-color: var(--example-background-color);
     flex: 0 1 400px;
 }
-.container .example a{
+
+.container .example a {
     text-decoration: none;
 }
-.container .example a:hover{
+
+.container .example a:hover {
     text-decoration: underline;
 }
+
 nav {
     margin: 0.25em;
     border-radius: 12px;
-    font-family: var(--header-font);
+    font-family: var(--body-font);
 }
 
 nav a:any-link {
@@ -347,10 +351,10 @@ nav.site-nav {
     overflow: auto;
     white-space: nowrap;
 }
-nav.site-nav ol li{
+
+nav.site-nav ol li {
     display: inline-block;
 }
-
 
 nav.offsite-nav {
     padding: 0.25em;
@@ -367,7 +371,7 @@ nav.offsite-nav ol {
     place-content: end;
 }
 nav.offsite-nav ol li a,
-nav.site-nav ol li a{
+nav.site-nav ol li a {
     text-decoration: none;
 }
 
@@ -385,17 +389,13 @@ nav ol > li > a:hover {
     background-color: var(--nav-link-text-hover-background-color);
 }
 
-
-
-
 much-select:not(:defined) {
     visibility: hidden;
 }
 
 much-select {
     display: inline-block;
-    margin: 10px 0;
-    max-width: 300px;
+    margin: 0.25em 0;
 }
 
 button {
@@ -515,8 +515,8 @@ much-select::part(input-filter) {
     margin: 0;
 
     /* Keep input filter's text from running over the dropdown indicator. */
-    padding: 0 0.8em 0 10px;
-    border-right: 2px dotted var(--border-right);
+    padding: 0 0.8em 0 0px;
+    border-right: 2px dotted var(--much-select-border-color);
 }
 
 much-select::part(input-filter):hover, much-select::part(input-filter):focus {
@@ -568,10 +568,10 @@ much-select::part(selected-value) {
     text-align: center;
     display: flex;
     justify-content: center;
-    padding: 3px 10px;
-    margin-right: 3px;
-    margin-bottom: 3px;
-    margin-top: 5px;
+    padding: 0;
+    margin-right: 0.1em;
+    margin-left: 0.2em;
+    margin-top: 0.7em;
 }
 
 much-select::part(value highlighted-value) {
@@ -630,18 +630,17 @@ much-select::part(dropdown-optgroup) {
 }
 
 much-select::part(dropdown-option) {
-    background-color: var(--white);
+    background-color: var(--much-select-dropdown-option-background-color);
     color: var(--much-select-dropdown-option-color);
     font-family: var(--form-font);
-    padding: 5px;
+    padding: 0.5em;
     cursor: pointer;
-    height: 40px;
+    font-size: 1em;
 }
 
 much-select::part(dropdown-option selected) {
     background-color: var(--much-select-dropdown-option-selected-background-color);
     color: var(--much-select-dropdown-option-color-inverse);
-    padding: 5px;
     cursor: pointer;
 }
 
@@ -653,7 +652,6 @@ much-select::part(dropdown-option highlighted) {
 much-select::part(dropdown-option active) {
     background-color: var(--much-select-dropdown-option-active-background-color);
     color: var(--much-select-dropdown-option-color-inverse);
-    padding: 5px;
     cursor: pointer;
 }
 

@@ -1,8 +1,9 @@
-module OptionPart exposing (OptionPart, decoder, empty, fromStringOrEmpty, test_new, toActiveDropdownAttribute, toDisabledDropdownAttribute, toDropdownAttribute, toHighlightedDropdownAttribute, toSelectedHighlightedValueAttribute, toSelectedValueAttribute, valueDecoder)
+module OptionPart exposing (OptionPart, decoder, empty, fromStringOrEmpty, test_new, toDropdownAttribute, valueDecoder)
 
 import Html
 import Html.Attributes
 import Json.Decode exposing (Decoder)
+import OptionDisplay exposing (OptionDisplay(..))
 import String.Extra
 
 
@@ -10,76 +11,49 @@ type OptionPart
     = OptionPart String
 
 
-toSelectedValueAttribute : OptionPart -> Html.Attribute msg
-toSelectedValueAttribute optionPart =
-    case optionPart of
-        OptionPart string ->
-            case string of
-                "" ->
-                    Html.Attributes.attribute "part" "selected-value"
+toDropdownAttribute : OptionDisplay -> OptionPart -> Html.Attribute msg
+toDropdownAttribute optionDisplay optionPart =
+    let
+        valuePart =
+            case optionPart of
+                OptionPart string ->
+                    case string of
+                        "" ->
+                            ""
 
-                _ ->
-                    Html.Attributes.attribute "part" ("selected-value " ++ string)
+                        _ ->
+                            string
 
+        partAttribute =
+            Html.Attributes.attribute "part"
+    in
+    case optionDisplay of
+        OptionShown _ ->
+            partAttribute ("dropdown-option " ++ valuePart)
 
-toSelectedHighlightedValueAttribute : OptionPart -> Html.Attribute msg
-toSelectedHighlightedValueAttribute optionPart =
-    case optionPart of
-        OptionPart string ->
-            case string of
-                "" ->
-                    Html.Attributes.attribute "part" "selected-value highlighted"
+        OptionHidden ->
+            partAttribute ("dropdown-option hidden " ++ valuePart)
 
-                _ ->
-                    Html.Attributes.attribute "part" ("selected-value highlighted " ++ string)
+        OptionSelected _ _ ->
+            partAttribute ("dropdown-option selected selected " ++ valuePart)
 
+        OptionSelectedAndInvalid _ _ ->
+            partAttribute ("dropdown-option selected invalid " ++ valuePart)
 
-toDropdownAttribute : OptionPart -> Html.Attribute msg
-toDropdownAttribute optionPart =
-    case optionPart of
-        OptionPart string ->
-            case string of
-                "" ->
-                    Html.Attributes.attribute "part" "dropdown-option"
+        OptionSelectedPendingValidation _ ->
+            partAttribute ("dropdown-option " ++ valuePart)
 
-                _ ->
-                    Html.Attributes.attribute "part" ("dropdown-option " ++ string)
+        OptionSelectedHighlighted _ ->
+            partAttribute ("dropdown-option selected highlighted " ++ valuePart)
 
+        OptionHighlighted ->
+            partAttribute ("dropdown-option highlighted " ++ valuePart)
 
-toHighlightedDropdownAttribute : OptionPart -> Html.Attribute msg
-toHighlightedDropdownAttribute optionPart =
-    case optionPart of
-        OptionPart string ->
-            case string of
-                "" ->
-                    Html.Attributes.attribute "part" "dropdown-option highlighted"
+        OptionActivated ->
+            partAttribute ("dropdown-option active highlighted " ++ valuePart)
 
-                _ ->
-                    Html.Attributes.attribute "part" ("dropdown-option highlighted " ++ string)
-
-
-toActiveDropdownAttribute : OptionPart -> Html.Attribute msg
-toActiveDropdownAttribute optionPart =
-    case optionPart of
-        OptionPart string ->
-            case string of
-                "" ->
-                    Html.Attributes.attribute "part" "dropdown-option active highlighted"
-
-                _ ->
-                    Html.Attributes.attribute "part" ("dropdown-option active highlighted " ++ string)
-
-
-toDisabledDropdownAttribute : OptionPart -> Html.Attribute msg
-toDisabledDropdownAttribute optionPart =
-    case optionPart of
-        OptionPart string ->
-            case string of
-                "" ->
-                    Html.Attributes.attribute "part" "dropdown-option disabled"
-
-                _ ->
-                    Html.Attributes.attribute "part" ("dropdown-option disabled " ++ string)
+        OptionDisabled _ ->
+            partAttribute ("dropdown-option disabled " ++ valuePart)
 
 
 empty : OptionPart
