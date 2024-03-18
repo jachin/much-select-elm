@@ -16958,6 +16958,14 @@ var $author$project$MuchSelect$singleSelectCustomHtmlInputField = F5(
 				]),
 			_List_Nil));
 	});
+var $author$project$OptionPart$toSelectedValueAttribute = function (optionPart) {
+	var string = optionPart;
+	if (string === '') {
+		return A2($elm$html$Html$Attributes$attribute, 'part', 'selected-value');
+	} else {
+		return A2($elm$html$Html$Attributes$attribute, 'part', 'selected-value ' + string);
+	}
+};
 var $author$project$FancyOption$toSingleSelectValueHtml = function (option) {
 	switch (option.$) {
 		case 0:
@@ -16966,9 +16974,7 @@ var $author$project$FancyOption$toSingleSelectValueHtml = function (option) {
 				_List_fromArray(
 					[
 						$elm$html$Html$Attributes$id('selected-value'),
-						A2(
-						$author$project$OptionPart$toDropdownAttribute,
-						$author$project$FancyOption$getOptionDisplay(option),
+						$author$project$OptionPart$toSelectedValueAttribute(
 						$author$project$FancyOption$getOptionPart(option))
 					]),
 				_List_fromArray(
@@ -16983,9 +16989,7 @@ var $author$project$FancyOption$toSingleSelectValueHtml = function (option) {
 				_List_fromArray(
 					[
 						$elm$html$Html$Attributes$id('selected-value'),
-						A2(
-						$author$project$OptionPart$toDropdownAttribute,
-						$author$project$FancyOption$getOptionDisplay(option),
+						$author$project$OptionPart$toSelectedValueAttribute(
 						$author$project$FancyOption$getOptionPart(option))
 					]),
 				_List_fromArray(

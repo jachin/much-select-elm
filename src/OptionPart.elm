@@ -1,4 +1,4 @@
-module OptionPart exposing (OptionPart, decoder, empty, fromStringOrEmpty, test_new, toDropdownAttribute, valueDecoder)
+module OptionPart exposing (OptionPart, decoder, empty, fromStringOrEmpty, test_new, toDropdownAttribute, toSelectedValueAttribute, valueDecoder)
 
 import Html
 import Html.Attributes
@@ -9,6 +9,18 @@ import String.Extra
 
 type OptionPart
     = OptionPart String
+
+
+toSelectedValueAttribute : OptionPart -> Html.Attribute msg
+toSelectedValueAttribute optionPart =
+    case optionPart of
+        OptionPart string ->
+            case string of
+                "" ->
+                    Html.Attributes.attribute "part" "selected-value"
+
+                _ ->
+                    Html.Attributes.attribute "part" ("selected-value " ++ string)
 
 
 toDropdownAttribute : OptionDisplay -> OptionPart -> Html.Attribute msg

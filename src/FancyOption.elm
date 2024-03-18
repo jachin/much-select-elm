@@ -584,14 +584,14 @@ toSingleSelectValueHtml option =
         FancyOption _ _ _ _ _ _ _ ->
             span
                 [ id "selected-value"
-                , OptionPart.toDropdownAttribute (getOptionDisplay option) (getOptionPart option)
+                , OptionPart.toSelectedValueAttribute (getOptionPart option)
                 ]
                 [ text (option |> getOptionLabel |> optionLabelToString) ]
 
         CustomFancyOption _ _ _ _ ->
             span
                 [ id "selected-value"
-                , OptionPart.toDropdownAttribute (getOptionDisplay option) (getOptionPart option)
+                , OptionPart.toSelectedValueAttribute (getOptionPart option)
                 ]
                 [ text (option |> getOptionLabel |> optionLabelToString) ]
 
