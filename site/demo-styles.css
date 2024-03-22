@@ -56,8 +56,8 @@ body {
     --red-orange: #ff3f34;
     --london-square: #808e9b;
     --black-pearl: #1e272e;
-    --much-select-height: 36px;
 
+    --much-select-height: 1.5em;
     --comic-sans: 'Comic Sans MS', cursive, sans-serif;
 }
 
@@ -101,10 +101,10 @@ body {
         --text-color: var(--electromagnetic);
         --link-text-color: var(--mazarine-blue);
         --nav-link-text-color: var(--pico-void);
-        --nav-link-text-hover-background-color: var(--vanadyl-blue);
+        --nav-link-text-hover-background-color: transparent;
 
         --site-nav-background-color: var(--hint-of-pensive);
-        --offsite-nav-background-color: var(--matt-purple);
+        --offsite-nav-background-color: var(--hint-of-pensive);
 
         --example-background-color: var(--hint-of-pensive);
         --example-border-color: var(--blueberry-soda);
@@ -158,7 +158,7 @@ body {
         /* Much Select Dropdown */
         --much-select-dropdown-option-color: var(--black-pearl);
         --much-select-dropdown-option-color-inverse: var(--good-night);
-        --much-select-dropdown-option-background-color: var(--good-night);
+        --much-select-dropdown-option-background-color: white;
         --much-select-dropdown-option-highlighted-background-color: var(--spirio-disco-ball);
         --much-select-dropdown-option-active-background-color: var(--minty-green);
         --much-select-dropdown-option-selected-background-color: var(--fresh-turquoise);
@@ -174,9 +174,9 @@ body {
         --text-color: var(--hint-of-pensive);
         --link-text-color: var(--periwinkle);
         --nav-link-text-color: var(--rise-n-shine);
-        --nav-link-text-hover-background-color: var(--sea-brook);
-        --site-nav-background-color: var(--matt-purple);
-        --offsite-nav-background-color: var(--vanadyl-blue);
+        --nav-link-text-hover-background-color: transparent;
+        --site-nav-background-color: var(--sea-brook);
+        --offsite-nav-background-color: var(--sea-brook);
 
         --example-background-color: var(--pico-void);
         --example-border-color: var(--blueberry-soda);
@@ -206,10 +206,10 @@ body {
         --text-color: var(--vibrant-yellow);
         --link-text-color: var(--minty-green);
         --nav-link-text-color: var(--green-teal);
-        --site-nav-background-color: var(--dark-periwinkle);
+        --site-nav-background-color: transparent;
         --offsite-nav-background-color: var(--free-speech-blue);
 
-        --example-background-color: var(--black-pearl);
+        --example-background-color: var(--dark-periwinkle);
         --example-border-color: var(--sizeling-red);
         --example-border-shadow-color: var(--highligher-pink);
 
@@ -348,10 +348,16 @@ nav a:any-link {
 }
 
 nav.site-nav {
-    padding: 0.25em;
+    padding: 0.25dvw;
+    margin: 0.5dvw;
     background-color: var(--site-nav-background-color);
-    overflow: auto;
+    overflow: hidden;
     white-space: nowrap;
+    border: 0.2em solid;
+}
+
+nav ol {
+    padding: 0;
 }
 
 nav.site-nav ol li {
@@ -359,8 +365,10 @@ nav.site-nav ol li {
 }
 
 nav.offsite-nav {
-    padding: 0.25em;
+    padding: 0.25dvw;
+    margin: 0.5dvw;
     background-color: var(--offsite-nav-background-color);
+    border: 0.2em solid;
 }
 
 nav ol {
@@ -374,7 +382,7 @@ nav.offsite-nav ol {
 }
 nav.offsite-nav ol li a,
 nav.site-nav ol li a {
-    text-decoration: none;
+    text-decoration: underline;
 }
 
 nav ol > li {
@@ -587,7 +595,7 @@ much-select::part(dropdown-indicator) {
     top: 10px;
     cursor: pointer;
     display: block;
-    transition: transform 0.50s;
+    transition: transform 0.25s;
 }
 
 much-select::part(dropdown-indicator up) {
@@ -616,9 +624,11 @@ much-select::part(clear-button-wrapper):hover {
 }
 
 much-select::part(dropdown) {
-    margin-top: 5px;
-    border-radius: 8px;
-    font-size: 20px;
+    margin-top: 0.2rem;
+    border-radius: 0.3rem;
+    border-width: 0.1rem;
+    border-color: var(--much-select-border-color);
+    border-style: solid;
     max-height: 300px;
     font-family: var(--form-font);
 }
@@ -628,16 +638,16 @@ much-select::part(dropdown-optgroup) {
     font-size: 0.85rem;
     font-weight: 300;
     font-family: var(--form-font);
-    padding: 10px;
+    padding: 0.2rem;
 }
 
 much-select::part(dropdown-option) {
     background-color: var(--much-select-dropdown-option-background-color);
     color: var(--much-select-dropdown-option-color);
     font-family: var(--form-font);
-    padding: 0.5em;
+    padding: 0.5rem;
     cursor: pointer;
-    font-size: 1em;
+    font-size: var(--value-font-size);
 }
 
 much-select::part(dropdown-option selected) {
@@ -664,7 +674,7 @@ much-select::part(dropdown-option disabled) {
 
 much-select::part(dropdown-option-description) {
     font-size: 0.85rem;
-    padding: 3px;
+    padding: 0.2rem;
 }
 
 much-select::part(dropdown-footer) {
@@ -672,6 +682,6 @@ much-select::part(dropdown-footer) {
     text-align: center;
     color: var(--much-select-dropdown-footer-color);
     background-color: var(--much-select-dropdown-footer-background-color);
-    padding: 5px;
+    padding: 0.2rem;
 
 }
