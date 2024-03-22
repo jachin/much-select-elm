@@ -406,6 +406,9 @@ much-select:not(:defined) {
 much-select {
     display: inline-block;
     margin: 0.25em 0;
+
+    /*I added this because it keeps with width of the much-select from jumping around as we select and unselect values.*/
+    width: 100%;
 }
 
 button {
