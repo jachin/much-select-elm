@@ -536,7 +536,7 @@ much-select::part(input-filter) {
     margin: 0;
 
     /* Keep input filter's text from running over the dropdown indicator. */
-    padding: 0 0.8em 0 0px;
+    padding: 0 0.8em 0 0;
     border-right: 2px dotted var(--much-select-border-color);
 }
 
@@ -569,16 +569,16 @@ much-select::part(input-filter):hover, much-select::part(input-filter):focus {
     background: none;
 }
 
-much-select::part(value) {
+much-select[multi-select]::part(selected-value) {
     padding: 3px;
     font-size: 20px;
     color: white;
     background-image: linear-gradient(to bottom, #4f6a8f, #88a2bc);
     background-repeat: repeat-x;
-    margin: 2px 2px;
-    border-radius: 5px;
+    margin: 0.25rem 0.25rem;
+    border-radius: 0.2rem;
     border: 3px solid #d99477;
-    min-width: 10px;
+    min-width: 0.5rem;
     flex-grow: 0;
     flex-shrink: 1;
     flex-basis: auto;
@@ -595,7 +595,7 @@ much-select::part(selected-value) {
     margin-top: 0.7em;
 }
 
-much-select::part(value highlighted-value) {
+much-select[multi-select]::part(selected-value highlighted-value) {
     background-image: linear-gradient(to bottom, #d99477, #efb680);
     background-repeat: repeat-x;
 }

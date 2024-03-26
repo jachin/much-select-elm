@@ -15938,6 +15938,16 @@ var $author$project$OptionLabel$getLabelString = function (optionLabel) {
 	var string = optionLabel.a;
 	return string;
 };
+var $author$project$OptionPart$toSelectedValueAttribute = F2(
+	function (isHighlighted, optionPart) {
+		var highlightedPart = isHighlighted ? 'highlighted-value' : '';
+		var string = optionPart;
+		if (string === '') {
+			return A2($elm$html$Html$Attributes$attribute, 'part', 'selected-value ' + highlightedPart);
+		} else {
+			return A2($elm$html$Html$Attributes$attribute, 'part', 'selected-value ' + (highlightedPart + (' ' + string)));
+		}
+	});
 var $author$project$FancyOption$valueLabelHtml = F3(
 	function (toggleSelectedMsg, labelText, optionValue) {
 		return A2(
@@ -15988,10 +15998,15 @@ var $author$project$FancyOption$toMultiSelectValueHtml = F4(
 							$elm$html$Html$div,
 							_List_fromArray(
 								[
-									$elm$html$Html$Attributes$class('value'),
+									$elm$html$Html$Attributes$classList(
+									_List_fromArray(
+										[
+											_Utils_Tuple2('value', true),
+											_Utils_Tuple2('selected-value', true)
+										])),
 									A2(
-									$author$project$OptionPart$toDropdownAttribute,
-									$author$project$FancyOption$getOptionDisplay(fancyOption),
+									$author$project$OptionPart$toSelectedValueAttribute,
+									false,
 									$author$project$FancyOption$getOptionPart(fancyOption))
 								]),
 							_List_fromArray(
@@ -16016,11 +16031,12 @@ var $author$project$FancyOption$toMultiSelectValueHtml = F4(
 									_List_fromArray(
 										[
 											_Utils_Tuple2('value', true),
+											_Utils_Tuple2('selected-value', true),
 											_Utils_Tuple2('highlighted-value', true)
 										])),
 									A2(
-									$author$project$OptionPart$toDropdownAttribute,
-									$author$project$FancyOption$getOptionDisplay(fancyOption),
+									$author$project$OptionPart$toSelectedValueAttribute,
+									true,
 									$author$project$FancyOption$getOptionPart(fancyOption))
 								]),
 							_List_fromArray(
@@ -16958,14 +16974,6 @@ var $author$project$MuchSelect$singleSelectCustomHtmlInputField = F5(
 				]),
 			_List_Nil));
 	});
-var $author$project$OptionPart$toSelectedValueAttribute = function (optionPart) {
-	var string = optionPart;
-	if (string === '') {
-		return A2($elm$html$Html$Attributes$attribute, 'part', 'selected-value');
-	} else {
-		return A2($elm$html$Html$Attributes$attribute, 'part', 'selected-value ' + string);
-	}
-};
 var $author$project$FancyOption$toSingleSelectValueHtml = function (option) {
 	switch (option.$) {
 		case 0:
@@ -16974,7 +16982,9 @@ var $author$project$FancyOption$toSingleSelectValueHtml = function (option) {
 				_List_fromArray(
 					[
 						$elm$html$Html$Attributes$id('selected-value'),
-						$author$project$OptionPart$toSelectedValueAttribute(
+						A2(
+						$author$project$OptionPart$toSelectedValueAttribute,
+						false,
 						$author$project$FancyOption$getOptionPart(option))
 					]),
 				_List_fromArray(
@@ -16989,7 +16999,9 @@ var $author$project$FancyOption$toSingleSelectValueHtml = function (option) {
 				_List_fromArray(
 					[
 						$elm$html$Html$Attributes$id('selected-value'),
-						$author$project$OptionPart$toSelectedValueAttribute(
+						A2(
+						$author$project$OptionPart$toSelectedValueAttribute,
+						false,
 						$author$project$FancyOption$getOptionPart(option))
 					]),
 				_List_fromArray(

@@ -11,16 +11,24 @@ type OptionPart
     = OptionPart String
 
 
-toSelectedValueAttribute : OptionPart -> Html.Attribute msg
-toSelectedValueAttribute optionPart =
+toSelectedValueAttribute : Bool -> OptionPart -> Html.Attribute msg
+toSelectedValueAttribute isHighlighted optionPart =
+    let
+        highlightedPart =
+            if isHighlighted then
+                "highlighted-value"
+
+            else
+                ""
+    in
     case optionPart of
         OptionPart string ->
             case string of
                 "" ->
-                    Html.Attributes.attribute "part" "selected-value"
+                    Html.Attributes.attribute "part" ("selected-value " ++ highlightedPart)
 
                 _ ->
-                    Html.Attributes.attribute "part" ("selected-value " ++ string)
+                    Html.Attributes.attribute "part" ("selected-value " ++ highlightedPart ++ " " ++ string)
 
 
 toDropdownAttribute : OptionDisplay -> OptionPart -> Html.Attribute msg

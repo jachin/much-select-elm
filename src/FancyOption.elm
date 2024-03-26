@@ -584,14 +584,14 @@ toSingleSelectValueHtml option =
         FancyOption _ _ _ _ _ _ _ ->
             span
                 [ id "selected-value"
-                , OptionPart.toSelectedValueAttribute (getOptionPart option)
+                , OptionPart.toSelectedValueAttribute False (getOptionPart option)
                 ]
                 [ text (option |> getOptionLabel |> optionLabelToString) ]
 
         CustomFancyOption _ _ _ _ ->
             span
                 [ id "selected-value"
-                , OptionPart.toSelectedValueAttribute (getOptionPart option)
+                , OptionPart.toSelectedValueAttribute False (getOptionPart option)
                 ]
                 [ text (option |> getOptionLabel |> optionLabelToString) ]
 
@@ -626,8 +626,11 @@ toMultiSelectValueHtml toggleSelectedMsg deselectOptionInternal enableSingleItem
 
                 OptionSelected _ _ ->
                     div
-                        [ class "value"
-                        , OptionPart.toDropdownAttribute (getOptionDisplay fancyOption) (getOptionPart fancyOption)
+                        [ classList
+                            [ ( "value", True )
+                            , ( "selected-value", True )
+                            ]
+                        , OptionPart.toSelectedValueAttribute False (getOptionPart fancyOption)
                         ]
                         [ valueLabelHtml
                             toggleSelectedMsg
@@ -646,9 +649,10 @@ toMultiSelectValueHtml toggleSelectedMsg deselectOptionInternal enableSingleItem
                     div
                         [ classList
                             [ ( "value", True )
+                            , ( "selected-value", True )
                             , ( "highlighted-value", True )
                             ]
-                        , OptionPart.toDropdownAttribute (getOptionDisplay fancyOption) (getOptionPart fancyOption)
+                        , OptionPart.toSelectedValueAttribute True (getOptionPart fancyOption)
                         ]
                         [ valueLabelHtml toggleSelectedMsg (OptionLabel.getLabelString optionLabel) optionValue, removalHtml optionValue ]
 
