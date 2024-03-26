@@ -2879,6 +2879,15 @@ customHtmlDropdown selectionMode options searchString (ValueCasing valueCasingWi
                         )
                     ]
 
+            else if showDropdownFooter selectionMode && DropdownOptions.length optionsForTheDropdown == 0 then
+                div
+                    [ id "dropdown-footer"
+                    , Html.Attributes.attribute "part" "dropdown-footer"
+                    ]
+                    [ text
+                        "options to select"
+                    ]
+
             else
                 text ""
     in

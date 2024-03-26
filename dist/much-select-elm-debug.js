@@ -20543,7 +20543,17 @@ var $author$project$MuchSelect$customHtmlDropdown = F4(
 					'showing ' + ($elm$core$String$fromInt(
 						$author$project$DropdownOptions$length(optionsForTheDropdown)) + (' of ' + ($elm$core$String$fromInt(
 						$author$project$OptionList$length(options)) + ' options'))))
-				])) : $elm$html$Html$text('');
+				])) : (($author$project$SelectionMode$showDropdownFooter(selectionMode) && (!$author$project$DropdownOptions$length(optionsForTheDropdown))) ? A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$id('dropdown-footer'),
+					A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-footer')
+				]),
+			_List_fromArray(
+				[
+					$elm$html$Html$text('options to select')
+				])) : $elm$html$Html$text(''));
 		return $author$project$SelectionMode$isDisabled(selectionMode) ? $elm$html$Html$text('') : A2(
 			$elm$html$Html$div,
 			_List_fromArray(
