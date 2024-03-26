@@ -570,14 +570,13 @@ much-select::part(input-filter):hover, much-select::part(input-filter):focus {
 }
 
 much-select[multi-select]::part(selected-value) {
-    padding: 3px;
-    font-size: 20px;
-    color: white;
-    background-image: linear-gradient(to bottom, #4f6a8f, #88a2bc);
+    padding: 0.25rem;
+    color: var(--pico-void);
+    background-image: linear-gradient(to bottom, var(--lynx-white), var(--hint-of-pensive));
     background-repeat: repeat-x;
-    margin: 0.25rem 0.25rem;
-    border-radius: 0.2rem;
-    border: 3px solid #d99477;
+    margin: 0.1rem 0.25rem 0.1rem 0;
+    border-radius: 0.3rem;
+    border: 0.1rem solid var(--periwinkle);
     min-width: 0.5rem;
     flex-grow: 0;
     flex-shrink: 1;
@@ -596,8 +595,13 @@ much-select::part(selected-value) {
 }
 
 much-select[multi-select]::part(selected-value highlighted-value) {
-    background-image: linear-gradient(to bottom, #d99477, #efb680);
+    background-image: linear-gradient(to bottom, var(--nanohanacha-gold), var(--rise-n-shine));
     background-repeat: repeat-x;
+}
+
+much-select[multi-select]::part(selected-value-label) {
+    /** Vertically center the text in the middle of the selected value "pill". **/
+    padding-top: 0.09rem;
 }
 
 much-select::part(dropdown-indicator) {

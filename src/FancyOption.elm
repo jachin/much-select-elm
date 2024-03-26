@@ -742,7 +742,8 @@ toMultiSelectValueHtml toggleSelectedMsg deselectOptionInternal enableSingleItem
 valueLabelHtml : (OptionValue -> msg) -> String -> OptionValue -> Html msg
 valueLabelHtml toggleSelectedMsg labelText optionValue =
     span
-        [ class "value-label"
+        [ class "selected-value-label"
+        , Html.Attributes.attribute "part" "selected-value-label"
         , mouseUpPreventDefault
             (toggleSelectedMsg optionValue)
         ]

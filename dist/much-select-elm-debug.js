@@ -21176,7 +21176,8 @@ var $author$project$FancyOption$valueLabelHtml = F3(
 			$elm$html$Html$span,
 			_List_fromArray(
 				[
-					$elm$html$Html$Attributes$class('value-label'),
+					$elm$html$Html$Attributes$class('selected-value-label'),
+					A2($elm$html$Html$Attributes$attribute, 'part', 'selected-value-label'),
 					$author$project$Events$mouseUpPreventDefault(
 					toggleSelectedMsg(optionValue))
 				]),
