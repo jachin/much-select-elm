@@ -16419,43 +16419,75 @@ var $author$project$MuchSelect$remoteButtonSlot = function (index) {
 };
 var $author$project$MuchSelect$rightSlotHtml = F4(
 	function (rightSlot, interactionState, isDisabled, selectedIndex) {
+		var wrapper = function (content) {
+			return A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$id('right-slot-wrapper'),
+						A2($elm$html$Html$Attributes$attribute, 'part', 'right-slot-wrapper')
+					]),
+				_List_fromArray(
+					[content]));
+		};
 		switch (rightSlot.$) {
 			case 0:
 				return $elm$html$Html$text('');
 			case 1:
-				return A3(
-					$elm$html$Html$node,
-					'slot',
-					_List_fromArray(
-						[
-							$elm$html$Html$Attributes$name('loading-indicator')
-						]),
-					_List_fromArray(
-						[$author$project$MuchSelect$defaultLoadingIndicator]));
+				return wrapper(
+					A3(
+						$elm$html$Html$node,
+						'slot',
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$name('loading-indicator')
+							]),
+						_List_fromArray(
+							[$author$project$MuchSelect$defaultLoadingIndicator])));
 			case 2:
 				var transitioning = rightSlot.a;
-				return A2($author$project$MuchSelect$dropdownIndicator, interactionState, transitioning);
+				return A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$id('right-slot-wrapper'),
+							A2($elm$html$Html$Attributes$attribute, 'part', 'right-slot-wrapper')
+						]),
+					_List_fromArray(
+						[
+							A2($author$project$MuchSelect$dropdownIndicator, interactionState, transitioning)
+						]));
 			case 3:
 				return isDisabled ? $elm$html$Html$text('') : A2(
 					$elm$html$Html$div,
 					_List_fromArray(
 						[
-							$elm$html$Html$Attributes$id('clear-button-wrapper'),
-							A2($elm$html$Html$Attributes$attribute, 'part', 'clear-button-wrapper'),
-							$author$project$Events$onClickPreventDefaultAndStopPropagation($author$project$MuchSelect$ClearAllSelectedOptions)
+							$elm$html$Html$Attributes$id('right-slot-wrapper'),
+							A2($elm$html$Html$Attributes$attribute, 'part', 'right-slot-wrapper')
 						]),
 					_List_fromArray(
 						[
-							A3(
-							$elm$html$Html$node,
-							'slot',
+							A2(
+							$elm$html$Html$div,
 							_List_fromArray(
 								[
-									$elm$html$Html$Attributes$name('clear-button')
+									$elm$html$Html$Attributes$id('clear-button-wrapper'),
+									A2($elm$html$Html$Attributes$attribute, 'part', 'clear-button-wrapper'),
+									$author$project$Events$onClickPreventDefaultAndStopPropagation($author$project$MuchSelect$ClearAllSelectedOptions)
 								]),
 							_List_fromArray(
 								[
-									$elm$html$Html$text('✕')
+									A3(
+									$elm$html$Html$node,
+									'slot',
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$name('clear-button')
+										]),
+									_List_fromArray(
+										[
+											$elm$html$Html$text('✕')
+										]))
 								]))
 						]));
 			case 4:
@@ -16463,7 +16495,8 @@ var $author$project$MuchSelect$rightSlotHtml = F4(
 					$elm$html$Html$div,
 					_List_fromArray(
 						[
-							$elm$html$Html$Attributes$class('add-remove-buttons')
+							$elm$html$Html$Attributes$id('right-slot-wrapper'),
+							A2($elm$html$Html$Attributes$attribute, 'part', 'right-slot-wrapper')
 						]),
 					_List_fromArray(
 						[
@@ -16471,13 +16504,22 @@ var $author$project$MuchSelect$rightSlotHtml = F4(
 							$elm$html$Html$div,
 							_List_fromArray(
 								[
-									$elm$html$Html$Attributes$class('add-button-wrapper'),
-									$elm$html$Html$Events$onClick(
-									$author$project$MuchSelect$AddMultiSelectValue(selectedIndex))
+									$elm$html$Html$Attributes$class('add-remove-buttons')
 								]),
 							_List_fromArray(
 								[
-									$author$project$MuchSelect$addButtonSlot(selectedIndex)
+									A2(
+									$elm$html$Html$div,
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('add-button-wrapper'),
+											$elm$html$Html$Events$onClick(
+											$author$project$MuchSelect$AddMultiSelectValue(selectedIndex))
+										]),
+									_List_fromArray(
+										[
+											$author$project$MuchSelect$addButtonSlot(selectedIndex)
+										]))
 								]))
 						]));
 			default:
@@ -16485,7 +16527,8 @@ var $author$project$MuchSelect$rightSlotHtml = F4(
 					$elm$html$Html$div,
 					_List_fromArray(
 						[
-							$elm$html$Html$Attributes$class('add-remove-buttons')
+							$elm$html$Html$Attributes$id('right-slot-wrapper'),
+							A2($elm$html$Html$Attributes$attribute, 'part', 'right-slot-wrapper')
 						]),
 					_List_fromArray(
 						[
@@ -16493,25 +16536,34 @@ var $author$project$MuchSelect$rightSlotHtml = F4(
 							$elm$html$Html$div,
 							_List_fromArray(
 								[
-									$elm$html$Html$Attributes$class('add-button-wrapper'),
-									$elm$html$Html$Events$onClick(
-									$author$project$MuchSelect$AddMultiSelectValue(selectedIndex))
+									$elm$html$Html$Attributes$class('add-remove-buttons')
 								]),
 							_List_fromArray(
 								[
-									$author$project$MuchSelect$addButtonSlot(selectedIndex)
-								])),
-							A2(
-							$elm$html$Html$div,
-							_List_fromArray(
-								[
-									$elm$html$Html$Attributes$class('remove-button-wrapper'),
-									$elm$html$Html$Events$onClick(
-									$author$project$MuchSelect$RemoveMultiSelectValue(selectedIndex))
-								]),
-							_List_fromArray(
-								[
-									$author$project$MuchSelect$remoteButtonSlot(selectedIndex)
+									A2(
+									$elm$html$Html$div,
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('add-button-wrapper'),
+											$elm$html$Html$Events$onClick(
+											$author$project$MuchSelect$AddMultiSelectValue(selectedIndex))
+										]),
+									_List_fromArray(
+										[
+											$author$project$MuchSelect$addButtonSlot(selectedIndex)
+										])),
+									A2(
+									$elm$html$Html$div,
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('remove-button-wrapper'),
+											$elm$html$Html$Events$onClick(
+											$author$project$MuchSelect$RemoveMultiSelectValue(selectedIndex))
+										]),
+									_List_fromArray(
+										[
+											$author$project$MuchSelect$remoteButtonSlot(selectedIndex)
+										]))
 								]))
 						]));
 		}

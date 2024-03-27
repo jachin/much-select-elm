@@ -464,6 +464,10 @@ much-select::part(value-casing output-style-datalist) {
     cursor: pointer;
 }
 
+much-select::part(right-slot-wrapper) {
+    border-left: 2px dotted var(--much-select-border-color);
+}
+
 much-select::part(input-value) {
     min-height: var(--much-select-height);
 }
@@ -537,7 +541,7 @@ much-select::part(input-filter) {
 
     /* Keep input filter's text from running over the dropdown indicator. */
     padding: 0 0.8em 0 0;
-    border-right: 2px dotted var(--much-select-border-color);
+
 }
 
 much-select::part(input-filter):hover, much-select::part(input-filter):focus {

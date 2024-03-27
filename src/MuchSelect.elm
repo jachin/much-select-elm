@@ -2996,17 +2996,31 @@ optionToValueHtml enableSingleItemRemoval option =
 
 rightSlotHtml : RightSlot -> SelectionMode.InteractionState -> Bool -> Int -> Html Msg
 rightSlotHtml rightSlot interactionState isDisabled selectedIndex =
+    let
+        wrapper content =
+            div
+                [ id "right-slot-wrapper"
+                , Html.Attributes.attribute "part" "right-slot-wrapper"
+                ]
+                [ content ]
+    in
     case rightSlot of
         ShowNothing ->
             text ""
 
         ShowLoadingIndicator ->
-            node "slot"
-                [ name "loading-indicator" ]
-                [ defaultLoadingIndicator ]
+            wrapper
+                (node "slot"
+                    [ name "loading-indicator" ]
+                    [ defaultLoadingIndicator ]
+                )
 
         ShowDropdownIndicator transitioning ->
-            dropdownIndicator interactionState transitioning
+            div
+                [ id "right-slot-wrapper"
+                , Html.Attributes.attribute "part" "right-slot-wrapper"
+                ]
+                [ dropdownIndicator interactionState transitioning ]
 
         ShowClearButton ->
             if isDisabled then
@@ -3014,14 +3028,19 @@ rightSlotHtml rightSlot interactionState isDisabled selectedIndex =
 
             else
                 div
-                    [ id "clear-button-wrapper"
-                    , Html.Attributes.attribute "part" "clear-button-wrapper"
-                    , onClickPreventDefaultAndStopPropagation ClearAllSelectedOptions
+                    [ id "right-slot-wrapper"
+                    , Html.Attributes.attribute "part" "right-slot-wrapper"
                     ]
-                    [ node "slot"
-                        [ name "clear-button"
+                    [ div
+                        [ id "clear-button-wrapper"
+                        , Html.Attributes.attribute "part" "clear-button-wrapper"
+                        , onClickPreventDefaultAndStopPropagation ClearAllSelectedOptions
                         ]
-                        [ text "✕"
+                        [ node "slot"
+                            [ name "clear-button"
+                            ]
+                            [ text "✕"
+                            ]
                         ]
                     ]
 
@@ -3030,9 +3049,14 @@ rightSlotHtml rightSlot interactionState isDisabled selectedIndex =
                 text ""
 
             else
-                div [ class "add-remove-buttons" ]
-                    [ div [ class "add-button-wrapper", onClick (AddMultiSelectValue selectedIndex) ]
-                        [ addButtonSlot selectedIndex ]
+                div
+                    [ id "right-slot-wrapper"
+                    , Html.Attributes.attribute "part" "right-slot-wrapper"
+                    ]
+                    [ div [ class "add-remove-buttons" ]
+                        [ div [ class "add-button-wrapper", onClick (AddMultiSelectValue selectedIndex) ]
+                            [ addButtonSlot selectedIndex ]
+                        ]
                     ]
 
         ShowAddAndRemoveButtons ->
@@ -3040,11 +3064,16 @@ rightSlotHtml rightSlot interactionState isDisabled selectedIndex =
                 text ""
 
             else
-                div [ class "add-remove-buttons" ]
-                    [ div [ class "add-button-wrapper", onClick (AddMultiSelectValue selectedIndex) ]
-                        [ addButtonSlot selectedIndex ]
-                    , div [ class "remove-button-wrapper", onClick (RemoveMultiSelectValue selectedIndex) ]
-                        [ remoteButtonSlot selectedIndex ]
+                div
+                    [ id "right-slot-wrapper"
+                    , Html.Attributes.attribute "part" "right-slot-wrapper"
+                    ]
+                    [ div [ class "add-remove-buttons" ]
+                        [ div [ class "add-button-wrapper", onClick (AddMultiSelectValue selectedIndex) ]
+                            [ addButtonSlot selectedIndex ]
+                        , div [ class "remove-button-wrapper", onClick (RemoveMultiSelectValue selectedIndex) ]
+                            [ remoteButtonSlot selectedIndex ]
+                        ]
                     ]
 
 
