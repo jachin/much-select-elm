@@ -20639,6 +20639,15 @@ var $author$project$GroupedDropdownOptions$dropdownOptionsToDatalistHtml = funct
 			$author$project$GroupedDropdownOptions$groupOptionsInOrder(options)));
 };
 var $elm_community$html_extra$Html$Attributes$Extra$empty = $elm$html$Html$Attributes$classList(_List_Nil);
+var $author$project$SelectionMode$getInteractionState = function (selectionConfig) {
+	if (selectionConfig.$ === 'SingleSelectConfig') {
+		var interactionState = selectionConfig.c;
+		return interactionState;
+	} else {
+		var interactionState = selectionConfig.c;
+		return interactionState;
+	}
+};
 var $author$project$SelectionMode$isSingleSelect = function (selectionMode) {
 	if (selectionMode.$ === 'SingleSelectConfig') {
 		return true;
@@ -20679,15 +20688,6 @@ var $elm$html$Html$Attributes$boolProperty = F2(
 			$elm$json$Json$Encode$bool(bool));
 	});
 var $elm$html$Html$Attributes$disabled = $elm$html$Html$Attributes$boolProperty('disabled');
-var $author$project$SelectionMode$getInteractionState = function (selectionConfig) {
-	if (selectionConfig.$ === 'SingleSelectConfig') {
-		var interactionState = selectionConfig.c;
-		return interactionState;
-	} else {
-		var interactionState = selectionConfig.c;
-		return interactionState;
-	}
-};
 var $author$project$SelectionMode$getPlaceholderString = function (selectionConfig) {
 	return $author$project$SelectionMode$getPlaceholder(selectionConfig).b;
 };
@@ -21511,6 +21511,213 @@ var $author$project$MuchSelect$optionsToValuesHtml = F2(
 				$author$project$OptionList$selectedOptions(options)));
 	});
 var $elm$html$Html$Attributes$placeholder = $elm$html$Html$Attributes$stringProperty('placeholder');
+var $elm$html$Html$Attributes$tabindex = function (n) {
+	return A2(
+		_VirtualDom_attribute,
+		'tabIndex',
+		$elm$core$String$fromInt(n));
+};
+var $author$project$MuchSelect$tabIndexAttribute = function (disabled) {
+	return disabled ? A2($elm$html$Html$Attributes$style, '', '') : $elm$html$Html$Attributes$tabindex(0);
+};
+var $author$project$MuchSelect$valueCasingClassList = F3(
+	function (selectionConfig, hasOptionSelected, hasAnError) {
+		var selectionModeClass = function () {
+			var _v3 = $author$project$SelectionMode$getSelectionMode(selectionConfig);
+			if (_v3.$ === 'SingleSelect') {
+				return _Utils_Tuple2('single', true);
+			} else {
+				return _Utils_Tuple2('multi', true);
+			}
+		}();
+		var outputStyleClass = function () {
+			var _v2 = $author$project$SelectionMode$getOutputStyle(selectionConfig);
+			if (_v2.$ === 'CustomHtml') {
+				return _Utils_Tuple2('output-style-custom-html', true);
+			} else {
+				return _Utils_Tuple2('output-style-datalist', true);
+			}
+		}();
+		var isFocused_ = $author$project$SelectionMode$isFocused(selectionConfig);
+		var showPlaceholder = function () {
+			var _v1 = $author$project$SelectionMode$getOutputStyle(selectionConfig);
+			if (_v1.$ === 'CustomHtml') {
+				return (!hasOptionSelected) && (!isFocused_);
+			} else {
+				return false;
+			}
+		}();
+		var allowsCustomOptions = function () {
+			var _v0 = $author$project$SelectionMode$getCustomOptions(selectionConfig);
+			if (_v0.$ === 'AllowCustomOptions') {
+				return true;
+			} else {
+				return false;
+			}
+		}();
+		return _List_fromArray(
+			[
+				_Utils_Tuple2('has-option-selected', hasOptionSelected),
+				_Utils_Tuple2('no-option-selected', !hasOptionSelected),
+				selectionModeClass,
+				outputStyleClass,
+				_Utils_Tuple2(
+				'disabled',
+				$author$project$SelectionMode$isDisabled(selectionConfig)),
+				_Utils_Tuple2('focused', isFocused_),
+				_Utils_Tuple2('not-focused', !isFocused_),
+				_Utils_Tuple2('show-placeholder', showPlaceholder),
+				_Utils_Tuple2('allows-custom-options', allowsCustomOptions),
+				_Utils_Tuple2('error', hasAnError)
+			]);
+	});
+var $author$project$MuchSelect$valueCasingPartsAttribute = F3(
+	function (selectionConfig, hasError, hasPendingValidation) {
+		var selectionModeStr = function () {
+			var _v2 = $author$project$SelectionMode$getSelectionMode(selectionConfig);
+			if (_v2.$ === 'SingleSelect') {
+				return 'single';
+			} else {
+				return 'multi';
+			}
+		}();
+		var outputStyleStr = function () {
+			var _v1 = $author$project$SelectionMode$getOutputStyle(selectionConfig);
+			if (_v1.$ === 'CustomHtml') {
+				return 'output-style-custom-html';
+			} else {
+				return 'output-style-datalist';
+			}
+		}();
+		var interactionStateStr = function () {
+			var _v0 = $author$project$SelectionMode$getInteractionState(selectionConfig);
+			switch (_v0.$) {
+				case 'Focused':
+					return 'focused';
+				case 'Unfocused':
+					return 'unfocused';
+				default:
+					return 'disabled';
+			}
+		}();
+		var hasPendingValidationStr = hasPendingValidation ? 'pending-validation' : '';
+		var hasErrorStr = hasError ? 'error' : '';
+		return A2(
+			$elm$html$Html$Attributes$attribute,
+			'part',
+			A2(
+				$elm$core$String$join,
+				' ',
+				_List_fromArray(
+					['value-casing', outputStyleStr, selectionModeStr, interactionStateStr, hasErrorStr, hasPendingValidationStr])));
+	});
+var $author$project$MuchSelect$multiSelectViewCustomHtml = F3(
+	function (selectionConfig, options, searchString) {
+		var hasPendingValidation = $author$project$OptionList$hasAnyPendingValidation(options);
+		var hasOptionSelected = $author$project$OptionList$hasSelectedOption(options);
+		var showPlaceholder = (!hasOptionSelected) && (!$author$project$SelectionMode$isFocused(selectionConfig));
+		var placeholderAttribute = showPlaceholder ? $elm$html$Html$Attributes$placeholder(
+			$author$project$SelectionMode$getPlaceholderString(selectionConfig)) : $elm$html$Html$Attributes$classList(_List_Nil);
+		var inputFilter = A2(
+			$elm$html$Html$input,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$type_('text'),
+					$elm$html$Html$Events$onBlur($author$project$MuchSelect$InputBlur),
+					$elm$html$Html$Events$onFocus($author$project$MuchSelect$InputFocus),
+					$elm$html$Html$Events$onInput($author$project$MuchSelect$UpdateSearchString),
+					$author$project$Events$onMouseDownStopPropagation($author$project$MuchSelect$NoOp),
+					$author$project$Events$onMouseUpStopPropagation($author$project$MuchSelect$NoOp),
+					$elm$html$Html$Attributes$value(
+					$author$project$SearchString$toString(searchString)),
+					placeholderAttribute,
+					$elm$html$Html$Attributes$id('input-filter'),
+					A2($elm$html$Html$Attributes$attribute, 'part', 'input-filter'),
+					$elm$html$Html$Attributes$disabled(
+					$author$project$SelectionMode$isDisabled(selectionConfig)),
+					A2(
+					$robinheghan$keyboard_events$Keyboard$Events$on,
+					$robinheghan$keyboard_events$Keyboard$Events$Keydown,
+					_List_fromArray(
+						[
+							_Utils_Tuple2($ohanhi$keyboard$Keyboard$Enter, $author$project$MuchSelect$SelectHighlightedOption),
+							_Utils_Tuple2($ohanhi$keyboard$Keyboard$Escape, $author$project$MuchSelect$EscapeKeyInInputFilter),
+							_Utils_Tuple2($ohanhi$keyboard$Keyboard$ArrowUp, $author$project$MuchSelect$MoveHighlightedOptionUp),
+							_Utils_Tuple2($ohanhi$keyboard$Keyboard$ArrowDown, $author$project$MuchSelect$MoveHighlightedOptionDown)
+						]))
+				]),
+			_List_Nil);
+		var hasErrors = $author$project$OptionList$hasAnyValidationErrors(options);
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$id('value-casing'),
+					A3($author$project$MuchSelect$valueCasingPartsAttribute, selectionConfig, hasErrors, hasPendingValidation),
+					$elm$html$Html$Events$onMouseDown($author$project$MuchSelect$NoOp),
+					$elm$html$Html$Events$onMouseUp($author$project$MuchSelect$BringInputInFocus),
+					$elm$html$Html$Events$onFocus($author$project$MuchSelect$BringInputInFocus),
+					A2(
+					$robinheghan$keyboard_events$Keyboard$Events$on,
+					$robinheghan$keyboard_events$Keyboard$Events$Keydown,
+					_List_fromArray(
+						[
+							_Utils_Tuple2($ohanhi$keyboard$Keyboard$Delete, $author$project$MuchSelect$DeleteKeydownForMultiSelect),
+							_Utils_Tuple2($ohanhi$keyboard$Keyboard$Backspace, $author$project$MuchSelect$DeleteKeydownForMultiSelect)
+						])),
+					$author$project$MuchSelect$tabIndexAttribute(
+					$author$project$SelectionMode$isDisabled(selectionConfig)),
+					$elm$html$Html$Attributes$classList(
+					A3($author$project$MuchSelect$valueCasingClassList, selectionConfig, hasOptionSelected, false))
+				]),
+			_Utils_ap(
+				A2(
+					$author$project$MuchSelect$optionsToValuesHtml,
+					options,
+					$author$project$SelectionMode$getSingleItemRemoval(selectionConfig)),
+				_List_fromArray(
+					[inputFilter])));
+	});
+var $author$project$OptionList$concatMap = F2(
+	function (_function, optionList) {
+		return $elm$core$List$concat(
+			A2($author$project$OptionList$andMap, _function, optionList));
+	});
+var $author$project$MuchSelect$UpdateOptionValueValue = F2(
+	function (a, b) {
+		return {$: 'UpdateOptionValueValue', a: a, b: b};
+	});
+var $author$project$OptionDisplay$getErrors = function (optionDisplay) {
+	switch (optionDisplay.$) {
+		case 'OptionShown':
+			return _List_Nil;
+		case 'OptionHidden':
+			return _List_Nil;
+		case 'OptionSelected':
+			return _List_Nil;
+		case 'OptionSelectedPendingValidation':
+			return _List_Nil;
+		case 'OptionSelectedAndInvalid':
+			var validationFailures = optionDisplay.b;
+			return validationFailures;
+		case 'OptionSelectedHighlighted':
+			return _List_Nil;
+		case 'OptionHighlighted':
+			return _List_Nil;
+		case 'OptionDisabled':
+			return _List_Nil;
+		default:
+			return _List_Nil;
+	}
+};
+var $author$project$Option$getOptionValidationErrors = function (option) {
+	return $author$project$OptionDisplay$getErrors(
+		$author$project$Option$getOptionDisplay(option));
+};
+var $author$project$SelectionMode$hasPlaceholder = function (selectionConfig) {
+	return $author$project$SelectionMode$getPlaceholder(selectionConfig).a;
+};
+var $elm$html$Html$Attributes$list = _VirtualDom_attribute('list');
 var $author$project$MuchSelect$AddMultiSelectValue = function (a) {
 	return {$: 'AddMultiSelectValue', a: a};
 };
@@ -21632,372 +21839,199 @@ var $author$project$MuchSelect$remoteButtonSlot = function (index) {
 		_List_fromArray(
 			[$author$project$MuchSelect$defaultRemoveButton]));
 };
-var $author$project$MuchSelect$rightSlotHtml = F4(
-	function (rightSlot, interactionState, isDisabled, selectedIndex) {
-		var wrapper = function (content) {
-			return A2(
-				$elm$html$Html$div,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$id('right-slot-wrapper'),
-						A2($elm$html$Html$Attributes$attribute, 'part', 'right-slot-wrapper')
-					]),
-				_List_fromArray(
-					[content]));
-		};
-		switch (rightSlot.$) {
-			case 'ShowNothing':
-				return $elm$html$Html$text('');
-			case 'ShowLoadingIndicator':
-				return wrapper(
-					A3(
-						$elm$html$Html$node,
-						'slot',
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$name('loading-indicator')
-							]),
-						_List_fromArray(
-							[$author$project$MuchSelect$defaultLoadingIndicator])));
-			case 'ShowDropdownIndicator':
-				var transitioning = rightSlot.a;
-				return A2(
-					$elm$html$Html$div,
-					_List_fromArray(
-						[
-							$elm$html$Html$Attributes$id('right-slot-wrapper'),
-							A2($elm$html$Html$Attributes$attribute, 'part', 'right-slot-wrapper')
-						]),
-					_List_fromArray(
-						[
-							A2($author$project$MuchSelect$dropdownIndicator, interactionState, transitioning)
-						]));
-			case 'ShowClearButton':
-				return isDisabled ? $elm$html$Html$text('') : A2(
-					$elm$html$Html$div,
-					_List_fromArray(
-						[
-							$elm$html$Html$Attributes$id('right-slot-wrapper'),
-							A2($elm$html$Html$Attributes$attribute, 'part', 'right-slot-wrapper')
-						]),
-					_List_fromArray(
-						[
-							A2(
-							$elm$html$Html$div,
-							_List_fromArray(
-								[
-									$elm$html$Html$Attributes$id('clear-button-wrapper'),
-									A2($elm$html$Html$Attributes$attribute, 'part', 'clear-button-wrapper'),
-									$author$project$Events$onClickPreventDefaultAndStopPropagation($author$project$MuchSelect$ClearAllSelectedOptions)
-								]),
-							_List_fromArray(
-								[
-									A3(
-									$elm$html$Html$node,
-									'slot',
-									_List_fromArray(
-										[
-											$elm$html$Html$Attributes$name('clear-button')
-										]),
-									_List_fromArray(
-										[
-											$elm$html$Html$text('✕')
-										]))
-								]))
-						]));
-			case 'ShowAddButton':
-				return isDisabled ? $elm$html$Html$text('') : A2(
-					$elm$html$Html$div,
-					_List_fromArray(
-						[
-							$elm$html$Html$Attributes$id('right-slot-wrapper'),
-							A2($elm$html$Html$Attributes$attribute, 'part', 'right-slot-wrapper')
-						]),
-					_List_fromArray(
-						[
-							A2(
-							$elm$html$Html$div,
-							_List_fromArray(
-								[
-									$elm$html$Html$Attributes$class('add-remove-buttons')
-								]),
-							_List_fromArray(
-								[
-									A2(
-									$elm$html$Html$div,
-									_List_fromArray(
-										[
-											$elm$html$Html$Attributes$class('add-button-wrapper'),
-											$elm$html$Html$Events$onClick(
-											$author$project$MuchSelect$AddMultiSelectValue(selectedIndex))
-										]),
-									_List_fromArray(
-										[
-											$author$project$MuchSelect$addButtonSlot(selectedIndex)
-										]))
-								]))
-						]));
-			default:
-				return isDisabled ? $elm$html$Html$text('') : A2(
-					$elm$html$Html$div,
-					_List_fromArray(
-						[
-							$elm$html$Html$Attributes$id('right-slot-wrapper'),
-							A2($elm$html$Html$Attributes$attribute, 'part', 'right-slot-wrapper')
-						]),
-					_List_fromArray(
-						[
-							A2(
-							$elm$html$Html$div,
-							_List_fromArray(
-								[
-									$elm$html$Html$Attributes$class('add-remove-buttons')
-								]),
-							_List_fromArray(
-								[
-									A2(
-									$elm$html$Html$div,
-									_List_fromArray(
-										[
-											$elm$html$Html$Attributes$class('add-button-wrapper'),
-											$elm$html$Html$Events$onClick(
-											$author$project$MuchSelect$AddMultiSelectValue(selectedIndex))
-										]),
-									_List_fromArray(
-										[
-											$author$project$MuchSelect$addButtonSlot(selectedIndex)
-										])),
-									A2(
-									$elm$html$Html$div,
-									_List_fromArray(
-										[
-											$elm$html$Html$Attributes$class('remove-button-wrapper'),
-											$elm$html$Html$Events$onClick(
-											$author$project$MuchSelect$RemoveMultiSelectValue(selectedIndex))
-										]),
-									_List_fromArray(
-										[
-											$author$project$MuchSelect$remoteButtonSlot(selectedIndex)
-										]))
-								]))
-						]));
-		}
-	});
-var $elm$html$Html$Attributes$tabindex = function (n) {
-	return A2(
-		_VirtualDom_attribute,
-		'tabIndex',
-		$elm$core$String$fromInt(n));
-};
-var $author$project$MuchSelect$tabIndexAttribute = function (disabled) {
-	return disabled ? A2($elm$html$Html$Attributes$style, '', '') : $elm$html$Html$Attributes$tabindex(0);
-};
-var $author$project$MuchSelect$valueCasingClassList = F3(
-	function (selectionConfig, hasOptionSelected, hasAnError) {
-		var selectionModeClass = function () {
-			var _v3 = $author$project$SelectionMode$getSelectionMode(selectionConfig);
-			if (_v3.$ === 'SingleSelect') {
-				return _Utils_Tuple2('single', true);
-			} else {
-				return _Utils_Tuple2('multi', true);
-			}
-		}();
-		var outputStyleClass = function () {
-			var _v2 = $author$project$SelectionMode$getOutputStyle(selectionConfig);
-			if (_v2.$ === 'CustomHtml') {
-				return _Utils_Tuple2('output-style-custom-html', true);
-			} else {
-				return _Utils_Tuple2('output-style-datalist', true);
-			}
-		}();
-		var isFocused_ = $author$project$SelectionMode$isFocused(selectionConfig);
-		var showPlaceholder = function () {
-			var _v1 = $author$project$SelectionMode$getOutputStyle(selectionConfig);
-			if (_v1.$ === 'CustomHtml') {
-				return (!hasOptionSelected) && (!isFocused_);
-			} else {
-				return false;
-			}
-		}();
-		var allowsCustomOptions = function () {
-			var _v0 = $author$project$SelectionMode$getCustomOptions(selectionConfig);
-			if (_v0.$ === 'AllowCustomOptions') {
-				return true;
-			} else {
-				return false;
-			}
-		}();
-		return _List_fromArray(
-			[
-				_Utils_Tuple2('has-option-selected', hasOptionSelected),
-				_Utils_Tuple2('no-option-selected', !hasOptionSelected),
-				selectionModeClass,
-				outputStyleClass,
-				_Utils_Tuple2(
-				'disabled',
-				$author$project$SelectionMode$isDisabled(selectionConfig)),
-				_Utils_Tuple2('focused', isFocused_),
-				_Utils_Tuple2('not-focused', !isFocused_),
-				_Utils_Tuple2('show-placeholder', showPlaceholder),
-				_Utils_Tuple2('allows-custom-options', allowsCustomOptions),
-				_Utils_Tuple2('error', hasAnError)
-			]);
-	});
-var $author$project$MuchSelect$valueCasingPartsAttribute = F3(
-	function (selectionConfig, hasError, hasPendingValidation) {
-		var selectionModeStr = function () {
-			var _v2 = $author$project$SelectionMode$getSelectionMode(selectionConfig);
-			if (_v2.$ === 'SingleSelect') {
-				return 'single';
-			} else {
-				return 'multi';
-			}
-		}();
-		var outputStyleStr = function () {
-			var _v1 = $author$project$SelectionMode$getOutputStyle(selectionConfig);
-			if (_v1.$ === 'CustomHtml') {
-				return 'output-style-custom-html';
-			} else {
-				return 'output-style-datalist';
-			}
-		}();
-		var interactionStateStr = function () {
-			var _v0 = $author$project$SelectionMode$getInteractionState(selectionConfig);
-			switch (_v0.$) {
-				case 'Focused':
-					return 'focused';
-				case 'Unfocused':
-					return 'unfocused';
-				default:
-					return 'disabled';
-			}
-		}();
-		var hasPendingValidationStr = hasPendingValidation ? 'pending-validation' : '';
-		var hasErrorStr = hasError ? 'error' : '';
-		return A2(
-			$elm$html$Html$Attributes$attribute,
-			'part',
-			A2(
-				$elm$core$String$join,
-				' ',
-				_List_fromArray(
-					['value-casing', outputStyleStr, selectionModeStr, interactionStateStr, hasErrorStr, hasPendingValidationStr])));
-	});
-var $author$project$MuchSelect$multiSelectViewCustomHtml = F4(
-	function (selectionConfig, options, searchString, rightSlot) {
-		var hasPendingValidation = $author$project$OptionList$hasAnyPendingValidation(options);
-		var hasOptionSelected = $author$project$OptionList$hasSelectedOption(options);
-		var showPlaceholder = (!hasOptionSelected) && (!$author$project$SelectionMode$isFocused(selectionConfig));
-		var placeholderAttribute = showPlaceholder ? $elm$html$Html$Attributes$placeholder(
-			$author$project$SelectionMode$getPlaceholderString(selectionConfig)) : $elm$html$Html$Attributes$classList(_List_Nil);
-		var inputFilter = A2(
-			$elm$html$Html$input,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$type_('text'),
-					$elm$html$Html$Events$onBlur($author$project$MuchSelect$InputBlur),
-					$elm$html$Html$Events$onFocus($author$project$MuchSelect$InputFocus),
-					$elm$html$Html$Events$onInput($author$project$MuchSelect$UpdateSearchString),
-					$author$project$Events$onMouseDownStopPropagation($author$project$MuchSelect$NoOp),
-					$author$project$Events$onMouseUpStopPropagation($author$project$MuchSelect$NoOp),
-					$elm$html$Html$Attributes$value(
-					$author$project$SearchString$toString(searchString)),
-					placeholderAttribute,
-					$elm$html$Html$Attributes$id('input-filter'),
-					A2($elm$html$Html$Attributes$attribute, 'part', 'input-filter'),
-					$elm$html$Html$Attributes$disabled(
-					$author$project$SelectionMode$isDisabled(selectionConfig)),
-					A2(
-					$robinheghan$keyboard_events$Keyboard$Events$on,
-					$robinheghan$keyboard_events$Keyboard$Events$Keydown,
-					_List_fromArray(
-						[
-							_Utils_Tuple2($ohanhi$keyboard$Keyboard$Enter, $author$project$MuchSelect$SelectHighlightedOption),
-							_Utils_Tuple2($ohanhi$keyboard$Keyboard$Escape, $author$project$MuchSelect$EscapeKeyInInputFilter),
-							_Utils_Tuple2($ohanhi$keyboard$Keyboard$ArrowUp, $author$project$MuchSelect$MoveHighlightedOptionUp),
-							_Utils_Tuple2($ohanhi$keyboard$Keyboard$ArrowDown, $author$project$MuchSelect$MoveHighlightedOptionDown)
-						]))
-				]),
-			_List_Nil);
-		var hasErrors = $author$project$OptionList$hasAnyValidationErrors(options);
+var $author$project$MuchSelect$rightSlotForEachValueHtml = F4(
+	function (rightSlot, interactionState, selectionMode, selectedIndex) {
 		return A2(
 			$elm$html$Html$div,
 			_List_fromArray(
 				[
-					$elm$html$Html$Attributes$id('value-casing'),
-					A3($author$project$MuchSelect$valueCasingPartsAttribute, selectionConfig, hasErrors, hasPendingValidation),
-					$elm$html$Html$Events$onMouseDown($author$project$MuchSelect$NoOp),
-					$elm$html$Html$Events$onMouseUp($author$project$MuchSelect$BringInputInFocus),
-					$elm$html$Html$Events$onFocus($author$project$MuchSelect$BringInputInFocus),
-					A2(
-					$robinheghan$keyboard_events$Keyboard$Events$on,
-					$robinheghan$keyboard_events$Keyboard$Events$Keydown,
-					_List_fromArray(
-						[
-							_Utils_Tuple2($ohanhi$keyboard$Keyboard$Delete, $author$project$MuchSelect$DeleteKeydownForMultiSelect),
-							_Utils_Tuple2($ohanhi$keyboard$Keyboard$Backspace, $author$project$MuchSelect$DeleteKeydownForMultiSelect)
-						])),
-					$author$project$MuchSelect$tabIndexAttribute(
-					$author$project$SelectionMode$isDisabled(selectionConfig)),
-					$elm$html$Html$Attributes$classList(
-					A3($author$project$MuchSelect$valueCasingClassList, selectionConfig, hasOptionSelected, false))
+					$elm$html$Html$Attributes$id('right-slot-wrapper'),
+					A2($elm$html$Html$Attributes$attribute, 'part', 'right-slot-wrapper')
 				]),
-			_Utils_ap(
-				A2(
-					$author$project$MuchSelect$optionsToValuesHtml,
-					options,
-					$author$project$SelectionMode$getSingleItemRemoval(selectionConfig)),
-				_List_fromArray(
-					[
-						inputFilter,
-						A4(
-						$author$project$MuchSelect$rightSlotHtml,
-						rightSlot,
-						$author$project$SelectionMode$getInteractionState(selectionConfig),
-						$author$project$SelectionMode$isDisabled(selectionConfig),
-						0)
-					])));
+			_List_fromArray(
+				[
+					function () {
+					switch (rightSlot.$) {
+						case 'ShowNothing':
+							return $elm_community$html_extra$Html$Extra$nothing;
+						case 'ShowLoadingIndicator':
+							return A3(
+								$elm$html$Html$node,
+								'slot',
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$name('loading-indicator')
+									]),
+								_List_fromArray(
+									[$author$project$MuchSelect$defaultLoadingIndicator]));
+						case 'ShowDropdownIndicator':
+							var transitioning = rightSlot.a;
+							return A2($author$project$MuchSelect$dropdownIndicator, interactionState, transitioning);
+						case 'ShowClearButton':
+							var clearButtonHtml = A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$id('clear-button-wrapper'),
+										A2($elm$html$Html$Attributes$attribute, 'part', 'clear-button-wrapper'),
+										$author$project$Events$onClickPreventDefaultAndStopPropagation($author$project$MuchSelect$ClearAllSelectedOptions)
+									]),
+								_List_fromArray(
+									[
+										A3(
+										$elm$html$Html$node,
+										'slot',
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$name('clear-button')
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text('✕')
+											]))
+									]));
+							switch (interactionState.$) {
+								case 'Focused':
+									return clearButtonHtml;
+								case 'Unfocused':
+									return clearButtonHtml;
+								default:
+									return $elm_community$html_extra$Html$Extra$nothing;
+							}
+						case 'ShowAddButton':
+							if (selectionMode.$ === 'SingleSelect') {
+								return $elm_community$html_extra$Html$Extra$nothing;
+							} else {
+								switch (interactionState.$) {
+									case 'Focused':
+										return A2(
+											$elm$html$Html$div,
+											_List_fromArray(
+												[
+													$elm$html$Html$Attributes$class('add-remove-buttons')
+												]),
+											_List_fromArray(
+												[
+													A2(
+													$elm$html$Html$div,
+													_List_fromArray(
+														[
+															$elm$html$Html$Attributes$class('add-button-wrapper'),
+															$elm$html$Html$Events$onClick(
+															$author$project$MuchSelect$AddMultiSelectValue(selectedIndex))
+														]),
+													_List_fromArray(
+														[
+															$author$project$MuchSelect$addButtonSlot(selectedIndex)
+														]))
+												]));
+									case 'Unfocused':
+										return A2(
+											$elm$html$Html$div,
+											_List_fromArray(
+												[
+													$elm$html$Html$Attributes$class('add-remove-buttons')
+												]),
+											_List_fromArray(
+												[
+													A2(
+													$elm$html$Html$div,
+													_List_fromArray(
+														[
+															$elm$html$Html$Attributes$class('add-button-wrapper'),
+															$elm$html$Html$Events$onClick(
+															$author$project$MuchSelect$AddMultiSelectValue(selectedIndex))
+														]),
+													_List_fromArray(
+														[
+															$author$project$MuchSelect$addButtonSlot(selectedIndex)
+														]))
+												]));
+									default:
+										return $elm_community$html_extra$Html$Extra$nothing;
+								}
+							}
+						default:
+							if (selectionMode.$ === 'SingleSelect') {
+								return $elm_community$html_extra$Html$Extra$nothing;
+							} else {
+								switch (interactionState.$) {
+									case 'Focused':
+										return A2(
+											$elm$html$Html$div,
+											_List_fromArray(
+												[
+													$elm$html$Html$Attributes$class('add-remove-buttons')
+												]),
+											_List_fromArray(
+												[
+													A2(
+													$elm$html$Html$div,
+													_List_fromArray(
+														[
+															$elm$html$Html$Attributes$class('add-button-wrapper'),
+															$elm$html$Html$Events$onClick(
+															$author$project$MuchSelect$AddMultiSelectValue(selectedIndex))
+														]),
+													_List_fromArray(
+														[
+															$author$project$MuchSelect$addButtonSlot(selectedIndex)
+														])),
+													A2(
+													$elm$html$Html$div,
+													_List_fromArray(
+														[
+															$elm$html$Html$Attributes$class('remove-button-wrapper'),
+															$elm$html$Html$Events$onClick(
+															$author$project$MuchSelect$RemoveMultiSelectValue(selectedIndex))
+														]),
+													_List_fromArray(
+														[
+															$author$project$MuchSelect$remoteButtonSlot(selectedIndex)
+														]))
+												]));
+									case 'Unfocused':
+										return A2(
+											$elm$html$Html$div,
+											_List_fromArray(
+												[
+													$elm$html$Html$Attributes$class('add-remove-buttons')
+												]),
+											_List_fromArray(
+												[
+													A2(
+													$elm$html$Html$div,
+													_List_fromArray(
+														[
+															$elm$html$Html$Attributes$class('add-button-wrapper'),
+															$elm$html$Html$Events$onClick(
+															$author$project$MuchSelect$AddMultiSelectValue(selectedIndex))
+														]),
+													_List_fromArray(
+														[
+															$author$project$MuchSelect$addButtonSlot(selectedIndex)
+														])),
+													A2(
+													$elm$html$Html$div,
+													_List_fromArray(
+														[
+															$elm$html$Html$Attributes$class('remove-button-wrapper'),
+															$elm$html$Html$Events$onClick(
+															$author$project$MuchSelect$RemoveMultiSelectValue(selectedIndex))
+														]),
+													_List_fromArray(
+														[
+															$author$project$MuchSelect$remoteButtonSlot(selectedIndex)
+														]))
+												]));
+									default:
+										return $elm_community$html_extra$Html$Extra$nothing;
+								}
+							}
+					}
+				}()
+				]));
 	});
-var $author$project$OptionList$concatMap = F2(
-	function (_function, optionList) {
-		return $elm$core$List$concat(
-			A2($author$project$OptionList$andMap, _function, optionList));
-	});
-var $author$project$MuchSelect$UpdateOptionValueValue = F2(
-	function (a, b) {
-		return {$: 'UpdateOptionValueValue', a: a, b: b};
-	});
-var $author$project$OptionDisplay$getErrors = function (optionDisplay) {
-	switch (optionDisplay.$) {
-		case 'OptionShown':
-			return _List_Nil;
-		case 'OptionHidden':
-			return _List_Nil;
-		case 'OptionSelected':
-			return _List_Nil;
-		case 'OptionSelectedPendingValidation':
-			return _List_Nil;
-		case 'OptionSelectedAndInvalid':
-			var validationFailures = optionDisplay.b;
-			return validationFailures;
-		case 'OptionSelectedHighlighted':
-			return _List_Nil;
-		case 'OptionHighlighted':
-			return _List_Nil;
-		case 'OptionDisabled':
-			return _List_Nil;
-		default:
-			return _List_Nil;
-	}
-};
-var $author$project$Option$getOptionValidationErrors = function (option) {
-	return $author$project$OptionDisplay$getErrors(
-		$author$project$Option$getOptionDisplay(option));
-};
-var $author$project$SelectionMode$hasPlaceholder = function (selectionConfig) {
-	return $author$project$SelectionMode$getPlaceholder(selectionConfig).a;
-};
-var $elm$html$Html$Attributes$list = _VirtualDom_attribute('list');
 var $author$project$MuchSelect$multiSelectDatasetInputField = F4(
 	function (maybeOption, selectionConfig, rightSlot, index) {
 		var valueString = function () {
@@ -22103,10 +22137,10 @@ var $author$project$MuchSelect$multiSelectDatasetInputField = F4(
 					[
 						inputHtml,
 						A4(
-						$author$project$MuchSelect$rightSlotHtml,
+						$author$project$MuchSelect$rightSlotForEachValueHtml,
 						rightSlot,
 						$author$project$SelectionMode$getInteractionState(selectionConfig),
-						$author$project$SelectionMode$isDisabled(selectionConfig),
+						$author$project$SelectionMode$getSelectionMode(selectionConfig),
 						index)
 					])),
 				errorMessage
@@ -22151,10 +22185,78 @@ var $author$project$MuchSelect$multiSelectView = F4(
 	function (selectionMode, options, searchString, rightSlot) {
 		var _v0 = $author$project$SelectionMode$getOutputStyle(selectionMode);
 		if (_v0.$ === 'CustomHtml') {
-			return A4($author$project$MuchSelect$multiSelectViewCustomHtml, selectionMode, options, searchString, rightSlot);
+			return A3($author$project$MuchSelect$multiSelectViewCustomHtml, selectionMode, options, searchString);
 		} else {
 			return A3($author$project$MuchSelect$multiSelectViewDataset, selectionMode, options, rightSlot);
 		}
+	});
+var $author$project$MuchSelect$rightSlotForAllValuesHtml = F2(
+	function (rightSlot, interactionState) {
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$id('right-slot-for-all-values-wrapper'),
+					$elm$html$Html$Attributes$class('right-slot-wrapper'),
+					A2($elm$html$Html$Attributes$attribute, 'part', 'right-slot-wrapper right-slot-for-all-values-wrapper')
+				]),
+			_List_fromArray(
+				[
+					function () {
+					switch (rightSlot.$) {
+						case 'ShowNothing':
+							return $elm_community$html_extra$Html$Extra$nothing;
+						case 'ShowLoadingIndicator':
+							return A3(
+								$elm$html$Html$node,
+								'slot',
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$name('loading-indicator')
+									]),
+								_List_fromArray(
+									[$author$project$MuchSelect$defaultLoadingIndicator]));
+						case 'ShowDropdownIndicator':
+							var transitioning = rightSlot.a;
+							return A2($author$project$MuchSelect$dropdownIndicator, interactionState, transitioning);
+						case 'ShowClearButton':
+							var clearButtonHtml = A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$id('clear-button-wrapper'),
+										A2($elm$html$Html$Attributes$attribute, 'part', 'clear-button-wrapper'),
+										$author$project$Events$onClickPreventDefaultAndStopPropagation($author$project$MuchSelect$ClearAllSelectedOptions)
+									]),
+								_List_fromArray(
+									[
+										A3(
+										$elm$html$Html$node,
+										'slot',
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$name('clear-button')
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text('✕')
+											]))
+									]));
+							switch (interactionState.$) {
+								case 'Focused':
+									return clearButtonHtml;
+								case 'Unfocused':
+									return clearButtonHtml;
+								default:
+									return $elm_community$html_extra$Html$Extra$nothing;
+							}
+						case 'ShowAddButton':
+							return $elm_community$html_extra$Html$Extra$nothing;
+						default:
+							return $elm_community$html_extra$Html$Extra$nothing;
+					}
+				}()
+				]));
 	});
 var $elm_community$html_extra$Html$Attributes$Extra$attributeIf = F2(
 	function (condition, attr) {
@@ -22304,8 +22406,8 @@ var $author$project$MuchSelect$singleSelectViewCustomHtmlValue = function (selec
 	return $author$project$Option$singleSelectViewCustomHtmlValueHtml(selectedOption);
 };
 var $author$project$FancyOption$toSingleSelectValueNoValueSelected = $elm_community$html_extra$Html$Extra$nothing;
-var $author$project$MuchSelect$singleSelectViewCustomHtml = F4(
-	function (selectionConfig, options, searchString, rightSlot) {
+var $author$project$MuchSelect$singleSelectViewCustomHtml = F3(
+	function (selectionConfig, options, searchString) {
 		var hasPendingValidation = $author$project$OptionList$hasAnyPendingValidation(options);
 		var hasOptionSelected = $author$project$OptionList$hasSelectedOption(options);
 		var hasErrors = $author$project$OptionList$hasAnyValidationErrors(options);
@@ -22357,42 +22459,7 @@ var $author$project$MuchSelect$singleSelectViewCustomHtml = F4(
 					$author$project$SelectionMode$isDisabled(selectionConfig),
 					$author$project$SelectionMode$isFocused(selectionConfig),
 					$author$project$SelectionMode$getPlaceholder(selectionConfig),
-					hasOptionSelected),
-					function () {
-					switch (rightSlot.$) {
-						case 'ShowNothing':
-							return $elm$html$Html$text('');
-						case 'ShowLoadingIndicator':
-							return A3(
-								$elm$html$Html$node,
-								'slot',
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$name('loading-indicator')
-									]),
-								_List_fromArray(
-									[$author$project$MuchSelect$defaultLoadingIndicator]));
-						case 'ShowDropdownIndicator':
-							var transitioning = rightSlot.a;
-							return A2(
-								$author$project$MuchSelect$dropdownIndicator,
-								$author$project$SelectionMode$getInteractionState(selectionConfig),
-								transitioning);
-						case 'ShowClearButton':
-							return A3(
-								$elm$html$Html$node,
-								'slot',
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$name('clear-button')
-									]),
-								_List_Nil);
-						case 'ShowAddButton':
-							return $elm$html$Html$text('');
-						default:
-							return $elm$html$Html$text('');
-					}
-				}()
+					hasOptionSelected)
 				]));
 	});
 var $author$project$MuchSelect$singleSelectDatasetInputField = F3(
@@ -22474,11 +22541,11 @@ var $author$project$MuchSelect$singleSelectViewDatalistHtml = F2(
 					A3($author$project$MuchSelect$singleSelectDatasetInputField, maybeSelectedOption, selectionConfig, hasOptionSelected)
 				]));
 	});
-var $author$project$MuchSelect$singleSelectView = F4(
-	function (selectionMode, options, searchString, rightSlot) {
+var $author$project$MuchSelect$singleSelectView = F3(
+	function (selectionMode, options, searchString) {
 		var _v0 = $author$project$SelectionMode$getOutputStyle(selectionMode);
 		if (_v0.$ === 'CustomHtml') {
-			return A4($author$project$MuchSelect$singleSelectViewCustomHtml, selectionMode, options, searchString, rightSlot);
+			return A3($author$project$MuchSelect$singleSelectViewCustomHtml, selectionMode, options, searchString);
 		} else {
 			return A2($author$project$MuchSelect$singleSelectViewDatalistHtml, selectionMode, options);
 		}
@@ -22862,7 +22929,7 @@ var $author$project$MuchSelect$view = function (model) {
 			]),
 		_List_fromArray(
 			[
-				$author$project$SelectionMode$isSingleSelect(model.selectionConfig) ? A4($author$project$MuchSelect$singleSelectView, model.selectionConfig, model.options, model.searchString, model.rightSlot) : A4($author$project$MuchSelect$multiSelectView, model.selectionConfig, model.options, model.searchString, model.rightSlot),
+				$author$project$SelectionMode$isSingleSelect(model.selectionConfig) ? A3($author$project$MuchSelect$singleSelectView, model.selectionConfig, model.options, model.searchString) : A4($author$project$MuchSelect$multiSelectView, model.selectionConfig, model.options, model.searchString, model.rightSlot),
 				function () {
 				var _v1 = $author$project$SelectionMode$getOutputStyle(model.selectionConfig);
 				if (_v1.$ === 'CustomHtml') {
@@ -22871,7 +22938,11 @@ var $author$project$MuchSelect$view = function (model) {
 					return $author$project$GroupedDropdownOptions$dropdownOptionsToDatalistHtml(
 						A2($author$project$DropdownOptions$figureOutWhichOptionsToShowInTheDropdownThatAreNotSelected, model.selectionConfig, model.options));
 				}
-			}()
+			}(),
+				A2(
+				$author$project$MuchSelect$rightSlotForAllValuesHtml,
+				model.rightSlot,
+				$author$project$SelectionMode$getInteractionState(model.selectionConfig))
 			]));
 };
 var $author$project$MuchSelect$main = $elm$browser$Browser$element(
