@@ -7763,8 +7763,8 @@ var $author$project$Ports$valuesDecoder = $elm$json$Json$Decode$oneOf(
 			$elm$json$Json$Decode$list($elm$json$Json$Decode$string),
 			A2($elm$json$Json$Decode$map, $elm$core$List$singleton, $elm$json$Json$Decode$string)
 		]));
-var $author$project$SelectedValueEncoding$stringToValueStrings = F2(
-	function (selectedValueEncoding, valuesString) {
+var $author$project$SelectedValueEncoding$stringToValueStrings = F3(
+	function (config, selectedValueEncoding, valuesString) {
 		if ((valuesString === '') && (!selectedValueEncoding)) {
 			return $elm$core$Result$Ok(_List_Nil);
 		} else {
@@ -7772,8 +7772,14 @@ var $author$project$SelectedValueEncoding$stringToValueStrings = F2(
 				return $elm$core$Result$Ok(_List_Nil);
 			} else {
 				if (!selectedValueEncoding) {
-					return $elm$core$Result$Ok(
-						A2($elm$core$String$split, ',', valuesString));
+					if (!config.$) {
+						return $elm$core$Result$Ok(
+							_List_fromArray(
+								[valuesString]));
+					} else {
+						return $elm$core$Result$Ok(
+							A2($elm$core$String$split, ',', valuesString));
+					}
 				} else {
 					return A2(
 						$elm$core$Result$andThen,
@@ -7917,7 +7923,7 @@ var $author$project$MuchSelect$init = function (flags) {
 	var selectionConfig = _v10.a;
 	var selectionConfigErrorEffect = _v10.b;
 	var _v12 = function () {
-		var _v13 = A2($author$project$SelectedValueEncoding$stringToValueStrings, selectedValueEncoding, flags.bE);
+		var _v13 = A3($author$project$SelectedValueEncoding$stringToValueStrings, selectionConfig, selectedValueEncoding, flags.bE);
 		if (!_v13.$) {
 			var values = _v13.a;
 			return _Utils_Tuple2(values, $author$project$MuchSelect$NoEffect);
@@ -14156,7 +14162,7 @@ var $author$project$MuchSelect$update = F2(
 								}),
 							$author$project$MuchSelect$NoEffect);
 					case 'selected-value':
-						var _v43 = A2($author$project$SelectedValueEncoding$stringToValueStrings, model.h, newAttributeValue);
+						var _v43 = A3($author$project$SelectedValueEncoding$stringToValueStrings, model.a, model.h, newAttributeValue);
 						if (!_v43.$) {
 							var selectedValueStrings = _v43.a;
 							if (A2($author$project$OptionList$selectedOptionValuesAreEqual, selectedValueStrings, model.b)) {
