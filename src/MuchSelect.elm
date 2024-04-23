@@ -1611,7 +1611,7 @@ update msg model =
                     )
 
                 "selected-value" ->
-                    case SelectedValueEncoding.stringToValueStrings model.selectedValueEncoding newAttributeValue of
+                    case SelectedValueEncoding.stringToValueStrings model.selectionConfig model.selectedValueEncoding newAttributeValue of
                         Ok selectedValueStrings ->
                             if OptionList.selectedOptionValuesAreEqual selectedValueStrings model.options then
                                 ( model, NoEffect )
@@ -3436,7 +3436,7 @@ init flags =
                 |> Result.withDefault SelectedValueEncoding.defaultSelectedValueEncoding
 
         ( initialValues, initialValueErrEffect ) =
-            case SelectedValueEncoding.stringToValueStrings selectedValueEncoding flags.selectedValue of
+            case SelectedValueEncoding.stringToValueStrings selectionConfig selectedValueEncoding flags.selectedValue of
                 Ok values ->
                     ( values, NoEffect )
 

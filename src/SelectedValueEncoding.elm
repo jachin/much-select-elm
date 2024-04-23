@@ -5,7 +5,7 @@ import Json.Encode
 import Option exposing (Option)
 import OptionList exposing (OptionList)
 import Ports exposing (valueDecoder, valuesDecoder)
-import SelectionMode exposing (SelectionMode)
+import SelectionMode exposing (SelectionConfig(..), SelectionMode)
 import Url exposing (percentDecode, percentEncode)
 
 
@@ -59,8 +59,8 @@ toString selectedValueEncoding =
             "json"
 
 
-stringToValueStrings : SelectedValueEncoding -> String -> Result String (List String)
-stringToValueStrings selectedValueEncoding valuesString =
+stringToValueStrings : SelectionConfig -> SelectedValueEncoding -> String -> Result String (List String)
+stringToValueStrings config selectedValueEncoding valuesString =
     if valuesString == "" && selectedValueEncoding == CommaSeperated then
         Ok []
 
@@ -70,7 +70,12 @@ stringToValueStrings selectedValueEncoding valuesString =
     else
         case selectedValueEncoding of
             CommaSeperated ->
-                Ok (String.split "," valuesString)
+                case config of
+                    SingleSelectConfig _ _ _ ->
+                        Ok [ valuesString ]
+
+                    MultiSelectConfig _ _ _ ->
+                        Ok (String.split "," valuesString)
 
             JsonEncoded ->
                 percentDecode valuesString
