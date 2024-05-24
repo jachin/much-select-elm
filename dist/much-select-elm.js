@@ -16628,196 +16628,218 @@ var $author$project$MuchSelect$remoteButtonSlot = function (index) {
 };
 var $author$project$MuchSelect$rightSlotForEachValueHtml = F4(
 	function (rightSlot, interactionState, selectionMode, selectedIndex) {
-		return A2(
-			$elm$html$Html$div,
+		var rightSlotWrapperDiv = $elm$html$Html$div(
 			_List_fromArray(
 				[
 					$elm$html$Html$Attributes$id('right-slot-wrapper'),
 					A2($elm$html$Html$Attributes$attribute, 'part', 'right-slot-wrapper')
-				]),
-			_List_fromArray(
-				[
-					function () {
-					switch (rightSlot.$) {
+				]));
+		switch (rightSlot.$) {
+			case 0:
+				return $elm_community$html_extra$Html$Extra$nothing;
+			case 1:
+				return rightSlotWrapperDiv(
+					_List_fromArray(
+						[
+							A3(
+							$elm$html$Html$node,
+							'slot',
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$name('loading-indicator')
+								]),
+							_List_fromArray(
+								[$author$project$MuchSelect$defaultLoadingIndicator]))
+						]));
+			case 2:
+				var transitioning = rightSlot.a;
+				return rightSlotWrapperDiv(
+					_List_fromArray(
+						[
+							A2($author$project$MuchSelect$dropdownIndicator, interactionState, transitioning)
+						]));
+			case 3:
+				var clearButtonHtml = A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$id('clear-button-wrapper'),
+							A2($elm$html$Html$Attributes$attribute, 'part', 'clear-button-wrapper'),
+							$author$project$Events$onClickPreventDefaultAndStopPropagation($author$project$MuchSelect$ClearAllSelectedOptions)
+						]),
+					_List_fromArray(
+						[
+							A3(
+							$elm$html$Html$node,
+							'slot',
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$name('clear-button')
+								]),
+							_List_fromArray(
+								[
+									$elm$html$Html$text('✕')
+								]))
+						]));
+				switch (interactionState) {
+					case 0:
+						return rightSlotWrapperDiv(
+							_List_fromArray(
+								[clearButtonHtml]));
+					case 1:
+						return rightSlotWrapperDiv(
+							_List_fromArray(
+								[clearButtonHtml]));
+					default:
+						return $elm_community$html_extra$Html$Extra$nothing;
+				}
+			case 4:
+				if (!selectionMode) {
+					return $elm_community$html_extra$Html$Extra$nothing;
+				} else {
+					switch (interactionState) {
 						case 0:
-							return $elm_community$html_extra$Html$Extra$nothing;
-						case 1:
-							return A3(
-								$elm$html$Html$node,
-								'slot',
+							return rightSlotWrapperDiv(
 								_List_fromArray(
 									[
-										$elm$html$Html$Attributes$name('loading-indicator')
-									]),
-								_List_fromArray(
-									[$author$project$MuchSelect$defaultLoadingIndicator]));
-						case 2:
-							var transitioning = rightSlot.a;
-							return A2($author$project$MuchSelect$dropdownIndicator, interactionState, transitioning);
-						case 3:
-							var clearButtonHtml = A2(
-								$elm$html$Html$div,
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$id('clear-button-wrapper'),
-										A2($elm$html$Html$Attributes$attribute, 'part', 'clear-button-wrapper'),
-										$author$project$Events$onClickPreventDefaultAndStopPropagation($author$project$MuchSelect$ClearAllSelectedOptions)
-									]),
-								_List_fromArray(
-									[
-										A3(
-										$elm$html$Html$node,
-										'slot',
+										A2(
+										$elm$html$Html$div,
 										_List_fromArray(
 											[
-												$elm$html$Html$Attributes$name('clear-button')
+												$elm$html$Html$Attributes$class('add-remove-buttons')
 											]),
 										_List_fromArray(
 											[
-												$elm$html$Html$text('✕')
+												A2(
+												$elm$html$Html$div,
+												_List_fromArray(
+													[
+														$elm$html$Html$Attributes$class('add-button-wrapper'),
+														$elm$html$Html$Events$onClick(
+														$author$project$MuchSelect$AddMultiSelectValue(selectedIndex))
+													]),
+												_List_fromArray(
+													[
+														$author$project$MuchSelect$addButtonSlot(selectedIndex)
+													]))
 											]))
 									]));
-							switch (interactionState) {
-								case 0:
-									return clearButtonHtml;
-								case 1:
-									return clearButtonHtml;
-								default:
-									return $elm_community$html_extra$Html$Extra$nothing;
-							}
-						case 4:
-							if (!selectionMode) {
-								return $elm_community$html_extra$Html$Extra$nothing;
-							} else {
-								switch (interactionState) {
-									case 0:
-										return A2(
-											$elm$html$Html$div,
-											_List_fromArray(
-												[
-													$elm$html$Html$Attributes$class('add-remove-buttons')
-												]),
-											_List_fromArray(
-												[
-													A2(
-													$elm$html$Html$div,
-													_List_fromArray(
-														[
-															$elm$html$Html$Attributes$class('add-button-wrapper'),
-															$elm$html$Html$Events$onClick(
-															$author$project$MuchSelect$AddMultiSelectValue(selectedIndex))
-														]),
-													_List_fromArray(
-														[
-															$author$project$MuchSelect$addButtonSlot(selectedIndex)
-														]))
-												]));
-									case 1:
-										return A2(
-											$elm$html$Html$div,
-											_List_fromArray(
-												[
-													$elm$html$Html$Attributes$class('add-remove-buttons')
-												]),
-											_List_fromArray(
-												[
-													A2(
-													$elm$html$Html$div,
-													_List_fromArray(
-														[
-															$elm$html$Html$Attributes$class('add-button-wrapper'),
-															$elm$html$Html$Events$onClick(
-															$author$project$MuchSelect$AddMultiSelectValue(selectedIndex))
-														]),
-													_List_fromArray(
-														[
-															$author$project$MuchSelect$addButtonSlot(selectedIndex)
-														]))
-												]));
-									default:
-										return $elm_community$html_extra$Html$Extra$nothing;
-								}
-							}
+						case 1:
+							return rightSlotWrapperDiv(
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$div,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$class('add-remove-buttons')
+											]),
+										_List_fromArray(
+											[
+												A2(
+												$elm$html$Html$div,
+												_List_fromArray(
+													[
+														$elm$html$Html$Attributes$class('add-button-wrapper'),
+														$elm$html$Html$Events$onClick(
+														$author$project$MuchSelect$AddMultiSelectValue(selectedIndex))
+													]),
+												_List_fromArray(
+													[
+														$author$project$MuchSelect$addButtonSlot(selectedIndex)
+													]))
+											]))
+									]));
 						default:
-							if (!selectionMode) {
-								return $elm_community$html_extra$Html$Extra$nothing;
-							} else {
-								switch (interactionState) {
-									case 0:
-										return A2(
-											$elm$html$Html$div,
-											_List_fromArray(
-												[
-													$elm$html$Html$Attributes$class('add-remove-buttons')
-												]),
-											_List_fromArray(
-												[
-													A2(
-													$elm$html$Html$div,
-													_List_fromArray(
-														[
-															$elm$html$Html$Attributes$class('add-button-wrapper'),
-															$elm$html$Html$Events$onClick(
-															$author$project$MuchSelect$AddMultiSelectValue(selectedIndex))
-														]),
-													_List_fromArray(
-														[
-															$author$project$MuchSelect$addButtonSlot(selectedIndex)
-														])),
-													A2(
-													$elm$html$Html$div,
-													_List_fromArray(
-														[
-															$elm$html$Html$Attributes$class('remove-button-wrapper'),
-															$elm$html$Html$Events$onClick(
-															$author$project$MuchSelect$RemoveMultiSelectValue(selectedIndex))
-														]),
-													_List_fromArray(
-														[
-															$author$project$MuchSelect$remoteButtonSlot(selectedIndex)
-														]))
-												]));
-									case 1:
-										return A2(
-											$elm$html$Html$div,
-											_List_fromArray(
-												[
-													$elm$html$Html$Attributes$class('add-remove-buttons')
-												]),
-											_List_fromArray(
-												[
-													A2(
-													$elm$html$Html$div,
-													_List_fromArray(
-														[
-															$elm$html$Html$Attributes$class('add-button-wrapper'),
-															$elm$html$Html$Events$onClick(
-															$author$project$MuchSelect$AddMultiSelectValue(selectedIndex))
-														]),
-													_List_fromArray(
-														[
-															$author$project$MuchSelect$addButtonSlot(selectedIndex)
-														])),
-													A2(
-													$elm$html$Html$div,
-													_List_fromArray(
-														[
-															$elm$html$Html$Attributes$class('remove-button-wrapper'),
-															$elm$html$Html$Events$onClick(
-															$author$project$MuchSelect$RemoveMultiSelectValue(selectedIndex))
-														]),
-													_List_fromArray(
-														[
-															$author$project$MuchSelect$remoteButtonSlot(selectedIndex)
-														]))
-												]));
-									default:
-										return $elm_community$html_extra$Html$Extra$nothing;
-								}
-							}
+							return $elm_community$html_extra$Html$Extra$nothing;
 					}
-				}()
-				]));
+				}
+			default:
+				if (!selectionMode) {
+					return $elm_community$html_extra$Html$Extra$nothing;
+				} else {
+					switch (interactionState) {
+						case 0:
+							return rightSlotWrapperDiv(
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$div,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$class('add-remove-buttons')
+											]),
+										_List_fromArray(
+											[
+												A2(
+												$elm$html$Html$div,
+												_List_fromArray(
+													[
+														$elm$html$Html$Attributes$class('add-button-wrapper'),
+														$elm$html$Html$Events$onClick(
+														$author$project$MuchSelect$AddMultiSelectValue(selectedIndex))
+													]),
+												_List_fromArray(
+													[
+														$author$project$MuchSelect$addButtonSlot(selectedIndex)
+													])),
+												A2(
+												$elm$html$Html$div,
+												_List_fromArray(
+													[
+														$elm$html$Html$Attributes$class('remove-button-wrapper'),
+														$elm$html$Html$Events$onClick(
+														$author$project$MuchSelect$RemoveMultiSelectValue(selectedIndex))
+													]),
+												_List_fromArray(
+													[
+														$author$project$MuchSelect$remoteButtonSlot(selectedIndex)
+													]))
+											]))
+									]));
+						case 1:
+							return rightSlotWrapperDiv(
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$div,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$class('add-remove-buttons')
+											]),
+										_List_fromArray(
+											[
+												A2(
+												$elm$html$Html$div,
+												_List_fromArray(
+													[
+														$elm$html$Html$Attributes$class('add-button-wrapper'),
+														$elm$html$Html$Events$onClick(
+														$author$project$MuchSelect$AddMultiSelectValue(selectedIndex))
+													]),
+												_List_fromArray(
+													[
+														$author$project$MuchSelect$addButtonSlot(selectedIndex)
+													])),
+												A2(
+												$elm$html$Html$div,
+												_List_fromArray(
+													[
+														$elm$html$Html$Attributes$class('remove-button-wrapper'),
+														$elm$html$Html$Events$onClick(
+														$author$project$MuchSelect$RemoveMultiSelectValue(selectedIndex))
+													]),
+												_List_fromArray(
+													[
+														$author$project$MuchSelect$remoteButtonSlot(selectedIndex)
+													]))
+											]))
+									]));
+						default:
+							return $elm_community$html_extra$Html$Extra$nothing;
+					}
+				}
+		}
 	});
 var $elm$html$Html$ul = _VirtualDom_node('ul');
 var $author$project$MuchSelect$multiSelectDatasetInputField = F4(
@@ -17727,10 +17749,17 @@ var $author$project$MuchSelect$view = function (model) {
 						A2($author$project$DropdownOptions$figureOutWhichOptionsToShowInTheDropdownThatAreNotSelected, model.a, model.b));
 				}
 			}(),
-				A2(
-				$author$project$MuchSelect$rightSlotForAllValuesHtml,
-				model.d,
-				$author$project$SelectionMode$getInteractionState(model.a))
+				function () {
+				var _v2 = $author$project$SelectionMode$getOutputStyle(model.a);
+				if (!_v2) {
+					return A2(
+						$author$project$MuchSelect$rightSlotForAllValuesHtml,
+						model.d,
+						$author$project$SelectionMode$getInteractionState(model.a));
+				} else {
+					return $elm_community$html_extra$Html$Extra$nothing;
+				}
+			}()
 			]));
 };
 var $author$project$MuchSelect$main = $elm$browser$Browser$element(

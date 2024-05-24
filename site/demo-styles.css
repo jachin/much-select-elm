@@ -483,6 +483,7 @@ much-select::part(right-slot-for-all-values-wrapper) {
 
 much-select::part(input-value) {
     min-height: var(--much-select-height);
+    width: 100%;
 }
 
 much-select::part(value-casing output-style-datalist error) {
