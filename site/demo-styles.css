@@ -466,12 +466,25 @@ much-select::part(value-casing output-style-datalist) {
 
 much-select::part(right-slot-wrapper) {
     border-left: 2px dotted var(--much-select-border-color);
+
+}
+
+much-select::part(right-slot-for-all-values-wrapper) {
+    position: absolute;
+    right: 0;
+    width: 2.1rem;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
 }
 
 much-select::part(input-value) {
     min-height: var(--much-select-height);
+    width: 100%;
 }
-
 
 much-select::part(value-casing output-style-datalist error) {
     border: none;
@@ -482,12 +495,10 @@ much-select::part(value-casing output-style-custom-html):hover {
     border-color: var(--much-select-hover-border-color);
 }
 
-
 much-select::part(value-casing output-style-custom-html):focus {
     outline: none;
     border-color: var(--example-border-color);
 }
-
 
 much-select::part(value-casing output-style-custom-html disabled) {
     border: 1px solid var(--much-select-disabled-border-color);
@@ -609,11 +620,7 @@ much-select[multi-select]::part(selected-value-label) {
 }
 
 much-select::part(dropdown-indicator) {
-    position: absolute;
-    right: 12px;
-    top: 10px;
     cursor: pointer;
-    display: block;
     transition: transform 0.25s;
 }
 
@@ -626,14 +633,10 @@ much-select::part(dropdown-indicator down) {
 }
 
 much-select::part(clear-button-wrapper) {
-    display: block;
-    position: absolute;
-    right: 0.2em;
-    top: 0.2em;
     cursor: pointer;
     box-sizing: content-box;
     padding: 0.3em 0.5em;
-    border-width: 1px;
+    border-width: 0.2em;
     border-style: solid;
     border-color: transparent;
 }

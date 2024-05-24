@@ -27,7 +27,7 @@ import GroupedDropdownOptions
         , groupOptionsInOrder
         , optionGroupsToHtml
         )
-import Html exposing (Html, button, div, input, li, node, span, text, ul)
+import Html exposing (Html, button, div, input, li, node, text, ul)
 import Html.Attributes
     exposing
         ( class
@@ -2148,7 +2148,6 @@ view model =
                 model.selectionConfig
                 model.options
                 model.searchString
-                model.rightSlot
 
           else
             multiSelectView
@@ -2174,18 +2173,23 @@ view model =
 
             Datalist ->
                 GroupedDropdownOptions.dropdownOptionsToDatalistHtml (DropdownOptions.figureOutWhichOptionsToShowInTheDropdownThatAreNotSelected model.selectionConfig model.options)
+        , case getOutputStyle model.selectionConfig of
+            CustomHtml ->
+                rightSlotForAllValuesHtml model.rightSlot (SelectionMode.getInteractionState model.selectionConfig)
+
+            Datalist ->
+                Html.Extra.nothing
         ]
 
 
-singleSelectView : SelectionConfig -> OptionList -> SearchString -> RightSlot -> Html Msg
-singleSelectView selectionMode options searchString rightSlot =
+singleSelectView : SelectionConfig -> OptionList -> SearchString -> Html Msg
+singleSelectView selectionMode options searchString =
     case getOutputStyle selectionMode of
         CustomHtml ->
             singleSelectViewCustomHtml
                 selectionMode
                 options
                 searchString
-                rightSlot
 
         Datalist ->
             singleSelectViewDatalistHtml selectionMode options
@@ -2199,7 +2203,6 @@ multiSelectView selectionMode options searchString rightSlot =
                 selectionMode
                 options
                 searchString
-                rightSlot
 
         Datalist ->
             multiSelectViewDataset
@@ -2208,8 +2211,8 @@ multiSelectView selectionMode options searchString rightSlot =
                 rightSlot
 
 
-singleSelectViewCustomHtml : SelectionConfig -> OptionList -> SearchString -> RightSlot -> Html Msg
-singleSelectViewCustomHtml selectionConfig options searchString rightSlot =
+singleSelectViewCustomHtml : SelectionConfig -> OptionList -> SearchString -> Html Msg
+singleSelectViewCustomHtml selectionConfig options searchString =
     let
         hasOptionSelected =
             OptionList.hasSelectedOption options
@@ -2258,24 +2261,6 @@ singleSelectViewCustomHtml selectionConfig options searchString rightSlot =
             (isFocused selectionConfig)
             (SelectionMode.getPlaceholder selectionConfig)
             hasOptionSelected
-        , case rightSlot of
-            ShowNothing ->
-                text ""
-
-            ShowLoadingIndicator ->
-                node "slot" [ name "loading-indicator" ] [ defaultLoadingIndicator ]
-
-            ShowDropdownIndicator transitioning ->
-                dropdownIndicator (SelectionMode.getInteractionState selectionConfig) transitioning
-
-            ShowClearButton ->
-                node "slot" [ name "clear-button" ] []
-
-            ShowAddButton ->
-                text ""
-
-            ShowAddAndRemoveButtons ->
-                text ""
         ]
 
 
@@ -2284,8 +2269,8 @@ singleSelectViewCustomHtmlValue selectedOption =
     Option.singleSelectViewCustomHtmlValueHtml selectedOption
 
 
-multiSelectViewCustomHtml : SelectionConfig -> OptionList -> SearchString -> RightSlot -> Html Msg
-multiSelectViewCustomHtml selectionConfig options searchString rightSlot =
+multiSelectViewCustomHtml : SelectionConfig -> OptionList -> SearchString -> Html Msg
+multiSelectViewCustomHtml selectionConfig options searchString =
     let
         hasOptionSelected =
             OptionList.hasSelectedOption options
@@ -2346,11 +2331,6 @@ multiSelectViewCustomHtml selectionConfig options searchString rightSlot =
         ]
         (optionsToValuesHtml options (getSingleItemRemoval selectionConfig)
             ++ [ inputFilter
-               , rightSlotHtml
-                    rightSlot
-                    (SelectionMode.getInteractionState selectionConfig)
-                    (SelectionMode.isDisabled selectionConfig)
-                    0
                ]
         )
 
@@ -2702,7 +2682,11 @@ multiSelectDatasetInputField maybeOption selectionConfig rightSlot index =
     in
     [ div [ class "input-wrapper", Html.Attributes.attribute "part" "input-wrapper" ]
         [ inputHtml
-        , rightSlotHtml rightSlot (SelectionMode.getInteractionState selectionConfig) (isDisabled selectionConfig) index
+        , rightSlotForEachValueHtml
+            rightSlot
+            (SelectionMode.getInteractionState selectionConfig)
+            (SelectionMode.getSelectionMode selectionConfig)
+            index
         ]
     , errorMessage
     ]
@@ -2772,6 +2756,158 @@ singleSelectDatasetInputField maybeOption selectionMode hasSelectedOption =
             , Html.Attributes.list "datalist-options"
             ]
             []
+
+
+rightSlotForAllValuesHtml : RightSlot -> SelectionMode.InteractionState -> Html Msg
+rightSlotForAllValuesHtml rightSlot interactionState =
+    div
+        [ id "right-slot-for-all-values-wrapper"
+        , class "right-slot-wrapper"
+        , Html.Attributes.attribute "part" "right-slot-wrapper right-slot-for-all-values-wrapper"
+        ]
+        [ case rightSlot of
+            ShowNothing ->
+                Html.Extra.nothing
+
+            ShowLoadingIndicator ->
+                node "slot" [ name "loading-indicator" ] [ defaultLoadingIndicator ]
+
+            ShowDropdownIndicator transitioning ->
+                dropdownIndicator interactionState transitioning
+
+            ShowClearButton ->
+                let
+                    clearButtonHtml =
+                        div
+                            [ id "clear-button-wrapper"
+                            , Html.Attributes.attribute "part" "clear-button-wrapper"
+                            , onClickPreventDefaultAndStopPropagation ClearAllSelectedOptions
+                            ]
+                            [ node "slot"
+                                [ name "clear-button"
+                                ]
+                                [ text "✕"
+                                ]
+                            ]
+                in
+                case interactionState of
+                    SelectionMode.Focused ->
+                        clearButtonHtml
+
+                    SelectionMode.Unfocused ->
+                        clearButtonHtml
+
+                    SelectionMode.Disabled ->
+                        Html.Extra.nothing
+
+            ShowAddButton ->
+                Html.Extra.nothing
+
+            ShowAddAndRemoveButtons ->
+                Html.Extra.nothing
+        ]
+
+
+rightSlotForEachValueHtml : RightSlot -> SelectionMode.InteractionState -> SelectionMode.SelectionMode -> Int -> Html Msg
+rightSlotForEachValueHtml rightSlot interactionState selectionMode selectedIndex =
+    let
+        rightSlotWrapperDiv : List (Html msg) -> Html msg
+        rightSlotWrapperDiv =
+            div
+                [ id "right-slot-wrapper"
+                , Html.Attributes.attribute "part" "right-slot-wrapper"
+                ]
+    in
+    case rightSlot of
+        ShowNothing ->
+            Html.Extra.nothing
+
+        ShowLoadingIndicator ->
+            rightSlotWrapperDiv [ node "slot" [ name "loading-indicator" ] [ defaultLoadingIndicator ] ]
+
+        ShowDropdownIndicator transitioning ->
+            rightSlotWrapperDiv [ dropdownIndicator interactionState transitioning ]
+
+        ShowClearButton ->
+            let
+                clearButtonHtml =
+                    div
+                        [ id "clear-button-wrapper"
+                        , Html.Attributes.attribute "part" "clear-button-wrapper"
+                        , onClickPreventDefaultAndStopPropagation ClearAllSelectedOptions
+                        ]
+                        [ node "slot"
+                            [ name "clear-button"
+                            ]
+                            [ text "✕"
+                            ]
+                        ]
+            in
+            case interactionState of
+                SelectionMode.Focused ->
+                    rightSlotWrapperDiv [ clearButtonHtml ]
+
+                SelectionMode.Unfocused ->
+                    rightSlotWrapperDiv [ clearButtonHtml ]
+
+                SelectionMode.Disabled ->
+                    Html.Extra.nothing
+
+        ShowAddButton ->
+            case selectionMode of
+                SelectionMode.SingleSelect ->
+                    Html.Extra.nothing
+
+                SelectionMode.MultiSelect ->
+                    case interactionState of
+                        SelectionMode.Focused ->
+                            rightSlotWrapperDiv
+                                [ div [ class "add-remove-buttons" ]
+                                    [ div [ class "add-button-wrapper", onClick (AddMultiSelectValue selectedIndex) ]
+                                        [ addButtonSlot selectedIndex ]
+                                    ]
+                                ]
+
+                        SelectionMode.Unfocused ->
+                            rightSlotWrapperDiv
+                                [ div [ class "add-remove-buttons" ]
+                                    [ div [ class "add-button-wrapper", onClick (AddMultiSelectValue selectedIndex) ]
+                                        [ addButtonSlot selectedIndex ]
+                                    ]
+                                ]
+
+                        SelectionMode.Disabled ->
+                            Html.Extra.nothing
+
+        ShowAddAndRemoveButtons ->
+            case selectionMode of
+                SelectionMode.SingleSelect ->
+                    Html.Extra.nothing
+
+                SelectionMode.MultiSelect ->
+                    case interactionState of
+                        SelectionMode.Focused ->
+                            rightSlotWrapperDiv
+                                [ div [ class "add-remove-buttons" ]
+                                    [ div [ class "add-button-wrapper", onClick (AddMultiSelectValue selectedIndex) ]
+                                        [ addButtonSlot selectedIndex ]
+                                    , div [ class "remove-button-wrapper", onClick (RemoveMultiSelectValue selectedIndex) ]
+                                        [ remoteButtonSlot selectedIndex ]
+                                    ]
+                                ]
+
+                        SelectionMode.Unfocused ->
+                            rightSlotWrapperDiv
+                                [ div [ class "add-remove-buttons" ]
+                                    [ div [ class "add-button-wrapper", onClick (AddMultiSelectValue selectedIndex) ]
+                                        [ addButtonSlot selectedIndex ]
+                                    , div [ class "remove-button-wrapper", onClick (RemoveMultiSelectValue selectedIndex) ]
+                                        [ remoteButtonSlot selectedIndex ]
+                                    ]
+                                ]
+
+                        SelectionMode.Disabled ->
+                            Html.Extra.nothing
 
 
 dropdownIndicator : SelectionMode.InteractionState -> FocusTransition -> Html Msg
@@ -2992,89 +3128,6 @@ optionToValueHtml enableSingleItemRemoval option =
 
         Option.SlottedOption slottedOption ->
             SlottedOption.toValueHtml ToggleSelectedValueHighlight DeselectOptionInternal enableSingleItemRemoval slottedOption
-
-
-rightSlotHtml : RightSlot -> SelectionMode.InteractionState -> Bool -> Int -> Html Msg
-rightSlotHtml rightSlot interactionState isDisabled selectedIndex =
-    let
-        wrapper content =
-            div
-                [ id "right-slot-wrapper"
-                , Html.Attributes.attribute "part" "right-slot-wrapper"
-                ]
-                [ content ]
-    in
-    case rightSlot of
-        ShowNothing ->
-            text ""
-
-        ShowLoadingIndicator ->
-            wrapper
-                (node "slot"
-                    [ name "loading-indicator" ]
-                    [ defaultLoadingIndicator ]
-                )
-
-        ShowDropdownIndicator transitioning ->
-            div
-                [ id "right-slot-wrapper"
-                , Html.Attributes.attribute "part" "right-slot-wrapper"
-                ]
-                [ dropdownIndicator interactionState transitioning ]
-
-        ShowClearButton ->
-            if isDisabled then
-                text ""
-
-            else
-                div
-                    [ id "right-slot-wrapper"
-                    , Html.Attributes.attribute "part" "right-slot-wrapper"
-                    ]
-                    [ div
-                        [ id "clear-button-wrapper"
-                        , Html.Attributes.attribute "part" "clear-button-wrapper"
-                        , onClickPreventDefaultAndStopPropagation ClearAllSelectedOptions
-                        ]
-                        [ node "slot"
-                            [ name "clear-button"
-                            ]
-                            [ text "✕"
-                            ]
-                        ]
-                    ]
-
-        ShowAddButton ->
-            if isDisabled then
-                text ""
-
-            else
-                div
-                    [ id "right-slot-wrapper"
-                    , Html.Attributes.attribute "part" "right-slot-wrapper"
-                    ]
-                    [ div [ class "add-remove-buttons" ]
-                        [ div [ class "add-button-wrapper", onClick (AddMultiSelectValue selectedIndex) ]
-                            [ addButtonSlot selectedIndex ]
-                        ]
-                    ]
-
-        ShowAddAndRemoveButtons ->
-            if isDisabled then
-                text ""
-
-            else
-                div
-                    [ id "right-slot-wrapper"
-                    , Html.Attributes.attribute "part" "right-slot-wrapper"
-                    ]
-                    [ div [ class "add-remove-buttons" ]
-                        [ div [ class "add-button-wrapper", onClick (AddMultiSelectValue selectedIndex) ]
-                            [ addButtonSlot selectedIndex ]
-                        , div [ class "remove-button-wrapper", onClick (RemoveMultiSelectValue selectedIndex) ]
-                            [ remoteButtonSlot selectedIndex ]
-                        ]
-                    ]
 
 
 defaultLoadingIndicator : Html msg
