@@ -1744,11 +1744,6 @@ class MuchSelect extends HTMLElement {
         flex-basis: auto;
       }
 
-      .value .remove-option::after {
-        content: "x";
-        padding-left: 5px;
-      }
-
       slot[name='loading-indicator'] {
         display: block;
         position: absolute;
@@ -1835,7 +1830,7 @@ class MuchSelect extends HTMLElement {
         padding-left: 5px;
         margin-left:6px;
         padding-bottom:3px;
-        border-left: 1px dotted black;
+        border-left: 1px dotted gray;
       }
       #search-keyboard-events #search-keyboard-events-log {
         width:100px;

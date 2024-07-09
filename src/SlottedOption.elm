@@ -155,7 +155,12 @@ toValueHtml toggleSelectedMsg deselectOptionInternal enableSingleItemRemoval opt
         removalHtml optionValue =
             case enableSingleItemRemoval of
                 EnableSingleItemRemoval ->
-                    span [ mouseUpPreventDefault <| deselectOptionInternal optionValue, class "remove-option" ] [ text "" ]
+                    span
+                        [ mouseUpPreventDefault <| deselectOptionInternal optionValue
+                        , class "remove-option"
+                        , Html.Attributes.attribute "part" "remove-option"
+                        ]
+                        [ text "" ]
 
                 DisableSingleItemRemoval ->
                     text ""

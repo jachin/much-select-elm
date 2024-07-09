@@ -21212,7 +21212,8 @@ var $author$project$FancyOption$toMultiSelectValueHtml = F4(
 						[
 							$author$project$Events$mouseUpPreventDefault(
 							deselectOptionInternal(optionValue)),
-							$elm$html$Html$Attributes$class('remove-option')
+							$elm$html$Html$Attributes$class('remove-option'),
+							A2($elm$html$Html$Attributes$attribute, 'part', 'remove-option')
 						]),
 					_List_fromArray(
 						[
@@ -21423,7 +21424,8 @@ var $author$project$SlottedOption$toValueHtml = F4(
 						[
 							$author$project$Events$mouseUpPreventDefault(
 							deselectOptionInternal(optionValue)),
-							$elm$html$Html$Attributes$class('remove-option')
+							$elm$html$Html$Attributes$class('remove-option'),
+							A2($elm$html$Html$Attributes$attribute, 'part', 'remove-option')
 						]),
 					_List_fromArray(
 						[

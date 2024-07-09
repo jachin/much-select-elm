@@ -632,6 +632,10 @@ much-select[multi-select]::part(selected-value-label) {
     padding-top: 0.09rem;
 }
 
+much-select[multi-select]::part(remove-option)::after {
+    border-left: 1px dotted var(--much-select-border-color)
+}
+
 much-select::part(dropdown-indicator) {
     cursor: pointer;
     transition: transform 0.25s;
