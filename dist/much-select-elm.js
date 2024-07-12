@@ -15954,6 +15954,13 @@ var $author$project$OptionLabel$getLabelString = function (optionLabel) {
 	var string = optionLabel.a;
 	return string;
 };
+var $author$project$Events$onMouseUpStopPropagationAndPreventDefault = function (message) {
+	return A2(
+		$elm$html$Html$Events$custom,
+		'mouseup',
+		$elm$json$Json$Decode$succeed(
+			{X: message, aa: true, ab: true}));
+};
 var $author$project$OptionPart$toSelectedValueAttribute = F2(
 	function (isHighlighted, optionPart) {
 		var highlightedPart = isHighlighted ? 'highlighted-value' : '';
@@ -15988,9 +15995,10 @@ var $author$project$FancyOption$toMultiSelectValueHtml = F4(
 					$elm$html$Html$span,
 					_List_fromArray(
 						[
-							$author$project$Events$mouseUpPreventDefault(
+							$author$project$Events$onMouseUpStopPropagationAndPreventDefault(
 							deselectOptionInternal(optionValue)),
-							$elm$html$Html$Attributes$class('remove-option')
+							$elm$html$Html$Attributes$class('remove-option'),
+							A2($elm$html$Html$Attributes$attribute, 'part', 'remove-option')
 						]),
 					_List_fromArray(
 						[
@@ -16199,9 +16207,10 @@ var $author$project$SlottedOption$toValueHtml = F4(
 					$elm$html$Html$span,
 					_List_fromArray(
 						[
-							$author$project$Events$mouseUpPreventDefault(
+							$author$project$Events$onMouseUpStopPropagationAndPreventDefault(
 							deselectOptionInternal(optionValue)),
-							$elm$html$Html$Attributes$class('remove-option')
+							$elm$html$Html$Attributes$class('remove-option'),
+							A2($elm$html$Html$Attributes$attribute, 'part', 'remove-option')
 						]),
 					_List_fromArray(
 						[
@@ -16543,13 +16552,6 @@ var $author$project$Events$onMouseDownStopPropagationAndPreventDefault = functio
 	return A2(
 		$elm$html$Html$Events$custom,
 		'mousedown',
-		$elm$json$Json$Decode$succeed(
-			{X: message, aa: true, ab: true}));
-};
-var $author$project$Events$onMouseUpStopPropagationAndPreventDefault = function (message) {
-	return A2(
-		$elm$html$Html$Events$custom,
-		'mouseup',
 		$elm$json$Json$Decode$succeed(
 			{X: message, aa: true, ab: true}));
 };

@@ -1,6 +1,6 @@
 module SlottedOption exposing (SlottedOption, activate, decoder, decoderWithAge, deselect, encode, getOptionDisplay, getOptionSelectedIndex, getOptionSlot, getOptionValue, getOptionValueAsString, highlightOption, isOptionHighlighted, isOptionSelectedHighlighted, isSelected, new, optionIsHighlightable, removeHighlightFromOption, select, setOptionDisplay, setOptionSelectedIndex, setOptionValue, test_new, test_optionToDebuggingString, toValueHtml)
 
-import Events exposing (mouseUpPreventDefault)
+import Events exposing (mouseUpPreventDefault, onMouseUpStopPropagationAndPreventDefault)
 import Html exposing (Html, div, span, text)
 import Html.Attributes exposing (class, classList)
 import Json.Decode
@@ -155,7 +155,14 @@ toValueHtml toggleSelectedMsg deselectOptionInternal enableSingleItemRemoval opt
         removalHtml optionValue =
             case enableSingleItemRemoval of
                 EnableSingleItemRemoval ->
-                    span [ mouseUpPreventDefault <| deselectOptionInternal optionValue, class "remove-option" ] [ text "" ]
+                    span
+                        [ -- This has to be on mouse up because if we listen for click events then
+                          --  the input field will get under the mouse and trigger a focus event.
+                          onMouseUpStopPropagationAndPreventDefault <| deselectOptionInternal optionValue
+                        , class "remove-option"
+                        , Html.Attributes.attribute "part" "remove-option"
+                        ]
+                        [ text "" ]
 
                 DisableSingleItemRemoval ->
                     text ""
