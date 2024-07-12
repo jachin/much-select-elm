@@ -1,7 +1,7 @@
 module FancyOption exposing (FancyOption, activate, decoder, decoderWithAge, deselect, encode, getMaybeOptionSearchFilter, getOptionDescription, getOptionDisplay, getOptionGroup, getOptionLabel, getOptionSelectedIndex, getOptionValue, getOptionValueAsString, highlightOption, isCustomOption, isEmptyOption, isOptionHighlighted, isOptionSelectedHighlighted, isSelected, merge, new, newCustomOption, newDisabledOption, newSelectedOption, optionIsHighlightable, removeHighlightFromOption, select, setDescription, setLabel, setOptionDisplay, setOptionGroup, setOptionLabelToValue, setOptionSearchFilter, setOptionSelectedIndex, setOptionValue, setPart, test_optionToDebuggingString, toDropdownHtml, toMultiSelectValueHtml, toSingleSelectValueHtml, toSingleSelectValueNoValueSelected)
 
 import DropdownItemEventListeners exposing (DropdownItemEventListeners)
-import Events exposing (mouseDownPreventDefault, mouseUpPreventDefault, onClickPreventDefault, onClickPreventDefaultAndStopPropagation)
+import Events exposing (mouseDownPreventDefault, mouseUpPreventDefault, onClickPreventDefault, onClickPreventDefaultAndStopPropagation, onMouseUpStopPropagationAndPreventDefault)
 import Html exposing (Html, div, span, text)
 import Html.Attributes exposing (class, classList, id)
 import Html.Events exposing (onMouseEnter, onMouseLeave)
@@ -611,7 +611,9 @@ toMultiSelectValueHtml toggleSelectedMsg deselectOptionInternal enableSingleItem
             case enableSingleItemRemoval of
                 EnableSingleItemRemoval ->
                     span
-                        [ mouseUpPreventDefault <| deselectOptionInternal optionValue
+                        [ -- This has to be on mouse up because if we listen for click events then
+                          --  the input field will get under the mouse and trigger a focus event.
+                          onMouseUpStopPropagationAndPreventDefault <| deselectOptionInternal optionValue
                         , class "remove-option"
                         , Html.Attributes.attribute "part" "remove-option"
                         ]
