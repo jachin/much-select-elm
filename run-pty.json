@@ -48,7 +48,13 @@
       "soupault.toml",
       "--",
       "soupault"
-    ]
+    ],
+    "defaultStatus": ["⏳", "W"],
+    "status": {
+      "Running": ["⏳", "W"],
+      "command not found": ["🚨", "E"],
+      "Command was successful": ["✅", "+"]
+    }
   },
   {
     "title": "Run web server http://localhost:1234",
