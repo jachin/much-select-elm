@@ -7,11 +7,12 @@ const makeLogEventHandler = (logElementId) => (event) => {
   console.info(event);
 
   tr.setAttribute("id", eventElementId);
+  tr.setAttribute("class", "event-log-row");
   tr.innerHTML = `
-    <td>
+    <td class="events-name-col">
       <strong><pre><code>${event.type}</code></pre></strong>
     </td>
-    <td><pre><code>${detailStr}</code></pre></td>`;
+    <td class="events-details-col"><pre><code>${detailStr}</code></pre></td>`;
   document.getElementById(logElementId).querySelector("tbody").prepend(tr);
   document
     .getElementById(logElementId)
@@ -29,7 +30,7 @@ const makeLogEventHandler = (logElementId) => (event) => {
     if (noRecentEventsToShow) {
       document
         .getElementById(logElementId)
-        .querySelector(".event-log-empty-row").style.display = "block";
+        .querySelector(".event-log-empty-row").style.display = null;
     }
   }, 10000);
 };

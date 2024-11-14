@@ -127,7 +127,10 @@ body {
 
         /* Event Log */
         --evet-log-border: 1px solid var(--chain-gang-grey);
-        --event-log-header-background: var(--nasturcian-flower);
+        --event-log-header-title-background: var(--sea-brook);
+        --event-log-header-background: var(--vanadyl-blue);
+        --event-log-progress-background: var(--chain-gang-grey);
+        --events-name-col-boder: 2px solid var(--matt-purple);
     }
 
     #theme-switch-fun:checked ~ #page-wrapper {
@@ -732,6 +735,15 @@ much-select::part(dropdown-footer) {
 }
 
 
+@keyframes AnimationName {
+    from {
+        background-position: 100% 0;
+    }
+    to {
+        background-position: 0 0;
+    }
+}
+
 .event-log {
     width: 100%;
     border: var(--evet-log-border);
@@ -740,25 +752,50 @@ much-select::part(dropdown-footer) {
 
     tr {
         border: 0;
+        width: 100%;
+        overflow: hidden;
     }
 
     th.event-log-title {
-        background-color: var(--sea-brook);
+        background-color: var(--event-log-header-title-background);
         border: 0;
         padding: 0.5rem;
         margin: 0;
         font-size: 120%;
     }
     th.event-log-heading {
-        background-color: var(--vanadyl-blue);
-        border: 0;
+        background-color: var(--event-log-header-background);
         padding: 0.5rem;
         margin: 0;
         font-size: 90%;
+        text-align: left;
+    }
+
+    .event-log-row {
+        background: linear-gradient(90deg, transparent 50%, var(--event-log-progress-background) 51%);
+        background-size: 200% 100%;
+        animation: AnimationName 10s linear;
     }
 
     .event-log-empty-row {
         text-align: center;
         padding: 0.5rem;
+    }
+
+    .events-name-col {
+        width: 25%;
+        border: var(--events-name-col-boder);
+        padding: 0.5rem;
+        margin: 0;
+        font-size: 75%;
+        vertical-align: top;
+    }
+
+    .events-details-col {
+        width: 75%;
+        border: var(--events-name-col-boder);
+        padding: 0.5rem;
+        margin: 0;
+        font-size: 75%;
     }
 }
