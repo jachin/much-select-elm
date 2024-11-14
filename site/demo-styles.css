@@ -124,6 +124,10 @@ body {
         --much-select-dropdown-optgroup-background-color: var(--chain-gang-grey);
         --much-select-dropdown-footer-color: var(--chain-gang-grey);
         --much-select-dropdown-footer-background-color: var(--hint-of-pensive);
+
+        /* Event Log */
+        --evet-log-border: 1px solid var(--chain-gang-grey);
+        --event-log-header-background: var(--nasturcian-flower);
     }
 
     #theme-switch-fun:checked ~ #page-wrapper {
@@ -725,4 +729,36 @@ much-select::part(dropdown-footer) {
     background-color: var(--much-select-dropdown-footer-background-color);
     padding: 0.2rem;
 
+}
+
+
+.event-log {
+    width: 100%;
+    border: var(--evet-log-border);
+    border-spacing: 0;
+    margin-top: 0.5rem;
+
+    tr {
+        border: 0;
+    }
+
+    th.event-log-title {
+        background-color: var(--sea-brook);
+        border: 0;
+        padding: 0.5rem;
+        margin: 0;
+        font-size: 120%;
+    }
+    th.event-log-heading {
+        background-color: var(--vanadyl-blue);
+        border: 0;
+        padding: 0.5rem;
+        margin: 0;
+        font-size: 90%;
+    }
+
+    .event-log-empty-row {
+        text-align: center;
+        padding: 0.5rem;
+    }
 }
