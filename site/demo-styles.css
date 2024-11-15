@@ -129,7 +129,6 @@ body {
         --evet-log-border: 1px solid var(--chain-gang-grey);
         --event-log-header-title-background: var(--sea-brook);
         --event-log-header-background: var(--vanadyl-blue);
-        --event-log-progress-background: var(--chain-gang-grey);
         --events-log-border-top-and-bottom: 1px solid var(--pico-void);
         --events-log-border-left-and-right: 1px dashed var(--naval);
     }
@@ -178,6 +177,13 @@ body {
         --much-select-dropdown-optgroup-background-color: var(--green-teal);
         --much-select-dropdown-footer-color: var(--yriel-yellow);
         --much-select-dropdown-footer-background-color: var(--red-orange);
+
+        /* Event Log */
+        --evet-log-border: 1px solid var(--jade-dust);
+        --event-log-header-title-background: var(--minty-green);
+        --event-log-header-background: var(--green-teal);
+        --events-log-border-top-and-bottom: 1px solid var(--jade-dust);
+        --events-log-border-left-and-right: 1px dashed var(--jade-dust);
     }
 }
 
@@ -222,6 +228,12 @@ body {
         /* The text color of a selected value in multi select mode and "custom" "output style". */
         --much-select-multi-select-selected-value-color: var(--text-color);
 
+        /* Event Log */
+        --evet-log-border: 1px solid var(--naval);
+        --event-log-header-title-background: var(--mazarine-blue);
+        --event-log-header-background: var(--blue-nights);
+        --events-log-border-top-and-bottom: 1px solid var(--mazarine-blue);
+        --events-log-border-left-and-right: 1px dashed var(--mazarine-blue);
     }
 
     #theme-switch-fun:checked ~ #page-wrapper {
@@ -256,6 +268,13 @@ body {
         --much-select-dropdown-optgroup-background-color: var(--london-square);
         --much-select-dropdown-footer-color: var(--minty-green);
         --much-select-dropdown-footer-background-color: var(--dark-periwinkle);
+
+        /* Event Log */
+        --evet-log-border: 1px solid var(--good-night);
+        --event-log-header-title-background: var(--free-speech-blue);
+        --event-log-header-background: var(--good-night);
+        --events-log-border-top-and-bottom: 1px solid var(--black-pearl);
+        --events-log-border-left-and-right: 1px dashed var(--black-pearl);
     }
 }
 
