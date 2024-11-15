@@ -791,14 +791,9 @@ much-select::part(dropdown-footer) {
         text-align: left;
     }
 
-    .event-log-row-background {
-        fill: var(--event-log-progress-background);
-    }
-
     .event-log-row {
         background: no-repeat url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="70" height="100%"><rect width="100%" height="100%" fill-opacity="10%" /></svg>');
         animation: EventTimer 10s linear;
-        background-blend-mode: luminosity;
     }
 
     .event-log-empty-row {
