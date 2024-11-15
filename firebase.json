@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "much-select",
     "public": "dist/site",
     "ignore": [
       "firebase.json",
