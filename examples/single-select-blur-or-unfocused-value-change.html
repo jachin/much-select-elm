@@ -8,21 +8,22 @@
       <option value="444">Soybean</option>
     </select>
   </much-select>
-
-  <p>
-    Events:
-  </p>
-  <table id="single-select-blur-or-unfocused-value-change-event-log">
+  <table id="single-select-blur-or-unfocused-value-change-event-log" class="event-log">
     <thead>
     <tr>
-      <th>Event</th>
-      <th>Details</th>
+      <th colspan="2" class="event-log-title">Event Log</th>
+    </tr>
+    <tr>
+      <th class="event-log-heading events-name-col">Event</th>
+      <th class="event-log-heading events-details-col">Details</th>
     </tr>
     </thead>
     <tbody>
+    <tr class="event-log-empty-row">
+      <td colspan="2"><em>Waiting for events.</em></td>
+    </tr>
     </tbody>
   </table>
-
   <script>
     window.addEventListener("load", () => {
       document
@@ -31,8 +32,8 @@
           "blurOrUnfocusedValueChanged",
           // eslint-disable-next-line no-undef
           makeLogEventHandler(
-            "single-select-blur-or-unfocused-value-change-event-log"
-          )
+            "single-select-blur-or-unfocused-value-change-event-log",
+          ),
         );
     });
   </script>

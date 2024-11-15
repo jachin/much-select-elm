@@ -1,0 +1,51 @@
+<div id="ready-event">
+  <h3><code>muchSelectReady</code> Event</h3>
+  <much-select>
+    <select slot="select-input">
+      <option>Dogbert</option>
+      <option>Dilbert</option>
+      <option>Catbert</option>
+      <option>Bob the Dinosaur</option>
+    </select>
+  </much-select>
+
+  <button>Replace this &lt;much-select&gt; with a new one</button>
+
+  <table id="ready-event-log" class="event-log">
+    <thead>
+    <tr>
+      <th colspan="2" class="event-log-title">Event Log</th>
+    </tr>
+    <tr>
+      <th class="event-log-heading events-name-col">Event</th>
+      <th class="event-log-heading events-details-col">Details</th>
+    </tr>
+    </thead>
+    <tbody>
+      <tr class="event-log-empty-row">
+        <td colspan="2"><em>Waiting for events.</em></td>
+      </tr>
+    </tbody>
+  </table>
+  <script>
+    window.addEventListener("load", () => {
+      document.querySelector("#ready-event much-select").addEventListener(
+        "muchSelectReady",
+        // eslint-disable-next-line no-undef
+        makeLogEventHandler("ready-event-log"),
+      );
+    });
+
+    document.querySelector("#ready-event button").addEventListener("click", () => {
+      const newMuchSelect = document.createElement("much-select");
+
+      newMuchSelect.addEventListener(
+        "muchSelectReady",
+        // eslint-disable-next-line no-undef
+        makeLogEventHandler("ready-event-log"),
+      );
+
+      document.querySelector("#ready-event much-select").replaceWith(newMuchSelect);
+    });
+  </script>
+</div>

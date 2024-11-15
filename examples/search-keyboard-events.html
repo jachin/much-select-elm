@@ -8,17 +8,20 @@
       <option>Pippin</option>
     </select>
   </much-select>
-  <p>
-    Key Press Events:
-  </p>
-  <table id="search-keyboard-events-log">
+  <table id="search-keyboard-events-log" class="event-log">
     <thead>
     <tr>
-      <th>Event</th>
-      <th>Details</th>
+      <th colspan="2" class="event-log-title">Event Log</th>
+    </tr>
+    <tr>
+      <th class="event-log-heading events-name-col">Event</th>
+      <th class="event-log-heading events-details-col">Details</th>
     </tr>
     </thead>
     <tbody>
+    <tr class="event-log-empty-row">
+      <td colspan="2"><em>Waiting for events.</em></td>
+    </tr>
     </tbody>
   </table>
 
@@ -29,7 +32,7 @@
         .addEventListener(
           "inputKeyUp",
           // eslint-disable-next-line no-undef
-          makeLogEventHandler("search-keyboard-events-log")
+          makeLogEventHandler("search-keyboard-events-log"),
         );
     });
     window.addEventListener("load", () => {
@@ -38,7 +41,7 @@
         .addEventListener(
           "inputKeyUpDebounced",
           // eslint-disable-next-line no-undef
-          makeLogEventHandler("search-keyboard-events-log")
+          makeLogEventHandler("search-keyboard-events-log"),
         );
     });
   </script>

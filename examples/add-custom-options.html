@@ -4,15 +4,20 @@
     Using the <code>allow-custom-options</code> attribute to allow the user to choose a "new" value (one that is not in the list of options).
   </p>
   <much-select allow-custom-options></much-select>
-  <p>Events:</p>
-  <table id="single-select-custom-option-event-log">
+  <table id="single-select-custom-option-event-log" class="event-log">
     <thead>
     <tr>
-      <th>Event</th>
-      <th>Details</th>
+      <th colspan="2" class="event-log-title">Event Log</th>
+    </tr>
+    <tr>
+      <th class="event-log-heading events-name-col">Event</th>
+      <th class="event-log-heading events-details-col">Details</th>
     </tr>
     </thead>
     <tbody>
+    <tr class="event-log-empty-row">
+      <td colspan="2"><em>Waiting for events.</em></td>
+    </tr>
     </tbody>
   </table>
   <script>
@@ -21,7 +26,7 @@
         .querySelector("#add-custom-options much-select")
         .addEventListener(
           "customValueSelected",
-          makeLogEventHandler("single-select-custom-option-event-log")
+          makeLogEventHandler("single-select-custom-option-event-log"),
         );
     });
   </script>
