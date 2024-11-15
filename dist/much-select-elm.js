@@ -4902,7 +4902,7 @@ var $elm$core$Array$treeFromBuilder = F2(
 	});
 var $elm$core$Array$builderToArray = F2(
 	function (reverseNodeList, builder) {
-		if (!builder.p) {
+		if (!builder.o) {
 			return A4(
 				$elm$core$Array$Array_elm_builtin,
 				$elm$core$Elm$JsArray$length(builder.r),
@@ -4910,11 +4910,11 @@ var $elm$core$Array$builderToArray = F2(
 				$elm$core$Elm$JsArray$empty,
 				builder.r);
 		} else {
-			var treeLen = builder.p * $elm$core$Array$branchFactor;
+			var treeLen = builder.o * $elm$core$Array$branchFactor;
 			var depth = $elm$core$Basics$floor(
 				A2($elm$core$Basics$logBase, $elm$core$Array$branchFactor, treeLen - 1));
 			var correctNodeList = reverseNodeList ? $elm$core$List$reverse(builder.s) : builder.s;
-			var tree = A2($elm$core$Array$treeFromBuilder, correctNodeList, builder.p);
+			var tree = A2($elm$core$Array$treeFromBuilder, correctNodeList, builder.o);
 			return A4(
 				$elm$core$Array$Array_elm_builtin,
 				$elm$core$Elm$JsArray$length(builder.r) + treeLen,
@@ -4933,7 +4933,7 @@ var $elm$core$Array$initializeHelp = F5(
 				return A2(
 					$elm$core$Array$builderToArray,
 					false,
-					{s: nodeList, p: (len / $elm$core$Array$branchFactor) | 0, r: tail});
+					{s: nodeList, o: (len / $elm$core$Array$branchFactor) | 0, r: tail});
 			} else {
 				var leaf = $elm$core$Array$Leaf(
 					A3($elm$core$Elm$JsArray$initialize, $elm$core$Array$branchFactor, fromIndex, fn));
@@ -8027,7 +8027,7 @@ var $author$project$MuchSelect$init = function (flags) {
 			}(),
 			g: $author$project$SearchString$reset,
 			v: $grotsev$elm_debouncer$Bounce$init,
-			q: $author$project$MuchSelect$getDebouceDelayForSearch(
+			p: $author$project$MuchSelect$getDebouceDelayForSearch(
 				$author$project$OptionList$length(optionsWithInitialValueSelectedSorted)),
 			aq: 0,
 			h: selectedValueEncoding,
@@ -10137,7 +10137,7 @@ var $author$project$MuchSelect$deselectOption = F2(
 							$author$project$SelectionMode$getSelectionMode(model.a),
 							model.h,
 							$author$project$OptionList$selectedOptions(updatedOptions)),
-							A2($author$project$MuchSelect$makeEffectsForUpdatingOptionsInTheWebWorker, model.q, model.g)
+							A2($author$project$MuchSelect$makeEffectsForUpdatingOptionsInTheWebWorker, model.p, model.g)
 						])));
 		} else {
 			return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
@@ -12854,7 +12854,7 @@ var $author$project$MuchSelect$update = F2(
 							_List_fromArray(
 								[
 									$author$project$MuchSelect$InputHasBeenBlurred,
-									$author$project$MuchSelect$SearchStringTouched(model.q)
+									$author$project$MuchSelect$SearchStringTouched(model.p)
 								])));
 				} else {
 					return _Utils_Tuple2(
@@ -12969,7 +12969,7 @@ var $author$project$MuchSelect$update = F2(
 										model.h,
 										$author$project$OptionList$selectedOptions(updatedOptions)),
 										$author$project$MuchSelect$FocusInput,
-										$author$project$MuchSelect$SearchStringTouched(model.q)
+										$author$project$MuchSelect$SearchStringTouched(model.p)
 									])));
 					} else {
 						return _Utils_Tuple2(
@@ -12991,7 +12991,7 @@ var $author$project$MuchSelect$update = F2(
 						_List_fromArray(
 							[
 								A2($author$project$MuchSelect$InputHasBeenKeyUp, searchString, 3),
-								$author$project$MuchSelect$SearchStringTouched(model.q)
+								$author$project$MuchSelect$SearchStringTouched(model.p)
 							])));
 			case 10:
 				return _Utils_Tuple2(
@@ -13204,7 +13204,7 @@ var $author$project$MuchSelect$update = F2(
 								_List_fromArray(
 									[
 										$author$project$MuchSelect$OptionsUpdated(true),
-										A2($author$project$MuchSelect$makeEffectsForUpdatingOptionsInTheWebWorker, model.q, model.g)
+										A2($author$project$MuchSelect$makeEffectsForUpdatingOptionsInTheWebWorker, model.p, model.g)
 									])));
 					} else {
 						var newOptionWithOldSelectedOption = A4(
@@ -13232,7 +13232,7 @@ var $author$project$MuchSelect$update = F2(
 								_List_fromArray(
 									[
 										$author$project$MuchSelect$OptionsUpdated(true),
-										A2($author$project$MuchSelect$makeEffectsForUpdatingOptionsInTheWebWorker, model.q, model.g)
+										A2($author$project$MuchSelect$makeEffectsForUpdatingOptionsInTheWebWorker, model.p, model.g)
 									])));
 					}
 				} else {
@@ -13266,14 +13266,14 @@ var $author$project$MuchSelect$update = F2(
 								{
 									b: updatedOptions,
 									v: $grotsev$elm_debouncer$Bounce$push(model.v),
-									q: $author$project$MuchSelect$getDebouceDelayForSearch(
+									p: $author$project$MuchSelect$getDebouceDelayForSearch(
 										$author$project$OptionList$length(updatedOptions))
 								})),
 						$author$project$MuchSelect$batch(
 							_List_fromArray(
 								[
 									$author$project$MuchSelect$OptionsUpdated(false),
-									A2($author$project$MuchSelect$makeEffectsForUpdatingOptionsInTheWebWorker, model.q, model.g)
+									A2($author$project$MuchSelect$makeEffectsForUpdatingOptionsInTheWebWorker, model.p, model.g)
 								])));
 				} else {
 					var error = _v13.a;
@@ -13301,14 +13301,14 @@ var $author$project$MuchSelect$update = F2(
 								{
 									b: updatedOptions,
 									v: $grotsev$elm_debouncer$Bounce$push(model.v),
-									q: $author$project$MuchSelect$getDebouceDelayForSearch(
+									p: $author$project$MuchSelect$getDebouceDelayForSearch(
 										$author$project$OptionList$length(updatedOptions))
 								})),
 						$author$project$MuchSelect$batch(
 							_List_fromArray(
 								[
 									$author$project$MuchSelect$OptionsUpdated(true),
-									A2($author$project$MuchSelect$makeEffectsForUpdatingOptionsInTheWebWorker, model.q, model.g)
+									A2($author$project$MuchSelect$makeEffectsForUpdatingOptionsInTheWebWorker, model.p, model.g)
 								])));
 				} else {
 					var error = _v14.a;
@@ -13354,8 +13354,8 @@ var $author$project$MuchSelect$update = F2(
 									$author$project$SelectionMode$getSelectionMode(model.a),
 									model.h,
 									$author$project$OptionList$selectedOptions(updatedOptions)),
-									A2($author$project$MuchSelect$makeEffectsForUpdatingOptionsInTheWebWorker, model.q, model.g),
-									$author$project$MuchSelect$SearchStringTouched(model.q)
+									A2($author$project$MuchSelect$makeEffectsForUpdatingOptionsInTheWebWorker, model.p, model.g),
+									$author$project$MuchSelect$SearchStringTouched(model.p)
 								])));
 				} else {
 					var error = _v15.a;
@@ -13578,7 +13578,7 @@ var $author$project$MuchSelect$update = F2(
 						_List_fromArray(
 							[
 								$author$project$MuchSelect$ReportReady,
-								A2($author$project$MuchSelect$makeEffectsForUpdatingOptionsInTheWebWorker, model.q, model.g),
+								A2($author$project$MuchSelect$makeEffectsForUpdatingOptionsInTheWebWorker, model.p, model.g),
 								cmd
 							])));
 			case 29:
@@ -13629,7 +13629,7 @@ var $author$project$MuchSelect$update = F2(
 										$author$project$SelectionMode$getSelectionMode(model.a),
 										model.h,
 										$author$project$OptionList$selectedOptions(updatedOptions)),
-										A2($author$project$MuchSelect$makeEffectsForUpdatingOptionsInTheWebWorker, model.q, model.g),
+										A2($author$project$MuchSelect$makeEffectsForUpdatingOptionsInTheWebWorker, model.p, model.g),
 										$author$project$MuchSelect$BlurInput
 									])));
 					} else {
@@ -13648,7 +13648,7 @@ var $author$project$MuchSelect$update = F2(
 										$author$project$SelectionMode$getSelectionMode(model.a),
 										model.h,
 										$author$project$OptionList$selectedOptions(updatedOptions)),
-										A2($author$project$MuchSelect$makeEffectsForUpdatingOptionsInTheWebWorker, model.q, model.g),
+										A2($author$project$MuchSelect$makeEffectsForUpdatingOptionsInTheWebWorker, model.p, model.g),
 										$author$project$MuchSelect$FocusInput
 									])));
 					}
@@ -14053,7 +14053,7 @@ var $author$project$MuchSelect$update = F2(
 								_List_fromArray(
 									[
 										$author$project$MuchSelect$ReportReady,
-										A2($author$project$MuchSelect$makeEffectsForUpdatingOptionsInTheWebWorker, model.q, model.g)
+										A2($author$project$MuchSelect$makeEffectsForUpdatingOptionsInTheWebWorker, model.p, model.g)
 									])));
 					case 'multi-select-single-item-removal':
 						return _Utils_Tuple2(
@@ -14314,7 +14314,7 @@ var $author$project$MuchSelect$update = F2(
 								_List_fromArray(
 									[
 										$author$project$MuchSelect$ReportReady,
-										A2($author$project$MuchSelect$makeEffectsForUpdatingOptionsInTheWebWorker, model.q, model.g),
+										A2($author$project$MuchSelect$makeEffectsForUpdatingOptionsInTheWebWorker, model.p, model.g),
 										A4(
 										$author$project$MuchSelect$makeEffectsWhenValuesChanges,
 										$author$project$SelectionMode$getEventMode(model.a),
