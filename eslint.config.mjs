@@ -4,9 +4,6 @@ import globals from "globals";
 
 export default [
   {
-    ignores: ["dist/*"],
-  },
-  {
     plugins: {
       prettier,
       html,
@@ -21,14 +18,7 @@ export default [
       ecmaVersion: "latest",
       sourceType: "module",
     },
-    ignores: [
-      "dist/",
-      "build/",
-      "elm-stuff/",
-      ".cache/",
-      ".firebase/",
-      ".parcel-cache/",
-    ],
+
     rules: {
       "prettier/prettier": "error",
 
@@ -46,5 +36,15 @@ export default [
     rules: {
       "no-unused-expressions": "off",
     },
+  },
+  {
+    ignores: [
+      "dist/",
+      "build/",
+      "elm-stuff/",
+      ".cache/",
+      ".firebase/",
+      ".parcel-cache/",
+    ],
   },
 ];

@@ -3,7 +3,6 @@ const makeLogEventHandler = (logElementId) => (event) => {
   const tr = document.createElement("tr");
   const eventElementId = `${event.type}-${event.timeStamp}`;
 
-  // eslint-disable-next-line no-console
   console.info(event);
 
   tr.setAttribute("id", eventElementId);
