@@ -67,12 +67,10 @@
 
           el.eventsOnlyMode = true;
 
-          // eslint-disable-next-line no-return-await
           await waitUntil(async () => await el.eventsOnlyMode);
 
           el.eventsOnlyMode = false;
 
-          // eslint-disable-next-line no-return-await
           await waitUntil(async () => !(await el.eventsOnlyMode));
         });
       });

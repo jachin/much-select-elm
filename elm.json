@@ -35,7 +35,7 @@
     "test-dependencies": {
         "direct": {
             "avh4/elm-program-test": "4.0.0",
-            "elm-explorations/test": "2.1.1"
+            "elm-explorations/test": "2.2.0"
         },
         "indirect": {
             "avh4/elm-fifo": "1.0.4",

@@ -1,9 +1,7 @@
 // noinspection JSFileReferences
 
-// eslint-disable-next-line import/no-unresolved
 import { Elm } from "./much-select-elm-debug.js";
 
-// eslint-disable-next-line import/no-unresolved
 import getMuchSelectTemplate from "./much-select-template.js";
 
 import asciiFold from "./ascii-fold.js";
@@ -913,9 +911,7 @@ class MuchSelect extends HTMLElement {
     this.stopTransformationValidationSlotObserver();
   }
 
-  // eslint-disable-next-line class-methods-use-this
   errorHandler(error) {
-    // eslint-disable-next-line no-console
     console.error(error);
   }
 
@@ -1668,7 +1664,6 @@ class MuchSelect extends HTMLElement {
     });
   }
 
-  // eslint-disable-next-line class-methods-use-this
   get styleTag() {
     // noinspection CssInvalidPropertyValue
     return `<style>
