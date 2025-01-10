@@ -47,5 +47,9 @@ export default [
     rules: {
       "no-unused-expressions": "off",
     },
+    plugins: {
+      prettier,
+      html,
+    },
   },
 ];

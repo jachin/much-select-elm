@@ -715,6 +715,12 @@ much-select::part(dropdown-option) {
     padding: 0.5rem;
     cursor: pointer;
     font-size: var(--value-font-size);
+
+    /** Throw in a min height so options without labels are not
+     so short but take up the same vertical space as options with
+     labels
+     **/
+    min-height: 1.2rem;
 }
 
 much-select::part(dropdown-option selected) {
@@ -751,7 +757,10 @@ much-select::part(dropdown-footer) {
     color: var(--much-select-dropdown-footer-color);
     background-color: var(--much-select-dropdown-footer-background-color);
     padding: 0.2rem;
+}
 
+much-select::part(no-options) {
+    padding: 0.2rem;
 }
 
 
