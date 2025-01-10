@@ -2982,7 +2982,12 @@ customHtmlDropdown selectionMode options searchString (ValueCasing valueCasingWi
         optionsHtml =
             -- TODO We should probably do something different if we are in a loading state
             if DropdownOptions.isEmpty optionsForTheDropdown then
-                [ div [ class "option disabled" ] [ node "slot" [ name "no-options" ] [ text "No available options" ] ] ]
+                [ div
+                    [ class "option disabled no-options"
+                    , Html.Attributes.attribute "part" "no-options"
+                    ]
+                    [ node "slot" [ name "no-options" ] [ text "No available options" ] ]
+                ]
 
             else if doesSearchStringFindNothing searchString (getSearchStringMinimumLength selectionMode) optionsForTheDropdown then
                 [ div [ class "option disabled" ] [ node "slot" [ name "no-filtered-options" ] [ text "This filter returned no results." ] ] ]
