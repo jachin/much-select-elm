@@ -9,7 +9,7 @@
             "elm/core": "1.0.5",
             "jfmengels/elm-review": "2.14.1",
             "jfmengels/elm-review-debug": "1.0.8",
-            "stil4m/elm-syntax": "7.3.2"
+            "stil4m/elm-syntax": "7.3.8"
         },
         "indirect": {
             "elm/bytes": "1.0.8",
@@ -21,15 +21,14 @@
             "elm/regex": "1.0.0",
             "elm/time": "1.0.0",
             "elm/virtual-dom": "1.0.3",
-            "elm-explorations/test": "2.1.1",
-            "miniBill/elm-unicode": "1.0.3",
+            "elm-explorations/test": "2.2.0",
             "rtfeldman/elm-hex": "1.0.0",
             "stil4m/structured-writer": "1.0.3"
         }
     },
     "test-dependencies": {
         "direct": {
-            "elm-explorations/test": "2.1.1"
+            "elm-explorations/test": "2.2.0"
         },
         "indirect": {}
     }

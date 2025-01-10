@@ -4,6 +4,16 @@ import globals from "globals";
 
 export default [
   {
+    ignores: [
+      "dist/",
+      "build/",
+      "elm-stuff/",
+      ".cache/",
+      ".firebase/",
+      ".parcel-cache/",
+    ],
+  },
+  {
     plugins: {
       prettier,
       html,
@@ -29,22 +39,13 @@ export default [
         },
       ],
     },
+    files: ["src/**", "templates/**", "site/**", "examples/**", "cypress/**"],
   },
   {
+    name: "Test files",
     files: ["**/*.test.html"],
-
     rules: {
       "no-unused-expressions": "off",
     },
-  },
-  {
-    ignores: [
-      "dist/",
-      "build/",
-      "elm-stuff/",
-      ".cache/",
-      ".firebase/",
-      ".parcel-cache/",
-    ],
   },
 ];
