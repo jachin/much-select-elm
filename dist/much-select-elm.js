@@ -15223,7 +15223,7 @@ var $author$project$MuchSelect$customHtmlDropdown = F4(
 				_List_fromArray(
 					[
 						$elm$html$Html$Attributes$class('option disabled no-options'),
-						A2($elm$html$Html$Attributes$attribute, 'part', 'no-options')
+						A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-message')
 					]),
 				_List_fromArray(
 					[
@@ -15249,7 +15249,8 @@ var $author$project$MuchSelect$customHtmlDropdown = F4(
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('option disabled')
+						$elm$html$Html$Attributes$class('option disabled'),
+						A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-message')
 					]),
 				_List_fromArray(
 					[
@@ -17631,7 +17632,8 @@ var $author$project$MuchSelect$slottedDropdown = F4(
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('option disabled')
+						$elm$html$Html$Attributes$class('option disabled'),
+						A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-message')
 					]),
 				_List_fromArray(
 					[
@@ -17657,7 +17659,8 @@ var $author$project$MuchSelect$slottedDropdown = F4(
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('option disabled')
+						$elm$html$Html$Attributes$class('option disabled'),
+						A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option dropdown-message')
 					]),
 				_List_fromArray(
 					[
