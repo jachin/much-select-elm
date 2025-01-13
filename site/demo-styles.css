@@ -746,6 +746,16 @@ much-select::part(dropdown-option disabled) {
     cursor: default;
 }
 
+much-select::part(dropdown-message) {
+    /**
+    The idea with this is that, these are not option's but they show up where
+    you'd see options. For example telling you why there are no options.
+    **/
+    min-height: 1.2rem;
+    padding: 0.2rem;
+    cursor: default;
+}
+
 much-select::part(dropdown-option-description) {
     font-size: 0.85rem;
     padding: 0.2rem;
@@ -756,10 +766,6 @@ much-select::part(dropdown-footer) {
     text-align: center;
     color: var(--much-select-dropdown-footer-color);
     background-color: var(--much-select-dropdown-footer-background-color);
-    padding: 0.2rem;
-}
-
-much-select::part(no-options) {
     padding: 0.2rem;
 }
 
