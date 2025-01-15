@@ -625,6 +625,7 @@ much-select[multi-select]::part(selected-value) {
     border-radius: 0.3rem;
     border: 0.1rem solid var(--periwinkle);
     min-width: 0.5rem;
+    min-height: 2rem;
     flex-grow: 0;
     flex-shrink: 1;
     flex-basis: auto;
