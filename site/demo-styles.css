@@ -125,6 +125,10 @@ body {
         --much-select-dropdown-footer-color: var(--chain-gang-grey);
         --much-select-dropdown-footer-background-color: var(--hint-of-pensive);
 
+        /** Much Select Error Messages **/
+        --much-select-error-color: var(--nasturcian-flower);
+        --much-select-error-size: 80%;
+
         /* Event Log */
         --evet-log-border: 1px solid var(--chain-gang-grey);
         --event-log-header-title-background: var(--sea-brook);
@@ -178,6 +182,10 @@ body {
         --much-select-dropdown-footer-color: var(--yriel-yellow);
         --much-select-dropdown-footer-background-color: var(--red-orange);
 
+        /** Much Select Error Messages **/
+        --much-select-error-color: var(--highligher-pink);
+        --much-select-error-size: 80%;
+
         /* Event Log */
         --evet-log-border: 1px solid var(--jade-dust);
         --event-log-header-title-background: var(--minty-green);
@@ -228,6 +236,11 @@ body {
         /* The text color of a selected value in multi select mode and "custom" "output style". */
         --much-select-multi-select-selected-value-color: var(--text-color);
 
+
+        /** Much Select Error Messages **/
+        --much-select-error-color: var(--nasturcian-flower);
+        --much-select-error-size: 80%;
+
         /* Event Log */
         --evet-log-border: 1px solid var(--naval);
         --event-log-header-title-background: var(--mazarine-blue);
@@ -268,6 +281,10 @@ body {
         --much-select-dropdown-optgroup-background-color: var(--london-square);
         --much-select-dropdown-footer-color: var(--minty-green);
         --much-select-dropdown-footer-background-color: var(--dark-periwinkle);
+
+        /** Much Select Error Messages **/
+        --much-select-error-color: var(--sizeling-red);
+        --much-select-error-size: 80%;
 
         /* Event Log */
         --evet-log-border: 1px solid var(--good-night);
@@ -777,9 +794,10 @@ much-select::part(error-message-list) {
 }
 
 much-select::part(error-message) {
-    font-size: 80%;
+    font-size: var(--much-select-error-size);
     margin: 0.1rem 0 0 0;
     padding: 0;
+    color: var(--much-select-error-color);
 }
 
 
