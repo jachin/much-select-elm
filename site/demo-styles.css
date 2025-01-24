@@ -770,6 +770,18 @@ much-select::part(dropdown-footer) {
     padding: 0.2rem;
 }
 
+much-select::part(error-message-list) {
+    margin: 0 0 0.4rem 0;
+    padding: 0;
+    cursor: default;
+}
+
+much-select::part(error-message) {
+    font-size: 80%;
+    margin: 0.1rem 0 0 0;
+    padding: 0;
+}
+
 
 @keyframes EventTimer {
     from {

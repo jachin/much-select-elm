@@ -22086,7 +22086,10 @@ var $author$project$MuchSelect$multiSelectDatasetInputField = F4(
 				var string = validationErrorMessage.a;
 				return A2(
 					$elm$html$Html$li,
-					_List_Nil,
+					_List_fromArray(
+						[
+							A2($elm$html$Html$Attributes$attribute, 'part', 'error-message')
+						]),
 					_List_fromArray(
 						[
 							$elm$html$Html$text(string)
@@ -22106,13 +22109,17 @@ var $author$project$MuchSelect$multiSelectDatasetInputField = F4(
 			_List_fromArray(
 				[
 					errorIdAttr,
-					$elm$html$Html$Attributes$class('error-message')
+					$elm$html$Html$Attributes$class('error-message'),
+					A2($elm$html$Html$Attributes$attribute, 'part', 'error-message-wrapper')
 				]),
 			_List_fromArray(
 				[
 					A2(
 					$elm$html$Html$ul,
-					_List_Nil,
+					_List_fromArray(
+						[
+							A2($elm$html$Html$Attributes$attribute, 'part', 'error-message-list')
+						]),
 					A2(
 						$elm$core$List$map,
 						makeValidationErrorMessage,

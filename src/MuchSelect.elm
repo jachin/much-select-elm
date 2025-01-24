@@ -2665,12 +2665,12 @@ multiSelectDatasetInputField maybeOption selectionConfig rightSlot index =
                         TransformAndValidate.ShowError ->
                             case validationErrorMessage of
                                 TransformAndValidate.ValidationErrorMessage string ->
-                                    li [] [ text string ]
+                                    li [ Html.Attributes.attribute "part" "error-message" ] [ text string ]
 
         errorMessage =
             if isOptionInvalid then
-                div [ errorIdAttr, class "error-message" ]
-                    [ ul []
+                div [ errorIdAttr, class "error-message", Html.Attributes.attribute "part" "error-message-wrapper" ]
+                    [ ul [ Html.Attributes.attribute "part" "error-message-list" ]
                         (Maybe.map Option.getOptionValidationErrors maybeOption
                             |> Maybe.withDefault []
                             |> List.map makeValidationErrorMessage
