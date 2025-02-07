@@ -1,9 +1,11 @@
 <!--suppress HtmlFormInputWithoutLabel -->
 <div id="validation-and-transformation-slot-custom-validation">
   <h3>Custom Validation</h3>
-  <p>
+  <h4>
     No milk
-  </p>
+  </h4>
+  <p>See what happens when you try to select 'milk'.</p>
+  <p>The example uses a `custom` validator. For more details on how this works look at [the documentation for the event](https://github.com/jachin/much-select-elm?tab=readme-ov-file#customValidateRequest).</p>
   <much-select multi-select output-style="datalist">
     <script type="application/json" slot="transformation-validation">
       {
