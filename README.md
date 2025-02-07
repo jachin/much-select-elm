@@ -346,8 +346,13 @@ If there are no options to display, show this message.
 ##### `no-filtered-options`
 
 If the user has typed in a search filter that just does not have any good matches show this message.
-
-
+```
+<much-select>
+ <div slot="no-filtered-options">
+  What? You don't want that.
+ </div>
+</much-select>
+```
 #### `transformation-validation`
 
 It would be great if the folks using our app always entered in information correctly, alas, they often do not, and we need to validate that information.
@@ -404,3 +409,9 @@ This is an element where you can put the results of a custom validation.
 ```html
 <script type="application/json" slot="custom-validation-result">
 ```
+
+#### Custom Element Options
+
+If you want to start putting custom markup per option in the dropdown, there's a way to do that, but well... buyer beware.
+
+TODO Add a section on the custom elements that can go inside a `<much-select>`.
