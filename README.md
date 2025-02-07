@@ -243,4 +243,67 @@ This event fires every time a user types in the `#input-filter` for filtering th
 
 This event fires every time a user types in the `#input-filter` but is debounced by half a second. The idea here is if you want to hook a `<much-select>` up to an API you can use this event to kick off your API calls to add additional options based on what the user is has "searched" for.
 
+##### `customValidateRequest`
+
+This even is used when a custom validator is in play. All too often, in the real world validation is complicated. It might even be dependent on an API call, for example, ensure the value is unique. In these cases you have the option to just call a JavaScript function. Do whatever you need to validate the value and then send the results back to the `<much-select>` element.
+
+**WARNING:** As I'm sure you can imagine this is fraught. If you do _not_ communicate back to much-select the result of validation much-select will hang in a state of limbo until it gets back the result of the validation. If this ends up taking a long time or fails, or times out, or fails in some other way, it's up _you_ to make sure something reasonable happens.
+
+The even will have a couple of values in the `detail` that will be important:
+ - `stringToValidate`: This is what the user typed in for the custom value that you'll be validating
+ - `selectedValueIndex`: This is just a number and you just need to hang on to it to pass it back to when it is time to share the results of your validation with your much-select element.
+
+The way you communicate the result of the validation is a little unconventional. You build a JavaScript object with the following fields: 
+ - `isValid`: Boolean
+ - `stringToValidate`: String
+ - `selectedValueIndex`: Index
+ - `errorMessages`: Array objects with they keys
+   - `errorMessage`: String
+   - `level` : String (could be `error`, `warning`, or `silent`)
+
+`isValid` is pretty straight forward, if the value passed your custom validation is valid this should be true, otherwise it should be false.
+
+`stringToValidate` is also something you _probably_ just want to send back as is. In theory though, you could "fix" it for the user if that makes sense, but maybe think carefully if you're going to do that. You don't want to surprise your users.
+
+`errorMessages` are for giving the user feedback as to why the value then entered is invalid. You can have multiple messages in case there's more than one thing wrong. TODO What are the different levels for?
+
+The final step is to encode this object as JSON and set it to the value of an element with a slot named `custom-validation-result`. You probably want to have that element be a `script` with a type of `application/json` to keep everything nice.  
+
+```html
+<script type="application/json" slot="custom-validation-result">
+```
+
+Here's an example code of what the JavaScript could look like:
+
+```javascript
+// Get the much-select element
+const muchSelect = example.querySelector("much-select");
+
+// Listen for event.
+muchSelect.addEventListener("customValidateRequest", (event) => {
+  const { stringToValidate, selectedValueIndex } = event.detail;
+  let result;
+  if (stringToValidate === "milk") {
+    result = {
+      isValid: false,
+      value: stringToValidate,
+      selectedValueIndex,
+      errorMessages: [{ errorMessage: "No milk!", level: "error" }],
+    };
+  } else {
+    result = {
+      isValid: true,
+      value: stringToValidate,
+      selectedValueIndex,
+    };
+  }
+  const customValidationResultSlot = muchSelect.querySelector(
+    "[slot='custom-validation-result']"
+  );
+  customValidationResultSlot.innerText = JSON.stringify(result);
+});
+```
+
+As you can see, this is a little awkward, if you find your self doing a lot of this you might want to write a library for much-select to make this easier. 
+
 ### Functions
