@@ -201,20 +201,6 @@ The options for this attribute are:
 
 The `show-dropdown-footer` attribute is used to show the footer in the dropdown of the `<much-select>`. The footer contains potentially useful information about how many options are really available but might not be visible because the results are being filter.
 
-#### Slots
-
-##### `no-options`
-
-If there are no options to display, show this message.
-
-##### `no-options`
-
-If there are no options to display, show this message.
-
-##### `no-filtered-options`
-
-If the user has typed in a search filter that just does not have any good matches show this message.
-
 #### Options
 
 ### Events
@@ -306,4 +292,115 @@ muchSelect.addEventListener("customValidateRequest", (event) => {
 
 As you can see, this is a little awkward, if you find your self doing a lot of this you might want to write a library for much-select to make this easier. 
 
-### Functions
+### Slots
+
+There are a lot of special [slots](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/slot) that much-select uses for various purposes. They are all optional.
+
+#### `select-input`
+
+One of the easy ways to populate a much-select with values and even selected values is to use the `select-input` slot. This lets you use the `<select>` html element. It can be great if you're using `<much-select>` to enhance an existing `<select>`.  
+
+```html
+  <much-select multi-select="true" selected-value="Blue">
+    <select slot="select-input">
+      <option>Red</option>
+      <option>Yellow</option>
+      <option>Blue</option>
+    </select>
+  </much-select>
+```
+
+##### `clear-button`
+
+If you want to drop in your own custom clear button, you can do that.
+
+```html
+  <much-select multi-select="true" selected-value="Blue">
+    <div slot="clear-button">✿</div>
+  </much-select>
+```
+
+##### `loading-indicator`
+
+If you want to drop in your own custom loading indicator you can do that. Maybe a nice animated SVG.
+
+##### `hidden-value-input`
+
+If you need the value of a `<much-select>` work correctly in the middle of a plain old HTML form this slot is very useful. You put it on a hidden input value, and `<much-select>` will keep the hidden input value up to date with the value of the `<much-select>`.
+
+The value for the input will respect whatever you set in the `selected-value-encoding` attribute.
+
+This will _not_ work if the `events-only` attribute is set, because updating the value of hidden input would mean modifying the DOM (other than the Shadow DOM) so we won't do it. If you want this hidden input value to updated and the light DOM left alone you can just handle it your self in some sort of wrapping library where you listen for the relevant events.  
+
+```
+  <much-select selected-value-encoding="json">
+    <input slot="hidden-value-input" type="hidden" name="my-special-value">
+  </much-select>
+</div>
+```
+
+##### `no-options`
+
+If there are no options to display, show this message.
+
+##### `no-filtered-options`
+
+If the user has typed in a search filter that just does not have any good matches show this message.
+
+
+#### `transformation-validation`
+
+It would be great if the folks using our app always entered in information correctly, alas, they often do not, and we need to validate that information.
+
+The first thing that could happen to the input is that you can "transform" it automatically. There are some cases (and becarful with this) where you can "just fix" the input. Maybe the most common example of this would be to trim trailing whitespace. If you have an input and there's just not good reason why anyone would want trailing whitespace you can just trim it up.
+
+The transformations happen before the validations.
+
+The built-in transformations are:
+ - `lowercase`: make all the uppercase letters lowercase.
+ - `trim-trailing-whitespace`: TODO
+
+**WARNING:** These are all frontend, browser validations, the real validation should happen in a backend somewhere, but in browser validation can help improve the experience of your users by showing them problems right next to where they're trying to input something and hopefully give them some guidance for how to fix their errors.
+
+This slot is a place where you can define how you would like the users input to be validated. The validators are all defined in JSON. much-select has some built in validators and in those don't do the job, there's an escape hatch to a custom validator.
+
+The built-in validators are:
+ - `no-white-space`
+ - `minimum-length`
+ - `custom`
+ - _More to come_
+
+Here's an example what the JSON can look like:
+
+```json
+{
+  "transformers": [
+    {
+      "name": "lowercase"
+    }
+  ],
+  "validators": [
+    {
+      "name": "no-white-space",
+      "level": "silent",
+      "message": "Spaces are not allow for custom fruit."
+    },
+    {
+      "name": "minimum-length",
+      "level": "silent",
+      "minimum-length": 3,
+      "message": "The minimum length is 3."
+    }
+  ]
+}
+```
+
+The transformation and validation slot can be a pain to work with. If you need to do a lot of this you probably want a library that wraps much-select to make working with this easier.
+
+#### `custom-validation-result`
+
+This is an element where you can put the results of a custom validation.
+
+```html
+<script type="application/json" slot="custom-validation-result">
+```
