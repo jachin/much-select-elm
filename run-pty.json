@@ -91,6 +91,29 @@
     }
   },
   {
+    "title": "Eslint",
+    "command": [
+      "watchexec",
+      "--project-origin",
+      ".",
+      "-w",
+      "src",
+      "-w",
+      "tests",
+      "--debounce",
+      "2sec",
+      "--",
+      "npm run lint"
+    ],
+    "defaultStatus": ["⏳", "S"],
+    "status": {
+      "[Running: npm run lint]": ["⏳", "W"],
+      "TEST RUN FAILED": ["🚨", "E"],
+      "failed with exit code 1": ["🚨", "E"],
+      "[Command was successful]": ["✅", "+"]
+    }
+  },
+  {
     "title": "Build much-select for production",
     "command": [
       "watchexec",

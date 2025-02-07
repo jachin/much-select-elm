@@ -22114,7 +22114,7 @@ var $author$project$MuchSelect$multiSelectDatasetInputField = F4(
 		var parts = _List_fromArray(
 			[
 				_Utils_Tuple2('input-value', true),
-				_Utils_Tuple2('invalid', isOptionInvalid)
+				_Utils_Tuple2('invalid-input-value', isOptionInvalid)
 			]);
 		var idAttr = $elm$html$Html$Attributes$id(
 			'input-value-' + $elm$core$String$fromInt(index));

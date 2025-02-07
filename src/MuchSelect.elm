@@ -2609,7 +2609,7 @@ multiSelectDatasetInputField maybeOption selectionConfig rightSlot index =
 
         parts =
             [ ( "input-value", True )
-            , ( "invalid", isOptionInvalid )
+            , ( "invalid-input-value", isOptionInvalid )
             ]
 
         typeAttr =
