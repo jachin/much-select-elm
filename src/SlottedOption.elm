@@ -9,6 +9,7 @@ import OptionDisplay exposing (OptionDisplay(..))
 import OptionSlot exposing (OptionSlot)
 import OptionValue exposing (OptionValue)
 import OutputStyle exposing (SingleItemRemoval(..))
+import PartAttribute
 import SelectionMode exposing (SelectionConfig, SelectionMode)
 
 
@@ -160,7 +161,7 @@ toValueHtml toggleSelectedMsg deselectOptionInternal enableSingleItemRemoval opt
                           --  the input field will get under the mouse and trigger a focus event.
                           onMouseUpStopPropagationAndPreventDefault <| deselectOptionInternal optionValue
                         , class "remove-option"
-                        , Html.Attributes.attribute "part" "remove-option"
+                        , PartAttribute.part "remove-option"
                         ]
                         [ text "" ]
 
@@ -168,10 +169,10 @@ toValueHtml toggleSelectedMsg deselectOptionInternal enableSingleItemRemoval opt
                     text ""
 
         partAttr =
-            Html.Attributes.attribute "part" "value"
+            PartAttribute.part "value"
 
         highlightPartAttr =
-            Html.Attributes.attribute "part" "value highlighted-value"
+            PartAttribute.part "value highlighted-value"
     in
     case option of
         SlottedOption optionDisplay optionValue _ ->

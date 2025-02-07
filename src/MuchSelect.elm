@@ -22,9 +22,7 @@ import Events
 import FancyOption
 import GroupedDropdownOptions
     exposing
-        ( DropdownOptionsGroup
-        , GroupedDropdownOptions
-        , groupOptionsInOrder
+        ( groupOptionsInOrder
         , optionGroupsToHtml
         )
 import Html exposing (Html, button, div, input, li, node, text, ul)
@@ -79,6 +77,7 @@ import OutputStyle
         , SearchStringMinimumLength(..)
         , SingleItemRemoval(..)
         )
+import PartAttribute
 import Ports
     exposing
         ( addOptionsReceiver
@@ -2131,7 +2130,7 @@ view : Model -> Html Msg
 view model =
     div
         [ id "wrapper"
-        , Html.Attributes.attribute "part" "wrapper"
+        , PartAttribute.part "wrapper"
         , case getOutputStyle model.selectionConfig of
             CustomHtml ->
                 -- This stops the dropdown from flashes when the user clicks
@@ -2302,7 +2301,7 @@ multiSelectViewCustomHtml selectionConfig options searchString =
                 , value (SearchString.toString searchString)
                 , placeholderAttribute
                 , id "input-filter"
-                , Html.Attributes.attribute "part" "input-filter"
+                , PartAttribute.part "input-filter"
                 , disabled (isDisabled selectionConfig)
                 , Keyboard.on Keyboard.Keydown
                     [ ( Enter, SelectHighlightedOption )
@@ -2493,7 +2492,7 @@ singleSelectCustomHtmlInputField searchString isDisabled focused placeholderTupl
             id "input-filter"
 
         partAttr =
-            Html.Attributes.attribute "part" "input-filter"
+            PartAttribute.part "input-filter"
 
         typeAttr =
             type_ "text"
@@ -2608,6 +2607,11 @@ multiSelectDatasetInputField maybeOption selectionConfig rightSlot index =
             , ( "invalid", isOptionInvalid )
             ]
 
+        parts =
+            [ ( "input-value", True )
+            , ( "invalid-input-value", isOptionInvalid )
+            ]
+
         typeAttr =
             type_ "text"
 
@@ -2632,7 +2636,7 @@ multiSelectDatasetInputField maybeOption selectionConfig rightSlot index =
                     [ disabled True
                     , idAttr
                     , ariaLabel
-                    , Html.Attributes.attribute "part" "input-value"
+                    , PartAttribute.partsList parts
                     , placeholderAttribute
                     , classList classes
                     , value valueString
@@ -2644,7 +2648,7 @@ multiSelectDatasetInputField maybeOption selectionConfig rightSlot index =
                     [ typeAttr
                     , idAttr
                     , ariaLabel
-                    , Html.Attributes.attribute "part" "input-value"
+                    , PartAttribute.partsList parts
                     , classList classes
                     , onInput (UpdateOptionValueValue index)
                     , onBlur InputBlur
@@ -2665,12 +2669,12 @@ multiSelectDatasetInputField maybeOption selectionConfig rightSlot index =
                         TransformAndValidate.ShowError ->
                             case validationErrorMessage of
                                 TransformAndValidate.ValidationErrorMessage string ->
-                                    li [] [ text string ]
+                                    li [ PartAttribute.part "error-message" ] [ text string ]
 
         errorMessage =
             if isOptionInvalid then
-                div [ errorIdAttr, class "error-message" ]
-                    [ ul []
+                div [ errorIdAttr, class "error-message", PartAttribute.part "error-message-wrapper" ]
+                    [ ul [ PartAttribute.part "error-message-list" ]
                         (Maybe.map Option.getOptionValidationErrors maybeOption
                             |> Maybe.withDefault []
                             |> List.map makeValidationErrorMessage
@@ -2680,7 +2684,7 @@ multiSelectDatasetInputField maybeOption selectionConfig rightSlot index =
             else
                 text ""
     in
-    [ div [ class "input-wrapper", Html.Attributes.attribute "part" "input-wrapper" ]
+    [ div [ class "input-wrapper", PartAttribute.part "input-wrapper" ]
         [ inputHtml
         , rightSlotForEachValueHtml
             rightSlot
@@ -2702,7 +2706,7 @@ singleSelectDatasetInputField maybeOption selectionMode hasSelectedOption =
             Html.Attributes.attribute "aria-label" "much-select-value"
 
         partAttr =
-            Html.Attributes.attribute "part" "input-value"
+            PartAttribute.part "input-value"
 
         typeAttr =
             type_ "text"
@@ -2763,7 +2767,7 @@ rightSlotForAllValuesHtml rightSlot interactionState =
     div
         [ id "right-slot-for-all-values-wrapper"
         , class "right-slot-wrapper"
-        , Html.Attributes.attribute "part" "right-slot-wrapper right-slot-for-all-values-wrapper"
+        , PartAttribute.part "right-slot-wrapper right-slot-for-all-values-wrapper"
         ]
         [ case rightSlot of
             ShowNothing ->
@@ -2780,7 +2784,7 @@ rightSlotForAllValuesHtml rightSlot interactionState =
                     clearButtonHtml =
                         div
                             [ id "clear-button-wrapper"
-                            , Html.Attributes.attribute "part" "clear-button-wrapper"
+                            , PartAttribute.part "clear-button-wrapper"
                             , onClickPreventDefaultAndStopPropagation ClearAllSelectedOptions
                             ]
                             [ node "slot"
@@ -2815,7 +2819,7 @@ rightSlotForEachValueHtml rightSlot interactionState selectionMode selectedIndex
         rightSlotWrapperDiv =
             div
                 [ id "right-slot-wrapper"
-                , Html.Attributes.attribute "part" "right-slot-wrapper"
+                , PartAttribute.part "right-slot-wrapper"
                 ]
     in
     case rightSlot of
@@ -2833,7 +2837,7 @@ rightSlotForEachValueHtml rightSlot interactionState selectionMode selectedIndex
                 clearButtonHtml =
                     div
                         [ id "clear-button-wrapper"
-                        , Html.Attributes.attribute "part" "clear-button-wrapper"
+                        , PartAttribute.part "clear-button-wrapper"
                         , onClickPreventDefaultAndStopPropagation ClearAllSelectedOptions
                         ]
                         [ node "slot"
@@ -2944,13 +2948,13 @@ dropdownIndicator interactionState transitioning =
                 partAttr =
                     case interactionState of
                         SelectionMode.Focused ->
-                            Html.Attributes.attribute "part" "dropdown-indicator down"
+                            PartAttribute.part "dropdown-indicator down"
 
                         SelectionMode.Unfocused ->
-                            Html.Attributes.attribute "part" "dropdown-indicator up"
+                            PartAttribute.part "dropdown-indicator up"
 
                         SelectionMode.Disabled ->
-                            Html.Attributes.attribute "part" "dropdown-indicator"
+                            PartAttribute.part "dropdown-indicator"
             in
             div
                 [ id "dropdown-indicator"
@@ -2984,7 +2988,7 @@ customHtmlDropdown selectionMode options searchString (ValueCasing valueCasingWi
             if DropdownOptions.isEmpty optionsForTheDropdown then
                 [ div
                     [ class "option disabled no-options"
-                    , Html.Attributes.attribute "part" "dropdown-message"
+                    , PartAttribute.part "dropdown-message"
                     ]
                     [ node "slot" [ name "no-options" ] [ text "No available options" ] ]
                 ]
@@ -2992,7 +2996,7 @@ customHtmlDropdown selectionMode options searchString (ValueCasing valueCasingWi
             else if doesSearchStringFindNothing searchString (getSearchStringMinimumLength selectionMode) optionsForTheDropdown then
                 [ div
                     [ class "option disabled"
-                    , Html.Attributes.attribute "part" "dropdown-message"
+                    , PartAttribute.part "dropdown-message"
                     ]
                     [ node "slot" [ name "no-filtered-options" ] [ text "This filter returned no results." ] ]
                 ]
@@ -3014,7 +3018,7 @@ customHtmlDropdown selectionMode options searchString (ValueCasing valueCasingWi
             if showDropdownFooter selectionMode && DropdownOptions.length optionsForTheDropdown < OptionList.length options then
                 div
                     [ id "dropdown-footer"
-                    , Html.Attributes.attribute "part" "dropdown-footer"
+                    , PartAttribute.part "dropdown-footer"
                     ]
                     [ text
                         ("showing "
@@ -3028,7 +3032,7 @@ customHtmlDropdown selectionMode options searchString (ValueCasing valueCasingWi
             else if showDropdownFooter selectionMode && DropdownOptions.length optionsForTheDropdown == 0 then
                 div
                     [ id "dropdown-footer"
-                    , Html.Attributes.attribute "part" "dropdown-footer"
+                    , PartAttribute.part "dropdown-footer"
                     ]
                     [ text
                         "options to select"
@@ -3043,7 +3047,7 @@ customHtmlDropdown selectionMode options searchString (ValueCasing valueCasingWi
     else
         div
             [ id "dropdown"
-            , Html.Attributes.attribute "part" "dropdown"
+            , PartAttribute.part "dropdown"
             , classList
                 [ ( "showing", showDropdown selectionMode )
                 , ( "hiding", not (showDropdown selectionMode) )
@@ -3068,7 +3072,7 @@ slottedDropdown selectionConfig options searchString (ValueCasing valueCasingWid
             if DropdownOptions.isEmpty optionsForTheDropdown then
                 [ div
                     [ class "option disabled"
-                    , Html.Attributes.attribute "part" "dropdown-message"
+                    , PartAttribute.part "dropdown-message"
                     ]
                     [ node "slot" [ name "no-options" ] [ text "No available options" ] ]
                 ]
@@ -3076,7 +3080,7 @@ slottedDropdown selectionConfig options searchString (ValueCasing valueCasingWid
             else if doesSearchStringFindNothing searchString (getSearchStringMinimumLength selectionConfig) optionsForTheDropdown then
                 [ div
                     [ class "option disabled"
-                    , Html.Attributes.attribute "part" "dropdown-option dropdown-message"
+                    , PartAttribute.part "dropdown-option dropdown-message"
                     ]
                     [ node "slot" [ name "no-filtered-options" ] [ text "This filter returned no results." ] ]
                 ]
@@ -3095,7 +3099,7 @@ slottedDropdown selectionConfig options searchString (ValueCasing valueCasingWid
             if showDropdownFooter selectionConfig && DropdownOptions.length optionsForTheDropdown < OptionList.length options then
                 div
                     [ id "dropdown-footer"
-                    , Html.Attributes.attribute "part" "dropdown-footer"
+                    , PartAttribute.part "dropdown-footer"
                     ]
                     [ text
                         ("showing "
@@ -3115,7 +3119,7 @@ slottedDropdown selectionConfig options searchString (ValueCasing valueCasingWid
     else
         div
             [ id "dropdown"
-            , Html.Attributes.attribute "part" "dropdown"
+            , PartAttribute.part "dropdown"
             , classList
                 [ ( "showing", showDropdown selectionConfig )
                 , ( "hiding", not (showDropdown selectionConfig) )
@@ -3227,7 +3231,7 @@ valueCasingPartsAttribute selectionConfig hasError hasPendingValidation =
             else
                 ""
     in
-    Html.Attributes.attribute "part"
+    PartAttribute.part
         (String.join " "
             [ "value-casing"
             , outputStyleStr

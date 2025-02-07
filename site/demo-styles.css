@@ -125,6 +125,13 @@ body {
         --much-select-dropdown-footer-color: var(--chain-gang-grey);
         --much-select-dropdown-footer-background-color: var(--hint-of-pensive);
 
+        /** Much Select Error state **/
+        /* The actual error messages themselves */
+        --much-select-error-color: var(--nasturcian-flower);
+        --much-select-error-size: 80%;
+        /* The background color of the input when it's in an error state. */
+        --much-select-error-background-color: hsl(from var(--much-select-error-color) h s l / 0.2);
+
         /* Event Log */
         --evet-log-border: 1px solid var(--chain-gang-grey);
         --event-log-header-title-background: var(--sea-brook);
@@ -150,7 +157,6 @@ body {
         --much-select-background-color: var(--hint-of-elusive-blue);
         --much-select-value-casing-background-image: linear-gradient(to bottom, #fefefe, #f2f2f2);
         --much-select-disabled-background-color: var(--london-square);
-        --much-select-error-background-color: var(--yriel-yellow);
         --much-select-border-color: var(--jade-dust);
         --much-select-hover-border-color: var(--spirio-disco-ball);
         --much-select-error-border-color: var(--nasturcian-flower);
@@ -177,6 +183,13 @@ body {
         --much-select-dropdown-optgroup-background-color: var(--green-teal);
         --much-select-dropdown-footer-color: var(--yriel-yellow);
         --much-select-dropdown-footer-background-color: var(--red-orange);
+
+        /** Much Select Error Messages **/
+        /* The actual error messages themselves */
+        --much-select-error-color: var(--highligher-pink);
+        --much-select-error-size: 80%;
+        /* The background color of the input when it's in an error state. */
+        --much-select-error-background-color: hsl(from var(--much-select-error-color) h s l / 0.2);
 
         /* Event Log */
         --evet-log-border: 1px solid var(--jade-dust);
@@ -228,6 +241,14 @@ body {
         /* The text color of a selected value in multi select mode and "custom" "output style". */
         --much-select-multi-select-selected-value-color: var(--text-color);
 
+
+        /** Much Select Error Messages **/
+        /* The actual error messages themselves */
+        --much-select-error-color: var(--nasturcian-flower);
+        --much-select-error-size: 80%;
+        /* The background color of the input when it's in an error state. */
+        --much-select-error-background-color: hsl(from var(--much-select-error-color) h s l / 0.8);
+
         /* Event Log */
         --evet-log-border: 1px solid var(--naval);
         --event-log-header-title-background: var(--mazarine-blue);
@@ -268,6 +289,13 @@ body {
         --much-select-dropdown-optgroup-background-color: var(--london-square);
         --much-select-dropdown-footer-color: var(--minty-green);
         --much-select-dropdown-footer-background-color: var(--dark-periwinkle);
+
+        /** Much Select Error Messages **/
+        /* The actual error messages themselves */
+        --much-select-error-color: var(--sizeling-red);
+        --much-select-error-size: 80%;
+        /* The background color of the input when it's in an error state. */
+        --much-select-error-background-color: hsl(from var(--much-select-error-color) h s l / 0.8);
 
         /* Event Log */
         --evet-log-border: 1px solid var(--good-night);
@@ -519,6 +547,10 @@ much-select::part(input-value) {
     width: 100%;
 }
 
+much-select::part(invalid-input-value) {
+    background-color: var(--much-select-error-background-color);
+}
+
 much-select::part(value-casing output-style-datalist error) {
     border: none;
 }
@@ -768,6 +800,19 @@ much-select::part(dropdown-footer) {
     color: var(--much-select-dropdown-footer-color);
     background-color: var(--much-select-dropdown-footer-background-color);
     padding: 0.2rem;
+}
+
+much-select::part(error-message-list) {
+    margin: 0 0 0.4rem 0;
+    padding: 0;
+    cursor: default;
+}
+
+much-select::part(error-message) {
+    font-size: var(--much-select-error-size);
+    margin: 0.1rem 0 0 0;
+    padding: 0;
+    color: var(--much-select-error-color);
 }
 
 
