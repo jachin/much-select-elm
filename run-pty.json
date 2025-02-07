@@ -78,7 +78,7 @@
       "-w",
       "tests",
       "--debounce",
-      "2000",
+      "2sec",
       "--",
       "npm test"
     ],
