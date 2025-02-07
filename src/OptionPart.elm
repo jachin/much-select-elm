@@ -1,9 +1,9 @@
 module OptionPart exposing (OptionPart, decoder, empty, fromStringOrEmpty, test_new, toDropdownAttribute, toSelectedValueAttribute, valueDecoder)
 
 import Html
-import Html.Attributes
 import Json.Decode exposing (Decoder)
 import OptionDisplay exposing (OptionDisplay(..))
+import PartAttribute
 import String.Extra
 
 
@@ -25,10 +25,10 @@ toSelectedValueAttribute isHighlighted optionPart =
         OptionPart string ->
             case string of
                 "" ->
-                    Html.Attributes.attribute "part" ("selected-value " ++ highlightedPart)
+                    PartAttribute.part ("selected-value " ++ highlightedPart)
 
                 _ ->
-                    Html.Attributes.attribute "part" ("selected-value " ++ highlightedPart ++ " " ++ string)
+                    PartAttribute.part ("selected-value " ++ highlightedPart ++ " " ++ string)
 
 
 toDropdownAttribute : OptionDisplay -> OptionPart -> Html.Attribute msg
@@ -45,7 +45,7 @@ toDropdownAttribute optionDisplay optionPart =
                             string
 
         partAttribute =
-            Html.Attributes.attribute "part"
+            PartAttribute.part
     in
     case optionDisplay of
         OptionShown _ ->

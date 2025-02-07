@@ -8,6 +8,7 @@ import Option exposing (Option)
 import OptionGroup exposing (OptionGroup)
 import OptionList
 import OptionPresentor exposing (tokensToHtml)
+import PartAttribute
 import SelectionMode exposing (SelectionConfig)
 
 
@@ -73,7 +74,7 @@ optionGroupToHtml dropdownItemEventListeners selectionMode dropdownOptionsGroup 
                         _ ->
                             div
                                 [ class "optgroup"
-                                , Html.Attributes.attribute "part" "dropdown-optgroup"
+                                , PartAttribute.part "dropdown-optgroup"
                                 ]
                                 [ span [ class "optgroup-header" ]
                                     (tokensToHtml optionSearchFilter.groupTokens)
@@ -87,7 +88,7 @@ optionGroupToHtml dropdownItemEventListeners selectionMode dropdownOptionsGroup 
                         optionGroupAsString ->
                             div
                                 [ class "optgroup"
-                                , Html.Attributes.attribute "part" "dropdown-optgroup"
+                                , PartAttribute.part "dropdown-optgroup"
                                 ]
                                 [ span [ class "optgroup-header" ]
                                     [ text

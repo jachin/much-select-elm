@@ -82,13 +82,13 @@ import OptionDisplay exposing (OptionDisplay)
 import OptionGroup exposing (OptionGroup)
 import OptionLabel exposing (OptionLabel(..), optionLabelToString)
 import OptionPart exposing (OptionPart)
-import OptionSearchFilter exposing (OptionSearchFilter, OptionSearchFilterWithValue, OptionSearchResult)
+import OptionSearchFilter exposing (OptionSearchFilter, OptionSearchFilterWithValue)
 import OptionSlot exposing (OptionSlot)
 import OptionValue exposing (OptionValue(..))
-import SelectionMode exposing (OutputStyle(..), SelectionConfig, SelectionMode(..))
+import SelectionMode exposing (OutputStyle(..), SelectionMode(..))
 import SlottedOption
 import SortRank exposing (SortRank(..))
-import TransformAndValidate exposing (ValidationErrorMessage, ValidationFailureMessage)
+import TransformAndValidate exposing (ValidationFailureMessage)
 
 
 type Option

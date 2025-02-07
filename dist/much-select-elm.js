@@ -14446,14 +14446,6 @@ var $author$project$MuchSelect$updateWrapper = F2(
 			A2($author$project$MuchSelect$update, msg, model));
 	});
 var $author$project$MuchSelect$NoOp = {$: 0};
-var $elm$virtual_dom$VirtualDom$attribute = F2(
-	function (key, value) {
-		return A2(
-			_VirtualDom_attribute,
-			_VirtualDom_noOnOrFormAction(key),
-			_VirtualDom_noJavaScriptOrHtmlUri(value));
-	});
-var $elm$html$Html$Attributes$attribute = $elm$virtual_dom$VirtualDom$attribute;
 var $elm$html$Html$Attributes$stringProperty = F2(
 	function (key, string) {
 		return A2(
@@ -14662,6 +14654,17 @@ var $author$project$FancyOption$hasDescription = function (option) {
 	return $author$project$OptionDescription$toBool(
 		$author$project$FancyOption$getOptionDescription(option));
 };
+var $elm$virtual_dom$VirtualDom$attribute = F2(
+	function (key, value) {
+		return A2(
+			_VirtualDom_attribute,
+			_VirtualDom_noOnOrFormAction(key),
+			_VirtualDom_noJavaScriptOrHtmlUri(value));
+	});
+var $elm$html$Html$Attributes$attribute = $elm$virtual_dom$VirtualDom$attribute;
+var $author$project$PartAttribute$part = function (p) {
+	return A2($elm$html$Html$Attributes$attribute, 'part', p);
+};
 var $elm$html$Html$span = _VirtualDom_node('span');
 var $author$project$OptionPresentor$tokensToHtml = function (list) {
 	return A2(
@@ -14692,7 +14695,7 @@ var $author$project$FancyOption$descriptionHtml = function (fancyOption) {
 				_List_fromArray(
 					[
 						$elm$html$Html$Attributes$class('description'),
-						A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option-description')
+						$author$project$PartAttribute$part('dropdown-option-description')
 					]),
 				_List_fromArray(
 					[
@@ -14707,7 +14710,7 @@ var $author$project$FancyOption$descriptionHtml = function (fancyOption) {
 				_List_fromArray(
 					[
 						$elm$html$Html$Attributes$class('description'),
-						A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option-description')
+						$author$project$PartAttribute$part('dropdown-option-description')
 					]),
 				_List_fromArray(
 					[
@@ -14828,7 +14831,7 @@ var $author$project$OptionPart$toDropdownAttribute = F2(
 				return string;
 			}
 		}();
-		var partAttribute = $elm$html$Html$Attributes$attribute('part');
+		var partAttribute = $author$project$PartAttribute$part;
 		switch (optionDisplay.$) {
 			case 0:
 				return partAttribute('dropdown-option ' + valuePart);
@@ -14874,7 +14877,7 @@ var $author$project$FancyOption$toDropdownOptionSelectedHighlightedHtml = F2(
 					$author$project$Events$mouseUpPreventDefault(
 					eventHandlers.dD(
 						$author$project$FancyOption$getOptionValue(option))),
-					A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option selected highlighted'),
+					$author$project$PartAttribute$part('dropdown-option selected highlighted'),
 					A2(
 					$author$project$OptionPart$toDropdownAttribute,
 					$author$project$FancyOption$getOptionDisplay(option),
@@ -14906,7 +14909,7 @@ var $author$project$FancyOption$toDropdownOptionSelectedHtml = F2(
 					$author$project$Events$mouseUpPreventDefault(
 					eventHandlers.dD(
 						$author$project$FancyOption$getOptionValue(option))),
-					A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option selected'),
+					$author$project$PartAttribute$part('dropdown-option selected'),
 					A2(
 					$author$project$OptionPart$toDropdownAttribute,
 					$author$project$FancyOption$getOptionDisplay(option),
@@ -14967,7 +14970,7 @@ var $author$project$FancyOption$toDropdownHtml = F3(
 					$elm$html$Html$div,
 					_List_fromArray(
 						[
-							A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option disabled pending-validation'),
+							$author$project$PartAttribute$part('dropdown-option disabled pending-validation'),
 							$elm$html$Html$Attributes$class('option disabled pending-validation'),
 							A2(
 							$author$project$OptionPart$toDropdownAttribute,
@@ -15119,7 +15122,7 @@ var $author$project$GroupedDropdownOptions$optionGroupToHtml = F3(
 						_List_fromArray(
 							[
 								$elm$html$Html$Attributes$class('optgroup'),
-								A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-optgroup')
+								$author$project$PartAttribute$part('dropdown-optgroup')
 							]),
 						_List_fromArray(
 							[
@@ -15144,7 +15147,7 @@ var $author$project$GroupedDropdownOptions$optionGroupToHtml = F3(
 						_List_fromArray(
 							[
 								$elm$html$Html$Attributes$class('optgroup'),
-								A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-optgroup')
+								$author$project$PartAttribute$part('dropdown-optgroup')
 							]),
 						_List_fromArray(
 							[
@@ -15223,7 +15226,7 @@ var $author$project$MuchSelect$customHtmlDropdown = F4(
 				_List_fromArray(
 					[
 						$elm$html$Html$Attributes$class('option disabled no-options'),
-						A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-message')
+						$author$project$PartAttribute$part('dropdown-message')
 					]),
 				_List_fromArray(
 					[
@@ -15250,7 +15253,7 @@ var $author$project$MuchSelect$customHtmlDropdown = F4(
 				_List_fromArray(
 					[
 						$elm$html$Html$Attributes$class('option disabled'),
-						A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-message')
+						$author$project$PartAttribute$part('dropdown-message')
 					]),
 				_List_fromArray(
 					[
@@ -15278,7 +15281,7 @@ var $author$project$MuchSelect$customHtmlDropdown = F4(
 			_List_fromArray(
 				[
 					$elm$html$Html$Attributes$id('dropdown-footer'),
-					A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-footer')
+					$author$project$PartAttribute$part('dropdown-footer')
 				]),
 			_List_fromArray(
 				[
@@ -15291,7 +15294,7 @@ var $author$project$MuchSelect$customHtmlDropdown = F4(
 			_List_fromArray(
 				[
 					$elm$html$Html$Attributes$id('dropdown-footer'),
-					A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-footer')
+					$author$project$PartAttribute$part('dropdown-footer')
 				]),
 			_List_fromArray(
 				[
@@ -15302,7 +15305,7 @@ var $author$project$MuchSelect$customHtmlDropdown = F4(
 			_List_fromArray(
 				[
 					$elm$html$Html$Attributes$id('dropdown'),
-					A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown'),
+					$author$project$PartAttribute$part('dropdown'),
 					$elm$html$Html$Attributes$classList(
 					_List_fromArray(
 						[
@@ -15968,9 +15971,9 @@ var $author$project$OptionPart$toSelectedValueAttribute = F2(
 		var highlightedPart = isHighlighted ? 'highlighted-value' : '';
 		var string = optionPart;
 		if (string === '') {
-			return A2($elm$html$Html$Attributes$attribute, 'part', 'selected-value ' + highlightedPart);
+			return $author$project$PartAttribute$part('selected-value ' + highlightedPart);
 		} else {
-			return A2($elm$html$Html$Attributes$attribute, 'part', 'selected-value ' + (highlightedPart + (' ' + string)));
+			return $author$project$PartAttribute$part('selected-value ' + (highlightedPart + (' ' + string)));
 		}
 	});
 var $author$project$FancyOption$valueLabelHtml = F3(
@@ -15980,7 +15983,7 @@ var $author$project$FancyOption$valueLabelHtml = F3(
 			_List_fromArray(
 				[
 					$elm$html$Html$Attributes$class('selected-value-label'),
-					A2($elm$html$Html$Attributes$attribute, 'part', 'selected-value-label'),
+					$author$project$PartAttribute$part('selected-value-label'),
 					$author$project$Events$mouseUpPreventDefault(
 					toggleSelectedMsg(optionValue))
 				]),
@@ -16000,7 +16003,7 @@ var $author$project$FancyOption$toMultiSelectValueHtml = F4(
 							$author$project$Events$onMouseUpStopPropagationAndPreventDefault(
 							deselectOptionInternal(optionValue)),
 							$elm$html$Html$Attributes$class('remove-option'),
-							A2($elm$html$Html$Attributes$attribute, 'part', 'remove-option')
+							$author$project$PartAttribute$part('remove-option')
 						]),
 					_List_fromArray(
 						[
@@ -16212,7 +16215,7 @@ var $author$project$SlottedOption$toValueHtml = F4(
 							$author$project$Events$onMouseUpStopPropagationAndPreventDefault(
 							deselectOptionInternal(optionValue)),
 							$elm$html$Html$Attributes$class('remove-option'),
-							A2($elm$html$Html$Attributes$attribute, 'part', 'remove-option')
+							$author$project$PartAttribute$part('remove-option')
 						]),
 					_List_fromArray(
 						[
@@ -16222,8 +16225,8 @@ var $author$project$SlottedOption$toValueHtml = F4(
 				return $elm$html$Html$text('');
 			}
 		};
-		var partAttr = A2($elm$html$Html$Attributes$attribute, 'part', 'value');
-		var highlightPartAttr = A2($elm$html$Html$Attributes$attribute, 'part', 'value highlighted-value');
+		var partAttr = $author$project$PartAttribute$part('value');
+		var highlightPartAttr = $author$project$PartAttribute$part('value highlighted-value');
 		var optionDisplay = option.a;
 		var optionValue = option.b;
 		switch (optionDisplay.$) {
@@ -16398,9 +16401,7 @@ var $author$project$MuchSelect$valueCasingPartsAttribute = F3(
 		}();
 		var hasPendingValidationStr = hasPendingValidation ? 'pending-validation' : '';
 		var hasErrorStr = hasError ? 'error' : '';
-		return A2(
-			$elm$html$Html$Attributes$attribute,
-			'part',
+		return $author$project$PartAttribute$part(
 			A2(
 				$elm$core$String$join,
 				' ',
@@ -16428,7 +16429,7 @@ var $author$project$MuchSelect$multiSelectViewCustomHtml = F3(
 					$author$project$SearchString$toString(searchString)),
 					placeholderAttribute,
 					$elm$html$Html$Attributes$id('input-filter'),
-					A2($elm$html$Html$Attributes$attribute, 'part', 'input-filter'),
+					$author$project$PartAttribute$part('input-filter'),
 					$elm$html$Html$Attributes$disabled(
 					$author$project$SelectionMode$isDisabled(selectionConfig)),
 					A2(
@@ -16515,6 +16516,16 @@ var $author$project$SelectionMode$hasPlaceholder = function (selectionConfig) {
 };
 var $elm$html$Html$li = _VirtualDom_node('li');
 var $elm$html$Html$Attributes$list = _VirtualDom_attribute('list');
+var $author$project$PartAttribute$partsList = function (classes) {
+	return $author$project$PartAttribute$part(
+		A2(
+			$elm$core$String$join,
+			' ',
+			A2(
+				$elm$core$List$map,
+				$elm$core$Tuple$first,
+				A2($elm$core$List$filter, $elm$core$Tuple$second, classes))));
+};
 var $author$project$MuchSelect$AddMultiSelectValue = function (a) {
 	return {$: 41, a: a};
 };
@@ -16565,11 +16576,11 @@ var $author$project$MuchSelect$dropdownIndicator = F2(
 			var partAttr = function () {
 				switch (interactionState) {
 					case 0:
-						return A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-indicator down');
+						return $author$project$PartAttribute$part('dropdown-indicator down');
 					case 1:
-						return A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-indicator up');
+						return $author$project$PartAttribute$part('dropdown-indicator up');
 					default:
-						return A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-indicator');
+						return $author$project$PartAttribute$part('dropdown-indicator');
 				}
 			}();
 			var classes = function () {
@@ -16642,7 +16653,7 @@ var $author$project$MuchSelect$rightSlotForEachValueHtml = F4(
 			_List_fromArray(
 				[
 					$elm$html$Html$Attributes$id('right-slot-wrapper'),
-					A2($elm$html$Html$Attributes$attribute, 'part', 'right-slot-wrapper')
+					$author$project$PartAttribute$part('right-slot-wrapper')
 				]));
 		switch (rightSlot.$) {
 			case 0:
@@ -16674,7 +16685,7 @@ var $author$project$MuchSelect$rightSlotForEachValueHtml = F4(
 					_List_fromArray(
 						[
 							$elm$html$Html$Attributes$id('clear-button-wrapper'),
-							A2($elm$html$Html$Attributes$attribute, 'part', 'clear-button-wrapper'),
+							$author$project$PartAttribute$part('clear-button-wrapper'),
 							$author$project$Events$onClickPreventDefaultAndStopPropagation($author$project$MuchSelect$ClearAllSelectedOptions)
 						]),
 					_List_fromArray(
@@ -16876,7 +16887,7 @@ var $author$project$MuchSelect$multiSelectDatasetInputField = F4(
 					$elm$html$Html$li,
 					_List_fromArray(
 						[
-							A2($elm$html$Html$Attributes$attribute, 'part', 'error-message')
+							$author$project$PartAttribute$part('error-message')
 						]),
 					_List_fromArray(
 						[
@@ -16888,6 +16899,11 @@ var $author$project$MuchSelect$multiSelectDatasetInputField = F4(
 			$elm$core$Maybe$withDefault,
 			false,
 			A2($elm$core$Maybe$map, $author$project$Option$isInvalid, maybeOption));
+		var parts = _List_fromArray(
+			[
+				_Utils_Tuple2('input-value', true),
+				_Utils_Tuple2('invalid', isOptionInvalid)
+			]);
 		var idAttr = $elm$html$Html$Attributes$id(
 			'input-value-' + $elm$core$String$fromInt(index));
 		var errorIdAttr = $elm$html$Html$Attributes$id(
@@ -16898,7 +16914,7 @@ var $author$project$MuchSelect$multiSelectDatasetInputField = F4(
 				[
 					errorIdAttr,
 					$elm$html$Html$Attributes$class('error-message'),
-					A2($elm$html$Html$Attributes$attribute, 'part', 'error-message-wrapper')
+					$author$project$PartAttribute$part('error-message-wrapper')
 				]),
 			_List_fromArray(
 				[
@@ -16906,7 +16922,7 @@ var $author$project$MuchSelect$multiSelectDatasetInputField = F4(
 					$elm$html$Html$ul,
 					_List_fromArray(
 						[
-							A2($elm$html$Html$Attributes$attribute, 'part', 'error-message-list')
+							$author$project$PartAttribute$part('error-message-list')
 						]),
 					A2(
 						$elm$core$List$map,
@@ -16929,7 +16945,7 @@ var $author$project$MuchSelect$multiSelectDatasetInputField = F4(
 					$elm$html$Html$Attributes$disabled(true),
 					idAttr,
 					ariaLabel,
-					A2($elm$html$Html$Attributes$attribute, 'part', 'input-value'),
+					$author$project$PartAttribute$partsList(parts),
 					placeholderAttribute,
 					$elm$html$Html$Attributes$classList(classes),
 					$elm$html$Html$Attributes$value(valueString)
@@ -16941,7 +16957,7 @@ var $author$project$MuchSelect$multiSelectDatasetInputField = F4(
 					typeAttr,
 					idAttr,
 					ariaLabel,
-					A2($elm$html$Html$Attributes$attribute, 'part', 'input-value'),
+					$author$project$PartAttribute$partsList(parts),
 					$elm$html$Html$Attributes$classList(classes),
 					$elm$html$Html$Events$onInput(
 					$author$project$MuchSelect$UpdateOptionValueValue(index)),
@@ -16958,7 +16974,7 @@ var $author$project$MuchSelect$multiSelectDatasetInputField = F4(
 				_List_fromArray(
 					[
 						$elm$html$Html$Attributes$class('input-wrapper'),
-						A2($elm$html$Html$Attributes$attribute, 'part', 'input-wrapper')
+						$author$project$PartAttribute$part('input-wrapper')
 					]),
 				_List_fromArray(
 					[
@@ -17025,7 +17041,7 @@ var $author$project$MuchSelect$rightSlotForAllValuesHtml = F2(
 				[
 					$elm$html$Html$Attributes$id('right-slot-for-all-values-wrapper'),
 					$elm$html$Html$Attributes$class('right-slot-wrapper'),
-					A2($elm$html$Html$Attributes$attribute, 'part', 'right-slot-wrapper right-slot-for-all-values-wrapper')
+					$author$project$PartAttribute$part('right-slot-wrapper right-slot-for-all-values-wrapper')
 				]),
 			_List_fromArray(
 				[
@@ -17052,7 +17068,7 @@ var $author$project$MuchSelect$rightSlotForAllValuesHtml = F2(
 								_List_fromArray(
 									[
 										$elm$html$Html$Attributes$id('clear-button-wrapper'),
-										A2($elm$html$Html$Attributes$attribute, 'part', 'clear-button-wrapper'),
+										$author$project$PartAttribute$part('clear-button-wrapper'),
 										$author$project$Events$onClickPreventDefaultAndStopPropagation($author$project$MuchSelect$ClearAllSelectedOptions)
 									]),
 								_List_fromArray(
@@ -17108,7 +17124,7 @@ var $author$project$MuchSelect$singleSelectCustomHtmlInputField = F5(
 		var typeAttr = $elm$html$Html$Attributes$type_('text');
 		var showPlaceholder = (!hasSelectedOption) && ((!focused) && placeholderTuple.a);
 		var placeholderAttribute = showPlaceholder ? $elm$html$Html$Attributes$placeholder(placeholderTuple.b) : A2($elm$html$Html$Attributes$style, '', '');
-		var partAttr = A2($elm$html$Html$Attributes$attribute, 'part', 'input-filter');
+		var partAttr = $author$project$PartAttribute$part('input-filter');
 		var onFocusAttr = $elm$html$Html$Events$onFocus($author$project$MuchSelect$InputFocus);
 		var onBlurAttr = $elm$html$Html$Events$onBlur($author$project$MuchSelect$InputBlur);
 		var keyboardEvents = A2(
@@ -17303,7 +17319,7 @@ var $author$project$MuchSelect$singleSelectDatasetInputField = F3(
 		var showPlaceholder = (!hasSelectedOption) && (!$author$project$SelectionMode$isFocused(selectionMode));
 		var placeholderAttribute = showPlaceholder ? $elm$html$Html$Attributes$placeholder(
 			$author$project$SelectionMode$getPlaceholderString(selectionMode)) : $elm_community$html_extra$Html$Attributes$Extra$empty;
-		var partAttr = A2($elm$html$Html$Attributes$attribute, 'part', 'input-value');
+		var partAttr = $author$project$PartAttribute$part('input-value');
 		var onFocusAttr = $elm$html$Html$Events$onFocus($author$project$MuchSelect$InputFocus);
 		var onBlurAttr = $elm$html$Html$Events$onBlur($author$project$MuchSelect$InputBlur);
 		var idAttr = $elm$html$Html$Attributes$id('input-value');
@@ -17421,7 +17437,7 @@ var $author$project$DropdownOptions$optionToSlottedOptionHtml = F2(
 							eventHandlers.dD(
 								$author$project$Option$getOptionValue(option))),
 							$author$project$Events$onClickPreventDefault(eventHandlers.dH),
-							A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option'),
+							$author$project$PartAttribute$part('dropdown-option'),
 							$elm$html$Html$Attributes$class('option'),
 							$author$project$DropdownOptions$valueDataAttribute(option)
 						]),
@@ -17457,7 +17473,7 @@ var $author$project$DropdownOptions$optionToSlottedOptionHtml = F2(
 							eventHandlers.dD(
 								$author$project$Option$getOptionValue(option))),
 							$author$project$Events$onClickPreventDefault(eventHandlers.dH),
-							A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option selected'),
+							$author$project$PartAttribute$part('dropdown-option selected'),
 							$elm$html$Html$Attributes$class('option selected'),
 							$author$project$DropdownOptions$valueDataAttribute(option)
 						]),
@@ -17480,7 +17496,7 @@ var $author$project$DropdownOptions$optionToSlottedOptionHtml = F2(
 					$elm$html$Html$div,
 					_List_fromArray(
 						[
-							A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option disabled pending-validation'),
+							$author$project$PartAttribute$part('dropdown-option disabled pending-validation'),
 							$elm$html$Html$Attributes$class('option disabled pending-validation'),
 							$author$project$DropdownOptions$valueDataAttribute(option)
 						]),
@@ -17514,7 +17530,7 @@ var $author$project$DropdownOptions$optionToSlottedOptionHtml = F2(
 							eventHandlers.dD(
 								$author$project$Option$getOptionValue(option))),
 							$author$project$Events$onClickPreventDefault(eventHandlers.dH),
-							A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option selected highlighted'),
+							$author$project$PartAttribute$part('dropdown-option selected highlighted'),
 							$elm$html$Html$Attributes$class('option selected highlighted'),
 							$author$project$DropdownOptions$valueDataAttribute(option)
 						]),
@@ -17548,7 +17564,7 @@ var $author$project$DropdownOptions$optionToSlottedOptionHtml = F2(
 							eventHandlers.dD(
 								$author$project$Option$getOptionValue(option))),
 							$author$project$Events$onClickPreventDefault(eventHandlers.dH),
-							A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option selected highlighted'),
+							$author$project$PartAttribute$part('dropdown-option selected highlighted'),
 							$elm$html$Html$Attributes$class('option highlighted'),
 							$author$project$DropdownOptions$valueDataAttribute(option)
 						]),
@@ -17582,7 +17598,7 @@ var $author$project$DropdownOptions$optionToSlottedOptionHtml = F2(
 							eventHandlers.dD(
 								$author$project$Option$getOptionValue(option))),
 							$author$project$Events$onClickPreventDefault(eventHandlers.dH),
-							A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option active highlighted'),
+							$author$project$PartAttribute$part('dropdown-option active highlighted'),
 							$elm$html$Html$Attributes$class('option active highlighted'),
 							$author$project$DropdownOptions$valueDataAttribute(option)
 						]),
@@ -17603,7 +17619,7 @@ var $author$project$DropdownOptions$optionToSlottedOptionHtml = F2(
 					$elm$html$Html$div,
 					_List_fromArray(
 						[
-							A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option disabled'),
+							$author$project$PartAttribute$part('dropdown-option disabled'),
 							$elm$html$Html$Attributes$class('option disabled'),
 							$author$project$DropdownOptions$valueDataAttribute(option)
 						]),
@@ -17640,7 +17656,7 @@ var $author$project$MuchSelect$slottedDropdown = F4(
 				_List_fromArray(
 					[
 						$elm$html$Html$Attributes$class('option disabled'),
-						A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-message')
+						$author$project$PartAttribute$part('dropdown-message')
 					]),
 				_List_fromArray(
 					[
@@ -17667,7 +17683,7 @@ var $author$project$MuchSelect$slottedDropdown = F4(
 				_List_fromArray(
 					[
 						$elm$html$Html$Attributes$class('option disabled'),
-						A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-option dropdown-message')
+						$author$project$PartAttribute$part('dropdown-option dropdown-message')
 					]),
 				_List_fromArray(
 					[
@@ -17694,7 +17710,7 @@ var $author$project$MuchSelect$slottedDropdown = F4(
 			_List_fromArray(
 				[
 					$elm$html$Html$Attributes$id('dropdown-footer'),
-					A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown-footer')
+					$author$project$PartAttribute$part('dropdown-footer')
 				]),
 			_List_fromArray(
 				[
@@ -17708,7 +17724,7 @@ var $author$project$MuchSelect$slottedDropdown = F4(
 			_List_fromArray(
 				[
 					$elm$html$Html$Attributes$id('dropdown'),
-					A2($elm$html$Html$Attributes$attribute, 'part', 'dropdown'),
+					$author$project$PartAttribute$part('dropdown'),
 					$elm$html$Html$Attributes$classList(
 					_List_fromArray(
 						[
@@ -17739,7 +17755,7 @@ var $author$project$MuchSelect$view = function (model) {
 		_List_fromArray(
 			[
 				$elm$html$Html$Attributes$id('wrapper'),
-				A2($elm$html$Html$Attributes$attribute, 'part', 'wrapper'),
+				$author$project$PartAttribute$part('wrapper'),
 				function () {
 				var _v0 = $author$project$SelectionMode$getOutputStyle(model.a);
 				if (!_v0) {

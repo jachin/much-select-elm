@@ -17,6 +17,7 @@ import OptionPresentor exposing (tokensToHtml)
 import OptionSearchFilter exposing (OptionSearchFilter)
 import OptionValue exposing (OptionValue(..))
 import OutputStyle exposing (SingleItemRemoval(..))
+import PartAttribute
 import SelectionMode exposing (OutputStyle, SelectionConfig, SelectionMode)
 
 
@@ -615,7 +616,7 @@ toMultiSelectValueHtml toggleSelectedMsg deselectOptionInternal enableSingleItem
                           --  the input field will get under the mouse and trigger a focus event.
                           onMouseUpStopPropagationAndPreventDefault <| deselectOptionInternal optionValue
                         , class "remove-option"
-                        , Html.Attributes.attribute "part" "remove-option"
+                        , PartAttribute.part "remove-option"
                         ]
                         [ text "" ]
 
@@ -750,7 +751,7 @@ valueLabelHtml : (OptionValue -> msg) -> String -> OptionValue -> Html msg
 valueLabelHtml toggleSelectedMsg labelText optionValue =
     span
         [ class "selected-value-label"
-        , Html.Attributes.attribute "part" "selected-value-label"
+        , PartAttribute.part "selected-value-label"
         , mouseUpPreventDefault
             (toggleSelectedMsg optionValue)
         ]
@@ -764,7 +765,7 @@ descriptionHtml fancyOption =
             Just optionSearchFilter ->
                 div
                     [ class "description"
-                    , Html.Attributes.attribute "part" "dropdown-option-description"
+                    , PartAttribute.part "dropdown-option-description"
                     ]
                     [ span [] (tokensToHtml optionSearchFilter.descriptionTokens)
                     ]
@@ -772,7 +773,7 @@ descriptionHtml fancyOption =
             Nothing ->
                 div
                     [ class "description"
-                    , Html.Attributes.attribute "part" "dropdown-option-description"
+                    , PartAttribute.part "dropdown-option-description"
                     ]
                     [ span []
                         [ fancyOption
@@ -830,7 +831,7 @@ toDropdownHtml eventHandlers selectionMode option =
 
         OptionSelectedPendingValidation _ ->
             div
-                [ Html.Attributes.attribute "part" "dropdown-option disabled pending-validation"
+                [ PartAttribute.part "dropdown-option disabled pending-validation"
                 , class "option disabled pending-validation"
                 , OptionPart.toDropdownAttribute (getOptionDisplay option) (getOptionPart option)
                 , valueDataAttribute option
@@ -889,7 +890,7 @@ toDropdownOptionSelectedHtml eventHandlers option =
         , onMouseLeave (option |> getOptionValue |> eventHandlers.mouseOutMsgConstructor)
         , mouseDownPreventDefault (option |> getOptionValue |> eventHandlers.mouseDownMsgConstructor)
         , mouseUpPreventDefault (option |> getOptionValue |> eventHandlers.mouseUpMsgConstructor)
-        , Html.Attributes.attribute "part" "dropdown-option selected"
+        , PartAttribute.part "dropdown-option selected"
         , OptionPart.toDropdownAttribute (getOptionDisplay option) (getOptionPart option)
         , class "option selected"
         , valueDataAttribute option
@@ -904,7 +905,7 @@ toDropdownOptionSelectedHighlightedHtml eventHandlers option =
         , onMouseLeave (option |> getOptionValue |> eventHandlers.mouseOutMsgConstructor)
         , mouseDownPreventDefault (option |> getOptionValue |> eventHandlers.mouseDownMsgConstructor)
         , mouseUpPreventDefault (option |> getOptionValue |> eventHandlers.mouseUpMsgConstructor)
-        , Html.Attributes.attribute "part" "dropdown-option selected highlighted"
+        , PartAttribute.part "dropdown-option selected highlighted"
         , OptionPart.toDropdownAttribute (getOptionDisplay option) (getOptionPart option)
         , class "option selected highlighted"
         , valueDataAttribute option
