@@ -16,6 +16,7 @@ import OutputStyle exposing (SelectedItemPlacementMode(..))
 import PositiveInt exposing (PositiveInt)
 import SearchString exposing (SearchString)
 import SelectionMode exposing (OutputStyle(..), SelectionConfig, SelectionMode(..))
+import Set
 import SortRank exposing (SortRank)
 import TransformAndValidate exposing (ValidationFailureMessage)
 
@@ -259,13 +260,36 @@ uniqueBy : (Option -> comparable) -> OptionList -> OptionList
 uniqueBy function optionList =
     case optionList of
         FancyOptionList options ->
-            FancyOptionList (List.Extra.uniqueBy function options)
+            FancyOptionList (fasterUniqueBy function options)
 
         DatalistOptionList options ->
-            DatalistOptionList (List.Extra.uniqueBy function options)
+            DatalistOptionList (fasterUniqueBy function options)
 
         SlottedOptionList options ->
-            SlottedOptionList (List.Extra.uniqueBy function options)
+            SlottedOptionList (fasterUniqueBy function options)
+
+
+fasterUniqueBy : (a -> comparable) -> List a -> List a
+fasterUniqueBy function list =
+    fasterUniqueByHelper function list [] Set.empty
+
+
+fasterUniqueByHelper : (a -> comparable) -> List a -> List a -> Set.Set comparable -> List a
+fasterUniqueByHelper function remainingList acc seen =
+    case remainingList of
+        [] ->
+            List.reverse acc
+
+        x :: xs ->
+            let
+                key =
+                    function x
+            in
+            if Set.member key seen then
+                fasterUniqueByHelper function xs acc seen
+
+            else
+                fasterUniqueByHelper function xs (x :: acc) (Set.insert key seen)
 
 
 find : (Option -> Bool) -> OptionList -> Maybe Option
