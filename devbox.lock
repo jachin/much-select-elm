@@ -1,0 +1,282 @@
+{
+  "lockfile_version": "1",
+  "packages": {
+    "elmPackages.elm-json@latest": {
+      "last_modified": "2025-09-18T16:33:27Z",
+      "resolved": "github:NixOS/nixpkgs/f4b140d5b253f5e2a1ff4e5506edbf8267724bde#elmPackages.elm-json",
+      "source": "devbox-search",
+      "version": "0.2.13",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/pd7b1pgh2q4kb2llliwvgc41ks669cfk-elm-json-0.2.13",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/pd7b1pgh2q4kb2llliwvgc41ks669cfk-elm-json-0.2.13"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/h2yngnirbjgvf3yk5cc13c14yqsqafyz-elm-json-0.2.13",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/h2yngnirbjgvf3yk5cc13c14yqsqafyz-elm-json-0.2.13"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/3i1wadhjy5ps05qi9gjrqn98a36mdgz1-elm-json-0.2.13",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/3i1wadhjy5ps05qi9gjrqn98a36mdgz1-elm-json-0.2.13"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/g7ja644vj7m4xciwsxmhca24x6pxc4ny-elm-json-0.2.13",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/g7ja644vj7m4xciwsxmhca24x6pxc4ny-elm-json-0.2.13"
+        }
+      }
+    },
+    "firebase-tools@latest": {
+      "last_modified": "2025-09-18T16:33:27Z",
+      "resolved": "github:NixOS/nixpkgs/f4b140d5b253f5e2a1ff4e5506edbf8267724bde#firebase-tools",
+      "source": "devbox-search",
+      "version": "14.16.0",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/p87i9xp5dwkhr2331pql0vpphd6vbfhg-firebase-tools-14.16.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/p87i9xp5dwkhr2331pql0vpphd6vbfhg-firebase-tools-14.16.0"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/abnq22c8liid9nv08wn221m5mr7rcbrp-firebase-tools-14.16.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/abnq22c8liid9nv08wn221m5mr7rcbrp-firebase-tools-14.16.0"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/356rprhhd4y1x2h0ivvrxi749czjg7ny-firebase-tools-14.16.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/356rprhhd4y1x2h0ivvrxi749czjg7ny-firebase-tools-14.16.0"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/v5jdg1l37j0i48c0z3lfwzqp8b50ljys-firebase-tools-14.16.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/v5jdg1l37j0i48c0z3lfwzqp8b50ljys-firebase-tools-14.16.0"
+        }
+      }
+    },
+    "github:NixOS/nixpkgs/nixpkgs-unstable": {
+      "last_modified": "2025-09-28T14:42:27Z",
+      "resolved": "github:NixOS/nixpkgs/647e5c14cbd5067f44ac86b74f014962df460840?lastModified=1759070547&narHash=sha256-JVZl8NaVRYb0%2B381nl7LvPE%2BA774%2FdRpif01FKLrYFQ%3D"
+    },
+    "nodejs@latest": {
+      "last_modified": "2025-09-18T16:33:27Z",
+      "plugin_version": "0.0.2",
+      "resolved": "github:NixOS/nixpkgs/f4b140d5b253f5e2a1ff4e5506edbf8267724bde#nodejs_24",
+      "source": "devbox-search",
+      "version": "24.8.0",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/cj8hvq7sqpsvjk7119w0w41sfp9606wx-nodejs-24.8.0",
+              "default": true
+            },
+            {
+              "name": "dev",
+              "path": "/nix/store/smybrnlm3kfrfd03nsp01j3s25rjcn32-nodejs-24.8.0-dev"
+            },
+            {
+              "name": "libv8",
+              "path": "/nix/store/82fl9py60ms063fl5g98h9qi2c9zna9a-nodejs-24.8.0-libv8"
+            }
+          ],
+          "store_path": "/nix/store/cj8hvq7sqpsvjk7119w0w41sfp9606wx-nodejs-24.8.0"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/855hdyp45b2k7dksv259w3m8fifcccz1-nodejs-24.8.0",
+              "default": true
+            },
+            {
+              "name": "dev",
+              "path": "/nix/store/phz4mj4y3mdakkrp5334yppgs8lkkbhh-nodejs-24.8.0-dev"
+            },
+            {
+              "name": "libv8",
+              "path": "/nix/store/bmf3w1wdxbs63vmn71pi2icwfnimzx4z-nodejs-24.8.0-libv8"
+            }
+          ],
+          "store_path": "/nix/store/855hdyp45b2k7dksv259w3m8fifcccz1-nodejs-24.8.0"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/dzrcn8s95bfqigvyv4snpmbzlww4jb7v-nodejs-24.8.0",
+              "default": true
+            },
+            {
+              "name": "dev",
+              "path": "/nix/store/b8whzzkhaxi31ysx8wdx50vzv01jcqzb-nodejs-24.8.0-dev"
+            },
+            {
+              "name": "libv8",
+              "path": "/nix/store/dhslzl533ik0maj8jiyl8rmsyv5iahig-nodejs-24.8.0-libv8"
+            }
+          ],
+          "store_path": "/nix/store/dzrcn8s95bfqigvyv4snpmbzlww4jb7v-nodejs-24.8.0"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/a83yhhb3dibglaj5s80pxsr19s05d071-nodejs-24.8.0",
+              "default": true
+            },
+            {
+              "name": "dev",
+              "path": "/nix/store/ggmz3g3yw7g5sv4j5f9lij3hxmdl2rai-nodejs-24.8.0-dev"
+            },
+            {
+              "name": "libv8",
+              "path": "/nix/store/9qhkgknw40n8kwcd5g5pw8fm0lbsd44q-nodejs-24.8.0-libv8"
+            }
+          ],
+          "store_path": "/nix/store/a83yhhb3dibglaj5s80pxsr19s05d071-nodejs-24.8.0"
+        }
+      }
+    },
+    "npm-check-updates@latest": {
+      "last_modified": "2025-09-18T16:33:27Z",
+      "resolved": "github:NixOS/nixpkgs/f4b140d5b253f5e2a1ff4e5506edbf8267724bde#npm-check-updates",
+      "source": "devbox-search",
+      "version": "18.1.0",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/2ilb7skbf3q2fcz1a6fwcm7ffhryyxdh-npm-check-updates-18.1.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/2ilb7skbf3q2fcz1a6fwcm7ffhryyxdh-npm-check-updates-18.1.0"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/7rvx850w41gr9574hpwzd4q2h4dyc718-npm-check-updates-18.1.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/7rvx850w41gr9574hpwzd4q2h4dyc718-npm-check-updates-18.1.0"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/bczgxy1qajv4h7a6mwsb5ib46187ddzy-npm-check-updates-18.1.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/bczgxy1qajv4h7a6mwsb5ib46187ddzy-npm-check-updates-18.1.0"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/hr2l4ppq3651d4az1i80vz7azp70sn0y-npm-check-updates-18.1.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/hr2l4ppq3651d4az1i80vz7azp70sn0y-npm-check-updates-18.1.0"
+        }
+      }
+    },
+    "soupault@latest": {
+      "last_modified": "2025-09-19T06:08:23Z",
+      "resolved": "github:NixOS/nixpkgs/12bd230118a1901a4a5d393f9f56b6ad7e571d01#soupault",
+      "source": "devbox-search",
+      "version": "5.1.0",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/dapr2sj3l2f8zh15awbffj0qzblvarg4-ocaml5.3.0-soupault-5.1.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/dapr2sj3l2f8zh15awbffj0qzblvarg4-ocaml5.3.0-soupault-5.1.0"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/6axfbd4bc9xsnlr5cr874ib9w99ip80s-ocaml5.3.0-soupault-5.1.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/6axfbd4bc9xsnlr5cr874ib9w99ip80s-ocaml5.3.0-soupault-5.1.0"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/v1xnkpvbmpkb1jimd27dnzalxpn94br8-ocaml5.3.0-soupault-5.1.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/v1xnkpvbmpkb1jimd27dnzalxpn94br8-ocaml5.3.0-soupault-5.1.0"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/32dgwgzq5ligqwbiibv5bd3ir1nwf5c9-ocaml5.3.0-soupault-5.1.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/32dgwgzq5ligqwbiibv5bd3ir1nwf5c9-ocaml5.3.0-soupault-5.1.0"
+        }
+      }
+    }
+  }
+}
