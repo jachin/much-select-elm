@@ -12802,52 +12802,67 @@ var $author$project$OptionList$removeEmptyOptions = function (optionList) {
 		A2($elm$core$Basics$composeR, $author$project$Option$isEmpty, $elm$core$Basics$not),
 		optionList);
 };
-var $elm$core$List$member = F2(
-	function (x, xs) {
-		return A2(
-			$elm$core$List$any,
-			function (a) {
-				return _Utils_eq(a, x);
-			},
-			xs);
+var $elm$core$Set$Set_elm_builtin = function (a) {
+	return {$: 'Set_elm_builtin', a: a};
+};
+var $elm$core$Set$empty = $elm$core$Set$Set_elm_builtin($elm$core$Dict$empty);
+var $elm$core$Set$insert = F2(
+	function (key, _v0) {
+		var dict = _v0.a;
+		return $elm$core$Set$Set_elm_builtin(
+			A3($elm$core$Dict$insert, key, _Utils_Tuple0, dict));
 	});
-var $elm_community$list_extra$List$Extra$uniqueHelp = F4(
-	function (f, existing, remaining, accumulator) {
-		uniqueHelp:
+var $elm$core$Dict$member = F2(
+	function (key, dict) {
+		var _v0 = A2($elm$core$Dict$get, key, dict);
+		if (_v0.$ === 'Just') {
+			return true;
+		} else {
+			return false;
+		}
+	});
+var $elm$core$Set$member = F2(
+	function (key, _v0) {
+		var dict = _v0.a;
+		return A2($elm$core$Dict$member, key, dict);
+	});
+var $author$project$OptionList$fasterUniqueByHelper = F4(
+	function (_function, remainingList, acc, seen) {
+		fasterUniqueByHelper:
 		while (true) {
-			if (!remaining.b) {
-				return $elm$core$List$reverse(accumulator);
+			if (!remainingList.b) {
+				return $elm$core$List$reverse(acc);
 			} else {
-				var first = remaining.a;
-				var rest = remaining.b;
-				var computedFirst = f(first);
-				if (A2($elm$core$List$member, computedFirst, existing)) {
-					var $temp$f = f,
-						$temp$existing = existing,
-						$temp$remaining = rest,
-						$temp$accumulator = accumulator;
-					f = $temp$f;
-					existing = $temp$existing;
-					remaining = $temp$remaining;
-					accumulator = $temp$accumulator;
-					continue uniqueHelp;
+				var x = remainingList.a;
+				var xs = remainingList.b;
+				var key = _function(x);
+				if (A2($elm$core$Set$member, key, seen)) {
+					var $temp$function = _function,
+						$temp$remainingList = xs,
+						$temp$acc = acc,
+						$temp$seen = seen;
+					_function = $temp$function;
+					remainingList = $temp$remainingList;
+					acc = $temp$acc;
+					seen = $temp$seen;
+					continue fasterUniqueByHelper;
 				} else {
-					var $temp$f = f,
-						$temp$existing = A2($elm$core$List$cons, computedFirst, existing),
-						$temp$remaining = rest,
-						$temp$accumulator = A2($elm$core$List$cons, first, accumulator);
-					f = $temp$f;
-					existing = $temp$existing;
-					remaining = $temp$remaining;
-					accumulator = $temp$accumulator;
-					continue uniqueHelp;
+					var $temp$function = _function,
+						$temp$remainingList = xs,
+						$temp$acc = A2($elm$core$List$cons, x, acc),
+						$temp$seen = A2($elm$core$Set$insert, key, seen);
+					_function = $temp$function;
+					remainingList = $temp$remainingList;
+					acc = $temp$acc;
+					seen = $temp$seen;
+					continue fasterUniqueByHelper;
 				}
 			}
 		}
 	});
-var $elm_community$list_extra$List$Extra$uniqueBy = F2(
-	function (f, list) {
-		return A4($elm_community$list_extra$List$Extra$uniqueHelp, f, _List_Nil, list, _List_Nil);
+var $author$project$OptionList$fasterUniqueBy = F2(
+	function (_function, list) {
+		return A4($author$project$OptionList$fasterUniqueByHelper, _function, list, _List_Nil, $elm$core$Set$empty);
 	});
 var $author$project$OptionList$uniqueBy = F2(
 	function (_function, optionList) {
@@ -12855,15 +12870,15 @@ var $author$project$OptionList$uniqueBy = F2(
 			case 'FancyOptionList':
 				var options = optionList.a;
 				return $author$project$OptionList$FancyOptionList(
-					A2($elm_community$list_extra$List$Extra$uniqueBy, _function, options));
+					A2($author$project$OptionList$fasterUniqueBy, _function, options));
 			case 'DatalistOptionList':
 				var options = optionList.a;
 				return $author$project$OptionList$DatalistOptionList(
-					A2($elm_community$list_extra$List$Extra$uniqueBy, _function, options));
+					A2($author$project$OptionList$fasterUniqueBy, _function, options));
 			default:
 				var options = optionList.a;
 				return $author$project$OptionList$SlottedOptionList(
-					A2($elm_community$list_extra$List$Extra$uniqueBy, _function, options));
+					A2($author$project$OptionList$fasterUniqueBy, _function, options));
 		}
 	});
 var $author$project$OptionList$organizeNewDatalistOptions = function (optionList) {
