@@ -6,51 +6,34 @@
     "firebase-tools@latest",
     "npm-check-updates@latest",
     "elmPackages.elm-json@latest",
-    "watchexec@latest"
+    "watchexec@latest",
+    "elmPackages.elm-review@latest"
   ],
   "shell": {
-    "init_hook": [
-      "echo 'Welcome to devbox!' > /dev/null"
-    ],
+    "init_hook": ["echo 'Welcome to devbox!' > /dev/null"],
     "scripts": {
-      "start": [
-        "npm start"
-      ],
-      "test": [
-        "npm test"
-      ],
+      "start":           ["npm start"],
+      "test":            ["npm test"],
       "web-test-runner": "npm run web-test-runner",
       "web-test-runner-with-coverage": [
         "npm run web-test-runner-with-coverage"
       ],
-      "build": [
-        "./scripts/build.sh"
-      ],
-      "build-site": [
-        "./scripts/build-site.sh"
-      ],
+      "build":      ["./scripts/build.sh"],
+      "build-site": ["./scripts/build-site.sh"],
       "build-and-test": [
         "npm run build",
         "npm run test",
         "npm run web-test-runner"
       ],
-      "serve":       "scripts/serve-site.sh",
-      "deploy-site": "npm run build && npm run build-site && firebase deploy",
-      "lint":        "eslint; eslint tests",
-      "format":      "elm-format",
-      "review":      "elm-review",
-      "check-npm-packages": [
-        "ncu"
-      ],
-      "check-elm-packages": [
-        "elm-json upgrade"
-      ],
-      "elm-tooling-install": [
-        "npx elm-tooling install"
-      ],
-      "npm-install": [
-        "npm install"
-      ]
+      "serve":               "scripts/serve-site.sh",
+      "deploy-site":         "npm run build && npm run build-site && firebase deploy",
+      "lint":                "eslint; eslint tests",
+      "format":              "elm-format",
+      "review":              "npx elm-review",
+      "check-npm-packages":  ["ncu"],
+      "check-elm-packages":  ["elm-json upgrade"],
+      "elm-tooling-install": ["npx elm-tooling install"],
+      "npm-install":         ["npm install"]
     }
   }
 }
