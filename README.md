@@ -41,45 +41,27 @@ if (!customElements.get("much-select")) {
 
 ### Pre-requisites
 
-#### asdf
-This project manages its Node version with [asdf](https://github.com/asdf-vm/asdf)
+#### devbox
+This project manages its development enviornment with [devbox](https://www.jetify.com/devbox).
 
-#### asdf-node-js
-
-You'll need `asdf` installed as well as the [asdf nodejs plugin](https://github.com/asdf-vm/asdf-nodejs)
-(`gpg` is a dependency used by asdf to verify plugin asset validity)
-
-```bash
-brew install gpg
-brew install asdf
-asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git
-```
-
-#### soupault
-
-We use a static site generator called [Soupault](https://soupault.app/) to make the sandbox.
-There [several ways to install](https://soupault.app/install/) it. I recommend using the OPAM method.
-
-
-#### watchexec
-
-The development build scripts depend on [watchexec](https://watchexec.github.io/). You can install it anyway that makes sense on your machine as long as it's in the `PATH` but I recommend using [homebrew](https://formulae.brew.sh/formula/watchexec).
-
-```bash
-brew install watchexec
-```
+Some of the tools devbox will just take care of for you include
+ - soupault, a static site generator
+ - watchexec, for doing stuff automatically when files change
 
 ### Initial Setup
 
 To work on this project, clone the repo to your machine then run the following:
 
 ```bash
-asdf install
-npm install
-npx elm-tooling install
+devbox run npm-install
+devbox run elm-tooling-install
 ```
 
-This should install the correct version of node (via `asdf`). All the npm packages, and all the elm-tools.
+That should set the table for you, then you can start all the fun stuff by running
+
+```bash
+devbox run start
+```
 
 ### Watch and Develop
 

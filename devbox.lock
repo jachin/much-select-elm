@@ -277,6 +277,54 @@
           "store_path": "/nix/store/32dgwgzq5ligqwbiibv5bd3ir1nwf5c9-ocaml5.3.0-soupault-5.1.0"
         }
       }
+    },
+    "watchexec@latest": {
+      "last_modified": "2025-09-18T16:33:27Z",
+      "resolved": "github:NixOS/nixpkgs/f4b140d5b253f5e2a1ff4e5506edbf8267724bde#watchexec",
+      "source": "devbox-search",
+      "version": "2.3.2",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/d7w5qbmkbh3hy1h7psl3kgrwah74hzbm-watchexec-2.3.2",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/d7w5qbmkbh3hy1h7psl3kgrwah74hzbm-watchexec-2.3.2"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/ss9v710hrcy1nmpxyjp7pnwpy6yzfg7c-watchexec-2.3.2",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/ss9v710hrcy1nmpxyjp7pnwpy6yzfg7c-watchexec-2.3.2"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/f5sqnppi0c5a8gphn59mq32w1kanbpwl-watchexec-2.3.2",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/f5sqnppi0c5a8gphn59mq32w1kanbpwl-watchexec-2.3.2"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/ldyc081qvlrqy1xyl2ndbk5hhywfdqrq-watchexec-2.3.2",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/ldyc081qvlrqy1xyl2ndbk5hhywfdqrq-watchexec-2.3.2"
+        }
+      }
     }
   }
 }
