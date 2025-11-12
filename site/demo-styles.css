@@ -3,15 +3,11 @@ Boring colors https://flatuicolors.com/palette/gb
 Fun colors https://flatuicolors.com/palette/se
 */
 
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@500&display=swap');
-
-
 body {
     /*
     This seems to prevent the dramatic flash as the theme is getting setup as a page loads.
     */
     transition-duration: 0.5s;
-
     margin: 0;
     padding: 0;
 }
@@ -61,7 +57,8 @@ body {
     --london-square: #808e9b;
     --black-pearl: #1e272e;
 
-    --much-select-height: 36px;
+    --much-select-height: 2.5em;
+    --comic-sans: 'Comic Sans MS', cursive, sans-serif;
 }
 
 @media (prefers-color-scheme: light) {
@@ -77,17 +74,18 @@ body {
 }
 
 #theme-switch-boring:checked ~ #page-wrapper {
-    --header-font: "Andale Mono", sans-serif;
-    --body-font: "Times New Roman", serif;
-    --form-font: "Andale Mono", sans-serif;
-    --value-font-size: 25px;
+    --header-font: system-ui;
+    --body-font: system-ui;
+    --form-font: system-ui;
+    --value-font-size: 1em;
 }
 
+
 #theme-switch-fun:checked ~ #page-wrapper {
-    --header-font: "Comic Sans MS";
-    --body-font: 'DM Sans', sans-serif;
-    --form-font: 'DM Sans', sans-serif;
-    --value-font-size: 25px;
+    --header-font: var(--comic-sans), sans-serif;
+    --body-font: system-ui, sans-serif ;
+    --form-font: system-ui, sans-serif;
+    --value-font-size: 1em;
 }
 
 @media (prefers-color-scheme: light) {
@@ -96,10 +94,10 @@ body {
         --text-color: var(--electromagnetic);
         --link-text-color: var(--mazarine-blue);
         --nav-link-text-color: var(--pico-void);
-        --nav-link-text-hover-background-color: var(--vanadyl-blue);
+        --nav-link-text-hover-background-color: transparent;
 
         --site-nav-background-color: var(--hint-of-pensive);
-        --offsite-nav-background-color: var(--matt-purple);
+        --offsite-nav-background-color: var(--hint-of-pensive);
 
         --example-background-color: var(--hint-of-pensive);
         --example-border-color: var(--blueberry-soda);
@@ -114,13 +112,32 @@ body {
         --much-select-clear-button-border-color: var(--matt-purple);
 
         /* Much Select Dropdown */
-        --much-select-dropdown-option-background-color: var(--hint-of-pensive);
+        --much-select-dropdown-option-color: var(--text-color);
+        --much-select-dropdown-option-color-inverse: var(--lynx-white);
+        --much-select-dropdown-option-background-color: var(--lynx-white);
         --much-select-dropdown-option-highlighted-background-color: var(--matt-purple);
         --much-select-dropdown-option-active-background-color: var(--protoss-pylon);
-        --much-select-dropdown-option-selected-background-color: var(--chain-gang-grey);
-        --much-select-dropdown-optgroup-background-color: var(--skirret-green);
+        --much-select-dropdown-option-selected-background-color: var(--vanadyl-blue);
+        --much-select-dropdown-option-disabled-background-color: var(--blueberry-soda);
+        --much-select-dropdown-option-disabled-font-color: var(--chain-gang-grey);
+        --much-select-dropdown-optgroup-color: var(--hint-of-pensive);
+        --much-select-dropdown-optgroup-background-color: var(--chain-gang-grey);
         --much-select-dropdown-footer-color: var(--chain-gang-grey);
         --much-select-dropdown-footer-background-color: var(--hint-of-pensive);
+
+        /** Much Select Error state **/
+        /* The actual error messages themselves */
+        --much-select-error-color: var(--nasturcian-flower);
+        --much-select-error-size: 80%;
+        /* The background color of the input when it's in an error state. */
+        --much-select-error-background-color: hsl(from var(--much-select-error-color) h s l / 0.2);
+
+        /* Event Log */
+        --evet-log-border: 1px solid var(--chain-gang-grey);
+        --event-log-header-title-background: var(--sea-brook);
+        --event-log-header-background: var(--vanadyl-blue);
+        --events-log-border-top-and-bottom: 1px solid var(--pico-void);
+        --events-log-border-left-and-right: 1px dashed var(--naval);
     }
 
     #theme-switch-fun:checked ~ #page-wrapper {
@@ -140,24 +157,46 @@ body {
         --much-select-background-color: var(--hint-of-elusive-blue);
         --much-select-value-casing-background-image: linear-gradient(to bottom, #fefefe, #f2f2f2);
         --much-select-disabled-background-color: var(--london-square);
-        --much-select-error-background-color: var(--yriel-yellow);
         --much-select-border-color: var(--jade-dust);
         --much-select-hover-border-color: var(--spirio-disco-ball);
         --much-select-error-border-color: var(--nasturcian-flower);
         --much-select-disabled-border-color: var(--hint-of-elusive-blue);
+
+        /* The background of a selected value in multi select mode and "custom" "output style". */
+        --much-select-multi-select-selected-value-background-image: linear-gradient(to bottom, var(--lynx-white), var(--hint-of-pensive));
+
+        /* The text color of a selected value in multi select mode and "custom" "output style". */
+        --much-select-multi-select-selected-value-color: var(--text-color);
 
         --much-select-clear-button-border-color: var(--spirio-disco-ball);
 
         /* Much Select Dropdown */
         --much-select-dropdown-option-color: var(--black-pearl);
         --much-select-dropdown-option-color-inverse: var(--good-night);
-        --much-select-dropdown-option-background-color: var(--hint-of-elusive-blue);
+        --much-select-dropdown-option-background-color: white;
         --much-select-dropdown-option-highlighted-background-color: var(--spirio-disco-ball);
         --much-select-dropdown-option-active-background-color: var(--minty-green);
         --much-select-dropdown-option-selected-background-color: var(--fresh-turquoise);
+        --much-select-dropdown-option-disabled-background-color: var(--london-square);
+        --much-select-dropdown-option-disabled-font-color: var(--hint-of-elusive-blue);
+        --much-select-dropdown-optgroup-color: var(--yriel-yellow);
         --much-select-dropdown-optgroup-background-color: var(--green-teal);
         --much-select-dropdown-footer-color: var(--yriel-yellow);
         --much-select-dropdown-footer-background-color: var(--red-orange);
+
+        /** Much Select Error Messages **/
+        /* The actual error messages themselves */
+        --much-select-error-color: var(--highligher-pink);
+        --much-select-error-size: 80%;
+        /* The background color of the input when it's in an error state. */
+        --much-select-error-background-color: hsl(from var(--much-select-error-color) h s l / 0.2);
+
+        /* Event Log */
+        --evet-log-border: 1px solid var(--jade-dust);
+        --event-log-header-title-background: var(--minty-green);
+        --event-log-header-background: var(--green-teal);
+        --events-log-border-top-and-bottom: 1px solid var(--jade-dust);
+        --events-log-border-left-and-right: 1px dashed var(--jade-dust);
     }
 }
 
@@ -167,9 +206,9 @@ body {
         --text-color: var(--hint-of-pensive);
         --link-text-color: var(--periwinkle);
         --nav-link-text-color: var(--rise-n-shine);
-        --nav-link-text-hover-background-color: var(--sea-brook);
-        --site-nav-background-color: var(--matt-purple);
-        --offsite-nav-background-color: var(--vanadyl-blue);
+        --nav-link-text-hover-background-color: transparent;
+        --site-nav-background-color: var(--sea-brook);
+        --offsite-nav-background-color: var(--sea-brook);
 
         --example-background-color: var(--pico-void);
         --example-border-color: var(--blueberry-soda);
@@ -183,15 +222,39 @@ body {
         --much-select-clear-button-border-color: var(--electromagnetic);
 
         /* Much Select Dropdown */
-        --much-select-dropdown-option-color: var(--good-night);
-        --much-select-dropdown-option-color-inverse: var(--megaman);
-        --much-select-dropdown-option-background-color: var(--hint-of-elusive-blue);
-        --much-select-dropdown-option-highlighted-background-color: var(--free-speech-blue);
-        --much-select-dropdown-option-active-background-color: var(--minty-green);
-        --much-select-dropdown-option-selected-background-color: var(--black-pearl);
+        --much-select-dropdown-option-color: var(--text-color);
+        --much-select-dropdown-option-color-inverse: var(--hint-of-pensive);
+        --much-select-dropdown-option-background-color: var(--mazarine-blue);
+        --much-select-dropdown-option-highlighted-background-color: var(--naval);
+        --much-select-dropdown-option-active-background-color: var(--protoss-pylon);
+        --much-select-dropdown-option-selected-background-color: var(--periwinkle);
+        --much-select-dropdown-option-disabled-background-color: var(--london-square);
+        --much-select-dropdown-option-disabled-font-color: var(--hint-of-elusive-blue);
+        --much-select-dropdown-optgroup-color: var(--hint-of-elusive-blue);
         --much-select-dropdown-optgroup-background-color: var(--blue-nights);
         --much-select-dropdown-footer-color: var(--hint-of-pensive);
         --much-select-dropdown-footer-background-color: var(--chain-gang-grey);
+
+        /* The background of a selected value in multi select mode and "custom" "output style". */
+        --much-select-multi-select-selected-value-background-image: linear-gradient(to bottom, var(--london-square), var(--black-pearl));
+
+        /* The text color of a selected value in multi select mode and "custom" "output style". */
+        --much-select-multi-select-selected-value-color: var(--text-color);
+
+
+        /** Much Select Error Messages **/
+        /* The actual error messages themselves */
+        --much-select-error-color: var(--nasturcian-flower);
+        --much-select-error-size: 80%;
+        /* The background color of the input when it's in an error state. */
+        --much-select-error-background-color: hsl(from var(--much-select-error-color) h s l / 0.8);
+
+        /* Event Log */
+        --evet-log-border: 1px solid var(--naval);
+        --event-log-header-title-background: var(--mazarine-blue);
+        --event-log-header-background: var(--blue-nights);
+        --events-log-border-top-and-bottom: 1px solid var(--mazarine-blue);
+        --events-log-border-left-and-right: 1px dashed var(--mazarine-blue);
     }
 
     #theme-switch-fun:checked ~ #page-wrapper {
@@ -199,10 +262,10 @@ body {
         --text-color: var(--vibrant-yellow);
         --link-text-color: var(--minty-green);
         --nav-link-text-color: var(--green-teal);
-        --site-nav-background-color: var(--dark-periwinkle);
+        --site-nav-background-color: transparent;
         --offsite-nav-background-color: var(--free-speech-blue);
 
-        --example-background-color: var(--black-pearl);
+        --example-background-color: var(--dark-periwinkle);
         --example-border-color: var(--sizeling-red);
         --example-border-shadow-color: var(--highligher-pink);
 
@@ -220,9 +283,26 @@ body {
         --much-select-dropdown-option-highlighted-background-color: var(--black-pearl);
         --much-select-dropdown-option-active-background-color: var(--london-square);
         --much-select-dropdown-option-selected-background-color: var(--black-pearl);
+        --much-select-dropdown-option-disabled-background-color: var(--london-square);
+        --much-select-dropdown-option-disabled-font-color: var(--black-pearl);
+        --much-select-dropdown-optgroup-color: var(--chrome-yellow);
         --much-select-dropdown-optgroup-background-color: var(--london-square);
         --much-select-dropdown-footer-color: var(--minty-green);
         --much-select-dropdown-footer-background-color: var(--dark-periwinkle);
+
+        /** Much Select Error Messages **/
+        /* The actual error messages themselves */
+        --much-select-error-color: var(--sizeling-red);
+        --much-select-error-size: 80%;
+        /* The background color of the input when it's in an error state. */
+        --much-select-error-background-color: hsl(from var(--much-select-error-color) h s l / 0.8);
+
+        /* Event Log */
+        --evet-log-border: 1px solid var(--good-night);
+        --event-log-header-title-background: var(--free-speech-blue);
+        --event-log-header-background: var(--good-night);
+        --events-log-border-top-and-bottom: 1px solid var(--black-pearl);
+        --events-log-border-left-and-right: 1px dashed var(--black-pearl);
     }
 }
 
@@ -239,7 +319,7 @@ body {
     position: relative;
     background-color: var(--background-color);
     color: var(--text-color);
-    font-family: var(--body-font);
+    font-family: var(--body-font), sans-serif;
 }
 
 @media (prefers-color-scheme: light) {
@@ -292,15 +372,15 @@ body {
 }
 
 h1 {
-    font-family: var(--header-font);
+    font-family: var(--header-font), sans-serif;
 }
 
 h2 {
-    font-family: var(--header-font);
+    font-family: var(--header-font), sans-serif;
 }
 
 h3 {
-    font-family: var(--header-font);
+    font-family: var(--header-font), sans-serif;
 }
 
 .container {
@@ -311,9 +391,10 @@ h3 {
 }
 
 .container > .example {
+    height: auto;
     margin: 1rem;
     padding: 1rem;
-    border: 3px solid var(--example-border-color);
+    border: 1px solid var(--example-border-color);
     box-shadow: 2px 2px 5px 0 var(--example-border-shadow-color);
     border-radius: 12px;
     max-width: 400px;
@@ -321,10 +402,18 @@ h3 {
     flex: 0 1 400px;
 }
 
+.container .example a {
+    text-decoration: none;
+}
+
+.container .example a:hover {
+    text-decoration: underline;
+}
+
 nav {
     margin: 0.25em;
     border-radius: 12px;
-    font-family: var(--header-font);
+    font-family: var(--body-font), sans-serif;
 }
 
 nav a:any-link {
@@ -332,13 +421,27 @@ nav a:any-link {
 }
 
 nav.site-nav {
-    padding: 0.25em;
+    padding: 0.25dvw;
+    margin: 0.5dvw;
     background-color: var(--site-nav-background-color);
+    overflow: hidden;
+    white-space: nowrap;
+    border: 0.2em solid;
+}
+
+nav ol {
+    padding: 0;
+}
+
+nav.site-nav ol li {
+    display: inline-block;
 }
 
 nav.offsite-nav {
-    padding: 0.25em;
+    padding: 0.25dvw;
+    margin: 0.5dvw;
     background-color: var(--offsite-nav-background-color);
+    border: 0.2em solid;
 }
 
 nav ol {
@@ -349,6 +452,10 @@ nav ol {
 
 nav.offsite-nav ol {
     place-content: end;
+}
+nav.offsite-nav ol li a,
+nav.site-nav ol li a {
+    text-decoration: underline;
 }
 
 nav ol > li {
@@ -365,24 +472,25 @@ nav ol > li > a:hover {
     background-color: var(--nav-link-text-hover-background-color);
 }
 
-
 much-select:not(:defined) {
     visibility: hidden;
 }
 
 much-select {
     display: inline-block;
-    margin: 10px 0;
-    max-width: 300px;
+    margin: 0.25em 0;
+
+    /*I added this because it keeps with width of the much-select from jumping around as we select and unselect values.*/
+    width: 100%;
 }
 
 button {
-    font-family: var(--form-font);
+    font-family: var(--form-font), sans-serif;
 }
 
 
 much-select::part(wrapper) {
-    font-family: var(--form-font);
+    font-family: var(--form-font), sans-serif;
     margin-top: auto;
     margin-bottom: auto;
     position: relative;
@@ -402,8 +510,7 @@ much-select::part(value-casing) {
 much-select::part(value-casing output-style-custom-html) {
     background-color: var(--much-select-background-color);
     box-shadow: 1px 1px 1px 0 lightgray inset;
-    padding: 0.1em 1.5em 0.1em 0.1em;
-
+    padding: 0.1em 2em 0.1em 10px;
     flex-flow: row;
     cursor: pointer;
     border: 1px solid var(--much-select-border-color);
@@ -420,16 +527,32 @@ much-select::part(value-casing output-style-custom-html multi) {
 much-select::part(value-casing output-style-datalist) {
     flex-flow: column;
     cursor: pointer;
-    border: 1px solid var(--much-select-border-color);
+}
+
+much-select::part(right-slot-for-all-values-wrapper) {
+    position: absolute;
+    right: 0;
+    width: 2.1rem;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    border-left: 2px dotted var(--much-select-border-color);
 }
 
 much-select::part(input-value) {
     min-height: var(--much-select-height);
+    width: 100%;
 }
 
+much-select::part(invalid-input-value) {
+    background-color: var(--much-select-error-background-color);
+}
 
 much-select::part(value-casing output-style-datalist error) {
-    border: 1px solid var(--much-select-error-border-color);
+    border: none;
 }
 
 much-select::part(value-casing output-style-custom-html):hover {
@@ -437,12 +560,10 @@ much-select::part(value-casing output-style-custom-html):hover {
     border-color: var(--much-select-hover-border-color);
 }
 
-
 much-select::part(value-casing output-style-custom-html):focus {
     outline: none;
     border-color: var(--example-border-color);
 }
-
 
 much-select::part(value-casing output-style-custom-html disabled) {
     border: 1px solid var(--much-select-disabled-border-color);
@@ -484,7 +605,7 @@ much-select::part(input-filter) {
     /* We don't want a border because the value-casing will supply the border for
       this input.
     */
-    border: none;
+
 
     /*
     We do not want an outline on the input (filter) because we want everything
@@ -492,11 +613,11 @@ much-select::part(input-filter) {
     */
     outline: none;
     background: none;
-
     margin: 0;
 
     /* Keep input filter's text from running over the dropdown indicator. */
     padding: 0 0.8em 0 0;
+
 }
 
 much-select::part(input-filter):hover, much-select::part(input-filter):focus {
@@ -528,39 +649,55 @@ much-select::part(input-filter):hover, much-select::part(input-filter):focus {
     background: none;
 }
 
-much-select::part(value) {
-    padding: 3px;
-    font-size: 20px;
-    color: white;
-    background-image: linear-gradient(to bottom, #4f6a8f, #88a2bc);
+much-select[multi-select]::part(selected-value) {
+    color: var(--much-select-multi-select-selected-value-color);
+    background-image: var(--much-select-multi-select-selected-value-background-image);
     background-repeat: repeat-x;
-    margin: 2px 2px;
-    border-radius: 5px;
-    border: 3px solid #d99477;
-    min-width: 10px;
-
+    margin: 0.1rem 0.25rem 0.1rem 0;
+    border-radius: 0.3rem;
+    border: 0.1rem solid var(--periwinkle);
+    min-width: 0.5rem;
+    min-height: 2rem;
     flex-grow: 0;
     flex-shrink: 1;
     flex-basis: auto;
+
+    /* Make sure the label is always vertically centered */
+    display: flex;
+    align-items: center;
+
+    /* Add a little space between the border and the label */
+    padding-left: 0.25em;
+    padding-right: 0.25em;
 }
 
 much-select::part(selected-value) {
-    font-size: var(--value-font-size);
-
-    padding-top: 2px;
+    font-size: 14px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    padding: 0;
+    margin-right: 0.1em;
+    margin-left: 0.2em;
+    margin-top: 0.7em;
 }
 
-much-select::part(value highlighted-value) {
-    background-image: linear-gradient(to bottom, #d99477, #efb680);
+much-select[multi-select]::part(selected-value highlighted-value) {
+    background-image: linear-gradient(to bottom, var(--nanohanacha-gold), var(--rise-n-shine));
     background-repeat: repeat-x;
 }
 
+much-select[multi-select]::part(selected-value-label) {
+    /** Vertically center the text in the middle of the selected value "pill". **/
+    padding-top: 0.09rem;
+}
+
+much-select[multi-select]::part(remove-option)::after {
+    border-left: 1px dotted var(--much-select-border-color)
+}
+
 much-select::part(dropdown-indicator) {
-    position: absolute;
-    right: 8px;
-    top: 15px;
     cursor: pointer;
-    display: block;
     transition: transform 0.25s;
 }
 
@@ -573,15 +710,10 @@ much-select::part(dropdown-indicator down) {
 }
 
 much-select::part(clear-button-wrapper) {
-    display: block;
-    position: absolute;
-    right: 0.2em;
-    top: 0.2em;
     cursor: pointer;
     box-sizing: content-box;
     padding: 0.3em 0.5em;
-
-    border-width: 1px;
+    border-width: 0.2em;
     border-style: solid;
     border-color: transparent;
 }
@@ -591,31 +723,42 @@ much-select::part(clear-button-wrapper):hover {
 }
 
 much-select::part(dropdown) {
-    font-size: 20px;
+    margin-top: 0.2rem;
+    border-radius: 0.3rem;
+    border-width: 0.1rem;
+    border-color: var(--much-select-border-color);
+    border-style: solid;
     max-height: 300px;
-    font-family: var(--form-font);
+    font-family: var(--form-font), sans-serif;
 }
 
 much-select::part(dropdown-optgroup) {
+    color: var(--much-select-dropdown-optgroup-color);
     background-color: var(--much-select-dropdown-optgroup-background-color);
     font-size: 0.85rem;
     font-weight: 300;
-    font-family: var(--form-font);
-    padding: 5px;
+    font-family: var(--form-font), sans-serif;
+    padding: 0.2rem;
 }
 
 much-select::part(dropdown-option) {
     background-color: var(--much-select-dropdown-option-background-color);
     color: var(--much-select-dropdown-option-color);
-    font-family: var(--form-font);
-    padding: 5px;
+    font-family: var(--form-font), sans-serif;
+    padding: 0.5rem;
     cursor: pointer;
+    font-size: var(--value-font-size);
+
+    /** Throw in a min height so options without labels are not
+     so short but take up the same vertical space as options with
+     labels
+     **/
+    min-height: 1.2rem;
 }
 
 much-select::part(dropdown-option selected) {
     background-color: var(--much-select-dropdown-option-selected-background-color);
     color: var(--much-select-dropdown-option-color-inverse);
-    padding: 5px;
     cursor: pointer;
 }
 
@@ -627,18 +770,28 @@ much-select::part(dropdown-option highlighted) {
 much-select::part(dropdown-option active) {
     background-color: var(--much-select-dropdown-option-active-background-color);
     color: var(--much-select-dropdown-option-color-inverse);
-    padding: 5px;
     cursor: pointer;
 }
 
 much-select::part(dropdown-option disabled) {
-    background-color: LightGray;
+    background-color: var(--much-select-dropdown-option-disabled-background-color);
+    color: var(--much-select-dropdown-option-disabled-font-color);
+    cursor: default;
+}
+
+much-select::part(dropdown-message) {
+    /**
+    The idea with this is that, these are not option's but they show up where
+    you'd see options. For example telling you why there are no options.
+    **/
+    min-height: 1.2rem;
+    padding: 0.2rem;
     cursor: default;
 }
 
 much-select::part(dropdown-option-description) {
     font-size: 0.85rem;
-    padding: 3px;
+    padding: 0.2rem;
 }
 
 much-select::part(dropdown-footer) {
@@ -646,5 +799,92 @@ much-select::part(dropdown-footer) {
     text-align: center;
     color: var(--much-select-dropdown-footer-color);
     background-color: var(--much-select-dropdown-footer-background-color);
-    padding: 5px;
+    padding: 0.2rem;
+}
+
+much-select::part(error-message-list) {
+    margin: 0 0 0.4rem 0;
+    padding: 0;
+    cursor: default;
+}
+
+much-select::part(error-message) {
+    font-size: var(--much-select-error-size);
+    margin: 0.1rem 0 0 0;
+    padding: 0;
+    color: var(--much-select-error-color);
+}
+
+
+@keyframes EventTimer {
+    from {
+        background-position: 0 0;
+    }
+    to {
+        background-position: 100% 0;
+    }
+}
+
+.event-log {
+    width: 100%;
+    border: var(--evet-log-border);
+    border-spacing: 0;
+    margin-top: 0.5rem;
+
+    tr {
+        border: 0;
+        width: 100%;
+        overflow: hidden;
+    }
+
+    th.event-log-title {
+        background-color: var(--event-log-header-title-background);
+        border: 0;
+        padding: 0.5rem;
+        margin: 0;
+        font-size: 120%;
+    }
+    th.event-log-heading {
+        background-color: var(--event-log-header-background);
+        padding: 0.5rem;
+        margin: 0;
+        font-size: 90%;
+        text-align: left;
+    }
+
+    .event-log-row {
+        background: no-repeat url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="70" height="100%"><rect width="100%" height="100%" fill-opacity="10%" /></svg>');
+        animation: EventTimer 10s linear;
+    }
+
+    .event-log-empty-row {
+        text-align: center;
+        padding: 0.5rem;
+        height: 3rem;
+    }
+
+    .events-name-col {
+        width: 25%;
+        padding: 0.5rem;
+        margin: 0;
+        font-size: 75%;
+        vertical-align: top;
+
+        border-top: var(--events-log-border-top-and-bottom);
+        border-bottom: var(--events-log-border-top-and-bottom);
+        border-left: var(--events-log-border-left-and-right);
+        border-right: var(--events-log-border-left-and-right);
+    }
+
+    .events-details-col {
+        width: 75%;
+        padding: 0.5rem;
+        margin: 0;
+        font-size: 75%;
+
+        border-top: var(--events-log-border-top-and-bottom);
+        border-bottom: var(--events-log-border-top-and-bottom);
+        border-left: var(--events-log-border-left-and-right);
+        border-right: var(--events-log-border-left-and-right);
+    }
 }

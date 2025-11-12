@@ -68,11 +68,11 @@ npx elm-esm make src/MuchSelect.elm --output=dist/much-select-elm-debug.js --deb
 cp ./src/much-select.js ./dist/much-select-debug.js
 
 # Have the debug version of this dist, load up the debug version of compiled elm code.
-# This condition is because we need format sed differently if we're on macOS for in the Github actions environment.
-if [ -z "${GITHUB_RUN_ID+x}" ]; then
-  # GITHUB_RUN_ID is unset
-  sed -i '' -e 's/much-select-elm\./much-select-elm-debug\./g' ./dist/much-select-debug.js
+# Check if we're using GNU sed or BSD sed (macOS default)
+if sed --version 2>/dev/null | grep -q 'GNU sed'; then
+  # GNU sed (Linux/devbox)
+  sed -i 's/much-select-elm\./much-select-elm-debug\./g' ./dist/much-select-debug.js
 else
-  # GITHUB_RUN_ID is set
-  sed -i -e 's/much-select-elm\./much-select-elm-debug\./g' ./dist/much-select-debug.js
+  # BSD sed (macOS)
+  sed -i '' 's/much-select-elm\./much-select-elm-debug\./g' ./dist/much-select-debug.js
 fi

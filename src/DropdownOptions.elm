@@ -16,6 +16,7 @@ import OptionList exposing (OptionList)
 import OptionSearchFilter exposing (OptionSearchFilter)
 import OptionSlot
 import OutputStyle
+import PartAttribute
 import PositiveInt
 import SelectionMode exposing (SelectionConfig, getMaxDropdownItems)
 
@@ -437,7 +438,7 @@ optionToSlottedOptionHtml eventHandlers option =
                 , mouseDownPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseDownMsgConstructor)
                 , mouseUpPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseUpMsgConstructor)
                 , onClickPreventDefault eventHandlers.noOpMsgConstructor
-                , Html.Attributes.attribute "part" "dropdown-option"
+                , PartAttribute.part "dropdown-option"
                 , class "option"
                 , valueDataAttribute option
                 ]
@@ -453,7 +454,7 @@ optionToSlottedOptionHtml eventHandlers option =
                 , mouseDownPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseDownMsgConstructor)
                 , mouseUpPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseUpMsgConstructor)
                 , onClickPreventDefault eventHandlers.noOpMsgConstructor
-                , Html.Attributes.attribute "part" "dropdown-option selected"
+                , PartAttribute.part "dropdown-option selected"
                 , class "option selected"
                 , valueDataAttribute option
                 ]
@@ -464,7 +465,7 @@ optionToSlottedOptionHtml eventHandlers option =
 
         OptionSelectedPendingValidation _ ->
             div
-                [ Html.Attributes.attribute "part" "dropdown-option disabled pending-validation"
+                [ PartAttribute.part "dropdown-option disabled pending-validation"
                 , class "option disabled pending-validation"
                 , valueDataAttribute option
                 ]
@@ -477,7 +478,7 @@ optionToSlottedOptionHtml eventHandlers option =
                 , mouseDownPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseDownMsgConstructor)
                 , mouseUpPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseUpMsgConstructor)
                 , onClickPreventDefault eventHandlers.noOpMsgConstructor
-                , Html.Attributes.attribute "part" "dropdown-option selected highlighted"
+                , PartAttribute.part "dropdown-option selected highlighted"
                 , class "option selected highlighted"
                 , valueDataAttribute option
                 ]
@@ -490,7 +491,7 @@ optionToSlottedOptionHtml eventHandlers option =
                 , mouseDownPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseDownMsgConstructor)
                 , mouseUpPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseUpMsgConstructor)
                 , onClickPreventDefault eventHandlers.noOpMsgConstructor
-                , Html.Attributes.attribute "part" "dropdown-option selected highlighted"
+                , PartAttribute.part "dropdown-option selected highlighted"
                 , class "option highlighted"
                 , valueDataAttribute option
                 ]
@@ -503,7 +504,7 @@ optionToSlottedOptionHtml eventHandlers option =
                 , mouseDownPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseDownMsgConstructor)
                 , mouseUpPreventDefault (option |> Option.getOptionValue |> eventHandlers.mouseUpMsgConstructor)
                 , onClickPreventDefault eventHandlers.noOpMsgConstructor
-                , Html.Attributes.attribute "part" "dropdown-option active highlighted"
+                , PartAttribute.part "dropdown-option active highlighted"
                 , class "option active highlighted"
                 , valueDataAttribute option
                 ]
@@ -511,7 +512,7 @@ optionToSlottedOptionHtml eventHandlers option =
 
         OptionDisabled _ ->
             div
-                [ Html.Attributes.attribute "part" "dropdown-option disabled"
+                [ PartAttribute.part "dropdown-option disabled"
                 , class "option disabled"
                 , valueDataAttribute option
                 ]

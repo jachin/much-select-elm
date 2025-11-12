@@ -41,45 +41,27 @@ if (!customElements.get("much-select")) {
 
 ### Pre-requisites
 
-#### asdf
-This project manages its Node version with [asdf](https://github.com/asdf-vm/asdf)
+#### devbox
+This project manages its development enviornment with [devbox](https://www.jetify.com/devbox).
 
-#### asdf-node-js
-
-You'll need `asdf` installed as well as the [asdf nodejs plugin](https://github.com/asdf-vm/asdf-nodejs)
-(`gpg` is a dependency used by asdf to verify plugin asset validity)
-
-```bash
-brew install gpg
-brew install asdf
-asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git
-```
-
-#### soupault
-
-We use a static site generator called [Soupault](https://soupault.app/) to make the sandbox.
-There [several ways to install](https://soupault.app/install/) it. I recommend using the OPAM method.
-
-
-#### watchexec
-
-The development build scripts depend on [watchexec](https://watchexec.github.io/). You can install it anyway that makes sense on your machine as long as it's in the `PATH` but I recommend using [homebrew](https://formulae.brew.sh/formula/watchexec).
-
-```bash
-brew install watchexec
-```
+Some of the tools devbox will just take care of for you include
+ - soupault, a static site generator
+ - watchexec, for doing stuff automatically when files change
 
 ### Initial Setup
 
 To work on this project, clone the repo to your machine then run the following:
 
 ```bash
-asdf install
-npm install
-npx elm-tooling install
+devbox run npm-install
+devbox run elm-tooling-install
 ```
 
-This should install the correct version of node (via `asdf`). All the npm packages, and all the elm-tools.
+That should set the table for you, then you can start all the fun stuff by running
+
+```bash
+devbox run start
+```
 
 ### Watch and Develop
 
@@ -201,20 +183,6 @@ The options for this attribute are:
 
 The `show-dropdown-footer` attribute is used to show the footer in the dropdown of the `<much-select>`. The footer contains potentially useful information about how many options are really available but might not be visible because the results are being filter.
 
-#### Slots
-
-##### `no-options`
-
-If there are no options to display, show this message.
-
-##### `no-options`
-
-If there are no options to display, show this message.
-
-##### `no-filtered-options`
-
-If the user has typed in a search filter that just does not have any good matches show this message.
-
 #### Options
 
 ### Events
@@ -233,7 +201,12 @@ This event fires if the `<much-select>` is in single or multi select mode, but i
 
 ##### `optionDeselected`
 
-This event fires if the `<much-select>` is in single or multi select mode, but it's _mostly_ for multi select mode. It will just have the newly deselected option in it. This is kinda of the inverse of the `optionSelected` event.
+This event fires if the `<much-select>` is in single or multi select mode, but it's _mostly_ for multi select mode.
+It will just have the newly deselected option in it. This is kinda of the inverse of the `optionSelected` event.
+This event will only fire if an option is delected (or removed). If you just select a different value (like in a single select)
+it will not fire.
+
+This could be useful in single select mode if a field is required. It has a value, then that value gets removed, and you want to provide feedback right away to the user that they just blanked out the field, but it is required.
 
 ##### `inputKeyUp`
 
@@ -243,4 +216,189 @@ This event fires every time a user types in the `#input-filter` for filtering th
 
 This event fires every time a user types in the `#input-filter` but is debounced by half a second. The idea here is if you want to hook a `<much-select>` up to an API you can use this event to kick off your API calls to add additional options based on what the user is has "searched" for.
 
-### Functions
+##### `customValidateRequest`
+
+This even is used when a custom validator is in play. All too often, in the real world validation is complicated. It might even be dependent on an API call, for example, ensure the value is unique. In these cases you have the option to just call a JavaScript function. Do whatever you need to validate the value and then send the results back to the `<much-select>` element.
+
+**WARNING:** As I'm sure you can imagine this is fraught. If you do _not_ communicate back to much-select the result of validation much-select will hang in a state of limbo until it gets back the result of the validation. If this ends up taking a long time or fails, or times out, or fails in some other way, it's up _you_ to make sure something reasonable happens.
+
+The even will have a couple of values in the `detail` that will be important:
+ - `stringToValidate`: This is what the user typed in for the custom value that you'll be validating
+ - `selectedValueIndex`: This is just a number and you just need to hang on to it to pass it back to when it is time to share the results of your validation with your much-select element.
+
+The way you communicate the result of the validation is a little unconventional. You build a JavaScript object with the following fields: 
+ - `isValid`: Boolean
+ - `stringToValidate`: String
+ - `selectedValueIndex`: Index
+ - `errorMessages`: Array objects with they keys
+   - `errorMessage`: String
+   - `level` : String (could be `error`, `warning`, or `silent`)
+
+`isValid` is pretty straight forward, if the value passed your custom validation is valid this should be true, otherwise it should be false.
+
+`stringToValidate` is also something you _probably_ just want to send back as is. In theory though, you could "fix" it for the user if that makes sense, but maybe think carefully if you're going to do that. You don't want to surprise your users.
+
+`errorMessages` are for giving the user feedback as to why the value then entered is invalid. You can have multiple messages in case there's more than one thing wrong. TODO What are the different levels for?
+
+The final step is to encode this object as JSON and set it to the value of an element with a slot named `custom-validation-result`. You probably want to have that element be a `script` with a type of `application/json` to keep everything nice.  
+
+```html
+<script type="application/json" slot="custom-validation-result">
+```
+
+Here's an example code of what the JavaScript could look like:
+
+```javascript
+// Get the much-select element
+const muchSelect = example.querySelector("much-select");
+
+// Listen for event.
+muchSelect.addEventListener("customValidateRequest", (event) => {
+  const { stringToValidate, selectedValueIndex } = event.detail;
+  let result;
+  if (stringToValidate === "milk") {
+    result = {
+      isValid: false,
+      value: stringToValidate,
+      selectedValueIndex,
+      errorMessages: [{ errorMessage: "No milk!", level: "error" }],
+    };
+  } else {
+    result = {
+      isValid: true,
+      value: stringToValidate,
+      selectedValueIndex,
+    };
+  }
+  const customValidationResultSlot = muchSelect.querySelector(
+    "[slot='custom-validation-result']"
+  );
+  customValidationResultSlot.innerText = JSON.stringify(result);
+});
+```
+
+As you can see, this is a little awkward, if you find your self doing a lot of this you might want to write a library for much-select to make this easier. 
+
+### Slots
+
+There are a lot of special [slots](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/slot) that much-select uses for various purposes. They are all optional.
+
+#### `select-input`
+
+One of the easy ways to populate a much-select with values and even selected values is to use the `select-input` slot. This lets you use the `<select>` html element. It can be great if you're using `<much-select>` to enhance an existing `<select>`.  
+
+```html
+  <much-select multi-select="true" selected-value="Blue">
+    <select slot="select-input">
+      <option>Red</option>
+      <option>Yellow</option>
+      <option>Blue</option>
+    </select>
+  </much-select>
+```
+
+##### `clear-button`
+
+If you want to drop in your own custom clear button, you can do that.
+
+```html
+  <much-select multi-select="true" selected-value="Blue">
+    <div slot="clear-button">✿</div>
+  </much-select>
+```
+
+##### `loading-indicator`
+
+If you want to drop in your own custom loading indicator you can do that. Maybe a nice animated SVG.
+
+##### `hidden-value-input`
+
+If you need the value of a `<much-select>` work correctly in the middle of a plain old HTML form this slot is very useful. You put it on a hidden input value, and `<much-select>` will keep the hidden input value up to date with the value of the `<much-select>`.
+
+The value for the input will respect whatever you set in the `selected-value-encoding` attribute.
+
+This will _not_ work if the `events-only` attribute is set, because updating the value of hidden input would mean modifying the DOM (other than the Shadow DOM) so we won't do it. If you want this hidden input value to updated and the light DOM left alone you can just handle it your self in some sort of wrapping library where you listen for the relevant events.  
+
+```
+  <much-select selected-value-encoding="json">
+    <input slot="hidden-value-input" type="hidden" name="my-special-value">
+  </much-select>
+</div>
+```
+
+##### `no-options`
+
+If there are no options to display, show this message.
+
+##### `no-filtered-options`
+
+If the user has typed in a search filter that just does not have any good matches show this message.
+```
+<much-select>
+ <div slot="no-filtered-options">
+  What? You don't want that.
+ </div>
+</much-select>
+```
+#### `transformation-validation`
+
+It would be great if the folks using our app always entered in information correctly, alas, they often do not, and we need to validate that information.
+
+The first thing that could happen to the input is that you can "transform" it automatically. There are some cases (and becarful with this) where you can "just fix" the input. Maybe the most common example of this would be to trim trailing whitespace. If you have an input and there's just not good reason why anyone would want trailing whitespace you can just trim it up.
+
+The transformations happen before the validations.
+
+The built-in transformations are:
+ - `lowercase`: make all the uppercase letters lowercase.
+ - `trim-trailing-whitespace`: TODO
+
+**WARNING:** These are all frontend, browser validations, the real validation should happen in a backend somewhere, but in browser validation can help improve the experience of your users by showing them problems right next to where they're trying to input something and hopefully give them some guidance for how to fix their errors.
+
+This slot is a place where you can define how you would like the users input to be validated. The validators are all defined in JSON. much-select has some built in validators and in those don't do the job, there's an escape hatch to a custom validator.
+
+The built-in validators are:
+ - `no-white-space`
+ - `minimum-length`
+ - `custom`
+ - _More to come_
+
+Here's an example what the JSON can look like:
+
+```json
+{
+  "transformers": [
+    {
+      "name": "lowercase"
+    }
+  ],
+  "validators": [
+    {
+      "name": "no-white-space",
+      "level": "silent",
+      "message": "Spaces are not allow for custom fruit."
+    },
+    {
+      "name": "minimum-length",
+      "level": "silent",
+      "minimum-length": 3,
+      "message": "The minimum length is 3."
+    }
+  ]
+}
+```
+
+The transformation and validation slot can be a pain to work with. If you need to do a lot of this you probably want a library that wraps much-select to make working with this easier.
+
+#### `custom-validation-result`
+
+This is an element where you can put the results of a custom validation.
+
+```html
+<script type="application/json" slot="custom-validation-result">
+```
+
+#### Custom Element Options
+
+If you want to start putting custom markup per option in the dropdown, there's a way to do that, but well... buyer beware.
+
+TODO Add a section on the custom elements that can go inside a `<much-select>`.

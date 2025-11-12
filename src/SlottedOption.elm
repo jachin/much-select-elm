@@ -1,6 +1,6 @@
 module SlottedOption exposing (SlottedOption, activate, decoder, decoderWithAge, deselect, encode, getOptionDisplay, getOptionSelectedIndex, getOptionSlot, getOptionValue, getOptionValueAsString, highlightOption, isOptionHighlighted, isOptionSelectedHighlighted, isSelected, new, optionIsHighlightable, removeHighlightFromOption, select, setOptionDisplay, setOptionSelectedIndex, setOptionValue, test_new, test_optionToDebuggingString, toValueHtml)
 
-import Events exposing (mouseUpPreventDefault)
+import Events exposing (mouseUpPreventDefault, onMouseUpStopPropagationAndPreventDefault)
 import Html exposing (Html, div, span, text)
 import Html.Attributes exposing (class, classList)
 import Json.Decode
@@ -9,6 +9,7 @@ import OptionDisplay exposing (OptionDisplay(..))
 import OptionSlot exposing (OptionSlot)
 import OptionValue exposing (OptionValue)
 import OutputStyle exposing (SingleItemRemoval(..))
+import PartAttribute
 import SelectionMode exposing (SelectionConfig, SelectionMode)
 
 
@@ -155,16 +156,23 @@ toValueHtml toggleSelectedMsg deselectOptionInternal enableSingleItemRemoval opt
         removalHtml optionValue =
             case enableSingleItemRemoval of
                 EnableSingleItemRemoval ->
-                    span [ mouseUpPreventDefault <| deselectOptionInternal optionValue, class "remove-option" ] [ text "" ]
+                    span
+                        [ -- This has to be on mouse up because if we listen for click events then
+                          --  the input field will get under the mouse and trigger a focus event.
+                          onMouseUpStopPropagationAndPreventDefault <| deselectOptionInternal optionValue
+                        , class "remove-option"
+                        , PartAttribute.part "remove-option"
+                        ]
+                        [ text "" ]
 
                 DisableSingleItemRemoval ->
                     text ""
 
         partAttr =
-            Html.Attributes.attribute "part" "value"
+            PartAttribute.part "value"
 
         highlightPartAttr =
-            Html.Attributes.attribute "part" "value highlighted-value"
+            PartAttribute.part "value highlighted-value"
     in
     case option of
         SlottedOption optionDisplay optionValue _ ->

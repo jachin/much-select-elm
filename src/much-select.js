@@ -1,9 +1,7 @@
 // noinspection JSFileReferences
 
-// eslint-disable-next-line import/no-unresolved
 import { Elm } from "./much-select-elm.js";
 
-// eslint-disable-next-line import/no-unresolved
 import getMuchSelectTemplate from "./much-select-template.js";
 
 import asciiFold from "./ascii-fold.js";
@@ -913,9 +911,7 @@ class MuchSelect extends HTMLElement {
     this.stopTransformationValidationSlotObserver();
   }
 
-  // eslint-disable-next-line class-methods-use-this
   errorHandler(error) {
-    // eslint-disable-next-line no-console
     console.error(error);
   }
 
@@ -1668,7 +1664,6 @@ class MuchSelect extends HTMLElement {
     });
   }
 
-  // eslint-disable-next-line class-methods-use-this
   get styleTag() {
     // noinspection CssInvalidPropertyValue
     return `<style>
@@ -1699,7 +1694,6 @@ class MuchSelect extends HTMLElement {
         margin-bottom: auto;
         position: relative;
       }
-
 
       #value-casing {
         display: flex;
@@ -1733,20 +1727,16 @@ class MuchSelect extends HTMLElement {
         In multi select mode, let's let the selected values line up on a row and then wrap.
         */
         flex-flow: row wrap;
+        margin-top:5px;
       }
 
       #value-casing.output-style-custom-html.multi .value {
-        border: 3px solid black;
-        min-width: 10px;
-
+        border: 2px solid black;
+        border-radius:40px;
+        padding:3px 10px;
         flex-grow: 0;
         flex-shrink: 1;
         flex-basis: auto;
-      }
-
-      .value .remove-option::after {
-        content: "x";
-        padding-left: 5px;
       }
 
       slot[name='loading-indicator'] {
@@ -1765,7 +1755,6 @@ class MuchSelect extends HTMLElement {
         max-height: 300px;
         overflow-y: auto;
         cursor: default;
-
         background-color: white;
         border: 1px solid black;
       }
@@ -1783,10 +1772,6 @@ class MuchSelect extends HTMLElement {
 
       .option {
         cursor: pointer;
-      }
-
-      .option.selected {
-        font-weight: bold;
       }
 
       .option.highlighted {
@@ -1826,6 +1811,24 @@ class MuchSelect extends HTMLElement {
       @keyframes rotate {
         0%   { transform: rotate(0);      }
         100% { transform: rotate(360deg); }
+      }
+      #wrapper .error-message ul li{
+        color: red;
+        list-style:none;
+        padding:0px;
+      }
+      #wrapper .error-message ul{
+        padding:0px;
+      }
+      .value .remove-option::after {
+        content: "x";
+        padding-left: 5px;
+        margin-left:6px;
+        padding-bottom:3px;
+        border-left: 1px dotted gray;
+      }
+      #search-keyboard-events #search-keyboard-events-log {
+        width:100px;
       }
     </style>`;
   }

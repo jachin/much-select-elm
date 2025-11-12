@@ -48,7 +48,13 @@
       "soupault.toml",
       "--",
       "soupault"
-    ]
+    ],
+    "defaultStatus": ["⏳", "W"],
+    "status": {
+      "Running": ["⏳", "W"],
+      "command not found": ["🚨", "E"],
+      "Command was successful": ["✅", "+"]
+    }
   },
   {
     "title": "Run web server http://localhost:1234",
@@ -72,7 +78,7 @@
       "-w",
       "tests",
       "--debounce",
-      "2000",
+      "2sec",
       "--",
       "npm test"
     ],
@@ -82,6 +88,29 @@
       "TEST RUN FAILED": ["🚨", "E"],
       "failed with exit code 1": ["🚨", "E"],
       "TEST RUN PASSED": ["✅", "+"]
+    }
+  },
+  {
+    "title": "Eslint",
+    "command": [
+      "watchexec",
+      "--project-origin",
+      ".",
+      "-w",
+      "src",
+      "-w",
+      "tests",
+      "--debounce",
+      "2sec",
+      "--",
+      "npm run lint"
+    ],
+    "defaultStatus": ["⏳", "S"],
+    "status": {
+      "[Running: npm run lint]": ["⏳", "W"],
+      "TEST RUN FAILED": ["🚨", "E"],
+      "failed with exit code 1": ["🚨", "E"],
+      "[Command was successful]": ["✅", "+"]
     }
   },
   {

@@ -22,12 +22,10 @@ import Events
 import FancyOption
 import GroupedDropdownOptions
     exposing
-        ( DropdownOptionsGroup
-        , GroupedDropdownOptions
-        , groupOptionsInOrder
+        ( groupOptionsInOrder
         , optionGroupsToHtml
         )
-import Html exposing (Html, button, div, input, li, node, span, text, ul)
+import Html exposing (Html, button, div, input, li, node, text, ul)
 import Html.Attributes
     exposing
         ( class
@@ -79,6 +77,7 @@ import OutputStyle
         , SearchStringMinimumLength(..)
         , SingleItemRemoval(..)
         )
+import PartAttribute
 import Ports
     exposing
         ( addOptionsReceiver
@@ -1185,6 +1184,20 @@ update msg model =
 
                         else
                             OptionList.deselectLastSelectedOption model.options
+
+                    optionsAboutToBeDeselected =
+                        if OptionList.hasSelectedHighlightedOptions model.options then
+                            OptionList.findHighlightedOptions model.options
+
+                        else
+                            OptionList.findLastSelectedOption model.options
+
+                    deselectEventEffect =
+                        if OptionList.isEmpty optionsAboutToBeDeselected then
+                            NoEffect
+
+                        else
+                            ReportOptionDeselected (Ports.optionsEncoder (OptionList.deselectAll optionsAboutToBeDeselected))
                 in
                 ( { model
                     | options = updatedOptions
@@ -1194,8 +1207,7 @@ update msg model =
                     [ ReportValueChanged
                         (updatedOptions |> OptionList.selectedOptions |> Ports.optionsEncoder)
                         (SelectionMode.getSelectionMode model.selectionConfig)
-
-                    -- TODO optionDeselected
+                    , deselectEventEffect
                     , FocusInput
                     ]
                 )
@@ -2131,7 +2143,7 @@ view : Model -> Html Msg
 view model =
     div
         [ id "wrapper"
-        , Html.Attributes.attribute "part" "wrapper"
+        , PartAttribute.part "wrapper"
         , case getOutputStyle model.selectionConfig of
             CustomHtml ->
                 -- This stops the dropdown from flashes when the user clicks
@@ -2148,7 +2160,6 @@ view model =
                 model.selectionConfig
                 model.options
                 model.searchString
-                model.rightSlot
 
           else
             multiSelectView
@@ -2174,18 +2185,23 @@ view model =
 
             Datalist ->
                 GroupedDropdownOptions.dropdownOptionsToDatalistHtml (DropdownOptions.figureOutWhichOptionsToShowInTheDropdownThatAreNotSelected model.selectionConfig model.options)
+        , case getOutputStyle model.selectionConfig of
+            CustomHtml ->
+                rightSlotForAllValuesHtml model.rightSlot (SelectionMode.getInteractionState model.selectionConfig)
+
+            Datalist ->
+                Html.Extra.nothing
         ]
 
 
-singleSelectView : SelectionConfig -> OptionList -> SearchString -> RightSlot -> Html Msg
-singleSelectView selectionMode options searchString rightSlot =
+singleSelectView : SelectionConfig -> OptionList -> SearchString -> Html Msg
+singleSelectView selectionMode options searchString =
     case getOutputStyle selectionMode of
         CustomHtml ->
             singleSelectViewCustomHtml
                 selectionMode
                 options
                 searchString
-                rightSlot
 
         Datalist ->
             singleSelectViewDatalistHtml selectionMode options
@@ -2199,7 +2215,6 @@ multiSelectView selectionMode options searchString rightSlot =
                 selectionMode
                 options
                 searchString
-                rightSlot
 
         Datalist ->
             multiSelectViewDataset
@@ -2208,8 +2223,8 @@ multiSelectView selectionMode options searchString rightSlot =
                 rightSlot
 
 
-singleSelectViewCustomHtml : SelectionConfig -> OptionList -> SearchString -> RightSlot -> Html Msg
-singleSelectViewCustomHtml selectionConfig options searchString rightSlot =
+singleSelectViewCustomHtml : SelectionConfig -> OptionList -> SearchString -> Html Msg
+singleSelectViewCustomHtml selectionConfig options searchString =
     let
         hasOptionSelected =
             OptionList.hasSelectedOption options
@@ -2258,24 +2273,6 @@ singleSelectViewCustomHtml selectionConfig options searchString rightSlot =
             (isFocused selectionConfig)
             (SelectionMode.getPlaceholder selectionConfig)
             hasOptionSelected
-        , case rightSlot of
-            ShowNothing ->
-                text ""
-
-            ShowLoadingIndicator ->
-                node "slot" [ name "loading-indicator" ] [ defaultLoadingIndicator ]
-
-            ShowDropdownIndicator transitioning ->
-                dropdownIndicator (SelectionMode.getInteractionState selectionConfig) transitioning
-
-            ShowClearButton ->
-                node "slot" [ name "clear-button" ] []
-
-            ShowAddButton ->
-                text ""
-
-            ShowAddAndRemoveButtons ->
-                text ""
         ]
 
 
@@ -2284,8 +2281,8 @@ singleSelectViewCustomHtmlValue selectedOption =
     Option.singleSelectViewCustomHtmlValueHtml selectedOption
 
 
-multiSelectViewCustomHtml : SelectionConfig -> OptionList -> SearchString -> RightSlot -> Html Msg
-multiSelectViewCustomHtml selectionConfig options searchString rightSlot =
+multiSelectViewCustomHtml : SelectionConfig -> OptionList -> SearchString -> Html Msg
+multiSelectViewCustomHtml selectionConfig options searchString =
     let
         hasOptionSelected =
             OptionList.hasSelectedOption options
@@ -2317,7 +2314,7 @@ multiSelectViewCustomHtml selectionConfig options searchString rightSlot =
                 , value (SearchString.toString searchString)
                 , placeholderAttribute
                 , id "input-filter"
-                , Html.Attributes.attribute "part" "input-filter"
+                , PartAttribute.part "input-filter"
                 , disabled (isDisabled selectionConfig)
                 , Keyboard.on Keyboard.Keydown
                     [ ( Enter, SelectHighlightedOption )
@@ -2346,11 +2343,6 @@ multiSelectViewCustomHtml selectionConfig options searchString rightSlot =
         ]
         (optionsToValuesHtml options (getSingleItemRemoval selectionConfig)
             ++ [ inputFilter
-               , rightSlotHtml
-                    rightSlot
-                    (SelectionMode.getInteractionState selectionConfig)
-                    (SelectionMode.isDisabled selectionConfig)
-                    0
                ]
         )
 
@@ -2513,7 +2505,7 @@ singleSelectCustomHtmlInputField searchString isDisabled focused placeholderTupl
             id "input-filter"
 
         partAttr =
-            Html.Attributes.attribute "part" "input-filter"
+            PartAttribute.part "input-filter"
 
         typeAttr =
             type_ "text"
@@ -2628,6 +2620,11 @@ multiSelectDatasetInputField maybeOption selectionConfig rightSlot index =
             , ( "invalid", isOptionInvalid )
             ]
 
+        parts =
+            [ ( "input-value", True )
+            , ( "invalid-input-value", isOptionInvalid )
+            ]
+
         typeAttr =
             type_ "text"
 
@@ -2652,7 +2649,7 @@ multiSelectDatasetInputField maybeOption selectionConfig rightSlot index =
                     [ disabled True
                     , idAttr
                     , ariaLabel
-                    , Html.Attributes.attribute "part" "input-value"
+                    , PartAttribute.partsList parts
                     , placeholderAttribute
                     , classList classes
                     , value valueString
@@ -2664,7 +2661,7 @@ multiSelectDatasetInputField maybeOption selectionConfig rightSlot index =
                     [ typeAttr
                     , idAttr
                     , ariaLabel
-                    , Html.Attributes.attribute "part" "input-value"
+                    , PartAttribute.partsList parts
                     , classList classes
                     , onInput (UpdateOptionValueValue index)
                     , onBlur InputBlur
@@ -2685,12 +2682,12 @@ multiSelectDatasetInputField maybeOption selectionConfig rightSlot index =
                         TransformAndValidate.ShowError ->
                             case validationErrorMessage of
                                 TransformAndValidate.ValidationErrorMessage string ->
-                                    li [] [ text string ]
+                                    li [ PartAttribute.part "error-message" ] [ text string ]
 
         errorMessage =
             if isOptionInvalid then
-                div [ errorIdAttr, class "error-message" ]
-                    [ ul []
+                div [ errorIdAttr, class "error-message", PartAttribute.part "error-message-wrapper" ]
+                    [ ul [ PartAttribute.part "error-message-list" ]
                         (Maybe.map Option.getOptionValidationErrors maybeOption
                             |> Maybe.withDefault []
                             |> List.map makeValidationErrorMessage
@@ -2700,9 +2697,13 @@ multiSelectDatasetInputField maybeOption selectionConfig rightSlot index =
             else
                 text ""
     in
-    [ div [ class "input-wrapper", Html.Attributes.attribute "part" "input-wrapper" ]
+    [ div [ class "input-wrapper", PartAttribute.part "input-wrapper" ]
         [ inputHtml
-        , rightSlotHtml rightSlot (SelectionMode.getInteractionState selectionConfig) (isDisabled selectionConfig) index
+        , rightSlotForEachValueHtml
+            rightSlot
+            (SelectionMode.getInteractionState selectionConfig)
+            (SelectionMode.getSelectionMode selectionConfig)
+            index
         ]
     , errorMessage
     ]
@@ -2718,7 +2719,7 @@ singleSelectDatasetInputField maybeOption selectionMode hasSelectedOption =
             Html.Attributes.attribute "aria-label" "much-select-value"
 
         partAttr =
-            Html.Attributes.attribute "part" "input-value"
+            PartAttribute.part "input-value"
 
         typeAttr =
             type_ "text"
@@ -2774,6 +2775,158 @@ singleSelectDatasetInputField maybeOption selectionMode hasSelectedOption =
             []
 
 
+rightSlotForAllValuesHtml : RightSlot -> SelectionMode.InteractionState -> Html Msg
+rightSlotForAllValuesHtml rightSlot interactionState =
+    div
+        [ id "right-slot-for-all-values-wrapper"
+        , class "right-slot-wrapper"
+        , PartAttribute.part "right-slot-wrapper right-slot-for-all-values-wrapper"
+        ]
+        [ case rightSlot of
+            ShowNothing ->
+                Html.Extra.nothing
+
+            ShowLoadingIndicator ->
+                node "slot" [ name "loading-indicator" ] [ defaultLoadingIndicator ]
+
+            ShowDropdownIndicator transitioning ->
+                dropdownIndicator interactionState transitioning
+
+            ShowClearButton ->
+                let
+                    clearButtonHtml =
+                        div
+                            [ id "clear-button-wrapper"
+                            , PartAttribute.part "clear-button-wrapper"
+                            , onClickPreventDefaultAndStopPropagation ClearAllSelectedOptions
+                            ]
+                            [ node "slot"
+                                [ name "clear-button"
+                                ]
+                                [ text "✕"
+                                ]
+                            ]
+                in
+                case interactionState of
+                    SelectionMode.Focused ->
+                        clearButtonHtml
+
+                    SelectionMode.Unfocused ->
+                        clearButtonHtml
+
+                    SelectionMode.Disabled ->
+                        Html.Extra.nothing
+
+            ShowAddButton ->
+                Html.Extra.nothing
+
+            ShowAddAndRemoveButtons ->
+                Html.Extra.nothing
+        ]
+
+
+rightSlotForEachValueHtml : RightSlot -> SelectionMode.InteractionState -> SelectionMode.SelectionMode -> Int -> Html Msg
+rightSlotForEachValueHtml rightSlot interactionState selectionMode selectedIndex =
+    let
+        rightSlotWrapperDiv : List (Html msg) -> Html msg
+        rightSlotWrapperDiv =
+            div
+                [ id "right-slot-wrapper"
+                , PartAttribute.part "right-slot-wrapper"
+                ]
+    in
+    case rightSlot of
+        ShowNothing ->
+            Html.Extra.nothing
+
+        ShowLoadingIndicator ->
+            rightSlotWrapperDiv [ node "slot" [ name "loading-indicator" ] [ defaultLoadingIndicator ] ]
+
+        ShowDropdownIndicator transitioning ->
+            rightSlotWrapperDiv [ dropdownIndicator interactionState transitioning ]
+
+        ShowClearButton ->
+            let
+                clearButtonHtml =
+                    div
+                        [ id "clear-button-wrapper"
+                        , PartAttribute.part "clear-button-wrapper"
+                        , onClickPreventDefaultAndStopPropagation ClearAllSelectedOptions
+                        ]
+                        [ node "slot"
+                            [ name "clear-button"
+                            ]
+                            [ text "✕"
+                            ]
+                        ]
+            in
+            case interactionState of
+                SelectionMode.Focused ->
+                    rightSlotWrapperDiv [ clearButtonHtml ]
+
+                SelectionMode.Unfocused ->
+                    rightSlotWrapperDiv [ clearButtonHtml ]
+
+                SelectionMode.Disabled ->
+                    Html.Extra.nothing
+
+        ShowAddButton ->
+            case selectionMode of
+                SelectionMode.SingleSelect ->
+                    Html.Extra.nothing
+
+                SelectionMode.MultiSelect ->
+                    case interactionState of
+                        SelectionMode.Focused ->
+                            rightSlotWrapperDiv
+                                [ div [ class "add-remove-buttons" ]
+                                    [ div [ class "add-button-wrapper", onClick (AddMultiSelectValue selectedIndex) ]
+                                        [ addButtonSlot selectedIndex ]
+                                    ]
+                                ]
+
+                        SelectionMode.Unfocused ->
+                            rightSlotWrapperDiv
+                                [ div [ class "add-remove-buttons" ]
+                                    [ div [ class "add-button-wrapper", onClick (AddMultiSelectValue selectedIndex) ]
+                                        [ addButtonSlot selectedIndex ]
+                                    ]
+                                ]
+
+                        SelectionMode.Disabled ->
+                            Html.Extra.nothing
+
+        ShowAddAndRemoveButtons ->
+            case selectionMode of
+                SelectionMode.SingleSelect ->
+                    Html.Extra.nothing
+
+                SelectionMode.MultiSelect ->
+                    case interactionState of
+                        SelectionMode.Focused ->
+                            rightSlotWrapperDiv
+                                [ div [ class "add-remove-buttons" ]
+                                    [ div [ class "add-button-wrapper", onClick (AddMultiSelectValue selectedIndex) ]
+                                        [ addButtonSlot selectedIndex ]
+                                    , div [ class "remove-button-wrapper", onClick (RemoveMultiSelectValue selectedIndex) ]
+                                        [ remoteButtonSlot selectedIndex ]
+                                    ]
+                                ]
+
+                        SelectionMode.Unfocused ->
+                            rightSlotWrapperDiv
+                                [ div [ class "add-remove-buttons" ]
+                                    [ div [ class "add-button-wrapper", onClick (AddMultiSelectValue selectedIndex) ]
+                                        [ addButtonSlot selectedIndex ]
+                                    , div [ class "remove-button-wrapper", onClick (RemoveMultiSelectValue selectedIndex) ]
+                                        [ remoteButtonSlot selectedIndex ]
+                                    ]
+                                ]
+
+                        SelectionMode.Disabled ->
+                            Html.Extra.nothing
+
+
 dropdownIndicator : SelectionMode.InteractionState -> FocusTransition -> Html Msg
 dropdownIndicator interactionState transitioning =
     case interactionState of
@@ -2808,13 +2961,13 @@ dropdownIndicator interactionState transitioning =
                 partAttr =
                     case interactionState of
                         SelectionMode.Focused ->
-                            Html.Attributes.attribute "part" "dropdown-indicator down"
+                            PartAttribute.part "dropdown-indicator down"
 
                         SelectionMode.Unfocused ->
-                            Html.Attributes.attribute "part" "dropdown-indicator up"
+                            PartAttribute.part "dropdown-indicator up"
 
                         SelectionMode.Disabled ->
-                            Html.Attributes.attribute "part" "dropdown-indicator"
+                            PartAttribute.part "dropdown-indicator"
             in
             div
                 [ id "dropdown-indicator"
@@ -2838,16 +2991,28 @@ type alias DropdownItemEventListeners msg =
 customHtmlDropdown : SelectionConfig -> OptionList -> SearchString -> ValueCasing -> Html Msg
 customHtmlDropdown selectionMode options searchString (ValueCasing valueCasingWidth valueCasingHeight) =
     let
+        optionsForTheDropdown : DropdownOptions
         optionsForTheDropdown =
             figureOutWhichOptionsToShowInTheDropdown selectionMode options
 
+        optionsHtml : List (Html Msg)
         optionsHtml =
             -- TODO We should probably do something different if we are in a loading state
             if DropdownOptions.isEmpty optionsForTheDropdown then
-                [ div [ class "option disabled" ] [ node "slot" [ name "no-options" ] [ text "No available options" ] ] ]
+                [ div
+                    [ class "option disabled no-options"
+                    , PartAttribute.part "dropdown-message"
+                    ]
+                    [ node "slot" [ name "no-options" ] [ text "No available options" ] ]
+                ]
 
             else if doesSearchStringFindNothing searchString (getSearchStringMinimumLength selectionMode) optionsForTheDropdown then
-                [ div [ class "option disabled" ] [ node "slot" [ name "no-filtered-options" ] [ text "This filter returned no results." ] ] ]
+                [ div
+                    [ class "option disabled"
+                    , PartAttribute.part "dropdown-message"
+                    ]
+                    [ node "slot" [ name "no-filtered-options" ] [ text "This filter returned no results." ] ]
+                ]
 
             else
                 optionsForTheDropdown
@@ -2861,11 +3026,12 @@ customHtmlDropdown selectionMode options searchString (ValueCasing valueCasingWi
                         }
                         selectionMode
 
+        dropdownFooterHtml : Html msg
         dropdownFooterHtml =
             if showDropdownFooter selectionMode && DropdownOptions.length optionsForTheDropdown < OptionList.length options then
                 div
                     [ id "dropdown-footer"
-                    , Html.Attributes.attribute "part" "dropdown-footer"
+                    , PartAttribute.part "dropdown-footer"
                     ]
                     [ text
                         ("showing "
@@ -2874,6 +3040,15 @@ customHtmlDropdown selectionMode options searchString (ValueCasing valueCasingWi
                             ++ (options |> OptionList.length |> String.fromInt)
                             ++ " options"
                         )
+                    ]
+
+            else if showDropdownFooter selectionMode && DropdownOptions.length optionsForTheDropdown == 0 then
+                div
+                    [ id "dropdown-footer"
+                    , PartAttribute.part "dropdown-footer"
+                    ]
+                    [ text
+                        "options to select"
                     ]
 
             else
@@ -2885,7 +3060,7 @@ customHtmlDropdown selectionMode options searchString (ValueCasing valueCasingWi
     else
         div
             [ id "dropdown"
-            , Html.Attributes.attribute "part" "dropdown"
+            , PartAttribute.part "dropdown"
             , classList
                 [ ( "showing", showDropdown selectionMode )
                 , ( "hiding", not (showDropdown selectionMode) )
@@ -2908,10 +3083,20 @@ slottedDropdown selectionConfig options searchString (ValueCasing valueCasingWid
         optionsHtml =
             -- TODO We should probably do something different if we are in a loading state
             if DropdownOptions.isEmpty optionsForTheDropdown then
-                [ div [ class "option disabled" ] [ node "slot" [ name "no-options" ] [ text "No available options" ] ] ]
+                [ div
+                    [ class "option disabled"
+                    , PartAttribute.part "dropdown-message"
+                    ]
+                    [ node "slot" [ name "no-options" ] [ text "No available options" ] ]
+                ]
 
             else if doesSearchStringFindNothing searchString (getSearchStringMinimumLength selectionConfig) optionsForTheDropdown then
-                [ div [ class "option disabled" ] [ node "slot" [ name "no-filtered-options" ] [ text "This filter returned no results." ] ] ]
+                [ div
+                    [ class "option disabled"
+                    , PartAttribute.part "dropdown-option dropdown-message"
+                    ]
+                    [ node "slot" [ name "no-filtered-options" ] [ text "This filter returned no results." ] ]
+                ]
 
             else
                 optionsForTheDropdown
@@ -2927,7 +3112,7 @@ slottedDropdown selectionConfig options searchString (ValueCasing valueCasingWid
             if showDropdownFooter selectionConfig && DropdownOptions.length optionsForTheDropdown < OptionList.length options then
                 div
                     [ id "dropdown-footer"
-                    , Html.Attributes.attribute "part" "dropdown-footer"
+                    , PartAttribute.part "dropdown-footer"
                     ]
                     [ text
                         ("showing "
@@ -2947,7 +3132,7 @@ slottedDropdown selectionConfig options searchString (ValueCasing valueCasingWid
     else
         div
             [ id "dropdown"
-            , Html.Attributes.attribute "part" "dropdown"
+            , PartAttribute.part "dropdown"
             , classList
                 [ ( "showing", showDropdown selectionConfig )
                 , ( "hiding", not (showDropdown selectionConfig) )
@@ -2980,60 +3165,6 @@ optionToValueHtml enableSingleItemRemoval option =
 
         Option.SlottedOption slottedOption ->
             SlottedOption.toValueHtml ToggleSelectedValueHighlight DeselectOptionInternal enableSingleItemRemoval slottedOption
-
-
-rightSlotHtml : RightSlot -> SelectionMode.InteractionState -> Bool -> Int -> Html Msg
-rightSlotHtml rightSlot interactionState isDisabled selectedIndex =
-    case rightSlot of
-        ShowNothing ->
-            text ""
-
-        ShowLoadingIndicator ->
-            node "slot"
-                [ name "loading-indicator" ]
-                [ defaultLoadingIndicator ]
-
-        ShowDropdownIndicator transitioning ->
-            dropdownIndicator interactionState transitioning
-
-        ShowClearButton ->
-            if isDisabled then
-                text ""
-
-            else
-                div
-                    [ id "clear-button-wrapper"
-                    , Html.Attributes.attribute "part" "clear-button-wrapper"
-                    , onClickPreventDefaultAndStopPropagation ClearAllSelectedOptions
-                    ]
-                    [ node "slot"
-                        [ name "clear-button"
-                        ]
-                        [ text "✕"
-                        ]
-                    ]
-
-        ShowAddButton ->
-            if isDisabled then
-                text ""
-
-            else
-                div [ class "add-remove-buttons" ]
-                    [ div [ class "add-button-wrapper", onClick (AddMultiSelectValue selectedIndex) ]
-                        [ addButtonSlot selectedIndex ]
-                    ]
-
-        ShowAddAndRemoveButtons ->
-            if isDisabled then
-                text ""
-
-            else
-                div [ class "add-remove-buttons" ]
-                    [ div [ class "add-button-wrapper", onClick (AddMultiSelectValue selectedIndex) ]
-                        [ addButtonSlot selectedIndex ]
-                    , div [ class "remove-button-wrapper", onClick (RemoveMultiSelectValue selectedIndex) ]
-                        [ remoteButtonSlot selectedIndex ]
-                    ]
 
 
 defaultLoadingIndicator : Html msg
@@ -3113,7 +3244,7 @@ valueCasingPartsAttribute selectionConfig hasError hasPendingValidation =
             else
                 ""
     in
-    Html.Attributes.attribute "part"
+    PartAttribute.part
         (String.join " "
             [ "value-casing"
             , outputStyleStr

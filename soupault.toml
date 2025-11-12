@@ -349,10 +349,6 @@ widget = "include"
 file = "examples/move-selected-item-to-top.html"
 selector = ".example #move-selected-item-to-top"
 
-[widgets.much-select-ready-event]
-widget = "include"
-file = "examples/much-select-ready-event.html"
-selector = ".example #much-select-ready-event"
 
 [widgets.multi-select-blur-or-unfocused-value-change]
 widget = "include"
@@ -368,6 +364,11 @@ selector = ".example #multi-select-comma-seperated-values"
 widget = "include"
 file = "examples/multi-select-json-seperated-values.html"
 selector = ".example #multi-select-json-seperated-values"
+
+[widgets.multi-select-option-deselected-event]
+widget = "include"
+file = "examples/multi-select-option-deselected-event.html"
+selector = ".example #multi-select-option-deselected-event"
 
 [widgets.multi-select-single-item-removal]
 widget = "include"
@@ -463,6 +464,12 @@ selector = ".example #override-the-clear-button"
 widget = "include"
 file = "examples/placeholder.html"
 selector = ".example #placeholder"
+
+[widgets.ready-event]
+widget = "include"
+file = "examples/ready-event.html"
+selector = ".example #ready-event"
+
 
 [widgets.remote-api-example]
 widget = "include"

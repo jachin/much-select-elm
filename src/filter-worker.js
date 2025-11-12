@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-undef
 const app = Elm.FilterWorker.init();
 
 onmessage = ({ data }) => {
