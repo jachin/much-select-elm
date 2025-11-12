@@ -365,6 +365,11 @@ widget = "include"
 file = "examples/multi-select-json-seperated-values.html"
 selector = ".example #multi-select-json-seperated-values"
 
+[widgets.multi-select-option-deselected-event]
+widget = "include"
+file = "examples/multi-select-option-deselected-event.html"
+selector = ".example #multi-select-option-deselected-event"
+
 [widgets.multi-select-single-item-removal]
 widget = "include"
 file = "examples/multi-select-single-item-removal.html"

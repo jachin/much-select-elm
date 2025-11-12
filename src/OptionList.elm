@@ -1,4 +1,4 @@
-module OptionList exposing (OptionList(..), activateOptionInListByOptionValue, addAdditionalOptionsToOptionList, addAdditionalOptionsToOptionListWithAutoSortRank, addAdditionalSelectedOptionWithStringValue, addAndSelectOptionsInOptionsListByString, addNewSelectedEmptyOptionAtIndex, all, allOptionsAreValid, andMap, any, append, appendOptions, changeHighlightedOption, changeHighlightedOptionByValue, cleanupEmptySelectedOptions, concatMap, customSelectedOptions, decoder, decoderWithAge, deselect, deselectAll, deselectAllButTheFirstSelectedOptionInList, deselectAllSelectedHighlightedOptions, deselectEveryOptionExceptOptionsInList, deselectLastSelectedOption, deselectOptionByValue, drop, encode, encodeSearchResults, filter, findByValue, findClosestHighlightableOptionGoingDown, findClosestHighlightableOptionGoingUp, findHighestAutoSortRank, findHighlightedOption, findHighlightedOptionIndex, findHighlightedOrSelectedOptionIndex, findLowestSearchScore, findOptionByValue, findSelectedOption, getOptions, hasAnyPendingValidation, hasAnyValidationErrors, hasOptionByValueString, hasSelectedHighlightedOptions, hasSelectedOption, head, highlightOption, isEmpty, isSlottedOptionList, length, map, mergeTwoListsOfOptionsPreservingSelectedOptions, optionsPlusOne, optionsValuesAsStrings, organizeNewDatalistOptions, prependCustomOption, reIndexSelectedOptions, removeOptionFromOptionListBySelectedIndex, removeOptionsFromOptionList, removeUnselectedCustomOptions, replaceOptions, selectHighlightedOption, selectOption, selectOptionByOptionValue, selectOptionByOptionValueWithIndex, selectOptionIByValueStringWithIndex, selectOptions, selectOptionsInOptionsListByString, selectSingleOption, selectSingleOptionByValue, selectedOptionValuesAreEqual, selectedOptions, selectedOptionsToTuple, setAge, sort, sortBy, sortOptionsByBestScore, take, test_newDatalistOptionList, test_newFancyOptionList, toDatalistOptionList, toggleSelectedHighlightByOptionValue, unhighlightOptionByValue, unhighlightSelectedOptions, uniqueBy, unselectedOptions, updateAge, updateDatalistOptionWithValueBySelectedValueIndex, updateDatalistOptionsWithPendingValidation, updateDatalistOptionsWithValue, updateDatalistOptionsWithValueAndErrors, updateOptionsWithNewSearchResults, updatedDatalistSelectedOptions)
+module OptionList exposing (OptionList(..), activateOptionInListByOptionValue, addAdditionalOptionsToOptionList, addAdditionalOptionsToOptionListWithAutoSortRank, addAdditionalSelectedOptionWithStringValue, addAndSelectOptionsInOptionsListByString, addNewSelectedEmptyOptionAtIndex, all, allOptionsAreValid, andMap, any, append, appendOptions, changeHighlightedOption, changeHighlightedOptionByValue, cleanupEmptySelectedOptions, concatMap, customSelectedOptions, decoder, decoderWithAge, deselect, deselectAll, deselectAllButTheFirstSelectedOptionInList, deselectAllSelectedHighlightedOptions, deselectEveryOptionExceptOptionsInList, deselectLastSelectedOption, deselectOptionByValue, drop, encode, encodeSearchResults, filter, findByValue, findClosestHighlightableOptionGoingDown, findClosestHighlightableOptionGoingUp, findHighestAutoSortRank, findHighlightedOption, findHighlightedOptionIndex, findHighlightedOptions, findHighlightedOrSelectedOptionIndex, findLastSelectedOption, findLowestSearchScore, findOptionByValue, findSelectedOption, getOptions, hasAnyPendingValidation, hasAnyValidationErrors, hasOptionByValueString, hasSelectedHighlightedOptions, hasSelectedOption, head, highlightOption, isEmpty, isSlottedOptionList, length, map, mergeTwoListsOfOptionsPreservingSelectedOptions, optionsPlusOne, optionsValuesAsStrings, organizeNewDatalistOptions, prependCustomOption, reIndexSelectedOptions, removeOptionFromOptionListBySelectedIndex, removeOptionsFromOptionList, removeUnselectedCustomOptions, replaceOptions, selectHighlightedOption, selectOption, selectOptionByOptionValue, selectOptionByOptionValueWithIndex, selectOptionIByValueStringWithIndex, selectOptions, selectOptionsInOptionsListByString, selectSingleOption, selectSingleOptionByValue, selectedOptionValuesAreEqual, selectedOptions, setAge, sort, sortBy, sortOptionsByBestScore, take, test_newDatalistOptionList, test_newFancyOptionList, toDatalistOptionList, toggleSelectedHighlightByOptionValue, unhighlightOptionByValue, unhighlightSelectedOptions, uniqueBy, unselectedOptions, updateAge, updateDatalistOptionWithValueBySelectedValueIndex, updateDatalistOptionsWithPendingValidation, updateDatalistOptionsWithValue, updateDatalistOptionsWithValueAndErrors, updateOptionsWithNewSearchResults, updatedDatalistSelectedOptions)
 
 import DatalistOption
 import FancyOption
@@ -468,6 +468,11 @@ findClosestHighlightableOptionGoingDown selectionMode index list =
 findHighlightedOption : OptionList -> Maybe Option
 findHighlightedOption optionList =
     find (\option -> Option.isHighlighted option) optionList
+
+
+findHighlightedOptions : OptionList -> OptionList
+findHighlightedOptions optionList =
+    filter Option.isHighlighted optionList
 
 
 findHighlightedOptionIndex : OptionList -> Maybe Int
@@ -943,6 +948,38 @@ deselectLastSelectedOption optionList =
 
         Nothing ->
             optionList
+
+
+findLastSelectedOption : OptionList -> OptionList
+findLastSelectedOption optionList =
+    let
+        maybeLastSelectionOption =
+            optionList
+                |> selectedOptions
+                |> last
+    in
+    case maybeLastSelectionOption of
+        Just lastSelectedOption ->
+            case optionList of
+                FancyOptionList _ ->
+                    FancyOptionList [ lastSelectedOption ]
+
+                DatalistOptionList _ ->
+                    DatalistOptionList [ lastSelectedOption ]
+
+                SlottedOptionList _ ->
+                    SlottedOptionList [ lastSelectedOption ]
+
+        Nothing ->
+            case optionList of
+                FancyOptionList _ ->
+                    FancyOptionList []
+
+                DatalistOptionList _ ->
+                    DatalistOptionList []
+
+                SlottedOptionList _ ->
+                    SlottedOptionList []
 
 
 {-| This is kind of a strange one it takes a list of options to leave selected and
@@ -1510,11 +1547,6 @@ setSelectedOptionInNewOptions selectionMode oldOptions newOptions =
 transformOptionsToOutputStyle : SelectionMode.OutputStyle -> OptionList -> OptionList
 transformOptionsToOutputStyle outputStyle options =
     mapValues (Option.transformOptionForOutputStyle outputStyle) options
-
-
-selectedOptionsToTuple : OptionList -> List ( String, String )
-selectedOptionsToTuple optionList =
-    optionList |> selectedOptions |> getOptions |> List.map Option.toValueLabelTuple
 
 
 {-| Take a list of string that are the values of options and an existing options list.
