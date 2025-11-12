@@ -1184,6 +1184,20 @@ update msg model =
 
                         else
                             OptionList.deselectLastSelectedOption model.options
+
+                    optionsAboutToBeDeselected =
+                        if OptionList.hasSelectedHighlightedOptions model.options then
+                            OptionList.findHighlightedOptions model.options
+
+                        else
+                            OptionList.findLastSelectedOption model.options
+
+                    deselectEventEffect =
+                        if OptionList.isEmpty optionsAboutToBeDeselected then
+                            NoEffect
+
+                        else
+                            ReportOptionDeselected (Ports.optionsEncoder (OptionList.deselectAll optionsAboutToBeDeselected))
                 in
                 ( { model
                     | options = updatedOptions
@@ -1193,8 +1207,7 @@ update msg model =
                     [ ReportValueChanged
                         (updatedOptions |> OptionList.selectedOptions |> Ports.optionsEncoder)
                         (SelectionMode.getSelectionMode model.selectionConfig)
-
-                    -- TODO optionDeselected
+                    , deselectEventEffect
                     , FocusInput
                     ]
                 )

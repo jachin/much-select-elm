@@ -8678,6 +8678,9 @@ var $author$project$MuchSelect$OptionsUpdated = function (a) {
 var $author$project$MuchSelect$ReportAllOptions = function (a) {
 	return {$: 23, a: a};
 };
+var $author$project$MuchSelect$ReportOptionDeselected = function (a) {
+	return {$: 15, a: a};
+};
 var $author$project$MuchSelect$ReportValueChanged = F2(
 	function (a, b) {
 		return {$: 10, a: a, b: b};
@@ -9364,9 +9367,6 @@ var $author$project$OptionList$cleanupEmptySelectedOptions = function (options) 
 		A2($elm$core$Basics$composeR, $author$project$Option$isEmptyOrHasEmptyValue, $elm$core$Basics$not),
 		$author$project$OptionList$selectedOptions(options));
 	return (($author$project$OptionList$length(selectedOptions_) > 1) && ($author$project$OptionList$length(selectedOptionsSansEmptyOptions) > 1)) ? selectedOptionsSansEmptyOptions : (($author$project$OptionList$length(selectedOptions_) > 1) ? A2($author$project$OptionList$take, 1, selectedOptions_) : options);
-};
-var $author$project$MuchSelect$ReportOptionDeselected = function (a) {
-	return {$: 15, a: a};
 };
 var $author$project$OptionList$deselectAll = function (optionList) {
 	switch (optionList.$) {
@@ -11135,6 +11135,39 @@ var $author$project$OptionList$findHighlightedOption = function (optionList) {
 			return $author$project$Option$isHighlighted(option);
 		},
 		optionList);
+};
+var $author$project$OptionList$findHighlightedOptions = function (optionList) {
+	return A2($author$project$OptionList$filter, $author$project$Option$isHighlighted, optionList);
+};
+var $author$project$OptionList$findLastSelectedOption = function (optionList) {
+	var maybeLastSelectionOption = $author$project$OptionList$last(
+		$author$project$OptionList$selectedOptions(optionList));
+	if (!maybeLastSelectionOption.$) {
+		var lastSelectedOption = maybeLastSelectionOption.a;
+		switch (optionList.$) {
+			case 0:
+				return $author$project$OptionList$FancyOptionList(
+					_List_fromArray(
+						[lastSelectedOption]));
+			case 1:
+				return $author$project$OptionList$DatalistOptionList(
+					_List_fromArray(
+						[lastSelectedOption]));
+			default:
+				return $author$project$OptionList$SlottedOptionList(
+					_List_fromArray(
+						[lastSelectedOption]));
+		}
+	} else {
+		switch (optionList.$) {
+			case 0:
+				return $author$project$OptionList$FancyOptionList(_List_Nil);
+			case 1:
+				return $author$project$OptionList$DatalistOptionList(_List_Nil);
+			default:
+				return $author$project$OptionList$SlottedOptionList(_List_Nil);
+		}
+	}
 };
 var $author$project$SelectedValueEncoding$fromString = function (string) {
 	switch (string) {
@@ -13868,6 +13901,10 @@ var $author$project$MuchSelect$update = F2(
 					return _Utils_Tuple2(model, $author$project$MuchSelect$NoEffect);
 				} else {
 					var updatedOptions = $author$project$OptionList$hasSelectedHighlightedOptions(model.b) ? $author$project$OptionList$deselectAllSelectedHighlightedOptions(model.b) : $author$project$OptionList$deselectLastSelectedOption(model.b);
+					var optionsAboutToBeDeselected = $author$project$OptionList$hasSelectedHighlightedOptions(model.b) ? $author$project$OptionList$findHighlightedOptions(model.b) : $author$project$OptionList$findLastSelectedOption(model.b);
+					var deselectEventEffect = $author$project$OptionList$isEmpty(optionsAboutToBeDeselected) ? $author$project$MuchSelect$NoEffect : $author$project$MuchSelect$ReportOptionDeselected(
+						$author$project$Ports$optionsEncoder(
+							$author$project$OptionList$deselectAll(optionsAboutToBeDeselected)));
 					return _Utils_Tuple2(
 						$author$project$MuchSelect$updateModelWithChangesThatEffectTheOptionsWhenTheSearchStringChanges(
 							_Utils_update(
@@ -13881,6 +13918,7 @@ var $author$project$MuchSelect$update = F2(
 									$author$project$Ports$optionsEncoder(
 										$author$project$OptionList$selectedOptions(updatedOptions)),
 									$author$project$SelectionMode$getSelectionMode(model.a)),
+									deselectEventEffect,
 									$author$project$MuchSelect$FocusInput
 								])));
 				}

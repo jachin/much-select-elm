@@ -201,7 +201,12 @@ This event fires if the `<much-select>` is in single or multi select mode, but i
 
 ##### `optionDeselected`
 
-This event fires if the `<much-select>` is in single or multi select mode, but it's _mostly_ for multi select mode. It will just have the newly deselected option in it. This is kinda of the inverse of the `optionSelected` event.
+This event fires if the `<much-select>` is in single or multi select mode, but it's _mostly_ for multi select mode.
+It will just have the newly deselected option in it. This is kinda of the inverse of the `optionSelected` event.
+This event will only fire if an option is delected (or removed). If you just select a different value (like in a single select)
+it will not fire.
+
+This could be useful in single select mode if a field is required. It has a value, then that value gets removed, and you want to provide feedback right away to the user that they just blanked out the field, but it is required.
 
 ##### `inputKeyUp`
 
