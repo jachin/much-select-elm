@@ -1,30 +1,39 @@
 {
-    "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.10.7/.schema/devbox.schema.json",
-    "packages": [
-        "elmPackages.elm@0.19.1",
-        "nodejs@20.9.0",
-        "watchexec@2.3.2",
-        "jq@1.7.1",
-        "python311",
-        "python311Packages.setuptools",
-        "python311Packages.distutils-extra",
-        "gcc",
-        "gnumake",
-        "soupault"
-    ],
-    "env": {
-        "DEVBOX_COREPACK_ENABLED": "true",
-        "PYTHON": "$DEVBOX_PACKAGES_DIR/bin/python3.11",
-        "npm_config_python": "$DEVBOX_PACKAGES_DIR/bin/python3.11"
-    },
-    "shell": {
-        "scripts": {
-            "init": "npm install && npx elm-tooling install",
-            "install": "npm install",
-            "watch": "npm run watch",
-            "test": "npm run test",
-            "release": "npm run release",
-            "format": "npx elm-format src/"
-        }
+  "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.16.0/.schema/devbox.schema.json",
+  "packages": [
+    "nodejs@latest",
+    "soupault@latest",
+    "firebase-tools@latest",
+    "npm-check-updates@latest",
+    "elmPackages.elm-json@latest",
+    "watchexec@latest",
+    "elmPackages.elm-review@latest"
+  ],
+  "shell": {
+    "init_hook": ["echo 'Welcome to devbox!' > /dev/null"],
+    "scripts": {
+      "start":           ["npm start"],
+      "test":            ["npm test"],
+      "web-test-runner": "npm run web-test-runner",
+      "web-test-runner-with-coverage": [
+        "npm run web-test-runner-with-coverage"
+      ],
+      "build":      ["./scripts/build.sh"],
+      "build-site": ["./scripts/build-site.sh"],
+      "build-and-test": [
+        "npm run build",
+        "npm run test",
+        "npm run web-test-runner"
+      ],
+      "serve":               "scripts/serve-site.sh",
+      "deploy-site":         "npm run build && npm run build-site && firebase deploy",
+      "lint":                "eslint; eslint tests",
+      "format":              "elm-format",
+      "review":              "npx elm-review",
+      "check-npm-packages":  ["ncu"],
+      "check-elm-packages":  ["elm-json upgrade"],
+      "elm-tooling-install": ["npx elm-tooling install"],
+      "npm-install":         ["npm install"]
     }
+  }
 }
