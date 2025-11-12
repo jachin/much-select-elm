@@ -55,3 +55,9 @@ firebase-debug.log
 
 # Cypress videos
 cypress/videos/
+
+# Soupault Cache
+.soupault-cache/
+
+# Local Claude settings
+.claude/settings.local.json
