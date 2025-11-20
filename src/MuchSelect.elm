@@ -57,13 +57,14 @@ import Json.Encode
 import Keyboard exposing (Key(..))
 import Keyboard.Events as Keyboard
 import LightDomChange
+import Maybe.Extra
 import Option
     exposing
         ( Option
         )
 import OptionDisplay exposing (OptionDisplay(..))
 import OptionList exposing (OptionList(..))
-import OptionSearcher exposing (doesSearchStringFindNothing, updateOrAddCustomOption)
+import OptionSearcher exposing (SearchStringFindResult(..), calculateSearchStringFindResult, updateOrAddCustomOption)
 import OptionSorting
     exposing
         ( OptionSort(..)
@@ -2141,6 +2142,14 @@ updatePartOfTheModelWithChangesThatEffectTheOptionsWhenTheMouseMoves rightSlot s
 
 view : Model -> Html Msg
 view model =
+    let
+        optionsForTheDropdown : DropdownOptions
+        optionsForTheDropdown =
+            figureOutWhichOptionsToShowInTheDropdown model.selectionConfig model.options
+
+        doesSearchStringFind =
+            calculateSearchStringFindResult model.searchString (getSearchStringMinimumLength model.selectionConfig) optionsForTheDropdown
+    in
     div
         [ id "wrapper"
         , PartAttribute.part "wrapper"
@@ -2160,12 +2169,14 @@ view model =
                 model.selectionConfig
                 model.options
                 model.searchString
+                doesSearchStringFind
 
           else
             multiSelectView
                 model.selectionConfig
                 model.options
                 model.searchString
+                doesSearchStringFind
                 model.rightSlot
         , case getOutputStyle model.selectionConfig of
             CustomHtml ->
@@ -2173,15 +2184,16 @@ view model =
                     slottedDropdown
                         model.selectionConfig
                         model.options
-                        model.searchString
                         model.valueCasing
+                        doesSearchStringFind
 
                 else
                     customHtmlDropdown
                         model.selectionConfig
                         model.options
-                        model.searchString
                         model.valueCasing
+                        doesSearchStringFind
+                        optionsForTheDropdown
 
             Datalist ->
                 GroupedDropdownOptions.dropdownOptionsToDatalistHtml (DropdownOptions.figureOutWhichOptionsToShowInTheDropdownThatAreNotSelected model.selectionConfig model.options)
@@ -2194,27 +2206,29 @@ view model =
         ]
 
 
-singleSelectView : SelectionConfig -> OptionList -> SearchString -> Html Msg
-singleSelectView selectionMode options searchString =
+singleSelectView : SelectionConfig -> OptionList -> SearchString -> SearchStringFindResult -> Html Msg
+singleSelectView selectionMode options searchString searchStringFind =
     case getOutputStyle selectionMode of
         CustomHtml ->
             singleSelectViewCustomHtml
                 selectionMode
                 options
                 searchString
+                searchStringFind
 
         Datalist ->
             singleSelectViewDatalistHtml selectionMode options
 
 
-multiSelectView : SelectionConfig -> OptionList -> SearchString -> RightSlot -> Html Msg
-multiSelectView selectionMode options searchString rightSlot =
+multiSelectView : SelectionConfig -> OptionList -> SearchString -> SearchStringFindResult -> RightSlot -> Html Msg
+multiSelectView selectionMode options searchString searchStringFind rightSlot =
     case getOutputStyle selectionMode of
         CustomHtml ->
             multiSelectViewCustomHtml
                 selectionMode
                 options
                 searchString
+                searchStringFind
 
         Datalist ->
             multiSelectViewDataset
@@ -2223,8 +2237,8 @@ multiSelectView selectionMode options searchString rightSlot =
                 rightSlot
 
 
-singleSelectViewCustomHtml : SelectionConfig -> OptionList -> SearchString -> Html Msg
-singleSelectViewCustomHtml selectionConfig options searchString =
+singleSelectViewCustomHtml : SelectionConfig -> OptionList -> SearchString -> SearchStringFindResult -> Html Msg
+singleSelectViewCustomHtml selectionConfig options searchString searchStringFind =
     let
         hasOptionSelected =
             OptionList.hasSelectedOption options
@@ -2273,6 +2287,7 @@ singleSelectViewCustomHtml selectionConfig options searchString =
             (isFocused selectionConfig)
             (SelectionMode.getPlaceholder selectionConfig)
             hasOptionSelected
+            searchStringFind
         ]
 
 
@@ -2281,8 +2296,8 @@ singleSelectViewCustomHtmlValue selectedOption =
     Option.singleSelectViewCustomHtmlValueHtml selectedOption
 
 
-multiSelectViewCustomHtml : SelectionConfig -> OptionList -> SearchString -> Html Msg
-multiSelectViewCustomHtml selectionConfig options searchString =
+multiSelectViewCustomHtml : SelectionConfig -> OptionList -> SearchString -> SearchStringFindResult -> Html Msg
+multiSelectViewCustomHtml selectionConfig options searchString searchStringFind =
     let
         hasOptionSelected =
             OptionList.hasSelectedOption options
@@ -2303,6 +2318,22 @@ multiSelectViewCustomHtml selectionConfig options searchString =
         hasPendingValidation =
             OptionList.hasAnyPendingValidation options
 
+        inputFilterKeyboardEvents =
+            Maybe.Extra.values
+                [ case searchStringFind of
+                    SearchStringFindNothing ->
+                        Nothing
+
+                    SearchStringFindSomething ->
+                        Just ( Enter, SelectHighlightedOption )
+
+                    SearchStringNotEngaged ->
+                        Just ( Enter, SelectHighlightedOption )
+                , Just ( Escape, EscapeKeyInInputFilter )
+                , Just ( ArrowUp, MoveHighlightedOptionUp )
+                , Just ( ArrowDown, MoveHighlightedOptionDown )
+                ]
+
         inputFilter =
             input
                 [ type_ "text"
@@ -2317,11 +2348,7 @@ multiSelectViewCustomHtml selectionConfig options searchString =
                 , PartAttribute.part "input-filter"
                 , disabled (isDisabled selectionConfig)
                 , Keyboard.on Keyboard.Keydown
-                    [ ( Enter, SelectHighlightedOption )
-                    , ( Escape, EscapeKeyInInputFilter )
-                    , ( ArrowUp, MoveHighlightedOptionUp )
-                    , ( ArrowDown, MoveHighlightedOptionDown )
-                    ]
+                    inputFilterKeyboardEvents
                 ]
                 []
     in
@@ -2454,52 +2481,78 @@ tabIndexAttribute disabled =
         tabindex 0
 
 
-singleSelectCustomHtmlInputField : SearchString -> Bool -> Bool -> ( Bool, String ) -> Bool -> Html Msg
-singleSelectCustomHtmlInputField searchString isDisabled focused placeholderTuple hasSelectedOption =
+singleSelectCustomHtmlInputField : SearchString -> Bool -> Bool -> ( Bool, String ) -> Bool -> SearchStringFindResult -> Html Msg
+singleSelectCustomHtmlInputField searchString isDisabled focused placeholderTuple hasSelectedOption searchStringFind =
     let
-        keyboardEvents =
-            Keyboard.customPerKey Keyboard.Keydown
-                [ ( Enter
-                  , { message = SelectHighlightedOption
-                    , preventDefault = False
-                    , stopPropagation = False
-                    }
-                  )
-                , ( Backspace
-                  , { message = DeleteInputForSingleSelect
-                    , preventDefault = False
-                    , stopPropagation = False
-                    }
-                  )
-                , ( Delete
-                  , { message = DeleteInputForSingleSelect
-                    , preventDefault = False
-                    , stopPropagation = False
-                    }
-                  )
-                , ( Escape
-                  , { message = EscapeKeyInInputFilter
-                    , preventDefault = False
-                    , stopPropagation = False
-                    }
-                  )
+        enterEvent =
+            ( Enter
+            , { message = SelectHighlightedOption
+              , preventDefault = False
+              , stopPropagation = False
+              }
+            )
 
-                -- We need to prevent default on these because when we use the arrow keys we want to move
-                --  the highlighted option up and down but we do not want to move the cursor in the text box
-                --  to the end and the beginning of the input.
-                , ( ArrowUp
-                  , { message = MoveHighlightedOptionUp
-                    , preventDefault = True
-                    , stopPropagation = False
-                    }
-                  )
-                , ( ArrowDown
-                  , { message = MoveHighlightedOptionDown
-                    , preventDefault = True
-                    , stopPropagation = False
-                    }
-                  )
-                ]
+        backspaceEvent =
+            ( Backspace
+            , { message = DeleteInputForSingleSelect
+              , preventDefault = False
+              , stopPropagation = False
+              }
+            )
+
+        deleteEvent =
+            ( Delete
+            , { message = DeleteInputForSingleSelect
+              , preventDefault = False
+              , stopPropagation = False
+              }
+            )
+
+        escapeEvent =
+            ( Escape
+            , { message = EscapeKeyInInputFilter
+              , preventDefault = False
+              , stopPropagation = False
+              }
+            )
+
+        -- We need to prevent default on these because when we use the arrow keys we want to move
+        --  the highlighted option up and down but we do not want to move the cursor in the text box
+        --  to the end and the beginning of the input.
+        arrowUpEvent =
+            ( ArrowUp
+            , { message = MoveHighlightedOptionUp
+              , preventDefault = True
+              , stopPropagation = False
+              }
+            )
+
+        arrowDownEvent =
+            ( ArrowDown
+            , { message = MoveHighlightedOptionDown
+              , preventDefault = True
+              , stopPropagation = False
+              }
+            )
+
+        keyboardEvents =
+            [ case searchStringFind of
+                SearchStringFindNothing ->
+                    Nothing
+
+                SearchStringFindSomething ->
+                    Just enterEvent
+
+                SearchStringNotEngaged ->
+                    Just enterEvent
+            , Just backspaceEvent
+            , Just deleteEvent
+            , Just escapeEvent
+            , Just arrowUpEvent
+            , Just arrowDownEvent
+            ]
+                |> Maybe.Extra.values
+                |> Keyboard.customPerKey Keyboard.Keydown
 
         idAttr =
             id "input-filter"
@@ -2988,13 +3041,9 @@ type alias DropdownItemEventListeners msg =
     }
 
 
-customHtmlDropdown : SelectionConfig -> OptionList -> SearchString -> ValueCasing -> Html Msg
-customHtmlDropdown selectionMode options searchString (ValueCasing valueCasingWidth valueCasingHeight) =
+customHtmlDropdown : SelectionConfig -> OptionList -> ValueCasing -> SearchStringFindResult -> DropdownOptions -> Html Msg
+customHtmlDropdown selectionMode options (ValueCasing valueCasingWidth valueCasingHeight) doesSearchStringFind optionsForTheDropdown =
     let
-        optionsForTheDropdown : DropdownOptions
-        optionsForTheDropdown =
-            figureOutWhichOptionsToShowInTheDropdown selectionMode options
-
         optionsHtml : List (Html Msg)
         optionsHtml =
             -- TODO We should probably do something different if we are in a loading state
@@ -3006,25 +3055,39 @@ customHtmlDropdown selectionMode options searchString (ValueCasing valueCasingWi
                     [ node "slot" [ name "no-options" ] [ text "No available options" ] ]
                 ]
 
-            else if doesSearchStringFindNothing searchString (getSearchStringMinimumLength selectionMode) optionsForTheDropdown then
-                [ div
-                    [ class "option disabled"
-                    , PartAttribute.part "dropdown-message"
-                    ]
-                    [ node "slot" [ name "no-filtered-options" ] [ text "This filter returned no results." ] ]
-                ]
-
             else
-                optionsForTheDropdown
-                    |> groupOptionsInOrder
-                    |> optionGroupsToHtml
-                        { mouseOverMsgConstructor = DropdownMouseOverOption
-                        , mouseOutMsgConstructor = DropdownMouseOutOption
-                        , mouseDownMsgConstructor = DropdownMouseDownOption
-                        , mouseUpMsgConstructor = DropdownMouseUpOption
-                        , noOpMsgConstructor = NoOp
-                        }
-                        selectionMode
+                case doesSearchStringFind of
+                    SearchStringFindNothing ->
+                        [ div
+                            [ class "option disabled"
+                            , PartAttribute.part "dropdown-message"
+                            ]
+                            [ node "slot" [ name "no-filtered-options" ] [ text "This filter returned no results." ] ]
+                        ]
+
+                    SearchStringFindSomething ->
+                        optionsForTheDropdown
+                            |> groupOptionsInOrder
+                            |> optionGroupsToHtml
+                                { mouseOverMsgConstructor = DropdownMouseOverOption
+                                , mouseOutMsgConstructor = DropdownMouseOutOption
+                                , mouseDownMsgConstructor = DropdownMouseDownOption
+                                , mouseUpMsgConstructor = DropdownMouseUpOption
+                                , noOpMsgConstructor = NoOp
+                                }
+                                selectionMode
+
+                    SearchStringNotEngaged ->
+                        optionsForTheDropdown
+                            |> groupOptionsInOrder
+                            |> optionGroupsToHtml
+                                { mouseOverMsgConstructor = DropdownMouseOverOption
+                                , mouseOutMsgConstructor = DropdownMouseOutOption
+                                , mouseDownMsgConstructor = DropdownMouseDownOption
+                                , mouseUpMsgConstructor = DropdownMouseUpOption
+                                , noOpMsgConstructor = NoOp
+                                }
+                                selectionMode
 
         dropdownFooterHtml : Html msg
         dropdownFooterHtml =
@@ -3074,8 +3137,8 @@ customHtmlDropdown selectionMode options searchString (ValueCasing valueCasingWi
             (optionsHtml ++ [ dropdownFooterHtml ])
 
 
-slottedDropdown : SelectionConfig -> OptionList -> SearchString -> ValueCasing -> Html Msg
-slottedDropdown selectionConfig options searchString (ValueCasing valueCasingWidth valueCasingHeight) =
+slottedDropdown : SelectionConfig -> OptionList -> ValueCasing -> SearchStringFindResult -> Html Msg
+slottedDropdown selectionConfig options (ValueCasing valueCasingWidth valueCasingHeight) doesSearchStringFind =
     let
         optionsForTheDropdown =
             figureOutWhichOptionsToShowInTheDropdown selectionConfig options
@@ -3090,23 +3153,35 @@ slottedDropdown selectionConfig options searchString (ValueCasing valueCasingWid
                     [ node "slot" [ name "no-options" ] [ text "No available options" ] ]
                 ]
 
-            else if doesSearchStringFindNothing searchString (getSearchStringMinimumLength selectionConfig) optionsForTheDropdown then
-                [ div
-                    [ class "option disabled"
-                    , PartAttribute.part "dropdown-option dropdown-message"
-                    ]
-                    [ node "slot" [ name "no-filtered-options" ] [ text "This filter returned no results." ] ]
-                ]
-
             else
-                optionsForTheDropdown
-                    |> DropdownOptions.dropdownOptionsToSlottedOptionsHtml
-                        { mouseOverMsgConstructor = DropdownMouseOverOption
-                        , mouseOutMsgConstructor = DropdownMouseOutOption
-                        , mouseDownMsgConstructor = DropdownMouseDownOption
-                        , mouseUpMsgConstructor = DropdownMouseUpOption
-                        , noOpMsgConstructor = NoOp
-                        }
+                case doesSearchStringFind of
+                    SearchStringFindNothing ->
+                        [ div
+                            [ class "option disabled"
+                            , PartAttribute.part "dropdown-option dropdown-message"
+                            ]
+                            [ node "slot" [ name "no-filtered-options" ] [ text "This filter returned no results." ] ]
+                        ]
+
+                    SearchStringFindSomething ->
+                        optionsForTheDropdown
+                            |> DropdownOptions.dropdownOptionsToSlottedOptionsHtml
+                                { mouseOverMsgConstructor = DropdownMouseOverOption
+                                , mouseOutMsgConstructor = DropdownMouseOutOption
+                                , mouseDownMsgConstructor = DropdownMouseDownOption
+                                , mouseUpMsgConstructor = DropdownMouseUpOption
+                                , noOpMsgConstructor = NoOp
+                                }
+
+                    SearchStringNotEngaged ->
+                        optionsForTheDropdown
+                            |> DropdownOptions.dropdownOptionsToSlottedOptionsHtml
+                                { mouseOverMsgConstructor = DropdownMouseOverOption
+                                , mouseOutMsgConstructor = DropdownMouseOutOption
+                                , mouseDownMsgConstructor = DropdownMouseDownOption
+                                , mouseUpMsgConstructor = DropdownMouseUpOption
+                                , noOpMsgConstructor = NoOp
+                                }
 
         dropdownFooterHtml =
             if showDropdownFooter selectionConfig && DropdownOptions.length optionsForTheDropdown < OptionList.length options then

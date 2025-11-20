@@ -1,4 +1,4 @@
-module OptionSearcher exposing (decodeSearchParams, doesSearchStringFindNothing, encodeSearchParams, simpleMatch, updateOptionsWithSearchString, updateOrAddCustomOption, updateSearchResultInOption)
+module OptionSearcher exposing (SearchStringFindResult(..), calculateSearchStringFindResult, decodeSearchParams, encodeSearchParams, simpleMatch, updateOptionsWithSearchString, updateOrAddCustomOption, updateSearchResultInOption)
 
 import DropdownOptions exposing (DropdownOptions, getSearchFilters)
 import Fuzzy exposing (Result, match)
@@ -215,15 +215,32 @@ updateOptionsWithSearchString searchString searchStringMinimumLength optionList 
                 )
 
 
-doesSearchStringFindNothing : SearchString -> SearchStringMinimumLength -> DropdownOptions -> Bool
-doesSearchStringFindNothing searchString searchStringMinimumLength options =
+type SearchStringFindResult
+    = SearchStringFindNothing
+    | SearchStringFindSomething
+    | SearchStringNotEngaged
+
+
+
+-- The idea here is, let's figure out if our search string has found anything. Or not.
+-- Or if there just isn't a search string (yet). This helps us make up our minds about
+-- what to display and what not to.
+-- TODO This feels like it should be combined with figureOutWhichOptionsToShowInTheDropdown
+
+
+calculateSearchStringFindResult : SearchString -> SearchStringMinimumLength -> DropdownOptions -> SearchStringFindResult
+calculateSearchStringFindResult searchString searchStringMinimumLength options =
     case searchStringMinimumLength of
         NoMinimumToSearchStringLength ->
-            True
+            if SearchString.length searchString <= 0 then
+                SearchStringNotEngaged
+
+            else
+                SearchStringFindSomething
 
         FixedSearchStringMinimumLength num ->
             if SearchString.length searchString <= PositiveInt.toInt num then
-                False
+                SearchStringNotEngaged
 
             else
                 options
@@ -237,6 +254,13 @@ doesSearchStringFindNothing searchString searchStringMinimumLength options =
                                 Just optionSearchFilter ->
                                     optionSearchFilter.bestScore > 1000
                         )
+                    |> (\b ->
+                            if b then
+                                SearchStringFindNothing
+
+                            else
+                                SearchStringFindSomething
+                       )
 
 
 encodeSearchParams : SearchString -> SearchStringMinimumLength -> Int -> Bool -> Json.Encode.Value
