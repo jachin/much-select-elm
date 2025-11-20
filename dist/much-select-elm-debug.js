@@ -19807,6 +19807,42 @@ var $author$project$MuchSelect$updateWrapper = F2(
 			A2($author$project$MuchSelect$update, msg, model));
 	});
 var $author$project$MuchSelect$NoOp = {$: 'NoOp'};
+var $author$project$OptionSearcher$SearchStringFindNothing = {$: 'SearchStringFindNothing'};
+var $author$project$OptionSearcher$SearchStringFindSomething = {$: 'SearchStringFindSomething'};
+var $author$project$OptionSearcher$SearchStringNotEngaged = {$: 'SearchStringNotEngaged'};
+var $author$project$DropdownOptions$getSearchFilters = function (dropdownOptions) {
+	return A2(
+		$elm$core$List$map,
+		function (option) {
+			return $author$project$Option$getMaybeOptionSearchFilter(option);
+		},
+		$author$project$OptionList$getOptions(
+			$author$project$DropdownOptions$getOptions(dropdownOptions)));
+};
+var $author$project$OptionSearcher$calculateSearchStringFindResult = F3(
+	function (searchString, searchStringMinimumLength, options) {
+		if (searchStringMinimumLength.$ === 'NoMinimumToSearchStringLength') {
+			return ($author$project$SearchString$length(searchString) <= 0) ? $author$project$OptionSearcher$SearchStringNotEngaged : $author$project$OptionSearcher$SearchStringFindSomething;
+		} else {
+			var num = searchStringMinimumLength.a;
+			return (_Utils_cmp(
+				$author$project$SearchString$length(searchString),
+				$author$project$PositiveInt$toInt(num)) < 1) ? $author$project$OptionSearcher$SearchStringNotEngaged : function (b) {
+				return b ? $author$project$OptionSearcher$SearchStringFindNothing : $author$project$OptionSearcher$SearchStringFindSomething;
+			}(
+				A2(
+					$elm$core$List$all,
+					function (maybeOptionSearchFilter) {
+						if (maybeOptionSearchFilter.$ === 'Nothing') {
+							return false;
+						} else {
+							var optionSearchFilter = maybeOptionSearchFilter.a;
+							return optionSearchFilter.bestScore > 1000;
+						}
+					},
+					$author$project$DropdownOptions$getSearchFilters(options)));
+		}
+	});
 var $elm$html$Html$Attributes$classList = function (classes) {
 	return $elm$html$Html$Attributes$class(
 		A2(
@@ -19829,36 +19865,6 @@ var $author$project$MuchSelect$DropdownMouseOverOption = function (a) {
 var $author$project$MuchSelect$DropdownMouseUpOption = function (a) {
 	return {$: 'DropdownMouseUpOption', a: a};
 };
-var $author$project$DropdownOptions$getSearchFilters = function (dropdownOptions) {
-	return A2(
-		$elm$core$List$map,
-		function (option) {
-			return $author$project$Option$getMaybeOptionSearchFilter(option);
-		},
-		$author$project$OptionList$getOptions(
-			$author$project$DropdownOptions$getOptions(dropdownOptions)));
-};
-var $author$project$OptionSearcher$doesSearchStringFindNothing = F3(
-	function (searchString, searchStringMinimumLength, options) {
-		if (searchStringMinimumLength.$ === 'NoMinimumToSearchStringLength') {
-			return true;
-		} else {
-			var num = searchStringMinimumLength.a;
-			return (_Utils_cmp(
-				$author$project$SearchString$length(searchString),
-				$author$project$PositiveInt$toInt(num)) < 1) ? false : A2(
-				$elm$core$List$all,
-				function (maybeOptionSearchFilter) {
-					if (maybeOptionSearchFilter.$ === 'Nothing') {
-						return false;
-					} else {
-						var optionSearchFilter = maybeOptionSearchFilter.a;
-						return optionSearchFilter.bestScore > 1000;
-					}
-				},
-				$author$project$DropdownOptions$getSearchFilters(options));
-		}
-	});
 var $author$project$GroupedDropdownOptions$DropdownOptionsGroup = F2(
 	function (a, b) {
 		return {$: 'DropdownOptionsGroup', a: a, b: b};
@@ -20536,66 +20542,78 @@ var $author$project$SelectionMode$showDropdown = function (selectionConfig) {
 			return false;
 	}
 };
-var $author$project$MuchSelect$customHtmlDropdown = F4(
-	function (selectionMode, options, searchString, _v0) {
+var $author$project$MuchSelect$customHtmlDropdown = F5(
+	function (selectionMode, options, _v0, doesSearchStringFind, optionsForTheDropdown) {
 		var valueCasingWidth = _v0.a;
 		var valueCasingHeight = _v0.b;
-		var optionsForTheDropdown = A2($author$project$DropdownOptions$figureOutWhichOptionsToShowInTheDropdown, selectionMode, options);
-		var optionsHtml = $author$project$DropdownOptions$isEmpty(optionsForTheDropdown) ? _List_fromArray(
-			[
-				A2(
-				$elm$html$Html$div,
-				_List_fromArray(
+		var optionsHtml = function () {
+			if ($author$project$DropdownOptions$isEmpty(optionsForTheDropdown)) {
+				return _List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('option disabled no-options'),
-						$author$project$PartAttribute$part('dropdown-message')
-					]),
-				_List_fromArray(
-					[
-						A3(
-						$elm$html$Html$node,
-						'slot',
+						A2(
+						$elm$html$Html$div,
 						_List_fromArray(
 							[
-								$elm$html$Html$Attributes$name('no-options')
+								$elm$html$Html$Attributes$class('option disabled no-options'),
+								$author$project$PartAttribute$part('dropdown-message')
 							]),
 						_List_fromArray(
 							[
-								$elm$html$Html$text('No available options')
+								A3(
+								$elm$html$Html$node,
+								'slot',
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$name('no-options')
+									]),
+								_List_fromArray(
+									[
+										$elm$html$Html$text('No available options')
+									]))
 							]))
-					]))
-			]) : (A3(
-			$author$project$OptionSearcher$doesSearchStringFindNothing,
-			searchString,
-			$author$project$SelectionMode$getSearchStringMinimumLength(selectionMode),
-			optionsForTheDropdown) ? _List_fromArray(
-			[
-				A2(
-				$elm$html$Html$div,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$class('option disabled'),
-						$author$project$PartAttribute$part('dropdown-message')
-					]),
-				_List_fromArray(
-					[
-						A3(
-						$elm$html$Html$node,
-						'slot',
-						_List_fromArray(
+					]);
+			} else {
+				switch (doesSearchStringFind.$) {
+					case 'SearchStringFindNothing':
+						return _List_fromArray(
 							[
-								$elm$html$Html$Attributes$name('no-filtered-options')
-							]),
-						_List_fromArray(
-							[
-								$elm$html$Html$text('This filter returned no results.')
-							]))
-					]))
-			]) : A3(
-			$author$project$GroupedDropdownOptions$optionGroupsToHtml,
-			{mouseDownMsgConstructor: $author$project$MuchSelect$DropdownMouseDownOption, mouseOutMsgConstructor: $author$project$MuchSelect$DropdownMouseOutOption, mouseOverMsgConstructor: $author$project$MuchSelect$DropdownMouseOverOption, mouseUpMsgConstructor: $author$project$MuchSelect$DropdownMouseUpOption, noOpMsgConstructor: $author$project$MuchSelect$NoOp},
-			selectionMode,
-			$author$project$GroupedDropdownOptions$groupOptionsInOrder(optionsForTheDropdown)));
+								A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('option disabled'),
+										$author$project$PartAttribute$part('dropdown-message')
+									]),
+								_List_fromArray(
+									[
+										A3(
+										$elm$html$Html$node,
+										'slot',
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$name('no-filtered-options')
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text('This filter returned no results.')
+											]))
+									]))
+							]);
+					case 'SearchStringFindSomething':
+						return A3(
+							$author$project$GroupedDropdownOptions$optionGroupsToHtml,
+							{mouseDownMsgConstructor: $author$project$MuchSelect$DropdownMouseDownOption, mouseOutMsgConstructor: $author$project$MuchSelect$DropdownMouseOutOption, mouseOverMsgConstructor: $author$project$MuchSelect$DropdownMouseOverOption, mouseUpMsgConstructor: $author$project$MuchSelect$DropdownMouseUpOption, noOpMsgConstructor: $author$project$MuchSelect$NoOp},
+							selectionMode,
+							$author$project$GroupedDropdownOptions$groupOptionsInOrder(optionsForTheDropdown));
+					default:
+						return A3(
+							$author$project$GroupedDropdownOptions$optionGroupsToHtml,
+							{mouseDownMsgConstructor: $author$project$MuchSelect$DropdownMouseDownOption, mouseOutMsgConstructor: $author$project$MuchSelect$DropdownMouseOutOption, mouseOverMsgConstructor: $author$project$MuchSelect$DropdownMouseOverOption, mouseUpMsgConstructor: $author$project$MuchSelect$DropdownMouseUpOption, noOpMsgConstructor: $author$project$MuchSelect$NoOp},
+							selectionMode,
+							$author$project$GroupedDropdownOptions$groupOptionsInOrder(optionsForTheDropdown));
+				}
+			}
+		}();
 		var dropdownFooterHtml = ($author$project$SelectionMode$showDropdownFooter(selectionMode) && (_Utils_cmp(
 			$author$project$DropdownOptions$length(optionsForTheDropdown),
 			$author$project$OptionList$length(options)) < 0)) ? A2(
@@ -21686,8 +21704,30 @@ var $author$project$MuchSelect$valueCasingPartsAttribute = F3(
 				_List_fromArray(
 					['value-casing', outputStyleStr, selectionModeStr, interactionStateStr, hasErrorStr, hasPendingValidationStr])));
 	});
-var $author$project$MuchSelect$multiSelectViewCustomHtml = F3(
-	function (selectionConfig, options, searchString) {
+var $author$project$MuchSelect$multiSelectViewCustomHtml = F4(
+	function (selectionConfig, options, searchString, searchStringFind) {
+		var inputFilterKeyboardEvents = $elm_community$maybe_extra$Maybe$Extra$values(
+			_List_fromArray(
+				[
+					function () {
+					switch (searchStringFind.$) {
+						case 'SearchStringFindNothing':
+							return $elm$core$Maybe$Nothing;
+						case 'SearchStringFindSomething':
+							return $elm$core$Maybe$Just(
+								_Utils_Tuple2($ohanhi$keyboard$Keyboard$Enter, $author$project$MuchSelect$SelectHighlightedOption));
+						default:
+							return $elm$core$Maybe$Just(
+								_Utils_Tuple2($ohanhi$keyboard$Keyboard$Enter, $author$project$MuchSelect$SelectHighlightedOption));
+					}
+				}(),
+					$elm$core$Maybe$Just(
+					_Utils_Tuple2($ohanhi$keyboard$Keyboard$Escape, $author$project$MuchSelect$EscapeKeyInInputFilter)),
+					$elm$core$Maybe$Just(
+					_Utils_Tuple2($ohanhi$keyboard$Keyboard$ArrowUp, $author$project$MuchSelect$MoveHighlightedOptionUp)),
+					$elm$core$Maybe$Just(
+					_Utils_Tuple2($ohanhi$keyboard$Keyboard$ArrowDown, $author$project$MuchSelect$MoveHighlightedOptionDown))
+				]));
 		var hasPendingValidation = $author$project$OptionList$hasAnyPendingValidation(options);
 		var hasOptionSelected = $author$project$OptionList$hasSelectedOption(options);
 		var showPlaceholder = (!hasOptionSelected) && (!$author$project$SelectionMode$isFocused(selectionConfig));
@@ -21710,16 +21750,7 @@ var $author$project$MuchSelect$multiSelectViewCustomHtml = F3(
 					$author$project$PartAttribute$part('input-filter'),
 					$elm$html$Html$Attributes$disabled(
 					$author$project$SelectionMode$isDisabled(selectionConfig)),
-					A2(
-					$robinheghan$keyboard_events$Keyboard$Events$on,
-					$robinheghan$keyboard_events$Keyboard$Events$Keydown,
-					_List_fromArray(
-						[
-							_Utils_Tuple2($ohanhi$keyboard$Keyboard$Enter, $author$project$MuchSelect$SelectHighlightedOption),
-							_Utils_Tuple2($ohanhi$keyboard$Keyboard$Escape, $author$project$MuchSelect$EscapeKeyInInputFilter),
-							_Utils_Tuple2($ohanhi$keyboard$Keyboard$ArrowUp, $author$project$MuchSelect$MoveHighlightedOptionUp),
-							_Utils_Tuple2($ohanhi$keyboard$Keyboard$ArrowDown, $author$project$MuchSelect$MoveHighlightedOptionDown)
-						]))
+					A2($robinheghan$keyboard_events$Keyboard$Events$on, $robinheghan$keyboard_events$Keyboard$Events$Keydown, inputFilterKeyboardEvents)
 				]),
 			_List_Nil);
 		var hasErrors = $author$project$OptionList$hasAnyValidationErrors(options);
@@ -22293,11 +22324,11 @@ var $author$project$MuchSelect$multiSelectViewDataset = F3(
 				]),
 			makeInputs(selectedOptions));
 	});
-var $author$project$MuchSelect$multiSelectView = F4(
-	function (selectionMode, options, searchString, rightSlot) {
+var $author$project$MuchSelect$multiSelectView = F5(
+	function (selectionMode, options, searchString, searchStringFind, rightSlot) {
 		var _v0 = $author$project$SelectionMode$getOutputStyle(selectionMode);
 		if (_v0.$ === 'CustomHtml') {
-			return A3($author$project$MuchSelect$multiSelectViewCustomHtml, selectionMode, options, searchString);
+			return A4($author$project$MuchSelect$multiSelectViewCustomHtml, selectionMode, options, searchString, searchStringFind);
 		} else {
 			return A3($author$project$MuchSelect$multiSelectViewDataset, selectionMode, options, rightSlot);
 		}
@@ -22388,39 +22419,55 @@ var $elm$html$Html$Attributes$maxlength = function (n) {
 		'maxlength',
 		$elm$core$String$fromInt(n));
 };
-var $author$project$MuchSelect$singleSelectCustomHtmlInputField = F5(
-	function (searchString, isDisabled, focused, placeholderTuple, hasSelectedOption) {
+var $author$project$MuchSelect$singleSelectCustomHtmlInputField = F6(
+	function (searchString, isDisabled, focused, placeholderTuple, hasSelectedOption, searchStringFind) {
 		var typeAttr = $elm$html$Html$Attributes$type_('text');
 		var showPlaceholder = (!hasSelectedOption) && ((!focused) && placeholderTuple.a);
 		var placeholderAttribute = showPlaceholder ? $elm$html$Html$Attributes$placeholder(placeholderTuple.b) : A2($elm$html$Html$Attributes$style, '', '');
 		var partAttr = $author$project$PartAttribute$part('input-filter');
 		var onFocusAttr = $elm$html$Html$Events$onFocus($author$project$MuchSelect$InputFocus);
 		var onBlurAttr = $elm$html$Html$Events$onBlur($author$project$MuchSelect$InputBlur);
+		var idAttr = $elm$html$Html$Attributes$id('input-filter');
+		var escapeEvent = _Utils_Tuple2(
+			$ohanhi$keyboard$Keyboard$Escape,
+			{message: $author$project$MuchSelect$EscapeKeyInInputFilter, preventDefault: false, stopPropagation: false});
+		var enterEvent = _Utils_Tuple2(
+			$ohanhi$keyboard$Keyboard$Enter,
+			{message: $author$project$MuchSelect$SelectHighlightedOption, preventDefault: false, stopPropagation: false});
+		var deleteEvent = _Utils_Tuple2(
+			$ohanhi$keyboard$Keyboard$Delete,
+			{message: $author$project$MuchSelect$DeleteInputForSingleSelect, preventDefault: false, stopPropagation: false});
+		var backspaceEvent = _Utils_Tuple2(
+			$ohanhi$keyboard$Keyboard$Backspace,
+			{message: $author$project$MuchSelect$DeleteInputForSingleSelect, preventDefault: false, stopPropagation: false});
+		var arrowUpEvent = _Utils_Tuple2(
+			$ohanhi$keyboard$Keyboard$ArrowUp,
+			{message: $author$project$MuchSelect$MoveHighlightedOptionUp, preventDefault: true, stopPropagation: false});
+		var arrowDownEvent = _Utils_Tuple2(
+			$ohanhi$keyboard$Keyboard$ArrowDown,
+			{message: $author$project$MuchSelect$MoveHighlightedOptionDown, preventDefault: true, stopPropagation: false});
 		var keyboardEvents = A2(
 			$robinheghan$keyboard_events$Keyboard$Events$customPerKey,
 			$robinheghan$keyboard_events$Keyboard$Events$Keydown,
-			_List_fromArray(
-				[
-					_Utils_Tuple2(
-					$ohanhi$keyboard$Keyboard$Enter,
-					{message: $author$project$MuchSelect$SelectHighlightedOption, preventDefault: false, stopPropagation: false}),
-					_Utils_Tuple2(
-					$ohanhi$keyboard$Keyboard$Backspace,
-					{message: $author$project$MuchSelect$DeleteInputForSingleSelect, preventDefault: false, stopPropagation: false}),
-					_Utils_Tuple2(
-					$ohanhi$keyboard$Keyboard$Delete,
-					{message: $author$project$MuchSelect$DeleteInputForSingleSelect, preventDefault: false, stopPropagation: false}),
-					_Utils_Tuple2(
-					$ohanhi$keyboard$Keyboard$Escape,
-					{message: $author$project$MuchSelect$EscapeKeyInInputFilter, preventDefault: false, stopPropagation: false}),
-					_Utils_Tuple2(
-					$ohanhi$keyboard$Keyboard$ArrowUp,
-					{message: $author$project$MuchSelect$MoveHighlightedOptionUp, preventDefault: true, stopPropagation: false}),
-					_Utils_Tuple2(
-					$ohanhi$keyboard$Keyboard$ArrowDown,
-					{message: $author$project$MuchSelect$MoveHighlightedOptionDown, preventDefault: true, stopPropagation: false})
-				]));
-		var idAttr = $elm$html$Html$Attributes$id('input-filter');
+			$elm_community$maybe_extra$Maybe$Extra$values(
+				_List_fromArray(
+					[
+						function () {
+						switch (searchStringFind.$) {
+							case 'SearchStringFindNothing':
+								return $elm$core$Maybe$Nothing;
+							case 'SearchStringFindSomething':
+								return $elm$core$Maybe$Just(enterEvent);
+							default:
+								return $elm$core$Maybe$Just(enterEvent);
+						}
+					}(),
+						$elm$core$Maybe$Just(backspaceEvent),
+						$elm$core$Maybe$Just(deleteEvent),
+						$elm$core$Maybe$Just(escapeEvent),
+						$elm$core$Maybe$Just(arrowUpEvent),
+						$elm$core$Maybe$Just(arrowDownEvent)
+					])));
 		return isDisabled ? A2(
 			$elm$html$Html$input,
 			_List_fromArray(
@@ -22518,8 +22565,8 @@ var $author$project$MuchSelect$singleSelectViewCustomHtmlValue = function (selec
 	return $author$project$Option$singleSelectViewCustomHtmlValueHtml(selectedOption);
 };
 var $author$project$FancyOption$toSingleSelectValueNoValueSelected = $elm_community$html_extra$Html$Extra$nothing;
-var $author$project$MuchSelect$singleSelectViewCustomHtml = F3(
-	function (selectionConfig, options, searchString) {
+var $author$project$MuchSelect$singleSelectViewCustomHtml = F4(
+	function (selectionConfig, options, searchString, searchStringFind) {
 		var hasPendingValidation = $author$project$OptionList$hasAnyPendingValidation(options);
 		var hasOptionSelected = $author$project$OptionList$hasSelectedOption(options);
 		var hasErrors = $author$project$OptionList$hasAnyValidationErrors(options);
@@ -22565,13 +22612,14 @@ var $author$project$MuchSelect$singleSelectViewCustomHtml = F3(
 						}
 					}
 				}(),
-					A5(
+					A6(
 					$author$project$MuchSelect$singleSelectCustomHtmlInputField,
 					searchString,
 					$author$project$SelectionMode$isDisabled(selectionConfig),
 					$author$project$SelectionMode$isFocused(selectionConfig),
 					$author$project$SelectionMode$getPlaceholder(selectionConfig),
-					hasOptionSelected)
+					hasOptionSelected,
+					searchStringFind)
 				]));
 	});
 var $author$project$MuchSelect$singleSelectDatasetInputField = F3(
@@ -22653,11 +22701,11 @@ var $author$project$MuchSelect$singleSelectViewDatalistHtml = F2(
 					A3($author$project$MuchSelect$singleSelectDatasetInputField, maybeSelectedOption, selectionConfig, hasOptionSelected)
 				]));
 	});
-var $author$project$MuchSelect$singleSelectView = F3(
-	function (selectionMode, options, searchString) {
+var $author$project$MuchSelect$singleSelectView = F4(
+	function (selectionMode, options, searchString, searchStringFind) {
 		var _v0 = $author$project$SelectionMode$getOutputStyle(selectionMode);
 		if (_v0.$ === 'CustomHtml') {
-			return A3($author$project$MuchSelect$singleSelectViewCustomHtml, selectionMode, options, searchString);
+			return A4($author$project$MuchSelect$singleSelectViewCustomHtml, selectionMode, options, searchString, searchStringFind);
 		} else {
 			return A2($author$project$MuchSelect$singleSelectViewDatalistHtml, selectionMode, options);
 		}
@@ -22914,64 +22962,76 @@ var $author$project$DropdownOptions$dropdownOptionsToSlottedOptionsHtml = F2(
 			$author$project$DropdownOptions$getOptions(options));
 	});
 var $author$project$MuchSelect$slottedDropdown = F4(
-	function (selectionConfig, options, searchString, _v0) {
+	function (selectionConfig, options, _v0, doesSearchStringFind) {
 		var valueCasingWidth = _v0.a;
 		var valueCasingHeight = _v0.b;
 		var optionsForTheDropdown = A2($author$project$DropdownOptions$figureOutWhichOptionsToShowInTheDropdown, selectionConfig, options);
-		var optionsHtml = $author$project$DropdownOptions$isEmpty(optionsForTheDropdown) ? _List_fromArray(
-			[
-				A2(
-				$elm$html$Html$div,
-				_List_fromArray(
+		var optionsHtml = function () {
+			if ($author$project$DropdownOptions$isEmpty(optionsForTheDropdown)) {
+				return _List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('option disabled'),
-						$author$project$PartAttribute$part('dropdown-message')
-					]),
-				_List_fromArray(
-					[
-						A3(
-						$elm$html$Html$node,
-						'slot',
+						A2(
+						$elm$html$Html$div,
 						_List_fromArray(
 							[
-								$elm$html$Html$Attributes$name('no-options')
+								$elm$html$Html$Attributes$class('option disabled'),
+								$author$project$PartAttribute$part('dropdown-message')
 							]),
 						_List_fromArray(
 							[
-								$elm$html$Html$text('No available options')
+								A3(
+								$elm$html$Html$node,
+								'slot',
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$name('no-options')
+									]),
+								_List_fromArray(
+									[
+										$elm$html$Html$text('No available options')
+									]))
 							]))
-					]))
-			]) : (A3(
-			$author$project$OptionSearcher$doesSearchStringFindNothing,
-			searchString,
-			$author$project$SelectionMode$getSearchStringMinimumLength(selectionConfig),
-			optionsForTheDropdown) ? _List_fromArray(
-			[
-				A2(
-				$elm$html$Html$div,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$class('option disabled'),
-						$author$project$PartAttribute$part('dropdown-option dropdown-message')
-					]),
-				_List_fromArray(
-					[
-						A3(
-						$elm$html$Html$node,
-						'slot',
-						_List_fromArray(
+					]);
+			} else {
+				switch (doesSearchStringFind.$) {
+					case 'SearchStringFindNothing':
+						return _List_fromArray(
 							[
-								$elm$html$Html$Attributes$name('no-filtered-options')
-							]),
-						_List_fromArray(
-							[
-								$elm$html$Html$text('This filter returned no results.')
-							]))
-					]))
-			]) : A2(
-			$author$project$DropdownOptions$dropdownOptionsToSlottedOptionsHtml,
-			{mouseDownMsgConstructor: $author$project$MuchSelect$DropdownMouseDownOption, mouseOutMsgConstructor: $author$project$MuchSelect$DropdownMouseOutOption, mouseOverMsgConstructor: $author$project$MuchSelect$DropdownMouseOverOption, mouseUpMsgConstructor: $author$project$MuchSelect$DropdownMouseUpOption, noOpMsgConstructor: $author$project$MuchSelect$NoOp},
-			optionsForTheDropdown));
+								A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('option disabled'),
+										$author$project$PartAttribute$part('dropdown-option dropdown-message')
+									]),
+								_List_fromArray(
+									[
+										A3(
+										$elm$html$Html$node,
+										'slot',
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$name('no-filtered-options')
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text('This filter returned no results.')
+											]))
+									]))
+							]);
+					case 'SearchStringFindSomething':
+						return A2(
+							$author$project$DropdownOptions$dropdownOptionsToSlottedOptionsHtml,
+							{mouseDownMsgConstructor: $author$project$MuchSelect$DropdownMouseDownOption, mouseOutMsgConstructor: $author$project$MuchSelect$DropdownMouseOutOption, mouseOverMsgConstructor: $author$project$MuchSelect$DropdownMouseOverOption, mouseUpMsgConstructor: $author$project$MuchSelect$DropdownMouseUpOption, noOpMsgConstructor: $author$project$MuchSelect$NoOp},
+							optionsForTheDropdown);
+					default:
+						return A2(
+							$author$project$DropdownOptions$dropdownOptionsToSlottedOptionsHtml,
+							{mouseDownMsgConstructor: $author$project$MuchSelect$DropdownMouseDownOption, mouseOutMsgConstructor: $author$project$MuchSelect$DropdownMouseOutOption, mouseOverMsgConstructor: $author$project$MuchSelect$DropdownMouseOverOption, mouseUpMsgConstructor: $author$project$MuchSelect$DropdownMouseUpOption, noOpMsgConstructor: $author$project$MuchSelect$NoOp},
+							optionsForTheDropdown);
+				}
+			}
+		}();
 		var dropdownFooterHtml = ($author$project$SelectionMode$showDropdownFooter(selectionConfig) && (_Utils_cmp(
 			$author$project$DropdownOptions$length(optionsForTheDropdown),
 			$author$project$OptionList$length(options)) < 0)) ? A2(
@@ -23019,6 +23079,12 @@ var $author$project$MuchSelect$slottedDropdown = F4(
 					[dropdownFooterHtml])));
 	});
 var $author$project$MuchSelect$view = function (model) {
+	var optionsForTheDropdown = A2($author$project$DropdownOptions$figureOutWhichOptionsToShowInTheDropdown, model.selectionConfig, model.options);
+	var doesSearchStringFind = A3(
+		$author$project$OptionSearcher$calculateSearchStringFindResult,
+		model.searchString,
+		$author$project$SelectionMode$getSearchStringMinimumLength(model.selectionConfig),
+		optionsForTheDropdown);
 	return A2(
 		$elm$html$Html$div,
 		_List_fromArray(
@@ -23043,11 +23109,11 @@ var $author$project$MuchSelect$view = function (model) {
 			]),
 		_List_fromArray(
 			[
-				$author$project$SelectionMode$isSingleSelect(model.selectionConfig) ? A3($author$project$MuchSelect$singleSelectView, model.selectionConfig, model.options, model.searchString) : A4($author$project$MuchSelect$multiSelectView, model.selectionConfig, model.options, model.searchString, model.rightSlot),
+				$author$project$SelectionMode$isSingleSelect(model.selectionConfig) ? A4($author$project$MuchSelect$singleSelectView, model.selectionConfig, model.options, model.searchString, doesSearchStringFind) : A5($author$project$MuchSelect$multiSelectView, model.selectionConfig, model.options, model.searchString, doesSearchStringFind, model.rightSlot),
 				function () {
 				var _v1 = $author$project$SelectionMode$getOutputStyle(model.selectionConfig);
 				if (_v1.$ === 'CustomHtml') {
-					return $author$project$OptionList$isSlottedOptionList(model.options) ? A4($author$project$MuchSelect$slottedDropdown, model.selectionConfig, model.options, model.searchString, model.valueCasing) : A4($author$project$MuchSelect$customHtmlDropdown, model.selectionConfig, model.options, model.searchString, model.valueCasing);
+					return $author$project$OptionList$isSlottedOptionList(model.options) ? A4($author$project$MuchSelect$slottedDropdown, model.selectionConfig, model.options, model.valueCasing, doesSearchStringFind) : A5($author$project$MuchSelect$customHtmlDropdown, model.selectionConfig, model.options, model.valueCasing, doesSearchStringFind, optionsForTheDropdown);
 				} else {
 					return $author$project$GroupedDropdownOptions$dropdownOptionsToDatalistHtml(
 						A2($author$project$DropdownOptions$figureOutWhichOptionsToShowInTheDropdownThatAreNotSelected, model.selectionConfig, model.options));

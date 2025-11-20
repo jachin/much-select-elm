@@ -1,30 +1,30 @@
 {
-    "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.10.7/.schema/devbox.schema.json",
-    "packages": [
-        "elmPackages.elm@0.19.1",
-        "nodejs@20.9.0",
-        "watchexec@2.3.2",
-        "jq@1.7.1",
-        "python311",
-        "python311Packages.setuptools",
-        "python311Packages.distutils-extra",
-        "gcc",
-        "gnumake",
-        "soupault"
-    ],
-    "env": {
-        "DEVBOX_COREPACK_ENABLED": "true",
-        "PYTHON": "$DEVBOX_PACKAGES_DIR/bin/python3.11",
-        "npm_config_python": "$DEVBOX_PACKAGES_DIR/bin/python3.11"
-    },
-    "shell": {
-        "scripts": {
-            "init": "npm install && npx elm-tooling install",
-            "install": "npm install",
-            "watch": "npm run watch",
-            "test": "npm run test",
-            "release": "npm run release",
-            "format": "npx elm-format src/"
-        }
+  "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.10.7/.schema/devbox.schema.json",
+  "packages": [
+    "elmPackages.elm@0.19.1",
+    "nodejs@20.9.0",
+    "watchexec@2.3.2",
+    "jq@1.7.1",
+    "python@3.11.14",
+    "python311Packages.setuptools@latest",
+    "python311Packages.distutils-extra@latest",
+    "gnumake@latest",
+    "soupault@latest"
+  ],
+  "env": {
+    "DEVBOX_COREPACK_ENABLED": "true",
+    "PYTHON": "$DEVBOX_PACKAGES_DIR/bin/python3.11",
+    "npm_config_python": "$DEVBOX_PACKAGES_DIR/bin/python3.11"
+  },
+  "shell": {
+    "scripts": {
+      "init": "npm install && npx elm-tooling install",
+      "install": "npm install",
+      "watch": "npm run watch",
+      "test": "npm run test",
+      "release": "npm run release",
+      "format": "npx elm-format src/",
+      "start": "npx run-pty run-pty.json"
     }
+  }
 }
