@@ -6,11 +6,11 @@ A web component - powered by Elm - that will create a powerful select menu.
 
 ## Prior Art, Inspiration, and Goals
 
-The project draws heavy inspiration from the jquery based [selectize.js](https://selectize.github.io/selectize.js/).
+The project draws heavy inspiration from the jQuery based [selectize.js](https://selectize.github.io/selectize.js/).
 
-The need for this project is that we want to use selectize.js however we need the over all app to be built in [Elm](https://elm-lang.org/). Elm needs to "own" the DOM and selectize is built in a way that's not compatible with that. 
+The need for this project came about because we were working on an app that used selectize.js a lot. However, we're migrating parts of the app to [Elm](https://elm-lang.org/). Elm needs to "own" the DOM and selectize.js is built in a way that's not compatible with that requirement. 
 
-The goal for this project to achieve near feature parity with selectize using web components. The API will be different, so it will not be a drop in replacement, but hopefully it will not be too hard to replace one with the other.
+The goal for this project to achieve near feature parity with selectize.js using web components. The API will be different, so it will not be a drop in replacement, but hopefully it will not be too hard to replace one with the other.
 
 ### Other Similar Projects
 
@@ -42,7 +42,7 @@ if (!customElements.get("much-select")) {
 ### Pre-requisites
 
 #### devbox
-This project manages its development enviornment with [devbox](https://www.jetify.com/devbox).
+This project manages its development environment with [devbox](https://www.jetify.com/devbox).
 
 Some of the tools devbox will just take care of for you include
  - soupault, a static site generator
@@ -63,14 +63,6 @@ That should set the table for you, then you can start all the fun stuff by runni
 devbox run start
 ```
 
-### Watch and Develop
-
-To run a webpack development server with the sandbox/demo page:
-
-```bash
-npm start
-```
-
 Now you can visit http://localhost:1234
 
 ### Production Build
@@ -78,7 +70,7 @@ Now you can visit http://localhost:1234
 To do a production build run
 
 ```bash
-npm run build
+npm run build-and-test
 ```
 
 ## API
@@ -173,7 +165,7 @@ The `selected-value-encoding` attribute is used to change how the values work in
 
 The options for this attribute are:
  - `comma` (default) the selected options are comma delegated
- - `json` the selected options are encoded in json and `encodeURIComponent()`
+ - `json` the selected options are encoded in JSON and `encodeURIComponent()`
 
 `comma` is the most straight forward but if you allow values that have commas in them things are not going to go well. As far as I can tell `json` can handle any kinds of text values, however it is a bit harder to just look at and know what the selected value is.
 
@@ -224,7 +216,7 @@ This even is used when a custom validator is in play. All too often, in the real
 
 The even will have a couple of values in the `detail` that will be important:
  - `stringToValidate`: This is what the user typed in for the custom value that you'll be validating
- - `selectedValueIndex`: This is just a number and you just need to hang on to it to pass it back to when it is time to share the results of your validation with your much-select element.
+ - `selectedValueIndex`: This is just a number. You need to hang on to it to pass it back is time to share the results of your validation with your much-select element.
 
 The way you communicate the result of the validation is a little unconventional. You build a JavaScript object with the following fields: 
  - `isValid`: Boolean
@@ -344,7 +336,7 @@ If the user has typed in a search filter that just does not have any good matche
 
 It would be great if the folks using our app always entered in information correctly, alas, they often do not, and we need to validate that information.
 
-The first thing that could happen to the input is that you can "transform" it automatically. There are some cases (and becarful with this) where you can "just fix" the input. Maybe the most common example of this would be to trim trailing whitespace. If you have an input and there's just not good reason why anyone would want trailing whitespace you can just trim it up.
+The first thing that could happen to the input is that you can "transform" it automatically. There are some cases (and be carful with this) where you can "just fix" the input. Maybe the most common example of this would be to trim trailing whitespace. If you have an input and there's just not good reason why anyone would want trailing whitespace you can just trim it up.
 
 The transformations happen before the validations.
 
