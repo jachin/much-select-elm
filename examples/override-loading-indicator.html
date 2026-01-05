@@ -71,10 +71,10 @@
   <button>Toggle loading attribute</button>
   <script>
     document
-      .querySelector("#loading-indicator button")
+      .querySelector("#override-loading-indicator button")
       .addEventListener("click", () => {
         const muchSelectElement = document.querySelector(
-          "#loading-indicator much-select"
+          "#override-loading-indicator much-select"
         );
         if (muchSelectElement.hasAttribute("loading")) {
           muchSelectElement.removeAttribute("loading");
