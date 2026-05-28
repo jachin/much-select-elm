@@ -297,3 +297,9 @@ Add a progress checklist (can be this file or a separate tracking file):
 - [x] Implemented final Phase 2 batch (items 31-32) with real program-test assertions:
   - `tests/Examples/LabelsAndValues.elm`
   - `tests/Examples/NotJustEnglishOptions.elm`
+- [x] Started Phase 3 with first batch (items 1-5) implemented:
+  - `tests/Examples/AddAndRemoveButtonSlots.elm`
+  - `tests/Examples/DefaultClearButton.elm`
+  - `tests/Examples/OverrideTheClearButton.elm`
+  - `tests/Examples/OverrideTheClearButtonWithAnSvg.elm`
+  - `tests/Examples/OverrideNoOptionsSlot.elm`
