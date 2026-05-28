@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <script type="module">
+      import { runTests } from "@web/test-runner-mocha";
+      import { expect } from "@esm-bundle/chai";
+      import { html, fixture, oneEvent, waitUntil } from "@open-wc/testing";
+
+      import MuchSelect from "../../dist/much-select-debug.js";
+
+      if (!customElements.get("much-select")) {
+        window.customElements.define("much-select", MuchSelect);
+      }
+
+      runTests(() => {
+        describe("ExamplesWeb", () => {
+          describe("add-possible-duplicate-option-to-a-much-select", () => {
+            it("addOption does not duplicate identical values", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(html`<much-select></much-select>`);
+              await oneEvent(el, "muchSelectReady");
+
+              el.addOption({ value: "ranch" });
+              el.addOption({ value: "ranch" });
+
+              await waitUntil(async () => {
+                const options = await el.getAllOptions();
+                return options.filter((o) => o.value === "ranch").length === 1;
+              }, "Expected duplicate value to be de-duplicated");
+            });
+
+            it("repeated random additions converge to unique option set", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(html`<much-select></much-select>`);
+              await oneEvent(el, "muchSelectReady");
+
+              const options = ["ranch", "farm", "orchard", "vineyard"];
+              for (let i = 0; i < 20; i += 1) {
+                el.addOption({ value: options[i % options.length] });
+              }
+
+              await waitUntil(async () => {
+                const current = await el.getAllOptions();
+                return options.every((value) => current.some((o) => o.value === value));
+              }, "Expected all unique random options to appear");
+
+              const current = await el.getAllOptions();
+              expect(current.filter((o) => o.value === "ranch")).to.have.lengthOf(1);
+              expect(current.filter((o) => o.value === "farm")).to.have.lengthOf(1);
+            });
+
+            it("selected value is preserved when duplicate option is added", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(html`<much-select selected-value="farm"></much-select>`);
+              await oneEvent(el, "muchSelectReady");
+
+              el.addOption({ value: "farm" });
+              await waitUntil(async () => {
+                const options = await el.getAllOptions();
+                return options.filter((o) => o.value === "farm").length === 1;
+              }, "Expected single selected farm option after duplicate add");
+
+              expect(await el.selectedValue).to.equal("farm");
+            });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
