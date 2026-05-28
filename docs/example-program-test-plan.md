@@ -309,3 +309,9 @@ Add a progress checklist (can be this file or a separate tracking file):
   - `tests/Examples/FocusOnDemand.elm`
   - `tests/Examples/SelectedOptionWithAsyncOptions.elm`
   - `tests/Examples/SelectedOptionWithAsyncOptionsSmall.elm`
+- [x] Implemented third Phase 3 batch (items 11-15):
+  - `tests/Examples/SelectedOptionWithMultiSelectWithAsyncOptionsSmall.elm`
+  - `tests/Examples/RemoteApiExample.elm`
+  - `tests/Examples/TenThousandOptions.elm`
+  - `tests/Examples/CustomOptionLabelText.elm`
+  - `tests/Examples/CustomOptionLabelText2.elm`

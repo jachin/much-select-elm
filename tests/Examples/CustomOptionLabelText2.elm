@@ -1,6 +1,5 @@
-module Examples.OverrideNoFilteredOptionsSlot exposing (suite)
+module Examples.CustomOptionLabelText2 exposing (suite)
 
-import Html.Attributes
 import Json.Decode
 import Json.Encode
 import MuchSelect exposing (Flags)
@@ -8,16 +7,16 @@ import ProgramTest exposing (ProgramTest)
 import SimulatedEffect.Ports
 import SimulatedEffect.Sub
 import Test exposing (Test, describe, test)
-import Test.Html.Selector exposing (attribute, text)
+import Test.Html.Selector exposing (text)
 
 
 optionsJson : String
 optionsJson =
     """
 [
-  { "value": "Black Tea", "label": "Black Tea", "labelClean": "Black Tea" },
-  { "value": "Green Tea", "label": "Green Tea", "labelClean": "Green Tea" },
-  { "value": "Red Tea", "label": "Red Tea", "labelClean": "Red Tea" }
+  { "value": "Itchy and Scrachy Money", "label": "Itchy and Scrachy Money", "labelClean": "Itchy and Scrachy Money" },
+  { "value": "Merits", "label": "Merits", "labelClean": "Merits" },
+  { "value": "Diamonds", "label": "Diamonds", "labelClean": "Diamonds" }
 ]
 """
 
@@ -28,7 +27,7 @@ flags =
     , selectedValue = ""
     , selectedValueEncoding = Nothing
     , placeholder = ( True, "" )
-    , customOptionHint = Nothing
+    , customOptionHint = Just "Create currency {{}}..."
     , allowMultiSelect = False
     , outputStyle = "customHtml"
     , enableMultiSelectSingleItemRemoval = False
@@ -37,7 +36,7 @@ flags =
     , loading = False
     , maxDropdownItems = Just "10"
     , disabled = False
-    , allowCustomOptions = False
+    , allowCustomOptions = True
     , selectedItemStaysInPlace = True
     , searchStringMinimumLength = Nothing
     , showDropdownFooter = False
@@ -51,6 +50,9 @@ simulateSubscriptions _ =
         [ SimulatedEffect.Ports.subscribe "searchStringReceiver"
             Json.Decode.string
             MuchSelect.UpdateSearchString
+        , SimulatedEffect.Ports.subscribe "searchStringSteadyReceiver"
+            Json.Decode.value
+            (\_ -> MuchSelect.SearchStringSteady)
         ]
 
 
@@ -67,15 +69,15 @@ start =
 
 suite : Test
 suite =
-    describe "Example: override-no-filtered-options-slot"
-        [ test "search input updates while no-filtered-options slot is configured" <|
+    describe "Example: custom-option-label-text-2"
+        [ test "second label-text variant applies configured custom label" <|
             \_ ->
                 start
                     |> ProgramTest.simulateIncomingPort
                         "searchStringReceiver"
-                        (Json.Encode.string "coffee")
-                    |> ProgramTest.expectViewHas
-                        [ attribute (Html.Attributes.value "coffee")
-                        , text "Black Tea"
-                        ]
+                        (Json.Encode.string "Dollars")
+                    |> ProgramTest.simulateIncomingPort
+                        "searchStringSteadyReceiver"
+                        Json.Encode.null
+                    |> ProgramTest.expectViewHas [ text "Create currency Dollars..." ]
         ]
