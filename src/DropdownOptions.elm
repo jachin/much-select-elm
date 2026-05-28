@@ -1,4 +1,4 @@
-module DropdownOptions exposing (DropdownOptions, dropdownOptionsToDatalistOption, dropdownOptionsToSlottedOptionsHtml, figureOutWhichOptionsToShowInTheDropdown, figureOutWhichOptionsToShowInTheDropdownThatAreNotSelected, filterOptionsToShowInDropdownBySearchScore, getSearchFilters, groupInOrder, head, isEmpty, length, maybeFirstOptionSearchFilter, moveHighlightedOptionDown, moveHighlightedOptionDownIfThereAreOptions, moveHighlightedOptionUp, optionsToCustomHtml, test_fromOptions, test_getOptions)
+module DropdownOptions exposing (DropdownOptions, dropdownOptionsToDatalistOption, dropdownOptionsToSlottedOptionsHtml, figureOutWhichOptionsToShowInTheDropdown, figureOutWhichOptionsToShowInTheDropdownThatAreNotSelected, filterOptionsToShowInDropdownBySearchScore, getSearchFilters, groupInOrder, head, isAllSelected, isEmpty, length, maybeFirstOptionSearchFilter, moveHighlightedOptionDown, moveHighlightedOptionDownIfThereAreOptions, moveHighlightedOptionUp, optionsToCustomHtml, test_fromOptions, test_getOptions)
 
 import DropdownItemEventListeners exposing (DropdownItemEventListeners)
 import Events exposing (mouseDownPreventDefault, mouseUpPreventDefault, onClickPreventDefault)
@@ -24,6 +24,7 @@ import SelectionMode exposing (SelectionConfig, getMaxDropdownItems)
 type DropdownOptions
     = DropdownOptions OptionList
     | DropdownOptionsThatAreNotSelected OptionList
+    | DropdownOptionsAreAllSelected OptionList
 
 
 {-| This function is responsible for figuring out which options should be shown in the dropdown.
@@ -42,56 +43,64 @@ figureOutWhichOptionsToShowInTheDropdown selectionConfig optionList =
 
         lastIndexOfOptions =
             OptionList.length optionsThatCouldBeShown - 1
+
+        allOptionsAreSelected =
+            not (OptionList.isEmpty optionList)
+                && OptionList.all Option.isSelected optionList
     in
-    case getMaxDropdownItems selectionConfig of
-        OutputStyle.FixedMaxDropdownItems maxDropdownItems ->
-            let
-                maxNumberOfDropdownItems =
-                    PositiveInt.toInt maxDropdownItems
-            in
-            if OptionList.length optionsThatCouldBeShown <= maxNumberOfDropdownItems then
-                DropdownOptions optionsThatCouldBeShown
+    if SelectionMode.getSelectionMode selectionConfig == SelectionMode.MultiSelect && allOptionsAreSelected then
+        DropdownOptionsAreAllSelected optionList
 
-            else
-                case OptionList.findHighlightedOrSelectedOptionIndex optionsThatCouldBeShown of
-                    Just index ->
-                        case index of
-                            0 ->
-                                DropdownOptions (OptionList.take maxNumberOfDropdownItems optionsThatCouldBeShown)
+    else
+        case getMaxDropdownItems selectionConfig of
+            OutputStyle.FixedMaxDropdownItems maxDropdownItems ->
+                let
+                    maxNumberOfDropdownItems =
+                        PositiveInt.toInt maxDropdownItems
+                in
+                if OptionList.length optionsThatCouldBeShown <= maxNumberOfDropdownItems then
+                    DropdownOptions optionsThatCouldBeShown
 
-                            _ ->
-                                if index == OptionList.length optionsThatCouldBeShown - 1 then
-                                    DropdownOptions (OptionList.drop (OptionList.length optionList - maxNumberOfDropdownItems) optionsThatCouldBeShown)
+                else
+                    case OptionList.findHighlightedOrSelectedOptionIndex optionsThatCouldBeShown of
+                        Just index ->
+                            case index of
+                                0 ->
+                                    DropdownOptions (OptionList.take maxNumberOfDropdownItems optionsThatCouldBeShown)
 
-                                else
-                                    let
-                                        isEven =
-                                            modBy 2 maxNumberOfDropdownItems
-                                                == 0
-
-                                        half =
-                                            if isEven then
-                                                maxNumberOfDropdownItems // 2
-
-                                            else
-                                                (maxNumberOfDropdownItems // 2) + 1
-                                    in
-                                    if index + half > lastIndexOfOptions then
-                                        -- The "window" runs off the "tail" of the list, so just take the last options
+                                _ ->
+                                    if index == OptionList.length optionsThatCouldBeShown - 1 then
                                         DropdownOptions (OptionList.drop (OptionList.length optionList - maxNumberOfDropdownItems) optionsThatCouldBeShown)
 
-                                    else if index - half < 0 then
-                                        -- The "window" runs off the "head" of the list, so just take the first options
-                                        DropdownOptions (OptionList.take maxNumberOfDropdownItems optionsThatCouldBeShown)
-
                                     else
-                                        DropdownOptions (optionList |> OptionList.drop (index + 1 - half) |> OptionList.take maxNumberOfDropdownItems)
+                                        let
+                                            isEven =
+                                                modBy 2 maxNumberOfDropdownItems
+                                                    == 0
 
-                    Nothing ->
-                        DropdownOptions (OptionList.take maxNumberOfDropdownItems optionList)
+                                            half =
+                                                if isEven then
+                                                    maxNumberOfDropdownItems // 2
 
-        OutputStyle.NoLimitToDropdownItems ->
-            DropdownOptions optionsThatCouldBeShown
+                                                else
+                                                    (maxNumberOfDropdownItems // 2) + 1
+                                        in
+                                        if index + half > lastIndexOfOptions then
+                                            -- The "window" runs off the "tail" of the list, so just take the last options
+                                            DropdownOptions (OptionList.drop (OptionList.length optionList - maxNumberOfDropdownItems) optionsThatCouldBeShown)
+
+                                        else if index - half < 0 then
+                                            -- The "window" runs off the "head" of the list, so just take the first options
+                                            DropdownOptions (OptionList.take maxNumberOfDropdownItems optionsThatCouldBeShown)
+
+                                        else
+                                            DropdownOptions (optionList |> OptionList.drop (index + 1 - half) |> OptionList.take maxNumberOfDropdownItems)
+
+                        Nothing ->
+                            DropdownOptions (OptionList.take maxNumberOfDropdownItems optionList)
+
+            OutputStyle.NoLimitToDropdownItems ->
+                DropdownOptions optionsThatCouldBeShown
 
 
 figureOutWhichOptionsToShowInTheDropdownThatAreNotSelected : SelectionConfig -> OptionList -> DropdownOptions
@@ -231,6 +240,19 @@ getOptions dropdownOptions =
         DropdownOptionsThatAreNotSelected options ->
             options
 
+        DropdownOptionsAreAllSelected options ->
+            OptionList.unselectedOptions options
+
+
+isAllSelected : DropdownOptions -> Bool
+isAllSelected dropdownOptions =
+    case dropdownOptions of
+        DropdownOptionsAreAllSelected _ ->
+            True
+
+        _ ->
+            False
+
 
 isEmpty : DropdownOptions -> Bool
 isEmpty dropdownOptions =
@@ -293,6 +315,11 @@ maybeFirstOptionSearchFilter dropdownOptions =
 
         DropdownOptionsThatAreNotSelected options ->
             OptionList.head options
+                |> Maybe.andThen Option.getMaybeOptionSearchFilter
+
+        DropdownOptionsAreAllSelected options ->
+            OptionList.unselectedOptions options
+                |> OptionList.head
                 |> Maybe.andThen Option.getMaybeOptionSearchFilter
 
 
@@ -387,6 +414,9 @@ optionsToCustomHtml dropdownItemEventListeners selectionConfig dropdownOptions =
 
         DropdownOptionsThatAreNotSelected options ->
             OptionList.andMap (optionToCustomHtml dropdownItemEventListeners selectionConfig) options
+
+        DropdownOptionsAreAllSelected _ ->
+            []
 
 
 valueDataAttribute : Option -> Html.Attribute msg

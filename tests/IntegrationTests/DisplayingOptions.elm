@@ -165,6 +165,98 @@ flagsBookOptionsWithSelected =
     }
 
 
+flagsBookOptionsAllSelectedInMultiSelect : Flags
+flagsBookOptionsAllSelectedInMultiSelect =
+    { isEventsOnly = False
+    , selectedValue = "The Enormous Crocodile,James and the Giant Peach,Matilda,The BFG"
+    , selectedValueEncoding = Nothing
+    , placeholder = ( True, "A book" )
+    , customOptionHint = Nothing
+    , allowMultiSelect = True
+    , outputStyle = "customHtml"
+    , enableMultiSelectSingleItemRemoval = False
+    , optionsJson = booksJsonWithIndexes
+    , optionSort = ""
+    , loading = False
+    , maxDropdownItems = Just "10"
+    , disabled = False
+    , allowCustomOptions = False
+    , selectedItemStaysInPlace = True
+    , searchStringMinimumLength = Nothing
+    , showDropdownFooter = False
+    , transformationAndValidationJson = ""
+    }
+
+
+flagsBookOptionsAllSelectedInMultiSelectJson : Flags
+flagsBookOptionsAllSelectedInMultiSelectJson =
+    { isEventsOnly = False
+    , selectedValue = "%5B%22The%20Enormous%20Crocodile%22%2C%22James%20and%20the%20Giant%20Peach%22%2C%22Matilda%22%2C%22The%20BFG%22%5D"
+    , selectedValueEncoding = Just "json"
+    , placeholder = ( True, "A book" )
+    , customOptionHint = Nothing
+    , allowMultiSelect = True
+    , outputStyle = "customHtml"
+    , enableMultiSelectSingleItemRemoval = False
+    , optionsJson = booksJsonWithIndexes
+    , optionSort = ""
+    , loading = False
+    , maxDropdownItems = Just "10"
+    , disabled = False
+    , allowCustomOptions = False
+    , selectedItemStaysInPlace = True
+    , searchStringMinimumLength = Nothing
+    , showDropdownFooter = False
+    , transformationAndValidationJson = ""
+    }
+
+
+flagsBookOptionsPartiallySelectedInMultiSelect : Flags
+flagsBookOptionsPartiallySelectedInMultiSelect =
+    { isEventsOnly = False
+    , selectedValue = "The Enormous Crocodile,James and the Giant Peach"
+    , selectedValueEncoding = Nothing
+    , placeholder = ( True, "A book" )
+    , customOptionHint = Nothing
+    , allowMultiSelect = True
+    , outputStyle = "customHtml"
+    , enableMultiSelectSingleItemRemoval = False
+    , optionsJson = booksJsonWithIndexes
+    , optionSort = ""
+    , loading = False
+    , maxDropdownItems = Just "10"
+    , disabled = False
+    , allowCustomOptions = False
+    , selectedItemStaysInPlace = True
+    , searchStringMinimumLength = Nothing
+    , showDropdownFooter = False
+    , transformationAndValidationJson = ""
+    }
+
+
+flagsEmptyOptionsInMultiSelect : Flags
+flagsEmptyOptionsInMultiSelect =
+    { isEventsOnly = False
+    , selectedValue = ""
+    , selectedValueEncoding = Nothing
+    , placeholder = ( True, "A book" )
+    , customOptionHint = Nothing
+    , allowMultiSelect = True
+    , outputStyle = "customHtml"
+    , enableMultiSelectSingleItemRemoval = False
+    , optionsJson = "[]"
+    , optionSort = ""
+    , loading = False
+    , maxDropdownItems = Just "10"
+    , disabled = False
+    , allowCustomOptions = False
+    , selectedItemStaysInPlace = True
+    , searchStringMinimumLength = Nothing
+    , showDropdownFooter = False
+    , transformationAndValidationJson = ""
+    }
+
+
 element =
     ProgramTest.createElement
         { init = MuchSelect.init
@@ -224,6 +316,42 @@ suite =
                                 [ text "Matilda" ]
                             |> expectViewHas
                                 [ text "The BFG" ]
+                ]
+            , describe "with all options selected in multi-select mode"
+                [ test "show a specific message that explains why the dropdown is empty" <|
+                    \_ ->
+                        start flagsBookOptionsAllSelectedInMultiSelect
+                            |> ensureViewHasNot
+                                [ text "No available options" ]
+                            |> expectViewHas
+                                [ text "All options are selected" ]
+                , test "show the same message when selected-value is JSON encoded" <|
+                    \_ ->
+                        start flagsBookOptionsAllSelectedInMultiSelectJson
+                            |> ensureViewHasNot
+                                [ text "No available options" ]
+                            |> expectViewHas
+                                [ text "All options are selected" ]
+                ]
+            , describe "with some options still unselected in multi-select mode"
+                [ test "show remaining options instead of the all-selected message" <|
+                    \_ ->
+                        start flagsBookOptionsPartiallySelectedInMultiSelect
+                            |> ensureViewHas
+                                [ text "Matilda" ]
+                            |> ensureViewHas
+                                [ text "The BFG" ]
+                            |> expectViewHasNot
+                                [ text "All options are selected" ]
+                ]
+            , describe "with no options in multi-select mode"
+                [ test "show the generic empty message and not the all-selected message" <|
+                    \_ ->
+                        start flagsEmptyOptionsInMultiSelect
+                            |> ensureViewHas
+                                [ text "No available options" ]
+                            |> expectViewHasNot
+                                [ text "All options are selected" ]
                 ]
             ]
         ]

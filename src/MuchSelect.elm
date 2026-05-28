@@ -3046,8 +3046,19 @@ customHtmlDropdown selectionMode options (ValueCasing valueCasingWidth valueCasi
     let
         optionsHtml : List (Html Msg)
         optionsHtml =
+            if DropdownOptions.isAllSelected optionsForTheDropdown then
+                [ div
+                    [ class "option disabled no-options"
+                    , PartAttribute.part "dropdown-message"
+                    ]
+                    [ node "slot" [ name "no-options" ] [ text "All options are selected" ] ]
+                ]
+
+            else
             -- TODO We should probably do something different if we are in a loading state
-            if DropdownOptions.isEmpty optionsForTheDropdown then
+            if
+                DropdownOptions.isEmpty optionsForTheDropdown
+            then
                 [ div
                     [ class "option disabled no-options"
                     , PartAttribute.part "dropdown-message"

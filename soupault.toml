@@ -390,6 +390,11 @@ widget = "include"
 file = "examples/multi-select.html"
 selector = ".example #multi-select"
 
+[widgets.multi-select-all-options-selected]
+widget = "include"
+file = "examples/multi-select-all-options-selected.html"
+selector = ".example #multi-select-all-options-selected"
+
 [widgets.no-value-no-options]
 widget = "include"
 file = "examples/no-value-no-options.html"
@@ -605,4 +610,3 @@ selector = ".example #validation-and-transformation-slot-single-custom-html"
 widget = "include"
 file = "examples/validation-and-transformation-slot-single-datalist.html"
 selector = ".example #validation-and-transformation-slot-single-datalist"
-
