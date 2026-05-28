@@ -270,3 +270,21 @@ Add a progress checklist (can be this file or a separate tracking file):
   - `tests/Examples/SelectMultipleOptionsInAMultiMuchSelect.elm`
   - `tests/Examples/UpdateOptionsAddOptionsToAMuchSelect.elm`
   - `tests/Examples/UpdateOptionsAddOptionsToAnEmptyMuchSelect.elm`
+- [x] Implemented third Phase 2 batch (items 11-15) with real program-test assertions:
+  - `tests/Examples/ChangeTheOptionsWithTheDom.elm`
+  - `tests/Examples/AnInitialValue.elm`
+  - `tests/Examples/AnInitialValueWithNoOptions.elm`
+  - `tests/Examples/NoValueNoOptions.elm`
+  - `tests/Examples/EmptyOption.elm`
+- [x] Implemented fourth Phase 2 batch (items 16-20) with real program-test assertions:
+  - `tests/Examples/OneEmptyOptionWithALabel.elm`
+  - `tests/Examples/EmptyOptionWithLabelAndOtherOptions.elm`
+  - `tests/Examples/EmptyOptionWithLabelAndOtherOptions2.elm`
+  - `tests/Examples/EmptyOptionsMultiSelect.elm`
+  - `tests/Examples/MultiSelectAllOptionsSelected.elm`
+- [x] Implemented fifth Phase 2 batch (items 21-25) with real program-test assertions:
+  - `tests/Examples/MultiSelectBlurOrUnfocusedValueChange.elm`
+  - `tests/Examples/SingleSelectBlurOrUnfocusedValueChange.elm`
+  - `tests/Examples/SingleSelectJsonSeperatedValues.elm`
+  - `tests/Examples/MultiSelectCommaSeperatedValues.elm`
+  - `tests/Examples/MultiSelectJsonSeperatedValues.elm`
