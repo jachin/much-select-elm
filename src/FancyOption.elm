@@ -629,8 +629,6 @@ toMultiSelectValueHtml toggleSelectedMsg deselectOptionInternal enableSingleItem
                 OptionShown _ ->
                     Html.Extra.nothing
 
-                OptionHidden ->
-                    Html.Extra.nothing
 
                 OptionSelected _ _ ->
                     div
@@ -678,8 +676,6 @@ toMultiSelectValueHtml toggleSelectedMsg deselectOptionInternal enableSingleItem
                 OptionShown _ ->
                     Html.Extra.nothing
 
-                OptionHidden ->
-                    Html.Extra.nothing
 
                 OptionSelected _ _ ->
                     div
@@ -718,8 +714,6 @@ toMultiSelectValueHtml toggleSelectedMsg deselectOptionInternal enableSingleItem
                 OptionShown _ ->
                     Html.Extra.nothing
 
-                OptionHidden ->
-                    Html.Extra.nothing
 
                 OptionSelected _ _ ->
                     div
@@ -818,8 +812,6 @@ toDropdownHtml eventHandlers selectionMode option =
                 ]
                 [ labelHtml option, descriptionHtml option ]
 
-        OptionHidden ->
-            Html.Extra.nothing
 
         OptionSelected _ _ ->
             case selectionMode of

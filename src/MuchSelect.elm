@@ -187,7 +187,7 @@ type Effect
     | BlurInput
     | InputHasBeenFocused
     | InputHasBeenBlurred
-    | InputHasBeenKeyUp String TransformAndValidate.ValidationStatus
+    | InputHasBeenKeyUp String
     | SearchStringTouched Float
     | UpdateOptionsInWebWorker
     | SearchOptionsWithWebWorker Json.Decode.Value
@@ -493,7 +493,7 @@ update msg model =
                 , searchStringNonce = model.searchStringNonce + 1
               }
             , batch
-                [ InputHasBeenKeyUp searchString TransformAndValidate.InputValidationIsNotHappening
+                [ InputHasBeenKeyUp searchString
                 , SearchStringTouched model.searchStringDebounceLength
                 ]
             )
@@ -534,7 +534,7 @@ update msg model =
                             (SelectionMode.getSelectionMode model.selectionConfig)
                             model.selectedValueEncoding
                             (updatedOptions |> OptionList.selectedOptions |> OptionList.cleanupEmptySelectedOptions)
-                        , InputHasBeenKeyUp valueString TransformAndValidate.InputHasBeenValidated
+                        , InputHasBeenKeyUp valueString
                         ]
                     )
 
@@ -562,11 +562,11 @@ update msg model =
                             (SelectionMode.getSelectionMode model.selectionConfig)
                             model.selectedValueEncoding
                             (updatedOptions |> OptionList.selectedOptions |> OptionList.cleanupEmptySelectedOptions)
-                        , InputHasBeenKeyUp valueString TransformAndValidate.InputHasFailedValidation
+                        , InputHasBeenKeyUp valueString
                         ]
                     )
 
-                TransformAndValidate.ValidationPending _ _ ->
+                TransformAndValidate.ValidationPending _ ->
                     let
                         updatedOptions =
                             OptionList.updateDatalistOptionsWithPendingValidation
@@ -589,7 +589,7 @@ update msg model =
                             (SelectionMode.getSelectionMode model.selectionConfig)
                             model.selectedValueEncoding
                             (updatedOptions |> OptionList.selectedOptions |> OptionList.cleanupEmptySelectedOptions)
-                        , InputHasBeenKeyUp valueString TransformAndValidate.InputHasValidationPending
+                        , InputHasBeenKeyUp valueString
                         ]
                     )
 
@@ -1347,7 +1347,7 @@ update msg model =
                                 (updatedOptions |> OptionList.selectedOptions |> OptionList.cleanupEmptySelectedOptions)
                             )
 
-                        TransformAndValidate.ValidationPending _ _ ->
+                        TransformAndValidate.ValidationPending _ ->
                             ( model, ReportErrorMessage "We should not end up with a validation pending state on a second pass." )
 
                 Err error ->
@@ -1926,7 +1926,7 @@ perform effect =
         InputHasBeenFocused ->
             inputFocused ()
 
-        InputHasBeenKeyUp string _ ->
+        InputHasBeenKeyUp string ->
             inputKeyUp string
 
         UpdateOptionsInWebWorker ->
@@ -3799,7 +3799,7 @@ effectToDebuggingString effect =
         InputHasBeenBlurred ->
             "InputHasBeenBlurred"
 
-        InputHasBeenKeyUp _ _ ->
+        InputHasBeenKeyUp _ ->
             "InputHasBeenKeyUp"
 
         SearchStringTouched _ ->

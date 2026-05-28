@@ -84,7 +84,7 @@ simulatedEffects effect =
         MuchSelect.InputHasBeenBlurred ->
             SimulatedEffect.Ports.send "inputBlurred" (Json.Encode.object [])
 
-        MuchSelect.InputHasBeenKeyUp string _ ->
+        MuchSelect.InputHasBeenKeyUp string ->
             SimulatedEffect.Ports.send "inputKeyUp" (Json.Encode.string string)
 
         MuchSelect.SearchStringTouched _ ->

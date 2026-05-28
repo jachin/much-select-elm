@@ -118,15 +118,15 @@ type alias DemoOption =
 type Msg
     = MuchSelectReady
     | ValueChanged (List MuchSelectValue)
-    | InvalidValueChanged (List MuchSelectValue)
+    | InvalidValueChanged
     | ValueCleared
     | OptionSelected
-    | BlurOrUnfocusedValueChanged String
+    | BlurOrUnfocusedValueChanged
     | InputKeyUpDebounced String
-    | InputKeyUp String
+    | InputKeyUp
     | OptionsUpdated
     | OptionDeselected
-    | CustomValueSelected String
+    | CustomValueSelected
     | CustomValidationRequest String Int
     | ToggleAllowCustomValues
     | ToggleMultiSelect
@@ -186,13 +186,13 @@ update msg model =
         ValueChanged selectedValues ->
             ( { model | selectedValues = selectedValues }, Cmd.none )
 
-        InvalidValueChanged _ ->
+        InvalidValueChanged ->
             ( model, Cmd.none )
 
         ValueCleared ->
             ( model, Cmd.none )
 
-        BlurOrUnfocusedValueChanged _ ->
+        BlurOrUnfocusedValueChanged ->
             ( model, Cmd.none )
 
         InputKeyUpDebounced searchString ->
@@ -234,10 +234,10 @@ update msg model =
         OptionsUpdated ->
             ( model, Cmd.none )
 
-        InputKeyUp _ ->
+        InputKeyUp ->
             ( model, Cmd.none )
 
-        CustomValueSelected _ ->
+        CustomValueSelected ->
             ( model, Cmd.none )
 
         CustomValidationRequest string int ->
@@ -359,11 +359,7 @@ onInputKeyupDebounced =
 onInputKeyUp : Attribute Msg
 onInputKeyUp =
     on "inputKeyUp"
-        (Json.Decode.at
-            [ "detail", "searchString" ]
-            Json.Decode.string
-            |> Json.Decode.map InputKeyUp
-        )
+        (Json.Decode.succeed InputKeyUp)
 
 
 onReady : Attribute Msg
@@ -394,7 +390,7 @@ onValueChanged =
 
 onInvalidValueChanged : Attribute Msg
 onInvalidValueChanged =
-    on "invalidValueChange" (Json.Decode.map InvalidValueChanged (Json.Decode.at [ "detail", "values" ] (Json.Decode.list valueDecoder)))
+    on "invalidValueChange" (Json.Decode.succeed InvalidValueChanged)
 
 
 onValueCleared : Attribute Msg
@@ -410,11 +406,7 @@ onOptionSelected =
 onCustomValueSelected : Attribute Msg
 onCustomValueSelected =
     on "customValueSelected"
-        (Json.Decode.at
-            [ "detail", "value" ]
-            Json.Decode.string
-            |> Json.Decode.map CustomValueSelected
-        )
+        (Json.Decode.succeed CustomValueSelected)
 
 
 onOptionDeselected : Attribute Msg
@@ -425,11 +417,7 @@ onOptionDeselected =
 onBlurOrUnfocusedValueChanged : Attribute Msg
 onBlurOrUnfocusedValueChanged =
     on "blurOrUnfocusedValueChanged"
-        (Json.Decode.map BlurOrUnfocusedValueChanged
-            (Json.Decode.at [ "detail", "value" ]
-                Json.Decode.string
-            )
-        )
+        (Json.Decode.succeed BlurOrUnfocusedValueChanged)
 
 
 onOptionsUpdated : Attribute Msg
@@ -526,10 +514,6 @@ disabledAttribute bool =
 view : Model -> Html Msg
 view model =
     let
-        transformers =
-            [-- Lowercase
-            ]
-
         validators =
             List.filterMap
                 (\( shouldInclude, validator ) ->
@@ -571,7 +555,7 @@ view model =
                 [ slot "transformation-validation"
                 , type_ "application/json"
                 ]
-                [ text (Json.Encode.encode 0 (encode transformers validators)) ]
+                [ text (Json.Encode.encode 0 (encode validators)) ]
             , case model.customValidationResult of
                 NothingToValidate ->
                     text ""
@@ -957,10 +941,6 @@ optionsHtml optionDemo knownOptions =
                 knownOptions
 
 
-type Transformer
-    = Lowercase
-
-
 type Validator
     = NoWhiteSpace ValidatorLevel String
     | MinimumLength ValidatorLevel String Int
@@ -976,19 +956,12 @@ type ValidationResult
     | ValidationFailed String Int (List ( String, String ))
 
 
-encode : List Transformer -> List Validator -> Json.Encode.Value
-encode transformers validators =
+encode : List Validator -> Json.Encode.Value
+encode validators =
     Json.Encode.object
-        [ ( "transformers", Json.Encode.list encodeTransformer transformers )
+        [ ( "transformers", Json.Encode.list identity [] )
         , ( "validators", Json.Encode.list encodeValidator validators )
         ]
-
-
-encodeTransformer : Transformer -> Json.Encode.Value
-encodeTransformer transformer =
-    case transformer of
-        Lowercase ->
-            Json.Encode.object [ ( "name", Json.Encode.string "lowercase" ) ]
 
 
 encodeValidator : Validator -> Json.Encode.Value

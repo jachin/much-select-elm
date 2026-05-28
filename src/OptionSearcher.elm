@@ -155,7 +155,7 @@ updateOrAddCustomOption searchString selectionMode options =
                             TransformAndValidate.ValidationFailed _ _ _ ->
                                 ( False, searchString )
 
-                            TransformAndValidate.ValidationPending _ _ ->
+                            TransformAndValidate.ValidationPending _ ->
                                 ( False, searchString )
 
                     NoCustomOptions ->

@@ -32,7 +32,6 @@ import TransformAndValidate exposing (ValidationFailureMessage)
 
 type OptionDisplay
     = OptionShown OptionAge
-    | OptionHidden
     | OptionSelected Int OptionAge
     | OptionSelectedAndInvalid Int (List ValidationFailureMessage)
     | OptionSelectedPendingValidation Int
@@ -78,9 +77,6 @@ isSelected optionDisplay =
         OptionShown _ ->
             False
 
-        OptionHidden ->
-            False
-
         OptionSelected _ _ ->
             True
 
@@ -107,9 +103,6 @@ setSelectedIndex : Int -> OptionDisplay -> OptionDisplay
 setSelectedIndex selectedIndex optionDisplay =
     case optionDisplay of
         OptionShown _ ->
-            optionDisplay
-
-        OptionHidden ->
             optionDisplay
 
         OptionSelected _ age ->
@@ -140,9 +133,6 @@ getSelectedIndex optionDisplay =
         OptionShown _ ->
             -1
 
-        OptionHidden ->
-            -1
-
         OptionSelected int _ ->
             int
 
@@ -171,9 +161,6 @@ select selectedIndex optionDisplay =
         OptionShown age ->
             OptionSelected selectedIndex age
 
-        OptionHidden ->
-            OptionSelected selectedIndex MatureOption
-
         OptionSelected _ age ->
             OptionSelected selectedIndex age
 
@@ -200,9 +187,6 @@ deselect : OptionDisplay -> OptionDisplay
 deselect optionDisplay =
     case optionDisplay of
         OptionShown _ ->
-            optionDisplay
-
-        OptionHidden ->
             optionDisplay
 
         OptionSelected _ age ->
@@ -233,9 +217,6 @@ addHighlight optionDisplay =
         OptionShown _ ->
             OptionHighlighted
 
-        OptionHidden ->
-            optionDisplay
-
         OptionSelected selectedIndex _ ->
             OptionSelectedHighlighted selectedIndex
 
@@ -262,9 +243,6 @@ removeHighlight : OptionDisplay -> OptionDisplay
 removeHighlight optionDisplay =
     case optionDisplay of
         OptionShown _ ->
-            optionDisplay
-
-        OptionHidden ->
             optionDisplay
 
         OptionSelected _ _ ->
@@ -295,9 +273,6 @@ isHighlighted optionDisplay =
         OptionShown _ ->
             False
 
-        OptionHidden ->
-            False
-
         OptionSelected _ _ ->
             False
 
@@ -325,9 +300,6 @@ isHighlightable selectionMode optionDisplay =
     case optionDisplay of
         OptionShown _ ->
             True
-
-        OptionHidden ->
-            False
 
         OptionSelected _ _ ->
             case selectionMode of
@@ -362,9 +334,6 @@ isHighlightedSelected optionDisplay =
         OptionShown _ ->
             False
 
-        OptionHidden ->
-            False
-
         OptionSelected _ _ ->
             False
 
@@ -391,9 +360,6 @@ setErrors : List ValidationFailureMessage -> OptionDisplay -> OptionDisplay
 setErrors validationErrorMessages optionDisplay =
     case optionDisplay of
         OptionShown _ ->
-            optionDisplay
-
-        OptionHidden ->
             optionDisplay
 
         OptionSelected selectedIndex _ ->
@@ -432,9 +398,6 @@ getErrors optionDisplay =
         OptionShown _ ->
             []
 
-        OptionHidden ->
-            []
-
         OptionSelected _ _ ->
             []
 
@@ -461,9 +424,6 @@ isInvalid : OptionDisplay -> Bool
 isInvalid optionDisplay =
     case optionDisplay of
         OptionShown _ ->
-            False
-
-        OptionHidden ->
             False
 
         OptionSelected _ _ ->
@@ -494,9 +454,6 @@ isPendingValidation optionDisplay =
         OptionShown _ ->
             False
 
-        OptionHidden ->
-            False
-
         OptionSelected _ _ ->
             False
 
@@ -525,9 +482,6 @@ setAge optionAge optionDisplay =
         OptionShown _ ->
             OptionShown optionAge
 
-        OptionHidden ->
-            optionDisplay
-
         OptionSelected int _ ->
             OptionSelected int optionAge
 
@@ -554,9 +508,6 @@ activate : OptionDisplay -> OptionDisplay
 activate optionDisplay =
     case optionDisplay of
         OptionShown _ ->
-            optionDisplay
-
-        OptionHidden ->
             optionDisplay
 
         OptionSelected _ _ ->

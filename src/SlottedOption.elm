@@ -175,9 +175,6 @@ toValueHtml toggleSelectedMsg deselectOptionInternal enableSingleItemRemoval opt
                 OptionShown _ ->
                     text ""
 
-                OptionHidden ->
-                    text ""
-
                 OptionSelected _ _ ->
                     div
                         [ class "value"
