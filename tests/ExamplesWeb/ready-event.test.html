@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+<script type="module">
+  import { runTests } from "@web/test-runner-mocha";
+  import { expect } from "@esm-bundle/chai";
+  import { html, fixture, oneEvent } from "@open-wc/testing";
+
+  import MuchSelect from "../../dist/much-select-debug.js";
+
+  if (!customElements.get("much-select")) {
+    window.customElements.define("much-select", MuchSelect);
+  }
+
+  runTests(() => {
+    describe("ExamplesWeb", () => {
+      describe("ready-event", () => {
+        it("fires muchSelectReady when mounted", async () => {
+          const el = /** @type {MuchSelect} */ await fixture(
+            html`<much-select>
+              <select slot="select-input">
+                <option>Dogbert</option>
+                <option>Dilbert</option>
+              </select>
+            </much-select>`,
+          );
+
+          const readyEvent = await oneEvent(el, "muchSelectReady");
+          expect(readyEvent).to.exist;
+          expect(await el.isReady()).to.be.true;
+        });
+
+        it("also fires the ready event for compatibility", async () => {
+          const el = /** @type {MuchSelect} */ await fixture(
+            html`<much-select>
+              <select slot="select-input">
+                <option>Catbert</option>
+              </select>
+            </much-select>`,
+          );
+
+          const readyEvent = await oneEvent(el, "ready");
+          expect(readyEvent).to.exist;
+          expect(readyEvent.bubbles).to.be.true;
+        });
+
+        it("a replacement element emits muchSelectReady again", async () => {
+          const container = await fixture(
+            html`<div>
+              <much-select>
+                <select slot="select-input">
+                  <option>Bob the Dinosaur</option>
+                </select>
+              </much-select>
+            </div>`,
+          );
+
+          const first = container.querySelector("much-select");
+          await oneEvent(first, "muchSelectReady");
+
+          const replacement = document.createElement("much-select");
+          const replacementReady = oneEvent(replacement, "muchSelectReady");
+          first.replaceWith(replacement);
+
+          const evt = await replacementReady;
+          expect(evt).to.exist;
+        });
+      });
+    });
+  });
+</script>
+</body>
+</html>
