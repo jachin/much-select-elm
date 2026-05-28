@@ -165,6 +165,29 @@ flagsBookOptionsWithSelected =
     }
 
 
+flagsBookOptionsAllSelectedInMultiSelect : Flags
+flagsBookOptionsAllSelectedInMultiSelect =
+    { isEventsOnly = False
+    , selectedValue = "The Enormous Crocodile,James and the Giant Peach,Matilda,The BFG"
+    , selectedValueEncoding = Nothing
+    , placeholder = ( True, "A book" )
+    , customOptionHint = Nothing
+    , allowMultiSelect = True
+    , outputStyle = "customHtml"
+    , enableMultiSelectSingleItemRemoval = False
+    , optionsJson = booksJsonWithIndexes
+    , optionSort = ""
+    , loading = False
+    , maxDropdownItems = Just "10"
+    , disabled = False
+    , allowCustomOptions = False
+    , selectedItemStaysInPlace = True
+    , searchStringMinimumLength = Nothing
+    , showDropdownFooter = False
+    , transformationAndValidationJson = ""
+    }
+
+
 element =
     ProgramTest.createElement
         { init = MuchSelect.init
@@ -224,6 +247,15 @@ suite =
                                 [ text "Matilda" ]
                             |> expectViewHas
                                 [ text "The BFG" ]
+                ]
+            , describe "with all options selected in multi-select mode"
+                [ test "show a specific message that explains why the dropdown is empty" <|
+                    \_ ->
+                        start flagsBookOptionsAllSelectedInMultiSelect
+                            |> ensureViewHasNot
+                                [ text "No available options" ]
+                            |> expectViewHas
+                                [ text "All options are selected" ]
                 ]
             ]
         ]
