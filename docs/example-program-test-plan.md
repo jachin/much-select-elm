@@ -258,3 +258,15 @@ Add a progress checklist (can be this file or a separate tracking file):
 - [x] Scaffolded all 38 Phase 1 modules with compiling placeholder `suite` tests
 - [x] Replaced placeholder tests with real program-test assertions for all 38 Phase 1 examples
 - [x] Implemented real program-test assertions for all Phase 1 suites (no remaining `TODO:` in `tests/Examples/*.elm`)
+- [x] Implemented first 5 Phase 2 example suites with real program-test assertions:
+  - `tests/Examples/AddOptionToAMuchSelect.elm`
+  - `tests/Examples/AddOptionsIncludingTheSelectedValue.elm`
+  - `tests/Examples/AddOptionsNotIncludingTheSelectedValue.elm`
+  - `tests/Examples/AddOptionsToAMultiSelectNotIncludingTheSelectedValue.elm`
+  - `tests/Examples/AddPossibleDuplicateOptionToAMuchSelect.elm`
+- [x] Implemented second Phase 2 batch (items 6-10) with real program-test assertions:
+  - `tests/Examples/RemoveAnOptionFromAMuchSelect.elm`
+  - `tests/Examples/SelectAndDeselectOptionFromAMuchSelect.elm`
+  - `tests/Examples/SelectMultipleOptionsInAMultiMuchSelect.elm`
+  - `tests/Examples/UpdateOptionsAddOptionsToAMuchSelect.elm`
+  - `tests/Examples/UpdateOptionsAddOptionsToAnEmptyMuchSelect.elm`
