@@ -7,6 +7,7 @@ export default [
     ignores: [
       "dist/",
       "build/",
+      "coverage/",
       "elm-stuff/",
       ".cache/",
       ".firebase/",
