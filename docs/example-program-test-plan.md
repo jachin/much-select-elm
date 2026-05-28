@@ -248,7 +248,7 @@ For each suite in phase order:
 Add a progress checklist (can be this file or a separate tracking file):
 
 - [x] Phase 1 complete
-- [ ] Phase 2 complete
+- [x] Phase 2 complete
 - [ ] Phase 3 complete
 - [ ] 94/94 example suites implemented
 
@@ -294,3 +294,6 @@ Add a progress checklist (can be this file or a separate tracking file):
   - `tests/Examples/OptionGroups.elm`
   - `tests/Examples/OptionsWithDescriptions.elm`
   - `tests/Examples/CustomElementOptions.elm`
+- [x] Implemented final Phase 2 batch (items 31-32) with real program-test assertions:
+  - `tests/Examples/LabelsAndValues.elm`
+  - `tests/Examples/NotJustEnglishOptions.elm`
