@@ -1,8 +1,8 @@
 # Hot files
 /build
 
-# Site
-/dist/site
+# Build artifacts
+/dist
 
 # soupault
 .soupault-cache

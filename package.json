@@ -26,13 +26,16 @@
   "scripts": {
     "start": "run-pty run-pty.json",
     "test": "elm-test",
+    "preweb-test-runner": "npm run build",
     "web-test-runner": "web-test-runner tests/**/*.test.html --node-resolve --concurrency=1",
+    "preweb-test-runner-with-coverage": "npm run build",
     "web-test-runner-with-coverage": "web-test-runner tests/**/*.test.html --coverage --node-resolve --concurrency=1",
     "build": "./scripts/build.sh",
     "build-site": "./scripts/build-site.sh",
     "build-and-test": "npm run build; npm run test; npm run web-test-runner",
     "serve": "scripts/serve-site.sh",
     "deploy-site": "npm run build && npm run build-site && firebase deploy",
+    "prepack": "npm run build",
     "lint": "eslint .",
     "format": "elm-format",
     "review": "elm-review"
