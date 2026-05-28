@@ -303,3 +303,9 @@ Add a progress checklist (can be this file or a separate tracking file):
   - `tests/Examples/OverrideTheClearButton.elm`
   - `tests/Examples/OverrideTheClearButtonWithAnSvg.elm`
   - `tests/Examples/OverrideNoOptionsSlot.elm`
+- [x] Implemented second Phase 3 batch (items 6-10):
+  - `tests/Examples/OverrideNoFilteredOptionsSlot.elm`
+  - `tests/Examples/StylingDropdownOptionsWithPart.elm`
+  - `tests/Examples/FocusOnDemand.elm`
+  - `tests/Examples/SelectedOptionWithAsyncOptions.elm`
+  - `tests/Examples/SelectedOptionWithAsyncOptionsSmall.elm`
