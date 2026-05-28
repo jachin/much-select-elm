@@ -888,7 +888,7 @@ class MuchSelect extends HTMLElement {
     } else {
       const muchSelectOptionElements =
         this.querySelectorAll("much-select-option");
-      if (muchSelectOptionElements) {
+      if (muchSelectOptionElements.length > 0) {
         const optionsJson = buildOptionsFromMuchSelectOptionElements(
           muchSelectOptionElements,
         );
