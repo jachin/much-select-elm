@@ -257,4 +257,4 @@ Add a progress checklist (can be this file or a separate tracking file):
 - [x] Created `tests/Examples/` namespace
 - [x] Scaffolded all 38 Phase 1 modules with compiling placeholder `suite` tests
 - [ ] Replace placeholder tests with real program-test assertions for each Phase 1 example
-- [x] Implemented first real program-test assertions for 10 Phase 1 suites (`SimpleExample`, `MultiSelect`, `SelectedValue`, `OutputStyleDatalist`, `SearchKeyboardEvents`, `Placeholder`, `DisabledMuchSelect`, `DisabledOptions`, `ShowDropdownFooter`, `ReadyEvent`)
+- [x] Implemented first real program-test assertions for 20 Phase 1 suites (`SimpleExample`, `MultiSelect`, `SelectedValue`, `OutputStyleDatalist`, `SearchKeyboardEvents`, `Placeholder`, `DisabledMuchSelect`, `DisabledOptions`, `ShowDropdownFooter`, `ReadyEvent`, `AllowCustomOptions`, `MinimumSearchStringLength`, `MaxDropdownItems`, `OutputStyleDatalistMultiSelect`, `SingleSelectValueChangedEvent`, `MultiSelectValueChangedEvent`, `DatalistSingleSelectValueChangedEvent`, `DatalistMultiSelectValueChangedEvent`, `SingleSelectOptionSelectedEvent`, `SingleSelectOptionDeselectedEvent`)
