@@ -1,10 +1,8 @@
 // noinspection JSFileReferences
 
-import { Elm } from "./much-select-elm.js";
-
-import getMuchSelectTemplate from "./much-select-template.js";
-
 import asciiFold from "./ascii-fold.js";
+import { Elm } from "./much-select-elm.js";
+import getMuchSelectTemplate from "./much-select-template.js";
 
 /**
  * Dasherize a string.
@@ -1052,7 +1050,7 @@ class MuchSelect extends HTMLElement {
     }
 
     if (this.hasAttribute("selected-value")) {
-      if (selectElement && selectElement.querySelector("option[selected]")) {
+      if (selectElement?.querySelector("option[selected]")) {
         throw new Error(
           "MuchSelect does not support using the selected-value attribute and selected options in the selected-value slot.",
         );
