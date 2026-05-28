@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <script type="module">
+      import { runTests } from "@web/test-runner-mocha";
+      import { expect } from "@esm-bundle/chai";
+      import { html, fixture, oneEvent, waitUntil } from "@open-wc/testing";
+
+      import MuchSelect from "../../dist/much-select-debug.js";
+
+      if (!customElements.get("much-select")) {
+        window.customElements.define("much-select", MuchSelect);
+      }
+
+      runTests(() => {
+        describe("ExamplesWeb", () => {
+          describe("add-options-including-the-selected-value", () => {
+            it("starts with selected value even when options are initially empty", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select selected-value="Coffee"></much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+              expect(await el.selectedValue).to.equal("Coffee");
+            });
+
+            it("keeps selected value after adding DOM options including that value", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select selected-value="Coffee"></much-select>`,
+              );
+              await oneEvent(el, "muchSelectReady");
+
+              el.innerHTML = `
+                <select slot="select-input">
+                  <option value="Coffee">Coffee</option>
+                  <option value="Tea">Tea</option>
+                  <option value="Water">Water</option>
+                  <option value="Soda">Soda</option>
+                </select>
+              `;
+
+              await waitUntil(async () => {
+                const options = await el.getAllOptions();
+                return options.some((o) => o.value === "Tea");
+              }, "Expected added DOM options to appear");
+
+              expect(await el.selectedValue).to.equal("Coffee");
+            });
+
+            it("does not duplicate selected option when matching option is added", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select selected-value="Coffee"></much-select>`,
+              );
+              await oneEvent(el, "muchSelectReady");
+
+              el.innerHTML = `
+                <select slot="select-input">
+                  <option value="Coffee">Coffee</option>
+                  <option value="Tea">Tea</option>
+                </select>
+              `;
+
+              await waitUntil(async () => {
+                const options = await el.getAllOptions();
+                return options.length >= 2;
+              }, "Expected replaced options to be available");
+
+              const options = await el.getAllOptions();
+              const coffees = options.filter((o) => o.value === "Coffee");
+              expect(coffees).to.have.lengthOf(1);
+            });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

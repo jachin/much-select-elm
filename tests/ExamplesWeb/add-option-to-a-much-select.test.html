@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <script type="module">
+      import { runTests } from "@web/test-runner-mocha";
+      import { expect } from "@esm-bundle/chai";
+      import { html, fixture, oneEvent, waitUntil } from "@open-wc/testing";
+
+      import MuchSelect from "../../dist/much-select-debug.js";
+
+      if (!customElements.get("much-select")) {
+        window.customElements.define("much-select", MuchSelect);
+      }
+
+      runTests(() => {
+        describe("ExamplesWeb", () => {
+          describe("add-option-to-a-much-select", () => {
+            it("addOption appends a single option", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select></much-select>`,
+              );
+              await oneEvent(el, "muchSelectReady");
+
+              el.addOption({ value: 1234 });
+
+              await waitUntil(async () => {
+                const options = await el.getAllOptions();
+                return options.some((o) => o.value === "1234");
+              }, "Expected addOption to append a new option");
+            });
+
+            it("multiple addOption calls append multiple values", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select></much-select>`,
+              );
+              await oneEvent(el, "muchSelectReady");
+
+              el.addOption({ value: "one" });
+              el.addOption({ value: "two" });
+              el.addOption({ value: "three" });
+
+              await waitUntil(async () => {
+                const options = await el.getAllOptions();
+                return options.length >= 3;
+              }, "Expected multiple addOption calls to append values");
+            });
+
+            it("emits optionsUpdated with optionsUpdated=true for addOption", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select></much-select>`,
+              );
+              await oneEvent(el, "muchSelectReady");
+
+              const updated = oneEvent(el, "optionsUpdated");
+              el.addOption({ value: "new-value" });
+
+              const evt = await updated;
+              expect(evt.detail.optionsUpdated).to.be.true;
+              expect(evt.detail.optionsReplaced).to.be.false;
+            });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

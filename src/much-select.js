@@ -1849,6 +1849,18 @@ class MuchSelect extends HTMLElement {
     this.updateDimensions();
   }
 
+  removeOption(option) {
+    this.removeOptions([option]);
+  }
+
+  removeOptions(options) {
+    // noinspection JSUnresolvedVariable
+    this.appPromise.then((app) =>
+      app.ports.removeOptionsReceiver.send(cleanUpOptions(options)),
+    );
+    this.updateDimensions();
+  }
+
   selectOption(option) {
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
