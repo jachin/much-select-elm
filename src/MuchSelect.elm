@@ -3044,50 +3044,63 @@ type alias DropdownItemEventListeners msg =
 customHtmlDropdown : SelectionConfig -> OptionList -> ValueCasing -> SearchStringFindResult -> DropdownOptions -> Html Msg
 customHtmlDropdown selectionMode options (ValueCasing valueCasingWidth valueCasingHeight) doesSearchStringFind optionsForTheDropdown =
     let
+        _ =
+            Debug.log "optionsForTheDropdown" optionsForTheDropdown
+
         optionsHtml : List (Html Msg)
         optionsHtml =
-            -- TODO We should probably do something different if we are in a loading state
-            if DropdownOptions.isEmpty optionsForTheDropdown then
-                [ div
-                    [ class "option disabled no-options"
-                    , PartAttribute.part "dropdown-message"
-                    ]
-                    [ node "slot" [ name "no-options" ] [ text "No available options" ] ]
-                ]
+            case optionsForTheDropdown of
 
-            else
-                case doesSearchStringFind of
-                    SearchStringFindNothing ->
-                        [ div
-                            [ class "option disabled"
-                            , PartAttribute.part "dropdown-message"
-                            ]
-                            [ node "slot" [ name "no-filtered-options" ] [ text "This filter returned no results." ] ]
-                        ]
+                DropdownOptions.DropdownOptions _ ->
+                    -- TODO We should probably do something different if we are in a loading state
+                                if DropdownOptions.isEmpty optionsForTheDropdown then
+                                    [ div
+                                        [ class "option disabled no-options"
+                                        , PartAttribute.part "dropdown-message"
+                                        ]
+                                        [ node "slot" [ name "no-options" ] [ text "No available options" ] ]
+                                    ]
 
-                    SearchStringFindSomething ->
-                        optionsForTheDropdown
-                            |> groupOptionsInOrder
-                            |> optionGroupsToHtml
-                                { mouseOverMsgConstructor = DropdownMouseOverOption
-                                , mouseOutMsgConstructor = DropdownMouseOutOption
-                                , mouseDownMsgConstructor = DropdownMouseDownOption
-                                , mouseUpMsgConstructor = DropdownMouseUpOption
-                                , noOpMsgConstructor = NoOp
-                                }
-                                selectionMode
+                                else
+                                    case doesSearchStringFind of
+                                        SearchStringFindNothing ->
+                                            [ div
+                                                [ class "option disabled"
+                                                , PartAttribute.part "dropdown-message"
+                                                ]
+                                                [ node "slot" [ name "no-filtered-options" ] [ text "This filter returned no results." ] ]
+                                            ]
 
-                    SearchStringNotEngaged ->
-                        optionsForTheDropdown
-                            |> groupOptionsInOrder
-                            |> optionGroupsToHtml
-                                { mouseOverMsgConstructor = DropdownMouseOverOption
-                                , mouseOutMsgConstructor = DropdownMouseOutOption
-                                , mouseDownMsgConstructor = DropdownMouseDownOption
-                                , mouseUpMsgConstructor = DropdownMouseUpOption
-                                , noOpMsgConstructor = NoOp
-                                }
-                                selectionMode
+                                        SearchStringFindSomething ->
+                                            optionsForTheDropdown
+                                                |> groupOptionsInOrder
+                                                |> optionGroupsToHtml
+                                                    { mouseOverMsgConstructor = DropdownMouseOverOption
+                                                    , mouseOutMsgConstructor = DropdownMouseOutOption
+                                                    , mouseDownMsgConstructor = DropdownMouseDownOption
+                                                    , mouseUpMsgConstructor = DropdownMouseUpOption
+                                                    , noOpMsgConstructor = NoOp
+                                                    }
+                                                    selectionMode
+
+                                        SearchStringNotEngaged ->
+                                            optionsForTheDropdown
+                                                |> groupOptionsInOrder
+                                                |> optionGroupsToHtml
+                                                    { mouseOverMsgConstructor = DropdownMouseOverOption
+                                                    , mouseOutMsgConstructor = DropdownMouseOutOption
+                                                    , mouseDownMsgConstructor = DropdownMouseDownOption
+                                                    , mouseUpMsgConstructor = DropdownMouseUpOption
+                                                    , noOpMsgConstructor = NoOp
+                                                    }
+                                                    selectionMode
+
+
+                DropdownOptions.DropdownOptionsThatAreNotSelected optionList ->
+
+
+                DropdownOptions.DropdownOptionsAreAllSelected optionList ->
+
 
         dropdownFooterHtml : Html msg
         dropdownFooterHtml =

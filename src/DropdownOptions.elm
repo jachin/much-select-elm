@@ -22,8 +22,12 @@ import SelectionMode exposing (SelectionConfig, getMaxDropdownItems)
 
 
 type DropdownOptions
-    = DropdownOptions OptionList
-    | DropdownOptionsThatAreNotSelected OptionList
+    = AllTheOptions OptionList
+    | FilteredOptions PositiveInt.PositiveInt OptionList
+    | FilterFoundNoOptions
+    | NoOptions
+    | OptionsThatAreNotSelected OptionList
+    | OptionsAreAllSelected
 
 
 {-| This function is responsible for figuring out which options should be shown in the dropdown.
@@ -34,64 +38,39 @@ the options that are supposed to be shown in the dropdown.
 -}
 figureOutWhichOptionsToShowInTheDropdown : SelectionConfig -> OptionList -> DropdownOptions
 figureOutWhichOptionsToShowInTheDropdown selectionConfig optionList =
-    let
-        optionsThatCouldBeShown =
-            optionList
-                |> filterOptionsToShowInDropdown selectionConfig
-                |> OptionList.sortOptionsByBestScore
+    case SelectionMode.getOutputStyle selectionConfig of
+        SelectionMode.Datalist ->
+            AllTheOptions optionList
 
-        lastIndexOfOptions =
-            OptionList.length optionsThatCouldBeShown - 1
+        SelectionMode.CustomHtml ->
+            customHtmlHelper selectionConfig optionList
+
+
+customHtmlHelper : SelectionConfig -> OptionList -> DropdownOptions
+customHtmlHelper selectionConfig optionList =
+    let
+        optionsThatCouldBeShown = filterOptionsToShowInDropdown selectionConfig optionList
     in
-    case getMaxDropdownItems selectionConfig of
-        OutputStyle.FixedMaxDropdownItems maxDropdownItems ->
-            let
-                maxNumberOfDropdownItems =
-                    PositiveInt.toInt maxDropdownItems
-            in
-            if OptionList.length optionsThatCouldBeShown <= maxNumberOfDropdownItems then
-                DropdownOptions optionsThatCouldBeShown
+    case SelectionMode.getSelectionMode selectionConfig of
+        SelectionMode.SingleSelect ->
+            case getMaxDropdownItems selectionConfig of
+                OutputStyle.FixedMaxDropdownItems maxDropdownItems ->
+                    limitTheNumberOfVisibleOptions optionList lastIndexOfOptions maxDropdownItems optionsThatCouldBeShown
+
+                OutputStyle.NoLimitToDropdownItems ->
+                    DropdownOptions optionsThatCouldBeShown
+
+        SelectionMode.MultiSelect ->
+            if OptionList.any (Option.isSelected >> not) optionList then
+                DropdownOptionsAreAllSelected optionList
 
             else
-                case OptionList.findHighlightedOrSelectedOptionIndex optionsThatCouldBeShown of
-                    Just index ->
-                        case index of
-                            0 ->
-                                DropdownOptions (OptionList.take maxNumberOfDropdownItems optionsThatCouldBeShown)
+                case getMaxDropdownItems selectionConfig of
+                    OutputStyle.FixedMaxDropdownItems maxDropdownItems ->
+                        limitTheNumberOfVisibleOptions optionList lastIndexOfOptions maxDropdownItems optionsThatCouldBeShown
 
-                            _ ->
-                                if index == OptionList.length optionsThatCouldBeShown - 1 then
-                                    DropdownOptions (OptionList.drop (OptionList.length optionList - maxNumberOfDropdownItems) optionsThatCouldBeShown)
-
-                                else
-                                    let
-                                        isEven =
-                                            modBy 2 maxNumberOfDropdownItems
-                                                == 0
-
-                                        half =
-                                            if isEven then
-                                                maxNumberOfDropdownItems // 2
-
-                                            else
-                                                (maxNumberOfDropdownItems // 2) + 1
-                                    in
-                                    if index + half > lastIndexOfOptions then
-                                        -- The "window" runs off the "tail" of the list, so just take the last options
-                                        DropdownOptions (OptionList.drop (OptionList.length optionList - maxNumberOfDropdownItems) optionsThatCouldBeShown)
-
-                                    else if index - half < 0 then
-                                        -- The "window" runs off the "head" of the list, so just take the first options
-                                        DropdownOptions (OptionList.take maxNumberOfDropdownItems optionsThatCouldBeShown)
-
-                                    else
-                                        DropdownOptions (optionList |> OptionList.drop (index + 1 - half) |> OptionList.take maxNumberOfDropdownItems)
-
-                    Nothing ->
-                        DropdownOptions (OptionList.take maxNumberOfDropdownItems optionList)
-
-        OutputStyle.NoLimitToDropdownItems ->
-            DropdownOptions optionsThatCouldBeShown
+                    OutputStyle.NoLimitToDropdownItems ->
+                        DropdownOptions optionsThatCouldBeShown
 
 
 figureOutWhichOptionsToShowInTheDropdownThatAreNotSelected : SelectionConfig -> OptionList -> DropdownOptions
@@ -103,10 +82,12 @@ figureOutWhichOptionsToShowInTheDropdownThatAreNotSelected selectionConfig optio
     DropdownOptionsThatAreNotSelected (OptionList.unselectedOptions visibleOptions)
 
 
-filterOptionsToShowInDropdown : SelectionConfig -> OptionList -> OptionList
+filterOptionsToShowInDropdown : SelectionConfig -> OptionList -> DropdownOptions
 filterOptionsToShowInDropdown selectionConfig =
-    filterOptionsToShowInDropdownByOptionDisplay selectionConfig
+    (filterOptionsToShowInDropdownByOptionDisplay selectionConfig
         >> filterOptionsToShowInDropdownBySearchScore
+    )
+        |> OptionList.sortOptionsByBestScore
 
 
 filterOptionsToShowInDropdownByOptionDisplay : SelectionConfig -> OptionList -> OptionList
@@ -114,100 +95,14 @@ filterOptionsToShowInDropdownByOptionDisplay selectionConfig =
     case SelectionMode.getSelectionMode selectionConfig of
         SelectionMode.SingleSelect ->
             OptionList.filter
-                (\option ->
-                    case Option.getOptionDisplay option of
-                        OptionShown age ->
-                            case age of
-                                OptionDisplay.NewOption ->
-                                    False
-
-                                OptionDisplay.MatureOption ->
-                                    True
-
-                        OptionHidden ->
-                            False
-
-                        OptionSelected _ age ->
-                            case age of
-                                OptionDisplay.NewOption ->
-                                    False
-
-                                OptionDisplay.MatureOption ->
-                                    True
-
-                        OptionSelectedPendingValidation _ ->
-                            True
-
-                        OptionSelectedAndInvalid _ _ ->
-                            False
-
-                        OptionSelectedHighlighted _ ->
-                            True
-
-                        OptionHighlighted ->
-                            True
-
-                        OptionDisabled age ->
-                            case age of
-                                OptionDisplay.NewOption ->
-                                    False
-
-                                OptionDisplay.MatureOption ->
-                                    True
-
-                        OptionActivated ->
-                            True
-                )
+                OptionList.singleSelectOptionDisplayFilter
 
         SelectionMode.MultiSelect ->
             OptionList.filter
-                (\option ->
-                    case Option.getOptionDisplay option of
-                        OptionShown age ->
-                            case age of
-                                OptionDisplay.NewOption ->
-                                    False
-
-                                OptionDisplay.MatureOption ->
-                                    True
-
-                        OptionHidden ->
-                            False
-
-                        OptionSelected _ age ->
-                            case age of
-                                OptionDisplay.NewOption ->
-                                    False
-
-                                OptionDisplay.MatureOption ->
-                                    True
-
-                        OptionSelectedPendingValidation _ ->
-                            True
-
-                        OptionSelectedAndInvalid _ _ ->
-                            False
-
-                        OptionSelectedHighlighted _ ->
-                            False
-
-                        OptionHighlighted ->
-                            True
-
-                        OptionDisabled age ->
-                            case age of
-                                OptionDisplay.NewOption ->
-                                    False
-
-                                OptionDisplay.MatureOption ->
-                                    True
-
-                        OptionActivated ->
-                            True
-                )
+                OptionList.multiSelectOptionDisplayFilter
 
 
-filterOptionsToShowInDropdownBySearchScore : OptionList -> OptionList
+filterOptionsToShowInDropdownBySearchScore : OptionList -> DropdownOptions
 filterOptionsToShowInDropdownBySearchScore optionList =
     case OptionList.findLowestSearchScore optionList of
         Just lowScore ->
@@ -222,6 +117,58 @@ filterOptionsToShowInDropdownBySearchScore optionList =
             optionList
 
 
+limitTheNumberOfVisibleOptions : OptionList -> PositiveInt.PositiveInt -> DropdownOptions -> DropdownOptions
+limitTheNumberOfVisibleOptions optionList maxDropdownItems dropdownOptions =
+    case dropdownOptions of
+        AllTheOptions optionsThatCouldBeShown ->
+            if PositiveInt.greaterThan maxDropdownItems (OptionList.length optionsThatCouldBeShown) then
+                    AllTheOptions optionsThatCouldBeShown
+
+                else
+                    case OptionList.findHighlightedOrSelectedOptionIndex optionsThatCouldBeShown of
+                        Just index ->
+                            case index of
+                                0 ->
+                                    FilteredOptions maxDropdownItems (OptionList.takePositiveInt maxDropdownItems optionsThatCouldBeShown)
+
+                                _ ->
+                                    if index == OptionList.length optionsThatCouldBeShown - 1 then
+                                        FilteredOptions maxDropdownItems  (OptionList.drop (OptionList.length optionList - maxDropdownItems) optionsThatCouldBeShown)
+
+                                    else
+                                        let
+                                            isEven =
+                                                modBy 2 maxNumberOfDropdownItems
+                                                    == 0
+
+                                            half =
+                                                if isEven then
+                                                    maxNumberOfDropdownItems // 2
+
+                                                else
+                                                    (maxNumberOfDropdownItems // 2) + 1
+                                        in
+                                        if index + half > lastIndexOfOptions then
+                                            -- The "window" runs off the "tail" of the list, so just take the last options
+                                            DropdownOptions (OptionList.drop (OptionList.length optionList - maxNumberOfDropdownItems) optionsThatCouldBeShown)
+
+                                        else if index - half < 0 then
+                                            -- The "window" runs off the "head" of the list, so just take the first options
+                                            DropdownOptions (OptionList.take maxNumberOfDropdownItems optionsThatCouldBeShown)
+
+                                        else
+                                            DropdownOptions (optionList |> OptionList.drop (index + 1 - half) |> OptionList.take maxNumberOfDropdownItems)
+
+                        Nothing ->
+                            DropdownOptions (OptionList.take maxNumberOfDropdownItems optionList)
+
+        FilteredOptions optionsLength optionsThatCouldBeShown ->
+
+
+
+
+
+
 getOptions : DropdownOptions -> OptionList
 getOptions dropdownOptions =
     case dropdownOptions of
@@ -229,6 +176,9 @@ getOptions dropdownOptions =
             options
 
         DropdownOptionsThatAreNotSelected options ->
+            options
+
+        DropdownOptionsAreAllSelected options ->
             options
 
 
@@ -292,6 +242,10 @@ maybeFirstOptionSearchFilter dropdownOptions =
                 |> Maybe.andThen Option.getMaybeOptionSearchFilter
 
         DropdownOptionsThatAreNotSelected options ->
+            OptionList.head options
+                |> Maybe.andThen Option.getMaybeOptionSearchFilter
+
+        DropdownOptionsAreAllSelected options ->
             OptionList.head options
                 |> Maybe.andThen Option.getMaybeOptionSearchFilter
 
@@ -387,6 +341,9 @@ optionsToCustomHtml dropdownItemEventListeners selectionConfig dropdownOptions =
 
         DropdownOptionsThatAreNotSelected options ->
             OptionList.andMap (optionToCustomHtml dropdownItemEventListeners selectionConfig) options
+
+        DropdownOptionsAreAllSelected _ ->
+            []
 
 
 valueDataAttribute : Option -> Html.Attribute msg

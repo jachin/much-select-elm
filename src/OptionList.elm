@@ -1,4 +1,4 @@
-module OptionList exposing (OptionList(..), activateOptionInListByOptionValue, addAdditionalOptionsToOptionList, addAdditionalOptionsToOptionListWithAutoSortRank, addAdditionalSelectedOptionWithStringValue, addAndSelectOptionsInOptionsListByString, addNewSelectedEmptyOptionAtIndex, all, allOptionsAreValid, andMap, any, append, appendOptions, changeHighlightedOption, changeHighlightedOptionByValue, cleanupEmptySelectedOptions, concatMap, customSelectedOptions, decoder, decoderWithAge, deselect, deselectAll, deselectAllButTheFirstSelectedOptionInList, deselectAllSelectedHighlightedOptions, deselectEveryOptionExceptOptionsInList, deselectLastSelectedOption, deselectOptionByValue, drop, encode, encodeSearchResults, filter, findByValue, findClosestHighlightableOptionGoingDown, findClosestHighlightableOptionGoingUp, findHighestAutoSortRank, findHighlightedOption, findHighlightedOptionIndex, findHighlightedOptions, findHighlightedOrSelectedOptionIndex, findLastSelectedOption, findLowestSearchScore, findOptionByValue, findSelectedOption, getOptions, hasAnyPendingValidation, hasAnyValidationErrors, hasOptionByValueString, hasSelectedHighlightedOptions, hasSelectedOption, head, highlightOption, isEmpty, isSlottedOptionList, length, map, mergeTwoListsOfOptionsPreservingSelectedOptions, optionsPlusOne, optionsValuesAsStrings, organizeNewDatalistOptions, prependCustomOption, reIndexSelectedOptions, removeOptionFromOptionListBySelectedIndex, removeOptionsFromOptionList, removeUnselectedCustomOptions, replaceOptions, selectHighlightedOption, selectOption, selectOptionByOptionValue, selectOptionByOptionValueWithIndex, selectOptionIByValueStringWithIndex, selectOptions, selectOptionsInOptionsListByString, selectSingleOption, selectSingleOptionByValue, selectedOptionValuesAreEqual, selectedOptions, setAge, sort, sortBy, sortOptionsByBestScore, take, test_newDatalistOptionList, test_newFancyOptionList, toDatalistOptionList, toggleSelectedHighlightByOptionValue, unhighlightOptionByValue, unhighlightSelectedOptions, uniqueBy, unselectedOptions, updateAge, updateDatalistOptionWithValueBySelectedValueIndex, updateDatalistOptionsWithPendingValidation, updateDatalistOptionsWithValue, updateDatalistOptionsWithValueAndErrors, updateOptionsWithNewSearchResults, updatedDatalistSelectedOptions)
+module OptionList exposing (OptionList(..), activateOptionInListByOptionValue, addAdditionalOptionsToOptionList, addAdditionalOptionsToOptionListWithAutoSortRank, addAdditionalSelectedOptionWithStringValue, addAndSelectOptionsInOptionsListByString, addNewSelectedEmptyOptionAtIndex, all, allOptionsAreValid, andMap, any, append, appendOptions, changeHighlightedOption, changeHighlightedOptionByValue, cleanupEmptySelectedOptions, concatMap, customSelectedOptions, decoder, decoderWithAge, deselect, deselectAll, deselectAllButTheFirstSelectedOptionInList, deselectAllSelectedHighlightedOptions, deselectEveryOptionExceptOptionsInList, deselectLastSelectedOption, deselectOptionByValue, drop, encode, encodeSearchResults, enforceMaxLength, filter, findByValue, findClosestHighlightableOptionGoingDown, findClosestHighlightableOptionGoingUp, findHighestAutoSortRank, findHighlightedOption, findHighlightedOptionIndex, findHighlightedOptions, findHighlightedOrSelectedOptionIndex, findLastSelectedOption, findLowestSearchScore, findOptionByValue, findSelectedOption, getOptions, hasAnyPendingValidation, hasAnyValidationErrors, hasOptionByValueString, hasSelectedHighlightedOptions, hasSelectedOption, head, highlightOption, isEmpty, isSlottedOptionList, length, map, mergeTwoListsOfOptionsPreservingSelectedOptions, multiSelectOptionDisplayFilter, optionsPlusOne, optionsValuesAsStrings, organizeNewDatalistOptions, prependCustomOption, reIndexSelectedOptions, removeOptionFromOptionListBySelectedIndex, removeOptionsFromOptionList, removeUnselectedCustomOptions, replaceOptions, selectHighlightedOption, selectOption, selectOptionByOptionValue, selectOptionByOptionValueWithIndex, selectOptionIByValueStringWithIndex, selectOptions, selectOptionsInOptionsListByString, selectSingleOption, selectSingleOptionByValue, selectedOptionValuesAreEqual, selectedOptions, setAge, singleSelectOptionDisplayFilter, sort, sortBy, sortOptionsByBestScore, take, takePositiveInt, test_newDatalistOptionList, test_newFancyOptionList, toDatalistOptionList, toggleSelectedHighlightByOptionValue, unhighlightOptionByValue, unhighlightSelectedOptions, uniqueBy, unselectedOptions, updateAge, updateDatalistOptionWithValueBySelectedValueIndex, updateDatalistOptionsWithPendingValidation, updateDatalistOptionsWithValue, updateDatalistOptionsWithValueAndErrors, updateOptionsWithNewSearchResults, updatedDatalistSelectedOptions)
 
 import DatalistOption
 import FancyOption
@@ -13,7 +13,7 @@ import OptionSearchFilter exposing (OptionSearchFilterWithValue)
 import OptionSorting exposing (OptionSort(..))
 import OptionValue exposing (OptionValue)
 import OutputStyle exposing (SelectedItemPlacementMode(..))
-import PositiveInt exposing (PositiveInt)
+import PositiveInt exposing (PositiveInt(..))
 import SearchString exposing (SearchString)
 import SelectionMode exposing (OutputStyle(..), SelectionConfig, SelectionMode(..))
 import Set
@@ -434,6 +434,11 @@ take int optionList =
                 |> SlottedOptionList
 
 
+takePositiveInt : PositiveInt -> OptionList -> OptionList
+takePositiveInt int optionList =
+    take (PositiveInt.toInt int) optionList
+
+
 drop : Int -> OptionList -> OptionList
 drop int optionList =
     case optionList of
@@ -448,6 +453,11 @@ drop int optionList =
         SlottedOptionList options ->
             List.drop int options
                 |> SlottedOptionList
+
+
+enforceMaxLength : PositiveInt -> OptionList -> OptionList
+enforceMaxLength maxLength optionList =
+    drop (length optionList - PositiveInt.toInt maxLength) optionList
 
 
 findClosestHighlightableOptionGoingUp : SelectionMode -> Int -> OptionList -> Maybe Option
@@ -1848,6 +1858,102 @@ optionTypeMatches option optionList =
 
                 _ ->
                     False
+
+
+
+-- This function determines if an option should be visible or not. This one is just for single select custom html situations.
+
+
+singleSelectOptionDisplayFilter : Option -> Bool
+singleSelectOptionDisplayFilter option =
+    case Option.getOptionDisplay option of
+        OptionDisplay.OptionShown age ->
+            case age of
+                OptionDisplay.NewOption ->
+                    False
+
+                OptionDisplay.MatureOption ->
+                    True
+
+        OptionDisplay.OptionHidden ->
+            False
+
+        OptionDisplay.OptionSelected _ age ->
+            case age of
+                OptionDisplay.NewOption ->
+                    False
+
+                OptionDisplay.MatureOption ->
+                    True
+
+        OptionDisplay.OptionSelectedPendingValidation _ ->
+            True
+
+        OptionDisplay.OptionSelectedAndInvalid _ _ ->
+            False
+
+        OptionDisplay.OptionSelectedHighlighted _ ->
+            True
+
+        OptionDisplay.OptionHighlighted ->
+            True
+
+        OptionDisplay.OptionDisabled age ->
+            case age of
+                OptionDisplay.NewOption ->
+                    False
+
+                OptionDisplay.MatureOption ->
+                    True
+
+        OptionDisplay.OptionActivated ->
+            True
+
+
+multiSelectOptionDisplayFilter : Option -> Bool
+multiSelectOptionDisplayFilter option =
+    case Option.getOptionDisplay option of
+        OptionDisplay.OptionShown age ->
+            case age of
+                OptionDisplay.NewOption ->
+                    False
+
+                OptionDisplay.MatureOption ->
+                    True
+
+        OptionDisplay.OptionHidden ->
+            False
+
+        OptionDisplay.OptionSelected _ age ->
+            case age of
+                OptionDisplay.NewOption ->
+                    False
+
+                OptionDisplay.MatureOption ->
+                    True
+
+        OptionDisplay.OptionSelectedPendingValidation _ ->
+            True
+
+        OptionDisplay.OptionSelectedAndInvalid _ _ ->
+            False
+
+        OptionDisplay.OptionSelectedHighlighted _ ->
+            False
+
+        OptionDisplay.OptionHighlighted ->
+            True
+
+        OptionDisplay.OptionDisabled age ->
+            case age of
+                OptionDisplay.NewOption ->
+                    False
+
+                OptionDisplay.MatureOption ->
+                    True
+
+        OptionDisplay.OptionActivated ->
+            True
 
 
 test_newFancyOptionList : List Option -> OptionList
