@@ -1,10 +1,10 @@
-module GroupedDropdownOptions exposing (DropdownOptionsGroup, GroupedDropdownOptions, dropdownOptionsToDatalistHtml, getOptions, getOptionsGroup, groupOptionsInOrder, optionGroupsToHtml, test_DropdownOptionsGroupToStringAndOptions)
+module GroupedDropdownOptions exposing (DropdownOptionsGroup, GroupedDropdownOptions, dropdownOptionsToDatalistHtml, groupOptionsInOrder, optionGroupsToHtml, test_DropdownOptionsGroupToStringAndOptions)
 
 import DropdownItemEventListeners exposing (DropdownItemEventListeners)
 import DropdownOptions exposing (DropdownOptions, dropdownOptionsToDatalistOption, optionsToCustomHtml)
 import Html exposing (Html, div, optgroup, span, text)
 import Html.Attributes exposing (class)
-import Option exposing (Option)
+import Option
 import OptionGroup exposing (OptionGroup)
 import OptionList
 import OptionPresentor exposing (tokensToHtml)

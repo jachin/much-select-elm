@@ -1,4 +1,4 @@
-module SlottedOption exposing (SlottedOption, activate, decoder, decoderWithAge, deselect, encode, getOptionDisplay, getOptionSelectedIndex, getOptionSlot, getOptionValue, getOptionValueAsString, highlightOption, isOptionHighlighted, isOptionSelectedHighlighted, isSelected, new, optionIsHighlightable, removeHighlightFromOption, select, setOptionDisplay, setOptionSelectedIndex, setOptionValue, test_new, test_optionToDebuggingString, toValueHtml)
+module SlottedOption exposing (SlottedOption, activate, decoder, decoderWithAge, deselect, encode, getOptionDisplay, getOptionSelectedIndex, getOptionSlot, getOptionValue, highlightOption, isOptionHighlighted, isOptionSelectedHighlighted, isSelected, optionIsHighlightable, removeHighlightFromOption, select, setOptionDisplay, setOptionValue, test_new, test_optionToDebuggingString, toValueHtml)
 
 import Events exposing (mouseUpPreventDefault, onMouseUpStopPropagationAndPreventDefault)
 import Html exposing (Html, div, span, text)
@@ -10,7 +10,7 @@ import OptionSlot exposing (OptionSlot)
 import OptionValue exposing (OptionValue)
 import OutputStyle exposing (SingleItemRemoval(..))
 import PartAttribute
-import SelectionMode exposing (SelectionConfig, SelectionMode)
+import SelectionMode exposing (SelectionMode)
 
 
 type SlottedOption
@@ -52,11 +52,6 @@ isSelected slottedOption =
 getOptionSelectedIndex : SlottedOption -> Int
 getOptionSelectedIndex slottedOption =
     slottedOption |> getOptionDisplay |> OptionDisplay.getSelectedIndex
-
-
-setOptionSelectedIndex : Int -> SlottedOption -> SlottedOption
-setOptionSelectedIndex selectedIndex option =
-    setOptionDisplay (option |> getOptionDisplay |> OptionDisplay.setSelectedIndex selectedIndex) option
 
 
 getOptionValue : SlottedOption -> OptionValue

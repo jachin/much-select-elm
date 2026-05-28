@@ -1,4 +1,4 @@
-module PositiveInt exposing (PositiveInt, decode, encode, fromString, greaterThan, isZero, lessThan, lessThanOrEqualTo, maybeNew, new, test_new, toInt)
+module PositiveInt exposing (PositiveInt, decode, encode, fromString, isZero, lessThan, lessThanOrEqualTo, maybeNew, new, test_new, toInt)
 
 import Json.Decode
 import Json.Encode
@@ -38,11 +38,6 @@ toInt positiveInt =
 lessThanOrEqualTo : PositiveInt -> Int -> Bool
 lessThanOrEqualTo (PositiveInt a) b =
     a <= b
-
-
-greaterThan : PositiveInt -> Int -> Bool
-greaterThan (PositiveInt a) b =
-    a > b
 
 
 lessThan : PositiveInt -> PositiveInt -> Bool

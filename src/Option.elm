@@ -1,7 +1,6 @@
 module Option exposing
     ( Option(..)
     , SearchResults
-    , activate
     , activateIfEqualRemoveHighlightElse
     , decodeSearchResults
     , decoder
@@ -9,7 +8,6 @@ module Option exposing
     , deselect
     , encode
     , encodeSearchResult
-    , equal
     , getDescription
     , getMaybeOptionSearchFilter
     , getOptionDisplay
@@ -60,13 +58,11 @@ module Option exposing
     , test_newEmptySelectedDatalistOption
     , test_newFancyCustomOptionWithCleanString
     , test_newFancyCustomOptionWithLabelAndMaybeCleanString
-    , test_newFancyCustomOptionWithMaybeCleanString
     , test_newFancyOption
     , test_newFancyOptionWithMaybeCleanString
     , test_newSlottedOption
     , test_optionToDebuggingString
     , toDatalistOption
-    , toValueLabelTuple
     , toggleHighlight
     , transformOptionForOutputStyle
     )
@@ -80,14 +76,14 @@ import Json.Encode
 import OptionDescription exposing (OptionDescription)
 import OptionDisplay exposing (OptionDisplay)
 import OptionGroup exposing (OptionGroup)
-import OptionLabel exposing (OptionLabel(..), optionLabelToString)
+import OptionLabel exposing (OptionLabel)
 import OptionPart exposing (OptionPart)
 import OptionSearchFilter exposing (OptionSearchFilter, OptionSearchFilterWithValue)
 import OptionSlot exposing (OptionSlot)
 import OptionValue exposing (OptionValue(..))
-import SelectionMode exposing (OutputStyle(..), SelectionMode(..))
+import SelectionMode exposing (OutputStyle(..), SelectionMode)
 import SlottedOption
-import SortRank exposing (SortRank(..))
+import SortRank exposing (SortRank)
 import TransformAndValidate exposing (ValidationFailureMessage)
 
 
@@ -539,11 +535,6 @@ isEmptyOrHasEmptyValue option =
     isEmpty option || (getOptionValue option |> OptionValue.isEmpty)
 
 
-toValueLabelTuple : Option -> ( String, String )
-toValueLabelTuple option =
-    ( getOptionValueAsString option, getOptionLabel option |> optionLabelToString )
-
-
 isCustomOption : Option -> Bool
 isCustomOption option =
     case option of
@@ -683,11 +674,6 @@ transformOptionForOutputStyle outputStyle option =
 
                 SlottedOption _ ->
                     Nothing
-
-
-equal : Option -> Option -> Bool
-equal optionA optionB =
-    optionA == optionB
 
 
 setOptionValueErrors : List ValidationFailureMessage -> Option -> Option

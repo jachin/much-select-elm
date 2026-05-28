@@ -12,13 +12,6 @@ type OptionSlot
     = OptionSlot String
 
 
-toString : OptionSlot -> String
-toString optionSlot =
-    case optionSlot of
-        OptionSlot option ->
-            option
-
-
 decoder : Decoder OptionSlot
 decoder =
     Json.Decode.string

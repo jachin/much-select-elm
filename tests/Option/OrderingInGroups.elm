@@ -3,7 +3,7 @@ module Option.OrderingInGroups exposing (suite)
 import DropdownOptions
 import Expect
 import GroupedDropdownOptions
-import Option exposing (Option(..), setGroupWithString, test_newFancyOptionWithMaybeCleanString)
+import Option exposing (setGroupWithString, test_newFancyOptionWithMaybeCleanString)
 import OptionGroup exposing (OptionGroup)
 import OptionList
 import Test exposing (Test, describe, test)

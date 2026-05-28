@@ -296,9 +296,6 @@ update msg model =
                             model.validators
                                 |> List.map Tuple.second
                                 |> List.Extra.findIndex isMinimumLengthValidator
-
-                        Custom ->
-                            Nothing
             in
             case maybeIndexToUpdate of
                 Just indexToUpdate ->
@@ -883,9 +880,6 @@ isNoWhiteSpaceValidator validator =
         MinimumLength _ _ _ ->
             False
 
-        Custom ->
-            False
-
 
 getNoWhiteSpaceValidatorIndex : Model -> Maybe Int
 getNoWhiteSpaceValidatorIndex model =
@@ -931,9 +925,6 @@ isMinimumLengthValidator validator =
         MinimumLength _ _ _ ->
             True
 
-        Custom ->
-            False
-
 
 getMinimumLengthValidatorIndex : Model -> Maybe Int
 getMinimumLengthValidatorIndex model =
@@ -973,12 +964,10 @@ type Transformer
 type Validator
     = NoWhiteSpace ValidatorLevel String
     | MinimumLength ValidatorLevel String Int
-    | Custom
 
 
 type ValidatorLevel
     = ShowError
-    | Silent
 
 
 type ValidationResult
@@ -1020,20 +1009,12 @@ encodeValidator validator =
                 , ( "minimum-length", Json.Encode.int int )
                 ]
 
-        Custom ->
-            Json.Encode.object
-                [ ( "name", Json.Encode.string "custom" )
-                ]
-
 
 encodeValidatorLevel : ValidatorLevel -> Json.Encode.Value
 encodeValidatorLevel validatorLevel =
     case validatorLevel of
         ShowError ->
             Json.Encode.string "error"
-
-        Silent ->
-            Json.Encode.string "silent"
 
 
 encodeCustomValidateResult : ValidationResult -> Json.Encode.Value

@@ -62,7 +62,7 @@ import Option
     exposing
         ( Option
         )
-import OptionDisplay exposing (OptionDisplay(..))
+import OptionDisplay
 import OptionList exposing (OptionList(..))
 import OptionSearcher exposing (SearchStringFindResult(..), calculateSearchStringFindResult, updateOrAddCustomOption)
 import OptionSorting
@@ -70,11 +70,10 @@ import OptionSorting
         ( OptionSort(..)
         , stringToOptionSort
         )
-import OptionValue exposing (OptionValue(..))
+import OptionValue exposing (OptionValue)
 import OutputStyle
     exposing
         ( DropdownStyle(..)
-        , MaxDropdownItems(..)
         , SearchStringMinimumLength(..)
         , SingleItemRemoval(..)
         )
@@ -138,7 +137,7 @@ import Ports
         , valueDecoder
         , valuesDecoder
         )
-import PositiveInt exposing (PositiveInt)
+import PositiveInt
 import RightSlot
     exposing
         ( FocusTransition(..)
@@ -177,8 +176,7 @@ import SelectionMode
 import SlottedOption
 import TransformAndValidate
     exposing
-        ( ValueTransformAndValidate
-        , transformAndValidateFirstPass
+        ( transformAndValidateFirstPass
         )
 
 
@@ -225,7 +223,6 @@ type Msg
     | UpdateSearchString String
     | SearchStringSteady
     | UpdateOptionValueValue Int String
-    | TextInputOnInput String
     | ValueChanged Json.Decode.Value
     | OptionsReplaced Json.Decode.Value
     | OptionSortingChanged String
@@ -595,14 +592,6 @@ update msg model =
                         , InputHasBeenKeyUp valueString TransformAndValidate.InputHasValidationPending
                         ]
                     )
-
-        TextInputOnInput inputString ->
-            ( { model
-                | searchString = SearchString.update inputString
-                , options = updateOrAddCustomOption (SearchString.update inputString) model.selectionConfig model.options
-              }
-            , InputHasBeenKeyUp inputString TransformAndValidate.InputValidationIsNotHappening
-            )
 
         ValueChanged valuesJson ->
             let

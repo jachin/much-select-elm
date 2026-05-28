@@ -5,7 +5,7 @@ module OptionPresentor exposing
     , tokensToHtml
     )
 
-import Fuzzy exposing (Result, match)
+import Fuzzy exposing (Result)
 import Html exposing (Html, span, text)
 import Html.Attributes exposing (class)
 import List.Extra

@@ -4,10 +4,10 @@ module RightSlot exposing (..)
 be in transition.
 -}
 
-import Option exposing (Option)
+import Option
 import OptionList exposing (OptionList)
 import OptionValue
-import SelectionMode exposing (OutputStyle, SelectionConfig(..), SelectionMode(..))
+import SelectionMode exposing (OutputStyle, SelectionConfig, SelectionMode(..))
 
 
 type FocusTransition

@@ -1,7 +1,7 @@
-module OptionSorting exposing (OptionSort(..), sortOptions, sortOptionsBySearchFilterTotalScore, stringToOptionSort, toString)
+module OptionSorting exposing (OptionSort(..), sortOptions, stringToOptionSort, toString)
 
 import List.Extra
-import Option exposing (Option, getMaybeOptionSearchFilter, getOptionGroup, getOptionLabel)
+import Option exposing (Option, getOptionGroup, getOptionLabel)
 import OptionLabel exposing (getSortRank, optionLabelToString)
 import SortRank exposing (getAutoIndexForSorting)
 
@@ -42,19 +42,6 @@ sortFunction optionSort_ =
 
         SortByOptionLabel ->
             sortOptionsByLabel
-
-
-sortOptionsBySearchFilterTotalScore : List Option -> List Option
-sortOptionsBySearchFilterTotalScore options =
-    -- TODO I might not this any more.
-    List.sortBy
-        (\option ->
-            option
-                |> getMaybeOptionSearchFilter
-                |> Maybe.map .totalScore
-                |> Maybe.withDefault 100000
-        )
-        options
 
 
 

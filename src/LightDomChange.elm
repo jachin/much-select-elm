@@ -5,7 +5,6 @@ import Json.Encode
 
 type LightDomChange
     = AddUpdateAttribute String String
-    | RemoveAttribute String
     | UpdateSelectedValue Json.Encode.Value
 
 
@@ -17,12 +16,6 @@ encode lightDomChange =
                 [ ( "changeType", Json.Encode.string "add-update-attribute" )
                 , ( "name", Json.Encode.string name )
                 , ( "value", Json.Encode.string value )
-                ]
-
-        RemoveAttribute name ->
-            Json.Encode.object
-                [ ( "changeType", Json.Encode.string "remove-attribute" )
-                , ( "name", Json.Encode.string name )
                 ]
 
         UpdateSelectedValue data ->

@@ -2,7 +2,7 @@ module SelectedValueEncoding exposing (..)
 
 import Json.Decode
 import Json.Encode
-import Option exposing (Option)
+import Option
 import OptionList exposing (OptionList)
 import Ports exposing (valueDecoder, valuesDecoder)
 import SelectionMode exposing (SelectionConfig(..), SelectionMode)

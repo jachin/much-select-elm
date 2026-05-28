@@ -1,7 +1,7 @@
 module Option.Selecting exposing (suite)
 
-import Expect exposing (Expectation)
-import Option exposing (Option(..), select, test_newDatalistOption, test_newEmptyDatalistOption, test_newFancyOption, test_newFancyOptionWithMaybeCleanString)
+import Expect
+import Option exposing (select, test_newDatalistOption, test_newEmptyDatalistOption, test_newFancyOption)
 import OptionList exposing (OptionList(..), cleanupEmptySelectedOptions, deselectEveryOptionExceptOptionsInList, selectOptionByOptionValue, selectOptions, selectOptionsInOptionsListByString, selectSingleOptionByValue, test_newFancyOptionList)
 import OptionValue exposing (stringToOptionValue)
 import Test exposing (Test, describe, test)
