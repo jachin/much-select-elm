@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <script type="module">
+      import { runTests } from "@web/test-runner-mocha";
+      import { expect } from "@esm-bundle/chai";
+      import { html, fixture, oneEvent, waitUntil } from "@open-wc/testing";
+
+      import MuchSelect from "../../dist/much-select-debug.js";
+
+      if (!customElements.get("much-select")) {
+        window.customElements.define("much-select", MuchSelect);
+      }
+
+      runTests(() => {
+        describe("ExamplesWeb", () => {
+          describe("select-and-deselect-option-from-a-much-select", () => {
+            it("selectOption selects Rock", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select>
+                  <select slot="select-input">
+                    <option>Metal</option>
+                    <option>Rock</option>
+                    <option>Rap</option>
+                    <option>Country</option>
+                    <option>Folk</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              const selected = oneEvent(el, "optionSelected");
+              el.selectOption("Rock");
+
+              const evt = await selected;
+              expect(evt.detail.value).to.equal("Rock");
+              expect(await el.selectedValue).to.equal("Rock");
+            });
+
+            it("deselectOption clears Rock", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select selected-value="Rock">
+                  <select slot="select-input">
+                    <option>Metal</option>
+                    <option>Rock</option>
+                    <option>Rap</option>
+                    <option>Country</option>
+                    <option>Folk</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              const deselected = oneEvent(el, "optionDeselected");
+              el.deselectOption("Rock");
+
+              const evt = await deselected;
+              expect(evt.detail.value).to.equal("Rock");
+
+              await waitUntil(async () => {
+                const value = await el.selectedValue;
+                return value === "" || value === null;
+              });
+            });
+
+            it("can move selection from Rock to Folk", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select>
+                  <select slot="select-input">
+                    <option>Metal</option>
+                    <option>Rock</option>
+                    <option>Rap</option>
+                    <option>Country</option>
+                    <option>Folk</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              el.selectOption("Rock");
+              await oneEvent(el, "optionSelected");
+
+              const selectedFolk = oneEvent(el, "optionSelected");
+              el.selectOption("Folk");
+
+              const evt = await selectedFolk;
+              expect(evt.detail.value).to.equal("Folk");
+              expect(await el.selectedValue).to.equal("Folk");
+            });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

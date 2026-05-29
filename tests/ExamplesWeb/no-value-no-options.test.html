@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <script type="module">
+      import { runTests } from "@web/test-runner-mocha";
+      import { expect } from "@esm-bundle/chai";
+      import { html, fixture, oneEvent, waitUntil } from "@open-wc/testing";
+
+      import MuchSelect from "../../dist/much-select-debug.js";
+
+      if (!customElements.get("much-select")) {
+        window.customElements.define("much-select", MuchSelect);
+      }
+
+      runTests(() => {
+        describe("ExamplesWeb", () => {
+          describe("no-value-no-options", () => {
+            it("starts with no options and an empty selected value", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select></much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              const options = await el.getAllOptions();
+              expect(options).to.eql([]);
+
+              const value = await el.selectedValue;
+              expect(value === "" || value === null).to.be.true;
+            });
+
+            it("addOption can add the first option to an empty much-select", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select></much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              el.addOption({ value: "first" });
+
+              await waitUntil(async () => {
+                const options = await el.getAllOptions();
+                return options.some((option) => option.value === "first");
+              }, "Expected first option to be present");
+            });
+
+            it("selectOption emits optionSelected after options are added", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select></much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              el.addOption({ value: "first" });
+              await waitUntil(async () => {
+                const options = await el.getAllOptions();
+                return options.some((option) => option.value === "first");
+              });
+
+              const selected = oneEvent(el, "optionSelected");
+              el.selectOption("first");
+
+              const evt = await selected;
+              expect(evt.detail.value).to.equal("first");
+              expect(await el.selectedValue).to.equal("first");
+            });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

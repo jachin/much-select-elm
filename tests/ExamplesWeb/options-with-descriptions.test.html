@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <script type="module">
+      import { runTests } from "@web/test-runner-mocha";
+      import { expect } from "@esm-bundle/chai";
+      import { html, fixture, oneEvent } from "@open-wc/testing";
+
+      import MuchSelect from "../../dist/much-select-debug.js";
+
+      if (!customElements.get("much-select")) {
+        window.customElements.define("much-select", MuchSelect);
+      }
+
+      runTests(() => {
+        describe("ExamplesWeb", () => {
+          describe("options-with-descriptions", () => {
+            it("parses options and includes description text", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select>
+                  <select slot="select-input">
+                    <option data-description="scarlet, vermilion, ruby">Red</option>
+                    <option data-description="yellowish, lemon">Yellow</option>
+                    <option data-description="azure, cobalt">Blue</option>
+                    <option data-description="A town in France">Orange</option>
+                    <option data-description="olive green, emerald green">Green</option>
+                    <option data-description="violet">Purple</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              const options = await el.getAllOptions();
+              expect(options).to.have.lengthOf(6);
+              const orange = options.find((option) => option.value === "Orange");
+              expect(orange).to.exist;
+              expect(orange.description).to.equal("A town in France");
+            });
+
+            it("selectOption works with described options", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select>
+                  <select slot="select-input">
+                    <option data-description="scarlet, vermilion, ruby">Red</option>
+                    <option data-description="yellowish, lemon">Yellow</option>
+                    <option data-description="azure, cobalt">Blue</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              const selected = oneEvent(el, "optionSelected");
+              el.selectOption("Blue");
+
+              const evt = await selected;
+              expect(evt.detail.value).to.equal("Blue");
+              expect(await el.selectedValue).to.equal("Blue");
+            });
+
+            it("getAllOptions preserves description after selection", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select>
+                  <select slot="select-input">
+                    <option data-description="scarlet, vermilion, ruby">Red</option>
+                    <option data-description="yellowish, lemon">Yellow</option>
+                    <option data-description="azure, cobalt">Blue</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              el.selectOption("Red");
+              await oneEvent(el, "optionSelected");
+
+              const options = await el.getAllOptions();
+              const red = options.find((option) => option.value === "Red");
+              expect(red).to.exist;
+              expect(red.description).to.equal("scarlet, vermilion, ruby");
+            });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

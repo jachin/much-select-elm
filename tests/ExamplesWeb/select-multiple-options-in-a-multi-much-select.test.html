@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <script type="module">
+      import { runTests } from "@web/test-runner-mocha";
+      import { expect } from "@esm-bundle/chai";
+      import { html, fixture, oneEvent, waitUntil } from "@open-wc/testing";
+
+      import MuchSelect from "../../dist/much-select-debug.js";
+
+      if (!customElements.get("much-select")) {
+        window.customElements.define("much-select", MuchSelect);
+      }
+
+      runTests(() => {
+        describe("ExamplesWeb", () => {
+          describe("select-multiple-options-in-a-multi-much-select", () => {
+            it("starts in multi-select mode", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select multi-select>
+                  <select slot="select-input">
+                    <option>Basketball</option>
+                    <option>Baseball</option>
+                    <option>Football</option>
+                    <option>Hockey</option>
+                    <option>Soccer</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+              expect(await el.isInMultiSelectMode).to.be.true;
+            });
+
+            it("selectOption can select multiple values", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select multi-select>
+                  <select slot="select-input">
+                    <option>Basketball</option>
+                    <option>Baseball</option>
+                    <option>Football</option>
+                    <option>Hockey</option>
+                    <option>Soccer</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              el.selectOption("Basketball");
+              await oneEvent(el, "optionSelected");
+              el.selectOption("Baseball");
+              await oneEvent(el, "optionSelected");
+              el.selectOption("Football");
+              await oneEvent(el, "optionSelected");
+
+              await waitUntil(async () => {
+                const values = await el.selectedValue;
+                return (
+                  Array.isArray(values) &&
+                  values.includes("Basketball") &&
+                  values.includes("Baseball") &&
+                  values.includes("Football")
+                );
+              });
+            });
+
+            it("deselectOption removes one selected value from the array", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select multi-select selected-value="Basketball,Baseball,Football">
+                  <select slot="select-input">
+                    <option>Basketball</option>
+                    <option>Baseball</option>
+                    <option>Football</option>
+                    <option>Hockey</option>
+                    <option>Soccer</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              const deselected = oneEvent(el, "optionDeselected");
+              el.deselectOption("Baseball");
+              const evt = await deselected;
+              expect(evt.detail.value).to.equal("Baseball");
+
+              await waitUntil(async () => {
+                const values = await el.selectedValue;
+                return (
+                  Array.isArray(values) &&
+                  values.includes("Basketball") &&
+                  !values.includes("Baseball") &&
+                  values.includes("Football")
+                );
+              });
+            });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
