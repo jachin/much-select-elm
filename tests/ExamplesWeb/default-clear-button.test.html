@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <script type="module">
+      import { runTests } from "@web/test-runner-mocha";
+      import { expect } from "@esm-bundle/chai";
+      import { html, fixture, oneEvent, waitUntil } from "@open-wc/testing";
+
+      import MuchSelect from "../../dist/much-select-debug.js";
+
+      if (!customElements.get("much-select")) {
+        window.customElements.define("much-select", MuchSelect);
+      }
+
+      runTests(() => {
+        describe("ExamplesWeb", () => {
+          describe("default-clear-button", () => {
+            it("renders the default clear button fallback", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select multi-select selected-value="Blue,Yellow,Orange">
+                  <select slot="select-input">
+                    <option>Red</option>
+                    <option>Yellow</option>
+                    <option>Blue</option>
+                    <option>Orange</option>
+                    <option>Green</option>
+                    <option>Purple</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              const clearButtonSlot = el.shadowRoot.querySelector(
+                'slot[name="clear-button"]',
+              );
+              expect(clearButtonSlot).to.exist;
+              expect(clearButtonSlot.assignedElements({ flatten: true }).length).to.equal(
+                0,
+              );
+              expect(clearButtonSlot.textContent.trim()).to.equal("✕");
+            });
+
+            it("clicking clear button clears all selected values", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select multi-select selected-value="Blue,Yellow,Orange">
+                  <select slot="select-input">
+                    <option>Red</option>
+                    <option>Yellow</option>
+                    <option>Blue</option>
+                    <option>Orange</option>
+                    <option>Green</option>
+                    <option>Purple</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              const cleared = oneEvent(el, "valueCleared");
+
+              el.shadowRoot.getElementById("clear-button-wrapper").click();
+
+              await cleared;
+
+              await waitUntil(async () => {
+                const selectedValue = await el.selectedValue;
+                return Array.isArray(selectedValue) && selectedValue.length === 0;
+              }, "Expected all selected values to be cleared");
+            });
+
+            it("starts with multiple selected values", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select multi-select selected-value="Blue,Yellow,Orange">
+                  <select slot="select-input">
+                    <option>Red</option>
+                    <option>Yellow</option>
+                    <option>Blue</option>
+                    <option>Orange</option>
+                    <option>Green</option>
+                    <option>Purple</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              const selectedValue = await el.selectedValue;
+              expect(selectedValue).to.eql(["Blue", "Yellow", "Orange"]);
+            });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

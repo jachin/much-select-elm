@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <script type="module">
+      import { runTests } from "@web/test-runner-mocha";
+      import { expect } from "@esm-bundle/chai";
+      import { html, fixture, oneEvent, waitUntil } from "@open-wc/testing";
+
+      import MuchSelect from "../../dist/much-select-debug.js";
+
+      if (!customElements.get("much-select")) {
+        window.customElements.define("much-select", MuchSelect);
+      }
+
+      runTests(() => {
+        describe("ExamplesWeb", () => {
+          describe("override-no-filtered-options-slot", () => {
+            it("keeps custom no-filtered-options content in light DOM", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select>
+                  <div slot="no-filtered-options">
+                    Nope, you probably shouldn't drink that.
+                  </div>
+                  <select slot="select-input">
+                    <option>Black Tea</option>
+                    <option>Green Tea</option>
+                    <option>Red Tea</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              const overrideNode = el.querySelector(
+                '[slot="no-filtered-options"]',
+              );
+              expect(overrideNode).to.exist;
+              expect(overrideNode.textContent).to.include(
+                "Nope, you probably shouldn't drink that.",
+              );
+            });
+
+            it("keeps all options available before filtering", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select>
+                  <div slot="no-filtered-options">
+                    Nope, you probably shouldn't drink that.
+                  </div>
+                  <select slot="select-input">
+                    <option>Black Tea</option>
+                    <option>Green Tea</option>
+                    <option>Red Tea</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              const options = await el.getAllOptions();
+              expect(options.map((o) => o.value)).to.include.members([
+                "Black Tea",
+                "Green Tea",
+                "Red Tea",
+              ]);
+            });
+
+            it("shows the custom no-filtered-options message for unmatched searches", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select>
+                  <div slot="no-filtered-options">
+                    Nope, you probably shouldn't drink that.
+                  </div>
+                  <select slot="select-input">
+                    <option>Black Tea</option>
+                    <option>Green Tea</option>
+                    <option>Red Tea</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              const input = el.shadowRoot.getElementById("input-filter");
+              input.focus();
+
+              await waitUntil(() => {
+                const slot = el.shadowRoot.querySelector(
+                  'slot[name="no-filtered-options"]',
+                );
+                if (!slot) {
+                  return false;
+                }
+                const assigned = slot.assignedElements({ flatten: true });
+                return (
+                  assigned.length === 1 &&
+                  assigned[0].textContent.includes(
+                    "Nope, you probably shouldn't drink that.",
+                  )
+                );
+              }, "Expected no-filtered-options slot assignment to include custom text");
+            });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
