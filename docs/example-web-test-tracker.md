@@ -8,14 +8,14 @@ Generated for Phase 0 inventory from `examples/*.html` and current `tests/**/*.t
 - Total examples: **94**
 - `CoveredByExistingSuite`: **14**
 - `NeedsExistingSuiteExpansion`: **33**
-- `NeedsDedicatedSuite`: **21**
-- `Done`: **26**
+- `NeedsDedicatedSuite`: **16**
+- `Done`: **31**
 
 > Note: This is an initial machine-assisted pre-fill. Confirm each row during implementation and update status to `Done` as work lands.
 
 | example slug | status | existing tests | planned tests | skip reason |
 |---|---|---|---|---|
-| `add-and-remove-button-slots` | `NeedsDedicatedSuite` | — | Create `tests/ExamplesWeb/add-and-remove-button-slots.test.html` (3-6 JS-focused tests) | No concrete existing web-test mapping found |
+| `add-and-remove-button-slots` | `Done` | `tests/ExamplesWeb/add-and-remove-button-slots.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
 | `add-custom-options` | `Done` | `tests/ExamplesWeb/add-custom-options.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
 | `add-custom-options-2` | `Done` | `tests/ExamplesWeb/add-custom-options-2.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
 | `add-option-to-a-much-select` | `Done` | `tests/ExamplesWeb/add-option-to-a-much-select.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
@@ -40,9 +40,9 @@ Generated for Phase 0 inventory from `examples/*.html` and current `tests/**/*.t
 | `default-option-group-ordering` | `NeedsExistingSuiteExpansion` | `tests/Attributes/option-sorting.test.html`, `tests/Dropdown/dropdown-ordering.test.html` | Expand mapped suite with example-specific JS behavior assertions | Partially covered by feature tests but example contract not fully explicit yet |
 | `disabled-much-select` | `CoveredByExistingSuite` | `tests/Attributes/disabled.test.html` | Optional: add 1 focused edge-case/event assertion | Already mapped to robust JS-facing suite(s); verify during Phase 0 review |
 | `disabled-options` | `NeedsExistingSuiteExpansion` | `tests/Attributes/disabled.test.html` | Expand mapped suite with example-specific JS behavior assertions | Partially covered by feature tests but example contract not fully explicit yet |
-| `empty-option` | `NeedsDedicatedSuite` | — | Create `tests/ExamplesWeb/empty-option.test.html` (3-6 JS-focused tests) | No concrete existing web-test mapping found |
-| `empty-option-with-label-and-other-options` | `NeedsDedicatedSuite` | — | Create `tests/ExamplesWeb/empty-option-with-label-and-other-options.test.html` (3-6 JS-focused tests) | No concrete existing web-test mapping found |
-| `empty-option-with-label-and-other-options-2` | `NeedsDedicatedSuite` | — | Create `tests/ExamplesWeb/empty-option-with-label-and-other-options-2.test.html` (3-6 JS-focused tests) | No concrete existing web-test mapping found |
+| `empty-option` | `Done` | `tests/ExamplesWeb/empty-option.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
+| `empty-option-with-label-and-other-options` | `Done` | `tests/ExamplesWeb/empty-option-with-label-and-other-options.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
+| `empty-option-with-label-and-other-options-2` | `Done` | `tests/ExamplesWeb/empty-option-with-label-and-other-options-2.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
 | `empty-options-multi-select` | `NeedsDedicatedSuite` | — | Create `tests/ExamplesWeb/empty-options-multi-select.test.html` (3-6 JS-focused tests) | No concrete existing web-test mapping found |
 | `empty-selected-value-empty-select-input` | `NeedsExistingSuiteExpansion` | `tests/Attributes/selected-value.test.html` | Expand mapped suite with example-specific JS behavior assertions | Partially covered by feature tests but example contract not fully explicit yet |
 | `empty-selected-value-no-options` | `NeedsExistingSuiteExpansion` | `tests/Attributes/selected-value.test.html` | Expand mapped suite with example-specific JS behavior assertions | Partially covered by feature tests but example contract not fully explicit yet |
@@ -68,7 +68,7 @@ Generated for Phase 0 inventory from `examples/*.html` and current `tests/**/*.t
 | `multi-select-value-cleared` | `NeedsExistingSuiteExpansion` | `tests/Attributes/muli-select.test.html`, `tests/Events/selecting-options.test.html` | Expand mapped suite with example-specific JS behavior assertions | Partially covered by feature tests but example contract not fully explicit yet |
 | `no-value-no-options` | `NeedsDedicatedSuite` | — | Create `tests/ExamplesWeb/no-value-no-options.test.html` (3-6 JS-focused tests) | No concrete existing web-test mapping found |
 | `not-just-english-options` | `NeedsDedicatedSuite` | — | Create `tests/ExamplesWeb/not-just-english-options.test.html` (3-6 JS-focused tests) | No concrete existing web-test mapping found |
-| `one-empty-option-with-a-label` | `NeedsDedicatedSuite` | — | Create `tests/ExamplesWeb/one-empty-option-with-a-label.test.html` (3-6 JS-focused tests) | No concrete existing web-test mapping found |
+| `one-empty-option-with-a-label` | `Done` | `tests/ExamplesWeb/one-empty-option-with-a-label.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
 | `option-groups` | `CoveredByExistingSuite` | `tests/Attributes/option-sorting.test.html`, `tests/Dropdown/dropdown-ordering.test.html` | Optional: add 1 focused edge-case/event assertion | Already mapped to robust JS-facing suite(s); verify during Phase 0 review |
 | `options-with-descriptions` | `NeedsDedicatedSuite` | — | Create `tests/ExamplesWeb/options-with-descriptions.test.html` (3-6 JS-focused tests) | No concrete existing web-test mapping found |
 | `output-style-datalist` | `CoveredByExistingSuite` | `tests/Attributes/output-style.test.html` | Optional: add 1 focused edge-case/event assertion | Already mapped to robust JS-facing suite(s); verify during Phase 0 review |

@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <script type="module">
+      import { runTests } from "@web/test-runner-mocha";
+      import { expect } from "@esm-bundle/chai";
+      import { html, fixture, oneEvent } from "@open-wc/testing";
+
+      import MuchSelect from "../../dist/much-select-debug.js";
+
+      if (!customElements.get("much-select")) {
+        window.customElements.define("much-select", MuchSelect);
+      }
+
+      runTests(() => {
+        describe("ExamplesWeb", () => {
+          describe("one-empty-option-with-a-label", () => {
+            it("parses one empty-valued option with label NOTHING", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select>
+                  <select slot="select-input">
+                    <option value="">NOTHING</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              const options = await el.getAllOptions();
+              expect(options.length).to.equal(1);
+              expect(options[0].value).to.equal("");
+              expect(options[0].label).to.equal("NOTHING");
+            });
+
+            it("selectOption emits optionSelected with empty value and labeled text", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select>
+                  <select slot="select-input">
+                    <option value="">NOTHING</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              const selected = oneEvent(el, "optionSelected");
+              el.selectOption("");
+
+              const evt = await selected;
+              expect(evt.detail.value).to.equal("");
+              expect(evt.detail.label).to.equal("");
+            });
+
+            it("getAllOptions keeps the labeled empty option stable after selection", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select>
+                  <select slot="select-input">
+                    <option value="">NOTHING</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              el.selectOption("");
+              await oneEvent(el, "optionSelected");
+
+              const options = await el.getAllOptions();
+              expect(options).to.have.lengthOf(1);
+              expect(options[0].value).to.equal("");
+              expect(options[0].label).to.equal("NOTHING");
+            });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

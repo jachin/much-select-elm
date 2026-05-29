@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <script type="module">
+      import { runTests } from "@web/test-runner-mocha";
+      import { expect } from "@esm-bundle/chai";
+      import { html, fixture, oneEvent, waitUntil } from "@open-wc/testing";
+
+      import MuchSelect from "../../dist/much-select-debug.js";
+
+      if (!customElements.get("much-select")) {
+        window.customElements.define("much-select", MuchSelect);
+      }
+
+      runTests(() => {
+        describe("ExamplesWeb", () => {
+          describe("empty-option", () => {
+            it("parses one option with an empty value", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select>
+                  <select slot="select-input">
+                    <option></option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              const options = await el.getAllOptions();
+              expect(options.length).to.equal(1);
+              expect(options[0].value).to.equal("");
+              expect(options[0].label).to.equal("");
+            });
+
+            it("selectOption can select the empty value and emits optionSelected", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select>
+                  <select slot="select-input">
+                    <option></option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              const selected = oneEvent(el, "optionSelected");
+              el.selectOption("");
+
+              const evt = await selected;
+              expect(evt.detail.value).to.equal("");
+              expect(evt.detail.label).to.equal("");
+            });
+
+            it("deselectOption emits optionDeselected for empty value", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select>
+                  <select slot="select-input">
+                    <option></option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              el.selectOption("");
+              await oneEvent(el, "optionSelected");
+
+              const deselected = oneEvent(el, "optionDeselected");
+              el.deselectOption("");
+
+              const evt = await deselected;
+              expect(evt.detail.value).to.equal("");
+
+              await waitUntil(async () => {
+                const value = await el.selectedValue;
+                return value === "" || value === null;
+              });
+            });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
