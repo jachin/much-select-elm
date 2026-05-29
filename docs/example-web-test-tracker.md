@@ -1,17 +1,17 @@
 # Example Web Test Tracker
 
-Generated for Phase 0 inventory from `examples/*.html` and current `tests/**/*.test.html`.
+Originally generated during Phase 0 inventory from `examples/*.html` and existing `tests/**/*.test.html`.
 
 
-## Summary (initial pre-fill)
+## Summary (final status)
 
 - Total examples: **94**
-- `CoveredByExistingSuite`: **14**
+- `CoveredByExistingSuite`: **0**
 - `NeedsExistingSuiteExpansion`: **0**
 - `NeedsDedicatedSuite`: **0**
-- `Done`: **80**
+- `Done`: **94**
 
-> Note: This is an initial machine-assisted pre-fill. Confirm each row during implementation and update status to `Done` as work lands.
+> Note: Tracker is finalized for this rollout. Every example row is marked `Done` with explicit test-suite evidence.
 
 | example slug | status | existing tests | planned tests | skip reason |
 |---|---|---|---|---|
@@ -23,7 +23,7 @@ Generated for Phase 0 inventory from `examples/*.html` and current `tests/**/*.t
 | `add-options-not-including-the-selected-value` | `Done` | `tests/ExamplesWeb/add-options-not-including-the-selected-value.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
 | `add-options-to-a-multi-select-not-including-the-selected-value` | `Done` | `tests/ExamplesWeb/add-options-to-a-multi-select-not-including-the-selected-value.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
 | `add-possible-duplicate-option-to-a-much-select` | `Done` | `tests/ExamplesWeb/add-possible-duplicate-option-to-a-much-select.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
-| `allow-custom-options` | `CoveredByExistingSuite` | `tests/Attributes/allow-custom-options.test.html` | Optional: add 1 focused edge-case/event assertion | Already mapped to robust JS-facing suite(s); verify during Phase 0 review |
+| `allow-custom-options` | `Done` | `tests/Attributes/allow-custom-options.test.html` | Validated existing attribute suite coverage; no expansion required | Existing suite already provides robust JS-facing attribute/behavior assertions |
 | `allow-custom-options-with-minimum-search-string-length` | `Done` | `tests/Attributes/search-string-minimum-length.test.html` | Expanded mapped attribute suite with combined allow-custom-options + minimum-length contract assertions | Phase 2 batch complete |
 | `an-initial-value` | `Done` | `tests/Attributes/selected-value.test.html` | Expanded mapped selected-value suite with initial selected-value contract assertions | Phase 2 batch complete |
 | `an-initial-value-with-no-options` | `Done` | `tests/Attributes/selected-value.test.html` | Expanded mapped selected-value suite with no-options initial value contract assertions | Phase 2 batch complete |
@@ -38,7 +38,7 @@ Generated for Phase 0 inventory from `examples/*.html` and current `tests/**/*.t
 | `datalist-single-select-value-changed-event` | `Done` | `tests/Events/selecting-options.test.html` | Expanded mapped event suite with datalist single-select valueChanged contract assertions | Phase 2 batch complete |
 | `default-clear-button` | `Done` | `tests/ExamplesWeb/default-clear-button.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
 | `default-option-group-ordering` | `Done` | `tests/Attributes/option-sorting.test.html` | Expanded mapped sorting suite with optgroup ordering/contents assertions | Phase 2 batch complete |
-| `disabled-much-select` | `CoveredByExistingSuite` | `tests/Attributes/disabled.test.html` | Optional: add 1 focused edge-case/event assertion | Already mapped to robust JS-facing suite(s); verify during Phase 0 review |
+| `disabled-much-select` | `Done` | `tests/Attributes/disabled.test.html` | Validated existing attribute suite coverage; no expansion required | Existing suite already provides robust JS-facing disabled behavior assertions |
 | `disabled-options` | `Done` | `tests/Attributes/disabled.test.html` | Expanded mapped disabled suite with disabled option selection-blocking assertions | Phase 2 batch complete |
 | `empty-option` | `Done` | `tests/ExamplesWeb/empty-option.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
 | `empty-option-with-label-and-other-options` | `Done` | `tests/ExamplesWeb/empty-option-with-label-and-other-options.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
@@ -46,32 +46,32 @@ Generated for Phase 0 inventory from `examples/*.html` and current `tests/**/*.t
 | `empty-options-multi-select` | `Done` | `tests/ExamplesWeb/empty-options-multi-select.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
 | `empty-selected-value-empty-select-input` | `Done` | `tests/Attributes/selected-value.test.html` | Expanded mapped selected-value suite with empty selected-value + empty select-input assertions | Phase 2 batch complete |
 | `empty-selected-value-no-options` | `Done` | `tests/Attributes/selected-value.test.html` | Expanded mapped selected-value suite with empty selected-value + no-options assertions | Phase 2 batch complete |
-| `events-only-mode` | `CoveredByExistingSuite` | `tests/Attributes/events-only.test.html` | Optional: add 1 focused edge-case/event assertion | Already mapped to robust JS-facing suite(s); verify during Phase 0 review |
+| `events-only-mode` | `Done` | `tests/Attributes/events-only.test.html` | Validated existing attribute suite coverage; no expansion required | Existing suite already provides robust JS-facing events-only assertions |
 | `focus-on-demand` | `Done` | `tests/ExamplesWeb/focus-on-demand.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
 | `hidden-input-json-encoding-slot` | `Done` | `tests/Slots/hidden-input-slot.test.html` | Expanded mapped hidden-input slot suite with JSON encoding mirror assertions | Phase 2 batch complete |
-| `hidden-input-slot` | `CoveredByExistingSuite` | `tests/Slots/hidden-input-slot.test.html` | Optional: add 1 focused edge-case/event assertion | Already mapped to robust JS-facing suite(s); verify during Phase 0 review |
+| `hidden-input-slot` | `Done` | `tests/Slots/hidden-input-slot.test.html` | Validated existing slot suite coverage; no expansion required | Existing suite already provides robust JS-facing hidden input sync assertions |
 | `labels-and-values` | `Done` | `tests/Slots/select-input-slot.test.html` | Expanded mapped slot suite with label/value differentiation assertions | Phase 2 batch complete |
-| `loading-indicator` | `CoveredByExistingSuite` | `tests/Attributes/loading.test.html` | Optional: add 1 focused edge-case/event assertion | Already mapped to robust JS-facing suite(s); verify during Phase 0 review |
-| `max-dropdown-items` | `CoveredByExistingSuite` | `tests/Attributes/max-dropdown-items.test.html` | Optional: add 1 focused edge-case/event assertion | Already mapped to robust JS-facing suite(s); verify during Phase 0 review |
+| `loading-indicator` | `Done` | `tests/Attributes/loading.test.html` | Validated existing attribute suite coverage; no expansion required | Existing suite already provides robust JS-facing loading assertions |
+| `max-dropdown-items` | `Done` | `tests/Attributes/max-dropdown-items.test.html` | Validated existing attribute suite coverage; no expansion required | Existing suite already provides robust JS-facing max-dropdown-items assertions |
 | `max-number-of-dropdown-items` | `Done` | `tests/Attributes/max-dropdown-items.test.html` | Expanded mapped max-dropdown-items suite with capped visible dropdown assertions | Phase 2 batch complete |
 | `max-number-of-dropdown-items-big-list` | `Done` | `tests/Attributes/max-dropdown-items.test.html` | Expanded mapped max-dropdown-items suite with big-list cap assertions | Phase 2 batch complete |
-| `minimum-search-string-length` | `CoveredByExistingSuite` | `tests/Attributes/search-string-minimum-length.test.html` | Optional: add 1 focused edge-case/event assertion | Already mapped to robust JS-facing suite(s); verify during Phase 0 review |
+| `minimum-search-string-length` | `Done` | `tests/Attributes/search-string-minimum-length.test.html` | Validated existing attribute suite coverage; no expansion required | Existing suite already provides robust JS-facing minimum length assertions |
 | `move-selected-item-to-top` | `Done` | `tests/Attributes/selected-option-goes-to-top.test.html` | Expanded mapped selected-option-goes-to-top suite with selection contract assertions under move-to-top mode | Phase 2 batch complete |
-| `multi-select` | `CoveredByExistingSuite` | `tests/Attributes/muli-select.test.html` | Optional: add 1 focused edge-case/event assertion | Already mapped to robust JS-facing suite(s); verify during Phase 0 review |
+| `multi-select` | `Done` | `tests/Attributes/muli-select.test.html` | Validated existing attribute suite coverage; no expansion required | Existing suite already provides robust JS-facing multi-select assertions |
 | `multi-select-all-options-selected` | `Done` | `tests/Attributes/muli-select.test.html` | Expanded mapped attribute suite with all-options-selected assertions | Phase 2 batch complete |
 | `multi-select-blur-or-unfocused-value-change` | `Done` | `tests/Attributes/muli-select.test.html` | Expanded mapped attribute suite with blurOrUnfocusedValueChanged assertions | Phase 2 batch complete |
 | `multi-select-comma-seperated-values` | `Done` | `tests/Attributes/selected-value-encoding.test.html` | Expanded mapped encoding suite with comma-encoded multi-select contract assertions | Phase 2 batch complete |
-| `multi-select-json-seperated-values` | `Done` | `tests/Attributes/selected-value-encoding.test.html` | Expanded mapped encoding suite with json-encoded multi-select contract assertions | Phase 2 batch complete |
+| `multi-select-json-seperated-values` | `Done` | `tests/Attributes/selected-value-encoding.test.html` | Expanded mapped encoding suite with JSON-encoded multi-select contract assertions | Phase 2 batch complete |
 | `multi-select-option-deselected-event` | `Done` | `tests/Events/selecting-options.test.html` | Expanded mapped event suite with multi-select optionDeselected contract assertions | Phase 2 batch complete |
-| `multi-select-single-item-removal` | `CoveredByExistingSuite` | `tests/Attributes/multi-select-single-item-removal.test.html`, `tests/Attributes/muli-select.test.html` | Optional: add 1 focused edge-case/event assertion | Already mapped to robust JS-facing suite(s); verify during Phase 0 review |
+| `multi-select-single-item-removal` | `Done` | `tests/Attributes/multi-select-single-item-removal.test.html`, `tests/Attributes/muli-select.test.html` | Validated existing attribute suite coverage; no expansion required | Existing suite already provides robust JS-facing single-item-removal assertions |
 | `multi-select-value-changed-event` | `Done` | `tests/Events/selecting-options.test.html` | Expanded mapped event suite with multi-select valueChanged payload assertions | Phase 2 batch complete |
 | `multi-select-value-cleared` | `Done` | `tests/Events/selecting-options.test.html` | Expanded mapped event suite with valueCleared + selectedValue reset assertions | Phase 2 batch complete |
 | `no-value-no-options` | `Done` | `tests/ExamplesWeb/no-value-no-options.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
 | `not-just-english-options` | `Done` | `tests/ExamplesWeb/not-just-english-options.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
 | `one-empty-option-with-a-label` | `Done` | `tests/ExamplesWeb/one-empty-option-with-a-label.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
-| `option-groups` | `CoveredByExistingSuite` | `tests/Attributes/option-sorting.test.html`, `tests/Dropdown/dropdown-ordering.test.html` | Optional: add 1 focused edge-case/event assertion | Already mapped to robust JS-facing suite(s); verify during Phase 0 review |
+| `option-groups` | `Done` | `tests/Attributes/option-sorting.test.html`, `tests/Dropdown/dropdown-ordering.test.html` | Validated existing suite coverage; no expansion required | Existing suites already provide robust JS-facing option-group/sorting assertions |
 | `options-with-descriptions` | `Done` | `tests/ExamplesWeb/options-with-descriptions.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
-| `output-style-datalist` | `CoveredByExistingSuite` | `tests/Attributes/output-style.test.html` | Optional: add 1 focused edge-case/event assertion | Already mapped to robust JS-facing suite(s); verify during Phase 0 review |
+| `output-style-datalist` | `Done` | `tests/Attributes/output-style.test.html` | Validated existing attribute suite coverage; no expansion required | Existing suite already provides robust JS-facing output-style assertions |
 | `output-style-datalist-multi-select` | `Done` | `tests/Attributes/output-style.test.html` | Expanded mapped output-style suite with datalist multi-select assertions | Phase 2 batch complete |
 | `output-style-datalist-multi-select-with-selected-values` | `Done` | `tests/Attributes/output-style.test.html` | Expanded mapped output-style suite with comma selected-values assertions | Phase 2 batch complete |
 | `output-style-datalist-multi-select-with-selected-values-json-value-selected` | `Done` | `tests/Attributes/output-style.test.html` | Expanded mapped output-style suite with JSON selected-values assertions | Phase 2 batch complete |
@@ -80,7 +80,7 @@ Generated for Phase 0 inventory from `examples/*.html` and current `tests/**/*.t
 | `override-no-options-slot` | `Done` | `tests/ExamplesWeb/override-no-options-slot.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
 | `override-the-clear-button` | `Done` | `tests/ExamplesWeb/override-the-clear-button.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
 | `override-the-clear-button-with-an-svg` | `Done` | `tests/ExamplesWeb/override-the-clear-button-with-an-svg.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
-| `placeholder` | `CoveredByExistingSuite` | `tests/Attributes/placeholder.test.html` | Optional: add 1 focused edge-case/event assertion | Already mapped to robust JS-facing suite(s); verify during Phase 0 review |
+| `placeholder` | `Done` | `tests/Attributes/placeholder.test.html` | Validated existing attribute suite coverage; no expansion required | Existing suite already provides robust JS-facing placeholder assertions |
 | `ready-event` | `Done` | `tests/ExamplesWeb/ready-event.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
 | `remote-api-example` | `Done` | `tests/ExamplesWeb/remote-api-example.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
 | `remove-an-option-from-a-much-select` | `Done` | `tests/ExamplesWeb/remove-an-option-from-a-much-select.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
@@ -90,8 +90,8 @@ Generated for Phase 0 inventory from `examples/*.html` and current `tests/**/*.t
 | `selected-option-with-async-options` | `Done` | `tests/ExamplesWeb/selected-option-with-async-options.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
 | `selected-option-with-async-options-small` | `Done` | `tests/ExamplesWeb/selected-option-with-async-options-small.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
 | `selected-option-with-multi-select-with-async-options-small` | `Done` | `tests/ExamplesWeb/selected-option-with-multi-select-with-async-options-small.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
-| `selected-value` | `CoveredByExistingSuite` | `tests/Attributes/selected-value.test.html`, `tests/Option/initial-options.test.html` | Optional: add 1 focused edge-case/event assertion | Already mapped to robust JS-facing suite(s); verify during Phase 0 review |
-| `show-dropdown-footer` | `CoveredByExistingSuite` | `tests/Attributes/show-dropdown-footer.test.html` | Optional: add 1 focused edge-case/event assertion | Already mapped to robust JS-facing suite(s); verify during Phase 0 review |
+| `selected-value` | `Done` | `tests/Attributes/selected-value.test.html`, `tests/Option/initial-options.test.html` | Validated existing suite coverage; no expansion required | Existing suites already provide robust JS-facing selected-value assertions |
+| `show-dropdown-footer` | `Done` | `tests/Attributes/show-dropdown-footer.test.html` | Validated existing attribute suite coverage; no expansion required | Existing suite already provides robust JS-facing dropdown-footer assertions |
 | `simple-example` | `Done` | `tests/ExamplesWeb/simple-example.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
 | `single-select-blur-or-unfocused-value-change` | `Done` | `tests/ExamplesWeb/single-select-blur-or-unfocused-value-change.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
 | `single-select-json-seperated-values` | `Done` | `tests/Attributes/selected-value-encoding.test.html` | Expanded mapped encoding suite with single-select JSON contract assertions | Phase 2 batch complete |
