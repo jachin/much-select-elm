@@ -16,6 +16,7 @@
       "start": ["npm start"],
       "test": ["npm test"],
       "web-test-runner": "npm run web-test-runner",
+      "web-test-runner-debug": "npm run web-test-runner-debug",
       "web-test-runner-with-coverage": [
         "npm run web-test-runner-with-coverage"
       ],
