@@ -36,14 +36,7 @@ type ValidationErrorMessage
 type ValidationResult
     = ValidationPass String Int
     | ValidationFailed String Int (List ValidationFailureMessage)
-    | ValidationPending String Int
-
-
-type ValidationStatus
-    = InputHasBeenValidated
-    | InputHasValidationPending
-    | InputHasFailedValidation
-    | InputValidationIsNotHappening
+    | ValidationPending Int
 
 
 getSelectedIndexFromValidationResult : ValidationResult -> Int
@@ -55,7 +48,7 @@ getSelectedIndexFromValidationResult validationResult =
         ValidationFailed _ selectedIndex _ ->
             selectedIndex
 
-        ValidationPending _ selectedIndex ->
+        ValidationPending selectedIndex ->
             selectedIndex
 
 
@@ -93,7 +86,7 @@ hasValidationFailed validationResult =
         ValidationFailed _ _ _ ->
             True
 
-        ValidationPending _ _ ->
+        ValidationPending _ ->
             False
 
 
@@ -106,7 +99,7 @@ hasValidationPending validationResult =
         ValidationFailed _ _ _ ->
             False
 
-        ValidationPending _ _ ->
+        ValidationPending _ ->
             True
 
 
@@ -119,7 +112,7 @@ getValidationFailures validationResult =
         ValidationFailed _ _ validationFailures ->
             validationFailures
 
-        ValidationPending _ _ ->
+        ValidationPending _ ->
             []
 
 
@@ -156,7 +149,7 @@ validate validator string selectedValueIndex =
                 ValidationFailed string selectedValueIndex [ ValidationFailureMessage level validationErrorMessage ]
 
         Custom ->
-            ValidationPending string selectedValueIndex
+            ValidationPending selectedValueIndex
 
 
 transformAndValidateFirstPass : ValueTransformAndValidate -> String -> Int -> ValidationResult
@@ -199,7 +192,7 @@ transformAndValidateSecondPass (ValueTransformAndValidate transformers validator
                     ValidationFailed _ _ _ ->
                         result
 
-                    ValidationPending _ _ ->
+                    ValidationPending _ ->
                         case customValidationResult of
                             CustomValidationPass _ selectedValueIndex_ ->
                                 ValidationPass valueString selectedValueIndex_
@@ -244,7 +237,6 @@ rollUpErrors transformedString results =
 
     else if List.any hasValidationPending results then
         ValidationPending
-            transformedString
             (getSelectedIndexFromValidationResults results)
 
     else

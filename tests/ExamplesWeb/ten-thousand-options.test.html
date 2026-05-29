@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <script type="module">
+      import { runTests } from "@web/test-runner-mocha";
+      import { expect } from "@esm-bundle/chai";
+      import { html, fixture, oneEvent, waitUntil } from "@open-wc/testing";
+
+      import MuchSelect from "../../dist/much-select-debug.js";
+
+      if (!customElements.get("much-select")) {
+        window.customElements.define("much-select", MuchSelect);
+      }
+
+      const makeOptions = (count) =>
+        Array.from({ length: count }, (_, index) => ({
+          value: `Item ${index + 1}`,
+        }));
+
+      runTests(() => {
+        describe("ExamplesWeb", () => {
+          describe("ten-thousand-options", () => {
+            it("initializes with by-option-label sorting and max-dropdown-items=10000", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select option-sorting="by-option-label" max-dropdown-items="10000">
+                  <select slot="select-input">
+                    <option>Zulu</option>
+                    <option>Alpha</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+              expect(await el.maxDropdownItems).to.equal(10000);
+              expect(await el.optionSorting).to.equal("by-option-label");
+            });
+
+            it("can accept a large option set via addOptions", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select option-sorting="by-option-label" max-dropdown-items="10000"></much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              el.addOptions(makeOptions(1500));
+
+              await waitUntil(async () => {
+                const options = await el.getAllOptions();
+                return options.length >= 1500;
+              }, "Expected large option set to be loaded");
+            });
+
+            it("can select an option from a large loaded set", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select option-sorting="by-option-label" max-dropdown-items="10000"></much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              el.addOptions(makeOptions(1500));
+              await waitUntil(async () => (await el.getAllOptions()).length >= 1500);
+
+              const selected = oneEvent(el, "optionSelected");
+              el.selectOption("Item 1499");
+
+              const evt = await selected;
+              expect(evt.detail.value).to.equal("Item 1499");
+              expect(await el.selectedValue).to.equal("Item 1499");
+            });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

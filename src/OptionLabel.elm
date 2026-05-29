@@ -49,7 +49,7 @@ optionLabelToSearchString optionLabel =
         OptionLabel string maybeCleanString _ ->
             case maybeCleanString of
                 Just cleanString ->
-                    cleanString
+                    String.toLower cleanString
 
                 Nothing ->
                     String.toLower string

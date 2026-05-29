@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <script type="module">
+      import { runTests } from "@web/test-runner-mocha";
+      import { expect } from "@esm-bundle/chai";
+      import {
+        html,
+        fixture,
+        nextFrame,
+        oneEvent,
+        waitUntil,
+      } from "@open-wc/testing";
+
+      import MuchSelect from "../../dist/much-select-debug.js";
+
+      if (!customElements.get("much-select")) {
+        window.customElements.define("much-select", MuchSelect);
+      }
+
+      runTests(() => {
+        describe("ExamplesWeb", () => {
+          describe("validation-and-transformation-slot-multi-custom-html", () => {
+            it("starts in multi-select custom-html mode with transformation-validation slot", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select allow-custom-options multi-select>
+                  <script
+                    type="application/json"
+                    slot="transformation-validation"
+                  >
+                    {
+                      "transformers": [{ "name": "lowercase" }],
+                      "validators": [
+                        {
+                          "name": "no-white-space",
+                          "level": "silent",
+                          "message": "Spaces are not allow for custom fruit."
+                        },
+                        {
+                          "name": "minimum-length",
+                          "level": "silent",
+                          "minimum-length": 3,
+                          "message": "The minimum length is 3."
+                        }
+                      ]
+                    }
+                  <\/script>
+                  <select slot="select-input">
+                    <option>Custard apple</option>
+                    <option>Strawberry</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+              expect(await el.isInMultiSelectMode).to.be.true;
+              expect(await el.outputStyle).to.equal("custom-html");
+            });
+
+            it("allows updating the transformation-validation slot", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select allow-custom-options multi-select>
+                  <script
+                    type="application/json"
+                    slot="transformation-validation"
+                  >
+                    {
+                      "transformers": [{ "name": "lowercase" }],
+                      "validators": []
+                    }
+                  <\/script>
+                  <select slot="select-input">
+                    <option>Custard apple</option>
+                    <option>Strawberry</option>
+                  </select>
+                </much-select>`,
+              );
+              await oneEvent(el, "muchSelectReady");
+
+              const slot = el.querySelector(
+                '[slot="transformation-validation"]',
+              );
+              slot.textContent = JSON.stringify({
+                transformers: [{ name: "lowercase" }],
+                validators: [
+                  {
+                    name: "no-white-space",
+                    level: "silent",
+                    message: "Spaces are not allow for custom fruit.",
+                  },
+                ],
+              });
+
+              await nextFrame();
+              expect(slot.textContent).to.include("no-white-space");
+            });
+
+            it("supports selecting multiple existing values", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select allow-custom-options multi-select>
+                  <script
+                    type="application/json"
+                    slot="transformation-validation"
+                  >
+                    {
+                      "transformers": [{ "name": "lowercase" }],
+                      "validators": []
+                    }
+                  <\/script>
+                  <select slot="select-input">
+                    <option>Custard apple</option>
+                    <option>Strawberry</option>
+                    <option>Biribá</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              el.selectOption("Strawberry");
+              await oneEvent(el, "optionSelected");
+              el.selectOption("Biribá");
+              await oneEvent(el, "optionSelected");
+
+              await waitUntil(async () => {
+                const values = await el.selectedValue;
+                return (
+                  Array.isArray(values) &&
+                  values.includes("Strawberry") &&
+                  values.includes("Biribá")
+                );
+              });
+            });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <script type="module">
+      import { runTests } from "@web/test-runner-mocha";
+      import { expect } from "@esm-bundle/chai";
+      import { html, fixture, oneEvent, waitUntil } from "@open-wc/testing";
+
+      import MuchSelect from "../../dist/much-select-debug.js";
+
+      if (!customElements.get("much-select")) {
+        window.customElements.define("much-select", MuchSelect);
+      }
+
+      runTests(() => {
+        describe("ExamplesWeb", () => {
+          describe("override-no-options-slot", () => {
+            it("renders custom no-options slot content", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select>
+                  <div slot="no-options">Nothing to see here...</div>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              const slot = el.shadowRoot.querySelector(
+                'slot[name="no-options"]',
+              );
+              expect(slot).to.exist;
+
+              const assigned = slot.assignedElements({ flatten: true });
+              expect(assigned.length).to.equal(1);
+              expect(assigned[0].textContent.trim()).to.equal(
+                "Nothing to see here...",
+              );
+            });
+
+            it("has no selectable options", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select>
+                  <div slot="no-options">Nothing to see here...</div>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              const options = await el.getAllOptions();
+              expect(options).to.eql([]);
+            });
+
+            it("exposes no-options content through the slot assignment", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select>
+                  <div slot="no-options">Nothing to see here...</div>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              await waitUntil(() => {
+                const slot = el.shadowRoot.querySelector(
+                  'slot[name="no-options"]',
+                );
+                if (!slot) {
+                  return false;
+                }
+
+                const assigned = slot.assignedElements({ flatten: true });
+                return (
+                  assigned.length === 1 &&
+                  assigned[0].textContent.trim() === "Nothing to see here..."
+                );
+              }, "Expected no-options slot assignment to include custom text");
+            });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

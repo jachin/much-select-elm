@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <script type="module">
+      import { runTests } from "@web/test-runner-mocha";
+      import { expect } from "@esm-bundle/chai";
+      import { html, fixture, oneEvent, waitUntil } from "@open-wc/testing";
+      import { sendKeys } from "@web/test-runner-commands";
+
+      import MuchSelect from "../../dist/much-select-debug.js";
+
+      if (!customElements.get("much-select")) {
+        window.customElements.define("much-select", MuchSelect);
+      }
+
+      runTests(() => {
+        describe("ExamplesWeb", () => {
+          describe("custom-option-label-text-3", () => {
+            it("enables custom options with a raw placeholder hint", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select allow-custom-options="{{}}">
+                  <select slot="select-input">
+                    <option>Back Rubs</option>
+                    <option>Baby Sitting</option>
+                    <option>Pies</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+              expect(await el.allowCustomOptions).to.be.true;
+              expect(await el.customOptionHint).to.equal("{{}}");
+            });
+
+            it("renders custom option label as the typed value only", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select allow-custom-options="{{}}">
+                  <select slot="select-input">
+                    <option>Back Rubs</option>
+                    <option>Baby Sitting</option>
+                    <option>Pies</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              el.shadowRoot.getElementById("input-filter").focus();
+              await sendKeys({ type: "Bitcoin" });
+
+              await waitUntil(() => {
+                const dropdownText = el.shadowRoot.getElementById("dropdown").textContent;
+                return dropdownText.includes("Bitcoin");
+              }, "Expected dropdown to include the custom value");
+
+              const dropdownText = el.shadowRoot.getElementById("dropdown").textContent;
+              expect(dropdownText).to.not.include("{{}}");
+            });
+
+            it("does not add custom row for exact existing option matches", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select allow-custom-options="{{}}">
+                  <select slot="select-input">
+                    <option>Back Rubs</option>
+                    <option>Baby Sitting</option>
+                    <option>Pies</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              el.shadowRoot.getElementById("input-filter").focus();
+              await sendKeys({ type: "Pies" });
+
+              await waitUntil(() => {
+                const dropdownText = el.shadowRoot.getElementById("dropdown").textContent;
+                return dropdownText.includes("Pies");
+              });
+
+              const dropdownText = el.shadowRoot.getElementById("dropdown").textContent;
+              expect(dropdownText).to.not.include("PiesPies");
+            });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

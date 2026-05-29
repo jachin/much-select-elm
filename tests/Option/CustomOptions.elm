@@ -1,17 +1,16 @@
 module Option.CustomOptions exposing (suite)
 
-import Expect exposing (Expectation)
+import Expect
 import MuchSelect
     exposing
         ( updateModelWithChangesThatEffectTheOptionsWithSearchString
         )
-import Option exposing (Option(..), select, test_newFancyCustomOptionWithCleanString, test_newFancyCustomOptionWithLabelAndMaybeCleanString, test_newFancyOption)
+import Option exposing (select, test_newFancyCustomOptionWithCleanString, test_newFancyCustomOptionWithLabelAndMaybeCleanString, test_newFancyOption)
 import OptionList exposing (OptionList(..), prependCustomOption, removeUnselectedCustomOptions, selectOptionByOptionValue, test_newFancyOptionList)
 import OptionValue exposing (stringToOptionValue)
 import OutputStyle
     exposing
         ( MaxDropdownItems(..)
-        , SearchStringMinimumLength(..)
         , SingleItemRemoval(..)
         )
 import PositiveInt
@@ -19,10 +18,7 @@ import RightSlot exposing (RightSlot(..))
 import SearchString
 import SelectionMode
     exposing
-        ( OutputStyle(..)
-        , SelectionConfig(..)
-        , SelectionMode(..)
-        , defaultSelectionConfig
+        ( defaultSelectionConfig
         , setAllowCustomOptionsWithBool
         , setSingleItemRemoval
         )

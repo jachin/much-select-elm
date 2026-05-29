@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <script type="module">
+      import { runTests } from "@web/test-runner-mocha";
+      import { expect } from "@esm-bundle/chai";
+      import { html, fixture, oneEvent, waitUntil } from "@open-wc/testing";
+
+      import MuchSelect from "../../dist/much-select-debug.js";
+
+      if (!customElements.get("much-select")) {
+        window.customElements.define("much-select", MuchSelect);
+      }
+
+      runTests(() => {
+        describe("ExamplesWeb", () => {
+          describe("add-and-remove-button-slots", () => {
+            it("renders custom add/remove slot content for selected indexes", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select output-style="datalist" multi-select>
+                  <select slot="select-input">
+                    <option>Monday</option>
+                    <option selected>Tuesday</option>
+                    <option>Wednesday</option>
+                    <option>Thursday</option>
+                    <option selected>Friday</option>
+                    <option>Saturday</option>
+                    <option>Sunday</option>
+                  </select>
+                  <span slot="add-value-button-0">➕</span>
+                  <span slot="remove-value-button-0">🗑</span>
+                  <span slot="add-value-button-1"><button type="button">moar</button></span>
+                  <span slot="remove-value-button-1"><button type="button">less</button></span>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              await waitUntil(() => {
+                return (
+                  el.shadowRoot.querySelector('slot[name="add-value-button-0"]') &&
+                  el.shadowRoot.querySelector('slot[name="remove-value-button-0"]') &&
+                  el.shadowRoot.querySelector('slot[name="add-value-button-1"]') &&
+                  el.shadowRoot.querySelector('slot[name="remove-value-button-1"]')
+                );
+              });
+
+              const add0 = el.shadowRoot.querySelector('slot[name="add-value-button-0"]');
+              const remove0 = el.shadowRoot.querySelector(
+                'slot[name="remove-value-button-0"]',
+              );
+              const add1 = el.shadowRoot.querySelector('slot[name="add-value-button-1"]');
+              const remove1 = el.shadowRoot.querySelector(
+                'slot[name="remove-value-button-1"]',
+              );
+
+              expect(add0.assignedElements({ flatten: true })[0].textContent.trim()).to.equal(
+                "➕",
+              );
+              expect(
+                remove0.assignedElements({ flatten: true })[0].textContent.trim(),
+              ).to.equal("🗑");
+              expect(add1.assignedElements({ flatten: true })[0].textContent).to.include(
+                "moar",
+              );
+              expect(
+                remove1.assignedElements({ flatten: true })[0].textContent,
+              ).to.include("less");
+            });
+
+            it("starts with Tuesday and Friday selected", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select output-style="datalist" multi-select>
+                  <select slot="select-input">
+                    <option>Monday</option>
+                    <option selected>Tuesday</option>
+                    <option>Wednesday</option>
+                    <option>Thursday</option>
+                    <option selected>Friday</option>
+                    <option>Saturday</option>
+                    <option>Sunday</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              expect(await el.selectedValue).to.eql(["Tuesday", "Friday"]);
+            });
+
+            it("clicking remove button wrapper removes one selected value", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select output-style="datalist" multi-select>
+                  <select slot="select-input">
+                    <option>Monday</option>
+                    <option selected>Tuesday</option>
+                    <option>Wednesday</option>
+                    <option>Thursday</option>
+                    <option selected>Friday</option>
+                    <option>Saturday</option>
+                    <option>Sunday</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              const changed = oneEvent(el, "valueChanged");
+
+              const removeButtonWrapper = el.shadowRoot.querySelector(
+                ".remove-button-wrapper",
+              );
+              removeButtonWrapper.click();
+
+              await changed;
+
+              await waitUntil(async () => {
+                const value = await el.selectedValue;
+                return Array.isArray(value) && value.length === 1;
+              }, "Expected one selected value to be removed");
+            });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

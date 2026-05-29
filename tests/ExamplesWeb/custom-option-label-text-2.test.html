@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <script type="module">
+      import { runTests } from "@web/test-runner-mocha";
+      import { expect } from "@esm-bundle/chai";
+      import { html, fixture, oneEvent, waitUntil } from "@open-wc/testing";
+      import { sendKeys } from "@web/test-runner-commands";
+
+      import MuchSelect from "../../dist/much-select-debug.js";
+
+      if (!customElements.get("much-select")) {
+        window.customElements.define("much-select", MuchSelect);
+      }
+
+      runTests(() => {
+        describe("ExamplesWeb", () => {
+          describe("custom-option-label-text-2", () => {
+            it("uses placeholder-based custom option hint", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select
+                  allow-custom-options="Create currency {{}}..."
+                >
+                  <select slot="select-input">
+                    <option>Itchy and Scrachy Money</option>
+                    <option>Merits</option>
+                    <option>Diamonds</option>
+                  </select>
+                </much-select>`,
+              );
+              await oneEvent(el, "muchSelectReady");
+
+              el.shadowRoot.getElementById("input-filter").focus();
+              await sendKeys({ type: "Dollars" });
+
+              await waitUntil(() => {
+                const dropdown = el.shadowRoot.getElementById("dropdown");
+                return dropdown.textContent.includes(
+                  "Create currency Dollars...",
+                );
+              }, "Expected placeholder-based custom label text");
+            });
+
+            it("exact match suppresses placeholder custom row", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select
+                  allow-custom-options="Create currency {{}}..."
+                >
+                  <select slot="select-input">
+                    <option>Merits</option>
+                    <option>Diamonds</option>
+                  </select>
+                </much-select>`,
+              );
+              await oneEvent(el, "muchSelectReady");
+
+              el.shadowRoot.getElementById("input-filter").focus();
+              await sendKeys({ type: "Merits" });
+
+              await waitUntil(() => {
+                const dropdown = el.shadowRoot.getElementById("dropdown");
+                return dropdown.textContent.includes("Merits");
+              }, "Expected existing option row to be visible");
+
+              const text = el.shadowRoot.getElementById("dropdown").textContent;
+              expect(text).to.not.include("Create currency Merits...");
+            });
+
+            it("exposes placeholder custom option hint via property", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select
+                  allow-custom-options="Create currency {{}}..."
+                >
+                  <select slot="select-input">
+                    <option>Diamonds</option>
+                  </select>
+                </much-select>`,
+              );
+              await oneEvent(el, "muchSelectReady");
+
+              expect(await el.customOptionHint).to.equal(
+                "Create currency {{}}...",
+              );
+              expect(await el.allowCustomOptions).to.be.true;
+            });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <script type="module">
+      import { runTests } from "@web/test-runner-mocha";
+      import { expect } from "@esm-bundle/chai";
+      import {
+        html,
+        fixture,
+        nextFrame,
+        oneEvent,
+        waitUntil,
+      } from "@open-wc/testing";
+
+      import MuchSelect from "../../dist/much-select-debug.js";
+
+      if (!customElements.get("much-select")) {
+        window.customElements.define("much-select", MuchSelect);
+      }
+
+      runTests(() => {
+        describe("ExamplesWeb", () => {
+          describe("empty-option-with-label-and-other-options-2", () => {
+            it("parses empty option and transport options", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select>
+                  <select slot="select-input">
+                    <option value=""></option>
+                    <option value="car">Car</option>
+                    <option value="truck">Truck</option>
+                    <option value="van" disabled="true">Van</option>
+                    <option value="plane">Plane</option>
+                    <option value="boat">boat</option>
+                    <option value="train">Train</option>
+                    <option value="tank">Tank</option>
+                    <option value="teleporter">Teleporter</option>
+                    <option value="back_of_a_gorilla">Back of a Gorilla</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              const options = await el.getAllOptions();
+              expect(options).to.have.lengthOf(10);
+              expect(options[0].value).to.equal("");
+              expect(options.map((o) => o.value)).to.include.members([
+                "car",
+                "truck",
+                "teleporter",
+                "back_of_a_gorilla",
+              ]);
+            });
+
+            it("does not allow selecting the disabled van option", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select>
+                  <select slot="select-input">
+                    <option value=""></option>
+                    <option value="car">Car</option>
+                    <option value="truck">Truck</option>
+                    <option value="van" disabled="true">Van</option>
+                    <option value="plane">Plane</option>
+                    <option value="boat">boat</option>
+                    <option value="train">Train</option>
+                    <option value="tank">Tank</option>
+                    <option value="teleporter">Teleporter</option>
+                    <option value="back_of_a_gorilla">Back of a Gorilla</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              el.selectOption("van");
+              await nextFrame();
+
+              expect(await el.selectedValue).to.not.equal("van");
+            });
+
+            it("supports selecting and deselecting a non-empty option", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select>
+                  <select slot="select-input">
+                    <option value=""></option>
+                    <option value="car">Car</option>
+                    <option value="truck">Truck</option>
+                    <option value="van" disabled="true">Van</option>
+                    <option value="plane">Plane</option>
+                    <option value="boat">boat</option>
+                    <option value="train">Train</option>
+                    <option value="tank">Tank</option>
+                    <option value="teleporter">Teleporter</option>
+                    <option value="back_of_a_gorilla">Back of a Gorilla</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              const selected = oneEvent(el, "optionSelected");
+              el.selectOption("car");
+              const selectedEvt = await selected;
+              expect(selectedEvt.detail.value).to.equal("car");
+
+              await waitUntil(async () => (await el.selectedValue) === "car");
+
+              const deselected = oneEvent(el, "optionDeselected");
+              el.deselectOption("car");
+              const deselectedEvt = await deselected;
+              expect(deselectedEvt.detail.value).to.equal("car");
+            });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

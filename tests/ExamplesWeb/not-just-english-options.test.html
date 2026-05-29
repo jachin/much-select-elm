@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <script type="module">
+      import { runTests } from "@web/test-runner-mocha";
+      import { expect } from "@esm-bundle/chai";
+      import { html, fixture, oneEvent, waitUntil } from "@open-wc/testing";
+
+      import MuchSelect from "../../dist/much-select-debug.js";
+
+      if (!customElements.get("much-select")) {
+        window.customElements.define("much-select", MuchSelect);
+      }
+
+      runTests(() => {
+        describe("ExamplesWeb", () => {
+          describe("not-just-english-options", () => {
+            it("loads all options including diacritics", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select>
+                  <select slot="select-input">
+                    <option>hvid</option>
+                    <option>gul</option>
+                    <option>orange</option>
+                    <option>pink</option>
+                    <option>rød</option>
+                    <option>brun</option>
+                    <option>grøn</option>
+                    <option>blå</option>
+                    <option>lilla</option>
+                    <option>grå</option>
+                    <option>sølvfarvet</option>
+                    <option>guldfarvet</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              const options = await el.getAllOptions();
+              expect(options).to.have.lengthOf(12);
+              expect(options.map((option) => option.value)).to.include.members([
+                "rød",
+                "grøn",
+                "blå",
+                "grå",
+              ]);
+            });
+
+            it("selectOption supports selecting a value with diacritics", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select>
+                  <select slot="select-input">
+                    <option>rød</option>
+                    <option>grøn</option>
+                    <option>blå</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              const selected = oneEvent(el, "optionSelected");
+              el.selectOption("rød");
+
+              const evt = await selected;
+              expect(evt.detail.value).to.equal("rød");
+              expect(await el.selectedValue).to.equal("rød");
+            });
+
+            it("deselectOption supports deselecting a value with diacritics", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select selected-value="rød">
+                  <select slot="select-input">
+                    <option>rød</option>
+                    <option>grøn</option>
+                    <option>blå</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              const deselected = oneEvent(el, "optionDeselected");
+              el.deselectOption("rød");
+
+              const evt = await deselected;
+              expect(evt.detail.value).to.equal("rød");
+
+              await waitUntil(async () => {
+                const value = await el.selectedValue;
+                return value === "" || value === null;
+              });
+            });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

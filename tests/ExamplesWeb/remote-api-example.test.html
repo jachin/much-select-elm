@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <script type="module">
+      import { runTests } from "@web/test-runner-mocha";
+      import { expect } from "@esm-bundle/chai";
+      import { html, fixture, oneEvent, waitUntil } from "@open-wc/testing";
+      import { sendKeys } from "@web/test-runner-commands";
+
+      import MuchSelect from "../../dist/much-select-debug.js";
+
+      if (!customElements.get("much-select")) {
+        window.customElements.define("much-select", MuchSelect);
+      }
+
+      runTests(() => {
+        describe("ExamplesWeb", () => {
+          describe("remote-api-example", () => {
+            it("emits inputKeyUpDebounced after typing", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select></much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              const debounced = oneEvent(el, "inputKeyUpDebounced");
+
+              el.shadowRoot.getElementById("input-filter").focus();
+              await sendKeys({ type: "rick" });
+
+              const evt = await debounced;
+              expect(evt.detail.searchString).to.equal("rick");
+            });
+
+            it("remote-api handler toggles loading and adds options", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select></much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              el.addEventListener("inputKeyUpDebounced", (evt) => {
+                const { searchString } = evt.detail;
+                if (searchString.length < 3) {
+                  return;
+                }
+
+                el.loading = true;
+                el.addOption({ value: "Rick Sanchez" });
+                el.addOption({ value: "Birdperson" });
+                el.loading = false;
+              });
+
+              el.dispatchEvent(
+                new CustomEvent("inputKeyUpDebounced", {
+                  bubbles: true,
+                  detail: { searchString: "ric" },
+                }),
+              );
+
+              await waitUntil(async () => {
+                const options = await el.getAllOptions();
+                const isLoading = await el.loading;
+                return (
+                  options.some((option) => option.value === "Rick Sanchez") &&
+                  options.some((option) => option.value === "Birdperson") &&
+                  isLoading === false
+                );
+              }, "Expected remote options to be loaded and loading to clear");
+            });
+
+            it("remote-api handler ignores short search strings", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select></much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              el.addEventListener("inputKeyUpDebounced", (evt) => {
+                if (evt.detail.searchString.length < 3) {
+                  return;
+                }
+                el.addOption({ value: "ShouldNotAppear" });
+              });
+
+              el.dispatchEvent(
+                new CustomEvent("inputKeyUpDebounced", {
+                  bubbles: true,
+                  detail: { searchString: "ri" },
+                }),
+              );
+
+              const options = await el.getAllOptions();
+              expect(
+                options.some((option) => option.value === "ShouldNotAppear"),
+              ).to.be.false;
+            });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

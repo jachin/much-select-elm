@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+<script type="module">
+  import { runTests } from "@web/test-runner-mocha";
+  import { expect } from "@esm-bundle/chai";
+  import { html, fixture, oneEvent, waitUntil } from "@open-wc/testing";
+
+  import MuchSelect from "../../dist/much-select-debug.js";
+
+  if (!customElements.get("much-select")) {
+    window.customElements.define("much-select", MuchSelect);
+  }
+
+  const localStorageKey = "custom-options-that-persist";
+
+  runTests(() => {
+    describe("ExamplesWeb", () => {
+      describe("custom-options-that-persist", () => {
+        it("initializes localStorage when no custom options exist", async () => {
+          window.localStorage.removeItem(localStorageKey);
+
+          const el = /** @type {MuchSelect} */ await fixture(
+            html`<much-select allow-custom-options="">
+              <select slot="select-input">
+                <option value="Bánh mì">Bánh mì</option>
+                <option value="Cheese steak">Cheese steak</option>
+                <option value="Po' boy">Po' boy</option>
+              </select>
+            </much-select>`,
+          );
+
+          el.addEventListener("muchSelectReady", () => {
+            const customOptionsAsString = window.localStorage.getItem(localStorageKey);
+            if (customOptionsAsString === null) {
+              window.localStorage.setItem(localStorageKey, JSON.stringify([]));
+            }
+          });
+
+          await oneEvent(el, "muchSelectReady");
+          expect(window.localStorage.getItem(localStorageKey)).to.equal("[]");
+        });
+
+        it("loads persisted custom options on ready", async () => {
+          window.localStorage.setItem(localStorageKey, JSON.stringify(["Burrito", "Gyro"]));
+
+          const el = /** @type {MuchSelect} */ await fixture(
+            html`<much-select allow-custom-options="">
+              <select slot="select-input">
+                <option value="Bánh mì">Bánh mì</option>
+                <option value="Cheese steak">Cheese steak</option>
+                <option value="Po' boy">Po' boy</option>
+              </select>
+            </much-select>`,
+          );
+
+          el.addEventListener("muchSelectReady", () => {
+            const customOptions = JSON.parse(window.localStorage.getItem(localStorageKey));
+            el.addOptions(customOptions);
+          });
+
+          await oneEvent(el, "muchSelectReady");
+
+          await waitUntil(async () => {
+            const options = await el.getAllOptions();
+            return options.some((option) => option.value === "Burrito")
+              && options.some((option) => option.value === "Gyro");
+          }, "Expected persisted options to be added to much-select");
+        });
+
+        it("persists newly selected custom value to localStorage", async () => {
+          window.localStorage.setItem(localStorageKey, JSON.stringify(["Bánh mì"]));
+
+          const el = /** @type {MuchSelect} */ await fixture(
+            html`<much-select allow-custom-options="">
+              <select slot="select-input">
+                <option value="Bánh mì">Bánh mì</option>
+              </select>
+            </much-select>`,
+          );
+
+          el.addEventListener("muchSelectReady", () => {
+            el.addEventListener("customValueSelected", (evt) => {
+              const newValue = evt.detail.value;
+              const customOptions = JSON.parse(window.localStorage.getItem(localStorageKey));
+              customOptions.push(newValue);
+              window.localStorage.setItem(localStorageKey, JSON.stringify(customOptions));
+            });
+          });
+
+          await oneEvent(el, "muchSelectReady");
+
+          el.dispatchEvent(new CustomEvent("customValueSelected", {
+            bubbles: true,
+            detail: { value: "Torta" },
+          }));
+
+          const saved = JSON.parse(window.localStorage.getItem(localStorageKey));
+          expect(saved).to.deep.equal(["Bánh mì", "Torta"]);
+        });
+      });
+    });
+  });
+</script>
+</body>
+</html>

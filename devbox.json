@@ -7,7 +7,8 @@
     "npm-check-updates@latest",
     "elmPackages.elm-json@latest",
     "watchexec@latest",
-    "elmPackages.elm-review@latest"
+    "elmPackages.elm-review@latest",
+    "biome@latest"
   ],
   "shell": {
     "init_hook": ["echo 'Welcome to devbox!' > /dev/null"],
@@ -15,6 +16,7 @@
       "start": ["npm start"],
       "test": ["npm test"],
       "web-test-runner": "npm run web-test-runner",
+      "web-test-runner-debug": "npm run web-test-runner-debug",
       "web-test-runner-with-coverage": [
         "npm run web-test-runner-with-coverage"
       ],
@@ -29,6 +31,8 @@
       "deploy-site": "npm run build && npm run build-site && firebase deploy",
       "lint": "npm run lint",
       "format": "elm-format",
+      "biome-check": "biome check .",
+      "biome-format": "biome format --write .",
       "review": "npx elm-review",
       "check-npm-packages": ["ncu"],
       "check-elm-packages": ["elm-json upgrade"],

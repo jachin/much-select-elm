@@ -6,7 +6,6 @@ module SelectionMode exposing
     , defaultSelectionConfig
     , getCustomOptionHint
     , getCustomOptions
-    , getDropdownStyle
     , getEventMode
     , getInteractionState
     , getMaxDropdownItems
@@ -29,9 +28,7 @@ module SelectionMode exposing
     , setAllowCustomOptionsWithBool
     , setCustomOptionHint
     , setDropdownStyle
-    , setEventsMode
     , setEventsOnly
-    , setInteractionState
     , setIsDisabled
     , setIsFocused
     , setMaxDropdownItems
@@ -70,7 +67,7 @@ import OutputStyle
         , setEventsModeSingleSelect
         , setTransformAndValidateFromCustomOptions
         )
-import PositiveInt exposing (PositiveInt)
+import PositiveInt
 import TransformAndValidate exposing (ValueTransformAndValidate)
 
 

@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <script type="module">
+      import { runTests } from "@web/test-runner-mocha";
+      import { expect } from "@esm-bundle/chai";
+      import { html, fixture, oneEvent, waitUntil } from "@open-wc/testing";
+      import { sendKeys } from "@web/test-runner-commands";
+
+      import MuchSelect from "../../dist/much-select-debug.js";
+
+      if (!customElements.get("much-select")) {
+        window.customElements.define("much-select", MuchSelect);
+      }
+
+      runTests(() => {
+        describe("ExamplesWeb", () => {
+          describe("add-custom-options-2", () => {
+            it("typing exact existing option does not show Add custom option row", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select allow-custom-options>
+                  <select slot="select-input">
+                    <option>Flashlight</option>
+                    <option>Lantern</option>
+                    <option>Candle</option>
+                  </select>
+                </much-select>`,
+              );
+              await oneEvent(el, "muchSelectReady");
+
+              el.shadowRoot.getElementById("input-filter").focus();
+              await sendKeys({ type: "Flashlight" });
+
+              await waitUntil(() => {
+                const dropdown = el.shadowRoot.getElementById("dropdown");
+                return dropdown.textContent.includes("Flashlight");
+              }, "Expected matching existing option to appear");
+
+              const dropdownText =
+                el.shadowRoot.getElementById("dropdown").textContent;
+              expect(dropdownText).to.not.include("Add Flashlight…");
+            });
+
+            it("typing non-existing option shows Add custom option row", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select allow-custom-options>
+                  <select slot="select-input">
+                    <option>Flashlight</option>
+                    <option>Lantern</option>
+                    <option>Candle</option>
+                  </select>
+                </much-select>`,
+              );
+              await oneEvent(el, "muchSelectReady");
+
+              el.shadowRoot.getElementById("input-filter").focus();
+              await sendKeys({ type: "Torch" });
+
+              await waitUntil(() => {
+                const dropdown = el.shadowRoot.getElementById("dropdown");
+                return dropdown.textContent.includes("Add Torch…");
+              }, "Expected Add row for non-existing option");
+            });
+
+            it("keep allow-custom-options enabled with existing options", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select allow-custom-options>
+                  <select slot="select-input">
+                    <option>Flashlight</option>
+                  </select>
+                </much-select>`,
+              );
+              await oneEvent(el, "muchSelectReady");
+
+              expect(await el.allowCustomOptions).to.be.true;
+              expect(await el.customOptionHint).to.equal(null);
+            });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

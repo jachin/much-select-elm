@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <script type="module">
+      import { runTests } from "@web/test-runner-mocha";
+      import { expect } from "@esm-bundle/chai";
+      import { html, fixture, oneEvent, waitUntil } from "@open-wc/testing";
+
+      import MuchSelect from "../../dist/much-select-debug.js";
+
+      if (!customElements.get("much-select")) {
+        window.customElements.define("much-select", MuchSelect);
+      }
+
+      runTests(() => {
+        describe("ExamplesWeb", () => {
+          describe("update-options-add-options-to-an-empty-much-select", () => {
+            it("updateOptions adds options to an initially empty select", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(html`<much-select></much-select>`);
+              await oneEvent(el, "muchSelectReady");
+
+              el.updateOptions([
+                { value: "Bears", label: "Bears", description: "Chicago" },
+                { value: "Lions", label: "Lions", description: "Detroit" },
+                { value: "Packers", label: "Packers", description: "Green Bay" },
+                { value: "Vikings", label: "Vikings", description: "Minnesota" },
+              ]);
+
+              await waitUntil(async () => {
+                const options = await el.getAllOptions();
+                return options.length === 4;
+              }, "Expected 4 options after updateOptions");
+            });
+
+            it("keeps option descriptions passed through updateOptions", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(html`<much-select></much-select>`);
+              await oneEvent(el, "muchSelectReady");
+
+              el.updateOptions([
+                { value: "Bears", label: "Bears", description: "Chicago" },
+                { value: "Lions", label: "Lions", description: "Detroit" },
+              ]);
+
+              await waitUntil(async () => {
+                const options = await el.getAllOptions();
+                return options.some((o) => o.value === "Bears" && o.description === "Chicago");
+              }, "Expected descriptions to be present in options");
+            });
+
+            it("emits optionsUpdated with optionsReplaced=true for updateOptions", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(html`<much-select></much-select>`);
+              await oneEvent(el, "muchSelectReady");
+
+              const updated = oneEvent(el, "optionsUpdated");
+              el.updateOptions([{ value: "A" }, { value: "B" }]);
+
+              const evt = await updated;
+              expect(evt.detail.optionsReplaced).to.be.true;
+              expect(evt.detail.optionsUpdated).to.be.false;
+            });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

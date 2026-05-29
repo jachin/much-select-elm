@@ -6,7 +6,7 @@ import Json.Decode
 import Option exposing (test_newFancyOption)
 import OptionDisplay
 import OptionList exposing (test_newFancyOptionList)
-import OptionSearchFilter exposing (OptionSearchFilterWithValue)
+import OptionSearchFilter
 import OptionSearcher
 import OptionValue
 import OutputStyle

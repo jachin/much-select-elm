@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <script type="module">
+      import { runTests } from "@web/test-runner-mocha";
+      import { expect } from "@esm-bundle/chai";
+      import { html, fixture, oneEvent, waitUntil } from "@open-wc/testing";
+
+      import MuchSelect from "../../dist/much-select-debug.js";
+
+      if (!customElements.get("much-select")) {
+        window.customElements.define("much-select", MuchSelect);
+      }
+
+      runTests(() => {
+        describe("ExamplesWeb", () => {
+          describe("selected-option-with-async-options", () => {
+            it("retains initial selected value while async options are added", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select max-dropdown-items="30">
+                  <select slot="select-input">
+                    <option selected value="les Escaldes">les Escaldes</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "ready");
+
+              const possibleOptions = [
+                {
+                  value: "San Francisco",
+                  label: "San Francisco",
+                  description: "US",
+                },
+                { value: "Tokyo", label: "Tokyo", description: "JP" },
+              ];
+
+              window.setTimeout(() => {
+                possibleOptions.forEach((option) => {
+                  el.addOption(option);
+                });
+              }, 1);
+
+              await waitUntil(
+                async () => {
+                  const options = await el.getAllOptions();
+                  return (
+                    options.some(
+                      (option) => option.value === "San Francisco",
+                    ) && options.some((option) => option.value === "Tokyo")
+                  );
+                },
+                "Expected async options to be present",
+                { timeout: 4000 },
+              );
+
+              expect(await el.selectedValue).to.equal("les Escaldes");
+            });
+
+            it("can hydrate extra metadata for the initially selected option", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select max-dropdown-items="30">
+                  <select slot="select-input">
+                    <option selected value="les Escaldes">les Escaldes</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "ready");
+
+              el.addOption({
+                value: "les Escaldes",
+                label: "les Escaldes",
+                description: "Andorra",
+              });
+
+              await waitUntil(async () => {
+                const options = await el.getAllOptions();
+                return options.some(
+                  (option) =>
+                    option.value === "les Escaldes" &&
+                    option.description === "Andorra",
+                );
+              }, "Expected selected option metadata to be hydrated");
+            });
+
+            it("adds many async options without clearing existing option list", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select max-dropdown-items="30">
+                  <select slot="select-input">
+                    <option selected value="les Escaldes">les Escaldes</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "ready");
+
+              const asyncOptions = Array.from({ length: 10 }).map((_, i) => ({
+                value: `City-${i + 1}`,
+                label: `City-${i + 1}`,
+              }));
+
+              asyncOptions.forEach((option) => el.addOption(option));
+
+              await waitUntil(async () => {
+                const options = await el.getAllOptions();
+                return options.length >= 11;
+              }, "Expected all async options to be appended");
+            });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

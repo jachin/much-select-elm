@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <script type="module">
+      import { runTests } from "@web/test-runner-mocha";
+      import { expect } from "@esm-bundle/chai";
+      import { html, fixture, oneEvent, waitUntil } from "@open-wc/testing";
+
+      import MuchSelect from "../../dist/much-select-debug.js";
+
+      if (!customElements.get("much-select")) {
+        window.customElements.define("much-select", MuchSelect);
+      }
+
+      runTests(() => {
+        describe("ExamplesWeb", () => {
+          describe("remove-an-option-from-a-much-select", () => {
+            it("removeOption removes the matching option", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select>
+                  <select slot="select-input">
+                    <option>Ice Cream</option>
+                    <option>Cake</option>
+                    <option>Pie</option>
+                    <option>Candy</option>
+                    <option>Pudding</option>
+                  </select>
+                </much-select>`,
+              );
+              await oneEvent(el, "muchSelectReady");
+
+              el.removeOption({ value: "Cake" });
+
+              await waitUntil(async () => {
+                const options = await el.getAllOptions();
+                return !options.some((o) => o.value === "Cake");
+              }, "Expected Cake to be removed");
+            });
+
+            it("removeOptions removes multiple matching options", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select>
+                  <select slot="select-input">
+                    <option>Ice Cream</option>
+                    <option>Cake</option>
+                    <option>Pie</option>
+                    <option>Candy</option>
+                    <option>Pudding</option>
+                  </select>
+                </much-select>`,
+              );
+              await oneEvent(el, "muchSelectReady");
+
+              el.removeOptions([{ value: "Pie" }, { value: "Pudding" }]);
+
+              await waitUntil(async () => {
+                const options = await el.getAllOptions();
+                return (
+                  !options.some((o) => o.value === "Pie") &&
+                  !options.some((o) => o.value === "Pudding")
+                );
+              }, "Expected Pie and Pudding to be removed");
+            });
+
+            it("emits optionsUpdated event for removals", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select>
+                  <select slot="select-input">
+                    <option>Ice Cream</option>
+                    <option>Cake</option>
+                  </select>
+                </much-select>`,
+              );
+              await oneEvent(el, "muchSelectReady");
+
+              const updated = oneEvent(el, "optionsUpdated");
+              el.removeOption({ value: "Cake" });
+
+              const evt = await updated;
+              expect(evt.detail.optionsReplaced).to.be.true;
+              expect(evt.detail.optionsUpdated).to.be.false;
+            });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

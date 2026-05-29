@@ -1,4 +1,4 @@
-module FancyOption exposing (FancyOption, activate, decoder, decoderWithAge, deselect, encode, getMaybeOptionSearchFilter, getOptionDescription, getOptionDisplay, getOptionGroup, getOptionLabel, getOptionSelectedIndex, getOptionValue, getOptionValueAsString, highlightOption, isCustomOption, isEmptyOption, isOptionHighlighted, isOptionSelectedHighlighted, isSelected, merge, new, newCustomOption, newDisabledOption, newSelectedOption, optionIsHighlightable, removeHighlightFromOption, select, setDescription, setLabel, setOptionDisplay, setOptionGroup, setOptionLabelToValue, setOptionSearchFilter, setOptionSelectedIndex, setOptionValue, setPart, test_optionToDebuggingString, toDropdownHtml, toMultiSelectValueHtml, toSingleSelectValueHtml, toSingleSelectValueNoValueSelected)
+module FancyOption exposing (FancyOption, activate, decoder, decoderWithAge, deselect, encode, getMaybeOptionSearchFilter, getOptionDescription, getOptionDisplay, getOptionGroup, getOptionLabel, getOptionSelectedIndex, getOptionValue, highlightOption, isCustomOption, isEmptyOption, isOptionHighlighted, isOptionSelectedHighlighted, isSelected, merge, new, newCustomOption, newDisabledOption, newSelectedOption, optionIsHighlightable, removeHighlightFromOption, select, setDescription, setLabel, setOptionDisplay, setOptionGroup, setOptionSearchFilter, setOptionValue, setPart, test_optionToDebuggingString, toDropdownHtml, toMultiSelectValueHtml, toSingleSelectValueHtml, toSingleSelectValueNoValueSelected)
 
 import DropdownItemEventListeners exposing (DropdownItemEventListeners)
 import Events exposing (mouseDownPreventDefault, mouseUpPreventDefault, onClickPreventDefault, onClickPreventDefaultAndStopPropagation, onMouseUpStopPropagationAndPreventDefault)
@@ -8,7 +8,7 @@ import Html.Events exposing (onMouseEnter, onMouseLeave)
 import Html.Extra
 import Json.Decode
 import Json.Encode
-import OptionDescription exposing (OptionDescription(..))
+import OptionDescription exposing (OptionDescription)
 import OptionDisplay exposing (OptionDisplay(..))
 import OptionGroup exposing (OptionGroup(..))
 import OptionLabel exposing (OptionLabel, optionLabelToString)
@@ -18,7 +18,7 @@ import OptionSearchFilter exposing (OptionSearchFilter)
 import OptionValue exposing (OptionValue(..))
 import OutputStyle exposing (SingleItemRemoval(..))
 import PartAttribute
-import SelectionMode exposing (OutputStyle, SelectionConfig, SelectionMode)
+import SelectionMode exposing (SelectionMode)
 
 
 type FancyOption
@@ -629,8 +629,6 @@ toMultiSelectValueHtml toggleSelectedMsg deselectOptionInternal enableSingleItem
                 OptionShown _ ->
                     Html.Extra.nothing
 
-                OptionHidden ->
-                    Html.Extra.nothing
 
                 OptionSelected _ _ ->
                     div
@@ -678,8 +676,6 @@ toMultiSelectValueHtml toggleSelectedMsg deselectOptionInternal enableSingleItem
                 OptionShown _ ->
                     Html.Extra.nothing
 
-                OptionHidden ->
-                    Html.Extra.nothing
 
                 OptionSelected _ _ ->
                     div
@@ -718,8 +714,6 @@ toMultiSelectValueHtml toggleSelectedMsg deselectOptionInternal enableSingleItem
                 OptionShown _ ->
                     Html.Extra.nothing
 
-                OptionHidden ->
-                    Html.Extra.nothing
 
                 OptionSelected _ _ ->
                     div
@@ -818,8 +812,6 @@ toDropdownHtml eventHandlers selectionMode option =
                 ]
                 [ labelHtml option, descriptionHtml option ]
 
-        OptionHidden ->
-            Html.Extra.nothing
 
         OptionSelected _ _ ->
             case selectionMode of

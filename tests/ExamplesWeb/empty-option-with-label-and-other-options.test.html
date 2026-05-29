@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <script type="module">
+      import { runTests } from "@web/test-runner-mocha";
+      import { expect } from "@esm-bundle/chai";
+      import { html, fixture, oneEvent, waitUntil } from "@open-wc/testing";
+
+      import MuchSelect from "../../dist/much-select-debug.js";
+
+      if (!customElements.get("much-select")) {
+        window.customElements.define("much-select", MuchSelect);
+      }
+
+      runTests(() => {
+        describe("ExamplesWeb", () => {
+          describe("empty-option-with-label-and-other-options", () => {
+            it("parses empty placeholder option and the spice level options", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select>
+                  <select slot="select-input">
+                    <option value="">[SELECT SPICE LEVEL]</option>
+                    <option value="1">🌶</option>
+                    <option value="2">🌶🌶</option>
+                    <option value="3">🌶🌶🌶</option>
+                    <option value="4">🌶🌶🌶🌶</option>
+                    <option value="5">🌶🌶🌶🌶🌶</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              const options = await el.getAllOptions();
+              expect(options).to.have.lengthOf(6);
+              expect(options[0].value).to.equal("");
+              expect(options[0].label).to.equal("[SELECT SPICE LEVEL]");
+              expect(options.map((o) => o.value)).to.include.members([
+                "1",
+                "3",
+                "5",
+              ]);
+            });
+
+            it("can select a non-empty spice level option", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select>
+                  <select slot="select-input">
+                    <option value="">[SELECT SPICE LEVEL]</option>
+                    <option value="1">🌶</option>
+                    <option value="2">🌶🌶</option>
+                    <option value="3">🌶🌶🌶</option>
+                    <option value="4">🌶🌶🌶🌶</option>
+                    <option value="5">🌶🌶🌶🌶🌶</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              const selected = oneEvent(el, "optionSelected");
+              el.selectOption("3");
+
+              const evt = await selected;
+              expect(evt.detail.value).to.equal("3");
+
+              await waitUntil(async () => (await el.selectedValue) === "3");
+            });
+
+            it("can switch from a non-empty value back to the empty placeholder", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select>
+                  <select slot="select-input">
+                    <option value="">[SELECT SPICE LEVEL]</option>
+                    <option value="1">🌶</option>
+                    <option value="2">🌶🌶</option>
+                    <option value="3">🌶🌶🌶</option>
+                    <option value="4">🌶🌶🌶🌶</option>
+                    <option value="5">🌶🌶🌶🌶🌶</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              el.selectOption("3");
+              await oneEvent(el, "optionSelected");
+
+              const selectedEmpty = oneEvent(el, "optionSelected");
+              el.selectOption("");
+
+              const evt = await selectedEmpty;
+              expect(evt.detail.value).to.equal("");
+              expect(evt.detail.label).to.equal("");
+
+              await waitUntil(async () => (await el.selectedValue) === "");
+            });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <script type="module">
+      import { runTests } from "@web/test-runner-mocha";
+      import { expect } from "@esm-bundle/chai";
+      import { html, fixture, oneEvent, waitUntil } from "@open-wc/testing";
+
+      import MuchSelect from "../../dist/much-select-debug.js";
+
+      if (!customElements.get("much-select")) {
+        window.customElements.define("much-select", MuchSelect);
+      }
+
+      runTests(() => {
+        describe("ExamplesWeb", () => {
+          describe("change-the-options-with-the-dom", () => {
+            it("starts with initial select-input options", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select>
+                  <select slot="select-input">
+                    <option value="1">These</option>
+                    <option value="2">are</option>
+                    <option value="3" data-description="initial options">the</option>
+                    <option value="4" data-description="them by changing the dom">Replace</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              const options = await el.getAllOptions();
+              expect(options.some((o) => o.value === "1" && o.label === "These")).to.be.true;
+              expect(options.some((o) => o.value === "4" && o.description === "them by changing the dom")).to.be.true;
+            });
+
+            it("replacing select-input in light DOM updates available options", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select id="change-the-dom-much-select">
+                  <select id="change-the-dom-select" slot="select-input">
+                    <option value="1">These</option>
+                    <option value="2">are</option>
+                    <option value="3" data-description="initial options">the</option>
+                    <option value="4" data-description="them by changing the dom">Replace</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              el.innerHTML = `
+                <select id="change-the-dom-select" slot="select-input">
+                  <option value="100">New</option>
+                  <option value="200">options</option>
+                  <option value="3" data-description="here">are</option>
+                  <option value="4">Hurray!</option>
+                </select>
+              `;
+
+              await waitUntil(async () => {
+                const options = await el.getAllOptions();
+                return options.some((o) => o.value === "100" && o.label === "New")
+                  && options.some((o) => o.value === "3" && o.description === "here")
+                  && !options.some((o) => o.value === "1");
+              }, "Expected options to reflect replaced DOM select");
+            });
+
+            it("emits optionsUpdated with optionsReplaced=true for DOM replacement", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select>
+                  <select slot="select-input">
+                    <option value="1">These</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              const updatedEvent = oneEvent(el, "optionsUpdated");
+
+              el.innerHTML = `
+                <select slot="select-input">
+                  <option value="100">New</option>
+                  <option value="200">options</option>
+                </select>
+              `;
+
+              const evt = await updatedEvent;
+              expect(evt.detail.optionsReplaced).to.be.true;
+              expect(evt.detail.optionsUpdated).to.be.false;
+            });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

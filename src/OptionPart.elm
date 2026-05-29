@@ -51,9 +51,6 @@ toDropdownAttribute optionDisplay optionPart =
         OptionShown _ ->
             partAttribute ("dropdown-option " ++ valuePart)
 
-        OptionHidden ->
-            partAttribute ("dropdown-option hidden " ++ valuePart)
-
         OptionSelected _ _ ->
             partAttribute ("dropdown-option selected selected " ++ valuePart)
 

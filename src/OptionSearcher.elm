@@ -4,15 +4,15 @@ import DropdownOptions exposing (DropdownOptions, getSearchFilters)
 import Fuzzy exposing (Result, match)
 import Json.Decode
 import Json.Encode
-import Option exposing (Option(..))
+import Option exposing (Option)
 import OptionDescription
 import OptionGroup
 import OptionLabel exposing (optionLabelToSearchString, optionLabelToString)
 import OptionList exposing (OptionList)
 import OptionPresentor exposing (tokenize)
-import OptionSearchFilter exposing (OptionSearchFilter, OptionSearchResult, descriptionHandicap, groupHandicap)
+import OptionSearchFilter exposing (OptionSearchResult, descriptionHandicap, groupHandicap)
 import OutputStyle exposing (CustomOptions(..), SearchStringMinimumLength(..), decodeSearchStringMinimumLength)
-import PositiveInt exposing (PositiveInt)
+import PositiveInt
 import SearchString exposing (SearchString)
 import SelectionMode exposing (SelectionConfig, getCustomOptionHint)
 import TransformAndValidate
@@ -155,7 +155,7 @@ updateOrAddCustomOption searchString selectionMode options =
                             TransformAndValidate.ValidationFailed _ _ _ ->
                                 ( False, searchString )
 
-                            TransformAndValidate.ValidationPending _ _ ->
+                            TransformAndValidate.ValidationPending _ ->
                                 ( False, searchString )
 
                     NoCustomOptions ->

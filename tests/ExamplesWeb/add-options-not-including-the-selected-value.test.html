@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <script type="module">
+      import { runTests } from "@web/test-runner-mocha";
+      import { expect } from "@esm-bundle/chai";
+      import { html, fixture, oneEvent, waitUntil } from "@open-wc/testing";
+
+      import MuchSelect from "../../dist/much-select-debug.js";
+
+      if (!customElements.get("much-select")) {
+        window.customElements.define("much-select", MuchSelect);
+      }
+
+      runTests(() => {
+        describe("ExamplesWeb", () => {
+          describe("add-options-not-including-the-selected-value", () => {
+            it("starts with selected value while options are empty", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select selected-value="Butter"></much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+              expect(await el.selectedValue).to.equal("Butter");
+            });
+
+            it("keeps selected value after replacing DOM options that do not include it", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select selected-value="Butter"></much-select>`,
+              );
+              await oneEvent(el, "muchSelectReady");
+
+              el.innerHTML = `<select slot="select-input">
+                <option value="Jam">Jam</option>
+                <option value="Marmalade">Marmalade</option>
+                <option value="Preserves">Preserves</option>
+                <option value="Apple Butter">Apple Butter</option>
+              </select>`;
+
+              await waitUntil(async () => {
+                const options = await el.getAllOptions();
+                return options.some((o) => o.value === "Jam");
+              }, "Expected replacement options to be loaded");
+
+              expect(await el.selectedValue).to.equal("Butter");
+            });
+
+            it("retains selected value as an additional option alongside new DOM options", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select selected-value="Butter"></much-select>`,
+              );
+              await oneEvent(el, "muchSelectReady");
+
+              el.innerHTML = `<select slot="select-input">
+                <option value="Jam">Jam</option>
+                <option value="Marmalade">Marmalade</option>
+                <option value="Preserves">Preserves</option>
+              </select>`;
+
+              await waitUntil(async () => {
+                const options = await el.getAllOptions();
+                return options.some((o) => o.value === "Butter")
+                  && options.some((o) => o.value === "Jam");
+              }, "Expected selected value to remain as additional option");
+            });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

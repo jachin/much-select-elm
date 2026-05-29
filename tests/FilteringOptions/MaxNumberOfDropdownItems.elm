@@ -5,9 +5,9 @@ import DropdownOptions exposing (figureOutWhichOptionsToShowInTheDropdown)
 import Expect exposing (Expectation)
 import Option exposing (setGroupWithString, test_newDatalistOption, test_newEmptyDatalistOption, test_newFancyOptionWithMaybeCleanString)
 import OptionList exposing (OptionList(..), test_newDatalistOptionList)
-import OutputStyle exposing (MaxDropdownItems(..), SearchStringMinimumLength(..))
+import OutputStyle exposing (MaxDropdownItems(..))
 import PositiveInt
-import SelectionMode exposing (OutputStyle(..), SelectionConfig(..), defaultSelectionConfig)
+import SelectionMode exposing (OutputStyle(..), defaultSelectionConfig)
 import Test exposing (Test, describe, test)
 
 

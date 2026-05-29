@@ -1,7 +1,7 @@
 module Option.Sorting exposing (suite)
 
 import Expect
-import Option exposing (Option(..), setGroupWithString, test_newFancyOptionWithMaybeCleanString, test_optionToDebuggingString)
+import Option exposing (setGroupWithString, test_newFancyOptionWithMaybeCleanString, test_optionToDebuggingString)
 import OptionList exposing (findHighestAutoSortRank)
 import OptionSorting exposing (OptionSort(..), sortOptions)
 import SortRank exposing (newMaybeAutoSortRank)

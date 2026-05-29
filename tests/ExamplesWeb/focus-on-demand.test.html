@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+<script type="module">
+  import { runTests } from "@web/test-runner-mocha";
+  import { expect } from "@esm-bundle/chai";
+  import { html, fixture, oneEvent, waitUntil } from "@open-wc/testing";
+
+  import MuchSelect from "../../dist/much-select-debug.js";
+
+  if (!customElements.get("much-select")) {
+    window.customElements.define("much-select", MuchSelect);
+  }
+
+  runTests(() => {
+    describe("ExamplesWeb", () => {
+      describe("focus-on-demand", () => {
+        it("focus() emits muchSelectFocused", async () => {
+          const el = /** @type {MuchSelect} */ await fixture(
+            html`<much-select>
+              <select slot="select-input">
+                <option value="111">Grass Pea</option>
+                <option value="222">Velvet Bean</option>
+              </select>
+            </much-select>`,
+          );
+
+          const focusEvent = oneEvent(el, "muchSelectFocused");
+          el.focus();
+          const evt = await focusEvent;
+          expect(evt).to.exist;
+        });
+
+        it("focus() places focus in the internal input", async () => {
+          const el = /** @type {MuchSelect} */ await fixture(
+            html`<much-select>
+              <select slot="select-input">
+                <option value="333">Sword Bean</option>
+                <option value="444">Soybean</option>
+              </select>
+            </much-select>`,
+          );
+
+          el.focus();
+
+          await waitUntil(() => {
+            const input = el.shadowRoot.getElementById("input-filter");
+            return el.shadowRoot.activeElement === input;
+          }, "Expected internal input to receive focus");
+        });
+
+        it("blurring internal input emits muchSelectBlurred", async () => {
+          const el = /** @type {MuchSelect} */ await fixture(
+            html`<much-select>
+              <select slot="select-input">
+                <option value="111">Grass Pea</option>
+                <option value="222">Velvet Bean</option>
+              </select>
+            </much-select>`,
+          );
+
+          await oneEvent(el, "muchSelectReady");
+          el.focus();
+          await oneEvent(el, "muchSelectFocused");
+
+          const blurred = oneEvent(el, "muchSelectBlurred");
+          el.shadowRoot.getElementById("input-filter").blur();
+
+          const evt = await blurred;
+          expect(evt).to.exist;
+        });
+      });
+    });
+  });
+</script>
+</body>
+</html>

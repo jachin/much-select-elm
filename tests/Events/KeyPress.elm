@@ -45,7 +45,7 @@ flagsDatalistSingle =
 simulateEffects : MuchSelect.Effect -> ProgramTest.SimulatedEffect MuchSelect.Msg
 simulateEffects effect =
     case effect of
-        MuchSelect.InputHasBeenKeyUp string _ ->
+        MuchSelect.InputHasBeenKeyUp string ->
             SimulatedEffect.Ports.send "inputKeyUp" (Json.Encode.string string)
 
         MuchSelect.Batch effects ->

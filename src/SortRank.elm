@@ -1,4 +1,4 @@
-module SortRank exposing (SortRank(..), getAutoIndexForSorting, getManualWeightForSorting, newMaybeAutoSortRank, sortRankDecoder)
+module SortRank exposing (SortRank(..), getAutoIndexForSorting, newMaybeAutoSortRank, sortRankDecoder)
 
 import Json.Decode
 import PositiveInt exposing (PositiveInt)
@@ -27,19 +27,6 @@ getAutoIndexForSorting sortRank =
 
         NoSortRank ->
             100000000
-
-
-getManualWeightForSorting : SortRank -> Int
-getManualWeightForSorting sortRank =
-    case sortRank of
-        Auto _ ->
-            0
-
-        Manual positiveInt ->
-            PositiveInt.toInt positiveInt
-
-        NoSortRank ->
-            0
 
 
 sortRankDecoder : Json.Decode.Decoder SortRank

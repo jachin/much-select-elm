@@ -1,6 +1,6 @@
 const app = Elm.FilterWorker.init();
 
-onmessage = ({ data }) => {
+self.onmessage = ({ data }) => {
   const { portName, jsonBlob } = data;
 
   if (portName === "receiveOptions") {

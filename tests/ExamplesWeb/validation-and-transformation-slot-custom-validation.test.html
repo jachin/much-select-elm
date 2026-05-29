@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <script type="module">
+      import { runTests } from "@web/test-runner-mocha";
+      import { expect } from "@esm-bundle/chai";
+      import {
+        html,
+        fixture,
+        nextFrame,
+        oneEvent,
+        waitUntil,
+      } from "@open-wc/testing";
+
+      import MuchSelect from "../../dist/much-select-debug.js";
+
+      if (!customElements.get("much-select")) {
+        window.customElements.define("much-select", MuchSelect);
+      }
+
+      runTests(() => {
+        describe("ExamplesWeb", () => {
+          describe("validation-and-transformation-slot-custom-validation", () => {
+            it("initializes custom validator and custom-validation-result slots", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select multi-select output-style="datalist">
+                  <script
+                    type="application/json"
+                    slot="transformation-validation"
+                  >
+                    { "transformers": [], "validators": [{ "name": "custom" }] }
+                  <\/script>
+                  <script
+                    type="application/json"
+                    slot="custom-validation-result"
+                  ><\/script>
+                  <select slot="select-input">
+                    <option>Carob</option>
+                    <option>Tamarind</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+              expect(await el.outputStyle).to.equal("datalist");
+              expect(await el.isInMultiSelectMode).to.be.true;
+              expect(el.querySelector('[slot="custom-validation-result"]')).to
+                .exist;
+            });
+
+            it("allows updating custom-validation-result slot content", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select multi-select output-style="datalist">
+                  <script
+                    type="application/json"
+                    slot="transformation-validation"
+                  >
+                    { "transformers": [], "validators": [{ "name": "custom" }] }
+                  <\/script>
+                  <script
+                    type="application/json"
+                    slot="custom-validation-result"
+                  ><\/script>
+                  <select slot="select-input">
+                    <option>Carob</option>
+                    <option>Tamarind</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              const slot = el.querySelector(
+                '[slot="custom-validation-result"]',
+              );
+              slot.textContent = JSON.stringify({
+                isValid: false,
+                value: "milk",
+                selectedValueIndex: 0,
+                errorMessages: [{ errorMessage: "No milk!", level: "error" }],
+              });
+
+              await nextFrame();
+              expect(slot.textContent).to.include("No milk!");
+            });
+
+            it("keeps normal option selection working with custom validator config", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select multi-select output-style="datalist">
+                  <script
+                    type="application/json"
+                    slot="transformation-validation"
+                  >
+                    { "transformers": [], "validators": [{ "name": "custom" }] }
+                  <\/script>
+                  <script
+                    type="application/json"
+                    slot="custom-validation-result"
+                  ><\/script>
+                  <select slot="select-input">
+                    <option>Carob</option>
+                    <option>Tamarind</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              el.selectOption("Carob");
+              await oneEvent(el, "optionSelected");
+              await waitUntil(async () => {
+                const values = await el.selectedValue;
+                return Array.isArray(values) && values.includes("Carob");
+              });
+            });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

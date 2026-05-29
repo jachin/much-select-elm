@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <script type="module">
+      import { runTests } from "@web/test-runner-mocha";
+      import { expect } from "@esm-bundle/chai";
+      import { html, fixture, oneEvent, waitUntil } from "@open-wc/testing";
+
+      import MuchSelect from "../../dist/much-select-debug.js";
+
+      if (!customElements.get("much-select")) {
+        window.customElements.define("much-select", MuchSelect);
+      }
+
+      runTests(() => {
+        describe("ExamplesWeb", () => {
+          describe("selected-option-with-multi-select-with-async-options-small", () => {
+            it("starts with two selected values", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select multi-select>
+                  <select slot="select-input">
+                    <option selected value="les Escaldes">les Escaldes</option>
+                    <option selected value="Andorra la Vella">Andorra la Vella</option>
+                  </select>
+                </much-select>`,
+              );
+              await oneEvent(el, "ready");
+
+              const selected = await el.selectedValue;
+              expect(selected).to.include("les Escaldes");
+              expect(selected).to.include("Andorra la Vella");
+            });
+
+            it("adds async options and preserves selected values", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select multi-select>
+                  <select slot="select-input">
+                    <option selected value="les Escaldes">les Escaldes</option>
+                    <option selected value="Andorra la Vella">Andorra la Vella</option>
+                  </select>
+                </much-select>`,
+              );
+              await oneEvent(el, "ready");
+
+              const possibleOptions = [
+                { label: "les Escaldes", description: "Andorra, Escaldes-Engordany, 3040051", value: "les Escaldes" },
+                { label: "Andorra la Vella", description: "Andorra, Andorra la Vella, 3041563", value: "Andorra la Vella" },
+                { label: "Umm al Qaywayn", description: "United Arab Emirates, Umm al Qaywayn, 290594", value: "Umm al Qaywayn" },
+              ];
+
+              window.setTimeout(() => {
+                possibleOptions.forEach((option) => el.addOption(option));
+              }, 5);
+
+              await waitUntil(async () => {
+                const options = await el.getAllOptions();
+                return options.some((o) => o.value === "Umm al Qaywayn");
+              }, "Expected async options to be appended", { timeout: 4000 });
+
+              const selected = await el.selectedValue;
+              expect(selected).to.include("les Escaldes");
+              expect(selected).to.include("Andorra la Vella");
+            });
+
+            it("hydrates metadata for selected multi values", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select multi-select>
+                  <select slot="select-input">
+                    <option selected value="les Escaldes">les Escaldes</option>
+                    <option selected value="Andorra la Vella">Andorra la Vella</option>
+                  </select>
+                </much-select>`,
+              );
+              await oneEvent(el, "ready");
+
+              el.addOption({
+                label: "Andorra la Vella",
+                description: "Andorra, Andorra la Vella, 3041563",
+                value: "Andorra la Vella",
+              });
+
+              await waitUntil(async () => {
+                const options = await el.getAllOptions();
+                return options.some(
+                  (o) => o.value === "Andorra la Vella" && o.description === "Andorra, Andorra la Vella, 3041563",
+                );
+              }, "Expected selected multi option metadata to be hydrated");
+            });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

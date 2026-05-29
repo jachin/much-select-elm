@@ -1,71 +1,135 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<body>
-<script type="module">
-  import { runTests } from "@web/test-runner-mocha";
-  import { expect } from "@esm-bundle/chai";
-  import { html, fixture, nextFrame } from "@open-wc/testing";
+  <body>
+    <script type="module">
+      import { runTests } from "@web/test-runner-mocha";
+      import { expect } from "@esm-bundle/chai";
+      import { html, fixture, nextFrame, oneEvent } from "@open-wc/testing";
 
-  import MuchSelect from "../../dist/much-select-debug.js";
+      import MuchSelect from "../../dist/much-select-debug.js";
 
-  if (!customElements.get("much-select")) {
-    // Putting guard rails around this because browsers do not like
-    //  having the same custom element defined more than once.
-    window.customElements.define("much-select", MuchSelect);
-  }
+      if (!customElements.get("much-select")) {
+        // Putting guard rails around this because browsers do not like
+        //  having the same custom element defined more than once.
+        window.customElements.define("much-select", MuchSelect);
+      }
 
-  runTests(() => {
-    describe("Attributes", () => {
-      describe("max-dropdown-items", () => {
-        it("the default value should be 1000", async () => {
-          const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select></much-select>`,
-          );
-          expect(await el.maxDropdownItems).to.equal(1000);
-        });
+      runTests(() => {
+        describe("Attributes", () => {
+          describe("max-dropdown-items", () => {
+            it("the default value should be 1000", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select></much-select>`,
+              );
+              expect(await el.maxDropdownItems).to.equal(1000);
+            });
 
-        it("setting the attribute to a positive integer should change the value", async () => {
-          const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select max-dropdown-items="3"></much-select>`,
-          );
-          expect(await el.maxDropdownItems).to.equal(3);
-        });
+            it("setting the attribute to a positive integer should change the value", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select max-dropdown-items="3"></much-select>`,
+              );
+              expect(await el.maxDropdownItems).to.equal(3);
+            });
 
-        it("removing the attribute should revert back to the defaul value", async () => {
-          const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select max-dropdown-items="5"></much-select>`,
-          );
-          el.removeAttribute("max-dropdown-items");
-          await nextFrame();
-          expect(await el.maxDropdownItems).to.equal(1000);
-        });
+            it("removing the attribute should revert back to the defaul value", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select max-dropdown-items="5"></much-select>`,
+              );
+              el.removeAttribute("max-dropdown-items");
+              await nextFrame();
+              expect(await el.maxDropdownItems).to.equal(1000);
+            });
 
-        it("using the setter should set the value for max-dropdown-items", async () => {
-          const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select></much-select>`,
-          );
-          el.maxDropdownItems = 8;
-          await nextFrame();
-          expect(await el.maxDropdownItems).to.equal(8);
-        });
+            it("using the setter should set the value for max-dropdown-items", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select></much-select>`,
+              );
+              el.maxDropdownItems = 8;
+              await nextFrame();
+              expect(await el.maxDropdownItems).to.equal(8);
+            });
 
-        it("the initial value for max-dropdown-items should support 0", async () => {
-          const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select max-dropdown-items="0"></much-select>`,
-          );
-          expect(await el.maxDropdownItems).to.equal(0);
-        });
+            it("the initial value for max-dropdown-items should support 0", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select max-dropdown-items="0"></much-select>`,
+              );
+              expect(await el.maxDropdownItems).to.equal(0);
+            });
 
-        it("changing the attribute should change the value", async () => {
-          const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select max-dropdown-items="5"></much-select>`,
-          );
-          el.setAttribute("max-dropdown-items", 10);
-          expect(await el.maxDropdownItems).to.equal(10);
+            it("changing the attribute should change the value", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select max-dropdown-items="5"></much-select>`,
+              );
+              el.setAttribute("max-dropdown-items", 10);
+              expect(await el.maxDropdownItems).to.equal(10);
+            });
+
+            it("max-number-of-dropdown-items example should limit initially rendered dropdown options", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select max-dropdown-items="5">
+                  <select slot="select-input">
+                    <option>Hydrogen</option>
+                    <option>Lithium</option>
+                    <option>Sodium</option>
+                    <option>Potassium</option>
+                    <option>Rubidium</option>
+                    <option>Caesium</option>
+                    <option>Francium</option>
+                  </select>
+                </much-select>`,
+              );
+
+              el.shadowRoot.querySelector("#input-filter").focus();
+              await oneEvent(el, "muchSelectFocused");
+              await nextFrame();
+
+              expect(
+                el.shadowRoot.querySelectorAll("#dropdown .option").length,
+              ).to.equal(5);
+            });
+
+            it("max-number-of-dropdown-items-big-list example should cap visible options to the configured limit", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select max-dropdown-items="20">
+                  <select slot="select-input">
+                    <option>Aachenosaurus</option>
+                    <option>Aardonyx</option>
+                    <option>Abelisaurus</option>
+                    <option>Abrictosaurus</option>
+                    <option>Abrosaurus</option>
+                    <option>Abydosaurus</option>
+                    <option>Acantholipan</option>
+                    <option>Acanthopholis</option>
+                    <option>Achelousaurus</option>
+                    <option>Acheroraptor</option>
+                    <option>Achillesaurus</option>
+                    <option>Achillobator</option>
+                    <option>Acristavus</option>
+                    <option>Acrocanthosaurus</option>
+                    <option>Acrotholus</option>
+                    <option>Actiosaurus</option>
+                    <option>Adamantisaurus</option>
+                    <option>Adasaurus</option>
+                    <option>Adelolophus</option>
+                    <option>Adeopapposaurus</option>
+                    <option>Adratiklit</option>
+                    <option>Adynomosaurus</option>
+                    <option>Aegyptosaurus</option>
+                  </select>
+                </much-select>`,
+              );
+
+              el.shadowRoot.querySelector("#input-filter").focus();
+              await oneEvent(el, "muchSelectFocused");
+              await nextFrame();
+
+              expect(
+                el.shadowRoot.querySelectorAll("#dropdown .option").length,
+              ).to.equal(20);
+            });
+          });
         });
       });
-    });
-  });
-</script>
-</body>
+    </script>
+  </body>
 </html>

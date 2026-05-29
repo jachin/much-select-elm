@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <script type="module">
+      import { runTests } from "@web/test-runner-mocha";
+      import { expect } from "@esm-bundle/chai";
+      import {
+        html,
+        fixture,
+        nextFrame,
+        oneEvent,
+        waitUntil,
+      } from "@open-wc/testing";
+
+      import MuchSelect from "../../dist/much-select-debug.js";
+
+      if (!customElements.get("much-select")) {
+        window.customElements.define("much-select", MuchSelect);
+      }
+
+      runTests(() => {
+        describe("ExamplesWeb", () => {
+          describe("switch-between-multi-select-and-single-select", () => {
+            it("starts in multi-select mode with two selected values", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select multi-select selected-value="Safari,Firefox">
+                  <select slot="select-input">
+                    <option>Firefox</option>
+                    <option>Chrome</option>
+                    <option>Safari</option>
+                    <option>Edge</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+              expect(await el.isInMultiSelectMode).to.be.true;
+              expect(await el.selectedValue).to.eql(["Safari", "Firefox"]);
+            });
+
+            it("removing multi-select attribute switches to single-select mode", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select multi-select selected-value="Safari,Firefox">
+                  <select slot="select-input">
+                    <option>Firefox</option>
+                    <option>Chrome</option>
+                    <option>Safari</option>
+                    <option>Edge</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+              el.removeAttribute("multi-select");
+              await nextFrame();
+
+              expect(await el.isInMultiSelectMode).to.be.false;
+              expect(el.shadowRoot.querySelector("#value-casing.single")).to
+                .exist;
+            });
+
+            it("re-adding multi-select attribute switches back to multi-select mode", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select selected-value="Safari,Firefox">
+                  <select slot="select-input">
+                    <option>Firefox</option>
+                    <option>Chrome</option>
+                    <option>Safari</option>
+                    <option>Edge</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              el.setAttribute("multi-select", "");
+
+              await waitUntil(
+                async () => (await el.isInMultiSelectMode) === true,
+              );
+              await waitUntil(
+                () => !!el.shadowRoot.querySelector("#value-casing.multi"),
+              );
+              expect(el.shadowRoot.querySelector("#value-casing.multi")).to
+                .exist;
+            });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

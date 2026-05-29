@@ -1,10 +1,8 @@
 // noinspection JSFileReferences
 
-import { Elm } from "./much-select-elm.js";
-
-import getMuchSelectTemplate from "./much-select-template.js";
-
 import asciiFold from "./ascii-fold.js";
+import { Elm } from "./much-select-elm.js";
+import getMuchSelectTemplate from "./much-select-template.js";
 
 /**
  * Dasherize a string.
@@ -890,7 +888,7 @@ class MuchSelect extends HTMLElement {
     } else {
       const muchSelectOptionElements =
         this.querySelectorAll("much-select-option");
-      if (muchSelectOptionElements) {
+      if (muchSelectOptionElements.length > 0) {
         const optionsJson = buildOptionsFromMuchSelectOptionElements(
           muchSelectOptionElements,
         );
@@ -1052,7 +1050,7 @@ class MuchSelect extends HTMLElement {
     }
 
     if (this.hasAttribute("selected-value")) {
-      if (selectElement && selectElement.querySelector("option[selected]")) {
+      if (selectElement?.querySelector("option[selected]")) {
         throw new Error(
           "MuchSelect does not support using the selected-value attribute and selected options in the selected-value slot.",
         );
@@ -1847,6 +1845,18 @@ class MuchSelect extends HTMLElement {
     // noinspection JSUnresolvedVariable
     this.appPromise.then((app) =>
       app.ports.addOptionsReceiver.send(cleanUpOptions(options)),
+    );
+    this.updateDimensions();
+  }
+
+  removeOption(option) {
+    this.removeOptions([option]);
+  }
+
+  removeOptions(options) {
+    // noinspection JSUnresolvedVariable
+    this.appPromise.then((app) =>
+      app.ports.removeOptionsReceiver.send(cleanUpOptions(options)),
     );
     this.updateDimensions();
   }

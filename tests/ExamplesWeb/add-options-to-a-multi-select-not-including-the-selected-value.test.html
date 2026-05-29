@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <script type="module">
+      import { runTests } from "@web/test-runner-mocha";
+      import { expect } from "@esm-bundle/chai";
+      import { html, fixture, oneEvent, waitUntil } from "@open-wc/testing";
+
+      import MuchSelect from "../../dist/much-select-debug.js";
+
+      if (!customElements.get("much-select")) {
+        window.customElements.define("much-select", MuchSelect);
+      }
+
+      runTests(() => {
+        describe("ExamplesWeb", () => {
+          describe("add-options-to-a-multi-select-not-including-the-selected-value", () => {
+            it("starts with two selected values", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select multi-select selected-value="Carrots,Peas" multi-select-single-item-removal allow-custom-options="{{}}"></much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+              const selected = await el.selectedValue;
+              expect(selected).to.include("Carrots");
+              expect(selected).to.include("Peas");
+            });
+
+            it("keeps selected values after adding DOM options that do not include them", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select multi-select selected-value="Carrots,Peas" multi-select-single-item-removal allow-custom-options="{{}}"></much-select>`,
+              );
+              await oneEvent(el, "muchSelectReady");
+
+              el.innerHTML = `
+                <select slot="select-input">
+                  <option>Zucchini</option>
+                  <option>Lettuce</option>
+                  <option>Cucumbers</option>
+                  <option>Pumpkins</option>
+                </select>
+              `;
+
+              await waitUntil(async () => {
+                const options = await el.getAllOptions();
+                return options.some((o) => o.value === "Zucchini")
+                  && options.some((o) => o.value === "Carrots")
+                  && options.some((o) => o.value === "Peas");
+              }, "Expected added DOM options plus selected values to be present");
+
+              const selected = await el.selectedValue;
+              expect(selected).to.include("Carrots");
+              expect(selected).to.include("Peas");
+            });
+
+            it("emits optionsUpdated event with optionsReplaced=true when DOM is replaced", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select multi-select selected-value="Carrots,Peas"></much-select>`,
+              );
+              await oneEvent(el, "muchSelectReady");
+
+              const updated = oneEvent(el, "optionsUpdated");
+              el.innerHTML = `<select slot="select-input"><option>Zucchini</option></select>`;
+
+              const evt = await updated;
+              expect(evt.detail.optionsReplaced).to.be.true;
+              expect(evt.detail.optionsUpdated).to.be.false;
+            });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

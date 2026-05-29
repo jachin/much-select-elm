@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <script type="module">
+      import { runTests } from "@web/test-runner-mocha";
+      import { expect } from "@esm-bundle/chai";
+      import { html, fixture, oneEvent, waitUntil } from "@open-wc/testing";
+
+      import MuchSelect from "../../dist/much-select-debug.js";
+
+      if (!customElements.get("much-select")) {
+        window.customElements.define("much-select", MuchSelect);
+      }
+
+      runTests(() => {
+        describe("ExamplesWeb", () => {
+          describe("simple-example", () => {
+            it("loads options from the slotted select", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select>
+                  <select slot="select-input">
+                    <option>Bricks</option>
+                    <option>Sticks</option>
+                    <option>Straw</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              const options = await el.getAllOptions();
+              const values = options.map((option) => option.value);
+              expect(values).to.include.members(["Bricks", "Sticks", "Straw"]);
+              expect(values.length).to.equal(3);
+            });
+
+            it("selectOption updates selectedValue and emits optionSelected", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select>
+                  <select slot="select-input">
+                    <option>Bricks</option>
+                    <option>Sticks</option>
+                    <option>Straw</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              const selected = oneEvent(el, "optionSelected");
+              el.selectOption("Sticks");
+
+              const evt = await selected;
+              expect(evt.detail.value).to.equal("Sticks");
+              expect(evt.detail.label).to.equal("Sticks");
+
+              await waitUntil(async () => (await el.selectedValue) === "Sticks");
+            });
+
+            it("deselectOption clears the selected value", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select selected-value="Bricks">
+                  <select slot="select-input">
+                    <option>Bricks</option>
+                    <option>Sticks</option>
+                    <option>Straw</option>
+                  </select>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              const deselected = oneEvent(el, "optionDeselected");
+              el.deselectOption("Bricks");
+
+              const evt = await deselected;
+              expect(evt.detail.value).to.equal("Bricks");
+
+              await waitUntil(async () => {
+                const value = await el.selectedValue;
+                return value === "" || value === null;
+              });
+            });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

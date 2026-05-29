@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <script type="module">
+      import { runTests } from "@web/test-runner-mocha";
+      import { expect } from "@esm-bundle/chai";
+      import { html, fixture, oneEvent, waitUntil } from "@open-wc/testing";
+
+      import MuchSelect from "../../dist/much-select-debug.js";
+
+      if (!customElements.get("much-select")) {
+        window.customElements.define("much-select", MuchSelect);
+      }
+
+      runTests(() => {
+        describe("ExamplesWeb", () => {
+          describe("styling-dropdown-options-with-part", () => {
+            it("loads the four card-suit options", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select>
+                  <select slot="select-input">
+                    <option>Spades</option>
+                    <option>Hearts</option>
+                    <option>Diamonds</option>
+                    <option>Clubs</option>
+                  </select>
+                </much-select>`,
+              );
+              await oneEvent(el, "muchSelectReady");
+
+              const options = await el.getAllOptions();
+              expect(options.map((o) => o.value)).to.include.members([
+                "Spades",
+                "Hearts",
+                "Diamonds",
+                "Clubs",
+              ]);
+            });
+
+            it("renders dropdown options with part tokens for styling", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select>
+                  <select slot="select-input">
+                    <option>Spades</option>
+                    <option>Hearts</option>
+                    <option>Diamonds</option>
+                    <option>Clubs</option>
+                  </select>
+                </much-select>`,
+              );
+              await oneEvent(el, "muchSelectReady");
+
+              const input = el.shadowRoot.getElementById("input-filter");
+              input.focus();
+
+              await waitUntil(() => {
+                return (
+                  el.shadowRoot.querySelectorAll("#dropdown .option").length >=
+                  4
+                );
+              });
+
+              const parts = Array.from(
+                el.shadowRoot.querySelectorAll("#dropdown .option"),
+              ).map((node) => node.getAttribute("part") || "");
+
+              expect(
+                parts.some(
+                  (p) => p.includes("dropdown-option") && p.includes("spades"),
+                ),
+              ).to.be.true;
+              expect(
+                parts.some(
+                  (p) => p.includes("dropdown-option") && p.includes("hearts"),
+                ),
+              ).to.be.true;
+            });
+
+            it("keeps selected value contract working with part-based options", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select>
+                  <select slot="select-input">
+                    <option>Spades</option>
+                    <option>Hearts</option>
+                    <option>Diamonds</option>
+                    <option>Clubs</option>
+                  </select>
+                </much-select>`,
+              );
+              await oneEvent(el, "muchSelectReady");
+
+              const selected = oneEvent(el, "optionSelected");
+              el.selectOption("Hearts");
+              const evt = await selected;
+              expect(evt.detail.value).to.equal("Hearts");
+              expect(await el.selectedValue).to.equal("Hearts");
+            });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

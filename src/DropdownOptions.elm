@@ -133,8 +133,6 @@ filterOptionsToShowInDropdownByOptionDisplay selectionConfig =
                                 OptionDisplay.MatureOption ->
                                     True
 
-                        OptionHidden ->
-                            False
 
                         OptionSelected _ age ->
                             case age of
@@ -180,8 +178,6 @@ filterOptionsToShowInDropdownByOptionDisplay selectionConfig =
                                 OptionDisplay.MatureOption ->
                                     True
 
-                        OptionHidden ->
-                            False
 
                         OptionSelected _ age ->
                             case age of
@@ -474,8 +470,6 @@ optionToSlottedOptionHtml eventHandlers option =
                 ]
                 [ node "slot" [ option |> Option.getSlot |> OptionSlot.toSlotNameAttribute ] [] ]
 
-        OptionHidden ->
-            text ""
 
         OptionSelected _ _ ->
             div

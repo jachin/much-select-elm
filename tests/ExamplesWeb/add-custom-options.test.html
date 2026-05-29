@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <script type="module">
+      import { runTests } from "@web/test-runner-mocha";
+      import { expect } from "@esm-bundle/chai";
+      import { html, fixture, oneEvent, waitUntil } from "@open-wc/testing";
+      import { sendKeys } from "@web/test-runner-commands";
+
+      import MuchSelect from "../../dist/much-select-debug.js";
+
+      if (!customElements.get("much-select")) {
+        window.customElements.define("much-select", MuchSelect);
+      }
+
+      runTests(() => {
+        describe("ExamplesWeb", () => {
+          describe("add-custom-options", () => {
+            it("allow-custom-options is enabled", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select allow-custom-options></much-select>`,
+              );
+              await oneEvent(el, "muchSelectReady");
+              expect(await el.allowCustomOptions).to.be.true;
+            });
+
+            it("typing unknown value shows Add custom option row", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select allow-custom-options></much-select>`,
+              );
+              await oneEvent(el, "muchSelectReady");
+
+              el.shadowRoot.getElementById("input-filter").focus();
+              await sendKeys({ type: "Dragonfruit" });
+
+              await waitUntil(() => {
+                const dropdown = el.shadowRoot.getElementById("dropdown");
+                return dropdown.textContent.includes("Add Dragonfruit…");
+              }, "Expected Add custom option text to appear");
+            });
+
+            it("custom option hint defaults to null when enabled without text", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select allow-custom-options></much-select>`,
+              );
+              await oneEvent(el, "muchSelectReady");
+
+              expect(await el.customOptionHint).to.equal(null);
+            });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

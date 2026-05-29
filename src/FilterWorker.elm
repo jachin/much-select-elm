@@ -6,7 +6,7 @@ import Json.Encode
 import OptionList exposing (OptionList(..))
 import OptionSearcher exposing (decodeSearchParams)
 import Platform
-import SelectionMode exposing (SelectionConfig)
+import SelectionMode
 
 
 type Msg
