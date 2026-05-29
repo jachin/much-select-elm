@@ -7,17 +7,17 @@ Generated for Phase 0 inventory from `examples/*.html` and current `tests/**/*.t
 
 - Total examples: **94**
 - `CoveredByExistingSuite`: **14**
-- `NeedsExistingSuiteExpansion`: **34**
-- `NeedsDedicatedSuite`: **31**
-- `Done`: **15**
+- `NeedsExistingSuiteExpansion`: **33**
+- `NeedsDedicatedSuite`: **27**
+- `Done`: **20**
 
 > Note: This is an initial machine-assisted pre-fill. Confirm each row during implementation and update status to `Done` as work lands.
 
 | example slug | status | existing tests | planned tests | skip reason |
 |---|---|---|---|---|
 | `add-and-remove-button-slots` | `NeedsDedicatedSuite` | — | Create `tests/ExamplesWeb/add-and-remove-button-slots.test.html` (3-6 JS-focused tests) | No concrete existing web-test mapping found |
-| `add-custom-options` | `NeedsDedicatedSuite` | — | Create `tests/ExamplesWeb/add-custom-options.test.html` (3-6 JS-focused tests) | No concrete existing web-test mapping found |
-| `add-custom-options-2` | `NeedsDedicatedSuite` | — | Create `tests/ExamplesWeb/add-custom-options-2.test.html` (3-6 JS-focused tests) | No concrete existing web-test mapping found |
+| `add-custom-options` | `Done` | `tests/ExamplesWeb/add-custom-options.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
+| `add-custom-options-2` | `Done` | `tests/ExamplesWeb/add-custom-options-2.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
 | `add-option-to-a-much-select` | `Done` | `tests/ExamplesWeb/add-option-to-a-much-select.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
 | `add-options-including-the-selected-value` | `Done` | `tests/ExamplesWeb/add-options-including-the-selected-value.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
 | `add-options-not-including-the-selected-value` | `Done` | `tests/ExamplesWeb/add-options-not-including-the-selected-value.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
@@ -30,8 +30,8 @@ Generated for Phase 0 inventory from `examples/*.html` and current `tests/**/*.t
 | `change-select-attribute-changes-selected-value-in-much-select` | `NeedsExistingSuiteExpansion` | `tests/Attributes/selected-value.test.html` | Expand mapped suite with example-specific JS behavior assertions | Partially covered by feature tests but example contract not fully explicit yet |
 | `change-the-options-with-the-dom` | `Done` | `tests/ExamplesWeb/change-the-options-with-the-dom.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
 | `custom-element-options` | `NeedsExistingSuiteExpansion` | `tests/Slots/select-input-slot.test.html` | Expand mapped suite with example-specific JS behavior assertions | Partially covered by feature tests but example contract not fully explicit yet |
-| `custom-option-label-text` | `NeedsDedicatedSuite` | — | Create `tests/ExamplesWeb/custom-option-label-text.test.html` (3-6 JS-focused tests) | No concrete existing web-test mapping found |
-| `custom-option-label-text-2` | `NeedsDedicatedSuite` | — | Create `tests/ExamplesWeb/custom-option-label-text-2.test.html` (3-6 JS-focused tests) | No concrete existing web-test mapping found |
+| `custom-option-label-text` | `Done` | `tests/ExamplesWeb/custom-option-label-text.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
+| `custom-option-label-text-2` | `Done` | `tests/ExamplesWeb/custom-option-label-text-2.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
 | `custom-option-label-text-3` | `NeedsDedicatedSuite` | — | Create `tests/ExamplesWeb/custom-option-label-text-3.test.html` (3-6 JS-focused tests) | No concrete existing web-test mapping found |
 | `custom-options-that-persist` | `Done` | `tests/ExamplesWeb/custom-options-that-persist.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
 | `datalist-multi-select-value-changed-event` | `NeedsExistingSuiteExpansion` | `tests/Events/selecting-options.test.html` | Expand mapped suite with example-specific JS behavior assertions | Partially covered by feature tests but example contract not fully explicit yet |
@@ -103,7 +103,7 @@ Generated for Phase 0 inventory from `examples/*.html` and current `tests/**/*.t
 | `switch-between-multi-select-and-single-select` | `NeedsDedicatedSuite` | — | Create `tests/ExamplesWeb/switch-between-multi-select-and-single-select.test.html` (3-6 JS-focused tests) | No concrete existing web-test mapping found |
 | `ten-thousand-options` | `NeedsDedicatedSuite` | — | Create `tests/ExamplesWeb/ten-thousand-options.test.html` (3-6 JS-focused tests) | No concrete existing web-test mapping found |
 | `update-options-add-options-to-a-much-select` | `Done` | `tests/ExamplesWeb/update-options-add-options-to-a-much-select.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
-| `update-options-add-options-to-an-empty-much-select` | `NeedsExistingSuiteExpansion` | `tests/Option/option-api.test.html`, `tests/IntegrationTests/options.test.html` | Expand mapped suite with example-specific JS behavior assertions | Partially covered by feature tests but example contract not fully explicit yet |
+| `update-options-add-options-to-an-empty-much-select` | `Done` | `tests/ExamplesWeb/update-options-add-options-to-an-empty-much-select.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
 | `validation-and-transformation-slot-custom-validation` | `NeedsDedicatedSuite` | — | Create `tests/ExamplesWeb/validation-and-transformation-slot-custom-validation.test.html` (3-6 JS-focused tests) | No concrete existing web-test mapping found |
 | `validation-and-transformation-slot-multi-custom-html` | `NeedsDedicatedSuite` | — | Create `tests/ExamplesWeb/validation-and-transformation-slot-multi-custom-html.test.html` (3-6 JS-focused tests) | No concrete existing web-test mapping found |
 | `validation-and-transformation-slot-multi-datalist` | `NeedsDedicatedSuite` | — | Create `tests/ExamplesWeb/validation-and-transformation-slot-multi-datalist.test.html` (3-6 JS-focused tests) | No concrete existing web-test mapping found |

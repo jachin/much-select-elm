@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <script type="module">
+      import { runTests } from "@web/test-runner-mocha";
+      import { expect } from "@esm-bundle/chai";
+      import { html, fixture, oneEvent, waitUntil } from "@open-wc/testing";
+      import { sendKeys } from "@web/test-runner-commands";
+
+      import MuchSelect from "../../dist/much-select-debug.js";
+
+      if (!customElements.get("much-select")) {
+        window.customElements.define("much-select", MuchSelect);
+      }
+
+      runTests(() => {
+        describe("ExamplesWeb", () => {
+          describe("custom-option-label-text", () => {
+            it("uses configured custom option hint prefix", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select allow-custom-options="New Currency: ">
+                  <select slot="select-input">
+                    <option>Gold Doubloons</option>
+                    <option>Schrute Bucks</option>
+                    <option>Credits</option>
+                  </select>
+                </much-select>`,
+              );
+              await oneEvent(el, "muchSelectReady");
+
+              el.shadowRoot.getElementById("input-filter").focus();
+              await sendKeys({ type: "Bitcoin" });
+
+              await waitUntil(() => {
+                const dropdown = el.shadowRoot.getElementById("dropdown");
+                return dropdown.textContent.includes("New Currency: Bitcoin");
+              }, "Expected configured custom label text");
+            });
+
+            it("does not lose existing option rows while typing custom input", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select allow-custom-options="New Currency: ">
+                  <select slot="select-input">
+                    <option>Gold Doubloons</option>
+                    <option>Schrute Bucks</option>
+                    <option>Credits</option>
+                  </select>
+                </much-select>`,
+              );
+              await oneEvent(el, "muchSelectReady");
+
+              el.shadowRoot.getElementById("input-filter").focus();
+              await sendKeys({ type: "Bit" });
+
+              await waitUntil(() => {
+                const text =
+                  el.shadowRoot.getElementById("dropdown").textContent;
+                return text.includes("Gold Doubloons");
+              }, "Expected existing options to remain visible");
+            });
+
+            it("exposes configured custom option hint via property", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select allow-custom-options="New Currency: ">
+                  <select slot="select-input">
+                    <option>Credits</option>
+                  </select>
+                </much-select>`,
+              );
+              await oneEvent(el, "muchSelectReady");
+
+              expect(await el.customOptionHint).to.equal("New Currency: ");
+              expect(await el.allowCustomOptions).to.be.true;
+            });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
