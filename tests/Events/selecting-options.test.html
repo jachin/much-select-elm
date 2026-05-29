@@ -1,94 +1,253 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<body>
-<script type="module">
-  import { runTests } from "@web/test-runner-mocha";
-  import { expect } from "@esm-bundle/chai";
-  import { html, fixture, oneEvent } from "@open-wc/testing";
+  <body>
+    <script type="module">
+      import { runTests } from "@web/test-runner-mocha";
+      import { expect } from "@esm-bundle/chai";
+      import { html, fixture, oneEvent } from "@open-wc/testing";
 
-  import MuchSelect from "../../dist/much-select-debug.js";
+      import MuchSelect from "../../dist/much-select-debug.js";
 
-  if (!customElements.get("much-select")) {
-    // Putting guard rails around this because browsers do not like
-    //  having the same custom element defined more than once.
-    window.customElements.define("much-select", MuchSelect);
-  }
+      if (!customElements.get("much-select")) {
+        // Putting guard rails around this because browsers do not like
+        //  having the same custom element defined more than once.
+        window.customElements.define("much-select", MuchSelect);
+      }
 
-  runTests(() => {
-    describe("Events", () => {
-      describe("single select mode", () => {
-        it("should emit valueChanged events", async () => {
-          const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select></much-select>`,
-          );
+      runTests(() => {
+        describe("Events", () => {
+          describe("single select mode", () => {
+            it("should emit valueChanged events", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select></much-select>`,
+              );
 
-          // Add some options
-          el.addOption("one");
-          el.addOption("two");
-          el.addOption("three");
+              el.addOption("one");
+              el.addOption("two");
+              el.addOption("three");
 
-          el.selectOption("one");
+              const valueChangedEvtOne = oneEvent(el, "valueChanged");
+              el.selectOption("one");
 
-          // Event detail should show the current value as "one".
-          const valueChangedEvtOne = await oneEvent(el, "valueChanged");
-          expect(valueChangedEvtOne.detail.value.value).to.be.equal("one");
+              const evt = await valueChangedEvtOne;
+              expect(evt.detail.value.value).to.equal("one");
+            });
+
+            it("single-select-value-changed-event example should emit selected value detail", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select output-style="custom-html"></much-select>`,
+              );
+
+              el.addOption("apple");
+              el.addOption("pear");
+
+              const valueChanged = oneEvent(el, "valueChanged");
+              el.selectOption("pear");
+
+              const evt = await valueChanged;
+              expect(evt.detail.value.value).to.equal("pear");
+              expect(evt.detail.values.map((v) => v.value)).to.eql(["pear"]);
+            });
+
+            it("datalist-single-select-value-changed-event example should emit selected value detail", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select output-style="datalist"></much-select>`,
+              );
+
+              el.addOption("one");
+              el.addOption("two");
+
+              const valueChanged = oneEvent(el, "valueChanged");
+              el.selectOption("two");
+
+              const evt = await valueChanged;
+              expect(evt.detail.value.value).to.equal("two");
+              expect(evt.detail.values.map((v) => v.value)).to.eql(["two"]);
+            });
+          });
+
+          it("should emit optionSelected events", async () => {
+            const el = /** @type {MuchSelect} */ await fixture(
+              html`<much-select></much-select>`,
+            );
+
+            el.addOption("one");
+            el.addOption("two");
+            el.addOption("three");
+
+            const optionSelected = oneEvent(el, "optionSelected");
+            el.selectOption("one");
+
+            const evt = await optionSelected;
+            expect(evt.detail.value).to.equal("one");
+            expect(evt.detail.label).to.equal("one");
+          });
+
+          it("single-select-option-selected-event example should emit value and label", async () => {
+            const el = /** @type {MuchSelect} */ await fixture(
+              html`<much-select></much-select>`,
+            );
+
+            el.addOption({ value: "usa", label: "United States" });
+
+            const optionSelected = oneEvent(el, "optionSelected");
+            el.selectOption("usa");
+
+            const evt = await optionSelected;
+            expect(evt.detail.value).to.equal("usa");
+            expect(evt.detail.label).to.equal("usa");
+          });
+
+          it("should emit addItem events", async () => {
+            const el = /** @type {MuchSelect} */ await fixture(
+              html`<much-select></much-select>`,
+            );
+
+            el.addOption("one");
+            el.addOption("two");
+            el.addOption("three");
+
+            const addItem = oneEvent(el, "addItem");
+            el.selectOption("one");
+
+            const evt = await addItem;
+            expect(evt.detail.value).to.equal("one");
+            expect(evt.detail.label).to.equal("one");
+          });
+
+          it("should emit optionDeselected events when an option is deselected", async () => {
+            const el = /** @type {MuchSelect} */ await fixture(
+              html`<much-select></much-select>`,
+            );
+
+            el.addOption("one");
+            el.addOption("two");
+            el.addOption("three");
+
+            const optionSelected = oneEvent(el, "optionSelected");
+            el.selectOption("one");
+            await optionSelected;
+
+            const optionDeselected = oneEvent(el, "optionDeselected");
+            el.deselectOption("one");
+
+            const evt = await optionDeselected;
+            expect(evt.detail.value).to.equal("one");
+            expect(evt.detail.label).to.equal("one");
+          });
+
+          it("single-select-option-deselected-event example should emit value and label", async () => {
+            const el = /** @type {MuchSelect} */ await fixture(
+              html`<much-select></much-select>`,
+            );
+
+            el.addOption({ value: "ca", label: "Canada" });
+
+            const optionSelected = oneEvent(el, "optionSelected");
+            el.selectOption("ca");
+            await optionSelected;
+
+            const optionDeselected = oneEvent(el, "optionDeselected");
+            el.deselectOption("ca");
+
+            const evt = await optionDeselected;
+            expect(evt.detail.value).to.equal("ca");
+            expect(evt.detail.label).to.equal("Canada");
+          });
+
+          describe("multi select mode", () => {
+            it("multi-select-value-changed-event example should emit all selected values", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select multi-select></much-select>`,
+              );
+
+              el.addOption("red");
+              el.addOption("blue");
+
+              const firstValueChanged = oneEvent(el, "valueChanged");
+              el.selectOption("red");
+              await firstValueChanged;
+
+              const secondValueChanged = oneEvent(el, "valueChanged");
+              el.selectOption("blue");
+
+              const evt = await secondValueChanged;
+              expect(evt.detail.values.map((v) => v.value)).to.eql([
+                "red",
+                "blue",
+              ]);
+            });
+
+            it("datalist-multi-select-value-changed-event example should emit all selected values", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select
+                  output-style="datalist"
+                  multi-select
+                ></much-select>`,
+              );
+
+              el.addOption("one");
+              el.addOption("two");
+
+              const firstValueChanged = oneEvent(el, "valueChanged");
+              el.selectOption("one");
+              await firstValueChanged;
+
+              const secondValueChanged = oneEvent(el, "valueChanged");
+              el.selectOption("two");
+
+              const evt = await secondValueChanged;
+              expect(evt.detail.values.map((v) => v.value)).to.eql([
+                "one",
+                "two",
+              ]);
+            });
+
+            it("multi-select-option-deselected-event example should emit the deselected option", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select multi-select></much-select>`,
+              );
+
+              el.addOption("alpha");
+              el.addOption("beta");
+
+              const selected = oneEvent(el, "optionSelected");
+              el.selectOption("alpha");
+              await selected;
+
+              const optionDeselected = oneEvent(el, "optionDeselected");
+              el.deselectOption("alpha");
+
+              const evt = await optionDeselected;
+              expect(evt.detail.value).to.equal("alpha");
+              expect(evt.detail.label).to.equal("alpha");
+            });
+
+            it("multi-select-value-cleared example should emit valueCleared and clear selected values", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select multi-select></much-select>`,
+              );
+
+              el.addOption("first");
+              el.addOption("second");
+
+              const selected1 = oneEvent(el, "optionSelected");
+              el.selectOption("first");
+              await selected1;
+
+              const selected2 = oneEvent(el, "optionSelected");
+              el.selectOption("second");
+              await selected2;
+
+              const valueCleared = oneEvent(el, "valueCleared");
+              el.shadowRoot.getElementById("clear-button-wrapper").click();
+              await valueCleared;
+
+              expect(await el.selectedValue).to.eql([]);
+            });
+          });
         });
       });
-
-      it("should emit optionSelected events", async () => {
-        const el = /** @type {MuchSelect} */ await fixture(
-          html`<much-select></much-select>`,
-        );
-
-        // Add some options
-        el.addOption("one");
-        el.addOption("two");
-        el.addOption("three");
-
-        el.selectOption("one");
-
-        const evt = await oneEvent(el, "optionSelected");
-        expect(evt.detail.value).to.be.equal("one");
-        expect(evt.detail.label).to.be.equal("one");
-      });
-
-      it("should emit addItem events", async () => {
-        const el = /** @type {MuchSelect} */ await fixture(
-          html`<much-select></much-select>`,
-        );
-
-        // Add some options
-        el.addOption("one");
-        el.addOption("two");
-        el.addOption("three");
-
-        el.selectOption("one");
-
-        const evt = await oneEvent(el, "addItem");
-        expect(evt.detail.value).to.be.equal("one");
-        expect(evt.detail.label).to.be.equal("one");
-      });
-
-      it("should emit optionDeselected events when an option is deselected", async () => {
-        const el = /** @type {MuchSelect} */ await fixture(
-          html`<much-select></much-select>`,
-        );
-
-        // Add some options
-        el.addOption("one");
-        el.addOption("two");
-        el.addOption("three");
-
-        el.selectOption("one");
-        await oneEvent(el, "optionSelected");
-        el.deselectOption("one");
-
-        const evt = await oneEvent(el, "optionDeselected");
-        expect(evt.detail.value).to.be.equal("one");
-        expect(evt.detail.label).to.be.equal("one");
-      });
-    });
-  });
-</script>
-</body>
+    </script>
+  </body>
 </html>

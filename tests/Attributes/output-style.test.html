@@ -1,48 +1,112 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<body>
-<script type="module">
-  import { runTests } from "@web/test-runner-mocha";
-  import { expect } from "@esm-bundle/chai";
-  import { html, fixture, nextFrame } from "@open-wc/testing";
+  <body>
+    <script type="module">
+      import { runTests } from "@web/test-runner-mocha";
+      import { expect } from "@esm-bundle/chai";
+      import { html, fixture, nextFrame } from "@open-wc/testing";
 
-  import MuchSelect from "../../dist/much-select-debug.js";
+      import MuchSelect from "../../dist/much-select-debug.js";
 
-  if (!customElements.get("much-select")) {
-    // Putting guard rails around this because browsers do not like
-    //  having the same custom element defined more than once.
-    window.customElements.define("much-select", MuchSelect);
-  }
+      if (!customElements.get("much-select")) {
+        // Putting guard rails around this because browsers do not like
+        //  having the same custom element defined more than once.
+        window.customElements.define("much-select", MuchSelect);
+      }
 
-  runTests(() => {
-    describe("Attributes", () => {
-      describe("output-style", () => {
-        it("the default value should be custom-html", async () => {
-          const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select></much-select>`,
-          );
-          expect(await el.outputStyle).to.equal("custom-html");
-        });
+      runTests(() => {
+        describe("Attributes", () => {
+          describe("output-style", () => {
+            it("the default value should be custom-html", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select></much-select>`,
+              );
+              expect(await el.outputStyle).to.equal("custom-html");
+            });
 
-        it("should support datalist on init", async () => {
-          const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select output-style="datalist"></much-select>`,
-          );
-          expect(await el.outputStyle).to.equal("datalist");
-        });
+            it("should support datalist on init", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select output-style="datalist"></much-select>`,
+              );
+              expect(await el.outputStyle).to.equal("datalist");
+            });
 
-        it("should support changing the value through the setter", async () => {
-          const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select output-style="datalist"></much-select>`,
-          );
+            it("should support changing the value through the setter", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select output-style="datalist"></much-select>`,
+              );
 
-          el.outputStyle = "custom-html";
-          await nextFrame();
-          expect(await el.outputStyle).to.equal("custom-html");
+              el.outputStyle = "custom-html";
+              await nextFrame();
+              expect(await el.outputStyle).to.equal("custom-html");
+            });
+
+            it("output-style-datalist-multi-select example should support datalist in multi-select mode", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select
+                  output-style="datalist"
+                  multi-select
+                ></much-select>`,
+              );
+
+              el.addOption("one");
+              el.addOption("two");
+              el.selectOption("one");
+              await nextFrame();
+
+              expect(await el.outputStyle).to.equal("datalist");
+              expect(await el.selectedValue).to.eql(["one"]);
+            });
+
+            it("output-style-datalist-multi-select-with-selected-values example should decode comma selected values", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select
+                  output-style="datalist"
+                  multi-select
+                  selected-value="one,two"
+                ></much-select>`,
+              );
+
+              expect(await el.outputStyle).to.equal("datalist");
+              expect(await el.selectedValue).to.eql(["one", "two"]);
+            });
+
+            it("output-style-datalist-multi-select-with-selected-values-json-value-selected example should decode JSON selected values", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select
+                  output-style="datalist"
+                  multi-select
+                  selected-value-encoding="json"
+                  selected-value="%5B%22one%22%2C%22two%22%5D"
+                ></much-select>`,
+              );
+
+              expect(await el.outputStyle).to.equal("datalist");
+              expect(await el.selectedValue).to.eql(["one", "two"]);
+            });
+
+            it("switch-between-datalist-and-custom-html example should preserve selected value while switching output style", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select output-style="datalist"></much-select>`,
+              );
+
+              el.addOption("x");
+              el.addOption("y");
+              el.selectOption("y");
+              await nextFrame();
+
+              expect(await el.outputStyle).to.equal("datalist");
+              expect(await el.selectedValue).to.equal("y");
+
+              el.outputStyle = "custom-html";
+              await nextFrame();
+
+              expect(await el.outputStyle).to.equal("custom-html");
+              expect(await el.selectedValue).to.equal("y");
+            });
+          });
         });
       });
-    });
-  });
-</script>
-</body>
+    </script>
+  </body>
 </html>

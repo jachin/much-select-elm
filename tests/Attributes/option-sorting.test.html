@@ -1,101 +1,146 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<body>
-<script type="module">
-  import { runTests } from "@web/test-runner-mocha";
-  import { expect } from "@esm-bundle/chai";
-  import { html, fixture, nextFrame } from "@open-wc/testing";
+  <body>
+    <script type="module">
+      import { runTests } from "@web/test-runner-mocha";
+      import { expect } from "@esm-bundle/chai";
+      import { html, fixture, nextFrame } from "@open-wc/testing";
 
-  import MuchSelect from "../../dist/much-select-debug.js";
+      import MuchSelect from "../../dist/much-select-debug.js";
 
-  if (!customElements.get("much-select")) {
-    // Putting guard rails around this because browsers do not like
-    //  having the same custom element defined more than once.
-    window.customElements.define("much-select", MuchSelect);
-  }
+      if (!customElements.get("much-select")) {
+        // Putting guard rails around this because browsers do not like
+        //  having the same custom element defined more than once.
+        window.customElements.define("much-select", MuchSelect);
+      }
 
-  runTests(() => {
-    describe("Attributes", () => {
-      describe("option-sorting", () => {
-        it("the default value should be no-sorting", async () => {
-          const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select></much-select>`,
-          );
-          expect(await el.optionSorting).to.equal("no-sorting");
-        });
+      runTests(() => {
+        describe("Attributes", () => {
+          describe("option-sorting", () => {
+            it("the default value should be no-sorting", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select></much-select>`,
+              );
+              expect(await el.optionSorting).to.equal("no-sorting");
+            });
 
-        it("is empty the default value of no-sorting should be used", async () => {
-          const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select option-sorting=""></much-select>`,
-          );
-          el.setAttribute("search-string-minimum-length", "");
-          expect(await el.optionSorting).to.equal("no-sorting");
-        });
+            it("is empty the default value of no-sorting should be used", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select option-sorting=""></much-select>`,
+              );
+              el.setAttribute("search-string-minimum-length", "");
+              expect(await el.optionSorting).to.equal("no-sorting");
+            });
 
-        it("setting the attribute to no-sorting should work", async () => {
-          const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select option-sorting="no-sorting"></much-select>`,
-          );
-          expect(await el.optionSorting).to.equal("no-sorting");
-        });
+            it("setting the attribute to no-sorting should work", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select option-sorting="no-sorting"></much-select>`,
+              );
+              expect(await el.optionSorting).to.equal("no-sorting");
+            });
 
-        it("setting the attribute to no-sorting explicitly should persist", async () => {
-          const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select option-sorting="no-sorting"></much-select>`,
-          );
-          expect(el.hasAttribute("option-sorting")).to.be.true;
-        });
+            it("setting the attribute to no-sorting explicitly should persist", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select option-sorting="no-sorting"></much-select>`,
+              );
+              expect(el.hasAttribute("option-sorting")).to.be.true;
+            });
 
-        it("setting the attribute to by-option-label should be valid and the attribute should stay", async () => {
-          const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select option-sorting="by-option-label"></much-select>`,
-          );
+            it("setting the attribute to by-option-label should be valid and the attribute should stay", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select
+                  option-sorting="by-option-label"
+                ></much-select>`,
+              );
 
-          expect(await el.optionSorting).to.equal("by-option-label");
-        });
+              expect(await el.optionSorting).to.equal("by-option-label");
+            });
 
-        it("removing the attribute should set the option sorting to default of no-sorting", async () => {
-          const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select option-sorting="by-option-label"></much-select>`,
-          );
+            it("removing the attribute should set the option sorting to default of no-sorting", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select
+                  option-sorting="by-option-label"
+                ></much-select>`,
+              );
 
-          el.removeAttribute("option-sorting");
+              el.removeAttribute("option-sorting");
 
-          await nextFrame();
+              await nextFrame();
 
-          expect(await el.optionSorting).to.equal("no-sorting");
-        });
+              expect(await el.optionSorting).to.equal("no-sorting");
+            });
 
-        it("should be able to be set by the property", async () => {
-          const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select></much-select>`,
-          );
+            it("should be able to be set by the property", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select></much-select>`,
+              );
 
-          el.optionSorting = "no-sorting";
-          await nextFrame();
-          expect(await el.optionSorting).to.equal("no-sorting");
+              el.optionSorting = "no-sorting";
+              await nextFrame();
+              expect(await el.optionSorting).to.equal("no-sorting");
 
-          el.optionSorting = "by-option-label";
-          await nextFrame();
-          expect(await el.optionSorting).to.equal("by-option-label");
-        });
+              el.optionSorting = "by-option-label";
+              await nextFrame();
+              expect(await el.optionSorting).to.equal("by-option-label");
+            });
 
-        it("should not allow a non-sense value change via the property setter", async () => {
-          const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select></much-select>`,
-          );
+            it("should not allow a non-sense value change via the property setter", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select></much-select>`,
+              );
 
-          el.optionSorting = "no-sorting";
-          await nextFrame();
-          expect(await el.optionSorting).to.equal("no-sorting");
+              el.optionSorting = "no-sorting";
+              await nextFrame();
+              expect(await el.optionSorting).to.equal("no-sorting");
 
-          el.optionSorting = "junk";
-          await nextFrame();
-          expect(await el.optionSorting).to.equal("no-sorting");
+              el.optionSorting = "junk";
+              await nextFrame();
+              expect(await el.optionSorting).to.equal("no-sorting");
+            });
+
+            it("default-option-group-ordering example should preserve optgroup ordering", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select option-sorting="by-option-label">
+                  <select slot="select-input">
+                    <optgroup label="Minnesota">
+                      <option>Minneapolis</option>
+                      <option>St Paul</option>
+                      <option>Duluth</option>
+                    </optgroup>
+                    <optgroup label="Iowa">
+                      <option>Des Moines</option>
+                      <option>Cedar Rapids</option>
+                      <option>Iowa City</option>
+                    </optgroup>
+                  </select>
+                </much-select>`,
+              );
+
+              const options = await el.getAllOptions();
+
+              const minnesotaOptions = options
+                .filter((o) => o.group === "Minnesota")
+                .map((o) => o.value)
+                .sort();
+              const iowaOptions = options
+                .filter((o) => o.group === "Iowa")
+                .map((o) => o.value)
+                .sort();
+
+              expect(minnesotaOptions).to.eql([
+                "Duluth",
+                "Minneapolis",
+                "St Paul",
+              ]);
+              expect(iowaOptions).to.eql([
+                "Cedar Rapids",
+                "Des Moines",
+                "Iowa City",
+              ]);
+            });
+          });
         });
       });
-    });
-  });
-</script>
-</body>
+    </script>
+  </body>
 </html>

@@ -1,207 +1,224 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<body>
-<script type="module">
-  import { runTests } from "@web/test-runner-mocha";
-  import { expect } from "@esm-bundle/chai";
-  import { html, fixture, nextFrame, oneEvent } from "@open-wc/testing";
-  import { sendKeys, sendMouse } from "@web/test-runner-commands";
+  <body>
+    <script type="module">
+      import { runTests } from "@web/test-runner-mocha";
+      import { expect } from "@esm-bundle/chai";
+      import { html, fixture, nextFrame, oneEvent } from "@open-wc/testing";
+      import { sendKeys } from "@web/test-runner-commands";
 
-  import MuchSelect from "../../dist/much-select-debug.js";
+      import MuchSelect from "../../dist/much-select-debug.js";
 
-  if (!customElements.get("much-select")) {
-    // Putting guard rails around this because browsers do not like
-    //  having the same custom element defined more than once.
-    window.customElements.define("much-select", MuchSelect);
-  }
+      if (!customElements.get("much-select")) {
+        // Putting guard rails around this because browsers do not like
+        //  having the same custom element defined more than once.
+        window.customElements.define("much-select", MuchSelect);
+      }
 
-  function getMiddleOfElement(element) {
-    const { x, y, width, height } = element.getBoundingClientRect();
+      runTests(() => {
+        describe("Dropdown Highlighted Option", () => {
+          it("when the dropdown is opened there should be no highlighted options", async () => {
+            const el = /** @type {MuchSelect} */ await fixture(
+              html` <much-select>
+                <select slot="select-input">
+                  <option value="Coffee">Coffee</option>
+                  <option value="Tea">Tea</option>
+                  <option value="Water">Water</option>
+                  <option value="Soda">Soda</option>
+                </select>
+              </much-select>`,
+            );
 
-    return {
-      x: Math.floor(x + window.pageXOffset + width / 2),
-      y: Math.floor(y + window.pageYOffset + height / 2),
-    };
-  }
+            // Focus on the input filter so the dropdown opens.
+            el.shadowRoot.querySelector("#input-filter").focus();
 
-  runTests(() => {
-    describe("Dropdown Highlighted Option", () => {
-      it("when the dropdown is opened there should be no highlighted options", async () => {
-        const el = /** @type {MuchSelect} */ await fixture(
-          html` <much-select>
-            <select slot="select-input">
-              <option value="Coffee">Coffee</option>
-              <option value="Tea">Tea</option>
-              <option value="Water">Water</option>
-              <option value="Soda">Soda</option>
-            </select>
-          </much-select>`,
-        );
+            await nextFrame();
 
-        // Focus on the input filter so the dropdown opens.
-        el.shadowRoot.querySelector("#input-filter").focus();
+            expect(
+              el.shadowRoot.querySelectorAll("#dropdown .option.highlighted")
+                .length,
+            ).to.equal(0);
+          });
 
-        await nextFrame();
+          it("when the dropdown is opened there should be no highlighted options even if an option is selected", async () => {
+            const el = /** @type {MuchSelect} */ await fixture(
+              html` <much-select>
+                <select slot="select-input">
+                  <option value="Coffee">Coffee</option>
+                  <option selected value="Tea">Tea</option>
+                  <option value="Water">Water</option>
+                  <option value="Soda">Soda</option>
+                </select>
+              </much-select>`,
+            );
 
-        expect(
-          el.shadowRoot.querySelectorAll("#dropdown .option.highlighted").length,
-        ).to.equal(0);
-      });
+            await oneEvent(el, "muchSelectReady");
 
-      it("when the dropdown is opened there should be no highlighted options even if an option is selected", async () => {
-        const el = /** @type {MuchSelect} */ await fixture(
-          html` <much-select>
-            <select slot="select-input">
-              <option value="Coffee">Coffee</option>
-              <option selected value="Tea">Tea</option>
-              <option value="Water">Water</option>
-              <option value="Soda">Soda</option>
-            </select>
-          </much-select>`,
-        );
+            // Focus on the input filter so the dropdown opens.
+            el.shadowRoot.querySelector("#input-filter").focus();
 
-        await oneEvent(el, "muchSelectReady");
+            await nextFrame();
 
-        // Focus on the input filter so the dropdown opens.
-        el.shadowRoot.querySelector("#input-filter").focus();
+            expect(
+              el.shadowRoot
+                .getElementById("dropdown")
+                .classList.contains("showing"),
+            ).to.be.true;
 
-        await nextFrame();
+            expect(
+              el.shadowRoot.querySelectorAll("#dropdown .option").length,
+            ).to.equal(4);
 
-        expect(
-          el.shadowRoot.getElementById("dropdown").classList.contains("showing"),
-        ).to.be.true;
+            expect(
+              el.shadowRoot.querySelectorAll("#dropdown .option.highlighted")
+                .length,
+            ).to.equal(0);
 
-        expect(
-          el.shadowRoot.querySelectorAll("#dropdown .option").length,
-        ).to.equal(4);
+            expect(
+              el.shadowRoot.querySelectorAll("#dropdown .option.selected")
+                .length,
+            ).to.equal(1);
+          });
 
-        expect(
-          el.shadowRoot.querySelectorAll("#dropdown .option.highlighted").length,
-        ).to.equal(0);
+          it("when the dropdown is opened pressing the down arrow should highlight the first option", async () => {
+            const el = /** @type {MuchSelect} */ await fixture(
+              html` <much-select option-sorting="no-sorting">
+                <select slot="select-input">
+                  <option value="Coffee">Coffee</option>
+                  <option value="Tea">Tea</option>
+                  <option value="Water">Water</option>
+                  <option value="Soda">Soda</option>
+                </select>
+              </much-select>`,
+            );
 
-        expect(
-          el.shadowRoot.querySelectorAll("#dropdown .option.selected").length,
-        ).to.equal(1);
-      });
+            await oneEvent(el, "muchSelectReady");
 
-      it("when the dropdown is opened pressing the down arrow should highlight the first option", async () => {
-        const el = /** @type {MuchSelect} */ await fixture(
-          html` <much-select option-sorting="no-sorting">
-            <select slot="select-input">
-              <option value="Coffee">Coffee</option>
-              <option value="Tea">Tea</option>
-              <option value="Water">Water</option>
-              <option value="Soda">Soda</option>
-            </select>
-          </much-select>`,
-        );
+            // Focus on the input filter so the dropdown opens.
+            el.shadowRoot.querySelector("#input-filter").focus();
 
-        await oneEvent(el, "muchSelectReady");
+            await oneEvent(el, "muchSelectFocused");
 
-        // Focus on the input filter so the dropdown opens.
-        el.shadowRoot.querySelector("#input-filter").focus();
+            await sendKeys({ press: "ArrowDown" });
 
-        await oneEvent(el, "muchSelectFocused");
+            await nextFrame();
 
-        await sendKeys({ press: "ArrowDown" });
+            expect(
+              el.shadowRoot.querySelectorAll("#dropdown .option.highlighted")
+                .length,
+            ).to.equal(1);
 
-        await nextFrame();
+            expect(
+              el.shadowRoot.querySelector("#dropdown .option.highlighted"),
+            ).to.have.text("Coffee");
+          });
 
-        expect(
-          el.shadowRoot.querySelectorAll("#dropdown .option.highlighted").length,
-        ).to.equal(1);
+          it("when the dropdown is opened pressing the down arrow should highlight the selected value", async () => {
+            const el = /** @type {MuchSelect} */ await fixture(
+              html` <much-select option-sorting="no-sorting">
+                <select slot="select-input">
+                  <option value="Coffee">Coffee</option>
+                  <option value="Tea">Tea</option>
+                  <option selected value="Water">Water</option>
+                  <option value="Soda">Soda</option>
+                </select>
+              </much-select>`,
+            );
+            await oneEvent(el, "muchSelectReady");
 
-        expect(
-          el.shadowRoot.querySelector("#dropdown .option.highlighted"),
-        ).to.have.text("Coffee");
-      });
+            // Focus on the input filter so the dropdown opens.
+            el.shadowRoot.querySelector("#input-filter").focus();
+            await oneEvent(el, "muchSelectFocused");
 
-      it("when the dropdown is opened pressing the down arrow should highlight the selected value", async () => {
-        const el = /** @type {MuchSelect} */ await fixture(
-          html` <much-select option-sorting="no-sorting">
-            <select slot="select-input">
-              <option value="Coffee">Coffee</option>
-              <option value="Tea">Tea</option>
-              <option selected value="Water">Water</option>
-              <option value="Soda">Soda</option>
-            </select>
-          </much-select>`,
-        );
-        await oneEvent(el, "muchSelectReady");
+            await sendKeys({ press: "ArrowDown" });
 
-        await sendKeys({
-          press: "Escape",
+            await nextFrame();
+
+            expect(
+              el.shadowRoot.querySelectorAll("#dropdown .option.highlighted")
+                .length,
+            ).to.equal(1);
+
+            expect(
+              el.shadowRoot.querySelector("#dropdown .option.highlighted"),
+            ).to.have.text("Water");
+          });
+
+          it("when the dropdown is opened pressing the arrows keys should only result in 1 highlighted option", async () => {
+            const el = /** @type {MuchSelect} */ await fixture(
+              html` <much-select option-sorting="no-sorting">
+                <select slot="select-input">
+                  <option value="Coffee">Coffee</option>
+                  <option value="Tea">Tea</option>
+                  <option selected value="Water">Water</option>
+                  <option value="Soda">Soda</option>
+                </select>
+              </much-select>`,
+            );
+            await oneEvent(el, "muchSelectReady");
+
+            // Focus on the input filter so the dropdown opens.
+            el.shadowRoot.querySelector("#input-filter").focus();
+            await oneEvent(el, "muchSelectFocused");
+
+            await sendKeys({ press: "ArrowDown" });
+
+            await nextFrame();
+
+            expect(
+              el.shadowRoot.querySelectorAll(
+                "#dropdown .option.selected.highlighted",
+              ).length,
+            ).to.equal(1);
+
+            await sendKeys({ press: "ArrowUp" });
+
+            await nextFrame();
+
+            expect(
+              el.shadowRoot.querySelectorAll("#dropdown .option.highlighted")
+                .length,
+            ).to.equal(1);
+
+            await sendKeys({ press: "ArrowUp" });
+
+            await nextFrame();
+
+            expect(
+              el.shadowRoot.querySelectorAll("#dropdown .option.selected")
+                .length,
+            ).to.equal(1);
+          });
+
+          it("search-keyboard-events example should emit inputKeyUp and inputKeyUpDebounced", async () => {
+            const el = /** @type {MuchSelect} */ await fixture(
+              html` <much-select>
+                <select slot="select-input">
+                  <option>Frodo</option>
+                  <option>Sam</option>
+                  <option>Merry</option>
+                  <option>Pippin</option>
+                </select>
+              </much-select>`,
+            );
+
+            const input = el.shadowRoot.querySelector("#input-filter");
+            input.focus();
+            await oneEvent(el, "muchSelectFocused");
+
+            const keyUp = oneEvent(el, "inputKeyUp");
+            const keyUpDebounced = oneEvent(el, "inputKeyUpDebounced");
+
+            await sendKeys({ type: "f" });
+
+            const keyUpEvt = await keyUp;
+            const keyUpDebouncedEvt = await keyUpDebounced;
+
+            expect(keyUpEvt.detail.searchString).to.equal("f");
+            expect(keyUpDebouncedEvt.detail.searchString).to.equal("f");
+          });
         });
-
-        // Focus on the input filter so the dropdown opens.
-        const { x, y } = getMiddleOfElement(el);
-        await sendMouse({ type: "click", position: [x, y] });
-
-        await oneEvent(el, "muchSelectFocused");
-
-        await sendKeys({ press: "ArrowDown" });
-
-        await nextFrame();
-
-        expect(
-          el.shadowRoot.querySelectorAll("#dropdown .option.highlighted").length,
-        ).to.equal(1);
-
-        expect(
-          el.shadowRoot.querySelector("#dropdown .option.highlighted"),
-        ).to.have.text("Water");
       });
-
-      it("when the dropdown is opened pressing the arrows keys should only result in 1 highlighted option", async () => {
-        const el = /** @type {MuchSelect} */ await fixture(
-          html` <much-select option-sorting="no-sorting">
-            <select slot="select-input">
-              <option value="Coffee">Coffee</option>
-              <option value="Tea">Tea</option>
-              <option selected value="Water">Water</option>
-              <option value="Soda">Soda</option>
-            </select>
-          </much-select>`,
-        );
-        await oneEvent(el, "muchSelectReady");
-
-        await sendKeys({
-          press: "Escape",
-        });
-
-        // Focus on the input filter so the dropdown opens.
-        const { x, y } = getMiddleOfElement(el);
-        await sendMouse({ type: "click", position: [x, y] });
-
-        await oneEvent(el, "muchSelectFocused");
-
-        await sendKeys({ press: "ArrowDown" });
-
-        await nextFrame();
-
-        expect(
-          el.shadowRoot.querySelectorAll("#dropdown .option.selected.highlighted")
-            .length,
-        ).to.equal(1);
-
-        await sendKeys({ press: "ArrowUp" });
-
-        await nextFrame();
-
-        expect(
-          el.shadowRoot.querySelectorAll("#dropdown .option.highlighted").length,
-        ).to.equal(1);
-
-        await sendKeys({ press: "ArrowUp" });
-
-        await nextFrame();
-
-        expect(
-          el.shadowRoot.querySelectorAll("#dropdown .option.selected").length,
-        ).to.equal(1);
-      });
-    });
-  });
-</script>
-</body>
+    </script>
+  </body>
 </html>

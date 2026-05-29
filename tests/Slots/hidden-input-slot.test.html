@@ -1,76 +1,111 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<body>
-<script type="module">
-  import { runTests } from "@web/test-runner-mocha";
-  import { html, fixture, waitUntil } from "@open-wc/testing";
+  <body>
+    <script type="module">
+      import { runTests } from "@web/test-runner-mocha";
+      import { expect } from "@esm-bundle/chai";
+      import { html, fixture, oneEvent, waitUntil } from "@open-wc/testing";
 
-  import MuchSelect from "../../dist/much-select-debug.js";
+      import MuchSelect from "../../dist/much-select-debug.js";
 
-  if (!customElements.get("much-select")) {
-    // Putting guard rails around this because browsers do not like
-    //  having the same custom element defined more than once.
-    window.customElements.define("much-select", MuchSelect);
-  }
+      if (!customElements.get("much-select")) {
+        // Putting guard rails around this because browsers do not like
+        //  having the same custom element defined more than once.
+        window.customElements.define("much-select", MuchSelect);
+      }
 
-  runTests(() => {
-    describe("Slots", () => {
-      describe("hidden-value-input", () => {
-        it("should be an empty string if there is no selected value", async () => {
-          const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select
-              ><input
-                slot="hidden-value-input"
-                type="hidden"
-                name="my-special-value"
-            /></much-select>`,
-          );
-          await waitUntil(
-            async () =>
-              el
-                .querySelector("[slot='hidden-value-input']")
-                .getAttribute("value") === "",
-          );
-        });
+      runTests(() => {
+        describe("Slots", () => {
+          describe("hidden-value-input", () => {
+            it("should be an empty string if there is no selected value", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select
+                  ><input
+                    slot="hidden-value-input"
+                    type="hidden"
+                    name="my-special-value"
+                /></much-select>`,
+              );
+              await waitUntil(
+                async () =>
+                  el
+                    .querySelector("[slot='hidden-value-input']")
+                    .getAttribute("value") === "",
+              );
+            });
 
-        it("should be populated with the current value on initialization", async () => {
-          const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select selected-value="Tocharians"
-              ><input
-                slot="hidden-value-input"
-                type="hidden"
-                name="my-special-value"
-            /></much-select>`,
-          );
-          await waitUntil(
-            async () =>
-              el
-                .querySelector("[slot='hidden-value-input']")
-                .getAttribute("value") === "Tocharians",
-          );
-        });
+            it("should be populated with the current value on initialization", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select selected-value="Tocharians"
+                  ><input
+                    slot="hidden-value-input"
+                    type="hidden"
+                    name="my-special-value"
+                /></much-select>`,
+              );
+              await waitUntil(
+                async () =>
+                  el
+                    .querySelector("[slot='hidden-value-input']")
+                    .getAttribute("value") === "Tocharians",
+              );
+            });
 
-        it("should update when the selected value changes", async () => {
-          const el = /** @type {MuchSelect} */ await fixture(
-            html`<much-select selected-value="Jangil"
-              ><input
-                slot="hidden-value-input"
-                type="hidden"
-                name="my-special-value"
-            /></much-select>`,
-          );
-          el.setAttribute("selected-value", "Chaouacha");
+            it("should update when the selected value changes", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select selected-value="Jangil"
+                  ><input
+                    slot="hidden-value-input"
+                    type="hidden"
+                    name="my-special-value"
+                /></much-select>`,
+              );
+              el.setAttribute("selected-value", "Chaouacha");
 
-          await waitUntil(
-            async () =>
-              el
-                .querySelector("[slot='hidden-value-input']")
-                .getAttribute("value") === "Chaouacha",
-          );
+              await waitUntil(
+                async () =>
+                  el
+                    .querySelector("[slot='hidden-value-input']")
+                    .getAttribute("value") === "Chaouacha",
+                "Expected hidden input slot value to update when selected-value attribute changes",
+                { timeout: 3000 },
+              );
+            });
+
+            it("hidden-input-json-encoding-slot example should mirror JSON-encoded value in hidden input", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select selected-value-encoding="json">
+                  <select slot="select-input">
+                    <option>Queensland</option>
+                    <option>Tasmania</option>
+                  </select>
+                  <input
+                    slot="hidden-value-input"
+                    type="hidden"
+                    name="my-special-value"
+                  />
+                </much-select>`,
+              );
+
+              el.selectOption("Queensland");
+              await oneEvent(el, "optionSelected");
+
+              const hiddenInput = el.querySelector(
+                "[slot='hidden-value-input']",
+              );
+              await waitUntil(
+                async () =>
+                  hiddenInput.getAttribute("value") === "%22Queensland%22",
+                "Expected hidden input to receive JSON-encoded selected value",
+              );
+
+              expect(hiddenInput.getAttribute("value")).to.equal(
+                "%22Queensland%22",
+              );
+            });
+          });
         });
       });
-    });
-  });
-</script>
-</body>
+    </script>
+  </body>
 </html>
