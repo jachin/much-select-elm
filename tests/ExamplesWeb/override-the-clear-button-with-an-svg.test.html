@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <script type="module">
+      import { runTests } from "@web/test-runner-mocha";
+      import { expect } from "@esm-bundle/chai";
+      import { html, fixture, oneEvent, waitUntil } from "@open-wc/testing";
+
+      import MuchSelect from "../../dist/much-select-debug.js";
+
+      if (!customElements.get("much-select")) {
+        window.customElements.define("much-select", MuchSelect);
+      }
+
+      runTests(() => {
+        describe("ExamplesWeb", () => {
+          describe("override-the-clear-button-with-an-svg", () => {
+            it("renders a clear-button slot override containing an svg", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select
+                  multi-select
+                  selected-value="Blue,Yellow,Purple,Green,Orange,Red"
+                >
+                  <select slot="select-input">
+                    <option>Red</option>
+                    <option>Yellow</option>
+                    <option>Blue</option>
+                    <option>Orange</option>
+                    <option>Green</option>
+                    <option>Purple</option>
+                  </select>
+                  <div slot="clear-button">
+                    <svg viewBox="0 0 20 20" width="20" height="20">
+                      <circle cx="10" cy="10" r="9"></circle>
+                      <path d="M6 6 L14 14 M14 6 L6 14"></path>
+                    </svg>
+                  </div>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              const clearButtonSlot = el.shadowRoot.querySelector(
+                'slot[name="clear-button"]',
+              );
+              const assigned = clearButtonSlot.assignedElements({
+                flatten: true,
+              });
+
+              expect(assigned.length).to.equal(1);
+              expect(assigned[0].querySelector("svg")).to.exist;
+            });
+
+            it("clicking the svg clear button wrapper clears all selected values", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select
+                  multi-select
+                  selected-value="Blue,Yellow,Purple,Green,Orange,Red"
+                >
+                  <select slot="select-input">
+                    <option>Red</option>
+                    <option>Yellow</option>
+                    <option>Blue</option>
+                    <option>Orange</option>
+                    <option>Green</option>
+                    <option>Purple</option>
+                  </select>
+                  <div slot="clear-button">
+                    <svg viewBox="0 0 20 20" width="20" height="20">
+                      <circle cx="10" cy="10" r="9"></circle>
+                      <path d="M6 6 L14 14 M14 6 L6 14"></path>
+                    </svg>
+                  </div>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              const cleared = oneEvent(el, "valueCleared");
+              el.shadowRoot.getElementById("clear-button-wrapper").click();
+              await cleared;
+
+              await waitUntil(async () => {
+                const selectedValue = await el.selectedValue;
+                return (
+                  Array.isArray(selectedValue) && selectedValue.length === 0
+                );
+              }, "Expected selected values to be cleared");
+            });
+
+            it("starts with all six values selected", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select
+                  multi-select
+                  selected-value="Blue,Yellow,Purple,Green,Orange,Red"
+                >
+                  <select slot="select-input">
+                    <option>Red</option>
+                    <option>Yellow</option>
+                    <option>Blue</option>
+                    <option>Orange</option>
+                    <option>Green</option>
+                    <option>Purple</option>
+                  </select>
+                  <div slot="clear-button">
+                    <svg viewBox="0 0 20 20" width="20" height="20">
+                      <circle cx="10" cy="10" r="9"></circle>
+                      <path d="M6 6 L14 14 M14 6 L6 14"></path>
+                    </svg>
+                  </div>
+                </much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              expect(await el.selectedValue).to.eql([
+                "Blue",
+                "Yellow",
+                "Purple",
+                "Green",
+                "Orange",
+                "Red",
+              ]);
+            });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

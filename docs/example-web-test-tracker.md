@@ -8,8 +8,8 @@ Generated for Phase 0 inventory from `examples/*.html` and current `tests/**/*.t
 - Total examples: **94**
 - `CoveredByExistingSuite`: **14**
 - `NeedsExistingSuiteExpansion`: **33**
-- `NeedsDedicatedSuite`: **27**
-- `Done`: **20**
+- `NeedsDedicatedSuite`: **21**
+- `Done`: **26**
 
 > Note: This is an initial machine-assisted pre-fill. Confirm each row during implementation and update status to `Done` as work lands.
 
@@ -36,7 +36,7 @@ Generated for Phase 0 inventory from `examples/*.html` and current `tests/**/*.t
 | `custom-options-that-persist` | `Done` | `tests/ExamplesWeb/custom-options-that-persist.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
 | `datalist-multi-select-value-changed-event` | `NeedsExistingSuiteExpansion` | `tests/Events/selecting-options.test.html` | Expand mapped suite with example-specific JS behavior assertions | Partially covered by feature tests but example contract not fully explicit yet |
 | `datalist-single-select-value-changed-event` | `NeedsExistingSuiteExpansion` | `tests/Events/selecting-options.test.html` | Expand mapped suite with example-specific JS behavior assertions | Partially covered by feature tests but example contract not fully explicit yet |
-| `default-clear-button` | `NeedsDedicatedSuite` | — | Create `tests/ExamplesWeb/default-clear-button.test.html` (3-6 JS-focused tests) | No concrete existing web-test mapping found |
+| `default-clear-button` | `Done` | `tests/ExamplesWeb/default-clear-button.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
 | `default-option-group-ordering` | `NeedsExistingSuiteExpansion` | `tests/Attributes/option-sorting.test.html`, `tests/Dropdown/dropdown-ordering.test.html` | Expand mapped suite with example-specific JS behavior assertions | Partially covered by feature tests but example contract not fully explicit yet |
 | `disabled-much-select` | `CoveredByExistingSuite` | `tests/Attributes/disabled.test.html` | Optional: add 1 focused edge-case/event assertion | Already mapped to robust JS-facing suite(s); verify during Phase 0 review |
 | `disabled-options` | `NeedsExistingSuiteExpansion` | `tests/Attributes/disabled.test.html` | Expand mapped suite with example-specific JS behavior assertions | Partially covered by feature tests but example contract not fully explicit yet |
@@ -76,10 +76,10 @@ Generated for Phase 0 inventory from `examples/*.html` and current `tests/**/*.t
 | `output-style-datalist-multi-select-with-selected-values` | `NeedsExistingSuiteExpansion` | `tests/Attributes/output-style.test.html` | Expand mapped suite with example-specific JS behavior assertions | Partially covered by feature tests but example contract not fully explicit yet |
 | `output-style-datalist-multi-select-with-selected-values-json-value-selected` | `NeedsExistingSuiteExpansion` | `tests/Attributes/output-style.test.html` | Expand mapped suite with example-specific JS behavior assertions | Partially covered by feature tests but example contract not fully explicit yet |
 | `override-loading-indicator` | `NeedsExistingSuiteExpansion` | `tests/Attributes/loading.test.html` | Expand mapped suite with example-specific JS behavior assertions | Partially covered by feature tests but example contract not fully explicit yet |
-| `override-no-filtered-options-slot` | `NeedsDedicatedSuite` | — | Create `tests/ExamplesWeb/override-no-filtered-options-slot.test.html` (3-6 JS-focused tests) | No concrete existing web-test mapping found |
-| `override-no-options-slot` | `NeedsDedicatedSuite` | — | Create `tests/ExamplesWeb/override-no-options-slot.test.html` (3-6 JS-focused tests) | No concrete existing web-test mapping found |
-| `override-the-clear-button` | `NeedsDedicatedSuite` | — | Create `tests/ExamplesWeb/override-the-clear-button.test.html` (3-6 JS-focused tests) | No concrete existing web-test mapping found |
-| `override-the-clear-button-with-an-svg` | `NeedsDedicatedSuite` | — | Create `tests/ExamplesWeb/override-the-clear-button-with-an-svg.test.html` (3-6 JS-focused tests) | No concrete existing web-test mapping found |
+| `override-no-filtered-options-slot` | `Done` | `tests/ExamplesWeb/override-no-filtered-options-slot.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
+| `override-no-options-slot` | `Done` | `tests/ExamplesWeb/override-no-options-slot.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
+| `override-the-clear-button` | `Done` | `tests/ExamplesWeb/override-the-clear-button.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
+| `override-the-clear-button-with-an-svg` | `Done` | `tests/ExamplesWeb/override-the-clear-button-with-an-svg.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
 | `placeholder` | `CoveredByExistingSuite` | `tests/Attributes/placeholder.test.html` | Optional: add 1 focused edge-case/event assertion | Already mapped to robust JS-facing suite(s); verify during Phase 0 review |
 | `ready-event` | `Done` | `tests/ExamplesWeb/ready-event.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
 | `remote-api-example` | `Done` | `tests/ExamplesWeb/remote-api-example.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
@@ -92,7 +92,7 @@ Generated for Phase 0 inventory from `examples/*.html` and current `tests/**/*.t
 | `selected-option-with-multi-select-with-async-options-small` | `Done` | `tests/ExamplesWeb/selected-option-with-multi-select-with-async-options-small.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
 | `selected-value` | `CoveredByExistingSuite` | `tests/Attributes/selected-value.test.html`, `tests/Option/initial-options.test.html` | Optional: add 1 focused edge-case/event assertion | Already mapped to robust JS-facing suite(s); verify during Phase 0 review |
 | `show-dropdown-footer` | `CoveredByExistingSuite` | `tests/Attributes/show-dropdown-footer.test.html` | Optional: add 1 focused edge-case/event assertion | Already mapped to robust JS-facing suite(s); verify during Phase 0 review |
-| `simple-example` | `NeedsDedicatedSuite` | — | Create `tests/ExamplesWeb/simple-example.test.html` (3-6 JS-focused tests) | No concrete existing web-test mapping found |
+| `simple-example` | `Done` | `tests/ExamplesWeb/simple-example.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
 | `single-select-blur-or-unfocused-value-change` | `NeedsDedicatedSuite` | — | Create `tests/ExamplesWeb/single-select-blur-or-unfocused-value-change.test.html` (3-6 JS-focused tests) | No concrete existing web-test mapping found |
 | `single-select-json-seperated-values` | `NeedsExistingSuiteExpansion` | `tests/Attributes/selected-value-encoding.test.html` | Expand mapped suite with example-specific JS behavior assertions | Partially covered by feature tests but example contract not fully explicit yet |
 | `single-select-option-deselected-event` | `NeedsExistingSuiteExpansion` | `tests/Events/selecting-options.test.html` | Expand mapped suite with example-specific JS behavior assertions | Partially covered by feature tests but example contract not fully explicit yet |

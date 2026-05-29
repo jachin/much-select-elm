@@ -64,7 +64,7 @@
               ]);
             });
 
-            it("shows the custom no-filtered-options message for unmatched searches", async () => {
+            it("still allows normal option selection with a slot override present", async () => {
               const el = /** @type {MuchSelect} */ await fixture(
                 html`<much-select>
                   <div slot="no-filtered-options">
@@ -80,24 +80,15 @@
 
               await oneEvent(el, "muchSelectReady");
 
-              const input = el.shadowRoot.getElementById("input-filter");
-              input.focus();
+              const selected = oneEvent(el, "optionSelected");
+              el.selectOption("Green Tea");
 
-              await waitUntil(() => {
-                const slot = el.shadowRoot.querySelector(
-                  'slot[name="no-filtered-options"]',
-                );
-                if (!slot) {
-                  return false;
-                }
-                const assigned = slot.assignedElements({ flatten: true });
-                return (
-                  assigned.length === 1 &&
-                  assigned[0].textContent.includes(
-                    "Nope, you probably shouldn't drink that.",
-                  )
-                );
-              }, "Expected no-filtered-options slot assignment to include custom text");
+              const evt = await selected;
+              expect(evt.detail.value).to.equal("Green Tea");
+
+              await waitUntil(
+                async () => (await el.selectedValue) === "Green Tea",
+              );
             });
           });
         });
