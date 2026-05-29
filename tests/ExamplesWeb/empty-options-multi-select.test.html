@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <script type="module">
+      import { runTests } from "@web/test-runner-mocha";
+      import { expect } from "@esm-bundle/chai";
+      import { html, fixture, oneEvent, waitUntil } from "@open-wc/testing";
+
+      import MuchSelect from "../../dist/much-select-debug.js";
+
+      if (!customElements.get("much-select")) {
+        window.customElements.define("much-select", MuchSelect);
+      }
+
+      runTests(() => {
+        describe("ExamplesWeb", () => {
+          describe("empty-options-multi-select", () => {
+            it("starts as multi-select with custom options enabled and no options", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select multi-select allow-custom-options></much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              expect(await el.isInMultiSelectMode).to.be.true;
+              expect(await el.allowCustomOptions).to.be.true;
+              expect(await el.getAllOptions()).to.eql([]);
+            });
+
+            it("addOption can add options into initially empty multi-select", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select multi-select allow-custom-options></much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              el.addOption({ value: "Apple" });
+              el.addOption({ value: "Pear" });
+
+              await waitUntil(async () => {
+                const options = await el.getAllOptions();
+                return options.some((o) => o.value === "Apple") && options.some((o) => o.value === "Pear");
+              }, "Expected added options to be available");
+            });
+
+            it("can select multiple added options", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select multi-select allow-custom-options></much-select>`,
+              );
+
+              await oneEvent(el, "muchSelectReady");
+
+              el.addOption({ value: "Apple" });
+              el.addOption({ value: "Pear" });
+
+              await waitUntil(async () => (await el.getAllOptions()).length === 2);
+
+              el.selectOption("Apple");
+              await oneEvent(el, "optionSelected");
+              el.selectOption("Pear");
+              await oneEvent(el, "optionSelected");
+
+              await waitUntil(async () => {
+                const values = await el.selectedValue;
+                return Array.isArray(values) && values.includes("Apple") && values.includes("Pear");
+              });
+            });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

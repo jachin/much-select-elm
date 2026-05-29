@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <script type="module">
+      import { runTests } from "@web/test-runner-mocha";
+      import { expect } from "@esm-bundle/chai";
+      import { html, fixture, oneEvent, waitUntil } from "@open-wc/testing";
+
+      import MuchSelect from "../../dist/much-select-debug.js";
+
+      if (!customElements.get("much-select")) {
+        window.customElements.define("much-select", MuchSelect);
+      }
+
+      runTests(() => {
+        describe("ExamplesWeb", () => {
+          describe("single-select-blur-or-unfocused-value-change", () => {
+            it("emits blurOrUnfocusedValueChanged after a value change followed by blur", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select>
+                  <select slot="select-input">
+                    <option value="111">Grass Pea</option>
+                    <option value="222">Velvet Bean</option>
+                    <option value="333">Sword Bean</option>
+                    <option value="444">Soybean</option>
+                  </select>
+                </much-select>`,
+              );
+              await oneEvent(el, "muchSelectReady");
+
+              const input = el.shadowRoot.getElementById("input-filter");
+              input.focus();
+              await oneEvent(el, "muchSelectFocused");
+
+              el.selectOption("222");
+              await oneEvent(el, "optionSelected");
+
+              const blurChanged = oneEvent(el, "blurOrUnfocusedValueChanged");
+              input.blur();
+
+              const evt = await blurChanged;
+              expect(evt.detail.value).to.equal("222");
+            });
+
+            it("does not emit blurOrUnfocusedValueChanged when value did not change", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select>
+                  <select slot="select-input">
+                    <option value="111">Grass Pea</option>
+                    <option value="222">Velvet Bean</option>
+                  </select>
+                </much-select>`,
+              );
+              await oneEvent(el, "muchSelectReady");
+
+              let emitted = false;
+              const handler = () => {
+                emitted = true;
+              };
+              el.addEventListener("blurOrUnfocusedValueChanged", handler);
+
+              const input = el.shadowRoot.getElementById("input-filter");
+              input.focus();
+              await oneEvent(el, "muchSelectFocused");
+              input.blur();
+              await oneEvent(el, "muchSelectBlurred");
+
+              expect(emitted).to.be.false;
+            });
+
+            it("event detail reflects latest selected value", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select>
+                  <select slot="select-input">
+                    <option value="111">Grass Pea</option>
+                    <option value="222">Velvet Bean</option>
+                    <option value="333">Sword Bean</option>
+                  </select>
+                </much-select>`,
+              );
+              await oneEvent(el, "muchSelectReady");
+
+              el.selectOption("333");
+              await oneEvent(el, "optionSelected");
+
+              const input = el.shadowRoot.getElementById("input-filter");
+              input.focus();
+              await oneEvent(el, "muchSelectFocused");
+
+              const blurChanged = oneEvent(el, "blurOrUnfocusedValueChanged");
+              input.blur();
+              const evt = await blurChanged;
+
+              await waitUntil(async () => (await el.selectedValue) === "333");
+              expect(evt.detail.value).to.equal("333");
+            });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
