@@ -8,8 +8,8 @@ Generated for Phase 0 inventory from `examples/*.html` and current `tests/**/*.t
 - Total examples: **94**
 - `CoveredByExistingSuite`: **14**
 - `NeedsExistingSuiteExpansion`: **33**
-- `NeedsDedicatedSuite`: **6**
-- `Done`: **41**
+- `NeedsDedicatedSuite`: **0**
+- `Done`: **47**
 
 > Note: This is an initial machine-assisted pre-fill. Confirm each row during implementation and update status to `Done` as work lands.
 
@@ -101,11 +101,11 @@ Generated for Phase 0 inventory from `examples/*.html` and current `tests/**/*.t
 | `styling-dropdown-options-with-part` | `Done` | `tests/ExamplesWeb/styling-dropdown-options-with-part.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
 | `switch-between-datalist-and-custom-html` | `NeedsExistingSuiteExpansion` | `tests/Attributes/output-style.test.html` | Expand mapped suite with example-specific JS behavior assertions | Partially covered by feature tests but example contract not fully explicit yet |
 | `switch-between-multi-select-and-single-select` | `Done` | `tests/ExamplesWeb/switch-between-multi-select-and-single-select.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
-| `ten-thousand-options` | `NeedsDedicatedSuite` | — | Create `tests/ExamplesWeb/ten-thousand-options.test.html` (3-6 JS-focused tests) | No concrete existing web-test mapping found |
+| `ten-thousand-options` | `Done` | `tests/ExamplesWeb/ten-thousand-options.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
 | `update-options-add-options-to-a-much-select` | `Done` | `tests/ExamplesWeb/update-options-add-options-to-a-much-select.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
 | `update-options-add-options-to-an-empty-much-select` | `Done` | `tests/ExamplesWeb/update-options-add-options-to-an-empty-much-select.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
-| `validation-and-transformation-slot-custom-validation` | `NeedsDedicatedSuite` | — | Create `tests/ExamplesWeb/validation-and-transformation-slot-custom-validation.test.html` (3-6 JS-focused tests) | No concrete existing web-test mapping found |
-| `validation-and-transformation-slot-multi-custom-html` | `NeedsDedicatedSuite` | — | Create `tests/ExamplesWeb/validation-and-transformation-slot-multi-custom-html.test.html` (3-6 JS-focused tests) | No concrete existing web-test mapping found |
-| `validation-and-transformation-slot-multi-datalist` | `NeedsDedicatedSuite` | — | Create `tests/ExamplesWeb/validation-and-transformation-slot-multi-datalist.test.html` (3-6 JS-focused tests) | No concrete existing web-test mapping found |
-| `validation-and-transformation-slot-single-custom-html` | `NeedsDedicatedSuite` | — | Create `tests/ExamplesWeb/validation-and-transformation-slot-single-custom-html.test.html` (3-6 JS-focused tests) | No concrete existing web-test mapping found |
-| `validation-and-transformation-slot-single-datalist` | `NeedsDedicatedSuite` | — | Create `tests/ExamplesWeb/validation-and-transformation-slot-single-datalist.test.html` (3-6 JS-focused tests) | No concrete existing web-test mapping found |
+| `validation-and-transformation-slot-custom-validation` | `Done` | `tests/ExamplesWeb/validation-and-transformation-slot-custom-validation.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
+| `validation-and-transformation-slot-multi-custom-html` | `Done` | `tests/ExamplesWeb/validation-and-transformation-slot-multi-custom-html.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
+| `validation-and-transformation-slot-multi-datalist` | `Done` | `tests/ExamplesWeb/validation-and-transformation-slot-multi-datalist.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
+| `validation-and-transformation-slot-single-custom-html` | `Done` | `tests/ExamplesWeb/validation-and-transformation-slot-single-custom-html.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
+| `validation-and-transformation-slot-single-datalist` | `Done` | `tests/ExamplesWeb/validation-and-transformation-slot-single-datalist.test.html` | Implemented dedicated JS-focused example suite | Phase 1 batch complete |
