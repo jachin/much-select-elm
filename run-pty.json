@@ -51,9 +51,12 @@
     ],
     "defaultStatus": ["⏳", "W"],
     "status": {
-      "Running": ["⏳", "W"],
-      "command not found": ["🚨", "E"],
-      "Command was successful": ["✅", "+"]
+      "\\[Running:": ["⏳", "W"],
+      "Command was successful": ["✅", "+"],
+      "Command exited with [1-9][0-9]*": ["🚨", "E"],
+      "Command timed out": ["🚨", "E"],
+      "Command (?:was )?killed by ForceStop": ["🚨", "E"],
+      "command not found": ["🚨", "E"]
     }
   },
   {

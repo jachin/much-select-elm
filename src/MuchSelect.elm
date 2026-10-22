@@ -3037,7 +3037,7 @@ customHtmlDropdown selectionMode options (ValueCasing valueCasingWidth valueCasi
         optionsHtml =
             if DropdownOptions.isAllSelected optionsForTheDropdown then
                 [ div
-                    [ class "option disabled no-options"
+                    [ class "option disabled no-options dropdown-message"
                     , PartAttribute.part "dropdown-message"
                     ]
                     [ node "slot" [ name "no-options" ] [ text "All options are selected" ] ]
@@ -3049,7 +3049,7 @@ customHtmlDropdown selectionMode options (ValueCasing valueCasingWidth valueCasi
                 DropdownOptions.isEmpty optionsForTheDropdown
             then
                 [ div
-                    [ class "option disabled no-options"
+                    [ class "option disabled no-options dropdown-message"
                     , PartAttribute.part "dropdown-message"
                     ]
                     [ node "slot" [ name "no-options" ] [ text "No available options" ] ]
@@ -3059,7 +3059,7 @@ customHtmlDropdown selectionMode options (ValueCasing valueCasingWidth valueCasi
                 case doesSearchStringFind of
                     SearchStringFindNothing ->
                         [ div
-                            [ class "option disabled"
+                            [ class "option disabled dropdown-message"
                             , PartAttribute.part "dropdown-message"
                             ]
                             [ node "slot" [ name "no-filtered-options" ] [ text "This filter returned no results." ] ]
@@ -3147,7 +3147,7 @@ slottedDropdown selectionConfig options (ValueCasing valueCasingWidth valueCasin
             -- TODO We should probably do something different if we are in a loading state
             if DropdownOptions.isEmpty optionsForTheDropdown then
                 [ div
-                    [ class "option disabled"
+                    [ class "option disabled dropdown-message"
                     , PartAttribute.part "dropdown-message"
                     ]
                     [ node "slot" [ name "no-options" ] [ text "No available options" ] ]
@@ -3157,7 +3157,7 @@ slottedDropdown selectionConfig options (ValueCasing valueCasingWidth valueCasin
                 case doesSearchStringFind of
                     SearchStringFindNothing ->
                         [ div
-                            [ class "option disabled"
+                            [ class "option disabled dropdown-message"
                             , PartAttribute.part "dropdown-option dropdown-message"
                             ]
                             [ node "slot" [ name "no-filtered-options" ] [ text "This filter returned no results." ] ]

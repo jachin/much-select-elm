@@ -37,6 +37,14 @@ if (!customElements.get("much-select")) {
 }
 ```
 
+## Example Styling
+
+The example site loads `site/much-select-example.css` inside each example component's shadow root, after Much Select's built-in styles. This stylesheet is example-only; registering the library's `MuchSelect` class as shown above keeps the library's default appearance unchanged.
+
+The example stylesheet uses internal IDs and classes, while theme differences are inherited through CSS custom properties. The site's existing `fun`/`boring` and light/dark theme rules map palette values to component variables such as `--much-select-example-focus-border-color` and `--much-select-example-selected-value-border-color`. To customize an example, set supported `--much-select-*` or `--much-select-example-*` properties on the component or an ancestor; they inherit into the shadow root and update without recreating the component.
+
+The component's existing `part` attributes remain available. External `::part()` rules can still customize parts, but the example site's shared component styling no longer depends on them. Page layout and slotted light-DOM content remain styled outside the shadow stylesheet.
+
 ## Development
 
 ### Pre-requisites
