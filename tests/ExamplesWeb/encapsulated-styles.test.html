@@ -38,6 +38,48 @@
       runTests(() => {
         describe("ExamplesWeb", () => {
           describe("encapsulated-styles", () => {
+            it("preserves example defaults and honors shared visual hooks over the example cascade", async () => {
+              const el = await fixture(html`<demo-much-select multi-select
+                multi-select-single-item-removal loading selected-value="Red,Blue">
+                <select slot="select-input"><option>Red</option><option>Blue</option></select>
+              </demo-much-select>`);
+              await oneEvent(el, "muchSelectReady");
+              await waitForStylesheet(el);
+              const casing = el.shadowRoot.getElementById("value-casing");
+              const pill = el.shadowRoot.querySelector(".value.selected-value");
+              const input = el.shadowRoot.getElementById("input-filter");
+              const spinner = el.shadowRoot.querySelector(".default-loading-indicator");
+              expect(getComputedStyle(casing).backgroundColor).to.equal("rgb(255, 255, 255)");
+              expect(getComputedStyle(pill).fontSize).to.equal("14px");
+              expect(getComputedStyle(input).height).to.equal("36px");
+
+              const cases = [
+                [casing, "--much-select-value-casing-border-width", "4px", "borderTopWidth", "4px"],
+                [casing, "--much-select-value-casing-border-style", "dashed", "borderTopStyle", "dashed"],
+                [pill, "--much-select-selected-value-border-width", "3px", "borderTopWidth", "3px"],
+                [pill, "--much-select-selected-value-border-radius", "9px", "borderRadius", "9px"],
+                [pill, "--much-select-selected-value-padding", "5px", "paddingLeft", "5px"],
+                [pill, "--much-select-selected-value-font-size", "19px", "fontSize", "19px"],
+                [pill, "--much-select-selected-value-color", "rgb(3, 4, 5)", "color", "rgb(3, 4, 5)"],
+                [spinner, "--much-select-loading-indicator-size", "24px", "width", "24px"],
+                [spinner, "--much-select-loading-indicator-animation-duration", "2s", "animationDuration", "2s"],
+              ];
+              for (const [element, name, value, property, expected] of cases) {
+                el.style.setProperty(name, value);
+                expect(getComputedStyle(element)[property], name).to.equal(expected);
+              }
+              el.style.setProperty("--much-select-example-value-font-size", "21px");
+              expect(getComputedStyle(input).fontSize).to.equal("21px");
+              el.style.setProperty("--much-select-disabled-opacity", "0.4");
+              el.setAttribute("disabled", "");
+              await waitUntil(() => casing.classList.contains("disabled"));
+              expect(getComputedStyle(casing).opacity).to.equal("0.4");
+              expect(getComputedStyle(casing).borderTopWidth).to.equal("4px");
+              expect(getComputedStyle(pill).cursor).to.equal("default");
+              el.style.removeProperty("--much-select-selected-value-font-size");
+              expect(getComputedStyle(pill).fontSize).to.equal("14px");
+            });
+
             it("loads one shared stylesheet for an initial example instance", async () => {
               const el = /** @type {ExampleMuchSelect} */ await fixture(
                 html`<demo-much-select>

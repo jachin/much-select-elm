@@ -1,5 +1,5 @@
 #wrapper {
-    font-family: var(--much-select-example-form-font, sans-serif);
+    font-family: var(--much-select-font-family, var(--much-select-example-form-font, sans-serif));
 }
 
 .input-wrapper {
@@ -8,23 +8,26 @@
 
 #value-casing {
     flex-flow: column;
-    min-height: var(--much-select-height, 2.5em);
+    min-height: var(--much-select-height, var(--much-select-min-height, 2.5em));
 }
 
 #value-casing.output-style-custom-html {
     background-color: var(--much-select-background-color, #fff);
     box-shadow: var(
-        --much-select-example-value-casing-inset-shadow,
-        1px 1px 1px 0 lightgray inset
+        --much-select-value-casing-box-shadow,
+        var(--much-select-example-value-casing-inset-shadow, 1px 1px 1px 0 lightgray inset)
     );
-    padding: 0.1em 2em 0.1em 10px;
+    padding: var(--much-select-value-casing-padding, 0.1em 2em 0.1em 10px);
     flex-flow: row;
     cursor: pointer;
-    border: 1px solid var(--much-select-border-color, currentColor);
+    border: var(--much-select-value-casing-border-width, 1px)
+        var(--much-select-value-casing-border-style, solid)
+        var(--much-select-border-color, currentColor);
 }
 
 #value-casing.output-style-custom-html.error {
-    border: 1px solid
+    border: var(--much-select-value-casing-border-width, 1px)
+        var(--much-select-value-casing-border-style, solid)
         var(--much-select-error-border-color, var(--much-select-border-color, currentColor));
 }
 
@@ -39,19 +42,21 @@
 
 #right-slot-for-all-values-wrapper {
     position: absolute;
-    right: 0;
-    width: 2.1rem;
-    top: 0;
-    bottom: 0;
+    right: var(--much-select-right-slot-offset-right, 0);
+    width: var(--much-select-right-slot-width, 2.1rem);
+    top: var(--much-select-right-slot-offset-top, 0);
+    bottom: var(--much-select-right-slot-offset-bottom, 0);
     display: flex;
     align-items: center;
     flex-direction: column;
     justify-content: center;
-    border-left: 2px dotted var(--much-select-border-color, currentColor);
+    border-left: var(--much-select-right-slot-separator-border-width, 2px)
+        var(--much-select-right-slot-separator-border-style, dotted)
+        var(--much-select-right-slot-separator-color, var(--much-select-border-color, currentColor));
 }
 
 #value-casing.output-style-datalist input {
-    min-height: var(--much-select-height, 2.5em);
+    min-height: var(--much-select-height, var(--much-select-min-height, 2.5em));
     width: 100%;
 }
 
@@ -60,24 +65,25 @@
 }
 
 #value-casing.output-style-datalist.error {
-    border: none;
+    border: var(--much-select-datalist-error-border, none);
 }
 
 #value-casing.output-style-custom-html:hover {
-    outline: none;
+    outline: var(--much-select-value-casing-hover-outline, none);
     border-color: var(--much-select-hover-border-color, var(--much-select-border-color, currentColor));
 }
 
 #value-casing.output-style-custom-html:focus {
-    outline: none;
+    outline: var(--much-select-value-casing-focus-outline, none);
     border-color: var(
-        --much-select-example-focus-border-color,
-        var(--much-select-border-color, currentColor)
+        --much-select-focus-border-color,
+        var(--much-select-example-focus-border-color, var(--much-select-border-color, currentColor))
     );
 }
 
 #value-casing.output-style-custom-html.disabled {
-    border: 1px solid
+    border: var(--much-select-value-casing-border-width, 1px)
+        var(--much-select-value-casing-border-style, solid)
         var(--much-select-disabled-border-color, var(--much-select-border-color, currentColor));
     cursor: default;
 }
@@ -85,11 +91,11 @@
 #value-casing.output-style-custom-html.single,
 #value-casing.output-style-custom-html.multi {
     background-image: var(--much-select-value-casing-background-image, none);
-    background-repeat: repeat-x;
+    background-repeat: var(--much-select-value-casing-background-repeat, repeat-x);
 }
 
 #value-casing.single.disabled {
-    background-image: none;
+    background-image: var(--much-select-disabled-background-image, none);
     background-color: var(
         --much-select-disabled-background-color,
         var(--much-select-background-color, transparent)
@@ -97,91 +103,95 @@
 }
 
 #value-casing.output-style-custom-html #input-filter {
-    height: 36px;
-    font-size: var(--much-select-example-value-font-size, 1em);
-    color: var(--much-select-example-text-color, currentColor);
-    min-width: 10px;
+    height: var(--much-select-input-filter-height, 36px);
+    font-size: var(--much-select-input-filter-font-size, var(--much-select-example-value-font-size, 1em));
+    color: var(--much-select-input-filter-color, var(--much-select-example-text-color, currentColor));
+    min-width: var(--much-select-input-filter-min-width, 10px);
     flex-grow: 3;
     flex-shrink: 0;
     flex-basis: 10%;
-    outline: none;
-    background: none;
-    margin: 0;
-    padding: 0 0.8em 0 0;
+    outline: var(--much-select-input-filter-outline, none);
+    background: var(--much-select-input-filter-background, none);
+    margin: var(--much-select-input-filter-margin, 0);
+    padding: var(--much-select-input-filter-padding, 0 0.8em 0 0);
 }
 
 #value-casing.output-style-custom-html #input-filter:hover,
 #value-casing.output-style-custom-html #input-filter:focus {
-    outline: none;
-    background: none;
+    outline: var(--much-select-input-filter-outline, none);
+    background: var(--much-select-input-filter-background, none);
 }
 
 #selected-value,
 #value-casing.output-style-custom-html.multi .value.selected-value {
-    font-size: 14px;
-    text-align: center;
+    font-size: var(--much-select-selected-value-font-size, 14px);
+    text-align: var(--much-select-selected-value-text-align, center);
     display: flex;
     justify-content: center;
-    padding: 0;
-    margin-right: 0.1em;
-    margin-left: 0.2em;
-    margin-top: 0.7em;
+    padding: var(--much-select-selected-value-padding, 0);
+    margin-right: var(--much-select-selected-value-margin-right, 0.1em);
+    margin-left: var(--much-select-selected-value-margin-left, 0.2em);
+    margin-top: var(--much-select-selected-value-margin-top, 0.7em);
 }
 
 #value-casing.output-style-custom-html.multi .value.selected-value {
-    color: var(--much-select-multi-select-selected-value-color, currentColor);
+    color: var(--much-select-selected-value-color, var(--much-select-multi-select-selected-value-color, currentColor));
     background-image: var(--much-select-multi-select-selected-value-background-image, none);
-    background-repeat: repeat-x;
-    margin: 0.1rem 0.25rem 0.1rem 0;
-    border-radius: 0.3rem;
-    border: 0.1rem solid
-        var(--much-select-example-selected-value-border-color, var(--much-select-border-color, currentColor));
-    min-width: 0.5rem;
-    min-height: 2rem;
+    background-repeat: var(--much-select-selected-value-background-repeat, repeat-x);
+    margin: var(--much-select-selected-value-margin, 0.1rem 0.25rem 0.1rem 0);
+    border-radius: var(--much-select-selected-value-border-radius, 0.3rem);
+    border: var(--much-select-selected-value-border-width, 0.1rem)
+        var(--much-select-selected-value-border-style, solid)
+        var(--much-select-selected-value-border-color, var(--much-select-example-selected-value-border-color, var(--much-select-border-color, currentColor)));
+    min-width: var(--much-select-selected-value-min-width, 0.5rem);
+    min-height: var(--much-select-selected-value-min-height, 2rem);
     flex-grow: 0;
     flex-shrink: 1;
     flex-basis: auto;
     align-items: center;
-    padding-left: 0.25em;
-    padding-right: 0.25em;
+    padding: var(--much-select-selected-value-padding, 0 0.25em);
 }
 
 #value-casing.output-style-custom-html.multi .value.selected-value.highlighted-value {
     background-image: var(
-        --much-select-example-highlighted-value-background-image,
-        linear-gradient(to bottom, #e1b12c, #fbc531)
+        --much-select-selected-value-highlighted-background-image,
+        var(--much-select-example-highlighted-value-background-image, linear-gradient(to bottom, #e1b12c, #fbc531))
     );
-    background-repeat: repeat-x;
+    background-repeat: var(--much-select-selected-value-highlighted-background-repeat, repeat-x);
 }
 
 .selected-value-label {
-    padding-top: 0.09rem;
+    padding-top: var(--much-select-selected-value-label-padding-top, 0.09rem);
 }
 
 .value .remove-option::after {
-    border-left: 1px dotted var(--much-select-border-color, currentColor);
+    border-left: var(--much-select-remove-option-separator-border-width, 1px)
+        var(--much-select-remove-option-separator-border-style, dotted)
+        var(--much-select-remove-option-separator-color, var(--much-select-border-color, currentColor));
 }
 
 #dropdown-indicator {
     cursor: pointer;
-    transition: transform 0.25s;
+    transition: transform var(--much-select-dropdown-indicator-transition-duration, 0.25s)
+        var(--much-select-dropdown-indicator-transition-timing-function, ease)
+        var(--much-select-dropdown-indicator-transition-delay, 0s);
 }
 
 #dropdown-indicator.up {
-    transform: rotate(270deg);
+    transform: var(--much-select-dropdown-indicator-up-transform, rotate(270deg));
 }
 
 #dropdown-indicator.down {
-    transform: rotate(90deg);
+    transform: var(--much-select-dropdown-indicator-down-transform, rotate(90deg));
 }
 
 #clear-button-wrapper {
     cursor: pointer;
     box-sizing: content-box;
-    padding: 0.3em 0.5em;
-    border-width: 0.2em;
-    border-style: solid;
-    border-color: transparent;
+    padding: var(--much-select-clear-button-padding, 0.3em 0.5em);
+    border-width: var(--much-select-clear-button-border-width, 0.2em);
+    border-style: var(--much-select-clear-button-border-style, solid);
+    border-color: var(--much-select-clear-button-idle-border-color, transparent);
 }
 
 #clear-button-wrapper:hover {
@@ -189,35 +199,35 @@
 }
 
 #dropdown {
-    margin-top: 0.2rem;
-    border-radius: 0.3rem;
-    border-width: 0.1rem;
+    margin-top: var(--much-select-dropdown-margin-top, 0.2rem);
+    border-radius: var(--much-select-dropdown-border-radius, 0.3rem);
+    border-width: var(--much-select-dropdown-border-width, 0.1rem);
     border-color: var(--much-select-border-color, currentColor);
-    border-style: solid;
-    font-family: var(--much-select-example-form-font, sans-serif);
+    border-style: var(--much-select-dropdown-border-style, solid);
+    font-family: var(--much-select-dropdown-font-family, var(--much-select-font-family, var(--much-select-example-form-font, sans-serif)));
 }
 
 #dropdown .optgroup {
     color: var(--much-select-dropdown-optgroup-color, inherit);
     background-color: var(--much-select-dropdown-optgroup-background-color, transparent);
-    font-size: 0.85rem;
-    font-weight: 300;
-    font-family: var(--much-select-example-form-font, sans-serif);
-    padding: 0.2rem;
+    font-size: var(--much-select-dropdown-optgroup-font-size, 0.85rem);
+    font-weight: var(--much-select-dropdown-optgroup-font-weight, 300);
+    font-family: var(--much-select-dropdown-optgroup-font-family, var(--much-select-font-family, var(--much-select-example-form-font, sans-serif)));
+    padding: var(--much-select-dropdown-optgroup-padding, 0.2rem);
 }
 
 #dropdown .option:not(.dropdown-message) {
     background-color: var(--much-select-dropdown-option-background-color, transparent);
     color: var(--much-select-dropdown-option-color, currentColor);
-    font-family: var(--much-select-example-form-font, sans-serif);
-    padding: 0.5rem;
-    font-size: var(--much-select-example-value-font-size, 1em);
-    min-height: 1.2rem;
+    font-family: var(--much-select-dropdown-option-font-family, var(--much-select-font-family, var(--much-select-example-form-font, sans-serif)));
+    padding: var(--much-select-dropdown-option-padding, 0.5rem);
+    font-size: var(--much-select-dropdown-option-font-size, var(--much-select-example-value-font-size, 1em));
+    min-height: var(--much-select-dropdown-option-min-height, 1.2rem);
 }
 
 #dropdown .option.selected {
     background-color: var(--much-select-dropdown-option-selected-background-color, transparent);
-    color: var(--much-select-dropdown-option-color-inverse, currentColor);
+    color: var(--much-select-dropdown-option-selected-color, var(--much-select-dropdown-option-color-inverse, currentColor));
 }
 
 #dropdown .option.highlighted {
@@ -227,42 +237,42 @@
 
 #dropdown .option.active {
     background-color: var(--much-select-dropdown-option-active-background-color, transparent);
-    color: var(--much-select-dropdown-option-color-inverse, currentColor);
+    color: var(--much-select-dropdown-option-active-color, var(--much-select-dropdown-option-color-inverse, currentColor));
 }
 
 #dropdown .option.disabled:not(.dropdown-message) {
     background-color: var(--much-select-dropdown-option-disabled-background-color, transparent);
-    color: var(--much-select-dropdown-option-disabled-font-color, currentColor);
+    color: var(--much-select-dropdown-option-disabled-font-color, var(--much-select-dropdown-option-disabled-color, currentColor));
 }
 
 #dropdown .dropdown-message {
-    min-height: 1.2rem;
-    padding: 0.2rem;
+    min-height: var(--much-select-dropdown-message-min-height, 1.2rem);
+    padding: var(--much-select-dropdown-message-padding, 0.2rem);
     cursor: default;
 }
 
 #dropdown .description {
-    font-size: 0.85rem;
-    padding: 0.2rem;
+    font-size: var(--much-select-description-font-size, 0.85rem);
+    padding: var(--much-select-description-padding, 0.2rem);
 }
 
 #dropdown-footer {
-    font-size: 50%;
-    text-align: center;
+    font-size: var(--much-select-dropdown-footer-font-size, 50%);
+    text-align: var(--much-select-dropdown-footer-text-align, center);
     color: var(--much-select-dropdown-footer-color, currentColor);
     background-color: var(--much-select-dropdown-footer-background-color, transparent);
-    padding: 0.2rem;
+    padding: var(--much-select-dropdown-footer-padding, 0.2rem);
 }
 
 #wrapper .error-message ul {
-    margin: 0 0 0.4rem 0;
-    padding: 0;
+    margin: var(--much-select-error-list-margin, 0 0 0.4rem 0);
+    padding: var(--much-select-error-list-padding, 0);
     cursor: default;
 }
 
 #wrapper .error-message ul li {
     font-size: var(--much-select-error-size, 80%);
-    margin: 0.1rem 0 0 0;
-    padding: 0;
+    margin: var(--much-select-error-list-item-margin, 0.1rem 0 0 0);
+    padding: var(--much-select-error-list-item-padding, 0);
     color: var(--much-select-error-color, #c23616);
 }

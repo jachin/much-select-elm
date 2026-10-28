@@ -45,6 +45,223 @@ The example stylesheet uses internal IDs and classes, while theme differences ar
 
 The component's existing `part` attributes remain available. External `::part()` rules can still customize parts, but the example site's shared component styling no longer depends on them. Page layout and slotted light-DOM content remain styled outside the shadow stylesheet.
 
+### Setting and updating a theme
+
+Set properties directly on the host or inherit them from an ancestor:
+
+```css
+much-select.compact {
+  --much-select-min-width: 160px;
+  --much-select-height: 30px;
+  --much-select-border-color: rebeccapurple;
+}
+
+.dark-form {
+  --much-select-background-color: #222;
+  --much-select-dropdown-background-color: #222;
+  --much-select-dropdown-option-color: #eee;
+  --much-select-dropdown-option-color-inverse: white;
+}
+```
+
+Properties participate in the normal CSS cascade. Changing a theme class or a property updates existing components without recreating them:
+
+```javascript
+const select = document.querySelector("much-select");
+select.style.setProperty("--much-select-border-color", "teal");
+select.style.removeProperty("--much-select-border-color");
+```
+
+Removing an inline property reveals any matching stylesheet or inherited value, then the fallback below if none is supplied. Use valid values for the consuming CSS declaration; a defined but invalid value does not select the `var()` fallback.
+
+`--much-select-height` (with fallback `--much-select-min-height`) sets the host's **minimum** height, not a fixed control height. The example layer also uses it for the value casing and datalist input. Dimension measurement keeps the original 20px casing-height safeguard, lowered when the host's computed minimum height is smaller (`Math.min(20, parseFloat(getComputedStyle(host).minHeight))`). A large host minimum height does not force the dropdown downward: its top offset remains based on the measured value-casing height. The width measurement floor follows the host's computed `min-width`.
+
+### Custom property reference
+
+The tables inventory the `var()` declarations in `src/much-select.js` (`styleTag`) and `site/much-select-example.css`. Property names below omit the common `--much-select-` prefix: for example, `border-color` means `--much-select-border-color`, and `example-form-font` means `--much-select-example-form-font`. In fallback columns, `$name` means `var(--much-select-name, …)`; arrows show the complete fallback order. Literal values are CSS values, not additional property names.
+
+**Built-in** is the library declaration's fallback; **Example** is the example stylesheet's declaration fallback, not a theme palette value. `—` means that layer has no declaration for that row (built-in rules still apply). Different selectors and specificity can override another row, so these are declaration references rather than guaranteed computed values in every state. Example theme rules can define the `example-*` properties before these terminal fallbacks are reached.
+
+#### Host, casing, and filter input
+
+| Selector / declaration | Property | Built-in fallback | Example fallback |
+| --- | --- | --- | --- |
+| `:host` min-height | `height` | `$min-height → 40px` | — |
+| `:host`, `#wrapper` min-width | `min-width` | `200px` | — |
+| `#wrapper` font-family | `font-family` | `inherit` | `$example-form-font → sans-serif` |
+| `#value-casing`, datalist input min-height | `height` | — | `$min-height → 2.5em` |
+| custom-html casing border-width | `value-casing-border-width` | `1px` | `1px` |
+| custom-html casing border-style | `value-casing-border-style` | `solid` | `solid` |
+| custom-html casing border-color | `border-color` | `black` | `currentColor` |
+| custom-html casing background-color | `background-color` | `transparent` | `#fff` |
+| custom-html casing box-shadow | `value-casing-box-shadow` | — | `$example-value-casing-inset-shadow → 1px 1px 1px 0 lightgray inset` |
+| custom-html casing padding | `value-casing-padding` | — | `0.1em 2em 0.1em 10px` |
+| custom-html error border-color | `error-border-color` | `$border-color → black` | `$border-color → currentColor` |
+| disabled casing color | `disabled-color` | `rgb(128, 128, 128)` | — |
+| disabled casing opacity | `disabled-opacity` | `0.65` | — |
+| custom-html disabled border-color | `disabled-border-color` | `$border-color → rgb(128, 128, 128)` | `$border-color → currentColor` |
+| custom-html multi disabled `.value` border-color | `disabled-border-color` | `$selected-value-border-color → $border-color → rgb(128, 128, 128)` | — |
+| datalist invalid input background-color | `error-background-color` | — | `transparent` |
+| datalist error border | `datalist-error-border` | — | `none` |
+| custom-html casing hover outline | `value-casing-hover-outline` | — | `none` |
+| custom-html casing hover border-color | `hover-border-color` | — | `$border-color → currentColor` |
+| custom-html casing focus outline | `value-casing-focus-outline` | — | `none` |
+| custom-html casing focus border-color | `focus-border-color` | — | `$example-focus-border-color → $border-color → currentColor` |
+| custom-html single/multi background-image | `value-casing-background-image` | — | `none` |
+| custom-html single/multi background-repeat | `value-casing-background-repeat` | — | `repeat-x` |
+| single disabled background-image | `disabled-background-image` | — | `none` |
+| single disabled background-color | `disabled-background-color` | — | `$background-color → transparent` |
+| custom-html filter border | `input-filter-border` | `none` | — |
+| custom-html filter outline (also example hover/focus) | `input-filter-outline` | `none` | `none` |
+| custom-html filter background (also example hover/focus) | `input-filter-background` | `none` | `none` |
+| custom-html filter height | `input-filter-height` | — | `36px` |
+| custom-html filter font-size | `input-filter-font-size` | — | `$example-value-font-size → 1em` |
+| custom-html filter color | `input-filter-color` | — | `$example-text-color → currentColor` |
+| custom-html filter min-width | `input-filter-min-width` | — | `10px` |
+| custom-html filter margin | `input-filter-margin` | — | `0` |
+| custom-html filter padding | `input-filter-padding` | — | `0 0.8em 0 0` |
+| custom-html multi casing margin-top | `selected-values-margin-top` | `5px` | — |
+
+The example's error and disabled casing borders also consume `value-casing-border-width` and `value-casing-border-style`, each with the same `1px` / `solid` fallback as the normal border.
+
+#### Selected values and remove control
+
+Built-in selected-value rows target `#value-casing.output-style-custom-html.multi .value`. Example rows target `#selected-value` and custom-html multi `.value.selected-value` unless marked **multi only**.
+
+| Declaration / state | Property | Built-in fallback | Example fallback |
+| --- | --- | --- | --- |
+| border-width (example multi only) | `selected-value-border-width` | `2px` | `0.1rem` |
+| border-style (example multi only) | `selected-value-border-style` | `solid` | `solid` |
+| border-color (example multi only) | `selected-value-border-color` | `$border-color → black` | `$example-selected-value-border-color → $border-color → currentColor` |
+| border-radius (example multi only) | `selected-value-border-radius` | `40px` | `0.3rem` |
+| background-color | `selected-value-background-color` | `transparent` | — |
+| color (example multi only) | `selected-value-color` | `inherit` | `$multi-select-selected-value-color → currentColor` |
+| font-size | `selected-value-font-size` | `inherit` | `14px` |
+| padding | `selected-value-padding` | `3px 10px` | `0`; multi-only rule: `0 0.25em` |
+| text-align | `selected-value-text-align` | — | `center` |
+| margin-right | `selected-value-margin-right` | — | `0.1em` |
+| margin-left | `selected-value-margin-left` | — | `0.2em` |
+| margin-top | `selected-value-margin-top` | — | `0.7em` |
+| margin (multi only; overrides preceding margins) | `selected-value-margin` | — | `0.1rem 0.25rem 0.1rem 0` |
+| background-image (multi only) | `multi-select-selected-value-background-image` | — | `none` |
+| background-repeat (multi only) | `selected-value-background-repeat` | — | `repeat-x` |
+| min-width (multi only) | `selected-value-min-width` | — | `0.5rem` |
+| min-height (multi only) | `selected-value-min-height` | — | `2rem` |
+| highlighted multi background-image | `selected-value-highlighted-background-image` | — | `$example-highlighted-value-background-image → linear-gradient(to bottom, #e1b12c, #fbc531)` |
+| highlighted multi background-repeat | `selected-value-highlighted-background-repeat` | — | `repeat-x` |
+| `.selected-value-label` padding-top | `selected-value-label-padding-top` | — | `0.09rem` |
+| `.value .remove-option::after` content | `remove-option-content` | `"x"` | — |
+| remove pseudo-element padding-left | `remove-option-padding-left` | `5px` | — |
+| remove pseudo-element margin-left | `remove-option-margin-left` | `6px` | — |
+| remove pseudo-element padding-bottom | `remove-option-padding-bottom` | `3px` | — |
+| remove pseudo-element border-left-width | `remove-option-separator-border-width` | `1px` | `1px` |
+| remove pseudo-element border-left-style | `remove-option-separator-border-style` | `dotted` | `dotted` |
+| remove pseudo-element border-left-color | `remove-option-separator-color` | `gray` | `$border-color → currentColor` |
+
+#### Right slot, dropdown indicator, and clear button
+
+| Selector / declaration | Property | Built-in fallback | Example fallback |
+| --- | --- | --- | --- |
+| `#right-slot-for-all-values-wrapper` right | `right-slot-offset-right` | — | `0` |
+| right-slot wrapper width | `right-slot-width` | — | `2.1rem` |
+| right-slot wrapper top | `right-slot-offset-top` | — | `0` |
+| right-slot wrapper bottom | `right-slot-offset-bottom` | — | `0` |
+| right-slot wrapper border-left-width | `right-slot-separator-border-width` | — | `2px` |
+| right-slot wrapper border-left-style | `right-slot-separator-border-style` | — | `dotted` |
+| right-slot wrapper border-left-color | `right-slot-separator-color` | — | `$border-color → currentColor` |
+| `#dropdown-indicator` transform transition duration | `dropdown-indicator-transition-duration` | — | `0.25s` |
+| indicator transform transition timing | `dropdown-indicator-transition-timing-function` | — | `ease` |
+| indicator transform transition delay | `dropdown-indicator-transition-delay` | — | `0s` |
+| `#dropdown-indicator.up` transform | `dropdown-indicator-up-transform` | — | `rotate(270deg)` |
+| `#dropdown-indicator.down` transform | `dropdown-indicator-down-transform` | — | `rotate(90deg)` |
+| `#clear-button-wrapper` padding | `clear-button-padding` | — | `0.3em 0.5em` |
+| clear-button wrapper border-width | `clear-button-border-width` | — | `0.2em` |
+| clear-button wrapper border-style | `clear-button-border-style` | — | `solid` |
+| clear-button wrapper border-color | `clear-button-idle-border-color` | — | `transparent` |
+| clear-button wrapper hover border-color | `clear-button-border-color` | — | `currentColor` |
+
+#### Dropdown, groups, options, and messages
+
+| Selector / declaration | Property | Built-in fallback | Example fallback |
+| --- | --- | --- | --- |
+| `#dropdown` left | `dropdown-offset-left` | `0px` | — |
+| dropdown z-index | `dropdown-z-index` | `10` | — |
+| dropdown max-height | `dropdown-max-height` | `300px` | — |
+| dropdown background-color | `dropdown-background-color` | `white` | — |
+| dropdown border-width | `dropdown-border-width` | `1px` | `0.1rem` |
+| dropdown border-style | `dropdown-border-style` | `solid` | `solid` |
+| dropdown border-color | `border-color` | `black` | `currentColor` |
+| dropdown margin-top | `dropdown-margin-top` | — | `0.2rem` |
+| dropdown border-radius | `dropdown-border-radius` | — | `0.3rem` |
+| dropdown font-family | `dropdown-font-family` | — | `$font-family → $example-form-font → sans-serif` |
+| `.optgroup` color | `dropdown-optgroup-color` | `inherit` | `inherit` |
+| optgroup background-color | `dropdown-optgroup-background-color` | `rgb(128, 128, 128)` | `transparent` |
+| optgroup font-size | `dropdown-optgroup-font-size` | — | `0.85rem` |
+| optgroup font-weight | `dropdown-optgroup-font-weight` | — | `300` |
+| optgroup font-family | `dropdown-optgroup-font-family` | — | `$font-family → $example-form-font → sans-serif` |
+| optgroup padding | `dropdown-optgroup-padding` | — | `0.2rem` |
+| `.option` color | `dropdown-option-color` | `inherit` | `currentColor` |
+| option background-color | `dropdown-option-background-color` | `transparent` | `transparent` |
+| option font-family | `dropdown-option-font-family` | — | `$font-family → $example-form-font → sans-serif` |
+| option padding | `dropdown-option-padding` | — | `0.5rem` |
+| option font-size | `dropdown-option-font-size` | — | `$example-value-font-size → 1em` |
+| option min-height | `dropdown-option-min-height` | — | `1.2rem` |
+| `.option.highlighted` background-color | `dropdown-option-highlighted-background-color` | `black` | `transparent` |
+| highlighted option color | `dropdown-option-color-inverse` | `white` | `currentColor` |
+| `.option.selected` background-color | `dropdown-option-selected-background-color` | `transparent` | `transparent` |
+| selected option color | `dropdown-option-selected-color` | `inherit` | `$dropdown-option-color-inverse → currentColor` |
+| `.option.active` background-color | `dropdown-option-active-background-color` | `transparent` | `transparent` |
+| active option color | `dropdown-option-active-color` | `inherit` | `$dropdown-option-color-inverse → currentColor` |
+| `.option.disabled` color | `dropdown-option-disabled-font-color` | `$dropdown-option-disabled-color → rgb(128, 128, 128)` | `$dropdown-option-disabled-color → currentColor` |
+| disabled option background-color | `dropdown-option-disabled-background-color` | `transparent` | `transparent` |
+| `.option.disabled.dropdown-message` color | `dropdown-message-color` | `rgb(128, 128, 128)` | — |
+| disabled message background-color | `dropdown-message-background-color` | `transparent` | — |
+| disabled message / example `.dropdown-message` min-height | `dropdown-message-min-height` | `0` | `1.2rem` |
+| disabled message / example `.dropdown-message` padding | `dropdown-message-padding` | `0` | `0.2rem` |
+| `.description` font-size | `description-font-size` | `75%` | `0.85rem` |
+| description padding | `description-padding` | — | `0.2rem` |
+| `.highlight` color | `highlight-color` | `blue` | — |
+
+The example's optgroup, option, message, and description selectors are scoped under `#dropdown`; its normal option and disabled option rules exclude `.dropdown-message`.
+
+#### Footer, errors, loading indicator, and diagnostic log
+
+| Selector / declaration | Property | Built-in fallback | Example fallback |
+| --- | --- | --- | --- |
+| `#dropdown-footer` color | `dropdown-footer-color` | `inherit` | `currentColor` |
+| footer background-color | `dropdown-footer-background-color` | `transparent` | `transparent` |
+| footer font-size | `dropdown-footer-font-size` | `inherit` | `50%` |
+| footer font-family | `dropdown-footer-font-family` | `inherit` | — |
+| footer padding | `dropdown-footer-padding` | `0` | `0.2rem` |
+| footer text-align | `dropdown-footer-text-align` | `inherit` | `center` |
+| `#wrapper .error-message ul li` color | `error-color` | `red` | `#c23616` |
+| error list item list-style | `error-list-style` | `none` | — |
+| error list item padding | `error-list-item-padding` | `0px` | `0` |
+| error list item font-size | `error-size` | — | `80%` |
+| error list item margin | `error-list-item-margin` | — | `0.1rem 0 0 0` |
+| `#wrapper .error-message ul` padding | `error-list-padding` | `0px` | `0` |
+| error list margin | `error-list-margin` | — | `0 0 0.4rem 0` |
+| `slot[name='loading-indicator']` right | `loading-indicator-offset-right` | `5px` | — |
+| loading slot top | `loading-indicator-offset-top` | `10px` | — |
+| `.default-loading-indicator` height and width | `loading-indicator-size` | `18px` | — |
+| loading indicator border-width | `loading-indicator-border-width` | `5px` | — |
+| loading indicator border-style | `loading-indicator-border-style` | `solid` | — |
+| loading indicator border-color | `loading-indicator-border-color` | `rgba(150, 150, 150, 0.2)` | — |
+| loading indicator border-radius | `loading-indicator-border-radius` | `50%` | — |
+| loading indicator border-top-color | `loading-indicator-highlight-color` | `rgb(150, 150, 150)` | — |
+| loading indicator animation-duration | `loading-indicator-animation-duration` | `1s` | — |
+| loading indicator animation-delay | `loading-indicator-animation-delay` | `0s` | — |
+| loading indicator animation-iteration-count | `loading-indicator-animation-iteration-count` | `infinite` | — |
+| loading indicator animation-timing-function | `loading-indicator-animation-timing-function` | `ease-in-out` | — |
+| loading indicator animation-direction | `loading-indicator-animation-direction` | `alternate` | — |
+| `#search-keyboard-events #search-keyboard-events-log` width | `search-keyboard-events-log-width` | `100px` | — |
+
+### Styling boundaries
+
+These properties expose visual choices, not every structural declaration. Flex layout and wrapping, positioning modes, dropdown visibility and scrolling, cursor states, filter flex sizing, datalist input width, clear-button box sizing, and the loading animation's `rotate` name and `0`–`360deg` keyframes remain fixed in these stylesheets. Dropdown dimensions and placement also involve runtime measurement; the property reference does not replace that behavior.
+
+The right-slot and loading-slot properties style their internal wrappers or slot placement, not arbitrary slotted content. Style supplied light-DOM content and page layout in your own stylesheet. Existing `::part()` customization remains supported alongside custom properties; the reference does not remove or rename any parts or slots.
+
 ## Development
 
 ### Pre-requisites

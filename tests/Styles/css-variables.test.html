@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <script type="module">
+      import { runTests } from "@web/test-runner-mocha";
+      import { expect } from "@esm-bundle/chai";
+      import { html, fixture, oneEvent, waitUntil } from "@open-wc/testing";
+
+      import MuchSelect from "../../dist/much-select-debug.js";
+
+      if (!customElements.get("much-select")) {
+        window.customElements.define("much-select", MuchSelect);
+      }
+
+      const createControl = async (markup) => {
+        const el = /** @type {MuchSelect} */ await fixture(markup);
+        await oneEvent(el, "muchSelectReady");
+        return el;
+      };
+
+      runTests(() => {
+        describe("Styles", () => {
+          describe("css variables", () => {
+            it("preserves built-in defaults for plain instances", async () => {
+              const el = await createControl(html`
+                <much-select
+                  multi-select
+                  multi-select-single-item-removal
+                  output-style="custom-html"
+                  selected-value="Red,Blue"
+                  loading
+                >
+                  <select slot="select-input">
+                    <option>Red</option>
+                    <option>Blue</option>
+                  </select>
+                </much-select>
+              `);
+
+              const casing = el.shadowRoot.getElementById("value-casing");
+              const pill = el.shadowRoot.querySelector(".value.selected-value");
+              const spinner = el.shadowRoot.querySelector(
+                ".default-loading-indicator",
+              );
+
+              expect(getComputedStyle(el).minHeight).to.equal("40px");
+              expect(getComputedStyle(el).minWidth).to.equal("200px");
+              expect(getComputedStyle(casing).borderTopWidth).to.equal("1px");
+              expect(getComputedStyle(casing).borderTopStyle).to.equal("solid");
+              expect(getComputedStyle(casing).borderTopColor).to.equal(
+                "rgb(0, 0, 0)",
+              );
+              expect(getComputedStyle(casing).backgroundColor).to.equal(
+                "rgba(0, 0, 0, 0)",
+              );
+              expect(getComputedStyle(pill).borderTopWidth).to.equal("2px");
+              expect(getComputedStyle(pill).borderRadius).to.equal("40px");
+              expect(getComputedStyle(pill).paddingTop).to.equal("3px");
+              expect(getComputedStyle(pill).paddingLeft).to.equal("10px");
+              expect(getComputedStyle(spinner).width).to.equal("18px");
+              expect(getComputedStyle(spinner).borderTopWidth).to.equal("5px");
+              expect(getComputedStyle(spinner).animationDuration).to.equal("1s");
+            });
+
+            it("supports host overrides for casing, pills, disabled state, and removal separators", async () => {
+              const el = await createControl(html`
+                <much-select
+                  multi-select
+                  multi-select-single-item-removal
+                  output-style="custom-html"
+                  selected-value="Red,Blue"
+                >
+                  <select slot="select-input">
+                    <option>Red</option>
+                    <option>Blue</option>
+                  </select>
+                </much-select>
+              `);
+              const variables = {
+                "--much-select-height": "52px",
+                "--much-select-min-width": "180px",
+                "--much-select-border-color": "rgb(1, 2, 3)",
+                "--much-select-background-color": "rgb(4, 5, 6)",
+                "--much-select-value-casing-border-width": "4px",
+                "--much-select-value-casing-border-style": "dashed",
+                "--much-select-selected-value-border-width": "3px",
+                "--much-select-selected-value-border-style": "dotted",
+                "--much-select-selected-value-border-color": "rgb(7, 8, 9)",
+                "--much-select-selected-value-border-radius": "8px",
+                "--much-select-selected-value-background-color": "rgb(10, 11, 12)",
+                "--much-select-selected-value-color": "rgb(13, 14, 15)",
+                "--much-select-selected-value-font-size": "17px",
+                "--much-select-selected-value-padding": "1px 6px",
+                "--much-select-selected-values-margin-top": "12px",
+                "--much-select-disabled-color": "rgb(16, 17, 18)",
+                "--much-select-disabled-border-color": "rgb(19, 20, 21)",
+                "--much-select-disabled-opacity": "0.35",
+                "--much-select-remove-option-content": '"remove"',
+                "--much-select-remove-option-padding-left": "4px",
+                "--much-select-remove-option-margin-left": "7px",
+                "--much-select-remove-option-padding-bottom": "2px",
+                "--much-select-remove-option-separator-border-width": "2px",
+                "--much-select-remove-option-separator-border-style": "solid",
+                "--much-select-remove-option-separator-color": "rgb(22, 23, 24)",
+              };
+              Object.entries(variables).forEach(([name, value]) => {
+                el.style.setProperty(name, value);
+              });
+
+              const casing = el.shadowRoot.getElementById("value-casing");
+              const pill = el.shadowRoot.querySelector(".value.selected-value");
+              const removeOption = pill.querySelector(".remove-option");
+              const removeSeparator = getComputedStyle(
+                removeOption,
+                "::after",
+              );
+
+              expect(getComputedStyle(el).minHeight).to.equal("52px");
+              expect(getComputedStyle(el).minWidth).to.equal("180px");
+              expect(getComputedStyle(casing).borderTopWidth).to.equal("4px");
+              expect(getComputedStyle(casing).borderTopStyle).to.equal("dashed");
+              expect(getComputedStyle(casing).borderTopColor).to.equal(
+                "rgb(1, 2, 3)",
+              );
+              expect(getComputedStyle(casing).backgroundColor).to.equal(
+                "rgb(4, 5, 6)",
+              );
+              expect(getComputedStyle(pill).borderTopWidth).to.equal("3px");
+              expect(getComputedStyle(pill).borderTopStyle).to.equal("dotted");
+              expect(getComputedStyle(pill).borderTopColor).to.equal(
+                "rgb(7, 8, 9)",
+              );
+              expect(getComputedStyle(pill).borderRadius).to.equal("8px");
+              expect(getComputedStyle(pill).backgroundColor).to.equal(
+                "rgb(10, 11, 12)",
+              );
+              expect(getComputedStyle(pill).color).to.equal("rgb(13, 14, 15)");
+              expect(getComputedStyle(pill).fontSize).to.equal("17px");
+              expect(getComputedStyle(pill).paddingTop).to.equal("1px");
+              expect(getComputedStyle(pill).paddingLeft).to.equal("6px");
+              expect(getComputedStyle(casing).marginTop).to.equal("12px");
+              expect(removeSeparator.content).to.equal('"remove"');
+              expect(removeSeparator.paddingLeft).to.equal("4px");
+              expect(removeSeparator.marginLeft).to.equal("7px");
+              expect(removeSeparator.paddingBottom).to.equal("2px");
+              expect(removeSeparator.borderLeftWidth).to.equal("2px");
+              expect(removeSeparator.borderLeftStyle).to.equal("solid");
+              expect(removeSeparator.borderLeftColor).to.equal(
+                "rgb(22, 23, 24)",
+              );
+
+              el.setAttribute("disabled", "");
+              await waitUntil(() => casing.classList.contains("disabled"));
+              expect(getComputedStyle(casing).color).to.equal("rgb(16, 17, 18)");
+              expect(getComputedStyle(casing).borderTopColor).to.equal(
+                "rgb(19, 20, 21)",
+              );
+              expect(getComputedStyle(casing).opacity).to.equal("0.35");
+              expect(getComputedStyle(pill).borderTopColor).to.equal(
+                "rgb(19, 20, 21)",
+              );
+            });
+
+            it("inherits variables, isolates per-instance overrides, and restores defaults when removed", async () => {
+              const root = await fixture(html`
+                <div style="--much-select-border-color: rgb(31, 32, 33)">
+                  <much-select id="inherited" output-style="custom-html">
+                    <select slot="select-input"><option>Red</option></select>
+                  </much-select>
+                  <much-select id="overridden" output-style="custom-html">
+                    <select slot="select-input"><option>Red</option></select>
+                  </much-select>
+                </div>
+              `);
+              const inherited = root.querySelector("#inherited");
+              const overridden = root.querySelector("#overridden");
+              await Promise.all([
+                oneEvent(inherited, "muchSelectReady"),
+                oneEvent(overridden, "muchSelectReady"),
+              ]);
+              const inheritedCasing = inherited.shadowRoot.getElementById(
+                "value-casing",
+              );
+              const overriddenCasing = overridden.shadowRoot.getElementById(
+                "value-casing",
+              );
+
+              expect(getComputedStyle(inheritedCasing).borderTopColor).to.equal(
+                "rgb(31, 32, 33)",
+              );
+              overridden.style.setProperty(
+                "--much-select-border-color",
+                "rgb(41, 42, 43)",
+              );
+              expect(getComputedStyle(overriddenCasing).borderTopColor).to.equal(
+                "rgb(41, 42, 43)",
+              );
+              expect(getComputedStyle(inheritedCasing).borderTopColor).to.equal(
+                "rgb(31, 32, 33)",
+              );
+
+              root.style.setProperty(
+                "--much-select-border-color",
+                "rgb(51, 52, 53)",
+              );
+              expect(getComputedStyle(inheritedCasing).borderTopColor).to.equal(
+                "rgb(51, 52, 53)",
+              );
+              overridden.style.removeProperty("--much-select-border-color");
+              expect(getComputedStyle(overriddenCasing).borderTopColor).to.equal(
+                "rgb(51, 52, 53)",
+              );
+
+              inherited.remove();
+              overridden.remove();
+              const standalone = await createControl(html`
+                <much-select output-style="custom-html">
+                  <select slot="select-input"><option>Red</option></select>
+                </much-select>
+              `);
+              const standaloneCasing = standalone.shadowRoot.getElementById(
+                "value-casing",
+              );
+              standalone.style.setProperty(
+                "--much-select-border-color",
+                "rgb(61, 62, 63)",
+              );
+              expect(getComputedStyle(standaloneCasing).borderTopColor).to.equal(
+                "rgb(61, 62, 63)",
+              );
+              standalone.style.removeProperty("--much-select-border-color");
+              expect(getComputedStyle(standaloneCasing).borderTopColor).to.equal(
+                "rgb(0, 0, 0)",
+              );
+            });
+
+            it("styles dropdown states, messages, groups, descriptions, footer, and keeps dimensions measured", async () => {
+              const el = await createControl(html`
+                <much-select
+                  multi-select
+                  output-style="custom-html"
+                  selected-value="Red,Blue"
+                  show-dropdown-footer
+                  max-dropdown-items="3"
+                >
+                  <select slot="select-input">
+                    <optgroup label="Warm">
+                      <option data-description="first option">Red</option>
+                      <option>Blue</option>
+                      <option data-description="third option">Orange</option>
+                    </optgroup>
+                    <option disabled>Gray</option>
+                    <option>Green</option>
+                    <option>Purple</option>
+                  </select>
+                </much-select>
+              `);
+              const variables = {
+                "--much-select-dropdown-max-height": "123px",
+                "--much-select-dropdown-offset-left": "7px",
+                "--much-select-dropdown-z-index": "42",
+                "--much-select-dropdown-background-color": "rgb(1, 2, 3)",
+                "--much-select-dropdown-border-width": "3px",
+                "--much-select-dropdown-border-style": "dashed",
+                "--much-select-dropdown-optgroup-color": "rgb(4, 5, 6)",
+                "--much-select-dropdown-optgroup-background-color": "rgb(7, 8, 9)",
+                "--much-select-dropdown-option-color": "rgb(10, 11, 12)",
+                "--much-select-dropdown-option-background-color": "rgb(13, 14, 15)",
+                "--much-select-dropdown-option-color-inverse": "rgb(16, 17, 18)",
+                "--much-select-dropdown-option-highlighted-background-color": "rgb(19, 20, 21)",
+                "--much-select-dropdown-option-selected-background-color": "rgb(22, 23, 24)",
+                "--much-select-dropdown-option-selected-color": "rgb(25, 26, 27)",
+                "--much-select-dropdown-option-active-background-color": "rgb(28, 29, 30)",
+                "--much-select-dropdown-option-active-color": "rgb(31, 32, 33)",
+                "--much-select-dropdown-option-disabled-background-color": "rgb(34, 35, 36)",
+                "--much-select-dropdown-option-disabled-font-color": "rgb(37, 38, 39)",
+                "--much-select-dropdown-message-color": "rgb(40, 41, 42)",
+                "--much-select-dropdown-message-background-color": "rgb(43, 44, 45)",
+                "--much-select-dropdown-message-min-height": "26px",
+                "--much-select-dropdown-message-padding": "5px",
+                "--much-select-description-font-size": "11px",
+                "--much-select-dropdown-footer-color": "rgb(46, 47, 48)",
+                "--much-select-dropdown-footer-background-color": "rgb(49, 50, 51)",
+                "--much-select-dropdown-footer-font-size": "13px",
+                "--much-select-dropdown-footer-padding": "6px",
+                "--much-select-highlight-color": "rgb(52, 53, 54)",
+              };
+              Object.entries(variables).forEach(([name, value]) => {
+                el.style.setProperty(name, value);
+              });
+
+              const input = el.shadowRoot.getElementById("input-filter");
+              const focused = oneEvent(el, "muchSelectFocused");
+              input.focus();
+              await focused;
+              await waitUntil(() => el.shadowRoot.querySelector("#dropdown .option"));
+
+              const dropdown = el.shadowRoot.getElementById("dropdown");
+              const optgroup =
+                dropdown.querySelector(".optgroup") ||
+                Object.assign(document.createElement("div"), {
+                  className: "optgroup",
+                });
+              const description =
+                dropdown.querySelector(".description") ||
+                Object.assign(document.createElement("div"), {
+                  className: "description",
+                });
+              const disabledOption =
+                dropdown.querySelector(".option.disabled:not(.dropdown-message)") ||
+                Object.assign(document.createElement("div"), {
+                  className: "option disabled",
+                });
+              const footer =
+                dropdown.querySelector("#dropdown-footer") ||
+                Object.assign(document.createElement("div"), {
+                  id: "dropdown-footer",
+                });
+              const option = dropdown.querySelector(".option:not(.disabled)");
+              if (!optgroup.isConnected) dropdown.prepend(optgroup);
+              if (!description.isConnected) option.append(description);
+              if (!disabledOption.isConnected) dropdown.append(disabledOption);
+              if (!footer.isConnected) dropdown.append(footer);
+
+              expect(optgroup).to.exist;
+              expect(option).to.exist;
+              expect(description).to.exist;
+              expect(disabledOption).to.exist;
+              expect(footer).to.exist;
+              expect(getComputedStyle(dropdown).maxHeight).to.equal("123px");
+              expect(getComputedStyle(dropdown).left).to.equal("7px");
+              expect(getComputedStyle(dropdown).zIndex).to.equal("42");
+              expect(getComputedStyle(dropdown).backgroundColor).to.equal(
+                "rgb(1, 2, 3)",
+              );
+              expect(getComputedStyle(dropdown).borderTopWidth).to.equal("3px");
+              expect(getComputedStyle(dropdown).borderTopStyle).to.equal("dashed");
+              expect(getComputedStyle(optgroup).color).to.equal("rgb(4, 5, 6)");
+              expect(getComputedStyle(optgroup).backgroundColor).to.equal(
+                "rgb(7, 8, 9)",
+              );
+              expect(getComputedStyle(option).color).to.equal("rgb(10, 11, 12)");
+              expect(getComputedStyle(option).backgroundColor).to.equal(
+                "rgb(13, 14, 15)",
+              );
+              expect(getComputedStyle(description).fontSize).to.equal("11px");
+              expect(getComputedStyle(disabledOption).color).to.equal(
+                "rgb(37, 38, 39)",
+              );
+              expect(getComputedStyle(disabledOption).backgroundColor).to.equal(
+                "rgb(34, 35, 36)",
+              );
+              expect(footer).to.exist;
+              expect(getComputedStyle(footer).color).to.equal("rgb(46, 47, 48)");
+              expect(getComputedStyle(footer).backgroundColor).to.equal(
+                "rgb(49, 50, 51)",
+              );
+              expect(getComputedStyle(footer).fontSize).to.equal("13px");
+              expect(getComputedStyle(footer).paddingTop).to.equal("6px");
+
+              option.classList.add("highlighted");
+              expect(getComputedStyle(option).backgroundColor).to.equal(
+                "rgb(19, 20, 21)",
+              );
+              expect(getComputedStyle(option).color).to.equal("rgb(16, 17, 18)");
+              option.classList.remove("highlighted");
+              option.classList.add("selected");
+              expect(getComputedStyle(option).backgroundColor).to.equal(
+                "rgb(22, 23, 24)",
+              );
+              expect(getComputedStyle(option).color).to.equal("rgb(25, 26, 27)");
+              option.classList.remove("selected");
+              option.classList.add("active");
+              expect(getComputedStyle(option).backgroundColor).to.equal(
+                "rgb(28, 29, 30)",
+              );
+              expect(getComputedStyle(option).color).to.equal("rgb(31, 32, 33)");
+
+              const message = document.createElement("div");
+              message.className = "option disabled dropdown-message";
+              dropdown.append(message);
+              expect(getComputedStyle(message).color).to.equal("rgb(40, 41, 42)");
+              expect(getComputedStyle(message).backgroundColor).to.equal(
+                "rgb(43, 44, 45)",
+              );
+              expect(getComputedStyle(message).minHeight).to.equal("26px");
+              expect(getComputedStyle(message).paddingTop).to.equal("5px");
+
+              await waitUntil(
+                () =>
+                  dropdown.style.width ===
+                    `${Math.max(el.shadowRoot.getElementById("value-casing").offsetWidth, Number.parseFloat(getComputedStyle(el).minWidth))}px` &&
+                  dropdown.style.top ===
+                    `${Math.max(el.shadowRoot.getElementById("value-casing").offsetHeight, Math.min(20, Number.parseFloat(getComputedStyle(el).minHeight)))}px`,
+              );
+              const casing = el.shadowRoot.getElementById("value-casing");
+              expect(dropdown.style.width).to.equal(
+                `${Math.max(casing.offsetWidth, Number.parseFloat(getComputedStyle(el).minWidth))}px`,
+              );
+              expect(dropdown.style.top).to.equal(
+                `${Math.max(casing.offsetHeight, Math.min(20, Number.parseFloat(getComputedStyle(el).minHeight)))}px`,
+              );
+            });
+
+            it("uses CSS minima for smaller and larger sizes and keeps multi-line dropdown alignment", async () => {
+              const el = await createControl(html`
+                <much-select
+                  style="display: block; width: 170px; --much-select-min-width: 120px; --much-select-min-height: 24px"
+                  multi-select
+                  output-style="custom-html"
+                  selected-value="Amber,Cobalt,Crimson,Daffodil"
+                  selected-option-goes-to-top="false"
+                  show-dropdown-footer
+                  max-dropdown-items="7"
+                >
+                  <select slot="select-input">
+                    <option>Emerald</option>
+                    <option>Fuchsia</option>
+                    <option>Green</option>
+                    <option>Amber</option>
+                    <option>Cobalt</option>
+                    <option>Crimson</option>
+                    <option>Daffodil</option>
+                    <option>Hazel</option>
+                  </select>
+                </much-select>
+              `);
+              const casing = el.shadowRoot.getElementById("value-casing");
+              const wrapper = el.shadowRoot.getElementById("wrapper");
+
+              expect(getComputedStyle(el).minWidth).to.equal("120px");
+              expect(getComputedStyle(el).minHeight).to.equal("24px");
+              expect(getComputedStyle(wrapper).minWidth).to.equal("120px");
+              expect(casing.offsetWidth).to.be.lessThan(200);
+              expect(casing.offsetHeight).to.be.greaterThan(24);
+
+              const pills = [...el.shadowRoot.querySelectorAll(".value.selected-value")];
+              expect(new Set(pills.map((pill) => pill.getBoundingClientRect().top)).size)
+                .to.be.greaterThan(1);
+
+              const input = el.shadowRoot.getElementById("input-filter");
+              const focused = oneEvent(el, "muchSelectFocused");
+              input.focus();
+              await focused;
+              const dropdown = el.shadowRoot.getElementById("dropdown");
+              await waitUntil(() => el.shadowRoot.querySelector("#dropdown .option"));
+              await waitUntil(
+                () =>
+                  dropdown.style.width ===
+                    `${Math.max(casing.offsetWidth, Number.parseFloat(getComputedStyle(el).minWidth))}px` &&
+                  dropdown.style.top ===
+                    `${Math.max(casing.offsetHeight, Math.min(20, Number.parseFloat(getComputedStyle(el).minHeight)))}px`,
+              );
+              expect(Number.parseFloat(dropdown.style.width)).to.be.lessThan(200);
+              expect(dropdown.querySelectorAll(".option").length).to.equal(3);
+              expect(dropdown.querySelector("#dropdown-footer")).to.exist;
+              el.remove();
+
+              const larger = await createControl(html`
+                <much-select
+                  style="display: block; width: 170px; --much-select-min-width: 320px; --much-select-min-height: 72px"
+                  multi-select
+                  output-style="custom-html"
+                  selected-value="Amber,Cobalt,Crimson,Daffodil"
+                  selected-option-goes-to-top="false"
+                  show-dropdown-footer
+                  max-dropdown-items="7"
+                >
+                  <select slot="select-input">
+                    <option>Emerald</option>
+                    <option>Fuchsia</option>
+                    <option>Green</option>
+                    <option>Amber</option>
+                    <option>Cobalt</option>
+                    <option>Crimson</option>
+                    <option>Daffodil</option>
+                    <option>Hazel</option>
+                  </select>
+                </much-select>
+              `);
+              const largerCasing = larger.shadowRoot.getElementById("value-casing");
+              const largerWrapper = larger.shadowRoot.getElementById("wrapper");
+              expect(getComputedStyle(larger).minWidth).to.equal("320px");
+              expect(getComputedStyle(larger).minHeight).to.equal("72px");
+              expect(getComputedStyle(largerWrapper).minWidth).to.equal("320px");
+
+              const largerInput = larger.shadowRoot.getElementById("input-filter");
+              const largerFocused = oneEvent(larger, "muchSelectFocused");
+              largerInput.focus();
+              await largerFocused;
+              await waitUntil(
+                () => larger.shadowRoot.querySelector("#dropdown .option"),
+              );
+              const largerDropdown = larger.shadowRoot.getElementById("dropdown");
+              await waitUntil(
+                () =>
+                  largerDropdown.style.width ===
+                    `${Math.max(largerCasing.offsetWidth, Number.parseFloat(getComputedStyle(larger).minWidth))}px` &&
+                  largerDropdown.style.top ===
+                    `${Math.max(largerCasing.offsetHeight, Math.min(20, Number.parseFloat(getComputedStyle(larger).minHeight)))}px`,
+              );
+              expect(largerDropdown.style.width).to.equal(
+                `${Math.max(largerCasing.offsetWidth, Number.parseFloat(getComputedStyle(larger).minWidth))}px`,
+              );
+              expect(largerDropdown.style.top).to.equal(
+                `${Math.max(largerCasing.offsetHeight, Math.min(20, Number.parseFloat(getComputedStyle(larger).minHeight)))}px`,
+              );
+              expect(largerDropdown.querySelectorAll(".option").length).to.equal(3);
+              expect(largerDropdown.querySelector("#dropdown-footer")).to.exist;
+            });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -216,17 +216,6 @@ class MuchSelect extends HTMLElement {
     this._isReady = false;
 
     /**
-     * Used in the CSS and elsewhere to determine what the
-     *  minimum width should be.
-     * TODO Perhaps this should be a property or attribute.
-     * @type {number}
-     * @private
-     */
-    this._minimumWidth = 200;
-
-    this._minimumHeight = 20;
-
-    /**
      * @type {null|object}
      * @private
      */
@@ -369,6 +358,7 @@ class MuchSelect extends HTMLElement {
     this.parentDivPromise.then((parentDiv) => {
       const wrapperDiv = parentDiv.querySelector("#wrapper");
       this._resizeObserver.observe(wrapperDiv);
+      this._resizeObserver.observe(this);
     });
 
     // noinspection JSUnresolvedVariable,JSIgnoredPromiseFromCall
@@ -932,15 +922,21 @@ class MuchSelect extends HTMLElement {
         if (valueCasingElement) {
           let width = valueCasingElement.offsetWidth;
           let height = valueCasingElement.offsetHeight;
+          const minimumDimensions = window.getComputedStyle(this);
+          const minimumWidth = Number.parseFloat(minimumDimensions.minWidth);
+          const minimumHeight = Math.min(
+            20,
+            Number.parseFloat(minimumDimensions.minHeight),
+          );
 
           // Prevent the width from falling below this threshold.
-          if (width < this._minimumWidth) {
-            width = this._minimumWidth;
+          if (Number.isFinite(minimumWidth) && width < minimumWidth) {
+            width = minimumWidth;
           }
 
           // Prevent the height from falling below this threshold.
-          if (height < this._minimumHeight) {
-            height = this._minimumHeight;
+          if (Number.isFinite(minimumHeight) && height < minimumHeight) {
+            height = minimumHeight;
           }
 
           this._callValueCasingWidthUpdate(width, height);
@@ -1674,8 +1670,8 @@ class MuchSelect extends HTMLElement {
         do something a bit more clever here to not hard code these values so much.
         */
 
-        min-height: 40px;
-        min-width: ${this._minimumWidth}px;
+        min-height: var(--much-select-height, var(--much-select-min-height, 40px));
+        min-width: var(--much-select-min-width, 200px);
       }
 
       /*
@@ -1687,7 +1683,8 @@ class MuchSelect extends HTMLElement {
       }
 
       #wrapper {
-        min-width: ${this._minimumWidth}px;
+        min-width: var(--much-select-min-width, 200px);
+        font-family: var(--much-select-font-family, inherit);
         margin-top: auto;
         margin-bottom: auto;
         position: relative;
@@ -1698,23 +1695,30 @@ class MuchSelect extends HTMLElement {
       }
 
       #value-casing.output-style-custom-html {
-        border: 1px solid black;
+        border-width: var(--much-select-value-casing-border-width, 1px);
+        border-style: var(--much-select-value-casing-border-style, solid);
+        border-color: var(--much-select-border-color, black);
+        background-color: var(--much-select-background-color, transparent);
         cursor: pointer;
+      }
+
+      #value-casing.output-style-custom-html.error {
+        border-color: var(--much-select-error-border-color, var(--much-select-border-color, black));
       }
 
       #value-casing.disabled,
       #value-casing.output-style-custom-html.disabled {
-        color: rgb(128, 128, 128);
+        color: var(--much-select-disabled-color, rgb(128, 128, 128));
         cursor: default;
-        opacity: 0.65;
+        opacity: var(--much-select-disabled-opacity, 0.65);
       }
 
       #value-casing.output-style-custom-html.disabled {
-        border-color: rgb(128, 128, 128);
+        border-color: var(--much-select-disabled-border-color, var(--much-select-border-color, rgb(128, 128, 128)));
       }
 
       #value-casing.output-style-custom-html.multi.disabled .value {
-        border-color: rgb(128, 128, 128);
+        border-color: var(--much-select-disabled-border-color, var(--much-select-selected-value-border-color, var(--much-select-border-color, rgb(128, 128, 128))));
       }
 
       #value-casing.output-style-custom-html #input-filter {
@@ -1725,14 +1729,14 @@ class MuchSelect extends HTMLElement {
         /* We don't want a border because the value-casing will supply the border for
           this input.
         */
-        border: none;
+        border: var(--much-select-input-filter-border, none);
 
         /*
         We do not want an outline on the input (filter) because we want everything
         inside of the #value-casing to (kinda) act like a text input.
         */
-        outline: none;
-        background: none;
+        outline: var(--much-select-input-filter-outline, none);
+        background: var(--much-select-input-filter-background, none);
       }
 
       #value-casing.output-style-custom-html.multi {
@@ -1740,13 +1744,18 @@ class MuchSelect extends HTMLElement {
         In multi select mode, let's let the selected values line up on a row and then wrap.
         */
         flex-flow: row wrap;
-        margin-top:5px;
+        margin-top: var(--much-select-selected-values-margin-top, 5px);
       }
 
       #value-casing.output-style-custom-html.multi .value {
-        border: 2px solid black;
-        border-radius:40px;
-        padding:3px 10px;
+        border-width: var(--much-select-selected-value-border-width, 2px);
+        border-style: var(--much-select-selected-value-border-style, solid);
+        border-color: var(--much-select-selected-value-border-color, var(--much-select-border-color, black));
+        border-radius: var(--much-select-selected-value-border-radius, 40px);
+        background-color: var(--much-select-selected-value-background-color, transparent);
+        color: var(--much-select-selected-value-color, inherit);
+        font-size: var(--much-select-selected-value-font-size, inherit);
+        padding: var(--much-select-selected-value-padding, 3px 10px);
         flex-grow: 0;
         flex-shrink: 1;
         flex-basis: auto;
@@ -1755,21 +1764,23 @@ class MuchSelect extends HTMLElement {
       slot[name='loading-indicator'] {
         display: block;
         position: absolute;
-        right: 5px;
-        top: 10px;
+        right: var(--much-select-loading-indicator-offset-right, 5px);
+        top: var(--much-select-loading-indicator-offset-top, 10px);
       }
 
       #dropdown {
         visibility: hidden;
         position: absolute;
-        left: 0;
+        left: var(--much-select-dropdown-offset-left, 0px);
         display: inline-block;
-        z-index: 10;
-        max-height: 300px;
+        z-index: var(--much-select-dropdown-z-index, 10);
+        max-height: var(--much-select-dropdown-max-height, 300px);
         overflow-y: auto;
         cursor: default;
-        background-color: white;
-        border: 1px solid black;
+        background-color: var(--much-select-dropdown-background-color, white);
+        border-width: var(--much-select-dropdown-border-width, 1px);
+        border-style: var(--much-select-dropdown-border-style, solid);
+        border-color: var(--much-select-border-color, black);
       }
 
       #dropdown.showing {
@@ -1780,32 +1791,53 @@ class MuchSelect extends HTMLElement {
       }
 
       .optgroup {
-        background-color: rgb(128,128,128);
+        color: var(--much-select-dropdown-optgroup-color, inherit);
+        background-color: var(--much-select-dropdown-optgroup-background-color, rgb(128, 128, 128));
       }
 
       .option {
         cursor: pointer;
+        color: var(--much-select-dropdown-option-color, inherit);
+        background-color: var(--much-select-dropdown-option-background-color, transparent);
       }
 
       .option.highlighted {
-        background-color: black;
-        color: white;
+        background-color: var(--much-select-dropdown-option-highlighted-background-color, black);
+        color: var(--much-select-dropdown-option-color-inverse, white);
+      }
+
+      .option.selected {
+        background-color: var(--much-select-dropdown-option-selected-background-color, transparent);
+        color: var(--much-select-dropdown-option-selected-color, inherit);
+      }
+
+      .option.active {
+        background-color: var(--much-select-dropdown-option-active-background-color, transparent);
+        color: var(--much-select-dropdown-option-active-color, inherit);
       }
 
       .option.disabled {
         cursor: default;
-        color: rgb(128,128,128);
+        color: var(--much-select-dropdown-option-disabled-font-color, var(--much-select-dropdown-option-disabled-color, rgb(128, 128, 128)));
+        background-color: var(--much-select-dropdown-option-disabled-background-color, transparent);
+      }
+
+      .option.disabled.dropdown-message {
+        color: var(--much-select-dropdown-message-color, rgb(128, 128, 128));
+        background-color: var(--much-select-dropdown-message-background-color, transparent);
+        min-height: var(--much-select-dropdown-message-min-height, 0);
+        padding: var(--much-select-dropdown-message-padding, 0);
       }
 
       .description {
-        font-size: 75%;
+        font-size: var(--much-select-description-font-size, 75%);
       }
 
       #add-remove-buttons {
         display: flex;
       }
 
-      .highlight { color: blue }
+      .highlight { color: var(--much-select-highlight-color, blue) }
 
       /* This loading indicator was copied (almost exactly)
         from this article.
@@ -1814,34 +1846,51 @@ class MuchSelect extends HTMLElement {
         It was chosen because it was so simple and short.
       */
       .default-loading-indicator {
-        height: 18px;
-        width: 18px;
-        border: 5px solid rgba(150, 150, 150, 0.2);
-        border-radius: 50%;
-        border-top-color: rgb(150, 150, 150);
-        animation: rotate 1s 0s infinite ease-in-out alternate;
+        height: var(--much-select-loading-indicator-size, 18px);
+        width: var(--much-select-loading-indicator-size, 18px);
+        border-width: var(--much-select-loading-indicator-border-width, 5px);
+        border-style: var(--much-select-loading-indicator-border-style, solid);
+        border-color: var(--much-select-loading-indicator-border-color, rgba(150, 150, 150, 0.2));
+        border-radius: var(--much-select-loading-indicator-border-radius, 50%);
+        border-top-color: var(--much-select-loading-indicator-highlight-color, rgb(150, 150, 150));
+        animation-name: rotate;
+        animation-duration: var(--much-select-loading-indicator-animation-duration, 1s);
+        animation-delay: var(--much-select-loading-indicator-animation-delay, 0s);
+        animation-iteration-count: var(--much-select-loading-indicator-animation-iteration-count, infinite);
+        animation-timing-function: var(--much-select-loading-indicator-animation-timing-function, ease-in-out);
+        animation-direction: var(--much-select-loading-indicator-animation-direction, alternate);
       }
       @keyframes rotate {
         0%   { transform: rotate(0);      }
         100% { transform: rotate(360deg); }
       }
       #wrapper .error-message ul li{
-        color: red;
-        list-style:none;
-        padding:0px;
+        color: var(--much-select-error-color, red);
+        list-style: var(--much-select-error-list-style, none);
+        padding: var(--much-select-error-list-item-padding, 0px);
       }
       #wrapper .error-message ul{
-        padding:0px;
+        padding: var(--much-select-error-list-padding, 0px);
+      }
+      #dropdown-footer {
+        color: var(--much-select-dropdown-footer-color, inherit);
+        background-color: var(--much-select-dropdown-footer-background-color, transparent);
+        font-size: var(--much-select-dropdown-footer-font-size, inherit);
+        font-family: var(--much-select-dropdown-footer-font-family, inherit);
+        padding: var(--much-select-dropdown-footer-padding, 0);
+        text-align: var(--much-select-dropdown-footer-text-align, inherit);
       }
       .value .remove-option::after {
-        content: "x";
-        padding-left: 5px;
-        margin-left:6px;
-        padding-bottom:3px;
-        border-left: 1px dotted gray;
+        content: var(--much-select-remove-option-content, "x");
+        padding-left: var(--much-select-remove-option-padding-left, 5px);
+        margin-left: var(--much-select-remove-option-margin-left, 6px);
+        padding-bottom: var(--much-select-remove-option-padding-bottom, 3px);
+        border-left-width: var(--much-select-remove-option-separator-border-width, 1px);
+        border-left-style: var(--much-select-remove-option-separator-border-style, dotted);
+        border-left-color: var(--much-select-remove-option-separator-color, gray);
       }
       #search-keyboard-events #search-keyboard-events-log {
-        width:100px;
+        width: var(--much-select-search-keyboard-events-log-width, 100px);
       }
     </style>`;
   }
