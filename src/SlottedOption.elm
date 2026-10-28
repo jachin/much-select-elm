@@ -3,6 +3,7 @@ module SlottedOption exposing (SlottedOption, activate, decoder, decoderWithAge,
 import Events exposing (mouseUpPreventDefault, onMouseUpStopPropagationAndPreventDefault)
 import Html exposing (Html, div, span, text)
 import Html.Attributes exposing (class, classList)
+import Html.Attributes.Extra exposing (attributeIf)
 import Json.Decode
 import Json.Encode
 import OptionDisplay exposing (OptionDisplay(..))
@@ -145,23 +146,27 @@ test_optionToDebuggingString slottedOption =
     slottedOption |> getOptionValue |> OptionValue.optionValueToString
 
 
-toValueHtml : (OptionValue -> msg) -> (OptionValue -> msg) -> SingleItemRemoval -> SlottedOption -> Html msg
-toValueHtml toggleSelectedMsg deselectOptionInternal enableSingleItemRemoval option =
+toValueHtml : Bool -> (OptionValue -> msg) -> (OptionValue -> msg) -> SingleItemRemoval -> SlottedOption -> Html msg
+toValueHtml isDisabled toggleSelectedMsg deselectOptionInternal enableSingleItemRemoval option =
     let
         removalHtml optionValue =
-            case enableSingleItemRemoval of
-                EnableSingleItemRemoval ->
-                    span
-                        [ -- This has to be on mouse up because if we listen for click events then
-                          --  the input field will get under the mouse and trigger a focus event.
-                          onMouseUpStopPropagationAndPreventDefault <| deselectOptionInternal optionValue
-                        , class "remove-option"
-                        , PartAttribute.part "remove-option"
-                        ]
-                        [ text "" ]
+            if isDisabled then
+                text ""
 
-                DisableSingleItemRemoval ->
-                    text ""
+            else
+                case enableSingleItemRemoval of
+                    EnableSingleItemRemoval ->
+                        span
+                            [ -- This has to be on mouse up because if we listen for click events then
+                              --  the input field will get under the mouse and trigger a focus event.
+                              onMouseUpStopPropagationAndPreventDefault <| deselectOptionInternal optionValue
+                            , class "remove-option"
+                            , PartAttribute.part "remove-option"
+                            ]
+                            [ text "" ]
+
+                    DisableSingleItemRemoval ->
+                        text ""
 
         partAttr =
             PartAttribute.part "value"
@@ -181,6 +186,7 @@ toValueHtml toggleSelectedMsg deselectOptionInternal enableSingleItemRemoval opt
                         , partAttr
                         ]
                         [ valueLabelHtml
+                            isDisabled
                             toggleSelectedMsg
                             (OptionValue.optionValueToString optionValue)
                             optionValue
@@ -202,6 +208,7 @@ toValueHtml toggleSelectedMsg deselectOptionInternal enableSingleItemRemoval opt
                         , highlightPartAttr
                         ]
                         [ valueLabelHtml
+                            isDisabled
                             toggleSelectedMsg
                             (OptionValue.optionValueToString optionValue)
                             optionValue
@@ -218,12 +225,11 @@ toValueHtml toggleSelectedMsg deselectOptionInternal enableSingleItemRemoval opt
                     text ""
 
 
-valueLabelHtml : (OptionValue -> msg) -> String -> OptionValue -> Html msg
-valueLabelHtml toggleSelectedMsg labelText optionValue =
+valueLabelHtml : Bool -> (OptionValue -> msg) -> String -> OptionValue -> Html msg
+valueLabelHtml isDisabled toggleSelectedMsg labelText optionValue =
     span
         [ class "value-label"
-        , mouseUpPreventDefault
-            (toggleSelectedMsg optionValue)
+        , attributeIf (not isDisabled) (mouseUpPreventDefault (toggleSelectedMsg optionValue))
         ]
         [ text labelText ]
 

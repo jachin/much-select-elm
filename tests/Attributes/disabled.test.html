@@ -4,7 +4,7 @@
     <script type="module">
       import { runTests } from "@web/test-runner-mocha";
       import { expect } from "@esm-bundle/chai";
-      import { html, fixture, nextFrame } from "@open-wc/testing";
+      import { html, fixture, nextFrame, waitUntil } from "@open-wc/testing";
 
       import MuchSelect from "../../dist/much-select-debug.js";
 
@@ -38,6 +38,8 @@
               el.removeAttribute("disabled");
               await nextFrame();
               expect(await el.disabled).to.be.false;
+              expect(el.shadowRoot.querySelector("#value-casing.disabled")).to
+                .be.null;
             });
 
             it("using the setter should set it to true", async () => {
@@ -47,6 +49,78 @@
               el.disabled = true;
               await nextFrame();
               expect(await el.disabled).to.be.true;
+              const valueCasing = el.shadowRoot.querySelector("#value-casing");
+              expect(valueCasing.classList.contains("disabled")).to.be.true;
+              expect(valueCasing.getAttribute("aria-disabled")).to.equal("true");
+              expect(getComputedStyle(valueCasing).opacity).to.equal("0.65");
+
+              el.disabled = false;
+              await nextFrame();
+              expect(await el.disabled).to.be.false;
+              expect(valueCasing.classList.contains("disabled")).to.be.false;
+              expect(valueCasing.hasAttribute("aria-disabled")).to.be.false;
+            });
+
+            it("prevents mouse and keyboard interactions while disabled", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select
+                  disabled
+                  multi-select
+                  output-style="custom-html"
+                  selected-value="Red,Yellow"
+                >
+                  <select slot="select-input">
+                    <option>Red</option>
+                    <option>Yellow</option>
+                    <option>Blue</option>
+                  </select>
+                </much-select>`,
+              );
+              await nextFrame();
+              const valueCasing = el.shadowRoot.querySelector("#value-casing");
+              valueCasing
+                .querySelector(".selected-value-label")
+                .dispatchEvent(
+                  new MouseEvent("mouseup", { bubbles: true }),
+                );
+              valueCasing.dispatchEvent(
+                new KeyboardEvent("keydown", { key: "Backspace", bubbles: true }),
+              );
+              await nextFrame();
+              expect(await el.selectedValue).to.eql(["Red", "Yellow"]);
+              expect(valueCasing.querySelector(".highlighted-value")).to.be
+                .null;
+            });
+
+            it("closes an open dropdown and keeps it closed after re-enabling", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select multi-select output-style="custom-html">
+                  <select slot="select-input">
+                    <option>Red</option>
+                    <option>Yellow</option>
+                    <option>Blue</option>
+                  </select>
+                </much-select>`,
+              );
+              await nextFrame();
+
+              el.shadowRoot.querySelector("#input-filter").focus();
+              await waitUntil(
+                () => el.shadowRoot.querySelector("#dropdown.showing") !== null,
+              );
+
+              el.setAttribute("disabled", "");
+              await waitUntil(
+                () => el.shadowRoot.querySelector("#value-casing.disabled") !== null,
+              );
+              expect(el.shadowRoot.querySelector("#dropdown")).to.be.null;
+
+              el.removeAttribute("disabled");
+              await waitUntil(
+                () => el.shadowRoot.querySelector("#value-casing.disabled") === null,
+              );
+              expect(el.shadowRoot.querySelector("#dropdown.showing")).to.be
+                .null;
             });
 
             it("disabled-options example should not allow selecting disabled options", async () => {

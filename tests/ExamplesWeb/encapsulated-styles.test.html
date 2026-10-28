@@ -145,6 +145,42 @@
               expect(getComputedStyle(option).backgroundColor).to.equal("rgb(7, 8, 9)");
             });
 
+            it("uses a default cursor over disabled multi-select values and casing", async () => {
+              const el = /** @type {ExampleMuchSelect} */ await fixture(
+                html`<demo-much-select
+                  multi-select
+                  output-style="custom-html"
+                  selected-value="Red,Blue"
+                >
+                  <select slot="select-input">
+                    <option>Red</option>
+                    <option>Blue</option>
+                  </select>
+                </demo-much-select>`,
+              );
+              await oneEvent(el, "muchSelectReady");
+              await waitForStylesheet(el);
+
+              const valueCasing = el.shadowRoot.getElementById("value-casing");
+              const pill = el.shadowRoot.querySelector(".value.selected-value");
+              const label = pill.querySelector(".selected-value-label");
+              const expectCursor = (cursor) => {
+                expect(getComputedStyle(valueCasing).cursor).to.equal(cursor);
+                expect(getComputedStyle(pill).cursor).to.equal(cursor);
+                expect(getComputedStyle(label).cursor).to.equal(cursor);
+              };
+
+              expectCursor("pointer");
+
+              el.setAttribute("disabled", "");
+              await waitUntil(() => valueCasing.classList.contains("disabled"));
+              expectCursor("default");
+
+              el.removeAttribute("disabled");
+              await waitUntil(() => !valueCasing.classList.contains("disabled"));
+              expectCursor("pointer");
+            });
+
             it("keeps dropdown messages distinct from disabled options", async () => {
               const el = /** @type {ExampleMuchSelect} */ await fixture(
                 html`<demo-much-select></demo-much-select>`,

@@ -79,7 +79,7 @@
 #value-casing.output-style-custom-html.disabled {
     border: 1px solid
         var(--much-select-disabled-border-color, var(--much-select-border-color, currentColor));
-    cursor: pointer;
+    cursor: default;
 }
 
 #value-casing.output-style-custom-html.single,

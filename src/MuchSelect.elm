@@ -2243,9 +2243,10 @@ singleSelectViewCustomHtml selectionConfig options searchString searchStringFind
         , valueCasingPartsAttribute selectionConfig hasErrors hasPendingValidation
 
         -- TODO On mouse down do something to provide a bit of feedback
-        , attributeIf (not (isFocused selectionConfig)) (onMouseDown NoOp)
+        , attributeIf (not (isFocused selectionConfig) && not (isDisabled selectionConfig)) (onMouseDown NoOp)
         , attributeIf (not (isFocused selectionConfig) && not (isDisabled selectionConfig)) (onMouseUp BringInputInFocus)
         , attributeIf (not (isFocused selectionConfig) && not (isDisabled selectionConfig)) (onFocus BringInputInFocus)
+        , attributeIf (isDisabled selectionConfig) (Html.Attributes.attribute "aria-disabled" "true")
         , tabIndexAttribute (isDisabled selectionConfig)
         , classList
             (valueCasingClassList selectionConfig hasOptionSelected False)
@@ -2326,38 +2327,44 @@ multiSelectViewCustomHtml selectionConfig options searchString searchStringFind 
         inputFilter =
             input
                 [ type_ "text"
-                , onBlur InputBlur
-                , onFocus InputFocus
-                , onInput UpdateSearchString
-                , onMouseDownStopPropagation NoOp
-                , onMouseUpStopPropagation NoOp
+                , attributeIf (not (isDisabled selectionConfig)) (onBlur InputBlur)
+                , attributeIf (not (isDisabled selectionConfig)) (onFocus InputFocus)
+                , attributeIf (not (isDisabled selectionConfig)) (onInput UpdateSearchString)
+                , attributeIf (not (isDisabled selectionConfig)) (onMouseDownStopPropagation NoOp)
+                , attributeIf (not (isDisabled selectionConfig)) (onMouseUpStopPropagation NoOp)
                 , value (SearchString.toString searchString)
                 , placeholderAttribute
                 , id "input-filter"
                 , PartAttribute.part "input-filter"
                 , disabled (isDisabled selectionConfig)
-                , Keyboard.on Keyboard.Keydown
-                    inputFilterKeyboardEvents
+                , attributeIf (not (isDisabled selectionConfig))
+                    (Keyboard.on Keyboard.Keydown inputFilterKeyboardEvents)
                 ]
                 []
     in
     div
         [ id "value-casing"
         , valueCasingPartsAttribute selectionConfig hasErrors hasPendingValidation
+        , attributeIf (isDisabled selectionConfig) (Html.Attributes.attribute "aria-disabled" "true")
 
         -- TODO On mouse down do something to provide a bit of feedback
-        , onMouseDown NoOp
-        , onMouseUp BringInputInFocus
-        , onFocus BringInputInFocus
-        , Keyboard.on Keyboard.Keydown
-            [ ( Delete, DeleteKeydownForMultiSelect )
-            , ( Backspace, DeleteKeydownForMultiSelect )
-            ]
+        , attributeIf (not (isDisabled selectionConfig)) (onMouseDown NoOp)
+        , attributeIf (not (isDisabled selectionConfig)) (onMouseUp BringInputInFocus)
+        , attributeIf (not (isDisabled selectionConfig)) (onFocus BringInputInFocus)
+        , attributeIf (not (isDisabled selectionConfig))
+            (Keyboard.on Keyboard.Keydown
+                [ ( Delete, DeleteKeydownForMultiSelect )
+                , ( Backspace, DeleteKeydownForMultiSelect )
+                ]
+            )
         , tabIndexAttribute (isDisabled selectionConfig)
         , classList
             (valueCasingClassList selectionConfig hasOptionSelected False)
         ]
-        (optionsToValuesHtml options (getSingleItemRemoval selectionConfig)
+        (optionsToValuesHtml
+            (isDisabled selectionConfig)
+            options
+            (getSingleItemRemoval selectionConfig)
             ++ [ inputFilter
                ]
         )
@@ -2402,6 +2409,7 @@ multiSelectViewDataset selectionConfig options rightSlot =
     div
         [ id "value-casing"
         , valueCasingPartsAttribute selectionConfig hasAnError hasPendingValidation
+        , attributeIf (isDisabled selectionConfig) (Html.Attributes.attribute "aria-disabled" "true")
         , classList
             (valueCasingClassList selectionConfig
                 hasOptionSelected
@@ -2630,6 +2638,7 @@ singleSelectViewDatalistHtml selectionConfig options =
     div
         [ id "value-casing"
         , valueCasingPartsAttribute selectionConfig hasAnError hasPendingValidation
+        , attributeIf (isDisabled selectionConfig) (Html.Attributes.attribute "aria-disabled" "true")
         , tabIndexAttribute (isDisabled selectionConfig)
         , classList
             (valueCasingClassList selectionConfig hasOptionSelected hasAnError)
@@ -3221,25 +3230,25 @@ slottedDropdown selectionConfig options (ValueCasing valueCasingWidth valueCasin
             (optionsHtml ++ [ dropdownFooterHtml ])
 
 
-optionsToValuesHtml : OptionList -> SingleItemRemoval -> List (Html Msg)
-optionsToValuesHtml options enableSingleItemRemoval =
+optionsToValuesHtml : Bool -> OptionList -> SingleItemRemoval -> List (Html Msg)
+optionsToValuesHtml isDisabled options enableSingleItemRemoval =
     options
         |> OptionList.selectedOptions
         |> OptionList.sortBy Option.getOptionSelectedIndex
-        |> OptionList.andMap (Html.Lazy.lazy2 optionToValueHtml enableSingleItemRemoval)
+        |> OptionList.andMap (Html.Lazy.lazy3 optionToValueHtml isDisabled enableSingleItemRemoval)
 
 
-optionToValueHtml : SingleItemRemoval -> Option -> Html Msg
-optionToValueHtml enableSingleItemRemoval option =
+optionToValueHtml : Bool -> SingleItemRemoval -> Option -> Html Msg
+optionToValueHtml isDisabled enableSingleItemRemoval option =
     case option of
         Option.FancyOption fancyOption ->
-            FancyOption.toMultiSelectValueHtml ToggleSelectedValueHighlight DeselectOptionInternal enableSingleItemRemoval fancyOption
+            FancyOption.toMultiSelectValueHtml isDisabled ToggleSelectedValueHighlight DeselectOptionInternal enableSingleItemRemoval fancyOption
 
         Option.DatalistOption _ ->
             text ""
 
         Option.SlottedOption slottedOption ->
-            SlottedOption.toValueHtml ToggleSelectedValueHighlight DeselectOptionInternal enableSingleItemRemoval slottedOption
+            SlottedOption.toValueHtml isDisabled ToggleSelectedValueHighlight DeselectOptionInternal enableSingleItemRemoval slottedOption
 
 
 defaultLoadingIndicator : Html msg

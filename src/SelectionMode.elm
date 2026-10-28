@@ -786,10 +786,14 @@ isDisabled selectionConfig =
 setIsDisabled : Bool -> SelectionConfig -> SelectionConfig
 setIsDisabled isDisabled_ selectionConfig =
     if isDisabled_ then
-        setInteractionState Disabled selectionConfig
+        selectionConfig
+            |> setShowDropdown False
+            |> setInteractionState Disabled
 
     else
-        setInteractionState Unfocused selectionConfig
+        selectionConfig
+            |> setShowDropdown False
+            |> setInteractionState Unfocused
 
 
 getInteractionState : SelectionConfig -> InteractionState

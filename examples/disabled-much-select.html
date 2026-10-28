@@ -1,6 +1,7 @@
 <div id="disabled-attribute">
   <h3>Disabled</h3>
   <p>Disable the <code>&lt;much-select&gt;</code> with the <code>disabled</code> attribute.</p>
+  <button type="button" id="disabled-attribute-toggle">Toggle disabled</button>
   <much-select disabled="disabled" multi-select selected-value="Red,Yellow">
     <select slot="select-input">
       <option>Red</option>
@@ -11,4 +12,14 @@
       <option>Purple</option>
     </select>
   </much-select>
+  <script>
+    const disabledToggle = document.querySelector("#disabled-attribute-toggle");
+    const disabledMuchSelect = document.querySelector(
+      "#disabled-attribute much-select",
+    );
+
+    disabledToggle.addEventListener("click", () => {
+      disabledMuchSelect.toggleAttribute("disabled");
+    });
+  </script>
 </div>

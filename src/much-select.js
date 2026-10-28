@@ -1702,6 +1702,21 @@ class MuchSelect extends HTMLElement {
         cursor: pointer;
       }
 
+      #value-casing.disabled,
+      #value-casing.output-style-custom-html.disabled {
+        color: rgb(128, 128, 128);
+        cursor: default;
+        opacity: 0.65;
+      }
+
+      #value-casing.output-style-custom-html.disabled {
+        border-color: rgb(128, 128, 128);
+      }
+
+      #value-casing.output-style-custom-html.multi.disabled .value {
+        border-color: rgb(128, 128, 128);
+      }
+
       #value-casing.output-style-custom-html #input-filter {
         flex-grow: 3;
         flex-shrink: 0;

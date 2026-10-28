@@ -4,6 +4,7 @@ import DropdownItemEventListeners exposing (DropdownItemEventListeners)
 import Events exposing (mouseDownPreventDefault, mouseUpPreventDefault, onClickPreventDefault, onClickPreventDefaultAndStopPropagation, onMouseUpStopPropagationAndPreventDefault)
 import Html exposing (Html, div, span, text)
 import Html.Attributes exposing (class, classList, id)
+import Html.Attributes.Extra exposing (attributeIf)
 import Html.Events exposing (onMouseEnter, onMouseLeave)
 import Html.Extra
 import Json.Decode
@@ -605,23 +606,27 @@ toSingleSelectValueNoValueSelected =
     Html.Extra.nothing
 
 
-toMultiSelectValueHtml : (OptionValue -> msg) -> (OptionValue -> msg) -> SingleItemRemoval -> FancyOption -> Html msg
-toMultiSelectValueHtml toggleSelectedMsg deselectOptionInternal enableSingleItemRemoval fancyOption =
+toMultiSelectValueHtml : Bool -> (OptionValue -> msg) -> (OptionValue -> msg) -> SingleItemRemoval -> FancyOption -> Html msg
+toMultiSelectValueHtml isDisabled toggleSelectedMsg deselectOptionInternal enableSingleItemRemoval fancyOption =
     let
         removalHtml optionValue =
-            case enableSingleItemRemoval of
-                EnableSingleItemRemoval ->
-                    span
-                        [ -- This has to be on mouse up because if we listen for click events then
-                          --  the input field will get under the mouse and trigger a focus event.
-                          onMouseUpStopPropagationAndPreventDefault <| deselectOptionInternal optionValue
-                        , class "remove-option"
-                        , PartAttribute.part "remove-option"
-                        ]
-                        [ text "" ]
+            if isDisabled then
+                text ""
 
-                DisableSingleItemRemoval ->
-                    text ""
+            else
+                case enableSingleItemRemoval of
+                    EnableSingleItemRemoval ->
+                        span
+                            [ -- This has to be on mouse up because if we listen for click events then
+                              --  the input field will get under the mouse and trigger a focus event.
+                              onMouseUpStopPropagationAndPreventDefault <| deselectOptionInternal optionValue
+                            , class "remove-option"
+                            , PartAttribute.part "remove-option"
+                            ]
+                            [ text "" ]
+
+                    DisableSingleItemRemoval ->
+                        text ""
     in
     case fancyOption of
         FancyOption optionDisplay optionLabel optionValue _ _ _ _ ->
@@ -639,6 +644,7 @@ toMultiSelectValueHtml toggleSelectedMsg deselectOptionInternal enableSingleItem
                         , OptionPart.toSelectedValueAttribute False (getOptionPart fancyOption)
                         ]
                         [ valueLabelHtml
+                            isDisabled
                             toggleSelectedMsg
                             (OptionLabel.getLabelString optionLabel)
                             optionValue
@@ -660,7 +666,7 @@ toMultiSelectValueHtml toggleSelectedMsg deselectOptionInternal enableSingleItem
                             ]
                         , OptionPart.toSelectedValueAttribute True (getOptionPart fancyOption)
                         ]
-                        [ valueLabelHtml toggleSelectedMsg (OptionLabel.getLabelString optionLabel) optionValue, removalHtml optionValue ]
+                        [ valueLabelHtml isDisabled toggleSelectedMsg (OptionLabel.getLabelString optionLabel) optionValue, removalHtml optionValue ]
 
                 OptionHighlighted ->
                     Html.Extra.nothing
@@ -682,7 +688,7 @@ toMultiSelectValueHtml toggleSelectedMsg deselectOptionInternal enableSingleItem
                         [ class "value"
                         , OptionPart.toDropdownAttribute (getOptionDisplay fancyOption) (getOptionPart fancyOption)
                         ]
-                        [ valueLabelHtml toggleSelectedMsg (OptionLabel.getLabelString optionLabel) optionValue, removalHtml optionValue ]
+                        [ valueLabelHtml isDisabled toggleSelectedMsg (OptionLabel.getLabelString optionLabel) optionValue, removalHtml optionValue ]
 
                 OptionSelectedAndInvalid _ _ ->
                     Html.Extra.nothing
@@ -698,7 +704,7 @@ toMultiSelectValueHtml toggleSelectedMsg deselectOptionInternal enableSingleItem
                             ]
                         , OptionPart.toDropdownAttribute (getOptionDisplay fancyOption) (getOptionPart fancyOption)
                         ]
-                        [ valueLabelHtml toggleSelectedMsg (OptionLabel.getLabelString optionLabel) optionValue, removalHtml optionValue ]
+                        [ valueLabelHtml isDisabled toggleSelectedMsg (OptionLabel.getLabelString optionLabel) optionValue, removalHtml optionValue ]
 
                 OptionHighlighted ->
                     Html.Extra.nothing
@@ -741,13 +747,12 @@ toMultiSelectValueHtml toggleSelectedMsg deselectOptionInternal enableSingleItem
                     Html.Extra.nothing
 
 
-valueLabelHtml : (OptionValue -> msg) -> String -> OptionValue -> Html msg
-valueLabelHtml toggleSelectedMsg labelText optionValue =
+valueLabelHtml : Bool -> (OptionValue -> msg) -> String -> OptionValue -> Html msg
+valueLabelHtml isDisabled toggleSelectedMsg labelText optionValue =
     span
         [ class "selected-value-label"
         , PartAttribute.part "selected-value-label"
-        , mouseUpPreventDefault
-            (toggleSelectedMsg optionValue)
+        , attributeIf (not isDisabled) (mouseUpPreventDefault (toggleSelectedMsg optionValue))
         ]
         [ text labelText ]
 
