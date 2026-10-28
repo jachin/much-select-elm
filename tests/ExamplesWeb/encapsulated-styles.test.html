@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <script type="module">
+      import { runTests } from "@web/test-runner-mocha";
+      import { emulateMedia } from "@web/test-runner-commands";
+      import { expect } from "@esm-bundle/chai";
+      import { html, fixture, oneEvent, waitUntil } from "@open-wc/testing";
+
+      import MuchSelect from "../../dist/much-select-debug.js";
+
+      const siteModuleUrl = new URL("../../site/index.js", import.meta.url);
+      const exampleStylesheetUrl = new URL(
+        "./much-select-example.css",
+        siteModuleUrl,
+      ).href;
+
+      if (!customElements.get("much-select")) {
+        window.customElements.define("much-select", MuchSelect);
+      }
+
+      class ExampleMuchSelect extends MuchSelect {
+        get styleTag() {
+          return `${super.styleTag}<link rel="stylesheet" href="${exampleStylesheetUrl}">`;
+        }
+      }
+
+      customElements.define("demo-much-select", ExampleMuchSelect);
+
+      const waitForStylesheet = async (el) => {
+        const stylesheet = el.shadowRoot.querySelector(
+          'link[rel="stylesheet"]',
+        );
+        await waitUntil(() => Boolean(stylesheet?.sheet));
+        return stylesheet;
+      };
+
+      runTests(() => {
+        describe("ExamplesWeb", () => {
+          describe("encapsulated-styles", () => {
+            it("loads one shared stylesheet for an initial example instance", async () => {
+              const el = /** @type {ExampleMuchSelect} */ await fixture(
+                html`<demo-much-select>
+                  <select slot="select-input">
+                    <option>Red</option>
+                    <option>Blue</option>
+                  </select>
+                </demo-much-select>`,
+              );
+              await oneEvent(el, "muchSelectReady");
+
+              const stylesheet = await waitForStylesheet(el);
+
+              expect(
+                el.shadowRoot.querySelectorAll('link[rel="stylesheet"]').length,
+              ).to.equal(1);
+              expect(stylesheet.href).to.equal(exampleStylesheetUrl);
+            });
+
+            it("loads the shared stylesheet for dynamically created instances", async () => {
+              const el = document.createElement("demo-much-select");
+              const ready = oneEvent(el, "muchSelectReady");
+              document.body.append(el);
+              await ready;
+
+              const stylesheet = await waitForStylesheet(el);
+
+              expect(
+                el.shadowRoot.querySelectorAll('link[rel="stylesheet"]').length,
+              ).to.equal(1);
+              expect(stylesheet.href).to.equal(exampleStylesheetUrl);
+              el.remove();
+            });
+
+            it("does not add the example stylesheet to a plain library instance", async () => {
+              const el = /** @type {MuchSelect} */ await fixture(
+                html`<much-select>
+                  <select slot="select-input">
+                    <option>Red</option>
+                    <option>Blue</option>
+                  </select>
+                </much-select>`,
+              );
+              await oneEvent(el, "muchSelectReady");
+
+              expect(
+                el.shadowRoot.querySelector(
+                  `link[href="${exampleStylesheetUrl}"]`,
+                ),
+              ).to.be.null;
+            });
+
+            it("updates internal styles from inherited variables without recreating the component", async () => {
+              const el = /** @type {ExampleMuchSelect} */ await fixture(
+                html`<demo-much-select>
+                  <select slot="select-input">
+                    <option>Red</option>
+                    <option>Blue</option>
+                  </select>
+                </demo-much-select>`,
+              );
+              await oneEvent(el, "muchSelectReady");
+              await waitForStylesheet(el);
+
+              const shadowRoot = el.shadowRoot;
+              const valueCasing = shadowRoot.getElementById("value-casing");
+              el.style.setProperty("--much-select-background-color", "rgb(12, 34, 56)");
+
+              expect(getComputedStyle(valueCasing).backgroundColor).to.equal(
+                "rgb(12, 34, 56)",
+              );
+              expect(el.shadowRoot).to.equal(shadowRoot);
+            });
+
+            it("styles multi-select pills and dropdown options through internal classes", async () => {
+              const el = /** @type {ExampleMuchSelect} */ await fixture(
+                html`<demo-much-select multi-select selected-value="Blue,Red">
+                  <select slot="select-input">
+                    <option>Red</option>
+                    <option>Blue</option>
+                    <option>Green</option>
+                  </select>
+                </demo-much-select>`,
+              );
+              await oneEvent(el, "muchSelectReady");
+              await waitForStylesheet(el);
+              el.style.setProperty(
+                "--much-select-example-selected-value-border-color",
+                "rgb(4, 5, 6)",
+              );
+              el.style.setProperty(
+                "--much-select-dropdown-option-background-color",
+                "rgb(7, 8, 9)",
+              );
+
+              const pill = el.shadowRoot.querySelector(".value.selected-value");
+              expect(getComputedStyle(pill).borderTopColor).to.equal("rgb(4, 5, 6)");
+              expect(getComputedStyle(pill).borderTopStyle).to.equal("solid");
+              expect(getComputedStyle(pill).paddingTop).to.equal("0px");
+
+              const input = el.shadowRoot.getElementById("input-filter");
+              input.focus();
+              await waitUntil(() => el.shadowRoot.querySelector("#dropdown .option"));
+              const option = el.shadowRoot.querySelector("#dropdown .option");
+              expect(getComputedStyle(option).backgroundColor).to.equal("rgb(7, 8, 9)");
+            });
+
+            it("keeps dropdown messages distinct from disabled options", async () => {
+              const el = /** @type {ExampleMuchSelect} */ await fixture(
+                html`<demo-much-select></demo-much-select>`,
+              );
+              await oneEvent(el, "muchSelectReady");
+              await waitForStylesheet(el);
+              el.style.setProperty(
+                "--much-select-dropdown-option-background-color",
+                "rgb(7, 8, 9)",
+              );
+              el.style.setProperty(
+                "--much-select-dropdown-option-color",
+                "rgb(10, 11, 12)",
+              );
+
+              const message = el.shadowRoot.querySelector("#dropdown .dropdown-message");
+              expect(getComputedStyle(message).backgroundColor).to.equal(
+                "rgba(0, 0, 0, 0)",
+              );
+              expect(getComputedStyle(message).color).to.equal("rgb(128, 128, 128)");
+            });
+
+            it("keeps external part overrides effective", async () => {
+              const el = /** @type {ExampleMuchSelect} */ await fixture(
+                html`<demo-much-select>
+                  <select slot="select-input">
+                    <option>Red</option>
+                    <option>Blue</option>
+                  </select>
+                </demo-much-select>`,
+              );
+              await oneEvent(el, "muchSelectReady");
+              await waitForStylesheet(el);
+
+              const override = document.createElement("style");
+              override.textContent = `
+                demo-much-select::part(value-casing) {
+                  border-color: rgb(21, 22, 23);
+                }
+              `;
+              document.head.append(override);
+
+              try {
+                const valueCasing = el.shadowRoot.getElementById("value-casing");
+                expect(getComputedStyle(valueCasing).borderTopColor).to.equal(
+                  "rgb(21, 22, 23)",
+                );
+              } finally {
+                override.remove();
+              }
+            });
+
+            it("preserves the example themes across light and dark color schemes", async () => {
+              const siteStylesheet = document.createElement("link");
+              siteStylesheet.rel = "stylesheet";
+              siteStylesheet.href = new URL(
+                "../../site/demo-styles.css",
+                import.meta.url,
+              ).href;
+              document.head.append(siteStylesheet);
+
+              const fixtureRoot = await fixture(html`
+                <div>
+                  <input id="theme-switch-boring" type="radio" name="theme" checked />
+                  <input id="theme-switch-fun" type="radio" name="theme" />
+                  <div id="page-wrapper">
+                    <demo-much-select id="theme-single" selected-value="Blue">
+                      <select slot="select-input">
+                        <option>Red</option>
+                        <option>Blue</option>
+                        <option>Green</option>
+                      </select>
+                    </demo-much-select>
+                    <demo-much-select
+                      id="theme-multi"
+                      multi-select
+                      selected-value="Red,Blue"
+                    >
+                      <select slot="select-input">
+                        <option>Red</option>
+                        <option>Blue</option>
+                        <option>Green</option>
+                      </select>
+                    </demo-much-select>
+                    <demo-much-select id="theme-datalist" output-style="datalist">
+                      <select slot="select-input">
+                        <option>Red</option>
+                        <option>Blue</option>
+                      </select>
+                    </demo-much-select>
+                    <demo-much-select id="theme-disabled" disabled>
+                      <select slot="select-input">
+                        <option>Red</option>
+                        <option>Blue</option>
+                      </select>
+                    </demo-much-select>
+                    <demo-much-select id="theme-error">
+                      <select slot="select-input">
+                        <option>Red</option>
+                        <option>Blue</option>
+                      </select>
+                    </demo-much-select>
+                    <demo-much-select id="theme-slotted">
+                      <span slot="no-options" id="theme-no-options">No options</span>
+                    </demo-much-select>
+                  </div>
+                </div>
+              `);
+
+              try {
+                await waitUntil(() => Boolean(siteStylesheet.sheet));
+                const themeBoring = fixtureRoot.querySelector("#theme-switch-boring");
+                const themeFun = fixtureRoot.querySelector("#theme-switch-fun");
+                const pageWrapper = fixtureRoot.querySelector("#page-wrapper");
+                const single = pageWrapper.querySelector("#theme-single");
+                const multi = pageWrapper.querySelector("#theme-multi");
+                const datalist = pageWrapper.querySelector("#theme-datalist");
+                const disabled = pageWrapper.querySelector("#theme-disabled");
+                const error = pageWrapper.querySelector("#theme-error");
+                const slotted = pageWrapper.querySelector("#theme-slotted");
+
+                await Promise.all(
+                  [single, multi, datalist, disabled, error, slotted].map((el) =>
+                    oneEvent(el, "muchSelectReady"),
+                  ),
+                );
+                await Promise.all(
+                  [single, multi, datalist, disabled, error, slotted].map(
+                    waitForStylesheet,
+                  ),
+                );
+
+                const errorCasing = error.shadowRoot.getElementById("value-casing");
+                errorCasing.classList.add("error");
+                const errorMessage = document.createElement("div");
+                errorMessage.className = "error-message";
+                const errorList = document.createElement("ul");
+                const errorItem = document.createElement("li");
+                errorItem.textContent = "Theme matrix validation";
+                errorList.append(errorItem);
+                errorMessage.append(errorList);
+                error.shadowRoot.getElementById("wrapper").append(errorMessage);
+                const expectedErrorColor = document.createElement("span");
+                expectedErrorColor.style.color = "var(--much-select-error-color)";
+                pageWrapper.append(expectedErrorColor);
+                const expectedErrorBorder = document.createElement("span");
+                expectedErrorBorder.style.color = "var(--much-select-error-border-color)";
+                pageWrapper.append(expectedErrorBorder);
+
+                const themes = [
+                  {
+                    colorScheme: "light",
+                    name: "boring",
+                    background: "rgb(245, 246, 250)",
+                    focusBorder: "rgb(127, 143, 166)",
+                  },
+                  {
+                    colorScheme: "light",
+                    name: "fun",
+                    background: "rgb(210, 218, 226)",
+                    focusBorder: "rgb(255, 63, 52)",
+                  },
+                  {
+                    colorScheme: "dark",
+                    name: "boring",
+                    background: "rgb(47, 54, 64)",
+                    focusBorder: "rgb(127, 143, 166)",
+                  },
+                  {
+                    colorScheme: "dark",
+                    name: "fun",
+                    background: "rgb(72, 84, 96)",
+                    focusBorder: "rgb(245, 59, 87)",
+                  },
+                ];
+
+                for (const theme of themes) {
+                  await emulateMedia({ colorScheme: theme.colorScheme });
+                  themeBoring.checked = theme.name === "boring";
+                  themeFun.checked = theme.name === "fun";
+
+                  const valueCasing = single.shadowRoot.getElementById("value-casing");
+                  await waitUntil(
+                    () => getComputedStyle(valueCasing).backgroundColor === theme.background,
+                  );
+                  expect(getComputedStyle(valueCasing).backgroundColor).to.equal(
+                    theme.background,
+                  );
+
+                  valueCasing.focus();
+                  expect(getComputedStyle(valueCasing).borderTopColor).to.equal(
+                    theme.focusBorder,
+                  );
+
+                  const pill = multi.shadowRoot.querySelector(".value.selected-value");
+                  expect(getComputedStyle(pill).borderTopColor).to.equal(
+                    "rgb(156, 136, 255)",
+                  );
+                  expect(
+                    datalist.shadowRoot.querySelector("#value-casing.output-style-datalist"),
+                  ).to.exist;
+                  expect(
+                    disabled.shadowRoot
+                      .getElementById("value-casing")
+                      .classList.contains("disabled"),
+                  ).to.equal(true);
+                  expect(error.shadowRoot.querySelector("#wrapper .error-message li")).to
+                    .exist;
+                  expect(getComputedStyle(errorCasing).borderTopColor).to.equal(
+                    getComputedStyle(expectedErrorBorder).color,
+                  );
+                  expect(getComputedStyle(errorItem).color).to.equal(
+                    getComputedStyle(expectedErrorColor).color,
+                  );
+                  expect(
+                    slotted.querySelector('[slot="no-options"]').assignedSlot.name,
+                  ).to.equal("no-options");
+
+                  const input = single.shadowRoot.getElementById("input-filter");
+                  input.focus();
+                  await waitUntil(() => single.shadowRoot.querySelector("#dropdown .option"));
+                  expect(
+                    getComputedStyle(single.shadowRoot.querySelector("#dropdown .option"))
+                      .backgroundColor,
+                  ).to.not.equal("");
+                }
+              } finally {
+                await emulateMedia({ colorScheme: "light" });
+                siteStylesheet.remove();
+              }
+            });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

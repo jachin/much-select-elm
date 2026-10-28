@@ -103,6 +103,14 @@ body {
         --example-border-color: var(--blueberry-soda);
         --example-border-shadow-color: var(--mazarine-blue);
 
+        --much-select-example-form-font: var(--form-font, system-ui);
+        --much-select-example-value-font-size: var(--value-font-size, 1em);
+        --much-select-example-text-color: var(--text-color, currentColor);
+        --much-select-example-focus-border-color: var(--example-border-color, var(--much-select-border-color, currentColor));
+        --much-select-example-value-casing-inset-shadow: 1px 1px 1px 0 lightgray inset;
+        --much-select-example-selected-value-border-color: var(--periwinkle, var(--much-select-border-color, currentColor));
+        --much-select-example-highlighted-value-background-image: linear-gradient(to bottom, var(--nanohanacha-gold, #e1b12c), var(--rise-n-shine, #fbc531));
+
         /* Much Select Value */
         --much-select-background-color: var(--lynx-white);
         --much-select-value-casing-background-image: linear-gradient(to bottom, #fefefe, #f2f2f2);
@@ -152,6 +160,14 @@ body {
         --example-background-color: var(--yriel-yellow);
         --example-border-color: var(--red-orange);
         --example-border-shadow-color: var(--sunset-orange);
+
+        --much-select-example-form-font: var(--form-font, system-ui);
+        --much-select-example-value-font-size: var(--value-font-size, 1em);
+        --much-select-example-text-color: var(--text-color, currentColor);
+        --much-select-example-focus-border-color: var(--example-border-color, var(--much-select-border-color, currentColor));
+        --much-select-example-value-casing-inset-shadow: 1px 1px 1px 0 lightgray inset;
+        --much-select-example-selected-value-border-color: var(--periwinkle, var(--much-select-border-color, currentColor));
+        --much-select-example-highlighted-value-background-image: linear-gradient(to bottom, var(--nanohanacha-gold, #e1b12c), var(--rise-n-shine, #fbc531));
 
         /* Much Select Value */
         --much-select-background-color: var(--hint-of-elusive-blue);
@@ -214,6 +230,14 @@ body {
         --example-border-color: var(--blueberry-soda);
         --example-border-shadow-color: var(--chain-gang-grey);
 
+        --much-select-example-form-font: var(--form-font, system-ui);
+        --much-select-example-value-font-size: var(--value-font-size, 1em);
+        --much-select-example-text-color: var(--text-color, currentColor);
+        --much-select-example-focus-border-color: var(--example-border-color, var(--much-select-border-color, currentColor));
+        --much-select-example-value-casing-inset-shadow: 1px 1px 1px 0 lightgray inset;
+        --much-select-example-selected-value-border-color: var(--periwinkle, var(--much-select-border-color, currentColor));
+        --much-select-example-highlighted-value-background-image: linear-gradient(to bottom, var(--nanohanacha-gold, #e1b12c), var(--rise-n-shine, #fbc531));
+
         --much-select-background-color: var(--electromagnetic);
         --much-select-value-casing-background-image: linear-gradient(to bottom, var(--electromagnetic), var(--pico-void));
         --much-select-border-color: var(--matt-purple);
@@ -268,6 +292,14 @@ body {
         --example-background-color: var(--dark-periwinkle);
         --example-border-color: var(--sizeling-red);
         --example-border-shadow-color: var(--highligher-pink);
+
+        --much-select-example-form-font: var(--form-font, system-ui);
+        --much-select-example-value-font-size: var(--value-font-size, 1em);
+        --much-select-example-text-color: var(--text-color, currentColor);
+        --much-select-example-focus-border-color: var(--example-border-color, var(--much-select-border-color, currentColor));
+        --much-select-example-value-casing-inset-shadow: 1px 1px 1px 0 lightgray inset;
+        --much-select-example-selected-value-border-color: var(--periwinkle, var(--much-select-border-color, currentColor));
+        --much-select-example-highlighted-value-background-image: linear-gradient(to bottom, var(--nanohanacha-gold, #e1b12c), var(--rise-n-shine, #fbc531));
 
         --much-select-background-color: var(--good-night);
         --much-select-value-casing-background-image: linear-gradient(to bottom, var(--good-night), var(--black-pearl));
@@ -486,333 +518,6 @@ much-select {
 
 button {
     font-family: var(--form-font), sans-serif;
-}
-
-
-much-select::part(wrapper) {
-    font-family: var(--form-font), sans-serif;
-    margin-top: auto;
-    margin-bottom: auto;
-    position: relative;
-}
-
-
-much-select::part(input-wrapper) {
-    display: flex;
-}
-
-much-select::part(value-casing) {
-    display: flex;
-    flex-flow: column;
-    min-height: var(--much-select-height);
-}
-
-much-select::part(value-casing output-style-custom-html) {
-    background-color: var(--much-select-background-color);
-    box-shadow: 1px 1px 1px 0 lightgray inset;
-    padding: 0.1em 2em 0.1em 10px;
-    flex-flow: row;
-    cursor: pointer;
-    border: 1px solid var(--much-select-border-color);
-}
-
-much-select::part(value-casing output-style-custom-html error) {
-    border: 1px solid var(--much-select-error-border-color);
-}
-
-much-select::part(value-casing output-style-custom-html multi) {
-    flex-flow: row wrap;
-}
-
-much-select::part(value-casing output-style-datalist) {
-    flex-flow: column;
-    cursor: pointer;
-}
-
-much-select::part(right-slot-for-all-values-wrapper) {
-    position: absolute;
-    right: 0;
-    width: 2.1rem;
-    top: 0;
-    bottom: 0;
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    justify-content: center;
-    border-left: 2px dotted var(--much-select-border-color);
-}
-
-much-select::part(input-value) {
-    min-height: var(--much-select-height);
-    width: 100%;
-}
-
-much-select::part(invalid-input-value) {
-    background-color: var(--much-select-error-background-color);
-}
-
-much-select::part(value-casing output-style-datalist error) {
-    border: none;
-}
-
-much-select::part(value-casing output-style-custom-html):hover {
-    outline: none;
-    border-color: var(--much-select-hover-border-color);
-}
-
-much-select::part(value-casing output-style-custom-html):focus {
-    outline: none;
-    border-color: var(--example-border-color);
-}
-
-much-select::part(value-casing output-style-custom-html disabled) {
-    border: 1px solid var(--much-select-disabled-border-color);
-    cursor: pointer;
-}
-
-much-select::part(value-casing output-style-custom-html single) {
-    background-image: var(--much-select-value-casing-background-image);
-    background-repeat: repeat-x;
-}
-
-much-select::part(value-casing output-style-custom-html multi) {
-    background-image: var(--much-select-value-casing-background-image);
-    background-repeat: repeat-x;
-}
-
-much-select::part(value-casing single disabled) {
-    background-image: none;
-    background-color: var(--much-select-disabled-background-color);
-}
-
-much-select::part(input-filter) {
-    /*
-    TODO, seems like the height and font-size should not be hardcoded.
-    */
-    height: 36px;
-    font-size: var(--value-font-size);
-    color: var(--text-color);
-    /* The min-width let's the input shrink down as far as it needs to.
-    The with width lets it grow as much as it can.
-    */
-    min-width: 10px;
-    /* Let's give the input a bit more room than the selected values.
-    */
-    flex-grow: 3;
-    flex-shrink: 0;
-    flex-basis: 10%;
-
-    /* We don't want a border because the value-casing will supply the border for
-      this input.
-    */
-
-
-    /*
-    We do not want an outline on the input (filter) because we want everything
-    inside of the #value-casing to (kinda) act like a text input.
-    */
-    outline: none;
-    background: none;
-    margin: 0;
-
-    /* Keep input filter's text from running over the dropdown indicator. */
-    padding: 0 0.8em 0 0;
-
-}
-
-much-select::part(input-filter):hover, much-select::part(input-filter):focus {
-    /*
-        We do not want an outline on the input (filter) because we want everything
-        inside of the #value-casing to (kinda) act like a text input.
-    */
-    outline: none;
-    background: var(--much-select-background-color);
-}
-
-much-select::part(input-filter):hover, much-select::part(input-filter):focus {
-    /*
-        Removing the default background color on the disabled input.
-        We might want to do some additional styling for "disabled"
-        much-selects but that should probably happen on the value-casing
-        div.
-        */
-    background: none;
-}
-
-much-select::part(input-filter):hover, much-select::part(input-filter):focus {
-    /*
-        Removing the default background color on the disabled input.
-        We might want to do some additional styling for "disabled"
-        much-selects but that should probably happen on the value-casing
-        div.
-        */
-    background: none;
-}
-
-much-select[multi-select]::part(selected-value) {
-    color: var(--much-select-multi-select-selected-value-color);
-    background-image: var(--much-select-multi-select-selected-value-background-image);
-    background-repeat: repeat-x;
-    margin: 0.1rem 0.25rem 0.1rem 0;
-    border-radius: 0.3rem;
-    border: 0.1rem solid var(--periwinkle);
-    min-width: 0.5rem;
-    min-height: 2rem;
-    flex-grow: 0;
-    flex-shrink: 1;
-    flex-basis: auto;
-
-    /* Make sure the label is always vertically centered */
-    display: flex;
-    align-items: center;
-
-    /* Add a little space between the border and the label */
-    padding-left: 0.25em;
-    padding-right: 0.25em;
-}
-
-much-select::part(selected-value) {
-    font-size: 14px;
-    text-align: center;
-    display: flex;
-    justify-content: center;
-    padding: 0;
-    margin-right: 0.1em;
-    margin-left: 0.2em;
-    margin-top: 0.7em;
-}
-
-much-select[multi-select]::part(selected-value highlighted-value) {
-    background-image: linear-gradient(to bottom, var(--nanohanacha-gold), var(--rise-n-shine));
-    background-repeat: repeat-x;
-}
-
-much-select[multi-select]::part(selected-value-label) {
-    /** Vertically center the text in the middle of the selected value "pill". **/
-    padding-top: 0.09rem;
-}
-
-much-select[multi-select]::part(remove-option)::after {
-    border-left: 1px dotted var(--much-select-border-color)
-}
-
-much-select::part(dropdown-indicator) {
-    cursor: pointer;
-    transition: transform 0.25s;
-}
-
-much-select::part(dropdown-indicator up) {
-    transform: rotate(270deg);
-}
-
-much-select::part(dropdown-indicator down) {
-    transform: rotate(90deg);
-}
-
-much-select::part(clear-button-wrapper) {
-    cursor: pointer;
-    box-sizing: content-box;
-    padding: 0.3em 0.5em;
-    border-width: 0.2em;
-    border-style: solid;
-    border-color: transparent;
-}
-
-much-select::part(clear-button-wrapper):hover {
-    border-color: var(--much-select-clear-button-border-color);
-}
-
-much-select::part(dropdown) {
-    margin-top: 0.2rem;
-    border-radius: 0.3rem;
-    border-width: 0.1rem;
-    border-color: var(--much-select-border-color);
-    border-style: solid;
-    max-height: 300px;
-    font-family: var(--form-font), sans-serif;
-}
-
-much-select::part(dropdown-optgroup) {
-    color: var(--much-select-dropdown-optgroup-color);
-    background-color: var(--much-select-dropdown-optgroup-background-color);
-    font-size: 0.85rem;
-    font-weight: 300;
-    font-family: var(--form-font), sans-serif;
-    padding: 0.2rem;
-}
-
-much-select::part(dropdown-option) {
-    background-color: var(--much-select-dropdown-option-background-color);
-    color: var(--much-select-dropdown-option-color);
-    font-family: var(--form-font), sans-serif;
-    padding: 0.5rem;
-    cursor: pointer;
-    font-size: var(--value-font-size);
-
-    /** Throw in a min height so options without labels are not
-     so short but take up the same vertical space as options with
-     labels
-     **/
-    min-height: 1.2rem;
-}
-
-much-select::part(dropdown-option selected) {
-    background-color: var(--much-select-dropdown-option-selected-background-color);
-    color: var(--much-select-dropdown-option-color-inverse);
-    cursor: pointer;
-}
-
-much-select::part(dropdown-option highlighted) {
-    background-color: var(--much-select-dropdown-option-highlighted-background-color);
-    color: var(--much-select-dropdown-option-color-inverse);
-}
-
-much-select::part(dropdown-option active) {
-    background-color: var(--much-select-dropdown-option-active-background-color);
-    color: var(--much-select-dropdown-option-color-inverse);
-    cursor: pointer;
-}
-
-much-select::part(dropdown-option disabled) {
-    background-color: var(--much-select-dropdown-option-disabled-background-color);
-    color: var(--much-select-dropdown-option-disabled-font-color);
-    cursor: default;
-}
-
-much-select::part(dropdown-message) {
-    /**
-    The idea with this is that, these are not option's but they show up where
-    you'd see options. For example telling you why there are no options.
-    **/
-    min-height: 1.2rem;
-    padding: 0.2rem;
-    cursor: default;
-}
-
-much-select::part(dropdown-option-description) {
-    font-size: 0.85rem;
-    padding: 0.2rem;
-}
-
-much-select::part(dropdown-footer) {
-    font-size: 50%;
-    text-align: center;
-    color: var(--much-select-dropdown-footer-color);
-    background-color: var(--much-select-dropdown-footer-background-color);
-    padding: 0.2rem;
-}
-
-much-select::part(error-message-list) {
-    margin: 0 0 0.4rem 0;
-    padding: 0;
-    cursor: default;
-}
-
-much-select::part(error-message) {
-    font-size: var(--much-select-error-size);
-    margin: 0.1rem 0 0 0;
-    padding: 0;
-    color: var(--much-select-error-color);
 }
 
 

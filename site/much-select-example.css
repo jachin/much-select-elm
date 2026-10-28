@@ -1,0 +1,268 @@
+#wrapper {
+    font-family: var(--much-select-example-form-font, sans-serif);
+}
+
+.input-wrapper {
+    display: flex;
+}
+
+#value-casing {
+    flex-flow: column;
+    min-height: var(--much-select-height, 2.5em);
+}
+
+#value-casing.output-style-custom-html {
+    background-color: var(--much-select-background-color, #fff);
+    box-shadow: var(
+        --much-select-example-value-casing-inset-shadow,
+        1px 1px 1px 0 lightgray inset
+    );
+    padding: 0.1em 2em 0.1em 10px;
+    flex-flow: row;
+    cursor: pointer;
+    border: 1px solid var(--much-select-border-color, currentColor);
+}
+
+#value-casing.output-style-custom-html.error {
+    border: 1px solid
+        var(--much-select-error-border-color, var(--much-select-border-color, currentColor));
+}
+
+#value-casing.output-style-custom-html.multi {
+    flex-flow: row wrap;
+}
+
+#value-casing.output-style-datalist {
+    flex-flow: column;
+    cursor: pointer;
+}
+
+#right-slot-for-all-values-wrapper {
+    position: absolute;
+    right: 0;
+    width: 2.1rem;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    border-left: 2px dotted var(--much-select-border-color, currentColor);
+}
+
+#value-casing.output-style-datalist input {
+    min-height: var(--much-select-height, 2.5em);
+    width: 100%;
+}
+
+#value-casing.output-style-datalist input.invalid {
+    background-color: var(--much-select-error-background-color, transparent);
+}
+
+#value-casing.output-style-datalist.error {
+    border: none;
+}
+
+#value-casing.output-style-custom-html:hover {
+    outline: none;
+    border-color: var(--much-select-hover-border-color, var(--much-select-border-color, currentColor));
+}
+
+#value-casing.output-style-custom-html:focus {
+    outline: none;
+    border-color: var(
+        --much-select-example-focus-border-color,
+        var(--much-select-border-color, currentColor)
+    );
+}
+
+#value-casing.output-style-custom-html.disabled {
+    border: 1px solid
+        var(--much-select-disabled-border-color, var(--much-select-border-color, currentColor));
+    cursor: pointer;
+}
+
+#value-casing.output-style-custom-html.single,
+#value-casing.output-style-custom-html.multi {
+    background-image: var(--much-select-value-casing-background-image, none);
+    background-repeat: repeat-x;
+}
+
+#value-casing.single.disabled {
+    background-image: none;
+    background-color: var(
+        --much-select-disabled-background-color,
+        var(--much-select-background-color, transparent)
+    );
+}
+
+#value-casing.output-style-custom-html #input-filter {
+    height: 36px;
+    font-size: var(--much-select-example-value-font-size, 1em);
+    color: var(--much-select-example-text-color, currentColor);
+    min-width: 10px;
+    flex-grow: 3;
+    flex-shrink: 0;
+    flex-basis: 10%;
+    outline: none;
+    background: none;
+    margin: 0;
+    padding: 0 0.8em 0 0;
+}
+
+#value-casing.output-style-custom-html #input-filter:hover,
+#value-casing.output-style-custom-html #input-filter:focus {
+    outline: none;
+    background: none;
+}
+
+#selected-value,
+#value-casing.output-style-custom-html.multi .value.selected-value {
+    font-size: 14px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    padding: 0;
+    margin-right: 0.1em;
+    margin-left: 0.2em;
+    margin-top: 0.7em;
+}
+
+#value-casing.output-style-custom-html.multi .value.selected-value {
+    color: var(--much-select-multi-select-selected-value-color, currentColor);
+    background-image: var(--much-select-multi-select-selected-value-background-image, none);
+    background-repeat: repeat-x;
+    margin: 0.1rem 0.25rem 0.1rem 0;
+    border-radius: 0.3rem;
+    border: 0.1rem solid
+        var(--much-select-example-selected-value-border-color, var(--much-select-border-color, currentColor));
+    min-width: 0.5rem;
+    min-height: 2rem;
+    flex-grow: 0;
+    flex-shrink: 1;
+    flex-basis: auto;
+    align-items: center;
+    padding-left: 0.25em;
+    padding-right: 0.25em;
+}
+
+#value-casing.output-style-custom-html.multi .value.selected-value.highlighted-value {
+    background-image: var(
+        --much-select-example-highlighted-value-background-image,
+        linear-gradient(to bottom, #e1b12c, #fbc531)
+    );
+    background-repeat: repeat-x;
+}
+
+.selected-value-label {
+    padding-top: 0.09rem;
+}
+
+.value .remove-option::after {
+    border-left: 1px dotted var(--much-select-border-color, currentColor);
+}
+
+#dropdown-indicator {
+    cursor: pointer;
+    transition: transform 0.25s;
+}
+
+#dropdown-indicator.up {
+    transform: rotate(270deg);
+}
+
+#dropdown-indicator.down {
+    transform: rotate(90deg);
+}
+
+#clear-button-wrapper {
+    cursor: pointer;
+    box-sizing: content-box;
+    padding: 0.3em 0.5em;
+    border-width: 0.2em;
+    border-style: solid;
+    border-color: transparent;
+}
+
+#clear-button-wrapper:hover {
+    border-color: var(--much-select-clear-button-border-color, currentColor);
+}
+
+#dropdown {
+    margin-top: 0.2rem;
+    border-radius: 0.3rem;
+    border-width: 0.1rem;
+    border-color: var(--much-select-border-color, currentColor);
+    border-style: solid;
+    font-family: var(--much-select-example-form-font, sans-serif);
+}
+
+#dropdown .optgroup {
+    color: var(--much-select-dropdown-optgroup-color, inherit);
+    background-color: var(--much-select-dropdown-optgroup-background-color, transparent);
+    font-size: 0.85rem;
+    font-weight: 300;
+    font-family: var(--much-select-example-form-font, sans-serif);
+    padding: 0.2rem;
+}
+
+#dropdown .option:not(.dropdown-message) {
+    background-color: var(--much-select-dropdown-option-background-color, transparent);
+    color: var(--much-select-dropdown-option-color, currentColor);
+    font-family: var(--much-select-example-form-font, sans-serif);
+    padding: 0.5rem;
+    font-size: var(--much-select-example-value-font-size, 1em);
+    min-height: 1.2rem;
+}
+
+#dropdown .option.selected {
+    background-color: var(--much-select-dropdown-option-selected-background-color, transparent);
+    color: var(--much-select-dropdown-option-color-inverse, currentColor);
+}
+
+#dropdown .option.highlighted {
+    background-color: var(--much-select-dropdown-option-highlighted-background-color, transparent);
+    color: var(--much-select-dropdown-option-color-inverse, currentColor);
+}
+
+#dropdown .option.active {
+    background-color: var(--much-select-dropdown-option-active-background-color, transparent);
+    color: var(--much-select-dropdown-option-color-inverse, currentColor);
+}
+
+#dropdown .option.disabled:not(.dropdown-message) {
+    background-color: var(--much-select-dropdown-option-disabled-background-color, transparent);
+    color: var(--much-select-dropdown-option-disabled-font-color, currentColor);
+}
+
+#dropdown .dropdown-message {
+    min-height: 1.2rem;
+    padding: 0.2rem;
+    cursor: default;
+}
+
+#dropdown .description {
+    font-size: 0.85rem;
+    padding: 0.2rem;
+}
+
+#dropdown-footer {
+    font-size: 50%;
+    text-align: center;
+    color: var(--much-select-dropdown-footer-color, currentColor);
+    background-color: var(--much-select-dropdown-footer-background-color, transparent);
+    padding: 0.2rem;
+}
+
+#wrapper .error-message ul {
+    margin: 0 0 0.4rem 0;
+    padding: 0;
+    cursor: default;
+}
+
+#wrapper .error-message ul li {
+    font-size: var(--much-select-error-size, 80%);
+    margin: 0.1rem 0 0 0;
+    padding: 0;
+    color: var(--much-select-error-color, #c23616);
+}
